@@ -708,18 +708,19 @@ switch(_operation) do {
                         _locations = [];
                     };
 
-                    if (count synchronizedObjects _logic > 0) then {
-                        for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
-                            _mod = (synchronizedObjects _logic) select _i;
-                            if (typeof _mod == "ALiVE_mil_OPCOM") then {
-                                [_logic, "setupTriggers", [_locations, "starting"]] call MAINCLASS;
-                                _locations = [];
-                            };
+                    private _hasOpcom = false;
+                    {
+                        if (typeOf _x == "ALiVE_mil_OPCOM") then {
+                            _hasOpcom = true;
+                            [_logic, "setupTriggers", [_locations, "starting"]] call MAINCLASS;
+                            _locations = [];
                         };
-                    } else {
-                        if (!(_logic getVariable["IED_Starting_Threat",0] == 0) && _debug) then {
-                            ["ALIVE MIL - Starting IED Threat set without being synced with the OPCOM Commander! Ignoring Starting Threat.."] call ALiVE_fnc_dump;
-                        };
+                    } forEach (synchronizedObjects _logic);
+                    // Starting IED Threat only works with an AI Commander synced. Synced to anything else, or to
+                    // nothing, it is ignored and the normal IED Threat is used, so say so in the RPT, debug or not
+                    if (!_hasOpcom && {([_logic, "IED_Starting_Threat"] call MAINCLASS) != 0}) then {
+                        ["ALiVE MIL IED - Starting IED Threat is set but no AI Commander is synced to this module, so it is ignored and the normal IED Threat is used. Synced to: %1",
+                            (synchronizedObjects _logic) apply { typeOf _x }] call ALiVE_fnc_dump;
                     };
                 } else {
                     // with or without an AI Commander synced: both place bombers and car bombs now
