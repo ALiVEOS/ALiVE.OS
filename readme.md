@@ -70,6 +70,7 @@ ALiVE ships support for some mods and Creator DLC in its `addons` folder. Each p
 | `composition_spe` | Spearhead 1944 | Bocage military and guerrilla compositions |
 | `composition_cup` | CUP Terrains Core | Desert, Woodland and Pacific compositions built from CUP objects |
 | `compatibility_gm` | Global Mobilization | ALiVE factions and groups for Global Mobilization units |
+| `compatibility_wbk` | WebKnight's Zombies and Creatures | Zombie groups for its WBK Zombies faction, so Military Placement and the AI Commander can field it |
 
 Without the mod, the server log shows a line like `Skipped loading of addon 'ALiVE_composition_vn' as required addon 'loadorder_f_vietnam' is not present`. That is expected and not an error.
 
