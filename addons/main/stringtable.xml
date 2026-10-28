@@ -357,9 +357,9 @@
     <Spanish>Modo de juego</Spanish>
 </Key>
 <Key ID="STR_ALiVE_GAMEMODE_COMMENT">
-    <English>Standard is ALiVE as it has always been. Outbreak is a zombie outbreak, and needs WebKnight's Zombies and Creatures and Improved Melee System loaded: without them the mission does not start, and says which mod is missing.</English>
-    <Chinesesimp>标准：一直以来的ALiVE。爆发：僵尸爆发模式，需要加载WebKnight's Zombies and Creatures和Improved Melee System；缺少它们时任务不会开始，并会说明缺少哪个模组。</Chinesesimp>
-    <Spanish>Estándar es ALiVE como siempre ha sido. Brote es un brote zombi y necesita cargados WebKnight's Zombies and Creatures e Improved Melee System: sin ellos la misión no empieza e indica qué mod falta.</Spanish>
+    <English>Standard is ALiVE as it has always been. Outbreak is a zombie outbreak, and needs WebKnight's Zombies and Creatures and Improved Melee System (or their DEV versions) loaded: without them the mission does not start, and says which mod is missing.</English>
+    <Chinesesimp>标准：一直以来的ALiVE。爆发：僵尸爆发模式，需要加载WebKnight's Zombies and Creatures和Improved Melee System（或其DEV版本）；缺少它们时任务不会开始，并会说明缺少哪个模组。</Chinesesimp>
+    <Spanish>Estándar es ALiVE como siempre ha sido. Brote es un brote zombi y necesita cargados WebKnight's Zombies and Creatures e Improved Melee System (o sus versiones DEV): sin ellos la misión no empieza e indica qué mod falta.</Spanish>
 </Key>
 <Key ID="STR_ALiVE_ZOMBIESIDE">
     <English>Zombie Side</English>
@@ -367,9 +367,9 @@
     <Spanish>Bando zombi</Spanish>
 </Key>
 <Key ID="STR_ALiVE_ZOMBIESIDE_COMMENT">
-    <English>Outbreak game mode only. The side the zombie factions are on. It is made hostile to every other side except civilians, so survivors can be any other side. Zombie mods leave civilian units alone, so townsfolk meant to be hunted must be soldiers dressed as civilians.</English>
-    <Chinesesimp>仅限爆发游戏模式。僵尸阵营所属的一方。它会与除平民外的所有其他方敌对，因此幸存者可以是任何其他方。僵尸模组不会攻击平民单位，所以要被追杀的镇民必须是穿着平民服装的士兵。</Chinesesimp>
-    <Spanish>Solo en el modo de juego Brote. El bando de las facciones zombi. Se vuelve hostil a todos los demás bandos salvo los civiles, así que los supervivientes pueden ser de cualquier otro bando. Los mods de zombis no atacan a unidades civiles, así que los aldeanos que deban ser perseguidos tienen que ser soldados vestidos de civil.</Spanish>
+    <English>Outbreak game mode only. The side the zombie factions are on. It is made hostile to every other side except civilians, and ALiVE sends the zombies after civilians itself. Give the zombies a side no human faction uses: humans on the zombie side are bitten too but can't shoot back, and that side's relations with the others are overruled.</English>
+    <Chinesesimp>仅限爆发游戏模式。僵尸阵营所属的一方。它会与除平民外的所有其他方敌对，ALiVE会自行让僵尸追击平民。请给僵尸一个没有人类阵营使用的一方：与僵尸同一方的人类也会被咬，但无法还击，而且该方与其他方的关系会被覆盖。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. El bando de las facciones zombi. Se vuelve hostil a todos los demás bandos salvo los civiles, y ALiVE lanza a los zombis contra los civiles por su cuenta. Da a los zombis un bando que no use ninguna facción humana: los humanos del bando zombi también reciben mordiscos pero no pueden devolver el fuego, y las relaciones de ese bando con los demás quedan anuladas.</Spanish>
 </Key>
 <Key ID="STR_ALiVE_GAMEMODE_STANDARD">
     <English>Standard</English>

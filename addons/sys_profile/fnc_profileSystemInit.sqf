@@ -255,6 +255,9 @@ if(isServer) then {
         } else {
             ["ALiVE Profile System - Outbreak zombie factions: %1", ALiVE_zombieFactions] call ALiVE_fnc_dump;
         };
+        // Every listed faction becomes a compiled faction on the zombie side, so Military Placement
+        // and the AI Commander can field CIV_F or BLU_F as zombies. Static data loads inside it.
+        [ALiVE_zombieFactions] call ALiVE_fnc_zombieFactionCompile;
         // A number setting: plain digits and a point only, anything else falls back to the default.
         private _zombieNumber = {
             params ["_key", "_default", "_label"];
@@ -277,17 +280,27 @@ if(isServer) then {
         ALiVE_zombieHuntRange = ["zombieHuntRange", 100, "Zombie hunt range"] call _zombieNumber;
         ALiVE_zombieBiteDamage = (["zombieBiteDamage", 0.3, "Zombie bite damage"] call _zombieNumber) min 1;
         if (ALiVE_zombieHuntRange == 0) then {
-            ["ALiVE Profile System - Zombie hunt range is 0, so zombies leave civilians alone."] call ALiVE_fnc_dumpR;
+            ["ALiVE Profile System - Zombie hunt range is 0, so zombies leave civilians and their own side alone."] call ALiVE_fnc_dumpR;
         };
+        private _infection = _logic getVariable ["zombieInfection", "true"];
+        ALiVE_zombieInfection = (_infection isEqualType true && {_infection}) || {_infection isEqualType "" && {toLower _infection == "true"}};
+        ALiVE_zombieInfectionCap = ["zombieInfectionCap", 40, "Zombie infection cap"] call _zombieNumber;
         // The zombie hunt runs on the server and on every headless client (a zombie group can be
         // handed to one), so they all need the list and the settings. Players' machines skip it.
         publicVariable "ALiVE_zombieFactions";
         publicVariable "ALiVE_zombieHuntRange";
         publicVariable "ALiVE_zombieBiteDamage";
+        publicVariable "ALiVE_zombieInfection";
+        // Every machine watches its own units' deaths, a player's included, so it starts everywhere
+        if (ALiVE_zombieFactions isNotEqualTo [] && {ALiVE_zombieInfection}) then {
+            ["start"] remoteExecCall ["ALiVE_fnc_zombieInfect", 0, "ALiVE_zombieInfect"];
+        };
         if (ALiVE_zombieFactions isNotEqualTo [] && {ALiVE_zombieHuntRange > 0}) then {
             [] remoteExecCall ["ALiVE_fnc_zombieHunt", 0, "ALiVE_zombieHunt"];
         };
     };
+    // The AI Commander waits on this in Outbreak before it reads a faction's side.
+    ALiVE_zombieFactionsReady = true;
     private _pathfinding = (_logic getVariable ["pathfinding", "true"]) == "true";
     // Pass the configured grid setting through RAW (no parse here). It may be an
     // auto-size token ("auto"/"high"/"med"/"low"), a stringified pair "[x,y]" from

@@ -32,6 +32,13 @@ private ["_side"];
 
 private _class = _this call ALiVE_fnc_configGetFactionClass;
 
+// Outbreak: a faction listed as zombies fights for the zombie side whatever its config says (CIV_F reads as
+// EAST). Decided from broadcast values alone, so the server, headless clients and players all agree.
+// Outside Outbreak this never fires.
+if ((missionNamespace getVariable ["ALiVE_GAMEMODE", ""]) == "outbreak" && {_this isEqualType ""} && {(toLower _this) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])}) exitWith {
+    [east, west, resistance] select ((["EAST", "WEST", "GUER"] find (toUpper (missionNamespace getVariable ["ALiVE_ZOMBIESIDE", "EAST"]))) max 0)
+};
+
 // A compiled faction whose name has no faction config of its own (Override mode with a made-up name) takes the side its
 // custom mapping names, rather than reading as EAST (F244).
 if (!isClass _class && {!isNil "ALiVE_factionCustomMappings"} && {_this isEqualType ""} && {_this in (ALiVE_factionCustomMappings select 1)}) exitWith {

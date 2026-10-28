@@ -6,7 +6,7 @@ Function: ALiVE_fnc_zombieHunt
 
 Description:
 Outbreak game mode: spawned zombie groups go after civilians, a player in a civilian
-slot included. The zombie mod only ever attacks units the engine calls enemies, and no
+slot included, and any human on the zombies' own side, whom the zombie mod never attacks. The zombie mod only ever attacks units the engine calls enemies, and no
 side is the civilians' enemy, so ALiVE drives the zombies at the nearest civilian and
 lands the bite itself. Soldiers stay the priority: while the group knows of an enemy in
 range, the zombie mod has it and this loop leaves the group alone.
@@ -98,20 +98,38 @@ if (!isNull _enemy && {_lead distance _enemy < _range}) exitWith {
 // soldier it has not been told about, so without this a horde walks past a rifleman to
 // reach a farmer.
 private _zombieSide = side _group;
+// One dash of 40 m directly away from the zombies, then not again for 30 seconds, so a zombie
+// gets its chance: sent every few seconds, a crowd agent outran a Runner for good. A player
+// moves themselves. The order goes to the machine that owns the man; crowd agents ignore
+// doMove and take setDestination.
+private _flee = {
+    params ["_man"];
+    if (!alive _man || {isPlayer _man} || {_now < (_man getVariable ["ALiVE_zombieFleeNext", 0])}) exitWith {};
+    _man setVariable ["ALiVE_zombieFleeNext", _now + 30];
+    private _away = _man getPos [40, _lead getDir _man];
+    if (isAgent teamMember _man) then {
+        if (local _man) then { _man setDestination [_away, "LEADER PLANNED", true] } else { [_man, [_away, "LEADER PLANNED", true]] remoteExecCall ["setDestination", _man] };
+    } else {
+        if (local _man) then { _man doMove _away } else { [_man, _away] remoteExecCall ["doMove", _man] };
+    };
+};
 private _target = objNull;
 private _targetDist = 1e9;
 private _heard = false;
 {
     if (alive _x && {isNull objectParent _x} && {!(_x getVariable ["ALiVE_zombie", false])} && {!(_x getVariable ["WBK_AI_isZombie", false])} && {(_x getVariable ["WBK_AI_ZombieMoveSet", ""]) isEqualTo ""}) then {
         private _dist = _lead distance _x;
+        // Prey: civilians, and any human on the zombies' own side, whom no zombie would otherwise touch.
         // A captive soldier also reads as civilian, so the group's side decides. Agents have no group.
-        if (side _x == civilian && {isNull group _x || {side group _x == civilian}}) then {
+        if ((side _x == civilian && {isNull group _x || {side group _x == civilian}}) || {side group _x == _zombieSide && {!captive _x}}) then {
             if (_dist < _targetDist) then { _target = _x; _targetDist = _dist };
         } else {
             // A captive is left alone: nobody fights him, and knowing about him would stall the group.
             if (_dist < 30 && {!captive _x} && {(_zombieSide getFriend (side group _x)) < 0.6}) then {
                 _group reveal [_x, 1.5];
                 _heard = true;
+                // An armed soldier fights; one with no gun runs, like a civilian
+                if (primaryWeapon _x == "" && {handgunWeapon _x == ""} && {secondaryWeapon _x == ""}) then { [_x] call _flee };
             };
         };
     };
@@ -161,16 +179,5 @@ if (_bite > 0) then {
     } forEach _units;
 };
 
-// The civilian runs: one dash of 40 m directly away, then not again for 30 seconds, so the
-// zombie gets its chance. Sent every few seconds, a crowd agent outran a Runner for good.
-// A player moves themselves. The order goes to the machine that owns the civilian; crowd
-// agents ignore doMove and take setDestination.
-if (alive _target && {!isPlayer _target} && {_now >= (_target getVariable ["ALiVE_zombieFleeNext", 0])}) then {
-    _target setVariable ["ALiVE_zombieFleeNext", _now + 30];
-    private _away = _target getPos [40, _lead getDir _target];
-    if (isAgent teamMember _target) then {
-        if (local _target) then { _target setDestination [_away, "LEADER PLANNED", true] } else { [_target, [_away, "LEADER PLANNED", true]] remoteExecCall ["setDestination", _target] };
-    } else {
-        if (local _target) then { _target doMove _away } else { [_target, _away] remoteExecCall ["doMove", _target] };
-    };
-};
+// The hunted man runs.
+[_target] call _flee;

@@ -97,6 +97,22 @@ if (typeName _this == "ARRAY") then {
 private _allowNone = "allowNone" in _flags;
 private _artilleryOnly = "artilleryOnly" in _flags;
 
+// Outbreak: the AI Commander's and Military Placement's pickers also offer civilian factions,
+// since any of them can be listed as zombies on the Virtual AI module. Only those two field a
+// zombie faction on the zombie side, so other modules sharing the picker keep the military list.
+// The module is the one selected (the attributes window edits the selection); the mode is read
+// off the Required module.
+private _outbreak = false;
+private _outbreakModules = get3DENSelected "logic";
+if (_allowedSides isEqualTo [0,1,2] && {!_artilleryOnly} && {_outbreakModules isNotEqualTo []} && {(_outbreakModules findIf { !(typeOf _x in ["ALiVE_mil_placement", "ALiVE_mil_OPCOM"]) }) < 0}) then {
+    private _require = ((all3DENEntities) select 3) select { typeOf _x == "ALiVE_require" };
+    if (_require isNotEqualTo []) then {
+        private _mode = ((_require select 0) get3DENAttribute "ALiVE_require_ALiVE_GAMEMODE") param [0, "standard"];
+        _outbreak = _mode isEqualType "" && {toLower _mode == "outbreak"};
+    };
+    if (_outbreak) then { _allowedSides = [0,1,2,3] };
+};
+
 // ------------------------------------------------------------------------
 // 1. Resolve the currently-stored faction string.
 //    Priority: logic variable > Eden attribute value slot > side-aware default.
@@ -407,7 +423,7 @@ private _sideBuckets = [
     [0, "OPFOR"],
     [1, "BLUFOR"],
     [2, "INDFOR"],
-    [3, "CIVILIAN"]
+    [3, ["CIVILIAN", "CIVILIAN (as zombies)"] select _outbreak]
 ];
 
 {

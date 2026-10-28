@@ -1220,6 +1220,13 @@ switch(_operation) do {
 
             _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             _factionSideNumber = getNumber(_factionConfig >> "side");
+            // Outbreak: a faction listed as zombies is placed on the zombie side, CIV_F included
+            private _zombieSideNumber = ["EAST", "WEST", "GUER"] find (toUpper (missionNamespace getVariable ["ALiVE_ZOMBIESIDE", "EAST"]));
+            private _zombieFactions = if ((missionNamespace getVariable ["ALiVE_GAMEMODE", ""]) == "outbreak") then { missionNamespace getVariable ["ALiVE_zombieFactions", []] } else { [] };
+            if ((toLower _faction) in _zombieFactions) then { _factionSideNumber = _zombieSideNumber max 0 };
+            if (_factionSideNumber == 3 && {(missionNamespace getVariable ["ALiVE_GAMEMODE", ""]) == "outbreak"}) then {
+                ["MP [%1] - Warning %1 is a civilian faction and is not listed as zombies on the Virtual AI module, so civilians would hold military objectives. List it under the zombie factions there, or pick a military faction.", _faction] call ALiVE_fnc_dumpR;
+            };
             _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             _countProfiles = 0;
 
@@ -1234,7 +1241,9 @@ switch(_operation) do {
                     ["MP [%1] - Artillery faction %2 not found in CfgFactionClasses - artillery reverts to the force faction",_faction,_artilleryFaction] call ALiVE_fnc_dump;
                     _artilleryFaction = "";
                 } else {
-                    if (getNumber (_donorConfig >> "side") != _factionSideNumber) then {
+                    private _donorSideNumber = getNumber (_donorConfig >> "side");
+                    if ((toLower _artilleryFaction) in _zombieFactions) then { _donorSideNumber = _zombieSideNumber max 0 };
+                    if (_donorSideNumber != _factionSideNumber) then {
                         ["MP [%1] - Artillery faction %2 does not fight for side %3 - artillery reverts to the force faction",_faction,_artilleryFaction,_side] call ALiVE_fnc_dump;
                         _artilleryFaction = "";
                     };

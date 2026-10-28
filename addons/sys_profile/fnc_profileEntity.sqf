@@ -1551,6 +1551,33 @@ switch(_operation) do {
             };
             // --- end onEachSpawn hook ---
 
+            // Outbreak: a man of another side's class made in the zombie group keeps his class's side (a CIV_F
+            // zombie reads civilian, a BLU_F one WEST), so nobody shoots him. Joining the group again gives him
+            // the group's side; measured, BLUFOR and AAF then fire on CIV_F and BLU_F zombies.
+            private _sideFaction = _logic select 2 select 29;
+            if (_sideFaction isEqualType "" && {(toLower _sideFaction) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])}) then {
+                private _keepLeader = leader _group;
+                private _misSided = _units select { !isNull _x && {side _x != side _group} };
+                if (_misSided isNotEqualTo []) then {
+                    _misSided joinSilent _group;
+                    if (alive _keepLeader) then { _group selectLeader _keepLeader };
+                };
+            };
+
+            // Outbreak: every unit of a zombie faction becomes a zombie as it spawns, on this machine, which owns
+            // it. Clothes stay, so a CIV_F horde looks like townsfolk and a BLU_F horde like dead soldiers; the
+            // call takes the weapons. Units that are zombies by class already are left to the mod. Without
+            // WebKnight's mod nobody is converted and the zombie hunt still runs.
+            private _convertFaction = _logic select 2 select 29;
+            if (_convertFaction isEqualType "" && {(toLower _convertFaction) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])} && {isClass (configFile >> "CfgPatches" >> "WBK_ZombieCreatures")} && {!isNil "WBK_LoadAIThroughEden"}) then {
+                {
+                    if (alive _x && {!(_x getVariable ["WBK_AI_isZombie", false])} && {(toLower (getText (configOf _x >> "faction"))) != "wbk_ai_zhambies"}) then {
+                        // 4 is a Runner, 2 a Walker: mostly Runners, so the horde closes on people
+                        [_x, [4, 2] selectRandomWeighted [0.7, 0.3]] call WBK_LoadAIThroughEden;
+                    };
+                } forEach _units;
+            };
+
             // Outbreak: a zombie faction's group is tagged so the zombie hunt (ALiVE_fnc_zombieHunt) drives it
             // at civilians, on whichever machine owns it, and each zombie is marked so nothing mistakes a
             // zombie in civilian clothes for a civilian.
@@ -1563,10 +1590,13 @@ switch(_operation) do {
             // WebKnight's zombies: a Walker or Crawler leading the group holds everyone to its shamble (about
             // 19 m in 45 s against 154 m with a Runner in front), so a faster zombie takes the lead and the
             // slow ones trail behind. The mod's own AI names each zombie's gait a moment after it is made.
-            if (isClass (configFile >> "CfgPatches" >> "WBK_ZombieCreatures")) then {
+            // Only zombie groups: WebKnight's own faction, or one listed as zombies.
+            if (isClass (configFile >> "CfgPatches" >> "WBK_ZombieCreatures") && {_group getVariable ["ALiVE_zombieHunt", false] || {_spawnFaction isEqualType "" && {(toLower _spawnFaction) == "wbk_ai_zhambies"}}}) then {
                 [_logic, _group] spawn {
                     params ["_logic", "_group"];
-                    sleep 3;
+                    // The mod names each zombie's gait 0.1 to 5 s after it is made, so wait for the leader's
+                    private _until = time + 8;
+                    waitUntil { sleep 0.5; isNull _group || {((leader _group) getVariable ["WBK_AI_ZombieMoveSet", ""]) != ""} || {time > _until} };
                     if (isNull _group) exitWith {};
                     private _gait = { toLower (_this getVariable ["WBK_AI_ZombieMoveSet", ""]) };
                     private _slow = { private _g = _this call _gait; "wbk_walker" in _g || {"wbk_crawler" in _g} };

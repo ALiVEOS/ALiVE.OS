@@ -290,9 +290,9 @@
     <Spanish>Alcance de caza zombi:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE_COMMENT">
-    <English>Outbreak game mode only. How far in metres a zombie group looks for civilians to attack, players in civilian slots included. The zombie mod only attacks soldiers, so ALiVE sends the zombies after civilians itself; a soldier nearby still comes first. 0 means zombies leave civilians alone.</English>
-    <Chinesesimp>仅限爆发游戏模式。僵尸小组寻找平民攻击的距离（米），包括平民位置上的玩家。僵尸模组只攻击士兵，因此由ALiVE让僵尸追击平民；附近的士兵仍然优先。0表示僵尸不攻击平民。</Chinesesimp>
-    <Spanish>Solo en el modo de juego Brote. Distancia en metros a la que un grupo zombi busca civiles para atacar, incluidos los jugadores en puestos civiles. El mod de zombis solo ataca a soldados, así que ALiVE lanza a los zombis contra los civiles; un soldado cercano sigue teniendo prioridad. 0 significa que los zombis dejan en paz a los civiles.</Spanish>
+    <English>Outbreak game mode only. How far in metres a zombie group looks for civilians to attack, players in civilian slots included, and anyone on the zombies' own side. The zombie mod only attacks enemies, so ALiVE sends the zombies after these itself; an enemy soldier nearby still comes first. 0 turns this off.</English>
+    <Chinesesimp>仅限爆发游戏模式。僵尸小组寻找平民以及僵尸同一阵营人员攻击的距离（米），包括平民位置上的玩家。僵尸模组只攻击敌人，因此由ALiVE让僵尸追击他们；附近的敌方士兵仍然优先。0表示关闭此功能。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. Distancia en metros a la que un grupo zombi busca civiles para atacar, incluidos los jugadores en puestos civiles, y a cualquiera del mismo bando que los zombis. El mod de zombis solo ataca a enemigos, así que ALiVE lanza a los zombis contra ellos; un soldado enemigo cercano sigue teniendo prioridad. 0 lo desactiva.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE">
     <English>Zombie Bite Damage:</English>
@@ -300,9 +300,29 @@
     <Spanish>Daño del mordisco zombi:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE_COMMENT">
-    <English>Outbreak game mode only. Damage each bite does to a civilian, from 0 to 1. The default 0.3 kills in four bites. The zombie is named as the killer.</English>
-    <Chinesesimp>仅限爆发游戏模式。每次咬伤对平民造成的伤害，范围0到1。默认值0.3咬四次致死。僵尸被记为击杀者。</Chinesesimp>
-    <Spanish>Solo en el modo de juego Brote. Daño de cada mordisco a un civil, de 0 a 1. El valor por defecto 0.3 mata en cuatro mordiscos. El zombi figura como el que lo mató.</Spanish>
+    <English>Outbreak game mode only. Damage each bite ALiVE lands on a civilian, or on someone of the zombies' own side, from 0 to 1. The default 0.3 kills in four bites. The zombie is named as the killer.</English>
+    <Chinesesimp>仅限爆发游戏模式。ALiVE每次咬伤平民或僵尸同一阵营人员造成的伤害，范围0到1。默认值0.3咬四次致死。僵尸被记为击杀者。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. Daño de cada mordisco que ALiVE da a un civil, o a alguien del mismo bando que los zombis, de 0 a 1. El valor por defecto 0.3 mata en cuatro mordiscos. El zombi figura como el que lo mató.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION">
+    <English>Zombie Infection:</English>
+    <Chinesesimp>僵尸感染：</Chinesesimp>
+    <Spanish>Infección zombi:</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_COMMENT">
+    <English>Outbreak game mode only. Anyone a zombie kills gets up again as a zombie a few seconds later, in the same clothes: civilians, soldiers of any side and players. A player still respawns as the mission is set up, and the zombie of his body can go after other players.</English>
+    <Chinesesimp>仅限爆发游戏模式。被僵尸杀死的任何人几秒后会穿着同样的衣服作为僵尸重新站起来：平民、任何一方的士兵以及玩家。玩家仍按任务设置重生，他尸体变成的僵尸可以去攻击其他玩家。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. Quien muere a manos de un zombi se levanta como zombi unos segundos después, con la misma ropa: civiles, soldados de cualquier bando y jugadores. El jugador reaparece según lo configurado en la misión, y el zombi de su cuerpo puede ir a por otros jugadores.</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP">
+    <English>Zombie Infection Cap:</English>
+    <Chinesesimp>僵尸感染上限：</Chinesesimp>
+    <Spanish>Límite de infección zombi:</Spanish>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP_COMMENT">
+    <English>Outbreak game mode only. The most risen zombies standing at once. Risen zombies are not Virtual AI groups and are never put away when players leave, so this keeps a long fight from filling the map. While the cap is reached, the dead stay dead.</English>
+    <Chinesesimp>仅限爆发游戏模式。同时存在的复活僵尸的最大数量。复活的僵尸不是虚拟AI小组，玩家离开时也不会被收起，所以这能防止长时间的战斗让地图塞满僵尸。达到上限时，死者不会复活。</Chinesesimp>
+    <Spanish>Solo en el modo de juego Brote. El máximo de zombis resucitados en pie a la vez. Los zombis resucitados no son grupos de la IA virtual y nunca se retiran cuando los jugadores se van, así que esto evita que un combate largo llene el mapa. Mientras se alcanza el límite, los muertos siguen muertos.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
     <English>Pathfinding:</English>

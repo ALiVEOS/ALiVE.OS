@@ -47,7 +47,7 @@ class CfgALiVEGameModes {
     class outbreak {
         displayName = "Outbreak";
         addons[] = {
-            {"WBK_ZombieCreatures", "2789152015", "WebKnight's Zombies and Creatures", 1},
+            {"WBK_ZombieCreatures", "2789152015, or 3566432930 for the DEV zombies", "WebKnight's Zombies and Creatures", 1},
             // stable Improved Melee System, or IMS: DEV for WebKnight's DEV zombies
             {"WBK_MeleeMechanics|WBK_IMS_Animations_Executions", "2291129343, or 3510959070 for the DEV zombies", "Improved Melee System (or IMS: DEV)", 1}
         };

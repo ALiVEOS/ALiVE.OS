@@ -337,12 +337,33 @@ switch (_operation) do {
         private _taskProfileCountOverrides = [_logic, "parseTaskProfileCountOverrides", _taskProfileCountOverridesRaw] call MAINCLASS;
         private _taskProfileTypeOverrides = [_logic, "parseTaskProfileTypeOverrides", _taskProfileTypeOverridesRaw] call MAINCLASS;
 
+        // Outbreak: a faction listed as zombies answers the zombie side only once the Virtual AI module has set
+        // it up, and that module may start after this one. Not forever: without a Virtual AI module nothing waits.
+        private _zombieWait = time + 60;
+        waitUntil { sleep 0.2; !isNil "ALiVE_GAMEMODE" || {time > _zombieWait} };
+        if ((missionNamespace getVariable ["ALiVE_GAMEMODE", ""]) == "outbreak") then {
+            waitUntil { sleep 0.5; !isNil "ALiVE_zombieFactionsReady" || {time > _zombieWait} };
+            if (isNil "ALiVE_zombieFactionsReady") then {
+                ["ALiVE OPCOM - Outbreak: the Virtual AI module never set up the zombie factions, so %1 is read by its config side", _factions select 0] call ALiVE_fnc_dumpR;
+            };
+        };
+
         // determine side
 
         private _side = [(_factions select 0) call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText;
         if (_side == "NULL") then {
             ["ALiVE OPCOM init ERROR: AI Commander has invalid side. Factions = %1", _factions] call ALiVE_fnc_Dump;
             _side = "EAST";
+        };
+
+        // Outbreak: the zombie side is at war with every other side, so a human faction sharing it has the
+        // mission's own side relations overruled, and its men are prey to the zombies and can't shoot back.
+        if ((missionNamespace getVariable ["ALiVE_GAMEMODE", ""]) == "outbreak" && {_side == toUpper (missionNamespace getVariable ["ALiVE_ZOMBIESIDE", "EAST"])} && {((_factions apply { toLower _x }) - (missionNamespace getVariable ["ALiVE_zombieFactions", []])) isNotEqualTo []}) then {
+            ["ALiVE OPCOM - Outbreak: AI Commander factions %1 are on %2, the zombie side. Zombies attack them and they can't shoot back, and the zombie side is at war with every other side. Put human factions on another side.", _factions, _side] call ALiVE_fnc_dumpR;
+        };
+
+        if (_side == "CIV" && {(missionNamespace getVariable ["ALiVE_GAMEMODE", ""]) == "outbreak"}) then {
+            ["ALiVE OPCOM - Outbreak: AI Commander factions %1 are civilian and not listed as zombies on the Virtual AI module, so they'd command as civilians. List them under the zombie factions there.", _factions] call ALiVE_fnc_dumpR;
         };
 
         ([_side] call ALiVE_fnc_getSideAllegiances) params ["_sidesEnemy","_sidesFriendly"];

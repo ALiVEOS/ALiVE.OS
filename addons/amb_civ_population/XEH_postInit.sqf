@@ -116,6 +116,7 @@ if (hasInterface) then {
                 && {!isPlayer _x}
                 && {!(_x getVariable ["ALiVE_civInteract_resolved", false])}
                 && {!(_x getVariable ["ALiVE_advciv_blacklist", false])}
+                && {!(_x getVariable ["ALiVE_zombie", false])}
                 && {(getNumber (configFile >> "CfgVehicles" >> typeOf _x >> "side")) == 3}
             ) then {
                 [_x] call ALiVE_fnc_addCivilianInteraction;
@@ -369,7 +370,8 @@ if (hasInterface) then {
                 {_civ != player} &&
                 {!isPlayer _civ} &&
                 {(getNumber (configFile >> "CfgVehicles" >> typeOf _civ >> "side")) == 3} &&
-                {!(_civ getVariable ["ALiVE_advciv_blacklist", false])}
+                {!(_civ getVariable ["ALiVE_advciv_blacklist", false])} &&
+                {!(_civ getVariable ["ALiVE_zombie", false])}
             ) then {
                 // Skip if advciv is active and the civilian is in a non-CALM
                 // reactive / ordered state - their brain already owns movement.
@@ -474,6 +476,7 @@ if (hasInterface) then {
                 {isPlayer _civ} ||
                 {(player distance _civ) > _aimRange} ||
                 {(getNumber (configFile >> "CfgVehicles" >> typeOf _civ >> "side")) != 3} ||
+                {_civ getVariable ["ALiVE_zombie", false]} ||
                 {_civ getVariable ["ALiVE_advciv_blacklist", false]}
             ) exitWith {};
 

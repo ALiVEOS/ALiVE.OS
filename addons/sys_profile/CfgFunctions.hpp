@@ -27,8 +27,18 @@ class cfgFunctions {
                 ALIVE_RECOMPILE;
             };
             class zombieHunt {
-                description = "Outbreak: drives spawned zombie groups at civilians and lands the bite (server and headless clients)";
+                description = "Outbreak: drives spawned zombie groups at civilians and their own side's humans, and lands the bite (server and headless clients)";
                 file = "\x\alive\addons\sys_profile\fnc_zombieHunt.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class zombieFactionCompile {
+                description = "Outbreak: registers each zombie faction as a compiled faction on the zombie side (server)";
+                file = "\x\alive\addons\sys_profile\fnc_zombieFactionCompile.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class zombieInfect {
+                description = "Outbreak: anyone a zombie kills rises as a zombie (every machine watches its own deaths, the server raises them)";
+                file = "\x\alive\addons\sys_profile\fnc_zombieInfect.sqf";
                 ALIVE_RECOMPILE;
             };
             class profileEntity {
