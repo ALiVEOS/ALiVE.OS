@@ -281,6 +281,32 @@ if (hasInterface) then {
         // already has its width, because the answer depends on where the lines wrap.
         private _show = {
             params ["_ctrl", "_body"];
+            // A holiday logo by this computer's own clock: Easter for a week either side of Easter
+            // Sunday, Halloween on 31 October, Christmas from 18 December to 1 January. An Outbreak
+            // mission gets the zombie version of Easter and Christmas, and the Outbreak logo on any
+            // other day. The mode arrives from the server, so a screen drawn before it lands catches
+            // up on its next refresh.
+            (systemTime) params ["_year", "_month", "_day"];
+            // Easter Sunday for this year (the Gregorian computus), then how many days today is
+            // from it. Easter falls in March or April, so the month lengths need no leap-year care.
+            private _a = _year % 19; private _b = floor (_year / 100); private _c = _year % 100;
+            private _f = floor ((_b + 8) / 25); private _g = floor ((_b - _f + 1) / 3);
+            private _h = (19 * _a + _b - floor (_b / 4) - _g + 15) % 30;
+            private _l = (32 + 2 * (_b % 4) + 2 * floor (_c / 4) - _h - (_c % 4)) % 7;
+            private _m = floor ((_a + 11 * _h + 22 * _l) / 451);
+            private _easterMonth = floor ((_h + _l - 7 * _m + 114) / 31);
+            private _easterDay = ((_h + _l - 7 * _m + 114) % 31) + 1;
+            private _dayOfYear = { params ["_mo", "_d"]; ([0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334] select (_mo - 1)) + _d };
+            private _fromEaster = ([_month, _day] call _dayOfYear) - ([_easterMonth, _easterDay] call _dayOfYear);
+            private _outbreak = (missionNamespace getVariable [QMOD(GAMEMODE), ""]) == "outbreak";
+            private _logo = switch (true) do {
+                case (_month == 10 && {_day == 31}): { "logo_alive_halloween.paa" };
+                case (abs _fromEaster <= 7): { ["logo_alive_easter.paa", "logo_alive_outbreak_easter.paa"] select _outbreak };
+                case ((_month == 12 && {_day >= 18}) || {_month == 1 && {_day == 1}}): { ["logo_alive_christmas.paa", "logo_alive_outbreak_christmas.paa"] select _outbreak };
+                case (_outbreak): { "logo_alive_outbreak.paa" };
+                default { "" };
+            };
+            if (_logo != "") then { _body = _body regexReplace ["logo_alive\.paa", _logo] };
             _ctrl ctrlSetPosition [safezoneX, safezoneY, safezoneW, safezoneH];
             _ctrl ctrlCommit 0;
             _ctrl ctrlSetStructuredText parseText _body;
