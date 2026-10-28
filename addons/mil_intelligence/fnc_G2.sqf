@@ -385,6 +385,15 @@ switch(_operation) do {
                         if (!_success || {_operation == "capture"}) then {
                             [_logic,"removeFriendlyOPCOMOrder", [_opcomID, _target]] call MAINCLASS;
                         };
+                    } else {
+                        // A failed completion only comes from the commander resetting the objective
+                        // (resetObjective), which sends the TACOM step it was on: with none, or a
+                        // defend or reserve step, the attack is still over, so its circle goes too.
+                        // Otherwise the commander counts the slot free and starts a new attack while
+                        // the old circle stays on the map.
+                        if (!_success) then {
+                            [_logic,"removeFriendlyOPCOMOrder", [_opcomID, _target]] call MAINCLASS;
+                        };
                     };
                 };
             };
