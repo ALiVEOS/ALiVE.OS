@@ -715,6 +715,34 @@ switch(_operation) do {
                             if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
                         };
 
+                        // [position, airport id] -> [takeoff spot, heading], or [] to leave the plane where it is. Only an
+                        // airfield whose taxi-off route is 2 points (the runway, end to end) gives a spot, and only for a
+                        // plane more than 40 m off that line: elsewhere the engine has a route from the stand.
+                        private _fnc_casRunwayStart = {
+                            params ["_pos", "_airport"];
+                            private _cfg = configFile >> "CfgWorlds" >> worldName;
+                            if (_airport > 0) then {
+                                private _secondary = _cfg >> "SecondaryAirports";
+                                _cfg = if (_airport <= count _secondary) then { _secondary select (_airport - 1) } else { configNull };
+                            };
+                            if (isNull _cfg) exitWith { [] };
+                            private _route = getArray (_cfg >> "ilsTaxiOff");
+                            if (count _route != 4) exitWith { [] };
+                            private _a = [_route select 0, _route select 1, 0];
+                            private _b = [_route select 2, _route select 3, 0];
+                            private _len = _a distance2D _b;
+                            if (_len < 300) exitWith { [] };
+                            private _along = _a vectorFromTo _b;
+                            private _rel = [_pos select 0, _pos select 1, 0] vectorDiff _a;
+                            private _t = ((_rel vectorDotProduct _along) max 0) min _len;
+                            if (((_a vectorAdd (_along vectorMultiply _t)) distance2D _pos) < 40) exitWith { [] };
+                            private _nearB = (_pos distance2D _b) < (_pos distance2D _a);
+                            private _from = [_a, _b] select _nearB;
+                            private _to = [_b, _a] select _nearB;
+                            private _heading = _from getDir _to;
+                            [_from getPos [30, _heading], _heading]
+                        };
+
 
                         // Transport
 
@@ -1001,6 +1029,23 @@ switch(_operation) do {
                             private _logisticsSource = if (count _x > 8) then {_x select 8} else {0};
                             _veh setVariable ["ALIVE_logistics_enabled", _logisticsEnabled, true];
                             _veh setVariable ["ALIVE_logistics_source", _logisticsSource, true];
+
+                            // A plane that starts on the ground at an airfield whose only taxi route is the runway itself
+                            // (Kunduz River's main field) has no way from its stand to the runway, so it drives cross-country
+                            // into whatever is in the way. It starts on the runway instead, at the end nearer its stand and
+                            // facing down it; an A-10 lifted off cleanly from either end there. A plane already on the
+                            // runway, or at an airfield with a real taxi route, stays where it was put.
+                            if (_veh isKindOf "Plane" && {_height <= 0} && {(_pos select 2) < 1.5} && {_airport >= 0} && {_airport < 100}) then {
+                                private _start = [_pos, _airport] call _fnc_casRunwayStart;
+                                if (_start isNotEqualTo []) then {
+                                    _pos = _start select 0;
+                                    _dir = _start select 1;
+                                    _veh setVelocity [0, 0, 0];
+                                    _veh setDir _dir;
+                                    _veh setPosATL _pos;
+                                    _veh setVectorUp [0, 0, 1];
+                                };
+                            };
 
                             //FSM
                             private _fsmHandle = [_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, CS_RESPAWN, _code, _audio] execFSM _casfsm;
