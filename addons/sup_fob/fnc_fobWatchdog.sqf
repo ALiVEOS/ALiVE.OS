@@ -253,6 +253,35 @@ private _tick = {
             [_entry, "objects", _kept] call ALIVE_fnc_hashSet;
             ALiVE_FOB_dirty = true;
         };
+        // Raised troops: a row whose men are all dead comes off, freeing its place; one still
+        // waiting to be made (no Virtual AI System when the save was loaded) is made now, free
+        if (!isNil "ALiVE_ProfileHandler") then {
+            if ([_entry, "troopsPending", false] call ALIVE_fnc_hashGet) then { ["restoreTroops", [_id]] call ALiVE_fnc_fobOps };
+            private _troops = [_entry, "troops", []] call ALIVE_fnc_hashGet;
+            if (_troops isEqualType [] && {_troops isNotEqualTo []}) then {
+                {
+                    if ((_x param [3, []]) isEqualTo [] && {_active}) then {
+                        (["spawnTroops", [_id, _x select 0, _x param [7, ""], _x param [4, ""], _x param [5, ""]]] call ALiVE_fnc_fobOps) params ["_newIds", "_newMen"];
+                        if (_newIds isNotEqualTo []) then { _x set [3, _newIds]; _x set [6, _newMen] } else {
+                            // can't be made (its mod isn't loaded now): dropped, not tried again every pass
+                            ["ALiVE Player FOBs - %1: raised %2 can't be made again, so it's dropped", _id, _x select 1] call ALiVE_fnc_dumpR;
+                            _x set [3, ["-"]];
+                        };
+                        ALiVE_FOB_dirty = true;
+                    };
+                } forEach _troops;
+                // a row stays while any of its men is left, or while it waits to be made (a damaged FOB's)
+                private _left = _troops select {
+                    private _ids = _x param [3, []];
+                    _ids isEqualTo [] || {(_ids findIf { !isNil {[ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler} }) > -1}
+                };
+                if (count _left != count _troops) then {
+                    [_entry, "troops", _left] call ALIVE_fnc_hashSet;
+                    ALiVE_FOB_dirty = true;
+                    [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+                };
+            };
+        };
         // A commander that reloaded its objectives has lost the FOB's; this puts it back
         ["reconcile", [_id]] call ALiVE_fnc_fobObjectives;
     } forEach +(ALiVE_FOB_registry select 1);

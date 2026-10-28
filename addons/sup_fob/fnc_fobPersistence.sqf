@@ -44,7 +44,7 @@ params [["_operation", "", [""]], ["_args", [], [[]]]];
 private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
 private _set = { [_logic, "attribute", [_this]] call ALiVE_fnc_FOB };
 private _debug = "fob_debug" call _set;
-private _runtime = ["hub", "engineerNear", "dirty", "respawn", "garrisonNext"];
+private _runtime = ["hub", "engineerNear", "dirty", "respawn", "garrisonNext", "troopsPending"];
 private _useData = !isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED};
 // The key the FOBs are saved under: ALiVE Data's own form when the mission has ALiVE Data (its
 // group id is only set then), the mission and map otherwise

@@ -49,7 +49,13 @@ private _fnc_status = {
     if (_fob isEqualTo []) exitWith {};
     _fob params ["", "", "_name", "", "", "_tier", "_supply", "_cap"];
     private _s = if (_supply < 0) then { localize "STR_ALIVE_FOB_SUPPLY_FREE" } else { if (_cap < 0) then { format [localize "STR_ALIVE_FOB_SUPPLY_POOL", round _supply] } else { format ["%1 / %2", round _supply, round _cap] } };
-    (BW_DISPLAY displayCtrl 92804) ctrlSetStructuredText ([[_name, format [localize "STR_ALIVE_FOB_UI_SUPPLY_LINE", _s]]] call _fnc_lines);
+    private _lines = [_name, format [localize "STR_ALIVE_FOB_UI_SUPPLY_LINE", _s]];
+    // the raised soldiers it holds against what its tier allows, once there are troops to raise
+    private _troopCap = ([missionNamespace getVariable ["ALiVE_sup_fob", objNull], "attribute", ["fob_troop_cap"]] call ALiVE_fnc_FOB) * _tier;
+    if (_troopCap > 0 && {((missionNamespace getVariable ["ALiVE_FOB_catalog", []]) findIf { (_x select 2) in ["SOLDIER", "GROUP"] }) > -1}) then {
+        _lines pushBack format [localize "STR_ALIVE_FOB_UI_TROOPS_STATUS", _fob param [11, 0], _troopCap];
+    };
+    (BW_DISPLAY displayCtrl 92804) ctrlSetStructuredText ([_lines] call _fnc_lines);
 };
 
 switch (_operation) do {
@@ -71,6 +77,9 @@ switch (_operation) do {
         uiNamespace setVariable ["ALiVE_FOB_buildFilling", true];
         _tier lbSetCurSel 0;
         uiNamespace setVariable ["ALiVE_FOB_buildFilling", false];
+        private _anyTroops = ((missionNamespace getVariable ["ALiVE_FOB_catalog", []]) findIf { (_x select 2) in ["SOLDIER", "GROUP"] }) > -1;
+        (BW_DISPLAY displayCtrl 92815) ctrlShow _anyTroops;
+        if (!_anyTroops && {(uiNamespace getVariable ["ALiVE_FOB_buildCategory", ""]) == "TROOPS"}) then { uiNamespace setVariable ["ALiVE_FOB_buildCategory", "FORTIFICATION"] };
         ["category", uiNamespace getVariable ["ALiVE_FOB_buildCategory", "FORTIFICATION"]] call ALiVE_fnc_buildMenu;
     };
 
@@ -85,8 +94,10 @@ switch (_operation) do {
         // and only what this FOB's type may build (FOB Types)
         private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
         private _type = (call _fnc_fob) param [10, ""];
+        // Troops holds soldiers and groups, from the same factions as static weapons and vehicles
+        private _kinds = [[_kind], ["SOLDIER", "GROUP"]] select (_kind == "TROOPS");
         private _rows = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select {
-            (_x select 2) == _kind && {!(_kind in ["STATIC", "VEHICLE"])
+            (_x select 2) in _kinds && {!(_kind in ["STATIC", "VEHICLE", "TROOPS"])
                 || {[(_x param [6, ""]) == _side, (_x param [7, ""]) in _allowed] select (_allowed isNotEqualTo [])}}
                 && {[_logic, "typeAllows", [_type, _x select 0]] call ALiVE_fnc_FOB}
         };
@@ -98,7 +109,7 @@ switch (_operation) do {
         uiNamespace setVariable ["ALiVE_FOB_buildAll", _rows];
         {
             (BW_DISPLAY displayCtrl (_x select 0)) ctrlSetTextColor ([[1,1,1,0.6], [1,1,1,1]] select (_kind == (_x select 1)));
-        } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"], [92810, "STATIC"], [92811, "VEHICLE"]];
+        } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"], [92810, "STATIC"], [92811, "VEHICLE"], [92815, "TROOPS"]];
         ["filter"] call ALiVE_fnc_buildMenu;
     };
 
@@ -134,7 +145,7 @@ switch (_operation) do {
                 _list lbSetColor [_i, [0.6, 0.6, 0.6, 1]];
                 _list lbSetTextRight [_i, format [localize "STR_ALIVE_FOB_UI_TIER_SHORT", _tierMin]];
             };
-            private _icon = getText (configFile >> "CfgVehicles" >> _class >> "icon");
+            private _icon = getText (configFile >> "CfgVehicles" >> (_x param [9, _class]) >> "icon");
             if (isText (configFile >> "CfgVehicleIcons" >> _icon)) then { _icon = getText (configFile >> "CfgVehicleIcons" >> _icon) };
             if (_icon != "" && {"\" in _icon}) then { _list lbSetPicture [_i, _icon] };
         } forEach _rows;
@@ -148,8 +159,8 @@ switch (_operation) do {
         if (_row isEqualTo []) exitWith {};
         _row params ["_class", "_name", "_kind", "_cost", "_pic", ["_tierMin", 1]];
         (BW_DISPLAY displayCtrl 92809) ctrlSetText _pic;
-        private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; case "VEHICLE": {["STR_ALIVE_FOB_UI_VEHICLE_ITEM", "STR_ALIVE_FOB_UI_AIRCRAFT_ITEM"] select (_class isKindOf "Air")}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
-        private _lines = [[_name, _class] select (_name == ""), localize _what, format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
+        private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; case "VEHICLE": {["STR_ALIVE_FOB_UI_VEHICLE_ITEM", "STR_ALIVE_FOB_UI_AIRCRAFT_ITEM"] select (_class isKindOf "Air")}; case "SOLDIER": {"STR_ALIVE_FOB_UI_SOLDIER_ITEM"}; case "GROUP": {"STR_ALIVE_FOB_UI_GROUP_ITEM"}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
+        private _lines = [[_name, _class] select (_name == ""), format [localize _what, _row param [8, 1]], format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
         private _locked = _tierMin > ((call _fnc_fob) param [5, 1]);
         if (_locked) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_TIER_NEEDED", _tierMin] };
         // a greyed item can be looked at but not placed
@@ -165,6 +176,10 @@ switch (_operation) do {
         if (_row isEqualTo [] || {_fob isEqualTo []}) exitWith {};
         // a double click on a greyed item does nothing, as the Place button does
         if ((_row param [5, 1]) > (_fob param [5, 1])) exitWith {};
+        // soldiers and groups are raised at the FOB by the server: nothing to place, and the window stays open
+        if ((_row select 2) in ["SOLDIER", "GROUP"]) exitWith {
+            ["raise", [_row select 0, _fob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+        };
         closeDialog 0;
         ["start", [_row, _fob]] call ALiVE_fnc_fobPlacement;
     };

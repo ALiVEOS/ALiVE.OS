@@ -117,6 +117,8 @@ class CfgVehicles {
                         class fob_tier3_cost : Edit { property = "ALiVE_sup_fob_fob_tier3_cost"; displayName = "$STR_ALIVE_FOB_TIER3_COST"; tooltip = "$STR_ALIVE_FOB_TIER_COST_COMMENT"; typeName = "STRING"; defaultValue = """3000"""; };
                         class fob_garrison_cost : Edit { property = "ALiVE_sup_fob_fob_garrison_cost"; displayName = "$STR_ALIVE_FOB_GARRISON_COST"; tooltip = "$STR_ALIVE_FOB_GARRISON_COST_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
                         class fob_garrison_groups { property = "ALiVE_sup_fob_fob_garrison_groups"; displayName = "$STR_ALIVE_FOB_GARRISON_GROUPS"; tooltip = "$STR_ALIVE_FOB_GARRISON_GROUPS_COMMENT"; control = "ALiVE_FOBGroupChoice"; typeName = "STRING"; expression = "_this setVariable ['fob_garrison_groups', _value, true];"; defaultValue = """||"""; };
+                        class fob_troop_cost : Edit { property = "ALiVE_sup_fob_fob_troop_cost"; displayName = "$STR_ALIVE_FOB_TROOP_COST"; tooltip = "$STR_ALIVE_FOB_TROOP_COST_COMMENT"; typeName = "STRING"; defaultValue = """50"""; };
+                        class fob_troop_cap : Edit { property = "ALiVE_sup_fob_fob_troop_cap"; displayName = "$STR_ALIVE_FOB_TROOP_CAP"; tooltip = "$STR_ALIVE_FOB_TROOP_CAP_COMMENT"; typeName = "STRING"; defaultValue = """8"""; };
                         class fob_respawn : Combo
                         {
                                 property = "ALiVE_sup_fob_fob_respawn";

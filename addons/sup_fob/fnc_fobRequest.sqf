@@ -32,7 +32,7 @@ params ["_op", "_args"];
 
 // Only what a player may ask for. Everything else in ALiVE_fnc_fobOps (cleanup, flip, salvage,
 // spawning profiles, tagging, restoring) is the server's own and never reachable from here.
-if !(_op in ["deploy", "dismantle", "build", "recycle", "unload", "upgrade", "repair", "fieldHQ", "rename", "permissions", "arsenalOpen", "arsenalClose"]) exitWith {
+if !(_op in ["deploy", "dismantle", "build", "raise", "recycle", "unload", "upgrade", "repair", "fieldHQ", "rename", "permissions", "arsenalOpen", "arsenalClose"]) exitWith {
     ["ALiVE Player FOBs - refused a request for %1 from machine %2: not something a player can ask for", _op, remoteExecutedOwner] call ALiVE_fnc_dumpR;
 };
 

@@ -282,6 +282,7 @@ switch (_op) do {
         { ["arsenalSettle", [_x, "fob"]] call ALiVE_fnc_fobOps } forEach _inArsenal;
         ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
         ["releaseGarrison", [_id]] call ALiVE_fnc_fobOps;
+        ["removeTroops", [_id]] call ALiVE_fnc_fobOps;
         [_entry, "status", "removed"] call ALIVE_fnc_hashSet;
         ["respawn", [_id]] call ALiVE_fnc_fobOps;
         {
@@ -380,6 +381,7 @@ switch (_op) do {
             private _hub = if (([_e, "status", ""] call ALIVE_fnc_hashGet) == "damaged") then { objNull } else { ["spawnHub", [_x]] call ALiVE_fnc_fobOps };
             ["reconcile", [_x]] call ALiVE_fnc_fobObjectives;
             ["restoreObjects", [_x]] call ALiVE_fnc_fobOps;
+            ["restoreTroops", [_x]] call ALiVE_fnc_fobOps;
             ["respawn", [_x]] call ALiVE_fnc_fobOps;
             if (([_e, "tier", 1] call ALIVE_fnc_hashGet) >= 2) then {
                 if (["garrisonAlive", [_x]] call ALiVE_fnc_fobOps) then {
@@ -497,6 +499,8 @@ switch (_op) do {
             ["STR_ALIVE_FOB_REFUSED_TYPE_ITEM", [[_entry, "name", ""] call ALIVE_fnc_hashGet]] call _tell;
         };
         (_row select 0) params ["", "_name", "_kind", "_cost", "", ["_tierMin", 1]];
+        // soldiers and groups are raised, never placed as objects
+        if (_kind in ["SOLDIER", "GROUP"]) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILDABLE"] call _tell };
         if (([_entry, "tier", 1] call ALIVE_fnc_hashGet) < _tierMin) exitWith { ["STR_ALIVE_FOB_REFUSED_TIER", [_tierMin]] call _tell };
         private _isStatic = _kind == "STATIC";
         private _isVehicle = _kind == "VEHICLE";
@@ -959,6 +963,7 @@ switch (_op) do {
         isNil {
             ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
             ["releaseGarrison", [_id]] call ALiVE_fnc_fobOps;
+            ["removeTroops", [_id]] call ALiVE_fnc_fobOps;
             // the old side's respawn point goes; the new side gets one if the FOB qualifies
             private _status = [_entry, "status", "active"] call ALIVE_fnc_hashGet;
             [_entry, "status", "flipping"] call ALIVE_fnc_hashSet;
@@ -1235,6 +1240,190 @@ switch (_op) do {
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         _result = !isNil "_entry" && {!isNil "ALiVE_ProfileHandler"}
             && {(([_entry, "garrison", []] call ALIVE_fnc_hashGet) findIf { !isNil {[ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler} }) > -1};
+    };
+
+
+    // Troops raised from the Build Menu (Jman, 27 Oct): a soldier or a group, made as profiles that
+    // hold the FOB as its garrison does (garrisoned within 30 m, busy and pinned, never sent
+    // elsewhere), each man tagged ALiVE_FOB_raised so Group Manager can't take him. They are lost
+    // with the FOB. Paid from the FOB's supply, or 1 from the group's own faction's force pool in
+    // Force pool mode. Priced from the server's own copy of the catalogue.
+    case "raise": {
+        _result = false;
+        _args params [["_key", "", [""]], ["_id", "", [""]]];
+        if (isNull _caller || {!alive _caller}) exitWith {};
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { ["STR_ALIVE_FOB_REFUSED_NOFOB"] call _tell };
+        private _fobSide = [_entry, "side", ""] call ALIVE_fnc_hashGet;
+        if (_fobSide != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED_BUILD"] call _tell };
+        private _range = [_logic, "attribute", ["fob_build_range"]] call ALiVE_fnc_FOB;
+        if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > _range) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _range]] call _tell };
+        private _row = (uiNamespace getVariable ["ALiVE_FOB_catalogServer", []]) select { (_x select 0) == _key && {(_x select 2) in ["SOLDIER", "GROUP"]} };
+        if (_row isEqualTo []) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILDABLE"] call _tell };
+        if !([_logic, "typeAllows", [[_entry, "type", ""] call ALIVE_fnc_hashGet, _key]] call ALiVE_fnc_FOB) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_TYPE_ITEM", [[_entry, "name", ""] call ALIVE_fnc_hashGet]] call _tell;
+        };
+        (_row select 0) params ["", "_name", "_kind", "_cost", "", ["_tierMin", 1], ["_rowSide", ""], ["_rowFaction", ""], ["_men", 1], "", ["_spawn", ["", ""]]];
+        private _tier = [_entry, "tier", 1] call ALIVE_fnc_hashGet;
+        if (_tier < _tierMin) exitWith { ["STR_ALIVE_FOB_REFUSED_TIER", [_tierMin]] call _tell };
+        // the factions the side's commanders field, or its own side's when it has none, as for static weapons
+        private _allowed = ((["factions"] call ALiVE_fnc_fobBuildScan) select { (_x select 0) == _fobSide }) param [0, ["", []]] select 1;
+        if ((_allowed isEqualTo [] && {_rowSide != _fobSide}) || {_allowed isNotEqualTo [] && {!(_rowFaction in _allowed)}}) exitWith { ["STR_ALIVE_FOB_REFUSED_TROOP_SIDE"] call _tell };
+        if (isNil "ALiVE_ProfileHandler") exitWith { ["STR_ALIVE_FOB_REFUSED_TROOP_PROFILES"] call _tell };
+        private _cap = ([_logic, "attribute", ["fob_troop_cap"]] call ALiVE_fnc_FOB) * _tier;
+        private _held = ["troopsHeld", [_id]] call ALiVE_fnc_fobOps;
+        if (_cap <= 0 || {_held + _men > _cap}) exitWith { ["STR_ALIVE_FOB_REFUSED_TROOP_CAP", [_cap, _held]] call _tell };
+        // what it costs is checked first and taken once the troops exist, so a spawn that fails costs nothing
+        private _pool = ([_logic, "attribute", ["fob_supply_source"]] call ALiVE_fnc_FOB) == "FORCEPOOL";
+        private _poolFaction = _spawn select 0;
+        if (_pool) then {
+            private _left = if (isNil "ALIVE_globalForcePool" || {!(_poolFaction in (ALIVE_globalForcePool select 1))}) then { -1 } else { [ALIVE_globalForcePool, _poolFaction, 0] call ALIVE_fnc_hashGet };
+            if (_left isEqualType "") then { _left = parseNumber _left };
+            if (_left >= 0 && {_cost > _left}) then { _pool = "refused" };
+        } else {
+            if !(["canAfford", [_id, _cost]] call ALiVE_fnc_fobSupply) then { _pool = "short" };
+        };
+        if (_pool isEqualTo "refused") exitWith { ["STR_ALIVE_FOB_REFUSED_POOL", [_cost]] call _tell };
+        if (_pool isEqualTo "short") exitWith { ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell };
+        (["spawnTroops", [_id, _kind, _spawn select 1, _spawn select 0, _rowSide]] call ALiVE_fnc_fobOps) params ["_ids", "_menMade"];
+        if (_ids isEqualTo []) exitWith { ["STR_ALIVE_FOB_REFUSED_TROOP_FAILED"] call _tell };
+        if (_pool) then { ["poolDebit", [_poolFaction, _cost]] call ALiVE_fnc_fobSupply } else { ["debit", [_id, _cost, "raise " + _key]] call ALiVE_fnc_fobSupply };
+        // a FOB saved before troops existed has no list yet
+        private _troops = [_entry, "troops", []] call ALIVE_fnc_hashGet;
+        _troops pushBack [_kind, _key, _cost, _ids, _spawn select 0, _rowSide, _menMade, _spawn select 1];
+        [_entry, "troops", _troops] call ALIVE_fnc_hashSet;
+        ALiVE_FOB_dirty = true;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["STR_ALIVE_FOB_RAISED", [_name, _cost]] call _tell;
+        ["ALiVE Player FOBs - %1: %2 raised %3 (%4 men, %5) for %6", _id, name _caller, _key, _menMade, _ids, _cost] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    // A soldier class or a group class of a faction made as profiles near the FOB, holding it:
+    // [profile ids, men], [[], 0] when nothing could be made. A group's vehicles stay behind and
+    // their crews come on foot.
+    case "spawnTroops": {
+        _args params [["_id", "", [""]], ["_kind", "", [""]], ["_class", "", [""]], ["_faction", "", [""]], ["_side", "", [""]]];
+        _result = [[], 0];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {isNil "ALiVE_ProfileHandler"}) exitWith {};
+        private _pos = ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) getPos [15, random 360];
+        private _hook = format ["(_this select 0) setVariable ['ALiVE_FOB_raised', %1, true]", str _id];
+        private _made = [];
+        if (_kind == "GROUP") then {
+            _made = [_class, _pos, random 360, true, _faction, true, false, "STEALTH", _hook, false, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        } else {
+            if (isClass (configFile >> "CfgVehicles" >> _class)) then {
+                private _p = [[_class], _side, _faction, _pos, random 360, "", true, "", true] call ALIVE_fnc_createProfileEntity;
+                [_p, "onEachSpawn", _hook] call ALIVE_fnc_profileEntity;
+                [_p, "onEachSpawnOnce", false] call ALIVE_fnc_profileEntity;
+                _made = [_p];
+            };
+        };
+        private _ids = [];
+        private _men = 0;
+        {
+            if (_x isEqualType [] && {([_x, "type", ""] call ALIVE_fnc_hashGet) == "entity"}) then {
+                [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 0.3, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
+                [_x, "busy", true] call ALIVE_fnc_hashSet;
+                _ids pushBack ([_x, "profileID", ""] call ALIVE_fnc_hashGet);
+                _men = _men + count ([_x, "unitClasses", []] call ALIVE_fnc_hashGet);
+            };
+        } forEach _made;
+        ["pinStatic", _ids] call ALiVE_fnc_fobOps;
+        _result = [_ids, _men];
+    };
+
+    // How many raised soldiers a FOB holds: a row counts while any of its profiles is left, and a
+    // row waiting to be made again (no ids) counts too
+    case "troopsHeld": {
+        _args params [["_id", "", [""]]];
+        _result = 0;
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith {};
+        {
+            private _ids = _x param [3, []];
+            if (_ids isEqualTo [] || {isNil "ALiVE_ProfileHandler"} || {(_ids findIf { !isNil {[ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler} }) > -1}) then {
+                _result = _result + (_x param [6, 0]);
+            };
+        } forEach ([_entry, "troops", []] call ALIVE_fnc_hashGet);
+    };
+
+    // The raised troops go with the FOB: dismantled, salvaged or taken
+    case "removeTroops": {
+        _args params [["_id", "", [""]]];
+        _result = 0;
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith {};
+        {
+            {
+                if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem };
+                private _pr = if (isNil "ALiVE_ProfileHandler") then { nil } else { [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler };
+                if (!isNil "_pr") then { [_pr, "destroy"] call ALIVE_fnc_profileEntity; _result = _result + 1 };
+            } forEach (_x param [3, []]);
+        } forEach ([_entry, "troops", []] call ALIVE_fnc_hashGet);
+        if (_result > 0) then { ["ALiVE Player FOBs - %1: %2 groups of raised troops gone with the FOB", _id, _result] call ALiVE_fnc_dump };
+        [_entry, "troops", []] call ALIVE_fnc_hashSet;
+        ALiVE_FOB_dirty = true;
+    };
+
+    // A saved FOB's raised troops: kept profiles pinned and garrisoned again (a saved profile keeps no
+    // orders). Profile ids are only a counter, so one is the FOB's only when it is of the row's faction
+    // and its spawn hook names this FOB (the hook is saved with the profile). Ones not found are made
+    // again, free. With no Virtual AI System yet nothing is touched: the watchdog runs this again once
+    // it is up, so saved men that load late are found rather than doubled.
+    case "restoreTroops": {
+        _args params [["_id", "", [""]]];
+        _result = 0;
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith {};
+        private _rows = [_entry, "troops", []] call ALIVE_fnc_hashGet;
+        if !(_rows isEqualType []) then { _rows = []; [_entry, "troops", _rows] call ALIVE_fnc_hashSet };
+        if (isNil "ALiVE_ProfileHandler") exitWith {
+            if (_rows isNotEqualTo []) then { [_entry, "troopsPending", true] call ALIVE_fnc_hashSet };
+        };
+        [_entry, "troopsPending", false] call ALIVE_fnc_hashSet;
+        private _tag = str _id;
+        private _active = ([_entry, "status", ""] call ALIVE_fnc_hashGet) == "active";
+        private _drop = [];
+        {
+            private _row = _x;
+            _row params ["_kind", "_key", "_cost", ["_ids", []], ["_faction", ""], ["_side", ""], ["_men", 0], ["_class", ""]];
+            private _mine = _ids select {
+                private _pr = [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                !isNil "_pr" && {([_pr, "faction", ""] call ALIVE_fnc_hashGet) == _faction}
+                    && {_tag in ([_pr, "onEachSpawn", ""] call ALIVE_fnc_hashGet)}
+            };
+            if (_mine isNotEqualTo []) then {
+                {
+                    private _pr = [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                    [_pr, "busy", true] call ALIVE_fnc_hashSet;
+                    [_pr, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 0.3, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
+                } forEach _mine;
+                ["pinStatic", _mine] call ALiVE_fnc_fobOps;
+                _row set [3, _mine];
+            } else {
+                _row set [3, []];
+                // a damaged FOB's lost troops wait for the watchdog, which makes them again once it's repaired
+                if (_active) then {
+                    (["spawnTroops", [_id, _kind, _class, _faction, _side]] call ALiVE_fnc_fobOps) params ["_newIds", "_newMen"];
+                    if (_newIds isNotEqualTo []) then {
+                        _row set [3, _newIds];
+                        _row set [6, _newMen];
+                        ["ALiVE Player FOBs - %1: raised %2 not found in the save, made again free (%3)", _id, _key, _newIds] call ALiVE_fnc_dump;
+                    } else {
+                        // one that can't be made (its mod isn't loaded now) is dropped rather than holding a place
+                        ["ALiVE Player FOBs - %1: raised %2 can't be made again, so it's dropped", _id, _key] call ALiVE_fnc_dumpR;
+                        _drop pushBack _forEachIndex;
+                    };
+                };
+            };
+            _result = _result + 1;
+        } forEach _rows;
+        reverse _drop;
+        { _rows deleteAt _x } forEach _drop;
+        if (_result > 0) then { ALiVE_FOB_dirty = true };
     };
 
     // An empty vehicle as a profile at a spot: its profile id, or "" when it couldn't be made

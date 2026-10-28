@@ -279,19 +279,19 @@
                 <English>Build Only These</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ONLY_COMMENT">
-                <English>Class names separated by commas. When set, the Build Menu offers these and nothing else apart from Also Build, each priced by the module's own rules (as a fortification when the rules wouldn't pick it) unless CfgALiVEFOBBuildables gives a price. Add =price to set one here, such as Land_HBarrier_5_F=12. The Build List page on the ALiVE website writes this list for you. Never Build still applies.</English>
+                <English>Class names separated by commas. When set, the Build Menu offers these and nothing else apart from Also Build, each priced by the module's own rules (as a fortification when the rules wouldn't pick it) unless CfgALiVEFOBBuildables gives a price. Add =price to set one here, such as Land_HBarrier_5_F=12. The Build List page on the ALiVE website writes this list for you. Never Build still applies. Soldier class names and group names are accepted too and go to the Troops tab: BUS_InfSquad means that group in every faction on your side, BLU_F&gt;BUS_InfSquad one faction's. A list that names no troops leaves the Troops tab as it is, and one that names only troops leaves the other tabs as they are.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BLACKLIST">
                 <English>Never Build</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BLACKLIST_COMMENT">
-                <English>Class names players can never build, separated by commas, e.g. Land_Razorwire_F, B_MBT_01_cannon_F. Added to any CfgALiVEFOBBuildables blacklist.</English>
+                <English>Class names players can never build, separated by commas, e.g. Land_Razorwire_F, B_MBT_01_cannon_F. Added to any CfgALiVEFOBBuildables blacklist. Soldier class names and group names are accepted too and keep them off the Troops tab: BUS_InfSquad means that group in every faction, BLU_F&gt;BUS_InfSquad one faction's.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_WHITELIST">
                 <English>Also Build</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_WHITELIST_COMMENT">
-                <English>Class names to offer even though the Build Menu wouldn't pick them, separated by commas. They are offered even when Build Only These is set; Never Build still wins. They are priced as fortifications unless CfgALiVEFOBBuildables gives a price.</English>
+                <English>Class names to offer even though the Build Menu wouldn't pick them, separated by commas. They are offered even when Build Only These is set; Never Build still wins. They are priced as fortifications unless CfgALiVEFOBBuildables gives a price. Soldier class names and group names are accepted too and go to the Troops tab: BUS_InfSquad means that group in every faction on your side, BLU_F&gt;BUS_InfSquad one faction's.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_SAVE_INTERVAL">
                 <English>Save Interval (s)</English>
@@ -724,6 +724,45 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_UI_AIRCRAFT_ITEM">
                 <English>Aircraft, empty, for your side to crew. A helicopter goes on a helipad, a plane on an airfield taxiway or parking area</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TROOP_COST">
+                <English>Soldier Cost</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TROOP_COST_COMMENT">
+                <English>What one soldier raised from the Build Menu costs in FOB supply, before the Cost Multiplier. A group costs this for each of its men. Build Only These can set a price with =, such as BUS_InfSquad=400. In Force pool mode a soldier or a group costs 1 from its faction's pool, as a Combat Logistics requisition does.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TROOP_CAP">
+                <English>Troops Per Tier</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TROOP_CAP_COMMENT">
+                <English>How many soldiers players can raise at a FOB from the Build Menu's Troops tab, for each tier: 8 lets a tier 1 FOB hold 8, tier 2 16 and tier 3 24. Single soldiers can be raised from tier 1, groups from tier 2. Raised troops hold the FOB, never leave it, and are lost with it. 0 turns the Troops tab off.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TROOPS">
+                <English>Troops</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_SOLDIER_ITEM">
+                <English>Soldier, holds the FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_GROUP_ITEM">
+                <English>Group of %1, holds the FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TROOPS_STATUS">
+                <English>Troops %1/%2</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RAISED">
+                <English>%1 raised for %2 supply. They hold the FOB.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TROOP_CAP">
+                <English>This FOB can hold %1 raised soldiers at this tier, and has %2.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TROOP_PROFILES">
+                <English>Raising troops needs the Virtual AI System module in the mission.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TROOP_SIDE">
+                <English>Your side can only raise soldiers and groups its own forces use.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_TROOP_FAILED">
+                <English>The troops couldn't be raised. Nothing was charged.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_GARRISON_COST">
                 <English>Garrison Cost</English>

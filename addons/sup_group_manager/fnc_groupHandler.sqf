@@ -153,6 +153,12 @@ switch(_operation) do {
             _unit = _join select 2;
             _group = _join select 3;
 
+            // A soldier raised at a Player FOB holds that FOB and is lost with it: he isn't taken into
+            // another group, and nobody is put into his
+            if (!isNil {_unit getVariable "ALiVE_FOB_raised"} || {!isNil {(leader _group) getVariable "ALiVE_FOB_raised"}}) exitWith {
+                ["Group Handler - %1 is one of a Player FOB's raised troops, so the group join was refused", _unit] call ALiVE_fnc_dump;
+            };
+
             _debug = [_logic,"debug"] call ALIVE_fnc_hashGet;
 
             _groupFrom = group _unit;

@@ -35,39 +35,49 @@ class ALiVE_FobBuildWindow {
             action = "['category', 'FORTIFICATION'] call ALiVE_fnc_buildMenu";
             x = 0.31 * safezoneW + safezoneX;
             y = 0.16 * safezoneH + safezoneY;
-            w = 0.07 * safezoneW;
+            w = 0.05 * safezoneW;
             h = 0.03 * safezoneH;
-            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.75)";
         };
         class FobUI_Supply: FobUI_RscButton {
             idc = 92808;
             text = "$STR_ALIVE_FOB_UI_SUPPLY";
             action = "['category', 'SUPPLY'] call ALiVE_fnc_buildMenu";
-            x = 0.382 * safezoneW + safezoneX;
+            x = 0.362 * safezoneW + safezoneX;
             y = 0.16 * safezoneH + safezoneY;
-            w = 0.036 * safezoneW;
+            w = 0.032 * safezoneW;
             h = 0.03 * safezoneH;
-            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.75)";
         };
         class FobUI_Statics: FobUI_RscButton {
             idc = 92810;
             text = "$STR_ALIVE_FOB_UI_STATICS";
             action = "['category', 'STATIC'] call ALiVE_fnc_buildMenu";
-            x = 0.42 * safezoneW + safezoneX;
+            x = 0.396 * safezoneW + safezoneX;
             y = 0.16 * safezoneH + safezoneY;
-            w = 0.038 * safezoneW;
+            w = 0.034 * safezoneW;
             h = 0.03 * safezoneH;
-            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.75)";
         };
         class FobUI_Vehicles: FobUI_RscButton {
             idc = 92811;
             text = "$STR_ALIVE_FOB_UI_VEHICLES";
             action = "['category', 'VEHICLE'] call ALiVE_fnc_buildMenu";
-            x = 0.46 * safezoneW + safezoneX;
+            x = 0.432 * safezoneW + safezoneX;
             y = 0.16 * safezoneH + safezoneY;
-            w = 0.04 * safezoneW;
+            w = 0.036 * safezoneW;
             h = 0.03 * safezoneH;
-            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.75)";
+        };
+        class FobUI_Troops: FobUI_RscButton {
+            idc = 92815;
+            text = "$STR_ALIVE_FOB_UI_TROOPS";
+            action = "['category', 'TROOPS'] call ALiVE_fnc_buildMenu";
+            x = 0.47 * safezoneW + safezoneX;
+            y = 0.16 * safezoneH + safezoneY;
+            w = 0.03 * safezoneW;
+            h = 0.03 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.75)";
         };
         // Search (#1085): typing narrows the list to the items whose name or class has the text in it
         class FobUI_SearchLabel: FobUI_RscText {

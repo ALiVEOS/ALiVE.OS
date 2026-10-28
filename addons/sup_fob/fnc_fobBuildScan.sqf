@@ -116,8 +116,8 @@ private _fixed = createHashMap;
     };
 } forEach [missionConfigFile, configFile];
 // and the module's own Never Build and Also Build lists, class names separated by commas
-_blacklist append (([_logic, "attribute", ["fob_blacklist"]] call ALiVE_fnc_FOB) splitString ", ;" apply { toLower _x });
-_whitelist append (([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB) splitString ", ;");
+_blacklist append ((([_logic, "attribute", ["fob_blacklist"]] call ALiVE_fnc_FOB) regexReplace ["\s*>\s*", ">"]) splitString ", ;" apply { toLower _x });
+_whitelist append ((([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB) regexReplace ["\s*>\s*", ">"]) splitString ", ;");
 // Build Only These (Jman, 25 Oct): an inclusion list set in Eden, as the website's Build List page
 // writes it, added to any only[]; each class once, whatever its case. Class=463 also sets its price,
 // in place of any cost in CfgALiVEFOBBuildables (spaces round the = are allowed)
@@ -135,7 +135,7 @@ _whitelist append (([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB)
             };
         };
     };
-} forEach ((([_logic, "attribute", ["fob_only"]] call ALiVE_fnc_FOB) regexReplace [" *= *", "="]) splitString ", ;");
+} forEach ((([_logic, "attribute", ["fob_only"]] call ALiVE_fnc_FOB) regexReplace [" *= *", "="] regexReplace ["\s*>\s*", ">"]) splitString ", ;");
 private _onlySeen = [];
 _only = _only select { private _k = toLower _x; if (_k in _onlySeen) then { false } else { _onlySeen pushBack _k; true } };
 // never the kit or supply crate themselves: one built here would be a crate of supply for its build price
@@ -168,6 +168,52 @@ _only = _only - _gearOnly;
 _whitelist = _whitelist - _gearAlso;
 if (_arsenal) then {
     ALiVE_FOB_gearOverrides = [+_blacklist, _gearOnly, _gearAlso, +_fixed];
+};
+
+// Troops (Jman, 27 Oct): the same lists take soldier classes and group names, which go to the Troops
+// tab. A group is named BUS_InfSquad (that group in every faction) or BLU_F>BUS_InfSquad (one
+// faction's), as on the tablet's catalogue. Each list touches troops only when it names one, so a list
+// of fortifications leaves the Troops tab as it is, and a list of troops leaves the fortifications.
+private _troopCap = [_logic, "attribute", ["fob_troop_cap"]] call ALiVE_fnc_FOB;
+private _troopBase = [_logic, "attribute", ["fob_troop_cost"]] call ALiVE_fnc_FOB;
+private _forcePool = ([_logic, "attribute", ["fob_supply_source"]] call ALiVE_fnc_FOB) == "FORCEPOOL";
+// with Troops Per Tier at 0 nothing is a troop, so the lists read as they did before troops
+private _isSoldier = {
+    params ["_c"];
+    private _v = configFile >> "CfgVehicles" >> _c;
+    _troopCap > 0 && {isClass _v} && {configName _v isKindOf "CAManBase"} && {getNumber (_v >> "side") in [0, 1, 2]}
+};
+// every CfgGroups group by its lower case name: [[CfgGroups faction (lower case), category, config], ...]
+private _groupIndex = createHashMap;
+{
+    {
+        private _gf = toLower configName _x;
+        {
+            private _cat = configName _x;
+            {
+                private _k = toLower configName _x;
+                private _l = _groupIndex getOrDefault [_k, []];
+                _l pushBack [_gf, _cat, _x];
+                _groupIndex set [_k, _l];
+            } forEach ("true" configClasses _x);
+        } forEach ("true" configClasses _x);
+    } forEach ("true" configClasses _x);
+} forEach ("true" configClasses (configFile >> "CfgGroups"));
+private _isGroupToken = { params ["_t"]; _troopCap > 0 && {((_t find ">") > -1) || {!isClass (configFile >> "CfgVehicles" >> _t) && {(toLower _t) in _groupIndex}}} };
+private _isTroop = { params ["_t"]; ([_t] call _isSoldier) || {[_t] call _isGroupToken} };
+private _soldierOnly = (_only select { [_x] call _isSoldier }) apply { configName (configFile >> "CfgVehicles" >> _x) };
+private _soldierAlso = (_whitelist select { [_x] call _isSoldier }) apply { configName (configFile >> "CfgVehicles" >> _x) };
+private _groupOnly = _only select { [_x] call _isGroupToken };
+private _groupAlso = _whitelist select { [_x] call _isGroupToken };
+private _groupNever = _blacklist select { [_x] call _isGroupToken };
+_only = _only select { !([_x] call _isTroop) };
+_whitelist = _whitelist select { !([_x] call _isTroop) };
+private _troopRules = createHashMap;
+// a FOB type's own groups answer only to Never Build, as its other extras do
+private _troopNeverRules = createHashMap;
+if (!isNil "ALIVE_fnc_PRCatalogueRules") then {
+    _troopRules = ["parse", [_groupOnly joinString ",", _groupNever joinString ",", _groupAlso joinString ","]] call ALIVE_fnc_PRCatalogueRules;
+    _troopNeverRules = ["parse", ["", _groupNever joinString ",", ""]] call ALIVE_fnc_PRCatalogueRules;
 };
 
 // Sizes measured on earlier starts
@@ -431,7 +477,7 @@ private _typeOnly = [];
 {
     {
         private _cfg = configFile >> "CfgVehicles" >> _x;
-        if (isClass _cfg && {!(toLower _x in _seen)} && {!(toLower _x in _blacklist)}) then {
+        if (isClass _cfg && {!(toLower _x in _seen)} && {!(toLower _x in _blacklist)} && {!([_x] call _isTroop)}) then {
             [configName _cfg, _cfg, "FORTIFICATION"] call _add;
             _typeOnly pushBackUnique toLower _x;
         };
@@ -460,10 +506,128 @@ if (_only isNotEqualTo []) then {
     {
         {
             if !(_x in _keep) then { _typeOnly pushBackUnique _x; _keep pushBack _x };
-        } forEach ((_x select 5) - _blacklist);
+        } forEach (((_x select 5) - _blacklist) select { !([_x] call _isTroop) });
     } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
     _rows = _rows select { toLower (_x select 0) in _keep };
 };
+
+// Troops: soldiers from tier 1, groups from tier 2, priced per man (Soldier Cost x Cost Multiplier), or
+// 1 from the faction's force pool in Force pool mode, as a Combat Logistics requisition costs.
+// A group is keyed faction>group in lower case, one row per faction that has it.
+// [key, name, "SOLDIER" or "GROUP", cost, picture, tier, side, faction, men, leader class, [faction, class] as configured]
+private _troopRows = [];
+private _troopSeen = createHashMap;
+private _sideOf = { params ["_n"]; ["EAST", "WEST", "GUER"] param [_n, ""] };
+private _addSoldier = {
+    params ["_class", ["_isTypeOnly", false]];
+    private _cfg = configFile >> "CfgVehicles" >> _class;
+    private _k = toLower _class;
+    if (_k in _troopSeen || {_k in _blacklist}) exitWith {};
+    private _side = [getNumber (_cfg >> "side")] call _sideOf;
+    if (_side == "") exitWith {};
+    _troopSeen set [_k, true];
+    private _cost = [_fixed getOrDefault [_k, (round (_troopBase * _scale)) max 1], 1] select _forcePool;
+    _troopRows pushBack [configName _cfg, getText (_cfg >> "displayName"), "SOLDIER", _cost, getText (_cfg >> "editorPreview"), 1, _side, toLower getText (_cfg >> "faction"), 1, configName _cfg, [getText (_cfg >> "faction"), configName _cfg]];
+    if (_isTypeOnly) then { _typeOnly pushBackUnique _k };
+};
+// a group token's matches: [[key, faction, side, config, name], ...]; a faction token matches the
+// faction's own name or the CfgGroups faction a custom mapping borrows its groups from
+private _resolveGroup = {
+    params ["_token"];
+    private _parts = (toLower _token) splitString ">";
+    private _ft = ["", _parts select 0] select (count _parts == 2);
+    private _g = _parts select (count _parts - 1);
+    private _mapped = _ft;
+    if (_ft != "" && {!isNil "ALIVE_factionCustomMappings"}) then {
+        private _i = (ALIVE_factionCustomMappings select 1) findIf { toLower _x == _ft };
+        if (_i > -1) then {
+            private _gfn = [[ALIVE_factionCustomMappings, (ALIVE_factionCustomMappings select 1) select _i] call ALIVE_fnc_hashGet, "GroupFactionName", _ft] call ALIVE_fnc_hashGet;
+            if (_gfn isEqualType "" && {_gfn != ""}) then { _mapped = toLower _gfn };
+        };
+    };
+    private _hits = [];
+    {
+        _x params ["_gf", "_cat", "_cfg"];
+        private _faction = getText (_cfg >> "faction");
+        if !(isClass (configFile >> "CfgFactionClasses" >> _faction)) then { _faction = _gf };
+        if (isClass (configFile >> "CfgFactionClasses" >> _faction)) then {
+            _faction = configName (configFile >> "CfgFactionClasses" >> _faction);
+            if (_ft == "" || {_ft == toLower _faction} || {_mapped == _gf}) then {
+                // a faction that borrows these groups through a custom mapping raises its own men
+                // under its own name: the spawner applies the mapping itself
+                if (_ft != "" && {_ft != toLower _faction} && {isClass (configFile >> "CfgFactionClasses" >> _ft)}) then {
+                    _faction = configName (configFile >> "CfgFactionClasses" >> _ft);
+                };
+                private _side = [getNumber (configFile >> "CfgFactionClasses" >> _faction >> "side")] call _sideOf;
+                if (_side != "") then { _hits pushBack [(toLower _faction) + ">" + toLower configName _cfg, _faction, _side, _cfg, getText (_cfg >> "name")] };
+            };
+        };
+    } forEach (_groupIndex getOrDefault [_g, []]);
+    _hits
+};
+private _addGroup = {
+    params ["_hit", ["_isTypeOnly", false]];
+    _hit params ["_k", "_faction", "_side", "_cfg", "_name"];
+    if (_k in _troopSeen) exitWith {};
+    private _rules = [_troopRules, _troopNeverRules] select _isTypeOnly;
+    if (count _rules > 0 && {!(["allowsGroup", [_rules, toLower _faction, configName _cfg]] call ALIVE_fnc_PRCatalogueRules)}) exitWith {};
+    // men as the spawner makes them: each soldier, and each vehicle's crew on foot (not a drone's)
+    private _men = 0;
+    private _leader = "";
+    {
+        private _v = getText (_x >> "vehicle");
+        if (isClass (configFile >> "CfgVehicles" >> _v)) then {
+            if (_v isKindOf "CAManBase") then {
+                _men = _men + 1;
+                if (_leader == "") then { _leader = _v };
+            } else {
+                if (getNumber (configFile >> "CfgVehicles" >> _v >> "isUav") != 1) then {
+                    private _p = [_v] call ALIVE_fnc_configGetVehicleEmptyPositions;
+                    private _n = 0;
+                    for "_i" from 0 to count _p - 3 do { _n = _n + (_p select _i) };
+                    if (_n < 2 && {[_v] call ALIVE_fnc_isArtillery}) then { _n = 2 };
+                    _men = _men + _n;
+                    if (_leader == "") then { _leader = _v call ALIVE_fnc_configGetVehicleCrew };
+                };
+            };
+        };
+    } forEach ("isClass _x" configClasses _cfg);
+    if (_men < 1) exitWith {};
+    _troopSeen set [_k, true];
+    private _bare = toLower configName _cfg;
+    private _cost = _fixed getOrDefault [_k, _fixed getOrDefault [_bare, (round (_men * _troopBase * _scale)) max 1]];
+    if (_forcePool) then { _cost = 1 };
+    if (_name == "") then { _name = configName _cfg };
+    _troopRows pushBack [_k, _name, "GROUP", _cost, getText (configFile >> "CfgVehicles" >> _leader >> "editorPreview"), 2, _side, toLower _faction, _men, _leader, [_faction, configName _cfg]];
+    if (_isTypeOnly) then { _typeOnly pushBackUnique _k };
+};
+if (_troopCap > 0) then {
+    private _troopOnly = (_soldierOnly + _groupOnly) isNotEqualTo [];
+    { [_x] call _addSoldier } forEach (([[], _soldierOnly] select _troopOnly) + _soldierAlso);
+    // with no troops on Build Only These, every faction's infantry groups
+    if (!_troopOnly) then {
+        {
+            private _gname = _x;
+            if ((_y findIf { toLower (_x select 1) == "infantry" }) > -1) then {
+                { [_x] call _addGroup } forEach ([_gname] call _resolveGroup);
+            };
+        } forEach _groupIndex;
+    };
+    {
+        private _hits = [_x] call _resolveGroup;
+        if (_hits isEqualTo []) then { ["ALiVE Player FOBs - %1 is no group in this game, so it isn't offered", _x] call ALiVE_fnc_dumpR };
+        { [_x] call _addGroup } forEach _hits;
+    } forEach (([[], _groupOnly] select _troopOnly) + _groupAlso);
+    // a FOB type's troops: one the catalogue hasn't got is that type's own
+    {
+        {
+            if ([_x] call _isSoldier) then { [_x, true] call _addSoldier } else {
+                if ([_x] call _isGroupToken) then { { [_x, true] call _addGroup } forEach ([_x] call _resolveGroup) };
+            };
+        } forEach ((_x select 5) - _blacklist);
+    } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
+};
+_rows append _troopRows;
 
 _rows sort true;
 if (_measured > 0) then {
@@ -471,6 +635,8 @@ if (_measured > 0) then {
     saveProfileNamespace;
 };
 
+// the server prices raised troops from its own copy, which no client's publicVariable can reach
+uiNamespace setVariable ["ALiVE_FOB_catalogServer", +_rows];
 ALiVE_FOB_catalog = _rows;
 publicVariable "ALiVE_FOB_catalog";
 ALiVE_FOB_typeOnly = _typeOnly;
@@ -480,7 +646,7 @@ publicVariable "ALiVE_FOB_typeOnly";
     private _tid = _x select 0;
     {
         private _c = _x;
-        if ((_rows findIf { toLower (_x select 0) == _c }) < 0) then {
+        if ((_rows findIf { private _k = toLower (_x select 0); _k == _c || {(_k select [(_k find ">") + 1]) == _c} }) < 0) then {
             ["ALiVE Player FOBs - FOB Types: %1's extra %2 can't be built (not in this game, or on Never Build)", _tid, _c] call ALiVE_fnc_dumpR;
         };
     } forEach (_x select 5);
@@ -490,8 +656,9 @@ publicVariable "ALiVE_FOB_typeOnly";
 if ([_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB) then {
     { diag_log text ("ALiVE_FOB_CATALOG " + str [_x select 0, _x select 1, _x select 2, _x select 3, _x select 5, _x select 6, _x select 7]) } forEach _rows;
 };
-["ALiVE Player FOBs - build catalog: %1 fortifications, %2 supply, %3 static weapons, %4 vehicles, %5 measured, %6 ms",
+["ALiVE Player FOBs - build catalog: %1 fortifications, %2 supply, %3 static weapons, %4 vehicles, %7 soldiers, %8 groups, %5 measured, %6 ms",
     { (_x select 2) == "FORTIFICATION" } count _rows, { (_x select 2) == "SUPPLY" } count _rows, { (_x select 2) == "STATIC" } count _rows,
-    { (_x select 2) == "VEHICLE" } count _rows, _measured, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+    { (_x select 2) == "VEHICLE" } count _rows, _measured, round ((diag_tickTime - _t0) * 1000),
+    { (_x select 2) == "SOLDIER" } count _rows, { (_x select 2) == "GROUP" } count _rows] call ALiVE_fnc_dump;
 ["factions"] call ALiVE_fnc_fobBuildScan;
 count _rows

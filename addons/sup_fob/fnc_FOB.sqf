@@ -114,6 +114,8 @@ private _settings = createHashMapFromArray [
     ["fob_respawn", [3, [0, 3]]],
     ["fob_garrison_cost", [500, [0, 1000000]]],
     ["fob_garrison_groups", ["||", "text"]],
+    ["fob_troop_cost", [50, [0, 100000]]],
+    ["fob_troop_cap", [8, [0, 100]]],
     ["fob_arsenal", [false, "bool"]],
     ["fob_arsenal_explosives", [false, "bool"]]
 ];
@@ -459,7 +461,7 @@ switch (_operation) do {
                                 case "+": { _plus pushBackUnique toLower (_x select [1]) };
                                 default { _plus pushBackUnique toLower _x };
                             };
-                        } forEach ((_h getOrDefault ["build", ""]) splitString ", ");
+                        } forEach (((_h getOrDefault ["build", ""]) regexReplace ["\s*>\s*", ">"]) splitString ", ");
                         _plus = _plus - [""]; _minus = _minus - [""];
                         private _role = toLower (_h getOrDefault ["role", "none"]);
                         if !(_role in ["none", "fire_base", "logistics", "medical", "patrol_base"]) then { _role = "none" };
@@ -586,8 +588,10 @@ switch (_operation) do {
         private _c = toLower _class;
         private _spec = [_logic, "typeSpec", [_type]] call MAINCLASS;
         if (_spec isEqualTo []) then { _spec = [_logic, "typeSpec", [""]] call MAINCLASS };
-        if (_c in (_spec select 6)) exitWith { _result = false };
-        if (_c in (_spec select 5)) exitWith {};
+        // a group is keyed faction>group: a type names it either way (Troops, Jman 27 Oct)
+        private _bare = _c select [(_c find ">") + 1];
+        if (_c in (_spec select 6) || {_bare in (_spec select 6)}) exitWith { _result = false };
+        if (_c in (_spec select 5) || {_bare in (_spec select 5)}) exitWith {};
         // before the build scan has run every extra counts as a type's own
         private _typeOnly = missionNamespace getVariable ["ALiVE_FOB_typeOnly", nil];
         _result = if (isNil "_typeOnly") then { (_types findIf { _c in (_x select 5) }) < 0 } else { !(_c in _typeOnly) };
@@ -634,7 +638,9 @@ switch (_operation) do {
             ["hubClass", _hub], ["hub", objNull],
             ["objects", []],
             ["repairRemaining", 0], ["captureRemaining", 0], ["alertCooldown", 0], ["resupplyCooldown", 0], ["trickleAccumulator", 0],
-            ["captureSide", ""], ["discoveredBy", []], ["objectiveIDs", []], ["garrison", []], ["respawn", []]
+            ["captureSide", ""], ["discoveredBy", []], ["objectiveIDs", []], ["garrison", []], ["respawn", []],
+            // troops raised from the Build Menu: [[kind, key, cost, profile IDs, faction, side, men], ...]
+            ["troops", []]
         ];
     };
 
@@ -668,7 +674,7 @@ switch (_operation) do {
         ALiVE_FOB_dirty = true;
     };
 
-    // What players' machines see: [id, side, name, pos, status, tier, supply, supplyCap, buildRange, deployedBy, type]
+    // What players' machines see: [id, side, name, pos, status, tier, supply, supplyCap, buildRange, deployedBy, type, troops held]
     // Each side's FOBs and its FOB limit, [[side, FOBs, limit], ...], for players' deploy
     // previews; sent only when it changed
     case "broadcastRoom": {
@@ -687,7 +693,8 @@ switch (_operation) do {
             [_x, [_e, "side"] call ALIVE_fnc_hashGet, [_e, "name"] call ALIVE_fnc_hashGet, [_e, "pos"] call ALIVE_fnc_hashGet,
              [_e, "status"] call ALIVE_fnc_hashGet, [_e, "tier"] call ALIVE_fnc_hashGet,
              ["balance", [_x]] call ALiVE_fnc_fobSupply, ["cap", [_x]] call ALiVE_fnc_fobSupply, _range,
-             [_e, "deployedBy", ""] call ALIVE_fnc_hashGet, [_e, "type", ""] call ALIVE_fnc_hashGet]
+             [_e, "deployedBy", ""] call ALIVE_fnc_hashGet, [_e, "type", ""] call ALIVE_fnc_hashGet,
+             ["troopsHeld", [_x]] call ALiVE_fnc_fobOps]
         };
         publicVariable "ALiVE_FOB_registryMirror";
         [_logic, "broadcastRoom"] call MAINCLASS;
