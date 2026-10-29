@@ -214,6 +214,25 @@ if (count _waypoints == 0 && {!_parkedAir} && {([_profile,"pendingWaypointPaths"
         _routePositions pushBack _startPos;
         private _routeCount = count _routePositions;
 
+        // A group on foot walks a short wander straight, point to point. Sent through the
+        // pathfinder, each leg came back as a waypoint per grid node, so 5 points became up
+        // to 22 waypoints criss-crossing the ground. A leg that crosses water, checked every
+        // 40 m, still goes to the pathfinder.
+        private _direct = _vehiclesInCommandOf isEqualTo [] && {([_profile,"type",""] call ALiVE_fnc_HashGet) == "entity"} && {_radius <= 500}
+            && {!isNil "ALiVE_profileSystem"} && {[ALiVE_profileSystem,"pathfinding",false] call ALiVE_fnc_hashGet};
+        if (_direct) then {
+            {
+                private _from = _routePositions select (if (_forEachIndex == 0) then {_routeCount - 1} else {_forEachIndex - 1});
+                _from = [_from select 0, _from select 1, 0];
+                private _to = [_x select 0, _x select 1, 0];
+                private _steps = ceil ((_from distance2D _to) / 40) max 2;
+                for "_s" from 1 to (_steps - 1) do {
+                    if (surfaceIsWater (_from vectorAdd ((_to vectorDiff _from) vectorMultiply (_s / _steps)))) exitWith {_direct = false};
+                };
+                if (!_direct) exitWith {};
+            } forEach _routePositions;
+        };
+
         {
             private _previousIndex = if (_forEachIndex == 0) then {_routeCount - 1} else {_forEachIndex - 1};
             private _nextIndex = if (_forEachIndex == (_routeCount - 1)) then {0} else {_forEachIndex + 1};
@@ -224,7 +243,16 @@ if (count _waypoints == 0 && {!_parkedAir} && {([_profile,"pendingWaypointPaths"
             private _type = if (_forEachIndex == (_routeCount - 1)) then {"CYCLE"} else {"MOVE"};
             private _profileWaypoint = [_x,20,_type,_speed,_completionRadius,[],_formation,"NO CHANGE",_behaviour] call ALIVE_fnc_createProfileWaypoint;
             [_profileWaypoint,"statements",["true","_disableSimulation = true;"]] call ALIVE_fnc_hashSet;
-            [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
+            if (_direct) then {
+                // A ready job is placed as it stands, without asking the pathfinder for a route.
+                [{
+                    params ["_profile","_profileWaypoint"];
+                    [_profile,"releaseGarrisonHold"] call ALIVE_fnc_profileEntity;
+                    [_profile,"addPendingWaypoint",["addWaypoint",_profileWaypoint,true]] call ALIVE_fnc_profileEntity;
+                }, [_profile,_profileWaypoint]] call CBA_fnc_directCall;
+            } else {
+                [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
+            };
         } forEach _routePositions;
     };
 };
