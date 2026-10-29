@@ -101,3 +101,6 @@ ALiVE_fnc_onPlayerConnected = {
 };
 
 GVAR(OPC) = addMissionEventHandler ["PlayerConnected",{_this call ALiVE_fnc_OnPlayerConnected}];
+
+// Named lists of what players may have: one RPT line each, so a mission maker sees what is set
+["report"] call ALIVE_fnc_lists;

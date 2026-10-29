@@ -6,6 +6,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_buttonAbort.sqf";
                 ALIVE_RECOMPILE;
             };
+            class lists {
+                description = "Named lists of what players may have, and the one set of rules the FOB, tablet and hub read them by";
+                file = "\x\alive\addons\main\fnc_lists.sqf";
+                ALIVE_RECOMPILE;
+            };
             class mapPins {
                 description = "The map label layer: names of ALiVE markers placed clear of each other";
                 file = "\x\alive\addons\main\fnc_mapPins.sqf";

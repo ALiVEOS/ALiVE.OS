@@ -12,6 +12,7 @@
 #include "CfgALiVEHumanitarianItems.hpp"
 #include "CfgALiVEAmbientAnimals.hpp"
 #include "CfgALiVEC2ISTARAccessItems.hpp"
+#include "CfgALiVELists.hpp"
 #include "\x\alive\addons\main\data\ui\main.hpp"
 
 // Marker labels on the game's maps. A map control draws marker text in its "font" face,
