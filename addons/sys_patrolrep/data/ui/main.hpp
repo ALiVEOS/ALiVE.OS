@@ -318,7 +318,7 @@ class RscDisplayALiVEPATROLREP
             text = "AMMO:"; //--- ToDo: Localize;
             x = 0.583011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.477998 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0637606 * GUI_GRID_WAbs;
+            w = 0.0570 * GUI_GRID_WAbs; // ends short of the dropdown
 
         };
         class patrolrep_CASTEXT: patrolrep_RscText_Right
@@ -329,7 +329,7 @@ class RscDisplayALiVEPATROLREP
             text = "CASUALTIES:"; //--- ToDo: Localize;
             x = 0.583011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.511001 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0637606 * GUI_GRID_WAbs;
+            w = 0.0570 * GUI_GRID_WAbs; // ends short of the dropdown
 
         };
         class patrolrep_AMMOLIST: patrolrep_RscComboBox
@@ -356,7 +356,7 @@ class RscDisplayALiVEPATROLREP
             text = "VEHICLES:"; //--- ToDo: Localize;
             x = 0.563011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.544004 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0837606 * GUI_GRID_WAbs;
+            w = 0.0770 * GUI_GRID_WAbs; // ends short of the dropdown
 
         };
         class patrolrep_VEHLIST: patrolrep_RscComboBox
@@ -375,7 +375,7 @@ class RscDisplayALiVEPATROLREP
             text = "COMBAT SPT:"; //--- ToDo: Localize;
             x = 0.563011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.577007 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0837606 * GUI_GRID_WAbs;
+            w = 0.0770 * GUI_GRID_WAbs; // ends short of the dropdown
 
         };
         class patrolrep_CSLIST: patrolrep_RscComboBox
