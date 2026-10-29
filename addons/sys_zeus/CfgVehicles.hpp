@@ -130,4 +130,59 @@ class CfgVehicles {
         icon = "x\alive\addons\sys_profile\icon_sys_profile.paa";
         picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
     };
+
+    class ALiVE_ModuleZeusObjective : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_OBJECTIVE";
+        ALiVE_zeusAction = "objective";
+        icon = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+        picture = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+    };
+
+    class ALiVE_ModuleZeusRevealInstallations : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_REVEAL";
+        ALiVE_zeusAction = "reveal";
+        icon = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+        picture = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+    };
+
+    class ALiVE_ModuleZeusCreateTask : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_CREATETASK";
+        ALiVE_zeusAction = "createTask";
+        icon = "x\alive\addons\mil_c2istar\icon_mil_C2.paa";
+        picture = "x\alive\addons\mil_c2istar\icon_mil_C2.paa";
+    };
+
+    class ALiVE_ModuleZeusCloseTask : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_CLOSETASK";
+        ALiVE_zeusAction = "closeTask";
+        icon = "x\alive\addons\mil_c2istar\icon_mil_C2.paa";
+        picture = "x\alive\addons\mil_c2istar\icon_mil_C2.paa";
+    };
+
+    class ALiVE_ModuleZeusAirStrike : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_AIRSTRIKE";
+        ALiVE_zeusAction = "airStrike";
+        icon = "x\alive\addons\mil_ato\icon_mil_ATO.paa";
+        picture = "x\alive\addons\mil_ato\icon_mil_ATO.paa";
+    };
+
+    class ALiVE_ModuleZeusResupply : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_RESUPPLY";
+        ALiVE_zeusAction = "resupply";
+        icon = "x\alive\addons\mil_logistics\icon_mil_ML.paa";
+        picture = "x\alive\addons\mil_logistics\icon_mil_ML.paa";
+    };
 };

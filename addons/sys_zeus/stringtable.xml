@@ -197,6 +197,186 @@
 <Key ID="STR_ALIVE_ZEUS_CONVERT_DONE">
     <English>ALiVE: he is a suicide bomber now, and goes for %1 within a minute.</English>
 </Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE">
+    <English>ALiVE: AI Commander Objective</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REVEAL">
+    <English>ALiVE: Reveal Insurgent Installations</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CREATETASK">
+    <English>ALiVE: Create Task</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CLOSETASK">
+    <English>ALiVE: Close Task</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE">
+    <English>ALiVE: Air Strike</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY">
+    <English>ALiVE: Reinforcements</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SIDE_CIV">
+    <English>Civilians</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_SIDE">
+    <English>ALiVE: no player nearby to pick a side from. With Zeus Enhanced you can choose the side.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FOR_SIDE">
+    <English>For side</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SIDE_NEAREST">
+    <English>The nearest player's side</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RADIUS">
+    <English>Radius</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_INTEL_SIDE">
+    <English>Add to the Intel Log of</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_INTEL_NONE">
+    <English>No side</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_C2ISTAR">
+    <English>ALiVE: needs the C2ISTAR module in the mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_ATO">
+    <English>ALiVE: needs a Military Air Component Commander in the mission, and it hasn't started yet.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_LOGISTICS">
+    <English>ALiVE: needs a Military Logistics module in the mission, and it hasn't started yet.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_HOW">
+    <English>Order</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_TAKE_LABEL">
+    <English>Take it</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_HOLD_LABEL">
+    <English>Hold it</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_TAKE">
+    <English>ALiVE: the %1 AI Commander will send groups to take grid %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_HOLD">
+    <English>ALiVE: the %1 AI Commander will send groups to hold grid %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_ASYM">
+    <English>ALiVE: an insurgent AI Commander picks its own towns, so it can't be given an objective.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_FAILED">
+    <English>ALiVE: the AI Commander didn't take the objective. The RPT has the reason.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REVEAL_NOINSURGENTS">
+    <English>ALiVE: no insurgent AI Commander in this mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REVEAL_NONE">
+    <English>ALiVE: no insurgent installations within %1 m.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REVEAL_DONE">
+    <English>ALiVE: installations in %1 insurgent towns within %2 m are on the map.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_TITLE">
+    <English>Move to grid %1</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_DESCRIPTION">
+    <English>Move to grid %1 and await further orders.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_TITLE_LABEL">
+    <English>Title</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_DESCRIPTION_LABEL">
+    <English>Description</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_NOPLAYERS">
+    <English>ALiVE: no players on that side to give a task to.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_DONE">
+    <English>ALiVE: task "%1" given to %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_NONE">
+    <English>ALiVE: no open task there. Place it on a player, or within 500 m of a task's marker.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_OUTCOME">
+    <English>Outcome</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_OUTCOME_SUCCEEDED">
+    <English>Succeeded</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_OUTCOME_FAILED">
+    <English>Failed</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_OUTCOME_CANCELED">
+    <English>Cancelled</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_SUCCEEDED">
+    <English>ALiVE: task "%1" succeeded.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_FAILED">
+    <English>ALiVE: task "%1" failed.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TASK_CANCELED">
+    <English>ALiVE: task "%1" was cancelled.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE_TYPE">
+    <English>Sortie</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE_CAS">
+    <English>Close air support</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE_STRIKE">
+    <English>Strike</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE_SEAD">
+    <English>Air defence suppression</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE_RECCE">
+    <English>Reconnaissance</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE_NOSIDE">
+    <English>ALiVE: no air commander for %1 in this mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE_NOTYPE">
+    <English>ALiVE: that air commander doesn't fly %1 sorties.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AIRSTRIKE_DONE">
+    <English>ALiVE: %1 asked of the %2 air commander at grid %3. Its answer goes out on that side's radio.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_INF">
+    <English>Infantry groups</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_MOT">
+    <English>Motorised groups</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_MECH">
+    <English>Mechanised groups</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_ARMOUR">
+    <English>Armour groups</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_HOW">
+    <English>Delivery</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_ROAD">
+    <English>By road</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_AIRDROP">
+    <English>Air drop</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_HELI">
+    <English>Helicopter insertion</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_NOTHING">
+    <English>ALiVE: pick at least one group to send.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_NOSIDE">
+    <English>ALiVE: no Military Logistics module for %1 in this mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_NOPOOL">
+    <English>ALiVE: that side's force pool is empty, so no reinforcements can be sent.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RESUPPLY_DONE">
+    <English>ALiVE: %1 groups of %2 are on their way to grid %3, if the logistics module allows that kind.</English>
+</Key>
 </Container>
 </Package>
 </Project>

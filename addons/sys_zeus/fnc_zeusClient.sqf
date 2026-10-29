@@ -11,7 +11,8 @@ server, which checks the Zeus and does the work (ALiVE_fnc_zeusRequest).
 
 Parameters:
 String - the module: "save", "debug", "spotReport", "handGroup", "bomber", "convertBomber",
-    "carBomb", "ied", "iedAmbush", "spawnGroup" or "removeGroup"
+    "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "createTask",
+    "closeTask", "airStrike" or "resupply"
 Array - position (ATL)
 Object - the unit the module was placed on, or objNull
 Bool - true when Zeus Enhanced is loaded, so its option dialogs can be used
@@ -254,6 +255,156 @@ switch (_action) do {
             ] call zen_dialog_fnc_create;
         } else {
             ["removeGroup", [_attached, "despawn"]] call _send;
+        };
+    };
+
+    // The side's AI Commanders attack the spot, or with Zeus Enhanced hold it, for the side chosen
+    case "objective": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_OBJECTIVE",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
+                    ["TOOLBOX", localize "STR_ALIVE_ZEUS_OBJECTIVE_HOW", [0, 1, 2, [localize "STR_ALIVE_ZEUS_OBJECTIVE_TAKE_LABEL", localize "STR_ALIVE_ZEUS_OBJECTIVE_HOLD_LABEL"]]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    ["objective", [_position, _values select 0, ["take", "hold"] select (_values select 1)]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["objective", [_position, "", "take"]] call _send;
+        };
+    };
+
+    // Installations within 1 km, or with Zeus Enhanced a radius chosen and a side whose Intel Log
+    // records them
+    case "reveal": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_REVEAL",
+                [
+                    ["SLIDER:RADIUS", localize "STR_ALIVE_ZEUS_RADIUS", [100, 5000, 1000, 0, _position]],
+                    ["COMBO", localize "STR_ALIVE_ZEUS_INTEL_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_INTEL_NONE", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    ["reveal", [_position, round (_values select 0), _values select 1]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["reveal", [_position, 1000, ""]] call _send;
+        };
+    };
+
+    // A task to go to the spot, for the side of the nearest player, or with Zeus Enhanced a side,
+    // title and description of the Zeus's own
+    case "createTask": {
+        private _title = format [localize "STR_ALIVE_ZEUS_TASK_TITLE", mapGridPosition _position];
+        private _description = format [localize "STR_ALIVE_ZEUS_TASK_DESCRIPTION", mapGridPosition _position];
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_CREATETASK",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
+                    ["EDIT", localize "STR_ALIVE_ZEUS_TASK_TITLE_LABEL", [_title]],
+                    ["EDIT:MULTI", localize "STR_ALIVE_ZEUS_TASK_DESCRIPTION_LABEL", [_description, {_this}, 5]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    _values params ["_side", "_title", "_description"];
+                    ["createTask", [_position, _side, _title, _description]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["createTask", [_position, "", _title, _description]] call _send;
+        };
+    };
+
+    // Placed on a player: their task. On the ground: the nearest open task. It succeeds, or with
+    // Zeus Enhanced fails or is cancelled
+    case "closeTask": {
+        // Placed on a vehicle: the player commanding it, or any player aboard
+        if (!isNull _attached && {!(_attached isKindOf "CAManBase")}) then {
+            private _crew = (crew _attached) select { isPlayer _x };
+            _attached = if (isPlayer (effectiveCommander _attached)) then { effectiveCommander _attached } else { _crew param [0, objNull] };
+        };
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_CLOSETASK",
+                [
+                    ["TOOLBOX", localize "STR_ALIVE_ZEUS_TASK_OUTCOME", [0, 1, 3, [localize "STR_ALIVE_ZEUS_TASK_OUTCOME_SUCCEEDED", localize "STR_ALIVE_ZEUS_TASK_OUTCOME_FAILED", localize "STR_ALIVE_ZEUS_TASK_OUTCOME_CANCELED"]]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_attached", "_send"];
+                    ["closeTask", [_position, _attached, ["Succeeded", "Failed", "Canceled"] select (_values select 0)]] call _send;
+                },
+                {},
+                [_position, _attached, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["closeTask", [_position, _attached, "Succeeded"]] call _send;
+        };
+    };
+
+    // Close air support from the nearest player's side, or with Zeus Enhanced a side and kind of
+    // sortie chosen
+    case "airStrike": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_AIRSTRIKE",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
+                    ["COMBO", localize "STR_ALIVE_ZEUS_AIRSTRIKE_TYPE", [["CAS", "Strike", "SEAD", "Recce"], [localize "STR_ALIVE_ZEUS_AIRSTRIKE_CAS", localize "STR_ALIVE_ZEUS_AIRSTRIKE_STRIKE", localize "STR_ALIVE_ZEUS_AIRSTRIKE_SEAD", localize "STR_ALIVE_ZEUS_AIRSTRIKE_RECCE"], 0]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    ["airStrike", [_position, _values select 0, _values select 1]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["airStrike", [_position, "", "CAS"]] call _send;
+        };
+    };
+
+    // Two infantry groups by road from the nearest player's side, or with Zeus Enhanced the side,
+    // the groups and how they come
+    case "resupply": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_RESUPPLY",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
+                    ["SLIDER", localize "STR_ALIVE_ZEUS_RESUPPLY_INF", [0, 5, 2, 0]],
+                    ["SLIDER", localize "STR_ALIVE_ZEUS_RESUPPLY_MOT", [0, 5, 0, 0]],
+                    ["SLIDER", localize "STR_ALIVE_ZEUS_RESUPPLY_MECH", [0, 5, 0, 0]],
+                    ["SLIDER", localize "STR_ALIVE_ZEUS_RESUPPLY_ARMOUR", [0, 5, 0, 0]],
+                    ["COMBO", localize "STR_ALIVE_ZEUS_RESUPPLY_HOW", [["STANDARD", "AIRDROP", "HELI_INSERT"], [localize "STR_ALIVE_ZEUS_RESUPPLY_ROAD", localize "STR_ALIVE_ZEUS_RESUPPLY_AIRDROP", localize "STR_ALIVE_ZEUS_RESUPPLY_HELI"], 0]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    _values params ["_side", "_inf", "_mot", "_mech", "_armour", "_delivery"];
+                    ["resupply", [_position, _side, [round _inf, round _mot, round _mech, round _armour, 0, 0], _delivery]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["resupply", [_position, "", [2, 0, 0, 0, 0, 0], "STANDARD"]] call _send;
         };
     };
 };

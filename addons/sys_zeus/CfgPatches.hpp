@@ -13,7 +13,13 @@ class CfgPatches {
             "ALiVE_ModuleZeusIED",
             "ALiVE_ModuleZeusIEDAmbush",
             "ALiVE_ModuleZeusSpawnGroup",
-            "ALiVE_ModuleZeusRemoveGroup"
+            "ALiVE_ModuleZeusRemoveGroup",
+            "ALiVE_ModuleZeusObjective",
+            "ALiVE_ModuleZeusRevealInstallations",
+            "ALiVE_ModuleZeusCreateTask",
+            "ALiVE_ModuleZeusCloseTask",
+            "ALiVE_ModuleZeusAirStrike",
+            "ALiVE_ModuleZeusResupply"
         };
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
