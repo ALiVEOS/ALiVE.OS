@@ -7387,6 +7387,8 @@ switch(_operation) do {
                 ([_x, 30] call _spot) params ["_pos", "_dir"];
                 private _o = createVehicle [_x, _pos, [], 0, "NONE"];
                 _o setDir _dir;
+                // Recycle at a hub clears it; the crates are paid for together, so nothing comes back
+                _o setVariable ["ALiVE_hub_made", [[_logic, "registryID"] call MAINCLASS, _faction, 0], true];
                 _made = _made + 1;
             };
         } forEach (_fm param [1, []]);
@@ -7404,6 +7406,8 @@ switch(_operation) do {
                 };
                 private _v = createVehicle [_class, _pos, [], 0, "NONE"];
                 _v setDir _dir;
+                // Recycle at a hub gives its one point back to the force pool
+                _v setVariable ["ALiVE_hub_made", [[_logic, "registryID"] call MAINCLASS, _faction, 1], true];
                 _made = _made + 1;
             };
         } forEach (_fm param [2, []]);

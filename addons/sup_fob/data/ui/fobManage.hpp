@@ -15,7 +15,7 @@ class ALiVE_FobWindow {
             x = 0.37 * safezoneW + safezoneX;
             y = 0.31 * safezoneH + safezoneY;
             w = 0.26 * safezoneW;
-            h = 0.39 * safezoneH;
+            h = 0.435 * safezoneH;
             colorBackground[] = {0,0,0,0.65};
         };
         class FobManage_Header: FobUI_RscText {
@@ -99,11 +99,40 @@ class ALiVE_FobWindow {
             w = 0.115 * safezoneW;
             h = 0.035 * safezoneH;
         };
+        // FOB Types: the types this FOB can become, and Change Type (shown by ALiVE_fnc_fobActions only
+        // when the mission has types)
+        class FobManage_TypeLabel: FobUI_RscText {
+            idc = 92864;
+            text = "$STR_ALIVE_FOB_UI_TYPE";
+            x = 0.38 * safezoneW + safezoneX;
+            y = 0.57 * safezoneH + safezoneY;
+            w = 0.04 * safezoneW;
+            h = 0.035 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
+        };
+        class FobManage_TypeList: FobUI_RscCombo {
+            idc = 92862;
+            x = 0.42 * safezoneW + safezoneX;
+            y = 0.57 * safezoneH + safezoneY;
+            w = 0.13 * safezoneW;
+            h = 0.035 * safezoneH;
+            onLBSelChanged = "['manageTypePicked'] call ALiVE_fnc_fobActions";
+        };
+        class FobManage_TypeChange: FobUI_RscButton {
+            idc = 92863;
+            text = "$STR_ALIVE_FOB_UI_CHANGE_TYPE";
+            action = "['manageDo', 'RETYPE'] call ALiVE_fnc_fobActions";
+            x = 0.555 * safezoneW + safezoneX;
+            y = 0.57 * safezoneH + safezoneY;
+            w = 0.065 * safezoneW;
+            h = 0.035 * safezoneH;
+            sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)";
+        };
         // the server's answer to the last thing asked for here
         class FobManage_Feedback: FobUI_RscStructuredText {
             idc = 92848;
             x = 0.38 * safezoneW + safezoneX;
-            y = 0.57 * safezoneH + safezoneY;
+            y = 0.615 * safezoneH + safezoneY;
             w = 0.24 * safezoneW;
             h = 0.075 * safezoneH;
             colorBackground[] = {0,0,0,0.3};
@@ -114,7 +143,7 @@ class ALiVE_FobWindow {
             text = "$STR_ALIVE_FOB_UI_PERMISSIONS";
             action = "['permOpen'] call ALiVE_fnc_fobActions";
             x = 0.38 * safezoneW + safezoneX;
-            y = 0.655 * safezoneH + safezoneY;
+            y = 0.70 * safezoneH + safezoneY;
             w = 0.1 * safezoneW;
             h = 0.035 * safezoneH;
         };
@@ -123,7 +152,7 @@ class ALiVE_FobWindow {
             text = "$STR_ALIVE_FOB_UI_CLOSE";
             action = "closeDialog 0";
             x = 0.555 * safezoneW + safezoneX;
-            y = 0.655 * safezoneH + safezoneY;
+            y = 0.70 * safezoneH + safezoneY;
             w = 0.065 * safezoneW;
             h = 0.035 * safezoneH;
         };

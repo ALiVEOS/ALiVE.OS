@@ -412,7 +412,7 @@ switch (_operation) do {
     // The FOB Types module's list, read once at start (and by typesReload): one type per line, or
     // types separated by |, each a set of key=value pairs separated by ; in any order. Published
     // as ALiVE_FOB_types, one row per type:
-    // [id, name, prefix, marker, hubs, extras, removals, role, who, names, cost, cap]
+    // [id, name, prefix, marker, hubs, extras, removals, role, who, names, cost, cap, own settings, preset]
     case "typesParse": {
         private _tm = _logic getVariable ["ALiVE_FOB_typesModule", objNull];
         private _raw = if (isNull _tm) then { "" } else { _tm getVariable ["fob_types", ""] };
@@ -502,7 +502,14 @@ switch (_operation) do {
                                 };
                             };
                         } forEach [["respawn", "fob_respawn"], ["supply", "fob_supply_initial"], ["trickle", "fob_supply_trickle"]];
-                        _rows pushBack [_id, _name, _prefix, _marker, _hubs, _plus, _minus, _role, _who, _h getOrDefault ["list", ""], _cost, _cap, _own];
+                        // preset: the type's own Build List Preset (Jman, 29 Oct); left out, the Player FOBs one
+                        private _tp = toUpper trim (_h getOrDefault ["preset", ""]);
+                        if (_tp == "EVERYTHING") then { _tp = "ALL" };
+                        if (_tp != "" && {!(_tp in ["ALL", "OUTPOST", "FORTIFIED", "INFANTRY", "LOGISTICS"])}) then {
+                            ["ALiVE Player FOBs - FOB Types: %1's preset %2 isn't ALL, OUTPOST, FORTIFIED, INFANTRY or LOGISTICS; the Player FOBs Build List Preset is used", _id, _tp] call ALiVE_fnc_dumpR;
+                            _tp = "";
+                        };
+                        _rows pushBack [_id, _name, _prefix, _marker, _hubs, _plus, _minus, _role, _who, _h getOrDefault ["list", ""], _cost, _cap, _own, _tp];
                     };
                 };
             };
@@ -546,7 +553,7 @@ switch (_operation) do {
     case "typeSpec": {
         _args params [["_id", "", [""]]];
         _result = if (_id == "") then {
-            ["", localize "STR_ALIVE_FOB_TYPE_GENERAL", "FOB", "mil_flag", [], [], [], "none", "SIDE", "", 0, 0, []]
+            ["", localize "STR_ALIVE_FOB_TYPE_GENERAL", "FOB", "mil_flag", [], [], [], "none", "SIDE", "", 0, 0, [], ""]
         } else {
             private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
             _types param [_types findIf { (_x select 0) == _id }, []]
@@ -593,6 +600,13 @@ switch (_operation) do {
         private _bare = _c select [(_c find ">") + 1];
         if (_c in (_spec select 6) || {_bare in (_spec select 6)}) exitWith { _result = false };
         if (_c in (_spec select 5) || {_bare in (_spec select 5)}) exitWith {};
+        // what this FOB's Build List Preset (its type's own, else the module's) leaves out, where another
+        // preset in use keeps it (ALiVE_fnc_fobBuildScan dropped what every one leaves out)
+        private _preset = _spec param [13, ""];
+        if (_preset == "") then { _preset = missionNamespace getVariable ["ALiVE_FOB_presetDefault", "ALL"] };
+        private _drop = missionNamespace getVariable ["ALiVE_FOB_presetDrop", []];
+        private _di = _drop findIf { (_x select 0) == _preset };
+        if (_di >= 0 && {_c in ((_drop select _di) select 1)}) exitWith { _result = false };
         // before the build scan has run every extra counts as a type's own
         private _typeOnly = missionNamespace getVariable ["ALiVE_FOB_typeOnly", nil];
         _result = if (isNil "_typeOnly") then { (_types findIf { _c in (_x select 5) }) < 0 } else { !(_c in _typeOnly) };

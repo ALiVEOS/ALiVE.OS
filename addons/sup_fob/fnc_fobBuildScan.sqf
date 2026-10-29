@@ -49,6 +49,12 @@ blacklist and whitelist, and its Build Only These field to only[]. A class in Bu
 can carry its price, Class=463, which wins over a cost in CfgALiVEFOBBuildables. With an only list,
 a FOB type's extras are still built, and one the list doesn't have is that type's alone.
 
+The Build List Preset cuts the catalog by kind (Outpost, Fortified Base, Infantry, Logistics Hub).
+A FOB type can name its own (preset= in FOB Types); one that doesn't, and the plain FOB, use the
+module's. Only what every preset in use leaves out is dropped here; what some presets keep and
+others don't stays in the catalog and is published per preset as ALiVE_FOB_presetDrop, for
+ALiVE_fnc_FOB "typeAllows" to hide at the FOBs whose preset leaves it out.
+
 Sizes come from a local, unsimulated copy of each object, measured a few at a time, and are
 kept in the server's profile, so later starts skip the measuring.
 
@@ -221,16 +227,17 @@ private _sizes = profileNamespace getVariable ["ALiVE_FOB_sizes", createHashMap]
 if !(_sizes isEqualType createHashMap) then { _sizes = createHashMap };
 private _measured = 0;
 
-// [volume m3, widest side m] of a class, measured on a local copy once and kept
+// [volume m3, widest side m, height m] of a class, measured on a local copy once and kept
+// (a size kept before the height was measured is measured again)
 private _size = {
     params ["_class"];
     private _have = _sizes get _class;
-    if (!isNil "_have") exitWith { _have };
+    if (!isNil "_have" && {count _have > 2}) exitWith { _have };
     private _o = createSimpleObject [_class, [0, 0, 1000], true];
-    private _s = [0, 0];
+    private _s = [0, 0, 0];
     if (!isNull _o) then {
         private _d = ((boundingBoxReal _o) select 1) vectorDiff ((boundingBoxReal _o) select 0);
-        _s = [abs ((_d select 0) * (_d select 1) * (_d select 2)), (abs (_d select 0)) max (abs (_d select 1))];
+        _s = [abs ((_d select 0) * (_d select 1) * (_d select 2)), (abs (_d select 0)) max (abs (_d select 1)), abs (_d select 2)];
         deleteVehicle _o;
     };
     _sizes set [_class, _s];
@@ -454,6 +461,9 @@ private _add = {
             case (_sub == "EdSubcat_Lamps" && {"portablelight" in toLower _class}): {"FORTIFICATION"};
             default {""};
         };
+        // firing-range props (Jman, 29 Oct): wooden, concrete and SAM targets sit in the same
+        // structures categories but aren't anything to build. Also Build still adds one by name.
+        if (_kind == "FORTIFICATION" && {"target" in toLower _class || {"target" in toLower getText (_cfg >> "displayName")}}) then { _kind = "" };
         if (_kind != "") then {
             ([_class] call _size) params ["", "_wide"];
             if (_wide <= 40) then { [_class, _cfg, _kind] call _add };
@@ -465,24 +475,45 @@ private _add = {
 // of vehicle, so it suits any mod. Build Only These sets the list itself, so a preset gives way to it.
 // Also Build and a FOB type's extras still add past it: what it drops is kept aside, and one of
 // those lists naming it puts its own row back (its real kind, price, tier and side).
-// [kinds, kinds of vehicle, the heaviest static weapon's tier, troops]. No preset keeps artillery,
-// a static weapon that fires as artillery (a mortar, a howitzer) included.
+// [kinds, kinds of vehicle, the heaviest static weapon's tier, troops, field works only], [] for
+// everything. Field works (Jman, 29 Oct) are the fortifications no taller than 3 m (sandbags,
+// barriers, hedgehogs, wire, small bunkers, lamps) plus camouflage nets and tents: walls, towers,
+// big bunkers and buildings are left out. No preset
+// keeps artillery, a static weapon that fires as artillery (a mortar, a howitzer) included.
+// A FOB type can name its own preset (Jman, 29 Oct). The presets in use are the module's (the plain
+// FOB's and every type's without one) and each type's own: a row all of them leave out is dropped,
+// one only some leave out stays and is listed against those presets in _presetDrop.
 private _presetTroops = true;
 private _presetDropped = createHashMap;
+private _presetDrop = createHashMap;
+private _presetSpec = {
+    params ["_p"];
+    switch (_p) do {
+        case "OUTPOST": { [["FORTIFICATION", "SUPPLY"], [], 0, false, true] };
+        case "FORTIFIED": { [["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE"], ["CAR", "TRUCK", "BOAT"], 3, true, false] };
+        case "INFANTRY": { [["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE"], ["CAR", "TRUCK"], 2, true, true] };
+        case "LOGISTICS": { [["FORTIFICATION", "SUPPLY", "VEHICLE"], ["TRUCK", "BOAT"], 0, false, false] };
+        case "ALL";
+        case "": { [] };
+        default {
+            ["ALiVE Player FOBs - Build List Preset %1 is not one of Outpost, Fortified, Infantry or Logistics, so nothing is left out for it", _p] call ALiVE_fnc_dumpR;
+            []
+        };
+    }
+};
 private _preset = [_logic, "attribute", ["fob_buildpreset"]] call ALiVE_fnc_FOB;
-private _presetRules = switch (_preset) do {
-    case "OUTPOST": { [["FORTIFICATION", "SUPPLY"], [], 0, false] };
-    case "FORTIFIED": { [["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE"], ["CAR", "TRUCK", "BOAT"], 3, true] };
-    case "INFANTRY": { [["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE"], ["CAR", "TRUCK"], 2, true] };
-    case "LOGISTICS": { [["FORTIFICATION", "SUPPLY", "VEHICLE"], ["TRUCK", "BOAT"], 0, false] };
-    default { [] };
+private _fobTypes = missionNamespace getVariable ["ALiVE_FOB_types", []];
+// The module's preset always counts, even when every type names its own: a FOB with no type (a saved
+// one whose type is gone) falls back to it
+private _inUse = [_preset];
+{ if ((_x param [13, ""]) != "") then { _inUse pushBackUnique (_x select 13) } } forEach _fobTypes;
+private _rulesOf = createHashMapFromArray (_inUse apply { [_x, [_x] call _presetSpec] });
+private _cuts = (_inUse findIf { (_rulesOf get _x) isNotEqualTo [] }) >= 0;
+if (_cuts && {_only isNotEqualTo []}) then {
+    ["ALiVE Player FOBs - Build List Preset %1 not used: a Build Only These list sets the build list", _inUse - ["ALL"]] call ALiVE_fnc_dumpR;
 };
-if (_presetRules isNotEqualTo [] && {_only isNotEqualTo []}) then {
-    ["ALiVE Player FOBs - Build List Preset %1 not used: a Build Only These list sets the build list", _preset] call ALiVE_fnc_dumpR;
-};
-if (_presetRules isNotEqualTo [] && {_only isEqualTo []}) then {
-    _presetRules params ["_kinds", "_vehicles", "_staticTier", "_troops"];
-    _presetTroops = _troops;
+if (_cuts && {_only isEqualTo []}) then {
+    _presetTroops = (_inUse findIf { private _r = _rulesOf get _x; _r isEqualTo [] || {_r select 3} }) >= 0;
     private _vehicleKind = {
         params ["_class"];
         switch (true) do {
@@ -494,17 +525,39 @@ if (_presetRules isNotEqualTo [] && {_only isEqualTo []}) then {
             default {"CAR"};
         }
     };
+    private _isFieldWork = {
+        params ["_class"];
+        private _lc = toLower _class;
+        (["camonet", "tent", "canvascover", "masking"] findIf { _x in _lc }) >= 0 || {(([_class] call _size) param [2, 99]) <= 3}
+    };
     private _keepRow = {
-        params ["_row"];
+        params ["_row", "_r"];
+        if (_r isEqualTo []) exitWith {true};
+        _r params ["_kinds", "_vehicles", "_staticTier", "", ["_fieldOnly", false]];
         _row params ["_class", "", "_kind", "", "", "_tier"];
         (_kind in _kinds)
+        && {_kind != "FORTIFICATION" || {!_fieldOnly} || {[_class] call _isFieldWork}}
         && {_kind != "STATIC" || {_tier <= _staticTier && {getNumber (configFile >> "CfgVehicles" >> _class >> "artilleryScanner") != 1}}}
         && {_kind != "VEHICLE" || {([_class] call _vehicleKind) in _vehicles}}
     };
     private _before = count _rows;
-    { _presetDropped set [toLower (_x select 0), _x] } forEach (_rows select { !([_x] call _keepRow) });
-    _rows = _rows select { [_x] call _keepRow };
-    ["ALiVE Player FOBs - Build List Preset %1 keeps %2 of %3 items", _preset, count _rows, _before] call ALiVE_fnc_dumpR;
+    private _kept = [];
+    {
+        private _row = _x;
+        private _by = _inUse select { !([_row, _rulesOf get _x] call _keepRow) };
+        if (count _by == count _inUse) then {
+            _presetDropped set [toLower (_row select 0), _row];
+        } else {
+            _kept pushBack _row;
+            {
+                private _l = _presetDrop getOrDefault [_x, []];
+                if (_l isEqualTo []) then { _presetDrop set [_x, _l] };
+                _l pushBack toLower (_row select 0);
+            } forEach _by;
+        };
+    } forEach _rows;
+    _rows = _kept;
+    ["ALiVE Player FOBs - Build List Preset %1 keeps %2 of %3 items", _inUse, count _rows, _before] call ALiVE_fnc_dumpR;
 };
 
 if (_arsenal && {isClass (configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal")}) then { ["ALiVE_FOB_Arsenal", configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal", "SUPPLY"] call _add };
@@ -521,6 +574,9 @@ if (_arsenal && {isClass (configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal")}) 
         };
     };
 } forEach _whitelist;
+// Also Build beats every preset, at every FOB
+private _wl = _whitelist apply { toLower _x };
+{ _presetDrop set [_x, (_presetDrop get _x) - _wl] } forEach (keys _presetDrop);
 
 // Every FOB type's extras (FOB Types). One the catalog already has stays everyone's; one only a
 // type brings is priced as a fortification and kept for the types that list it (ALiVE_FOB_typeOnly).
@@ -664,6 +720,7 @@ if (_troopCap > 0) then {
     // with no troops on Build Only These, every faction's infantry groups: those in a category with
     // infantry in its name (a mod like RHS names its own, rhs_group_nato_usarmy_d_infantry), and those
     // a faction's ALiVE mapping lists as Infantry. A Build List Preset without troops leaves them out.
+    private _infFrom = count _troopRows;
     if (!_troopOnly && {_presetTroops}) then {
         {
             private _gname = _x;
@@ -683,6 +740,16 @@ if (_troopCap > 0) then {
                 };
             } forEach (ALIVE_factionCustomMappings select 1);
         };
+    };
+    // those default groups are left out at the FOBs whose preset has no troops, an Also Build group excepted
+    private _infKeys = (_troopRows select [_infFrom]) apply { toLower (_x select 0) };
+    { { _infKeys = _infKeys - [toLower (_x select 0)] } forEach ([_x] call _resolveGroup) } forEach _groupAlso;
+    // only when a preset cut the list: a Build Only These list sets it instead
+    if (_infKeys isNotEqualTo [] && {_cuts} && {_only isEqualTo []}) then {
+        {
+            private _r = _rulesOf get _x;
+            if (_r isNotEqualTo [] && {!(_r select 3)}) then { _presetDrop set [_x, (_presetDrop getOrDefault [_x, []]) + _infKeys] };
+        } forEach _inUse;
     };
     {
         private _hits = [_x] call _resolveGroup;
@@ -712,6 +779,11 @@ ALiVE_FOB_catalog = _rows;
 publicVariable "ALiVE_FOB_catalog";
 ALiVE_FOB_typeOnly = _typeOnly;
 publicVariable "ALiVE_FOB_typeOnly";
+// [[preset, [what it leaves out that another preset in use keeps]], ...] and the module's preset
+ALiVE_FOB_presetDrop = (keys _presetDrop) apply { [_x, _presetDrop get _x] };
+ALiVE_FOB_presetDefault = _preset;
+publicVariable "ALiVE_FOB_presetDrop";
+publicVariable "ALiVE_FOB_presetDefault";
 // a type's extra that can't be built after all says why, rather than just not being in the menu
 {
     private _tid = _x select 0;

@@ -20,6 +20,8 @@ The player's FOB actions, on the scroll menu:
   in, and admins get a Permissions button for the Permissions window, which the ALiVE admin
   menu opens too, from anywhere.
 - Build Menu, inside an active FOB's build range: the build window.
+- FOB Arsenal, within 25 m of one of the side's active FOBs once it reaches the tier the build list's
+  FOB Arsenal crate needs: the same arsenal as the crate, opened at the headquarters.
 - Recycle, looking at something built at a FOB from within 8 m: takes it down for half its
   price back, for a player Who Can Dismantle lets in.
 - Unload Supplies, within 8 m of a supply crate inside a FOB's build range.
@@ -56,10 +58,11 @@ switch (_op) do {
             ALiVE_FOB_buildFob = [];
             ALiVE_FOB_nearCrate = objNull;
             ALiVE_FOB_mayAt = createHashMap;
+            ALiVE_FOB_hqArsenal = false;
             ALiVE_FOB_cacheLoop = [] spawn {
                 while { true } do {
                     if (alive player) then {
-                        private _side = str (side group player);
+                        private _side = ["unitSide", [player]] call ALIVE_fnc_hub;
                         private _kits = (nearestObjects [player, ["All"], 8]) select {
                             private _t = _x getVariable "ALiVE_FOB_kit";
                             !isNil "_t" && {_t isEqualTo true || {_t isEqualTo _side}}
@@ -71,6 +74,12 @@ switch (_op) do {
                             (_x select 1) == _side && {player distance2D (_x select 3) <= 25}
                         };
                         ALiVE_FOB_nearFob = _mine param [0, []];
+                        // the FOB Arsenal at the headquarters (Jman, 29 Oct): the FOB is active and at the
+                        // tier the build list's FOB Arsenal crate needs; with no crate in the list, none
+                        private _cat = missionNamespace getVariable ["ALiVE_FOB_catalog", []];
+                        private _ai = _cat findIf { (_x select 0) == "ALiVE_FOB_Arsenal" };
+                        ALiVE_FOB_hqArsenal = _ai >= 0 && {ALiVE_FOB_nearFob isNotEqualTo []} && {missionNamespace getVariable ["ALiVE_FOB_arsenalOn", false]}
+                            && {(ALiVE_FOB_nearFob select 4) == "active"} && {(ALiVE_FOB_nearFob select 5) >= ((_cat select _ai) select 5)};
                         // the side's FOB whose build range the player is in
                         private _inRange = (missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select {
                             (_x select 1) == _side && {(_x select 4) == "active"} && {player distance2D (_x select 3) <= (_x select 8)}
@@ -119,7 +128,10 @@ switch (_op) do {
             player addAction [(localize "STR_ALIVE_FOB_ACTION_RECYCLE") call ALiVE_fnc_actionTitle, { ["recycle", [cursorObject]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 0.6, false, true, "",
                 "vehicle _this == _this && {_this distance cursorObject < (8 max ([0, (sizeOf typeOf cursorObject) / 2] select (cursorObject isKindOf 'Air')))} && {['canRecycle', cursorObject] call ALiVE_fnc_fobActions}"],
             player addAction [(localize "STR_ALIVE_FOB_ACTION_ARSENAL") call ALiVE_fnc_actionTitle, { ["arsenalOpen", [cursorObject, !isNil "ALiVE_FOB_gearList"]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.46, true, true, "",
-                "vehicle _this == _this && {_this distance cursorObject < 8} && {cursorObject isKindOf 'ALiVE_FOB_Arsenal'} && {missionNamespace getVariable ['ALiVE_FOB_arsenalOn', false]}"]
+                "vehicle _this == _this && {_this distance cursorObject < 8} && {cursorObject isKindOf 'ALiVE_FOB_Arsenal'} && {missionNamespace getVariable ['ALiVE_FOB_arsenalOn', false]}"],
+            // the same arsenal from the headquarters, next to Build Menu and Manage FOB (Jman, 29 Oct)
+            player addAction [(localize "STR_ALIVE_FOB_ACTION_ARSENAL_HQ") call ALiVE_fnc_actionTitle, { ["arsenalOpen", [objNull, !isNil "ALiVE_FOB_gearList", ALiVE_FOB_nearFob param [0, ""]]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, nil, 1.44, false, true, "",
+                "ALiVE_FOB_hqArsenal && {vehicle _this == _this}"]
         ];
         player setVariable ["ALiVE_FOB_actionIDs", _ids];
 
@@ -138,6 +150,11 @@ switch (_op) do {
         // doesn't hold still shows the action, and the server says why it can't
         private _fid = _o getVariable ["ALiVE_FOB_object", ""];
         if (_fid != "") exitWith { ALiVE_FOB_mayAt getOrDefault [_fid, true] };
+        // made at a Logistics Hub: recycled near one of the side's hubs (the server checks the rest)
+        if (!isNil {_o getVariable "ALiVE_hub_made"}) exitWith {
+            private _side = ["unitSide", [player]] call ALIVE_fnc_hub;
+            (missionNamespace getVariable ["ALiVE_hub_list", []]) findIf { !isNull _x && {((_x getVariable ["ALiVE_hub", []]) param [0, ""]) == _side} && {_o distance2D _x < 100} } > -1
+        };
         ALiVE_FOB_buildFob isNotEqualTo [] && {_o isKindOf "StaticWeapon" || {_o isKindOf "LandVehicle"} || {_o isKindOf "Ship"} || {_o isKindOf "Air"}}
             && {ALiVE_FOB_mayAt getOrDefault [ALiVE_FOB_buildFob select 0, true]}
     };
@@ -157,6 +174,7 @@ switch (_op) do {
         } forEach [
             ["ALiVE_FOB_Deploy", "STR_ALIVE_FOB_ACTION_DEPLOY", { ["deploy"] call ALiVE_fnc_fobActions }, { !isNull ALiVE_FOB_nearKit && {vehicle _player == _player} }],
             ["ALiVE_FOB_Manage", "STR_ALIVE_FOB_ACTION_MANAGE", { ["manage"] call ALiVE_fnc_fobActions }, { ALiVE_FOB_nearFob isNotEqualTo [] && {vehicle _player == _player} }],
+            ["ALiVE_FOB_ArsenalHQ", "STR_ALIVE_FOB_ACTION_ARSENAL_HQ", { ["arsenalOpen", [objNull, !isNil "ALiVE_FOB_gearList", ALiVE_FOB_nearFob param [0, ""]]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { ALiVE_FOB_hqArsenal && {vehicle _player == _player} }],
             ["ALiVE_FOB_Build", "STR_ALIVE_FOB_ACTION_BUILD", { ["open", ALiVE_FOB_buildFob] call ALiVE_fnc_buildMenu }, { ALiVE_FOB_buildFob isNotEqualTo [] && {!(missionNamespace getVariable ["ALiVE_FOB_placing", false])} }],
             ["ALiVE_FOB_Unload", "STR_ALIVE_FOB_ACTION_UNLOAD", { ["unload", [ALiVE_FOB_nearCrate, ALiVE_FOB_buildFob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }, { !isNull ALiVE_FOB_nearCrate && {ALiVE_FOB_buildFob isNotEqualTo []} }]
         ];
@@ -242,12 +260,38 @@ switch (_op) do {
         private _row = ((missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 0) == _id }) param [0, []];
         // dismantled, lost or taken while the window was open
         if (_row isEqualTo [] || {(_row select 1) != str (side group player)}) exitWith { closeDialog 0 };
-        _row params ["", "", "_name", "", "_status", "_tier", "_supply", "_cap", "", ["_deployer", ""]];
+        _row params ["", "", "_name", "", "_status", "_tier", "_supply", "_cap", "", ["_deployer", ""], ["_type", ""]];
         private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
         private _may = [_logic, "mayManage", [player, _deployer]] call ALiVE_fnc_FOB;
         private _supplyText = if (_supply < 0) then { localize "STR_ALIVE_FOB_SUPPLY_FREE" } else { if (_cap < 0) then { format [localize "STR_ALIVE_FOB_SUPPLY_POOL", round _supply] } else { format ["%1 / %2", round _supply, round _cap] } };
         (_d displayCtrl 92840) ctrlSetText _name;
-        (_d displayCtrl 92841) ctrlSetStructuredText parseText format [localize "STR_ALIVE_FOB_STATUS", _name, localize (format ["STR_ALIVE_FOB_STATE_%1", toUpper _status]), _tier, _supplyText];
+        private _status2 = format [localize "STR_ALIVE_FOB_STATUS", _name, localize (format ["STR_ALIVE_FOB_STATE_%1", toUpper _status]), _tier, _supplyText];
+        // FOB Types (Jman, 29 Oct): the FOB's type on the status, and the types it can change to
+        private _hasTypes = (missionNamespace getVariable ["ALiVE_FOB_types", []]) isNotEqualTo [];
+        if (_hasTypes) then {
+            _status2 = _status2 + "<br/>" + format [localize "STR_ALIVE_FOB_STATUS_TYPE", ([_logic, "typeSpec", [_type]] call ALiVE_fnc_FOB) param [1, _type]];
+        };
+        (_d displayCtrl 92841) ctrlSetStructuredText parseText _status2;
+        { (_d displayCtrl _x) ctrlShow _hasTypes } forEach [92862, 92863, 92864];
+        if (_hasTypes) then {
+            private _list = _d displayCtrl 92862;
+            // keep what the player has picked while the list is filled again
+            private _picked = if (lbCurSel _list < 0) then { _type } else { _list lbData (lbCurSel _list) };
+            uiNamespace setVariable ["ALiVE_FOB_typeFilling", true];
+            lbClear _list;
+            {
+                private _id = _x select 0;
+                if (_id == _type || {[_logic, "mayDeployType", [player, _id]] call ALiVE_fnc_FOB}) then {
+                    private _i = _list lbAdd (_x select 1);
+                    _list lbSetData [_i, _id];
+                    if (_id == _picked) then { _list lbSetCurSel _i };
+                };
+            } forEach ([_logic, "types"] call ALiVE_fnc_FOB);
+            if (lbCurSel _list < 0 && {lbSize _list > 0}) then { _list lbSetCurSel 0 };
+            uiNamespace setVariable ["ALiVE_FOB_typeFilling", false];
+            _list ctrlEnable (_may && {_status == "active"});
+            ["manageTypePicked"] call ALiVE_fnc_fobActions;
+        };
         private _up = _d displayCtrl 92845;
         if (_tier >= 3) then {
             _up ctrlSetText localize "STR_ALIVE_FOB_UI_TOP_TIER";
@@ -278,6 +322,10 @@ switch (_op) do {
             case "RENAME": { ["rename", [_id, ctrlText (_d displayCtrl 92842)]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
             case "UPGRADE": { ["upgrade", [_id]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
             case "REPAIR": { ["repair", [_id]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
+            case "RETYPE": {
+                private _list = _d displayCtrl 92862;
+                if (lbCurSel _list >= 0) then { ["retype", [_id, _list lbData (lbCurSel _list)]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
+            };
             case "BUILD": {
                 private _row = ((missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 0) == _id }) param [0, []];
                 closeDialog 0;
@@ -348,6 +396,22 @@ switch (_op) do {
         private _d = findDisplay 9285;
         if (isNull _d || {isNil "ALiVE_FOB_permDraft"}) exitWith {};
         ["permissions", [(ALiVE_FOB_permDraft select 0) joinString ",", ctrlText (_d displayCtrl 92857)]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+    };
+
+    // Change Type follows the type picked: off for the FOB's own type, with the new type's cost on it
+    case "manageTypePicked": {
+        private _d = findDisplay 9283;
+        if (isNull _d || {uiNamespace getVariable ["ALiVE_FOB_typeFilling", false]}) exitWith {};
+        private _id = uiNamespace getVariable ["ALiVE_FOB_manageId", ""];
+        private _row = ((missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) select { (_x select 0) == _id }) param [0, []];
+        if (_row isEqualTo []) exitWith {};
+        private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+        private _list = _d displayCtrl 92862;
+        private _new = if (lbCurSel _list < 0) then { _row param [10, ""] } else { _list lbData (lbCurSel _list) };
+        private _cost = ([_logic, "typeSpec", [_new]] call ALiVE_fnc_FOB) param [10, 0];
+        private _btn = _d displayCtrl 92863;
+        _btn ctrlSetText ([localize "STR_ALIVE_FOB_UI_CHANGE_TYPE", format [localize "STR_ALIVE_FOB_UI_CHANGE_TYPE_COST", _cost]] select (_cost > 0));
+        _btn ctrlEnable (ctrlEnabled _list && {_new != (_row param [10, ""])});
     };
 
     case "manageClosed": {

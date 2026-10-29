@@ -21,7 +21,7 @@ class Cfg3DEN {
                     h = "4 * (pixelH * pixelGrid * 0.50)";
                     text = "$STR_ALIVE_FOB_BUILDLIST_OPEN";
                     tooltip = "$STR_ALIVE_FOB_BUILDLIST_COMMENT";
-                    url = "https://www.alivemod.com/public/alive3/sup_fob_buildlist.htm";
+                    url = "https://www.alivemod.com/public/alive3/sup_fob_buildlist.htm?for=fob";
                 };
             };
         };

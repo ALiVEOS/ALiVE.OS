@@ -32,6 +32,8 @@ Object - The player asking (objNull from the server itself)
 Returns:
 deploy - [kit, position, direction] -> the new FOB's id, or ""
 dismantle - [fobID] -> true when it was taken down
+zeusDeploy - [side, position, direction, typeID] -> [id] or ["", refusal string key, its arguments]: a Zeus's FOB,
+    with no kit, cost or who-may-deploy check (sys_zeus Create FOB)
 build - [class, position, direction, fobID] -> true when built and paid for
 recycle - [object] -> true when taken down, with half its price back
 restoreObjects - [fobID] -> a saved FOB's built objects made again; the number made
@@ -39,6 +41,7 @@ unload - [crate, fobID] -> true when a supply crate went into the FOB
 upgrade - [fobID] -> true when the FOB went up a tier and was paid for
 respawn - [fobID] -> whether the FOB now has a respawn point (active, at or above the Respawn Point tier)
 rename - [fobID, name] -> true when the FOB took the new name
+retype - [fobID, type id] -> true when the FOB changed to that FOB type
 permissions - [rules, list] -> true when an admin changed Who Can Dismantle and its list
 fieldHQ - [object, "KIT" or "CRATE"] -> the FOB kit or supply crate handed out, or false
 repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
@@ -55,7 +58,8 @@ removeStatic - [vehicle profile id, crew profile id] -> the static weapon and it
 tag - [object, "KIT"/"CRATE"/"HQ", value] -> makes it a FOB kit, supply crate or Field HQ
 kitInit - [object] -> an ALiVE_FOB_Kit or ALiVE_FOB_SupplyCrate the server made becomes one
 cleanup - [fobID] -> removes a FOB and everything it made, no checks
-arsenalOpen - [box, haveList] -> true when the player may use that FOB Arsenal now
+arsenalOpen - [box, haveList, fobID] -> true when the player may use that FOB Arsenal now; with a null box and
+    a FOB id, the arsenal at that FOB's headquarters
 arsenalClose - [loadout] -> true when the visit is being settled
 arsenalSettle - [uid, why, loadout] -> the visit paid for from the FOB's supply, or the kit put back
 restore - [] -> rebuilds every loaded FOB's headquarters and objectives; the number rebuilt
@@ -230,6 +234,52 @@ switch (_op) do {
         ["STR_ALIVE_FOB_DEPLOYED", [[_entry, "name"] call ALIVE_fnc_hashGet]] call _tell;
         ["ALiVE Player FOBs - %1 deployed %2 (%3) at %4", name _caller, _id, [_entry, "name"] call ALIVE_fnc_hashGet, _pos] call ALiVE_fnc_dump;
         _result = _id;
+    };
+
+    // A Zeus puts a FOB down (Jman, 29 Oct): no kit, no caller and no cost, and the side cap and
+    // who may deploy a type don't apply. Water, slope and the distance between FOBs still do, as
+    // the headquarters needs somewhere it can stand.
+    case "zeusDeploy": {
+        _args params [["_side", "", [""]], ["_pos", [0,0,0], [[]]], ["_dir", 0, [0]], ["_type", "", [""]]];
+        _result = ["", "STR_ALIVE_FOB_REFUSED_SIDE", []];
+        if !(_side in ["WEST", "EAST", "GUER"]) exitWith {};
+        if !(count _pos in [2, 3] && {(_pos findIf { !(_x isEqualType 0) || {!finite _x} }) < 0} && {finite _dir}) exitWith { _result = ["", "STR_ALIVE_FOB_REFUSED_SPOT", []] };
+        private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
+        if (_types isEqualTo []) then { _type = "" };
+        private _spec = [_logic, "typeSpec", [_type]] call ALiVE_fnc_FOB;
+        if (_spec isEqualTo []) exitWith { _result = ["", "STR_ALIVE_FOB_REFUSED_TYPE", []] };
+        _pos = [_pos param [0, 0], _pos param [1, 0], 0];
+        if (surfaceIsWater _pos || {getTerrainHeightASL _pos < -0.5}) exitWith { _result = ["", "STR_ALIVE_FOB_REFUSED_WATER", []] };
+        if (((surfaceNormal _pos) select 2) < 0.966) exitWith { _result = ["", "STR_ALIVE_FOB_REFUSED_SLOPE", []] };
+        private _minDist = [_logic, "attribute", ["fob_min_distance"]] call ALiVE_fnc_FOB;
+        private _near = (ALiVE_FOB_registry select 1) findIf {
+            (([[ALiVE_FOB_registry, _x] call ALIVE_fnc_hashGet, "pos", [0,0,0]] call ALIVE_fnc_hashGet) distance2D _pos) < _minDist
+        };
+        if (_near > -1) exitWith { _result = ["", "STR_ALIVE_FOB_REFUSED_DISTANCE", [_minDist]] };
+        // the faction, as a captured FOB gets one: the side's AI Commander's, else its men's nearest
+        // the spot, else the side's base game faction. Supply, the garrison and the supply network need one.
+        private _factions = [];
+        { if (([_x, "side", ""] call ALiVE_fnc_hashGet) == _side) then { _factions append ([_x, "factions", []] call ALiVE_fnc_hashGet) } } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+        if (_factions isEqualTo []) then {
+            private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
+            private _men = (_pos nearEntities [["CAManBase"], 500]) select { alive _x && {side group _x == _sideObj} };
+            _factions = [(_men apply { faction _x }) param [0, ["OPF_F", "BLU_F", "IND_F"] param [["EAST", "WEST", "GUER"] find _side, "BLU_F"]]];
+        };
+        private _id = [_logic, "nextID", [_side]] call ALiVE_fnc_FOB;
+        private _entry = [_logic, "newEntry", [_id, _side, _factions param [0, ""], _pos, _dir, "", _type]] call ALiVE_fnc_FOB;
+        [_entry, "deployedBy", ""] call ALIVE_fnc_hashSet;
+        [_logic, "registrySet", [_id, _entry]] call ALiVE_fnc_FOB;
+        private _hub = ["spawnHub", [_id]] call ALiVE_fnc_fobOps;
+        if (isNull _hub) exitWith {
+            [_logic, "registryRemove", [_id]] call ALiVE_fnc_FOB;
+            _result = ["", "STR_ALIVE_FOB_REFUSED_SPOT", []];
+        };
+        ["register", [_id]] call ALiVE_fnc_fobObjectives;
+        ["respawn", [_id]] call ALiVE_fnc_fobOps;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+        ["ALiVE Player FOBs - a Zeus deployed %1 (%2) for %3 at %4", _id, [_entry, "name"] call ALIVE_fnc_hashGet, _side, _pos] call ALiVE_fnc_dump;
+        _result = [_id];
     };
 
     case "dismantle": {
@@ -588,6 +638,28 @@ switch (_op) do {
         _result = false;
         _args params [["_o", objNull, [objNull]]];
         if (isNull _caller || {!alive _caller} || {isNull _o}) exitWith {};
+        // made at a Logistics Hub: recycled at one of the side's hubs, its cost back to the force pool it came from
+        private _hubMade = _o getVariable "ALiVE_hub_made";
+        if (!isNil "_hubMade") exitWith {
+            _hubMade params [["_regId", ""], ["_faction", ""], ["_cost", 0]];
+            private _side = ["unitSide", [_caller]] call ALIVE_fnc_hub;
+            private _atHub = (missionNamespace getVariable ["ALiVE_hub_list", []]) findIf {
+                !isNull _x && {((_x getVariable ["ALiVE_hub", []]) param [0, ""]) == _side} && {_o distance2D _x < 100}
+            } > -1;
+            if (!_atHub) exitWith { ["STR_ALIVE_FOB_REFUSED_HUBFAR", [100]] call _tell };
+            private _near = if (_o isKindOf "Air") then { 8 max ((sizeOf typeOf _o) / 2) } else { 8 };
+            if (_caller distance _o > _near) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _near]] call _tell };
+            if ((crew _o) findIf { alive _x } > -1) exitWith { ["STR_ALIVE_FOB_REFUSED_CREWED"] call _tell };
+            private _class = typeOf _o;
+            deleteVehicle _o;
+            if (_cost > 0 && {!isNil "ALIVE_globalForcePool"} && {!isNil "ALIVE_MLGlobalRegistry"}) then {
+                private _pool = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+                if (_pool isEqualType "") then { _pool = parseNumber _pool };
+                [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [_regId, _pool + _cost]] call ALIVE_fnc_MLGlobalRegistry;
+            };
+            ["STR_ALIVE_FOB_RECYCLED_HUB", [getText (configFile >> "CfgVehicles" >> _class >> "displayName"), _cost]] call _tell;
+            _result = true;
+        };
         private _id = _o getVariable ["ALiVE_FOB_object", ""];
         // a static weapon is known by its profile: the spawned gun carries the profile's id
         private _pid = _o getVariable ["profileID", ""];
@@ -640,8 +712,8 @@ switch (_op) do {
     // had on opening and charges only what they have more of; gear handed back earns nothing.
     case "arsenalOpen": {
         _result = false;
-        _args params [["_box", objNull, [objNull]], ["_haveList", false, [false]]];
-        if (isNull _caller || {!alive _caller} || {isNull _box}) exitWith {};
+        _args params [["_box", objNull, [objNull]], ["_haveList", false, [false]], ["_hqId", "", [""]]];
+        if (isNull _caller || {!alive _caller} || {isNull _box && {_hqId == ""}}) exitWith {};
         // an arsenal saved with the setting on and loaded with it off is a plain crate
         if !([_logic, "attribute", ["fob_arsenal"]] call ALiVE_fnc_FOB) exitWith { ["STR_ALIVE_FOB_ARSENAL_OFF"] call _tell };
         // the gear list is worked out after start-up
@@ -650,13 +722,32 @@ switch (_op) do {
         private _uid = getPlayerUID _caller;
         // a visit still open from before (its close never arrived) is settled first
         if (_uid in ALiVE_FOB_arsenalSessions) then { ["arsenalSettle", [_uid, "reopen"]] call ALiVE_fnc_fobOps };
-        // the box's FOB, found as recycle finds it
-        private _id = _box getVariable ["ALiVE_FOB_object", ""];
+        private _atHQ = isNull _box;
+        // the box's FOB, found as recycle finds it; or the FOB whose headquarters it is opened at
+        private _id = if (_atHQ) then { _hqId } else { _box getVariable ["ALiVE_FOB_object", ""] };
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
-        if (isNil "_entry" || {!(_box isKindOf "ALiVE_FOB_Arsenal")} || {(([_entry, "objects", []] call ALIVE_fnc_hashGet) findIf { (_x param [0, objNull]) isEqualTo _box }) < 0}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
+        if (isNil "_entry") exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
+        if (_atHQ) then { _box = [_entry, "hub", objNull] call ALIVE_fnc_hashGet };
+        if (!_atHQ && {!(_box isKindOf "ALiVE_FOB_Arsenal") || {(([_entry, "objects", []] call ALIVE_fnc_hashGet) findIf { (_x param [0, objNull]) isEqualTo _box }) < 0}}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILT"] call _tell };
         if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
-        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
-        if (_caller distance _box > 8 || {vehicle _caller != _caller}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [8]] call _tell };
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active" || {isNull _box}) exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
+        private _why = [];
+        if (_atHQ) then {
+            // at the headquarters: the FOB has reached the tier the build list's FOB Arsenal crate needs,
+            // and its type may build one
+            private _cat = uiNamespace getVariable ["ALiVE_FOB_catalogServer", []];
+            private _ai = _cat findIf { (_x select 0) == "ALiVE_FOB_Arsenal" };
+            private _need = if (_ai < 0) then { -1 } else { (_cat select _ai) select 5 };
+            _why = call {
+                if (_need < 0 || {!([_logic, "typeAllows", [[_entry, "type", ""] call ALIVE_fnc_hashGet, "ALiVE_FOB_Arsenal"]] call ALiVE_fnc_FOB)}) exitWith { ["STR_ALIVE_FOB_ARSENAL_HQ_NONE"] };
+                if (([_entry, "tier", 1] call ALIVE_fnc_hashGet) < _need) exitWith { ["STR_ALIVE_FOB_ARSENAL_HQ_TIER", [_need]] };
+                if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25 || {vehicle _caller != _caller}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] };
+                []
+            };
+        } else {
+            _why = [[], ["STR_ALIVE_FOB_REFUSED_RANGE", [8]]] select (_caller distance _box > 8 || {vehicle _caller != _caller});
+        };
+        if (_why isNotEqualTo []) exitWith { _why call _tell };
         private _loadout = getUnitLoadout _caller;
         private _balance = floor (["balance", [_id]] call ALiVE_fnc_fobSupply);
         // the game's own arsenal fills every part-used magazine as it opens (ACE's doesn't), and
@@ -723,7 +814,8 @@ switch (_op) do {
             ["ALiVE Player FOBs - FOB Arsenal: %1 closed an arsenal they hadn't opened", name _caller] call ALiVE_fnc_dump;
         };
         // a close from away from the box is no close: the loop settles them as moved
-        if (!isNull (_s select 2) && {_caller distance (_s select 2) > 10}) exitWith {};
+        // (a headquarters is a building: its centre can be further off)
+        if (!isNull (_s select 2) && {_caller distance (_s select 2) > ([30, 10] select ((_s select 2) isKindOf "ALiVE_FOB_Arsenal"))}) exitWith {};
         _result = ["arsenalSettle", [_uid, "close", _hint]] call ALiVE_fnc_fobOps;
     };
 
@@ -1111,6 +1203,57 @@ switch (_op) do {
         ["save", [true]] call ALiVE_fnc_fobPersistence;
         ["STR_ALIVE_FOB_RENAMED", [_old, _new]] call _tell;
         ["ALiVE Player FOBs - %1 renamed %2 from %3 to %4", name _caller, _id, _old, _new] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    // A FOB changed to another FOB type (Jman, 29 Oct), from the FOB window, by a player of its side
+    // standing at it whom Who Can Dismantle lets in and who may deploy the new type. The type's cap and
+    // cost hold as they do at deploy, the cost out of the FOB's supply (or the force pool). What it has
+    // built stays; its build menu, map marker, respawn point and supply per minute follow the new type.
+    // The headquarters building stays the one it has.
+    case "retype": {
+        _result = false;
+        _args params [["_id", "", [""]], ["_type", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {isNull _caller}) exitWith {};
+        private _side = [_entry, "side", ""] call ALIVE_fnc_hashGet;
+        if (_side != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active") exitWith { ["STR_ALIVE_FOB_REFUSED_RETYPE_ACTIVE"] call _tell };
+        private _old = [_entry, "type", ""] call ALIVE_fnc_hashGet;
+        if (_type == _old) exitWith {};
+        private _spec = [_logic, "typeSpec", [_type]] call ALiVE_fnc_FOB;
+        if (_spec isEqualTo []) exitWith { ["STR_ALIVE_FOB_REFUSED_TYPE"] call _tell };
+        if (_type == "" && {!(missionNamespace getVariable ["ALiVE_FOB_typesGeneral", true])}) exitWith { ["STR_ALIVE_FOB_REFUSED_RETYPE_PLAIN"] call _tell };
+        if !([_logic, "mayDeployType", [_caller, _type]] call ALiVE_fnc_FOB) exitWith { ["STR_ALIVE_FOB_REFUSED_TYPE_WHO", [_spec select 1]] call _tell };
+        if !(["canDeployType", [_side, _type]] call ALiVE_fnc_fobCap) exitWith { ["STR_ALIVE_FOB_REFUSED_TYPE_CAP", [_spec select 1, _spec select 11]] call _tell };
+        private _typeCost = _spec select 10;
+        if (_typeCost > 0 && {!(["debit", [_id, _typeCost, "FOB type " + _type]] call ALiVE_fnc_fobSupply)}) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_TYPE_COST", [_spec select 1, _typeCost]] call _tell;
+        };
+        [_entry, "type", _type] call ALIVE_fnc_hashSet;
+        // a name that still carries the old type's word ("Outpost Bravo") takes the new one's; a name a
+        // player gave it stays. Its respawn point is made again under the new name just below.
+        private _oldWord = ([_logic, "typeSpec", [_old]] call ALiVE_fnc_FOB) param [2, ""];
+        private _name = [_entry, "name", ""] call ALIVE_fnc_hashGet;
+        private _phonetic = ["Alpha","Bravo","Charlie","Delta","Echo","Foxtrot","Golf","Hotel","India","Juliet","Kilo","Lima","Mike",
+            "November","Oscar","Papa","Quebec","Romeo","Sierra","Tango","Uniform","Victor","Whiskey","X-ray","Yankee","Zulu"];
+        if (_oldWord != "" && {(_spec select 2) != _oldWord} && {(_name select [0, count _oldWord + 1]) == _oldWord + " "} && {(_name select [count _oldWord + 1]) in _phonetic}) then {
+            [_entry, "name", (_spec select 2) + (_name select [count _oldWord])] call ALIVE_fnc_hashSet;
+            private _have = [_entry, "respawn", []] call ALIVE_fnc_hashGet;
+            if (_have isEqualType [] && {_have isNotEqualTo []}) then {
+                _have call BIS_fnc_removeRespawnPosition;
+                [_entry, "respawn", []] call ALIVE_fnc_hashSet;
+            };
+        };
+        // the new type's respawn tier: the point goes, or comes, as it now should
+        ["respawn", [_id]] call ALiVE_fnc_fobOps;
+        ALiVE_FOB_dirty = true;
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+        ["STR_ALIVE_FOB_RETYPED", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _spec select 1]] call _tell;
+        ["ALiVE Player FOBs - %1 changed %2 from type '%3' to '%4'", name _caller, _id, _old, _type] call ALiVE_fnc_dump;
         _result = true;
     };
 

@@ -108,7 +108,10 @@ switch (_operation) do {
         _rows = _keys apply { _rows select (_x select 2) };
         uiNamespace setVariable ["ALiVE_FOB_buildAll", _rows];
         {
-            (BW_DISPLAY displayCtrl (_x select 0)) ctrlSetTextColor ([[1,1,1,0.6], [1,1,1,1]] select (_kind == (_x select 1)));
+            private _tab = BW_DISPLAY displayCtrl (_x select 0);
+            _tab ctrlSetTextColor ([[1,1,1,0.6], [1,1,1,1]] select (_kind == (_x select 1)));
+            // the open tab in the tablets' green, the others as the config has them
+            _tab ctrlSetBackgroundColor ([[0,0,0,0.5], [0.384,0.439,0.341,1]] select (_kind == (_x select 1)));
         } forEach [[92807, "FORTIFICATION"], [92808, "SUPPLY"], [92810, "STATIC"], [92811, "VEHICLE"], [92815, "TROOPS"]];
         ["filter"] call ALiVE_fnc_buildMenu;
     };

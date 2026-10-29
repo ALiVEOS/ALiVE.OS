@@ -73,8 +73,9 @@ class FobUI_RscButton
 	colorSelect2[] = {0,0,0,1};
 	colorBackground[] = {0,0,0,0.5};
 	colorBackgroundDisabled[] = {0,0,0,0.5};
-	colorBackgroundActive[] = {1,1,1,.7};
-	colorFocused[] = {1,1,1,1};
+	// hover and focus stay dark enough for the white text (the tablets' green, a dark grey)
+	colorBackgroundActive[] = {0.384,0.439,0.341,1};
+	colorFocused[] = {0.2,0.2,0.2,0.9};
 	colorShadow[] = {0,0,0,0};
 	colorBorder[] = {0,0,0,1};
 	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};

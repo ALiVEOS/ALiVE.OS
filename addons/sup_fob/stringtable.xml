@@ -237,7 +237,7 @@
                 <English>ALiVE FOB Supply Crate</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ARSENAL_NAME">
-                <English>Arsenal</English>
+                <English>FOB Arsenal</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ARSENAL">
                 <English>FOB Arsenal</English>
@@ -279,19 +279,19 @@
                 <English>Build List Preset</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDPRESET_COMMENT">
-                <English>A ready-made build list to start from, worked out from what each item is, so it suits any mod. Every preset keeps the fortifications and supplies. Never Build and Also Build still apply on top. A Build Only These list of objects replaces it; one naming only troops or gear leaves it in use.</English>
+                <English>A ready-made build list to start from, worked out from what each item is, so it suits any mod. Every preset keeps the supplies; Outpost and Infantry keep field works only (sandbags, barriers, wire, small bunkers, camouflage nets and tents), the others every fortification. Never Build and Also Build still apply on top. A FOB type can set its own with preset= in FOB Types. A Build Only These list of objects replaces it; one naming only troops or gear leaves it in use.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDPRESET_ALL">
                 <English>Everything</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDPRESET_OUTPOST">
-                <English>Outpost: fortifications and supplies, no troops</English>
+                <English>Outpost: field works and supplies, no troops</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDPRESET_FORTIFIED">
                 <English>Fortified Base: all but armour, artillery and aircraft</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDPRESET_INFANTRY">
-                <English>Infantry: troops, light static weapons, cars and trucks</English>
+                <English>Infantry: troops, field works, light static weapons, cars and trucks</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDPRESET_LOGISTICS">
                 <English>Logistics Hub: supplies, trucks and boats, no troops</English>
@@ -473,6 +473,15 @@
             <Key ID="STR_ALIVE_FOB_ACTION_ARSENAL">
                 <English>Open Arsenal (gear paid for on closing)</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_ARSENAL_HQ">
+                <English>FOB Arsenal</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_HQ_NONE">
+                <English>This FOB has no Arsenal: the build list doesn't offer the FOB Arsenal crate here</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ARSENAL_HQ_TIER">
+                <English>The FOB Arsenal opens at the headquarters from tier %1</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_ACTION_PLACE">
                 <English>Place %1 (%2 supply)</English>
             </Key>
@@ -547,6 +556,15 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILT">
                 <English>%1 built for %2 supply.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RECYCLED_HUB">
+                <English>%1 recycled: %2 back to the logistics force pool.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_HUBFAR">
+                <English>Bring it within %1 m of one of your side's logistics hubs to recycle it.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_CREWED">
+                <English>Everyone has to get out before it can be recycled.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_RECYCLED">
                 <English>%1 recycled: %2 supply back.</English>
@@ -845,6 +863,27 @@
             <Key ID="STR_ALIVE_FOB_RENAMED">
                 <English>%1 is now %2.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_STATUS_TYPE">
+                <English>Type: %1</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_TYPE">
+                <English>Type</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_CHANGE_TYPE">
+                <English>Change Type</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_CHANGE_TYPE_COST">
+                <English>Change Type (%1)</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_RETYPED">
+                <English>%1 is now a %2 FOB.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_RETYPE_ACTIVE">
+                <English>Only an active FOB can change its type.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REFUSED_RETYPE_PLAIN">
+                <English>This mission doesn't offer the plain FOB, so a FOB can't become one.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_NAME">
                 <English>Give the FOB a name of up to %1 characters.</English>
             </Key>
@@ -894,7 +933,7 @@
                 <English>Types</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_LIST_COMMENT">
-                <English>One type per line, each a set of key=value pairs separated by semicolons: id, name, prefix (the start of its FOBs' names, FOB by default), marker (a map marker class), hubs (headquarters classes, separated by commas), build (+class adds it, -class removes it; an added class no FOB could build before is kept for the types that add it), who (SIDE, LEADER or LIST, several separated by commas), list (player IDs, unit classes or Eden variable names, separated by commas, never semicolons), cost (taken when it's deployed), cap (most at once per side, 0 for no limit), respawn (the tier its respawn point comes at, 1 to 3, or 0 for none), supply (what a new one starts with, with FOB supply), trickle (supply per minute, with FOB supply) and role (not used yet). Respawn, supply and trickle left out use the Player FOBs settings. The FOB Types editor writes it for you.</English>
+                <English>One type per line, each a set of key=value pairs separated by semicolons: id, name, prefix (the start of its FOBs' names, FOB by default), marker (a map marker class), hubs (headquarters classes, separated by commas), build (+class adds it, -class removes it; an added class no FOB could build before is kept for the types that add it), who (SIDE, LEADER or LIST, several separated by commas), list (player IDs, unit classes or Eden variable names, separated by commas, never semicolons), cost (taken when it's deployed), cap (most at once per side, 0 for no limit), respawn (the tier its respawn point comes at, 1 to 3, or 0 for none), supply (what a new one starts with, with FOB supply), trickle (supply per minute, with FOB supply), preset (its own Build List Preset: ALL, OUTPOST, FORTIFIED, INFANTRY or LOGISTICS) and role (not used yet). Respawn, supply, trickle and preset left out use the Player FOBs settings. The FOB Types editor writes it for you.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_GENERAL">
                 <English>Offer the Plain FOB</English>
