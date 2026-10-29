@@ -217,6 +217,26 @@ class CfgVehicles {
                     // collected at these hubs
                     class HDR_CATALOGUE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_CATALOGUE"; displayName = "HUB CATALOGUE"; };
                     class hub_catalogue : Default { property = "ALiVE_sup_logistics_hub_hub_catalogue"; displayName = "$STR_ALIVE_HUB_LIST"; tooltip = "$STR_ALIVE_HUB_LIST_COMMENT"; control = "ALiVE_HubListLink"; typeName = "STRING"; defaultValue = "''"; };
+                    class hub_list : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_list";
+                            displayName = "$STR_ALIVE_HUB_NAMEDLIST";
+                            tooltip = "$STR_ALIVE_HUB_NAMEDLIST_COMMENT";
+                            defaultValue = """""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                class NotSet { name = "$STR_ALIVE_LISTS_NOTSET"; value = ""; default = 1; };
+                                class Supplies { name = "$STR_ALIVE_LISTS_SUPPLIES"; value = "SUPPLIES"; };
+                                class Light { name = "$STR_ALIVE_LISTS_LIGHT"; value = "LIGHT"; };
+                                class StaticsSupplies { name = "$STR_ALIVE_LISTS_STATICS_SUPPLIES"; value = "STATICS_SUPPLIES"; };
+                                class Troops { name = "$STR_ALIVE_LISTS_TROOPS"; value = "TROOPS"; };
+                                class Infantry { name = "$STR_ALIVE_LISTS_INFANTRY"; value = "INFANTRY"; };
+                                class Logistics { name = "$STR_ALIVE_LISTS_LOGISTICS"; value = "LOGISTICS"; };
+                                class Custom { name = "$STR_ALIVE_LISTS_CUSTOM"; value = "CUSTOM"; };
+                            };
+                    };
+                    class hub_list_name : Edit { property = "ALiVE_sup_logistics_hub_hub_list_name"; displayName = "$STR_ALIVE_HUB_NAMEDLIST_NAME"; tooltip = "$STR_ALIVE_HUB_NAMEDLIST_NAME_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_only : Edit { property = "ALiVE_sup_logistics_hub_hub_only"; displayName = "$STR_ALIVE_HUB_ONLY"; tooltip = "$STR_ALIVE_HUB_ONLY_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_never : Edit { property = "ALiVE_sup_logistics_hub_hub_never"; displayName = "$STR_ALIVE_HUB_NEVER"; tooltip = "$STR_ALIVE_HUB_NEVER_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_also : Edit { property = "ALiVE_sup_logistics_hub_hub_also"; displayName = "$STR_ALIVE_HUB_ALSO"; tooltip = "$STR_ALIVE_HUB_ALSO_COMMENT"; typeName = "STRING"; defaultValue = """"""; };

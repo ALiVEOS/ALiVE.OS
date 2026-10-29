@@ -25,7 +25,7 @@ collected there and it supplies nothing. With a Repair Time it comes back after 
 The module's settings exist only on the server, as Eden puts them there, so the server publishes
 what players' machines need: on each hub ALiVE_hub = [side, alive, radius, module], on each module
 ALiVE_hub_settings = [side, radius, who, names, only, never, also, enemy can dismantle, dismantle
-time, repair time, dismantle who, dismantle names], and the list of hubs as ALiVE_hub_list. A hub's name is ALiVE_hub_name on it (a mission can set it in the
+time, repair time, dismantle who, dismantle names, list name], and the list of hubs as ALiVE_hub_list. A hub's name is ALiVE_hub_name on it (a mission can set it in the
 object's init: this setVariable ["ALiVE_hub_name", "Hub Kilo"]), and while it is down with a Repair Time,
 ALiVE_hub_backAt is when it comes back. Manage Hub on the hub opens ALIVE_fnc_hubManage's window.
 
@@ -39,7 +39,9 @@ Parameters:
     ["rename", [hubNetId, name]] - server, through ALIVE_fnc_hubRequest: the Manage Hub window's Rename
     ["rules", [module, kind]] - Who Can Collect (kind "COLLECT", the default) or Who Can Dismantle
         ("DISMANTLE") as [rules, names]: an admin's in-game change, or the module's
-    ["catalogueRules", [module]] - the module's three lists read by ALIVE_fnc_PRCatalogueRules
+    ["catalogueRules", [module]] - the module's List and three lists under the tablet's Never and
+        List kinds, read by ALIVE_fnc_lists
+    ["tabletModule"] - the Player Combat Logistics module, objNull when there is none
     ["unitSide", [unit]] - the unit's side as text, a civilian-side player counted by faction
     ["nearHub", [unit]] - the nearest working hub of the unit's side within its radius, or objNull
     ["isAdmin", [unit]] - a logged-in or voted admin, or anyone in single player
@@ -186,8 +188,11 @@ switch (_op) do {
         private _repairTime = (parseNumber (["hub_repair_time", "0"] call _text)) max 0;
         private _dWho = toUpper (["hub_dismantle_who", ""] call _text);
         _dWho = (((_dWho splitString "[]""', ") select { _x in ["SIDE", "LEADER", "ITEM", "LIST"] }) joinString ",");
+        // a named list (List, or Custom and its name), read under the three lists
+        private _list = toUpper (["hub_list", ""] call _text);
+        if (_list == "CUSTOM") then { _list = (["hub_list_name", ""] call _text) trim [" ", 0] };
         private _settings = [_side, _radius, _who, _names, ["hub_only", ""] call _text, ["hub_never", ""] call _text, ["hub_also", ""] call _text,
-            _dismantle, _dismantleTime, _repairTime, _dWho, ["hub_dismantle_list", ""] call _text];
+            _dismantle, _dismantleTime, _repairTime, _dWho, ["hub_dismantle_list", ""] call _text, _list];
         _logic setVariable ["ALiVE_hub_settings", _settings, true];
 
         private _debugOn = (toLower (["hub_debug", "false"] call _text)) in ["true", "1", "yes"];
@@ -351,9 +356,48 @@ switch (_op) do {
         if (isNil "_result") then {
             private _s = if (isNull _logic) then { nil } else { _logic getVariable "ALiVE_hub_settings" };
             if (isNil "_s") exitWith { _result = createHashMap };
-            _result = ["parse", [_s select 4, _s select 5, _s select 6]] call ALIVE_fnc_PRCatalogueRules;
-            _logic setVariable ["ALiVE_hub_catRules", _result];
+            private _own = ["parse", [_s select 4, _s select 5, _s select 6]] call ALIVE_fnc_PRCatalogueRules;
+            private _listName = _s param [12, ""];
+            if (_listName isEqualType "" && {_listName != ""}) then {
+                _own = ["merge", [["get", _listName] call ALIVE_fnc_lists, _own, false, true]] call ALIVE_fnc_lists;
+            };
+            // under the tablet's rules: its Never always wins and its List's kinds stay cut, with Also
+            // (the tablet's or the hub's) adding past them as it does on the tablet. The tablet's Only
+            // These is already the side catalogue's, so the hub's own Only These counts here.
+            private _pr = ["tabletModule"] call ALIVE_fnc_hub;
+            private _prRules = if (isNull _pr) then { nil } else { _pr getVariable "pr_catalogueRules" };
+            private _keep = true;
+            if (isNil "_prRules" && {!isNull _pr}) then {
+                // the server reads the tablet's lists itself if the hub asks first; the tablet's own
+                // start clears this hub's copy. A player's machine waits for its own tablet.
+                if (isServer) then { _prRules = ["parseLogic", _pr] call ALIVE_fnc_PRCatalogueRules } else { _keep = false };
+            };
+            _result = _own;
+            if (!isNil "_prRules") then {
+                private _cut = !(_prRules getOrDefault ["onlyObjects", false]);
+                private _tablet = createHashMapFromArray [
+                    ["neverClasses", _prRules getOrDefault ["neverClasses", []]],
+                    ["neverGroups", _prRules getOrDefault ["neverGroups", []]],
+                    ["neverGear", _prRules getOrDefault ["neverGear", []]],
+                    ["kinds", [[], _prRules getOrDefault ["kinds", []]] select _cut],
+                    ["vehicleKinds", [[], _prRules getOrDefault ["vehicleKinds", []]] select _cut],
+                    ["staticTier", [-1, _prRules getOrDefault ["staticTier", -1]] select _cut],
+                    // what the tablet adds by its Also it offers at a hub too, unless the hub's own
+                    // lists leave it out
+                    ["alsoClasses", (_prRules getOrDefault ["alsoClasses", []]) select { ["allows", [_own, _x]] call ALIVE_fnc_lists }],
+                    ["alsoGear", (_prRules getOrDefault ["alsoGear", []]) select { ["allows", [_own, _x]] call ALIVE_fnc_lists }],
+                    ["alsoGroups", (_prRules getOrDefault ["alsoGroups", []]) select { ["allowsGroup", [_own, _x select 0, _x select 1]] call ALIVE_fnc_lists }]
+                ];
+                _result = ["merge", [_tablet, _own]] call ALIVE_fnc_lists;
+            };
+            if (_keep) then { _logic setVariable ["ALiVE_hub_catRules", _result] };
         };
+    };
+
+    // The tablet's module (Player Combat Logistics), found before its own start has run
+    case "tabletModule": {
+        _result = missionNamespace getVariable ["ALIVE_SUP_PLAYER_RESUPPLY", objNull];
+        if (isNull _result) then { _result = (allMissionObjects "ALiVE_sup_player_resupply") param [0, objNull] };
     };
 
     case "unitSide": {
@@ -439,17 +483,32 @@ switch (_op) do {
     // the side or no side, the mission's blacklist and whitelist): a hashmap of lower-case class names
     case "sideCatalogue": {
         _args params [["_sideText", "WEST", [""]]];
-        if (isNil "ALiVE_HUB_sideCatalogue") then { ALiVE_HUB_sideCatalogue = createHashMap };
-        _result = ALiVE_HUB_sideCatalogue get _sideText;
+        // kept in a local: the tablet's start swaps in a fresh map while a hub may still be sorting,
+        // and an early build then lands in the old one
+        private _store = missionNamespace getVariable "ALiVE_HUB_sideCatalogue";
+        if (isNil "_store") then { _store = createHashMap; ALiVE_HUB_sideCatalogue = _store };
+        _result = _store get _sideText;
         if (isNil "_result") then {
-            private _black = missionNamespace getVariable ["ALiVE_PR_BLACKLIST", []];
+            private _black = missionNamespace getVariable "ALiVE_PR_BLACKLIST";
             private _white = missionNamespace getVariable ["ALiVE_PR_WHITELIST", []];
+            // a hub that starts before the tablet reads the tablet's lists itself, so the collect
+            // check never ignores them; the tablet's own start clears this copy
+            if (isNil "_black") then {
+                _black = [];
+                private _pr = ["tabletModule"] call ALIVE_fnc_hub;
+                if (!isNull _pr && {isServer}) then {
+                    private _r = _pr getVariable "pr_catalogueRules";
+                    if (isNil "_r") then { _r = ["parseLogic", _pr] call ALIVE_fnc_PRCatalogueRules };
+                    _black = _r getOrDefault ["neverClasses", []];
+                    _white = _r getOrDefault ["onlyClasses", []];
+                };
+            };
             if !(_black isEqualType []) then { _black = [] };
             if !(_white isEqualType []) then { _white = [] };
             private _sorted = [_sideText, _black, _white] call ALIVE_fnc_sortCFGVehiclesByClass;
             _result = createHashMap;
             { { _result set [toLower _x, true] } forEach _x } forEach (_sorted select 2);
-            ALiVE_HUB_sideCatalogue set [_sideText, _result];
+            _store set [_sideText, _result];
             ["ALiVE Logistics Hub: side %1 catalogue holds %2 classes", _sideText, count _result] call _debug;
         };
     };

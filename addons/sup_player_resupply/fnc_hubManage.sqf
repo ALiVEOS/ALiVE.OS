@@ -127,6 +127,18 @@ switch (_op) do {
         private _cat = if (((_s select 4) call _count) + ((_s select 5) call _count) + ((_s select 6) call _count) == 0) then { localize "STR_ALIVE_HUB_UI_CAT_ALL" } else {
             format [localize "STR_ALIVE_HUB_UI_CAT_RULES", (_s select 4) call _count, (_s select 5) call _count, (_s select 6) call _count]
         };
+        // and the List it uses: a built-in one by its name in the List box, a mission's own as typed;
+        // one that names no list in the game leaves the hub as Not set, so it isn't shown
+        private _listName = _s param [12, ""];
+        if (_listName isEqualType "" && {_listName != ""} && {((["get", _listName] call ALIVE_fnc_lists) getOrDefault ["name", ""]) != ""}) then {
+            private _key = "STR_ALIVE_LISTS_" + toUpper _listName;
+            private _shown = if (isLocalized _key) then { localize _key } else { ((_listName regexReplace ["&", "&amp;"]) regexReplace ["<", "&lt;"]) regexReplace [">", "&gt;"] };
+            _cat = if (((_s select 4) call _count) + ((_s select 5) call _count) + ((_s select 6) call _count) == 0) then {
+                format [localize "STR_ALIVE_HUB_UI_CAT_LIST_ONLY", _shown]
+            } else {
+                format [localize "STR_ALIVE_HUB_UI_CAT_LIST", _shown, _cat]
+            };
+        };
         private _supplies = localize (["STR_ALIVE_HUB_UI_NO", "STR_ALIVE_HUB_UI_YES"] select (_logic getVariable ["ALiVE_hub_supplies", false]));
         (_d displayCtrl 92911) ctrlSetStructuredText parseText format [localize "STR_ALIVE_HUB_UI_STATUS", _sideName, _state, _collect, _cat, _supplies, mapGridPosition _hub];
 

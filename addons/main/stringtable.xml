@@ -728,4 +728,7 @@
 <Key ID="STR_ALIVE_LISTS_CUSTOM">
     <English>Custom (named below)</English>
 </Key>
+<Key ID="STR_ALIVE_LISTS_LOGISTICS">
+    <English>Logistics (supplies, defences, trucks, boats)</English>
+</Key>
 </Container></Package></Project>

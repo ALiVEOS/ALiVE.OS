@@ -709,7 +709,7 @@
     <English>Also</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_ALSO_COMMENT">
-    <English>Names separated by commas offered at these hubs on top of the tablet's catalogue, even past Only These; Never still wins. A group must be from the hub's side and needs its faction too, written Faction&gt;Group as the catalogue page shows it.</English>
+    <English>Names separated by commas offered at these hubs on top of the tablet's catalogue, even past Only These and the List; the tablet's Never and this hub's Never still win. A group must be from the hub's side and needs its faction too, written Faction&gt;Group as the catalogue page shows it.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_OPTION">
     <English>Collect at a hub  -  Set out beside you, no delivery</English>
@@ -797,5 +797,23 @@
 </Key>
 <Key ID="STR_ALIVE_PR_LIST_NAME_COMMENT">
     <English>With List set to Custom, the name of a list in CfgALiVELists in your description.ext. It can start from a built-in list with inherit = "SUPPLIES";, then only[], never[] and also[] add to it and a kinds[] of its own replaces the list's kinds. An unknown name is reported in the RPT and leaves the tablet as before.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_NAMEDLIST">
+    <English>List</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_NAMEDLIST_COMMENT">
+    <English>A ready-made list that cuts what these hubs offer by kind: Supplies only, Light forces, Static weapons and supplies, Troops only, Infantry or Logistics (supplies, defences, trucks, boats). Custom uses a list of your own from CfgALiVELists in description.ext, named in List Name. The tablet's lists apply here too: its Never always wins, and a hub list keeps only the kinds the tablet's List keeps. Also, the tablet's or this hub's, adds past both lists. Not set leaves these hubs offering what the tablet does, less their own Never.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_NAMEDLIST_NAME">
+    <English>List Name</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_NAMEDLIST_NAME_COMMENT">
+    <English>With List set to Custom, the name of a list in CfgALiVELists in your description.ext. An unknown name is reported in the RPT and leaves these hubs as Not set.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_CAT_LIST">
+    <English>the %1 list, then %2</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_CAT_LIST_ONLY">
+    <English>the %1 list within the tablet's catalogue</English>
 </Key>
 </Container></Package></Project>

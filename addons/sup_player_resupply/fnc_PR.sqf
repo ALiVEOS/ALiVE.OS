@@ -731,6 +731,9 @@ switch(_operation) do {
         ALiVE_PR_BLACKLIST = _rules get "neverClasses";
         ALiVE_PR_WHITELIST = _rules get "onlyClasses";
         ALiVE_PR_ALSO = _rules get "alsoClasses";
+        // a hub that read the lists before the tablet had reads them again
+        ALiVE_HUB_sideCatalogue = createHashMap;
+        { _x setVariable ["ALiVE_hub_catRules", nil] } forEach (missionNamespace getVariable ["ALiVE_hub_modules", []]);
         [_logic, "blacklist", ALiVE_PR_BLACKLIST] call MAINCLASS;
         [_logic, "whitelist", ALiVE_PR_WHITELIST] call MAINCLASS;
 
