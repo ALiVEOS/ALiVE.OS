@@ -7,7 +7,13 @@ class CfgPatches {
             "ALiVE_ModuleZeusDebug",
             "ALiVE_ModuleZeusSpotReport",
             "ALiVE_ModuleZeusHandGroup",
-            "ALiVE_ModuleZeusBomber"
+            "ALiVE_ModuleZeusBomber",
+            "ALiVE_ModuleZeusConvertBomber",
+            "ALiVE_ModuleZeusCarBomb",
+            "ALiVE_ModuleZeusIED",
+            "ALiVE_ModuleZeusIEDAmbush",
+            "ALiVE_ModuleZeusSpawnGroup",
+            "ALiVE_ModuleZeusRemoveGroup"
         };
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;

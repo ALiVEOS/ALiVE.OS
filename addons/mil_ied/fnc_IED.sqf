@@ -473,6 +473,18 @@ switch(_operation) do {
                             GVAR(STORE) = _state;
                             GVAR(Loaded) = true;
                             [_logic, "restoreTriggers", [GVAR(STORE), "triggers"] call ALiVE_fnc_hashGet] call MAINCLASS;
+                            // IEDs a Zeus placed (ALiVE Zeus modules, ZEUS_n) have no town trigger to bring them
+                            // back, so they're rebuilt here from what was saved. Jman
+                            private _iedTowns = [GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+                            if (_iedTowns isEqualType [] && {count _iedTowns > 2}) then {
+                                {
+                                    private _townIEDs = (_iedTowns select 2) param [_forEachIndex, []];
+                                    if (_x isEqualType "" && {(_x find "ZEUS_") == 0} && {_townIEDs isEqualType []} && {count _townIEDs > 2} && {count (_townIEDs select 1) > 0}) then {
+                                        private _first = [(_townIEDs select 2) select 0, "IEDpos", [0,0,0]] call ALiVE_fnc_hashGet;
+                                        [_first, 20, _x] call ALIVE_fnc_createIED;
+                                    };
+                                } forEach +(_iedTowns select 1);
+                            };
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then { ["IED - IEDs have been loaded from Database"] call ALiVE_fnc_dump; };
                             // DEBUG -------------------------------------------------------------------------------------

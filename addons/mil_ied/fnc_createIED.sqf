@@ -8,6 +8,8 @@ SCRIPT(createIED);
 #define DEFAULT_IED_CHARGE "ALIVE_IEDUrbanSmall_Remote_Ammo"
 
 // IED - create IED(s) at location
+// Parameters: position, size (m), the location's name in the IED store, (optional) how many,
+// (optional, Jman) the exact spots to put them, in place of the ones found round the position
 private ["_position","_town","_debug","_numIEDs","_j","_size","_posloc","_IEDs","_threat","_IEDData","_IEDcount", "_dud"];
 
 if !(isServer) exitWith {["IED Not running on server!"] call ALiVE_fnc_dump;};
@@ -56,6 +58,10 @@ if ((count _this) > 3) then {
     if (_numIEDs < 1 && _threat > 0) then {_numIEDs = 1;};
 };
 
+// Optional fifth argument: the exact spots to put them, in place of the ones found round the
+// position. A Zeus places these by hand, so a player nearby doesn't stop them.
+private _exactPositions = _this param [4, [], [[]]];
+
 // Get IEDs from store if available
 _IEDs = [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
 _IEDcount = count (_IEDs select 1);
@@ -66,7 +72,7 @@ if (_IEDcount == 0) then {
 
     // Find positions in area
     _posloc = [];
-    _posloc = [_position, true, true, true, _size] call ALIVE_fnc_placeIED;
+    _posloc = if (_exactPositions isEqualTo []) then { [_position, true, true, true, _size] call ALIVE_fnc_placeIED } else { +_exactPositions };
     if (_debug) then {
         ["ALIVE-%1 IED: Found %2 spots for IEDs",time, count _posloc] call ALiVE_fnc_dump;
     };
@@ -127,7 +133,7 @@ for "_j" from 1 to _numIEDs do {
 
         // Check not placed near a player
         // Skip THIS ITERATION if position is too close to a player
-        if ({(getpos _x distance _IEDpos) < 75} count ([] call BIS_fnc_listPlayers) > 0) then {
+        if (_exactPositions isEqualTo [] && {{(getpos _x distance _IEDpos) < 75} count ([] call BIS_fnc_listPlayers) > 0}) then {
             ["ALIVE-%1 IED: skipping - placement too close to player.",time] call ALiVE_fnc_dump; 
             _error = true;
         };

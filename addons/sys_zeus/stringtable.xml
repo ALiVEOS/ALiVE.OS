@@ -98,6 +98,105 @@
 <Key ID="STR_ALIVE_ZEUS_TOO_FAST">
     <English>ALiVE: that came too soon after the last one. Place the module again.</English>
 </Key>
+<Key ID="STR_ALIVE_ZEUS_CONVERTBOMBER">
+    <English>ALiVE: Make This Man A Suicide Bomber</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CARBOMB">
+    <English>ALiVE: Car Bomb</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_IED">
+    <English>ALiVE: IED</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_IEDAMBUSH">
+    <English>ALiVE: IED Ambush Squad</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SPAWNGROUP">
+    <English>ALiVE: Spawn ALiVE Group</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVEGROUP">
+    <English>ALiVE: Despawn Or Delete ALiVE Group</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_IED_COUNT">
+    <English>How many</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_IED_RADIUS">
+    <English>Spread over (m)</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_IED_RADIUS_TIP">
+    <English>With more than one, they go where the Military IED module would put them within this distance: roads and near buildings. One goes exactly where the module is placed.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_GROUP">
+    <English>Group</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVE_HOW">
+    <English>Do</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVE_DESPAWN">
+    <English>Despawn</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVE_DELETE">
+    <English>Delete for good</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_PERSON">
+    <English>ALiVE: place this module on a man on foot who isn't a player.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_ZEN">
+    <English>ALiVE: this module needs Zeus Enhanced to choose its options.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NO_GROUPS">
+    <English>ALiVE: faction %1 has no groups to spawn.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONVERT_FAILED">
+    <English>ALiVE: that man couldn't be made a bomber.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CARBOMB_BADCAR">
+    <English>ALiVE: that vehicle can't be rigged: it's wrecked or a player is in it.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CARBOMB_ALREADY">
+    <English>ALiVE: that vehicle is already rigged.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CARBOMB_RIGGED">
+    <English>ALiVE: the vehicle is rigged and goes off when it's hit hard or blown up.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CARBOMB_NOVICTIM">
+    <English>ALiVE: a car bomb needs a player (not a Zeus) within 1.5 km to go after.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CARBOMB_FAILED">
+    <English>ALiVE: no car bomb made. It needs a clear road within 300 m that is at least 150 m from the player, and faction %1 needs a car and a driver.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_IED_NONE">
+    <English>ALiVE: no IED placed. A spread skips spots within 75 m of a player (a Zeus too), on water or within 12 m of another IED, and there may be no road or building spot there.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_IED_DONE">
+    <English>ALiVE: %1 IED(s) placed. A spread skips spots within 75 m of a player, so it can place fewer than asked.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AMBUSH_NOTARGET">
+    <English>ALiVE: an ambush needs a player (not a Zeus) within 300 m.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_AMBUSH_DONE">
+    <English>ALiVE: an ambush squad is on its way, if a hostile ALiVE group is within 3 km to send it.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SPAWNGROUP_FAILED">
+    <English>ALiVE: no group called %1 could be made.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SPAWNGROUP_DONE">
+    <English>ALiVE: the group is made as an ALiVE profile, and the AI Commander of faction %1 can give it orders.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SPAWNGROUP_NOCOMMANDER">
+    <English>ALiVE: the group is made as an ALiVE profile. No AI Commander has faction %1, so none will give it orders.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NOT_PROFILE">
+    <English>ALiVE: that unit isn't in an ALiVE group.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVE_DELETED">
+    <English>ALiVE: the group is deleted from the mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVE_DESPAWNED">
+    <English>ALiVE: the group is despawned. It spawns again as soon as a player or the Zeus camera is within spawn distance, so move the camera away first.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONVERT_DONE">
+    <English>ALiVE: he is a suicide bomber now, and goes for %1 within a minute.</English>
+</Key>
 </Container>
 </Package>
 </Project>

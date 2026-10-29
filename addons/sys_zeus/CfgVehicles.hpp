@@ -73,4 +73,61 @@ class CfgVehicles {
         icon = "x\alive\addons\mil_ied\icon_mil_ied.paa";
         picture = "x\alive\addons\mil_ied\icon_mil_ied.paa";
     };
+
+    class ALiVE_ModuleZeusConvertBomber : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_CONVERTBOMBER";
+        ALiVE_zeusAction = "convertBomber";
+        icon = "x\alive\addons\mil_ied\icon_mil_ied.paa";
+        picture = "x\alive\addons\mil_ied\icon_mil_ied.paa";
+    };
+
+    class ALiVE_ModuleZeusCarBomb : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_CARBOMB";
+        ALiVE_zeusAction = "carBomb";
+        icon = "x\alive\addons\mil_ied\icon_mil_ied.paa";
+        picture = "x\alive\addons\mil_ied\icon_mil_ied.paa";
+    };
+
+    class ALiVE_ModuleZeusIED : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_IED";
+        ALiVE_zeusAction = "ied";
+        icon = "x\alive\addons\mil_ied\icon_mil_ied.paa";
+        picture = "x\alive\addons\mil_ied\icon_mil_ied.paa";
+    };
+
+    class ALiVE_ModuleZeusIEDAmbush : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_IEDAMBUSH";
+        ALiVE_zeusAction = "iedAmbush";
+        icon = "x\alive\addons\mil_ied\icon_mil_ied.paa";
+        picture = "x\alive\addons\mil_ied\icon_mil_ied.paa";
+    };
+
+    class ALiVE_ModuleZeusSpawnGroup : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_SPAWNGROUP";
+        ALiVE_zeusAction = "spawnGroup";
+        icon = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+        picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+    };
+
+    class ALiVE_ModuleZeusRemoveGroup : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_REMOVEGROUP";
+        ALiVE_zeusAction = "removeGroup";
+        icon = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+        picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+    };
 };

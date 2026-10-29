@@ -5,6 +5,10 @@
 #include "\x\alive\addons\mil_IED\script_component.hpp"
 SCRIPT(createVBIED);
 
+// Rig a vehicle as a car bomb.
+// Parameters: the vehicle, (optional) the threat in percent (the module's VB-IED Threat),
+// (optional, Jman) true to rig it whatever its side, the threat or the module's areas
+
 private ["_IEDskins","_IED","_trg","_vehicle","_debug","_threat","_side"];
 
 if (isNil QUOTE(ADDON)) exitWith {};
@@ -33,7 +37,11 @@ private _vehicleSide = if (((crew _vehicle) findIf {alive _x}) < 0) then {
     str (side _vehicle)
 };
 
-if (!alive _vehicle || _fate > _threat || _vehicleSide != _side || (_vehicle isKindOf "Quadbike_01_base_F") ) exitWith {};
+// A third argument of true rigs this car whatever its side, the threat or the module's areas:
+// a Zeus picked it by hand
+private _force = _this param [2, false, [true]];
+if (!alive _vehicle) exitWith {};
+if (!_force && {_fate > _threat || _vehicleSide != _side || (_vehicle isKindOf "Quadbike_01_base_F")}) exitWith {};
 
 // Make sure vehicle is not in blacklist
 
@@ -52,13 +60,13 @@ if(count _blacklist > 0) then {
     _black = (_blacklist findIf { [_vehicle, _x] call ALiVE_fnc_inArea }) > -1;
 };
 
-if (_black) exitWith {};
+if (_black && {!_force}) exitWith {};
 
 if(count _taor > 0) then {
     _t = (_taor findIf { [_vehicle, _x] call ALiVE_fnc_inArea }) > -1;
 };
 
-if !(_t) exitWith {};
+if (!_t && {!_force}) exitWith {};
 
 // create IED object and attach to vehicle
 //_IEDskins = ["Land_IED_v1_PMC","Land_IED_v2_PMC","Land_IED_v3_PMC","Land_IED_v4_PMC"];
