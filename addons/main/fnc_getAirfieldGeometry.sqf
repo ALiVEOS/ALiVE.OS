@@ -43,7 +43,7 @@ Parameters:
                              clear ALiVE_airfieldRetainedSurveys after terrain edits.
 
 Returns:
-    ARRAY [_runwaySegments, _taxiwaySegments, _airfieldZones, _sweptObjects] where each
+    ARRAY [_runwaySegments, _taxiwaySegments, _airfieldZones, _sweptObjects, _paving] where each
     entry is an array of [_startPos, _endPos, _halfWidth] tuples.
     _airfieldZones are degenerate (start == end) segments centred on
     `nearestLocations` Airport / NameAirportArea entries, with the
@@ -56,6 +56,8 @@ Returns:
     _sweptObjects is everything the search found in radius, handed back so a
     caller needing to inspect the same objects does not sweep the area twice.
     Empty when the zone work is skipped is NOT the case - it is always returned.
+    _paving is the invisibleroadway pieces: Altis builds its dirt strips from them and
+    other maps pave aprons with them, so only composition placement treats them as runway.
 
 Examples:
     (begin example)
@@ -140,6 +142,7 @@ if (!_retainSurvey) then {
 };
 private _runways       = [];
 private _taxiways      = [];
+private _paving        = [];
 private _airfieldZones = [];
 
 PROFILE_SCOPE(AIRGEOMMODULES, "ALiVE airfield geometry: module attributes and segments")
@@ -230,10 +233,10 @@ if (count _retainedSurvey > 0) then {
     PROFILE_SCOPE(AIRGEOMRETAINED, "ALiVE airfield geometry: retained terrain query")
     private _orderedMatches = [];
     {
-        _x params ["_object", "_isRunway", "_isTaxiway"];
+        _x params ["_object", "_isRunway", "_isTaxiway", ["_isPaving", false]];
         private _index = _taggedObjs find _object;
         if (_index >= 0 && {!isNull _object} && {typeOf _object == ""}) then {
-            _orderedMatches pushBack [_index, _isRunway, _isTaxiway];
+            _orderedMatches pushBack [_index, _isRunway, _isTaxiway, _isPaving];
         };
     } forEach (_retainedSurvey select 2);
     _orderedMatches sort true;
@@ -242,6 +245,7 @@ if (count _retainedSurvey > 0) then {
         private _pos = position _obj;
         if (_x select 1) then { _runways pushBack [_pos, _pos, 12, (count ((str _obj) regexFind ["runway_(?:main|secondary)/i"])) == 0] };
         if (_x select 2) then { _taxiways pushBack [_pos, _pos, 4] };
+        if (_x param [3, false]) then { _paving pushBack [_pos, _pos, 12] };
     } forEach _orderedMatches;
     PROFILE_SCOPE_END(AIRGEOMRETAINED)
 } else {
@@ -252,19 +256,26 @@ if (count _retainedSurvey > 0) then {
             // names contain both categories; repeated matches still emit one segment.
             // regexFind returns [[matched text, offset], ...] for each match.
             // Altis lays its dirt airstrips (the AAC strip measured) from invisibleroadway pieces, 20 m
-            // squares from the vanilla runway set, with no runway_* piece at all. Counted as runway
-            // they keep a Field HQ and other compositions off those strips; they count as slabs, so
-            // the main runway's centreline is still drawn from runway_main / runway_secondary only.
+            // squares from the vanilla runway set, with no runway_* piece at all. Stratis, Malden and
+            // Tanoa pave their aprons with the same pieces, so counting them as runway left no apron
+            // spot for aircraft (Stratis: 4 UAV spots down to none). They come back as their own
+            // list, paving, which composition placement reads to keep a Field HQ off a dirt strip.
             private _matches = (str _x) regexFind ["runway_(?:main|secondary|beton)|invisibleroadway|taxiway/gi"];
             private _isRunway = false;
             private _isTaxiway = false;
+            private _isPaving = false;
             {
-                if (toLower ((_x select 0) select 0) == "taxiway") then {
-                    _isTaxiway = true;
-                } else {
-                    _isRunway = true;
+                switch (toLower ((_x select 0) select 0)) do {
+                    case "taxiway": { _isTaxiway = true };
+                    case "invisibleroadway": { _isPaving = true };
+                    default { _isRunway = true };
                 };
             } forEach _matches;
+            if (_isPaving && {!_isRunway} && {!_isTaxiway}) then {
+                if (_retainSurvey) then { _retainedTerrain pushBack [_x, false, false, true] };
+                private _pos = position _x;
+                _paving pushBack [_pos, _pos, 12];
+            };
             if (_isRunway) then {
                 if (_retainSurvey) then { _retainedTerrain pushBack [_x, true, _isTaxiway] };
                 private _pos = position _x;
@@ -386,7 +397,7 @@ if (_retainSurvey) then {
     // Publish only a completed survey, including a valid empty match list.
     ALiVE_airfieldRetainedSurveys pushBack [_queryASL, _radius, _retainedTerrain];
 };
-private _result = [_runways, _taxiways, _airfieldZones, _taggedObjs];
+private _result = [_runways, _taxiways, _airfieldZones, _taggedObjs, _paving];
 ALiVE_airfieldGeomCache set [_cacheKey, _result];
 PROFILE_SCOPE_END(AIRGEOMMISS)
 

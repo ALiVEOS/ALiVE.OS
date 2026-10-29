@@ -449,6 +449,9 @@ if (_narrowedByReach) then {
 PROFILE_SCOPE_END(COMPAIRSURVEY)
 if (_collectStartupMetrics) then { _profGeometrySeconds = diag_tickTime - _profGeometryT0 };
 _airfield params ["_runwaySegments", "_taxiwaySegments", ["_airfieldZones", []]];
+// Altis's dirt strips are laid from paving pieces with no runway piece among them, so a
+// composition keeps clear of paving too. Aircraft parking does not: aprons use the same pieces.
+_runwaySegments = _runwaySegments + (_airfield param [4, []]);
 
 // Airfield-area exclusion: reject candidates inside ANY of the
 // nearestLocations "Airport" zones returned by getAirfieldGeometry's
