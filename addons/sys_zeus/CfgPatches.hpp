@@ -19,7 +19,10 @@ class CfgPatches {
             "ALiVE_ModuleZeusCreateTask",
             "ALiVE_ModuleZeusCloseTask",
             "ALiVE_ModuleZeusAirStrike",
-            "ALiVE_ModuleZeusResupply"
+            "ALiVE_ModuleZeusResupply",
+            "ALiVE_ModuleZeusTownMood",
+            "ALiVE_ModuleZeusTipOff",
+            "ALiVE_ModuleZeusAngryCrowd"
         };
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;

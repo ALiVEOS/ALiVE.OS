@@ -377,6 +377,84 @@
 <Key ID="STR_ALIVE_ZEUS_RESUPPLY_DONE">
     <English>ALiVE: %1 groups of %2 are on their way to grid %3, if the logistics module allows that kind.</English>
 </Key>
+<Key ID="STR_ALIVE_ZEUS_TOWNMOOD">
+    <English>ALiVE: Town Mood</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF">
+    <English>ALiVE: Civilian Tip-off</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_ANGRYCROWD">
+    <English>ALiVE: Angry Crowd</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_CIVPOP">
+    <English>ALiVE: needs Civilian Placement and Civilian Population in the mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TOWARDS_SIDE">
+    <English>Towards side</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SIDE_ALL">
+    <English>All sides</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_MOOD">
+    <English>Mood</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_MOOD_TIP">
+    <English>-100 is friendly, 0 neutral, 100 hostile. From 70 the town's crowds protest and throw things at that side.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_MOOD_NOTOWN">
+    <English>ALiVE: no town within %1 m.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_MOOD_DONE">
+    <English>ALiVE: %1 towns around %2 are now at %3 (-100 friendly, 100 hostile) towards %4. The people who live there keep their own mood; set all sides to change it.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_MOOD_DONE_ALL">
+    <English>ALiVE: %1 towns around %2 and the people living there are now at %3 (-100 friendly, 100 hostile) towards %4.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_NOCIV">
+    <English>ALiVE: no civilian within 300 m to give the tip-off. Place it on one, or nearer one.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_NOPLAYER">
+    <English>ALiVE: no player within 300 m of that civilian to tell.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_BUSY">
+    <English>ALiVE: that civilian is already on his way to a player.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_SENT">
+    <English>ALiVE: a civilian is walking over to %1 with a tip-off.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_FAILED">
+    <English>ALiVE: the civilian didn't reach the player in time, so the tip-off is off.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_TOLD_INSTALLATIONS">
+    <English>A civilian points out insurgent installations nearby. They're marked on the map for a short while.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_TOLD_ENEMY">
+    <English>A civilian tells you he saw enemy near grid %1.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_TOLD_NOTHING">
+    <English>A civilian comes up to you, but he has nothing useful to share about enemy positions.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_DONE">
+    <English>ALiVE: the civilian told %1 about %2 insurgent towns with installations and %3 places the enemy were seen.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TIPOFF_NOTHING">
+    <English>ALiVE: the civilian reached %1, but there are no insurgents or enemy groups within 2 km to tell of.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CROWD_SIZE">
+    <English>People</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CROWD_MINUTES">
+    <English>Minutes</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CROWD_VIOLENT">
+    <English>Some turn violent</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CROWD_VIOLENT_TIP">
+    <English>Up to one in four may pull a gun and fight players who come near.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CROWD_DONE">
+    <English>ALiVE: an angry crowd of %1 gathers for %2 minutes. They throw things at players who come within 40 m.</English>
+</Key>
 </Container>
 </Package>
 </Project>

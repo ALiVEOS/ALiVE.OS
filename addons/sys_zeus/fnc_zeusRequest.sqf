@@ -25,7 +25,7 @@ if (!isServer) exitWith {};
 if !(_this isEqualType [] && {count _this == 2} && {(_this select 0) isEqualType ""} && {(_this select 1) isEqualType []}) exitWith {};
 params ["_action", "_args"];
 
-if !(_action in ["save", "debug", "spotReport", "handGroup", "bomber", "convertBomber", "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "createTask", "closeTask", "airStrike", "resupply"]) exitWith {
+if !(_action in ["save", "debug", "spotReport", "handGroup", "bomber", "convertBomber", "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "createTask", "closeTask", "airStrike", "resupply", "townMood", "tipOff", "angryCrowd"]) exitWith {
     ["ALiVE Zeus - refused a request for %1 from machine %2: not a Zeus module", _action, remoteExecutedOwner] call ALiVE_fnc_dump;
 };
 

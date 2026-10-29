@@ -12,7 +12,7 @@ server, which checks the Zeus and does the work (ALiVE_fnc_zeusRequest).
 Parameters:
 String - the module: "save", "debug", "spotReport", "handGroup", "bomber", "convertBomber",
     "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "createTask",
-    "closeTask", "airStrike" or "resupply"
+    "closeTask", "airStrike", "resupply", "townMood", "tipOff" or "angryCrowd"
 Array - position (ATL)
 Object - the unit the module was placed on, or objNull
 Bool - true when Zeus Enhanced is loaded, so its option dialogs can be used
@@ -405,6 +405,61 @@ switch (_action) do {
             ] call zen_dialog_fnc_create;
         } else {
             ["resupply", [_position, "", [2, 0, 0, 0, 0, 0], "STANDARD"]] call _send;
+        };
+    };
+
+    // The towns within 1 km turn against the nearest player's side (70 of 100), or with Zeus
+    // Enhanced any mood from -100 (friendly) to 100 (hostile), for one side or all, over a radius
+    case "townMood": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_TOWNMOOD",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_TOWARDS_SIDE", [["", "WEST", "EAST", "GUER", "ALL"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER", localize "STR_ALIVE_ZEUS_SIDE_ALL"], 0]],
+                    ["SLIDER", [localize "STR_ALIVE_ZEUS_MOOD", localize "STR_ALIVE_ZEUS_MOOD_TIP"], [-100, 100, 70, 0]],
+                    ["SLIDER:RADIUS", localize "STR_ALIVE_ZEUS_RADIUS", [200, 3000, 1000, 0, _position]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    _values params ["_side", "_mood", "_radius"];
+                    ["townMood", [_position, _side, round _mood, round _radius]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["townMood", [_position, "", 70, 1000]] call _send;
+        };
+    };
+
+    // Placed on a civilian, or near one
+    case "tipOff": {
+        ["tipOff", [_position, _attached]] call _send;
+    };
+
+    // Eight for ten minutes, throwing things only, or with Zeus Enhanced how many, how long and
+    // whether some turn violent
+    case "angryCrowd": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_ANGRYCROWD",
+                [
+                    ["SLIDER", localize "STR_ALIVE_ZEUS_CROWD_SIZE", [3, 20, 8, 0]],
+                    ["SLIDER", localize "STR_ALIVE_ZEUS_CROWD_MINUTES", [1, 30, 10, 0]],
+                    ["CHECKBOX", [localize "STR_ALIVE_ZEUS_CROWD_VIOLENT", localize "STR_ALIVE_ZEUS_CROWD_VIOLENT_TIP"], false]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    _values params ["_count", "_minutes", "_violent"];
+                    ["angryCrowd", [_position, round _count, round _minutes, _violent]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["angryCrowd", [_position, 8, 10, false]] call _send;
         };
     };
 };

@@ -74,6 +74,17 @@ private _playerSideNear = {
     (side group (([_near, [], { (vehicle _x) distance2D _at }, "ASCEND"] call BIS_fnc_sortBy) select 0)) call _sideText
 };
 
+// The name of the town nearest the spot, or its grid with none named near
+private _townName = {
+    params ["_at"];
+    private _name = if (!isNil "ALIVE_fnc_taskGetNearestLocationName") then { [_at] call ALIVE_fnc_taskGetNearestLocationName } else { "" };
+    if (isNil "_name" || {!(_name isEqualType "")} || {_name == ""}) then {
+        private _locs = (nearestLocations [_at, ["NameCityCapital", "NameCity", "NameVillage", "NameLocal"], 2000]) select { text _x != "" };
+        _name = if (_locs isEqualTo []) then { mapGridPosition _at } else { text (_locs select 0) };
+    };
+    _name
+};
+
 switch (_action) do {
 
     // Saves once now, as the "now" autosave does; only with the Data module on local persistence
@@ -581,5 +592,280 @@ switch (_action) do {
         private _factionName = getText (configFile >> "CfgFactionClasses" >> _faction >> "displayName");
         if (_factionName == "") then { _factionName = _faction };
         ["STR_ALIVE_ZEUS_RESUPPLY_DONE", [_total, _factionName, mapGridPosition _position]] call _reply;
+    };
+
+    // How the towns near the spot feel about a side, set outright (-100 to 100). High: their crowds
+    // protest and throw things at that side, and an insurgent commander there recruits and strikes
+    // harder. Low: the reverse. The crowd already in town reads it again. The people who live there
+    // keep one mood for everyone, so they take it only when it's set for all sides
+    case "townMood": {
+        _args params [["_position", [], [[]]], ["_side", "", [""]], ["_value", 70, [0]], ["_radius", 1000, [0]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALIVE_clusterHandler" || {isNil "ALIVE_clustersCivSettlement"}) exitWith {
+            ["STR_ALIVE_ZEUS_NEED_CIVPOP"] call _reply;
+        };
+        _value = ((round _value) max -100) min 100;
+        _radius = (_radius max 200) min 3000;
+        if (_side == "") then { _side = [_position] call _playerSideNear };
+        if (_side == "") exitWith {
+            ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply;
+        };
+        private _sides = if (_side == "ALL") then { ["WEST", "EAST", "GUER"] } else { [_side] };
+        if !(_sides isEqualTo (_sides arrayIntersect ["WEST", "EAST", "GUER"])) exitWith {
+            ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply;
+        };
+        private _towns = [];
+        {
+            private _cluster = [ALIVE_clusterHandler, "getCluster", _x] call ALIVE_fnc_clusterHandler;
+            if (!isNil "_cluster" && {(([_cluster, "center", [0,0,0]] call ALIVE_fnc_hashGet) distance2D _position) < _radius}) then {
+                _towns pushBack [_x, _cluster];
+            };
+        } forEach (ALIVE_clustersCivSettlement select 1);
+        if (_towns isEqualTo []) exitWith {
+            ["STR_ALIVE_ZEUS_MOOD_NOTOWN", [_radius]] call _reply;
+        };
+        // A civilian's own mood is the town's, never below the resting 30, as the crowd sets it
+        private _personal = (_value max 30) min 100;
+        private _residents = _side == "ALL";
+        {
+            _x params ["_clusterID", "_cluster"];
+            private _hostility = [_cluster, "hostility"] call ALIVE_fnc_hashGet;
+            if (!isNil "_hostility") then {
+                { [_hostility, _x, _value] call ALIVE_fnc_hashSet } forEach _sides;
+            };
+            if (_residents && {!isNil "ALIVE_agentHandler"}) then {
+                private _townAgents = [[ALIVE_agentHandler, "agentsByCluster"] call ALIVE_fnc_hashGet, _clusterID] call ALIVE_fnc_hashGet;
+                if !(isNil "_townAgents") then {
+                    {
+                        if (((_x select 2) select 4) == "agent") then {
+                            [_x, "posture", _personal] call ALIVE_fnc_hashSet;
+                            private _unit = (_x select 2) select 5;
+                            if (!isNull _unit && {alive _unit}) then {
+                                _unit setVariable ["ALiVE_CivPop_Hostility", _personal, true];
+                            };
+                        };
+                    } forEach (_townAgents select 2);
+                };
+            };
+        } forEach _towns;
+        // The crowd keeps the mood it read when it came; cleared, it reads the town again for the
+        // side of the player nearest it
+        {
+            private _man = agent _x;
+            if (!isNull _man && {_man isKindOf "CAManBase"} && {isNil {_man getVariable "agentID"}} && {(_man distance2D _position) < _radius + 300}) then {
+                _man setVariable ["ALiVE_CivPop_Hostility", nil, true];
+            };
+        } forEach agents;
+        private _town = [_position] call _townName;
+        [["STR_ALIVE_ZEUS_MOOD_DONE", "STR_ALIVE_ZEUS_MOOD_DONE_ALL"] select _residents, [count _towns, _town, _value, (_sides apply { _x call _sideName }) joinString ", "]] call _reply;
+    };
+
+    // A civilian near the spot, or the one it's placed on, walks up to the nearest player and gives
+    // away what he knows: the insurgents' installations within 2 km go on the map, and the enemy
+    // groups nearest him become known to that player's AI Commander
+    case "tipOff": {
+        _args params [["_position", [], [[]]], ["_civ", objNull, [objNull]]];
+        if (count _position < 2) exitWith {};
+        private _isCiv = { params ["_u"]; alive _u && {_u isKindOf "CAManBase"} && {!isPlayer _u} && {side group _u == civilian} && {vehicle _u == _u} };
+        if (isNull _civ || {!(_civ call _isCiv)}) then {
+            private _near = (_position nearEntities ["CAManBase", 300]) select { _x call _isCiv };
+            _civ = if (_near isEqualTo []) then { objNull } else { ([_near, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy) select 0 };
+        };
+        if (isNull _civ) exitWith {
+            ["STR_ALIVE_ZEUS_TIPOFF_NOCIV"] call _reply;
+        };
+        private _players = allPlayers select { alive _x && {isNull (getAssignedCuratorLogic _x)} && {side group _x != civilian} && {(vehicle _x) distance2D _civ < 300} };
+        if (_players isEqualTo []) exitWith {
+            ["STR_ALIVE_ZEUS_TIPOFF_NOPLAYER"] call _reply;
+        };
+        private _player = ([_players, [], { (vehicle _x) distance2D _civ }, "ASCEND"] call BIS_fnc_sortBy) select 0;
+        if (_civ getVariable ["ALiVE_zeus_tipping", false]) exitWith {
+            ["STR_ALIVE_ZEUS_TIPOFF_BUSY"] call _reply;
+        };
+        _civ setVariable ["ALiVE_zeus_tipping", true];
+        ["STR_ALIVE_ZEUS_TIPOFF_SENT", [name _player]] call _reply;
+        [_civ, _player, _caller, _sideText] spawn {
+            params ["_civ", "_player", "_caller", "_sideText"];
+            // Advanced Civilians leaves him be while he does it
+            private _wasBlacklisted = _civ getVariable ["ALiVE_advciv_blacklist", false];
+            _civ setVariable ["ALiVE_advciv_blacklist", true, true];
+            // Out of whatever he was doing, and at a brisk walk
+            [_civ, ""] call ALiVE_fnc_switchMove;
+            [_civ, false] remoteExecCall ["forceWalk", _civ];
+            // Time to walk there at a civilian's pace, and near enough beside a big vehicle
+            private _until = time + 30 + ((_civ distance2D (vehicle _player)) / 1.2);
+            private _reach = { 5 + ((sizeOf (typeOf (vehicle _player))) / 2) };
+            private _nextMove = 0;
+            waitUntil {
+                if (time > _nextMove && {alive _civ} && {alive _player}) then {
+                    [_civ, getPosATL (vehicle _player)] call ALiVE_fnc_doMoveRemote;
+                    _nextMove = time + 10;
+                };
+                sleep 1;
+                !alive _civ || {!alive _player} || {_civ distance2D (vehicle _player) < call _reach} || {time > _until}
+            };
+            _civ setVariable ["ALiVE_zeus_tipping", false];
+            if (!_wasBlacklisted) then { _civ setVariable ["ALiVE_advciv_blacklist", false, true] };
+            if !(alive _civ && {alive _player} && {_civ distance2D (vehicle _player) < call _reach}) exitWith {
+                ["STR_ALIVE_ZEUS_TIPOFF_FAILED"] remoteExecCall ["ALiVE_fnc_zeusFeedback", _caller];
+            };
+            [_civ, getPosATL _player] remoteExecCall ["lookAt", _civ];
+            private _side = (side group _player) call _sideText;
+            private _sideObj = side group _player;
+            // The insurgents' towns with installations within 2 km of him
+            private _insurgentSides = [];
+            private _towns = 0;
+            {
+                private _s = ([_x, "side", ""] call ALiVE_fnc_HashGet) call _sideText;
+                if (([_x, "controltype", ""] call ALiVE_fnc_HashGet) == "asymmetric" && {_s != _side}) then {
+                    private _here = {
+                        private _objective = _x;
+                        ((([_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet) distance2D _civ) < 2000) && {["factory", "HQ", "ambush", "depot", "sabotage", "ied", "suicide", "roadblocks"] findIf {
+                            private _v = [_objective, _x, []] call ALiVE_fnc_HashGet;
+                            (_v isEqualType [] && {count _v > 0}) || {_v isEqualType objNull && {!isNull _v}}
+                        } > -1}
+                    } count ([_x, "objectives", []] call ALiVE_fnc_HashGet);
+                    if (_here > 0 && {!(_s in _insurgentSides)}) then { _insurgentSides pushBack _s };
+                    _towns = _towns + _here;
+                };
+            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+            { [getPosATL _civ, 2000, [_x] call ALiVE_fnc_sideTextToObject, _side, "a civilian", faction _player] call ALIVE_fnc_OPCOMToggleInstallations } forEach _insurgentSides;
+            // The enemy groups nearest him
+            private _seen = [];
+            if (!isNil "ALIVE_profileHandler") then {
+                {
+                    if ([_sideObj, [_x] call ALiVE_fnc_sideTextToObject] call BIS_fnc_sideIsEnemy) then {
+                        { _seen pushBack ([_x, "position", [0,0,0]] call ALIVE_fnc_hashGet) } forEach ([getPosATL _civ, 2000, [_x, "entity"]] call ALIVE_fnc_getNearProfiles);
+                    };
+                } forEach (["WEST", "EAST", "GUER"] - [_side]);
+                _seen = [_seen, [], { _x distance2D _civ }, "ASCEND"] call BIS_fnc_sortBy;
+                _seen = _seen select [0, 3];
+            };
+            if (_towns == 0 && {_seen isEqualTo []}) exitWith {
+                ["STR_ALIVE_ZEUS_TIPOFF_TOLD_NOTHING"] remoteExecCall ["ALiVE_fnc_zeusFeedback", _player];
+                ["STR_ALIVE_ZEUS_TIPOFF_NOTHING", [name _player]] remoteExecCall ["ALiVE_fnc_zeusFeedback", _caller];
+            };
+            if (_towns > 0) then {
+                ["STR_ALIVE_ZEUS_TIPOFF_TOLD_INSTALLATIONS"] remoteExecCall ["ALiVE_fnc_zeusFeedback", _player];
+            };
+            if (_seen isNotEqualTo []) then {
+                // His side's AI Commander learns of them; and the player hears where, whether or not
+                // his side has one
+                ["report", _side, _seen] call ALIVE_fnc_taskKnownEnemy;
+                ["STR_ALIVE_ZEUS_TIPOFF_TOLD_ENEMY", [(_seen apply { mapGridPosition _x }) joinString ", "]] remoteExecCall ["ALiVE_fnc_zeusFeedback", _player];
+            };
+            ["STR_ALIVE_ZEUS_TIPOFF_DONE", [name _player, _towns, count _seen]] remoteExecCall ["ALiVE_fnc_zeusFeedback", _caller];
+        };
+    };
+
+    // An angry crowd gathers on the spot for a while: they shout and wave their fists, and throw
+    // stones, cans and bottles at soldiers who come near. With Zeus Enhanced some can turn violent
+    // and pull a gun. Afterwards they go home and are cleared away out of sight
+    case "angryCrowd": {
+        _args params [["_position", [], [[]]], ["_count", 8, [0]], ["_minutes", 10, [0]], ["_violent", false, [false]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALiVE_CivPop_Crowd_Weapons") exitWith {
+            ["STR_ALIVE_ZEUS_NEED_CIVPOP"] call _reply;
+        };
+        _count = ((round _count) max 3) min 20;
+        _minutes = ((round _minutes) max 1) min 30;
+        private _classes = if (!isNil "ALiVE_fnc_taskGetCivilianClasses") then { [] call ALiVE_fnc_taskGetCivilianClasses } else { [] };
+        if (_classes isEqualTo []) then { _classes = ["C_man_1", "C_man_polo_1_F", "C_man_polo_2_F", "C_man_polo_4_F", "C_man_shorts_1_F"] };
+        private _group = createGroup [civilian, true];
+        _group setVariable ["ALIVE_profileIgnore", true, true];
+        private _crowd = [];
+        for "_i" from 1 to _count do {
+            private _spot = [_position, 3 + random 12, random 360] call BIS_fnc_relPos;
+            private _man = _group createUnit [selectRandom _classes, _spot, [], 0, "NONE"];
+            _man setVariable ["ALiVE_advciv_blacklist", true, true];
+            _man setVariable ["ALiVE_CivPop_Hostility", 100, true];
+            _man setDir (_man getDir _position);
+            _crowd pushBack _man;
+        };
+        _group setBehaviour "AWARE";
+        { _x addCuratorEditableObjects [_crowd, false] } forEach allCurators;
+        ["STR_ALIVE_ZEUS_CROWD_DONE", [count _crowd, _minutes]] call _reply;
+        [_crowd, _position, _minutes, _violent] spawn {
+            params ["_crowd", "_position", "_minutes", "_violent"];
+            private _end = time + _minutes * 60;
+            private _turned = [];
+            private _nextNoise = 0;
+            while { time < _end && {_crowd findIf {alive _x} > -1} } do {
+                private _alive = _crowd select { alive _x && {!(_x in _turned)} };
+                if (time > _nextNoise && {_alive isNotEqualTo []}) then {
+                    [selectRandom _alive, (selectRandom ALiVE_CivPop_Crowd_Noises) select 0] remoteExec ["say3D"];
+                    _nextNoise = time + 30;
+                };
+                {
+                    private _man = _x;
+                    private _targets = allPlayers select { alive _x && {isNull (getAssignedCuratorLogic _x)} && {side group _x != civilian} && {(vehicle _x) distance2D _man < 40} };
+                    if (_targets isEqualTo []) then {
+                        if (_man distance2D _position > 20) then {
+                            [_man, _position] call ALiVE_fnc_doMoveRemote;
+                        } else {
+                            if (random 1 < 0.5 && {!((animationState _man) in ALiVE_CivPop_Crowd_Anims_Protest)}) then {
+                                [_man, selectRandom ALiVE_CivPop_Crowd_Anims_Protest] call ALiVE_fnc_switchMove;
+                            };
+                        };
+                    } else {
+                        private _target = selectRandom _targets;
+                        if (_violent && {random 1 < 0.1} && {count _turned < ceil (count _crowd / 4)}) then {
+                            // One in four at most pulls a gun and fights for the other side
+                            private _weapons = [ALIVE_civilianWeapons, "CIV", [["hgun_Pistol_heavy_01_F", "11Rnd_45ACP_Mag"]]] call ALIVE_fnc_hashGet;
+                            if (_weapons isEqualTo []) then { _weapons = [["hgun_Pistol_heavy_01_F", "11Rnd_45ACP_Mag"]] };
+                            (selectRandom _weapons) params ["_weapon", "_ammo"];
+                            [_man, ""] call ALiVE_fnc_switchMove;
+                            _man addMagazine _ammo;
+                            _man addMagazine _ammo;
+                            _man addWeapon _weapon;
+                            [_man, _target] call ALIVE_fnc_addToEnemyGroup;
+                            (group _man) setVariable ["ALIVE_profileIgnore", true, true];
+                            _man setCombatMode "RED";
+                            _man setBehaviour "AWARE";
+                            _man doTarget _target;
+                            _turned pushBack _man;
+                        } else {
+                            if (random 1 < 0.4) then {
+                                private _throw = selectRandom ALiVE_CivPop_Crowd_Weapons;
+                                doStop _man;
+                                [_man, ""] call ALiVE_fnc_switchMove;
+                                _man setDir (_man getDir (vehicle _target));
+                                _man addWeapon "ALiVE_Throw";
+                                _man addMagazine [_throw select 0, 1];
+                                _man selectWeapon "ALiVE_Throw";
+                                _man forceWeaponFire [_throw select 1, _throw select 1];
+                            };
+                        };
+                    };
+                } forEach _alive;
+                sleep (4 + random 3);
+            };
+            // They go home, and each is cleared away once no player is near enough to see it
+            private _home = [_position, 300, random 360] call BIS_fnc_relPos;
+            { if (alive _x && {!(_x in _turned)}) then { [_x, ""] call ALiVE_fnc_switchMove; [_x, _home] call ALiVE_fnc_doMoveRemote } } forEach _crowd;
+            // The ones who turned go too, once no player is near; and after half an hour anyone still
+            // about is cleared if no player is within 100 m
+            private _left = +_crowd;
+            private _giveUp = time + 1800;
+            waitUntil {
+                sleep 10;
+                private _range = [300, 100] select (time > _giveUp);
+                {
+                    private _man = _x;
+                    if (isNull _man || {allPlayers findIf { (vehicle _x) distance2D _man < _range } == -1}) then {
+                        if (!isNull _man && {_man in _turned}) then {
+                            private _g = group _man;
+                            deleteVehicle _man;
+                            if (!isNull _g && {(units _g) isEqualTo []}) then { deleteGroup _g };
+                            _man = objNull;
+                        };
+                        if (!isNull _man) then { deleteVehicle _man };
+                        _left set [_forEachIndex, objNull];
+                    };
+                } forEach _left;
+                _left = _left select { !isNull _x };
+                _left isEqualTo []
+            };
+        };
     };
 };

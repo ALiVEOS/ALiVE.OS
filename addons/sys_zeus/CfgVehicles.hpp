@@ -185,4 +185,32 @@ class CfgVehicles {
         icon = "x\alive\addons\mil_logistics\icon_mil_ML.paa";
         picture = "x\alive\addons\mil_logistics\icon_mil_ML.paa";
     };
+
+    class ALiVE_ModuleZeusTownMood : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_TOWNMOOD";
+        ALiVE_zeusAction = "townMood";
+        icon = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
+        picture = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
+    };
+
+    class ALiVE_ModuleZeusTipOff : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_TIPOFF";
+        ALiVE_zeusAction = "tipOff";
+        icon = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
+        picture = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
+    };
+
+    class ALiVE_ModuleZeusAngryCrowd : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_ANGRYCROWD";
+        ALiVE_zeusAction = "angryCrowd";
+        icon = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
+        picture = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
+    };
 };
