@@ -9587,7 +9587,11 @@ switch(_operation) do {
                             } forEach _seaVehGroups;
                             _seaVehGroups = _keptVeh;
                             [_event, "seaVehicleGroups", _vehBoats] call ALIVE_fnc_hashSet;
-                            [_event, "seaStops", _stops] call ALIVE_fnc_hashSet;
+                            // each boat's stop kept with its crew's ID: checkEvent drops a lost crew from the transport list,
+                            // so a place in that list doesn't stay put
+                            private _keyedStops = [];
+                            { _keyedStops pushBack [_x, _stops param [_forEachIndex, []]] } forEach _transportProfiles;
+                            [_event, "seaStops", _keyedStops] call ALIVE_fnc_hashSet;
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
                             _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
                             ["ML - SHIP: %1 boat(s) of %2 carry %3 infantry group(s) and %4 vehicle group(s) from the ship to the beach at %5 (%6 m from the landing)",
@@ -10472,7 +10476,9 @@ switch(_operation) do {
                 private _stops = [_event, "seaStops", []] call ALIVE_fnc_hashGet;
                 {
                     private _crew = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                    (_stops param [_forEachIndex, []]) params [["_stop", []], ["_run", []]];
+                    private _crewID = _x;
+                    private _si = _stops findIf { _x isEqualType [] && {(_x param [0, ""]) isEqualTo _crewID} };
+                    (if (_si < 0) then { [] } else { (_stops select _si) select 1 }) params [["_stop", []], ["_run", []]];
                     if (!isNil "_crew" && {count _stop > 1}) then {
                         [_crew, "clearWaypoints"] call ALIVE_fnc_profileEntity;
                         [_crew, "addWaypoint", [_stop, 0, "MOVE", "NORMAL", 15, [], "COLUMN", "NO CHANGE", "CARELESS"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
@@ -10515,6 +10521,10 @@ switch(_operation) do {
                         [ALIVE_profileHandler, "getProfile", (_crew select 2 select 8) param [0, ""]] call ALIVE_fnc_profileHandler
                     };
                     private _crewID = _x;
+                    // this boat's stop and stall count, found by its crew's ID as well
+                    private _si = _stops findIf { _x isEqualType [] && {(_x param [0, ""]) isEqualTo _crewID} };
+                    private _myStop = if (_si < 0) then { [] } else { (_stops select _si) select 1 };
+                    private _ni = _stalls findIf { (_x param [0, ""]) isEqualTo _crewID };
                     private _vi = if (isNil "_crew") then { -1 } else { _vehGroups findIf { (_x select 0) == _crewID } };
                     private _vg = if (_vi < 0) then { "" } else { (_vehGroups select _vi) select 1 };
                     // a craft whose boat is gone though its crew lives: its group is lost with it
@@ -10530,18 +10540,18 @@ switch(_operation) do {
                     private _pos = if (_live) then { getPosASL _obj } else { _veh select 2 select 2 };
                     private _arrived = [_logic, "checkWaypointCompleted", _crew] call MAINCLASS;
                     // run aground short of the beach, or held off it: stopped within 150 m of it for three checks
-                    private _n = _stalls param [_forEachIndex, 0];
+                    private _n = if (_ni < 0) then { 0 } else { (_stalls select _ni) param [1, 0] };
                     _n = if ((_pos distance2D _shore) < 150 && {!_live || {speed _obj < 2}}) then { _n + 1 } else { 0 };
-                    _stalls set [_forEachIndex, _n];
+                    if (_ni < 0) then { _stalls pushBack [_crewID, _n] } else { (_stalls select _ni) set [1, _n] };
                     if (_arrived || {_n >= 3} || {_iter >= 180}) then {
                         if (!_arrived && {_n < 3}) then {
                             ["ML - SHIP: a boat (%1) out of time %2 m from the beach; its men are put ashore", _x, round (_pos distance2D _shore)] call ALiVE_fnc_dump;
                         };
                         if (_vg == "") then {
-                            [_logic, "unloadBoat", [_event, _veh, (_stops param [_forEachIndex, []]) param [2, []]]] call MAINCLASS;
+                            [_logic, "unloadBoat", [_event, _veh, _myStop param [2, []]]] call MAINCLASS;
                         } else {
                             // the craft has landed: its vehicle group is made on the beach, and heads for the landing
-                            private _land = (_stops param [_forEachIndex, []]) param [2, []];
+                            private _land = _myStop param [2, []];
                             if (count _land < 2 || {surfaceIsWater _land}) then { _land = +_shore };
                             private _dest = _eventData select 0;
                             private _made = [_vg, _land, _land getDir _dest, false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
