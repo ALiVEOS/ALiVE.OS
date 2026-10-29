@@ -9,6 +9,19 @@ params [
     ["_requester", objNull, [objNull]]
 ];
 
+// Sent from a player's machine, the requester is whoever is on that machine, not the object
+// the call carries: any client could name a Zeus there. A call made on the server itself keeps
+// the requester it was given.
+if (isRemoteExecuted) then {
+    private _owner = remoteExecutedOwner;
+    if (_owner == 0 || {_owner == clientOwner}) then {
+        _requester = [objNull, player] select hasInterface;
+    } else {
+        private _i = allPlayers findIf { owner _x == _owner && {isPlayer _x} };
+        _requester = if (_i > -1) then { allPlayers select _i } else { objNull };
+    };
+};
+
 if (isNull _requester || { isNull (getAssignedCuratorLogic _requester) }) exitWith {};
 
 if (

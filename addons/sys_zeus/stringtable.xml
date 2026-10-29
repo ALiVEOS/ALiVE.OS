@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_ZEUS_SAVE">
+    <English>ALiVE: Save Now</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_DEBUG">
+    <English>ALiVE: Profile Debug Markers</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SPOTREPORT">
+    <English>ALiVE: Spot Report</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HANDGROUP">
+    <English>ALiVE: Hand Group To AI Commander</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_BOMBER">
+    <English>ALiVE: Suicide Bomber</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TELL_SIDE">
+    <English>Tell the AI Commander of</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_ALL_COMMANDERS">
+    <English>Every side with an AI Commander</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FACTION">
+    <English>Faction</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FACTION_TIP">
+    <English>Faction class name of the bomber. Leave empty for the Military IED module's bomber faction.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_START_RADIUS">
+    <English>Starts within (m)</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_UNIT">
+    <English>ALiVE: place this module on a unit of the group.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_PNS">
+    <English>ALiVE: saving needs the Data module set to local persistence.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_PROFILES">
+    <English>ALiVE: this needs the Virtual AI System (Profile System) module.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_COMMANDER">
+    <English>ALiVE: no AI Commander for that side in this mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_IED">
+    <English>ALiVE: this needs the Military IED module.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_BAD_FACTION">
+    <English>ALiVE: there is no faction called %1.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SAVE_DONE">
+    <English>ALiVE: saving the mission now.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_DEBUG_ON">
+    <English>ALiVE: profile debug markers on.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_DEBUG_OFF">
+    <English>ALiVE: profile debug markers off.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SPOTREPORT_DONE">
+    <English>ALiVE: spot report at grid %2 passed to the AI Commander of %1.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HANDGROUP_PLAYERS">
+    <English>ALiVE: a group with players in it can't be handed over.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HANDGROUP_ALREADY">
+    <English>ALiVE: that group is already an ALiVE profile.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HANDGROUP_FAILED">
+    <English>ALiVE: that group couldn't be made into a profile.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HANDGROUP_DONE">
+    <English>ALiVE: the group is now an ALiVE profile, and the AI Commander of faction %1 will take it on. Its men are made again, so they are no longer under your Zeus control.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HANDGROUP_NOCOMMANDER">
+    <English>ALiVE: the group is now an ALiVE profile, but no AI Commander has faction %1, so none will give it orders. Its men are made again, so they are no longer under your Zeus control.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_BOMBER_NOVICTIM">
+    <English>ALiVE: a bomber needs a player (not a Zeus) within 300 m to go after.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_BOMBER_DONE">
+    <English>ALiVE: a suicide bomber is on the way to %1.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HANDGROUP_SHARED">
+    <English>ALiVE: that group is riding in a vehicle another group crews. Get it out first.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SIDE_WEST">
+    <English>BLUFOR</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SIDE_EAST">
+    <English>OPFOR</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SIDE_GUER">
+    <English>Independent</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_TOO_FAST">
+    <English>ALiVE: that came too soon after the last one. Place the module again.</English>
+</Key>
+</Container>
+</Package>
+</Project>
