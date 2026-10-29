@@ -2480,6 +2480,34 @@ switch(_operation) do {
         private _event = ["ATO_REQUEST", [_type, _chosenSide, _faction, [_pos select 0, _pos select 1, 0], [], _requestId, _uid], "PLAYER"] call ALIVE_fnc_event;
         [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
         ["ALIVE_fnc_ATOKernel - %1 asked for %2 at %3 (request %4, to %5)", name _unit, _type, mapGridPosition _pos, _requestId, _faction] call ALiVE_fnc_dump;
+
+        // A marker where it was asked for, seen only by the side that asked (players joining later too), and
+        // taken down when the sortie is over: complete or turned down, or never raised at all.
+        private _marker = format ["ALiVE_ATO_request_%1", ALiVE_ATO_playerReqSeq];
+        [[_marker, [_pos select 0, _pos select 1, 0], format ["%1 requested (%2)", _type, name _unit]], {
+            params ["_name", "_at", "_text"];
+            if (!hasInterface) exitWith {};
+            deleteMarkerLocal _name;
+            private _m = createMarkerLocal [_name, _at];
+            _m setMarkerTypeLocal "mil_destroy";
+            _m setMarkerColorLocal "ColorRed";
+            _m setMarkerTextLocal _text;
+        }] remoteExec ["call", _playerSide, _marker];
+        [[_chosen, "task"] call _fnc_piece, _requestId, _marker, _playerSide] spawn {
+            params ["_task", "_requestId", "_marker", "_side"];
+            private _start = time;
+            private _seen = false;
+            waitUntil {
+                sleep 10;
+                private _s = if (_task isEqualTo []) then { [] } else { [_task, "status", _requestId] call ALIVE_fnc_ATOTask };
+                private _live = _s isEqualType [] && {count _s >= 2} && {!((_s select 1) in ["complete", "denied"])};
+                if (_live) then { _seen = true };
+                // a request is a sortie within two minutes or not at all; none stays up past 45
+                (!_live && {_seen || {time - _start > 120}}) || {time - _start > 2700}
+            };
+            [_marker] remoteExec ["deleteMarkerLocal", _side];
+            remoteExec ["", _marker];
+        };
         _result = true;
     };
 
