@@ -342,6 +342,24 @@
 <Key ID="STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE_COMMENT">
     <English>The shortest wait between two mortar attacks from this commander. The next one comes between this many minutes and twice this many. Default 20.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_ASYM_TASK_RANGE">
+    <English>Task Group Range (m)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASYM_TASK_RANGE_COMMENT">
+    <English>How far away a group can be when this commander picks it for a task at a town: attacks and ambushes, IEDs and suicide bombers, depots, roadblocks and recruitment HQs, or holding the town in reserve. Groups further away stay where they are, so insurgents stay local, and a town with nobody in range gets nobody. A player's or FOB objective with nobody in range still borrows the nearest insurgents. 0 = no limit (the nearest free group, wherever it is). Default 0.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_TOWN_FACTIONS">
+    <English>Town-Only Factions</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_TOWN_FACTIONS_COMMENT">
+    <English>Optional. Factions this commander only sends to civilian objectives (from Civilian Placement and Custom Civilian Placement), for example police in the towns. Faction classnames, comma-separated or as an array: BLU_GEN_F. Empty = no limit. Orders a player gives through Player Command/Control are not limited.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_BASE_FACTIONS">
+    <English>Base-Only Factions</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_BASE_FACTIONS_COMMENT">
+    <English>Optional. Factions this commander only sends to military objectives (every objective that did not come from a civilian placement module), for example the army at the bases. Faction classnames, comma-separated or as an array: BLU_F. Empty = no limit. A faction in neither list goes anywhere. Orders a player gives through Player Command/Control are not limited.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_OFTEN">
     <English>Preparation Tasks How Often</English>
 </Key>

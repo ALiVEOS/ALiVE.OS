@@ -175,6 +175,10 @@ switch (_operation) do {
         //                    work
         private _factions = [_logic getvariable ["factions",[]]] call ALiVE_fnc_parseArrayFromString;
         private _factionsManual = [_logic getvariable ["factionsManual",[]]] call ALiVE_fnc_parseArrayFromString;
+        // Town-Only / Base-Only Factions (optional): a faction kept to civilian or to military objectives,
+        // for example police in the towns and the army at the bases. Lower case, compared with each profile's faction.
+        private _townFactions = ([_logic getvariable ["townFactions",""]] call ALiVE_fnc_parseArrayFromString) apply {toLower _x};
+        private _baseFactions = ([_logic getvariable ["baseFactions",""]] call ALiVE_fnc_parseArrayFromString) apply {toLower _x};
         private _faction1 = _logic getvariable ["faction1",""];
         private _faction2 = _logic getvariable ["faction2",""];
         private _faction3 = _logic getvariable ["faction3",""];
@@ -182,6 +186,8 @@ switch (_operation) do {
         private _simultanObjectives = parseNumber format ["%1", _logic getvariable ["simultanObjectives",10]];
         private _minAgents = parseNumber format ["%1", _logic getvariable ["minAgents",2]];
         private _asymForceLimit = floor (parseNumber format ["%1", _logic getvariable ["asymForceLimit",-1]]);
+        // Task Group Range: how far away a group can be when the asymmetric commander picks it for a town task (0 = no limit)
+        private _asymTaskRange = (parseNumber format ["%1", _logic getvariable ["asymTaskRange",0]]) max 0;
         private _recruitCycleMin = (parseNumber format ["%1", _logic getvariable ["recruitCycleMin",30]]) max 0;
         // Harassing Fire (Eric on Discord, 22 Oct): an Asymmetric commander's mortar attacks, and the shortest wait between them
         private _harassFire = (toLower format ["%1", _logic getVariable ["asymHarassFire", "false"]]) in ["true", "1"];
@@ -417,6 +423,9 @@ switch (_operation) do {
             ["simultanobjectives", _simultanObjectives],
             ["minAgents", _minAgents],
             ["asymForceLimit", _asymForceLimit],
+            ["asymTaskRange", _asymTaskRange],
+            ["townFactions", _townFactions],
+            ["baseFactions", _baseFactions],
             ["recruitCycleMin", _recruitCycleMin],
             ["harassFire", _harassFire],
             ["harassCycle", _harassCycle],
@@ -1412,8 +1421,15 @@ switch (_operation) do {
         _args params [
             "_pos",
             "_size",
-            ["_types", ["infantry"]]
+            ["_types", ["infantry"]],
+            ["_objectiveType", ""]
         ];
+
+        // Town-Only / Base-Only Factions: a civilian objective takes no base-only faction, any other objective
+        // no town-only one. Without an objective type (or with both lists empty) every faction may go.
+        private _barredFactions = if (_objectiveType == "") then {[]} else {
+            if (_objectiveType in ["CIV","CCU"]) then {[_logic,"baseFactions",[]] call ALiVE_fnc_HashGet} else {[_logic,"townFactions",[]] call ALiVE_fnc_HashGet};
+        };
 
         // Get troops from current OPCOM analysis
         _troops = []; {_troops = _troops + ([_logic,_x,[]] call ALiVE_fnc_HashGet)} foreach _types;
@@ -1468,7 +1484,7 @@ switch (_operation) do {
                         [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
                     } else { nil };
                     private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
-                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {if (_profileID in _seaProfileIDs) then {call _isSeaTravel} else {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})};
+                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {if (_profileID in _seaProfileIDs) then {call _isSeaTravel} else {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})} && {_barredFactions isEqualTo [] || {!(toLower format ["%1", [_profile,"faction",""] call ALiVE_fnc_HashGet] in _barredFactions)}};
 
                     if (_valid) then {_troopsUnsorted pushBack _profile};
                 };

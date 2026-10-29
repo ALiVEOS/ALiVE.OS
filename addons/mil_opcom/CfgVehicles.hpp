@@ -171,6 +171,21 @@ class CfgVehicles {
                                 tooltip      = "Optional. Type extra faction classnames here for mods not currently loaded but expected at mission time (e.g. when authoring for someone else's modset), or to supplement the visual selection above. Format: SQF array literal like [""rhs_faction_xyz""] or comma-separated like rhs_faction_xyz,uk3cb_faction_abc. Combined (unioned) with the Factions multi-select at runtime.";
                                 defaultValue = """""";
                         };
+                        // Optional: a faction kept to one kind of objective (police in the towns, army at the bases)
+                        class townFactions : Edit
+                        {
+                                property     = "ALiVE_mil_opcom_townFactions";
+                                displayName  = "$STR_ALIVE_OPCOM_TOWN_FACTIONS";
+                                tooltip      = "$STR_ALIVE_OPCOM_TOWN_FACTIONS_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class baseFactions : Edit
+                        {
+                                property     = "ALiVE_mil_opcom_baseFactions";
+                                displayName  = "$STR_ALIVE_OPCOM_BASE_FACTIONS";
+                                tooltip      = "$STR_ALIVE_OPCOM_BASE_FACTIONS_COMMENT";
+                                defaultValue = """""";
+                        };
                         // Hidden legacy slots - render no UI but apply
                         // SQM-saved values via expression at module init
                         // so missions that picked factions through the
@@ -708,6 +723,14 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_ASYM_FORCE_LIMIT";
                                 tooltip = "$STR_ALIVE_OPCOM_ASYM_FORCE_LIMIT_COMMENT";
                                 defaultValue = """-1""";
+                                typeName = "NUMBER";
+                        };
+                        class asymTaskRange : Edit
+                        {
+                                property = "ALiVE_mil_opcom_asymTaskRange";
+                                displayName = "$STR_ALIVE_OPCOM_ASYM_TASK_RANGE";
+                                tooltip = "$STR_ALIVE_OPCOM_ASYM_TASK_RANGE_COMMENT";
+                                defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
                         class asymHarassFire : Combo

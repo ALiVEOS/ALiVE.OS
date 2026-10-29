@@ -181,8 +181,14 @@ class FSM
                          "    _factions = _this select 2;" \n
                          "    _count = _this select 3;" \n
                          "    _types = _this select 4;" \n
+                         "    // Town-Only / Base-Only Factions: a civilian objective takes no base-only faction, any other no town-only one" \n
+                         "    private _objectiveType = _this param [5, """"];" \n
+                         "    private _barred = if (_objectiveType == """") then {[]} else {[_handler, [""townFactions"",""baseFactions""] select (_objectiveType in [""CIV"",""CCU""]), []] call ALiVE_fnc_HashGet};" \n
                          "" \n
                          "    _section = []; {_section = _section + ([_handler,_x,[]] call ALiVE_fnc_HashGet)} foreach _types;" \n
+                         "" \n
+                         "    // Task Group Range: a group further than this from the town is left where it is (0 = no limit)" \n
+                         "    private _range = [_handler,""asymTaskRange"",0] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "    _section = [" \n
                          "            _section," \n
@@ -197,6 +203,8 @@ class FSM
                          "                _pf = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
                          "" \n
                          "               !isnil ""_pf"" && {!([_pf,""busy"",false] call ALiVE_fnc_HashGet)} &&" \n
+                         "		   {_range <= 0 || {(_Input0 distance ([_pf,""position"",[0,0,0]] call ALiVE_fnc_HashGet)) <= _range}} &&" \n
+                         "		   {_barred isEqualTo [] || {!(toLower format [""%1"", [_pf,""faction"",""""] call ALiVE_fnc_HashGet] in _barred)}} &&" \n
                          "		   {([_pf,""type"",""""] call ALiVE_fnc_HashGet) == ""entity""} &&" \n
                          "		   {{toLower(_x select 0) == ""alive_fnc_garrison""} count  ([_pf,""activeCommands"",[]] call ALiVE_fnc_HashGet) == 0}" \n
                          "            }" \n
@@ -1288,7 +1296,7 @@ class FSM
                          "        // Dont assign troops on more than 3 objectives at once" \n
                          "        if (count _section <= 0 && {count _simultan >= _simultanObjectives}) exitwith {_simultan = _simultan - [_id]};" \n
                          "    " \n
-                         "        _nearProfiles = [_OPCOM_HANDLER,_center,_factions,_sizeSection - (count _section),_types] call _fnc_selectSection;" \n
+                         "        _nearProfiles = [_OPCOM_HANDLER,_center,_factions,_sizeSection - (count _section),_types,[_objective,""objectiveType"",""MIL""] call ALiVE_fnc_HashGet] call _fnc_selectSection;" \n
                          "        _section = _section + _nearProfiles;" \n
                          "" \n
                          "        // A player's objective, or a player FOB's, with nobody free borrows the nearest insurgents" \n
@@ -1297,11 +1305,14 @@ class FSM
                          "            private _assigned = [_OPCOM_HANDLER,""profileObjectiveAssignment"",createHashMap] call ALiVE_fnc_HashGet;" \n
                          "            private _byID = [_OPCOM_HANDLER,""objectivesByID"",createHashMap] call ALiVE_fnc_HashGet;" \n
                          "            private _pool = []; {_pool append ([_OPCOM_HANDLER,_x,[]] call ALiVE_fnc_HashGet)} foreach _types;" \n
+                         "            // a Town-Only faction is still kept off a player's or FOB objective (a base objective)" \n
+                         "            private _barred = [_OPCOM_HANDLER, [""townFactions"",""baseFactions""] select (([_objective,""objectiveType"",""MIL""] call ALiVE_fnc_HashGet) in [""CIV"",""CCU""]), []] call ALiVE_fnc_HashGet;" \n
                          "            _pool = _pool select {" \n
                          "                private _pf = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
                          "                private _from = _byID get (_assigned getOrDefault [_x,""""]);" \n
                          "                !isnil ""_pf"" && {!(_x in _section)} && {_x in _assigned} &&" \n
                          "                {isNil ""_from"" || {!(([_from,""playerCreated"",false] call ALiVE_fnc_HashGet) || {([_from,""fobID"",""""] call ALiVE_fnc_HashGet) != """"})}} &&" \n
+                         "                {_barred isEqualTo [] || {!(toLower format [""%1"", [_pf,""faction"",""""] call ALiVE_fnc_HashGet] in _barred)}} &&" \n
                          "                {([_pf,""type"",""""] call ALiVE_fnc_HashGet) == ""entity""} &&" \n
                          "                {{toLower(_x select 0) == ""alive_fnc_garrison""} count ([_pf,""activeCommands"",[]] call ALiVE_fnc_HashGet) == 0}" \n
                          "            };" \n

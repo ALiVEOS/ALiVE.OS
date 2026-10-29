@@ -1213,7 +1213,7 @@ class FSM
                          "        _taskTypes = _this select 1 select 2;" \n
                          "        _pos = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "" \n
-                         "        _sectionAssist = [_this select 0,""NearestAvailableSection"",[_pos,_size,_taskTypes]] call ALiVE_fnc_OPCOM;" \n
+                         "        _sectionAssist = [_this select 0,""NearestAvailableSection"",[_pos,_size,_taskTypes,[_objective,""objectiveType"",""MIL""] call ALiVE_fnc_HashGet]] call ALiVE_fnc_OPCOM;" \n
                          "        if !([_objective,""deleted"",false] call ALiVE_fnc_HashGet) then {" \n
                          "            [_objective, ""sectionAssist"",_sectionAssist] call ALiVE_fnc_HashSet;" \n
                          "        };" \n
