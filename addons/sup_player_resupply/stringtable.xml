@@ -510,6 +510,123 @@
 <Key ID="STR_ALIVE_HUB">
     <English>Logistics Hub</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_UI_MANAGE">
+    <English>Manage Hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_NAME">
+    <English>Name</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_NAME_TIP">
+    <English>Shown on the map and in this window. Leave it empty for the grid.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_RENAME">
+    <English>Rename</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_PERMISSIONS">
+    <English>Permissions</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_COLLECT">
+    <English>Collect</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_COLLECT_TIP_OFF">
+    <English>This hub isn't synced to Player Combat Logistics, so nothing can be collected here</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_COLLECT_TIP_DOWN">
+    <English>The hub is down until it's repaired</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_COLLECT_TIP_NOT_YOU">
+    <English>Who Can Collect doesn't let you collect here</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_DISMANTLE">
+    <English>Dismantle</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_DISMANTLE_AGAIN">
+    <English>Press again</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_DISMANTLE_CONFIRM">
+    <English>Press Dismantle again within 10 s to take %1 down. Nothing can be collected there until it is repaired.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_CLOSE">
+    <English>Close</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_APPLY">
+    <English>Apply</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_NOT_ALLOWED">
+    <English>Only admins, and players Who Can Dismantle lets in, can change this hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_STATUS">
+    <English>Side: %1&lt;br/&gt;State: %2&lt;br/&gt;Who can collect: %3&lt;br/&gt;Offers: %4&lt;br/&gt;AI Commanders supply from it: %5&lt;br/&gt;Grid: %6</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_WORKING">
+    <English>working</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_DOWN">
+    <English>down</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_DOWN_BACK">
+    <English>down, back in about %1 min</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_DOWN_SOON">
+    <English>down, back any moment</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_COLLECT_OFF">
+    <English>nobody (not synced to Player Combat Logistics)</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_WHO_SIDE">
+    <English>Anyone on the side</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_WHO_LEADER">
+    <English>Group leaders</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_WHO_ITEM">
+    <English>Access item carriers</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_WHO_LIST">
+    <English>Players on the list</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_WHO_NOBODY">
+    <English>admins only</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_YOU_MAY">
+    <English>you can</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_YOU_MAY_NOT">
+    <English>not you</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_CAT_ALL">
+    <English>everything the tablet offers</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_CAT_RULES">
+    <English>the tablet's catalogue with %1 in Only These, %2 in Never, %3 in Also</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_YES">
+    <English>yes</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_NO">
+    <English>no</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_PERM_TITLE">
+    <English>Permissions: %1</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_PERM_NOTE">
+    <English>Changes every hub of this module (%1), until the mission restarts. Admins can always collect and dismantle.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_RENAMED">
+    <English>The hub is now called %1</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_RENAME_CLEARED">
+    <English>The hub's name is cleared; it shows its grid again</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_REFUSED_NOT_ALLOWED">
+    <English>You can't change this hub: only admins, and players Who Can Dismantle lets in, can</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_PERMISSIONS_SET_BOTH">
+    <English>Who can collect and who can dismantle are changed on %1 Logistics Hub module(s) until the mission restarts</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_MARKER">
+    <English>Logistics Hub %1</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_COMMENT">
     <English>The objects synced to this module are logistics hubs. A player of the hub's side standing at one can choose Collect at a Hub on the Player Logistics tablet: the requisition is set out beside them straight away, with no convoy and no wait, and paid from the force pool as a delivery would be. Sync the hub objects (static objects, not vehicles) and Player Combat Logistics to this module. Military Logistics must serve the hub's side, as it pays for what is collected. Sync Military Logistics to this module too and the hubs become supply points: AI convoys and helicopter inserts set out from whichever is nearer, a hub or the HQ.</English>
 </Key>
@@ -523,7 +640,7 @@
     <English>Collect Radius (m)</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_RADIUS_COMMENT">
-    <English>How close to a hub a player must stand to collect there, from 2 to 100 metres. Within it the tablet opens without an access item, if Who Can Collect lets the player in.</English>
+    <English>How close to a hub a player must stand to collect there, from 2 to 200 metres (30 if left alone). Within it the tablet opens without an access item, if Who Can Collect lets the player in.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_DEBUG">
     <English>Debug</English>

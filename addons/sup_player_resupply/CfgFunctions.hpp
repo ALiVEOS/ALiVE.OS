@@ -56,6 +56,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_player_resupply\fnc_hub.sqf";
                 ALIVE_RECOMPILE;
             };
+            class hubManage {
+                description = "The Manage Hub window on a player's machine";
+                file = "\x\alive\addons\sup_player_resupply\fnc_hubManage.sqf";
+                ALIVE_RECOMPILE;
+            };
             class hubRequest {
                 description = "The only way a player's machine asks the server to change a Logistics Hub (#1091)";
                 file = "\x\alive\addons\sup_player_resupply\fnc_hubRequest.sqf";

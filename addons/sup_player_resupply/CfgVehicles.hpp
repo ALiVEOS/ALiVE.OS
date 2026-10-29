@@ -187,7 +187,7 @@ class CfgVehicles {
                                     class GUER { name = "Independent"; value = "GUER"; };
                             };
                     };
-                    class hub_radius : Edit { property = "ALiVE_sup_logistics_hub_hub_radius"; displayName = "$STR_ALIVE_HUB_RADIUS"; tooltip = "$STR_ALIVE_HUB_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """10"""; };
+                    class hub_radius : Edit { property = "ALiVE_sup_logistics_hub_hub_radius"; displayName = "$STR_ALIVE_HUB_RADIUS"; tooltip = "$STR_ALIVE_HUB_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """30"""; };
 
                     class HDR_COLLECT : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_COLLECT"; displayName = "WHO CAN COLLECT"; };
                     class hub_collect_who { property = "ALiVE_sup_logistics_hub_hub_collect_who"; displayName = "$STR_ALIVE_HUB_COLLECT_WHO"; tooltip = "$STR_ALIVE_HUB_COLLECT_WHO_COMMENT"; control = "ALiVE_HubCollectChoice"; typeName = "STRING"; expression = "_this setVariable ['hub_collect_who', _value];"; defaultValue = """SIDE"""; };

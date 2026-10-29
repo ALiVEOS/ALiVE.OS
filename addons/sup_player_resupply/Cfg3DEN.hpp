@@ -20,7 +20,7 @@ class Cfg3DEN {
                     h = "4 * (pixelH * pixelGrid * 0.50)";
                     text = "$STR_ALIVE_PR_CATALOGUE_OPEN";
                     tooltip = "$STR_ALIVE_PR_CATALOGUE_COMMENT";
-                    url = "https://www.alivemod.com/public/alive3/sup_fob_buildlist.htm";
+                    url = "https://www.alivemod.com/public/alive3/sup_fob_buildlist.htm?for=tablet";
                 };
             };
         };
@@ -31,6 +31,7 @@ class Cfg3DEN {
                 class Link: Link {
                     text = "$STR_ALIVE_HUB_LIST_OPEN";
                     tooltip = "$STR_ALIVE_HUB_LIST_COMMENT";
+                    url = "https://www.alivemod.com/public/alive3/sup_fob_buildlist.htm?for=hub";
                 };
             };
         };

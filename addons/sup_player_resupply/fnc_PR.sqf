@@ -2095,6 +2095,27 @@ switch(_operation) do {
                     _vehiclesText ctrlSetText format["%1 of %2 vehicles",0,_countVehicles];
                     _individualsText ctrlSetText format["%1 of %2 individuals",0,_countIndividuals];
 
+                    // Collect at a hub: say straight away if the player isn't at a hub, or isn't let in at
+                    // this one (Jman, 29 Oct: it only showed on Request, after the list was picked). The
+                    // Request button asks again, as the player may walk to a hub meanwhile.
+                    private _hubStatus = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadStatus);
+                    private _hubWarnings = [localize "STR_ALIVE_HUB_STAND_AT", localize "STR_ALIVE_HUB_NOT_ALLOWED"];
+                    if (_selectedValue == "PR_COLLECT") then {
+                        private _atHub = ["nearHub", [player]] call ALIVE_fnc_hub;
+                        private _warn = call {
+                            if (isNull _atHub) exitWith { _hubWarnings select 0 };
+                            if !(["mayCollect", [player, _atHub]] call ALIVE_fnc_hub) exitWith { _hubWarnings select 1 };
+                            ""
+                        };
+                        if (_warn != "" || {(ctrlText _hubStatus) in _hubWarnings}) then {
+                            _hubStatus ctrlSetText _warn;
+                            _hubStatus ctrlSetTextColor [0.729,0.216,0.235,1];
+                        };
+                    } else {
+                        // another delivery: the warning no longer applies
+                        if ((ctrlText _hubStatus) in _hubWarnings) then { _hubStatus ctrlSetText "" };
+                    };
+
                     // reset the supply list
 
                     private ["_supplyList","_selectedSupplyListOptions","_selectedSupplyListValues","_selectedSupplyListDepth"];
@@ -2255,10 +2276,16 @@ switch(_operation) do {
                                             _staticOptions = [ALIVE_sideDefaultResupplyVehicleOptions,_side] call ALIVE_fnc_hashGet;
                                         };
 
-                                        _staticOptions = [_staticOptions,_selectedDeliveryValue] call ALIVE_fnc_hashGet;
+                                        // Collect at a hub offers what a convoy would bring (Jman, 29 Oct: the
+                                        // table has no entry for it, so the list came up empty with no way back)
+                                        private _optionsKey = [_selectedDeliveryValue, "PR_STANDARD"] select (_selectedDeliveryValue == "PR_COLLECT");
+                                        _staticOptions = [_staticOptions,_optionsKey,[]] call ALIVE_fnc_hashGet;
+                                        if !(_staticOptions isEqualTypeArray [[], []]) then { _staticOptions = [["<< Back"], ["<< Back"]] };
 
-                                        _options = _staticOptions select 0;
-                                        _values = _staticOptions select 1;
+                                        _options = +(_staticOptions select 0);
+                                        _values = +(_staticOptions select 1);
+                                        // always a way back, whatever a faction's own table holds
+                                        if !("<< Back" in _values) then { _options = ["<< Back"] + _options; _values = ["<< Back"] + _values };
 
                                         // PR_HELI_INSERT: static data only includes "Air" by default.
                                         // Supplement with slingable ground categories so players can

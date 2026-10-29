@@ -25,12 +25,18 @@ collected there and it supplies nothing. With a Repair Time it comes back after 
 The module's settings exist only on the server, as Eden puts them there, so the server publishes
 what players' machines need: on each hub ALiVE_hub = [side, alive, radius, module], on each module
 ALiVE_hub_settings = [side, radius, who, names, only, never, also, enemy can dismantle, dismantle
-time, repair time, dismantle who, dismantle names], and the list of hubs as ALiVE_hub_list.
+time, repair time, dismantle who, dismantle names], and the list of hubs as ALiVE_hub_list. A hub's name is ALiVE_hub_name on it (a mission can set it in the
+object's init: this setVariable ["ALiVE_hub_name", "Hub Kilo"]), and while it is down with a Repair Time,
+ALiVE_hub_backAt is when it comes back. Manage Hub on the hub opens ALIVE_fnc_hubManage's window.
 
 Parameters:
     ["init", [module]] - server: reads the settings, tags the synced objects
     ["tag", [object, module]] - server: makes the object one of the module's hubs, with its hold actions
     ["settings", [module]] - the settings above, any machine
+    ["markers", []] - a player's machine: keeps a map marker on each working hub of the player's side
+    ["label", [hub]] - the hub's name, or "Logistics Hub" and its grid when it has none
+    ["cleanName", [text]] - a name as a hub may carry it: no markup characters, at most 32 letters
+    ["rename", [hubNetId, name]] - server, through ALIVE_fnc_hubRequest: the Manage Hub window's Rename
     ["rules", [module, kind]] - Who Can Collect (kind "COLLECT", the default) or Who Can Dismantle
         ("DISMANTLE") as [rules, names]: an admin's in-game change, or the module's
     ["catalogueRules", [module]] - the module's three lists read by ALIVE_fnc_PRCatalogueRules
@@ -39,7 +45,7 @@ Parameters:
     ["isAdmin", [unit]] - a logged-in or voted admin, or anyone in single player
     ["mayWho", [unit, rules, names]] - whether Who Can Collect style rules let the unit in
     ["mayCollect", [unit, hub]] - an admin, or let in by the hub's module
-    ["mayDismantle", [unit, hub]] - the same, for its own side's hold action
+    ["mayDismantle", [unit, hub]] - the same, for its own side's Dismantle in the Manage Hub window
     ["sideCatalogue", [sideText]] - server: every class the tablet could list for that side, lower case
     ["validateCollect", [hubNetId, playerID, faction, forceMakeup, sender]] - server: "" when the requisition
         may be collected, else why not; with the player, hub and module. sender is the machine the
@@ -48,9 +54,11 @@ Parameters:
     ["commanderFactions", [side, mlModules]] - server: the factions of those modules' AI Commanders of that side
     ["nodeAdd", [hub]] - server: the hub joins its side's supply network, for every such faction
     ["nodeRemove", [hubNetId]] - server: it leaves it again (a delivery's units merged into it stay as a plain node)
-    ["permissions", [rules, names, hubNetId, kind]] - server, through ALIVE_fnc_hubRequest: an admin's change
-        to Who Can Collect (kind "COLLECT", the default) or Who Can Dismantle ("DISMANTLE"), for one hub's
-        module or (hubNetId "") for every module
+    ["permissions", [rules, names, hubNetId, kind, dismantleRules, dismantleNames]] - server, through
+        ALIVE_fnc_hubRequest: a change to Who Can Collect (kind "COLLECT", the default), Who Can Dismantle
+        ("DISMANTLE") or both ("BOTH", from the Manage Hub window, with the last two), for one hub's module
+        or (hubNetId "", admins only) for every module. Admins, and for one hub players of its side Who Can
+        Dismantle lets in
     ["dismantle", [hubNetId]] - server, through ALIVE_fnc_hubRequest: a player's hold action finished
     ["hubDown", [hubNetId, destroyed, byName, byEnemy]] - server: the hub stops working, and with a
         Repair Time comes back later
@@ -80,6 +88,80 @@ private _result = nil;
 
 switch (_op) do {
 
+    // A map marker on each working hub of this player's side (Jman, 29 Oct: hubs had none), on this
+    // machine only: ALiVE's resupply pin with the name written by the map label layer, or Arma's
+    // supply marker. Redrawn when a hub goes up or down, or the player changes side. One watch per
+    // machine however many Hub modules start it.
+    case "markers": {
+        if (!hasInterface || {!isNil "ALiVE_hub_markerLoop"}) exitWith {};
+        ALiVE_hub_markerLoop = [] spawn {
+            waitUntil { sleep 2; !isNull player && {!isNil "ALiVE_hub_list"} };
+            private _had = [];
+            private _sig = [];
+            while { true } do {
+                private _side = ["unitSide", [player]] call ALIVE_fnc_hub;
+                private _hubs = (missionNamespace getVariable ["ALiVE_hub_list", []]) select {
+                    !isNull _x && {(_x getVariable ["ALiVE_hub", []]) params [["_s", ""], ["_a", false]]; _a && {_s == _side}}
+                };
+                private _type = ["pinType", ["b_support", "supplyrequest"]] call ALiVE_fnc_mapPins;
+                private _now = [_side, _type] + (_hubs apply { [(getPosATL _x) apply { round _x }, _x getVariable ["ALiVE_hub_name", ""]] });
+                if (_now isNotEqualTo _sig) then {
+                    _sig = _now;
+                    { ["release", [_x]] call ALiVE_fnc_mapPins; deleteMarkerLocal _x } forEach _had;
+                    _had = [];
+                    private _colour = switch (_side) do { case "EAST": {"ColorEAST"}; case "GUER": {"ColorGUER"}; default {"ColorWEST"} };
+                    {
+                        private _m = createMarkerLocal [format ["ALiVE_hubMarker_%1", _forEachIndex], getPosATL _x];
+                        _m setMarkerTypeLocal _type;
+                        _m setMarkerColorLocal ([_colour, "Default"] select (_type != "b_support"));
+                        ["adopt", [_m, ["label", [_x]] call ALIVE_fnc_hub, 80, _colour, {}, [], "auto"]] call ALiVE_fnc_mapPins;
+                        _had pushBack _m;
+                    } forEach _hubs;
+                };
+                sleep 5;
+            };
+        };
+    };
+
+    case "label": {
+        _args params [["_hub", objNull, [objNull]]];
+        private _n = if (isNull _hub) then { "" } else { _hub getVariable ["ALiVE_hub_name", ""] };
+        _result = if (_n isEqualType "" && {_n != ""}) then { _n } else { format [localize "STR_ALIVE_HUB_MARKER", mapGridPosition _hub] };
+    };
+
+    case "cleanName": {
+        _args params [["_text", "", [""]]];
+        _result = [toString (((toArray _text) select { _x >= 32 && {!(_x in [34, 38, 39, 60, 62])} }) select [0, 32])] call CBA_fnc_trim;
+    };
+
+    // A name from the Manage Hub window: admins, and players of the hub's side Who Can Dismantle lets in
+    case "rename": {
+        _result = false;
+        _args params [["_netId", "", [""]], ["_name", "", [""]]];
+        if (isNil "_ALiVE_hubCaller") exitWith {};
+        private _caller = _ALiVE_hubCaller;
+        if (isNull _caller || {isNil "ALiVE_hub_registry"} || {!(_netId in ALiVE_hub_registry)}) exitWith {};
+        private _e = ALiVE_hub_registry get _netId;
+        private _hub = _netId call BIS_fnc_objectFromNetId;
+        if (isNull _hub) exitWith {};
+        private _may = (["isAdmin", [_caller]] call ALIVE_fnc_hub)
+            || {(["unitSide", [_caller]] call ALIVE_fnc_hub) == (_e select 0) && {["mayDismantle", [_caller, _hub]] call ALIVE_fnc_hub}};
+        if (!_may) exitWith {
+            ["notify", ["STR_ALIVE_HUB_REFUSED_NOT_ALLOWED", []]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller];
+            ["ALiVE Logistics Hub - %1 asked to rename %2, refused: Who Can Dismantle doesn't let them", name _caller, _netId] call ALiVE_fnc_dump;
+        };
+        _name = ["cleanName", [_name]] call ALIVE_fnc_hub;
+        _hub setVariable ["ALiVE_hub_name", _name, true];
+        _e set [9, _name];
+        ["ALiVE Logistics Hub - %1 named %2 at %3 [%4]", name _caller, typeOf _hub, mapGridPosition _hub, _name] call ALiVE_fnc_dump;
+        if (_name == "") then {
+            ["notify", ["STR_ALIVE_HUB_RENAME_CLEARED", []]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller];
+        } else {
+            ["notify", ["STR_ALIVE_HUB_RENAMED", [_name]]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller];
+        };
+        _result = true;
+    };
+
     case "init": {
         _args params [["_logic", objNull, [objNull]]];
         if (isNull _logic || {!isServer}) exitWith {};
@@ -91,9 +173,9 @@ switch (_op) do {
         private _text = { params ["_name", "_default"]; private _v = _logic getVariable [_name, _default]; if (_v isEqualType "") then { _v } else { str _v } };
         private _side = toUpper (["hub_side", "WEST"] call _text);
         if !(_side in ["WEST", "EAST", "GUER"]) then { _side = "WEST" };
-        private _radius = parseNumber (["hub_radius", "10"] call _text);
-        if (_radius <= 0) then { _radius = 10 };
-        _radius = (_radius max 2) min 100;
+        private _radius = parseNumber (["hub_radius", "30"] call _text);
+        if (_radius <= 0) then { _radius = 30 };
+        _radius = (_radius max 2) min 200;
         private _who = toUpper (["hub_collect_who", "SIDE"] call _text);
         _who = (((_who splitString "[]""', ") select { _x in ["SIDE", "LEADER", "ITEM", "LIST"] }) joinString ",");
         private _names = ["hub_collect_list", ""] call _text;
@@ -122,6 +204,8 @@ switch (_op) do {
         private _collect = (_synced findIf { typeOf _x == "ALiVE_SUP_PLAYER_RESUPPLY" }) > -1;
         private _mlMods = _synced select { typeOf _x == "ALiVE_mil_logistics" };
         _logic setVariable ["ALiVE_hub_collect", _collect, true];
+        // for the Manage Hub window: whether the AI Commanders supply from these hubs
+        _logic setVariable ["ALiVE_hub_supplies", _mlMods isNotEqualTo [], true];
         if (!_collect && {_mlMods isEqualTo []}) then {
             ["ALiVE Logistics Hub: the module at %1 is synced to neither Player Combat Logistics nor Military Logistics, so its hubs do nothing. Sync it to one or both.", mapGridPosition _logic] call ALiVE_fnc_dumpR;
         };
@@ -153,6 +237,8 @@ switch (_op) do {
         _logic setVariable ["ALiVE_hub_mlMods", _mlMods];
         { ["tag", [_x, _logic]] call ALIVE_fnc_hub } forEach _hubs;
         publicVariable "ALiVE_hub_list";
+        // every player's machine, joining later too, keeps the hubs on its map
+        ["markers", []] remoteExec ["ALIVE_fnc_hub", 0, "ALiVE_hub_markers"];
         ["ALiVE Logistics Hub: %1 hubs of side %2, radius %3 m, Who Can Collect [%4], Collect %5, enemy can dismantle %6, repair %7 s, Who Can Dismantle [%8]",
             count _hubs, _side, _radius, _who, ["off (not synced to Player Combat Logistics)", "on"] select _collect, _dismantle, _repairTime, _dWho] call _debug;
 
@@ -193,7 +279,7 @@ switch (_op) do {
     };
 
     // One object becomes a hub: in the registry, its state broadcast, on the public list, a handler for
-    // its destruction and the two dismantle hold actions. The actions are added once and never removed:
+    // its destruction and the enemy's dismantle hold action. The actions are added once and never removed:
     // their conditions read the hub's state, so they hide while it is down and show again after a repair.
     case "tag": {
         _args params [["_hub", objNull, [objNull]], ["_logic", objNull, [objNull]]];
@@ -204,8 +290,12 @@ switch (_op) do {
         private _netId = _hub call BIS_fnc_netId;
         // side, alive, owning module, offers Collect, source Military Logistics modules, and what a
         // rebuild needs: class, position, direction, up vector
+        // and its name, set in Eden, by a Zeus or from the Manage Hub window
+        private _name = ["cleanName", [_hub getVariable ["ALiVE_hub_name", ""]]] call ALIVE_fnc_hub;
+        _hub setVariable ["ALiVE_hub_name", _name, true];
         ALiVE_hub_registry set [_netId, [_side, true, _logic, _logic getVariable ["ALiVE_hub_collect", false], _logic getVariable ["ALiVE_hub_mlMods", []],
-            typeOf _hub, getPosATL _hub, getDir _hub, vectorUp _hub]];
+            typeOf _hub, getPosATL _hub, getDir _hub, vectorUp _hub, _name]];
+        _hub setVariable ["ALiVE_hub_backAt", -1, true];
         _hub setVariable ["ALiVE_hub", [_side, true, _s select 1, _logic], true];
         ALiVE_hub_list pushBackUnique _hub;
 
@@ -234,11 +324,8 @@ switch (_op) do {
             // a dedicated server has no player to hold it
             ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, "ALiVE_hub_enemy_" + _netId];
         };
-        // its own side: Who Can Dismantle, admins always
-        [_hub, localize "STR_ALIVE_HUB_ACTION_DISMANTLE", _icon, _icon,
-            "_this distance2D _target < (8 max ((sizeOf typeOf _target) / 2)) && {(_target getVariable ['ALiVE_hub', []]) params [['_s', ''], ['_a', false]]; _a && {(['unitSide', [_this]] call ALIVE_fnc_hub) == _s} && {['mayDismantle', [_this, _target]] call ALIVE_fnc_hub}}",
-            "_caller distance2D _target < (8 max ((sizeOf typeOf _target) / 2))", {}, {}, _done, {}, [], _s select 8, 6, false
-        ] remoteExec ["BIS_fnc_holdActionAdd", [0, -2] select isDedicated, "ALiVE_hub_own_" + _netId];
+        // Manage Hub, for its own side, which is also where it dismantles its hub (Who Can Dismantle, admins always)
+        ["action", [_hub]] remoteExec ["ALIVE_fnc_hubManage", [0, -2] select isDedicated, "ALiVE_hub_manage_" + _netId];
     };
 
     case "settings": {
@@ -526,26 +613,42 @@ switch (_op) do {
         _result set [0, _why];
     };
 
-    // An admin's change to Who Can Collect, through ALIVE_fnc_hubRequest only. Holds until the
-    // mission restarts.
+    // A change to Who Can Collect or Who Can Dismantle, through ALIVE_fnc_hubRequest only. Holds until
+    // the mission restarts.
     case "permissions": {
         _result = false;
-        _args params [["_rules", "", [""]], ["_names", "", [""]], ["_netId", "", [""]], ["_kind", "COLLECT", [""]]];
+        _args params [["_rules", "", [""]], ["_names", "", [""]], ["_netId", "", [""]], ["_kind", "COLLECT", [""]], ["_dRules", "", [""]], ["_dNames", "", [""]]];
         if (isNil "_ALiVE_hubCaller") exitWith {};
         private _caller = _ALiVE_hubCaller;
         _kind = toUpper _kind;
-        if !(_kind in ["COLLECT", "DISMANTLE"]) exitWith {};
-        private _what = ["collect", "dismantle"] select (_kind == "DISMANTLE");
-        if (isNull _caller || {!(["isAdmin", [_caller]] call ALIVE_fnc_hub)}) exitWith {
-            ["ALiVE Logistics Hub - %1 asked to change who can %2, but is no admin", name _caller, _what] call ALiVE_fnc_dump;
+        if !(_kind in ["COLLECT", "DISMANTLE", "BOTH"]) exitWith {};
+        private _what = switch (_kind) do { case "DISMANTLE": {"dismantle"}; case "BOTH": {"collect and dismantle"}; default {"collect"} };
+        if (isNull _caller) exitWith {};
+        // for one hub, a player of its side Who Can Dismantle lets in may change them too (Jman, 29 Oct)
+        private _admin = ["isAdmin", [_caller]] call ALIVE_fnc_hub;
+        private _hubObj = if (_netId == "") then { objNull } else { _netId call BIS_fnc_objectFromNetId };
+        if (!_admin && {isNull _hubObj || {(["unitSide", [_caller]] call ALIVE_fnc_hub) != ((_hubObj getVariable ["ALiVE_hub", []]) param [0, ""])} || {!(["mayDismantle", [_caller, _hubObj]] call ALIVE_fnc_hub)}}) exitWith {
+            ["ALiVE Logistics Hub - %1 asked to change who can %2, but is no admin and Who Can Dismantle doesn't let them", name _caller, _what] call ALiVE_fnc_dump;
+            if (_kind == "BOTH") then { ["notify", ["STR_ALIVE_HUB_REFUSED_NOT_ALLOWED", []]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller] };
         };
-        _rules = (((toUpper _rules) splitString "[]""', ") select { _x in ["SIDE", "LEADER", "ITEM", "LIST"] }) joinString ",";
-        _names = toString (((toArray _names) select { _x >= 32 && {!(_x in [34, 38, 39, 60, 62])} }) select [0, 2000]);
+        private _clean = {
+            params ["_r", "_n"];
+            [(((toUpper _r) splitString "[]""', ") select { _x in ["SIDE", "LEADER", "ITEM", "LIST"] }) joinString ",",
+                toString (((toArray _n) select { _x >= 32 && {!(_x in [34, 38, 39, 60, 62])} }) select [0, 2000])]
+        };
+        ([_rules, _names] call _clean) params ["_rules", "_names"];
+        ([_dRules, _dNames] call _clean) params ["_dRules", "_dNames"];
         if (_netId != "" && {isNil "ALiVE_hub_registry" || {!(_netId in ALiVE_hub_registry)}}) exitWith {
             ["ALiVE Logistics Hub - %1 named %2, which is no hub, so nothing changed", name _caller, _netId] call ALiVE_fnc_dump;
             ["ALiVE", localize "STR_ALIVE_HUB_PERMISSIONS_NONE"] remoteExec ["ALIVE_fnc_sendHint", owner _caller];
         };
         private _modules = if (_netId == "") then { missionNamespace getVariable ["ALiVE_hub_modules", []] } else { [(ALiVE_hub_registry get _netId) select 2] };
+        if (_kind == "BOTH") exitWith {
+            { _x setVariable ["ALiVE_hub_perm_collect", [_rules, _names], true]; _x setVariable ["ALiVE_hub_perm_dismantle", [_dRules, _dNames], true] } forEach _modules;
+            ["ALiVE Logistics Hub - %1 set who can collect to [%2] list [%3], who can dismantle to [%4] list [%5], on %6 module(s)", name _caller, _rules, _names, _dRules, _dNames, count _modules] call ALiVE_fnc_dump;
+            ["notify", ["STR_ALIVE_HUB_PERMISSIONS_SET_BOTH", [count _modules]]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller];
+            _result = true;
+        };
         { _x setVariable [["ALiVE_hub_perm_collect", "ALiVE_hub_perm_dismantle"] select (_kind == "DISMANTLE"), [_rules, _names], true] } forEach _modules;
         ["ALiVE Logistics Hub - %1 set who can %2 to [%3], list [%4], on %5 module(s)", name _caller, _what, _rules, _names, count _modules] call ALiVE_fnc_dump;
         ["ALiVE", format [localize (["STR_ALIVE_HUB_PERMISSIONS_SET", "STR_ALIVE_HUB_PERMISSIONS_SET_DISMANTLE"] select (_kind == "DISMANTLE")), count _modules]] remoteExec ["ALIVE_fnc_sendHint", owner _caller];
@@ -613,6 +716,8 @@ switch (_op) do {
         private _n = (ALiVE_hub_downs getOrDefault [_netId, 0]) + 1;
         ALiVE_hub_downs set [_netId, _n];
         if ((_s select 9) > 0) then {
+            // when it comes back, for the Manage Hub window
+            if (!isNull _hub) then { _hub setVariable ["ALiVE_hub_backAt", ([time, serverTime] select isMultiplayer) + (_s select 9), true] };
             [_netId, _s select 9, _n] spawn {
                 params ["_netId", "_wait", "_n"];
                 sleep _wait;
@@ -626,7 +731,7 @@ switch (_op) do {
         if (!isServer || {isNil "ALiVE_hub_registry"} || {!(_netId in ALiVE_hub_registry)}) exitWith {};
         private _e = ALiVE_hub_registry get _netId;
         if (_e select 1) exitWith {};
-        _e params ["_side", "", "_logic", "", "", "_class", "_pos", "_dir", "_up"];
+        _e params ["_side", "", "_logic", "", "", "_class", "_pos", "_dir", "_up", ["_name", ""]];
         private _hub = _netId call BIS_fnc_objectFromNetId;
         // mended where it stands, and its ruins cleared; a dismantled hub has none, so nothing nearby is touched
         if (isNull _hub || {!alive _hub}) then {
@@ -638,9 +743,12 @@ switch (_op) do {
             if (!isNull _hub) then { deleteVehicle _hub };
             remoteExec ["", "ALiVE_hub_enemy_" + _netId];
             remoteExec ["", "ALiVE_hub_own_" + _netId];
+            remoteExec ["", "ALiVE_hub_manage_" + _netId];
             ALiVE_hub_registry deleteAt _netId;
             ALiVE_hub_list = ALiVE_hub_list select { !isNull _x && {_x != _hub} };
             _hub = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
+            // it keeps its name
+            _hub setVariable ["ALiVE_hub_name", _name];
             _hub setDir _dir;
             _hub setVectorUp _up;
             _hub setPosATL _pos;
@@ -652,6 +760,7 @@ switch (_op) do {
         } else {
             _e set [1, true];
             _hub setVariable ["ALiVE_hub", [_side, true, (["settings", [_logic]] call ALIVE_fnc_hub) select 1, _logic], true];
+            _hub setVariable ["ALiVE_hub_backAt", -1, true];
         };
         ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
         ["ALiVE", format [localize "STR_ALIVE_HUB_BACK", mapGridPosition _pos]] remoteExec ["ALIVE_fnc_sendHint", [_side] call ALIVE_fnc_sideTextToObject];
