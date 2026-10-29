@@ -740,6 +740,7 @@ switch (_operation) do {
                 {
                     private _factionRoster = [_x, _excludeKinds] call ALiVE_fnc_INS_buildTieredGroupRoster;
                     [_tieredGroupRoster, _x, _factionRoster] call ALiVE_fnc_hashSet;
+                    ["ALiVE OPCOM asymmetric recruits for %1: %2 infantry, %3 light, %4 medium groups", _x, count (_factionRoster select 0), count (_factionRoster select 1), count (_factionRoster select 2)] call ALiVE_fnc_dump;
                 } foreach _factions;
                 [_handler,"tieredGroupRoster", _tieredGroupRoster] call ALiVE_fnc_HashSet;
                 [_handler,"escalationLevel", "infantry"] call ALiVE_fnc_HashSet;

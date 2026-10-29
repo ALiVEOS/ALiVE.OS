@@ -248,7 +248,7 @@ ALiVE_fnc_INS_classifyGroupTier = {
 
 // Build a tiered group roster for a faction, usable by the asymmetric
 // progressive recruitment feature. Walks the faction's CfgGroups
-// categories, classifies each group via INS_classifyGroupTier, buckets
+// categories (a Faction Compiler faction's own groups instead), classifies each group via INS_classifyGroupTier, buckets
 // by tier. "excluded" groups are dropped entirely from the roster.
 //
 // Return format (positional index so callers can use select):
@@ -265,9 +265,6 @@ ALiVE_fnc_INS_buildTieredGroupRoster = {
                 private _roster = [[], [], []];
                 if (_faction == "") exitWith {_roster};
 
-                private _groupsConfig = _faction call ALiVE_fnc_configGetFactionGroups;
-                if (isNull _groupsConfig) exitWith {_roster};
-
                 // As the infantry-only picker does: blacklisted groups (the mission's own list
                 // included) and groups with no units are left out, and the infantry tier comes
                 // from the faction's Infantry category only, so a tank crew or divers aren't
@@ -281,6 +278,43 @@ ALiVE_fnc_INS_buildTieredGroupRoster = {
                         if (!isNil "_mapped" && {_mapped isEqualType ""}) then { _infantryCategory = _mapped };
                     };
                 };
+
+                // A Faction Compiler faction keeps its groups in the compiler's own table under group ids,
+                // not in CfgGroups. Its mapping points CfgGroups at the faction it was built from, so
+                // reading CfgGroups recruited that faction's groups instead, or nobody at all. Its groups
+                // are read from the compiler, and the ids recruited go back through
+                // createProfilesFromGroupConfig, which hands them to the compiler to spawn.
+                private _compiledGroups = [];
+                if (!isNil "ALIVE_factionCustomMappings" && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
+                    private _mapping = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
+                    if ([_mapping, "CompiledFaction", false] call ALIVE_fnc_hashGet) then {
+                        private _factionData = [[_mapping, "FactionName", _faction] call ALIVE_fnc_hashGet] call ALIVE_fnc_factionCompilerGetFactionData;
+                        _compiledGroups = if (isNil "_factionData") then { [[], [], []] } else { [_factionData, "compiledGroups", [[], [], []]] call ALIVE_fnc_hashGet };
+                    };
+                };
+
+                if (_compiledGroups isNotEqualTo []) exitWith {
+                    {
+                        private _groupData = (_compiledGroups select 2) select _forEachIndex;
+                        if !(_x in _blacklist) then {
+                            private _classes = (([_groupData, "units", []] call ALIVE_fnc_hashGet) apply { [_x, "class", ""] call ALIVE_fnc_hashGet })
+                                + (([_groupData, "vehicles", []] call ALIVE_fnc_hashGet) apply { [_x, "class", ""] call ALIVE_fnc_hashGet });
+                            _classes = _classes - [""];
+                            if (_classes isNotEqualTo []) then {
+                                private _tier = [_classes, _excludedKinds] call ALiVE_fnc_INS_classifyClassesTier;
+                                switch (_tier) do {
+                                    case "infantry": { if (([_groupData, "category", ""] call ALIVE_fnc_hashGet) == _infantryCategory) then { (_roster select 0) pushBack _x }; };
+                                    case "light":    { (_roster select 1) pushBack _x; };
+                                    case "medium":   { (_roster select 2) pushBack _x; };
+                                };
+                            };
+                        };
+                    } forEach (_compiledGroups select 1);
+                    _roster
+                };
+
+                private _groupsConfig = _faction call ALiVE_fnc_configGetFactionGroups;
+                if (isNull _groupsConfig) exitWith {_roster};
 
                 for "_i" from 0 to (count _groupsConfig - 1) do {
                     private _categoryConfig = _groupsConfig select _i;
