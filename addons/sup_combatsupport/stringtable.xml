@@ -485,7 +485,7 @@
     <Russian>Подразделение выдвинется к месту, обеспечит непосредственную авиаподдержку и атакует все отмеченные цели</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_CAS_DESC_LOITER">
-    <English>Unit will move to location and orbit it at the chosen altitude. With Hold Fire it only watches; with Fire At Will it covers the area and engages hostiles it sees</English>
+    <English>Orbits the location at the chosen altitude. On Hold Fire it only watches; on Fire At Will it engages hostiles it sees</English>
     <Chinesesimp>单位将前往该位置并在所选高度盘旋。停火时只观察；自由开火时会掩护该区域并攻击发现的敌人</Chinesesimp>
     <Chinese>單位將前往該位置並在所選高度盤旋。停火時只觀察；自由開火時會掩護該區域並攻擊發現的敵人</Chinese>
     <Spanish>La unidad irá a la ubicación y la orbitará a la altitud elegida. Con Alto el fuego solo observa; con Fuego a discreción cubre la zona y ataca a los hostiles que vea</Spanish>
@@ -494,7 +494,7 @@
     <Russian>Подразделение выдвинется к месту и будет кружить на выбранной высоте. При «Не стрелять» только наблюдает; при «Огонь по готовности» прикрывает район и атакует замеченного противника</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_CAS_DESC_ROE">
-    <English>Unit engages all hostiles in the target area, including unmanned vehicles. Lase a target to designate it manually - the pilot will prioritise your laser. Automatic uses the best weapon first and switches as ammo runs out; pick a specific weapon below to force it</English>
+    <English>Engages every hostile in the area, drones included. Lase a target and the pilot hits it first. Pick a weapon below to force it</English>
     <Chinesesimp>单位攻击目标区域内所有敌人，包括无人载具。用激光标定目标即可手动指定，飞行员会优先攻击你的激光。自动模式先用最合适的武器，弹药耗尽时切换；在下方选择具体武器可强制使用</Chinesesimp>
     <Chinese>單位攻擊目標區域內所有敵人，包括無人載具。用雷射標定目標即可手動指定，飛行員會優先攻擊你的雷射。自動模式先用最合適的武器，彈藥耗盡時切換；在下方選擇具體武器可強制使用</Chinese>
     <Spanish>La unidad ataca a todos los hostiles de la zona objetivo, incluidos los vehículos no tripulados. Ilumina un objetivo con láser para designarlo: el piloto dará prioridad a tu láser. Automático usa primero la mejor arma y cambia al agotarse la munición; elige un arma abajo para forzarla</Spanish>

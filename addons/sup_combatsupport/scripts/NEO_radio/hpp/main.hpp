@@ -464,10 +464,10 @@ class NEO_resourceRadio
                         h = 0.028 * GUI_GRID_HAbs;
                         text = "$STR_ALIVE_CS_UI_GRID";
                         sizeEx = CS_BTN_SIZE;
-                        colorText[] = {0.25,0.25,0.25,1}; // darker grey - more visible on the light header band
+                        colorText[] = {1,1,1,1}; // white - the header is dark
                         class Attributes
                         {
-                                color = "#404040";
+                                color = "#FFFFFF";
                         };
                 };
                 class NEO_radioGridEdit : NEO_RscEdit
@@ -479,7 +479,9 @@ class NEO_resourceRadio
                         h = 0.036 * GUI_GRID_HAbs;
                         text = "";
                         sizeEx = 0.034; // larger, comfortably readable
-                        colorText[] = {0.1,0.1,0.1,1}; // dark - readable on the light input box
+                        colorText[] = {1,1,1,1}; // white on the box's dark grey fill
+                        colorBackground[] = {0.173,0.173,0.173,1}; // the lists' fill, so the box shows where to type
+                        colorSelection[] = {0.384,0.439,0.341,1};
                         class Attributes
                         {
                                 valign = "middle";

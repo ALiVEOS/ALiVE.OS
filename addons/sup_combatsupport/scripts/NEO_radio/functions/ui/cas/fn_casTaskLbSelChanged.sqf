@@ -27,9 +27,9 @@ private _listBackground = [0.047, 0.047, 0.047, 0.72];
 
 _show = switch (toUpper (_lb lbData _index)) do
 {
-    case "SAD" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_ATTACK"] };
-    case "LOITER" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_LOITER"] };
-    case "ATTACK" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_ROE"] };
+    case "SAD" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_ATTACK"] };
+    case "LOITER" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_LOITER"] };
+    case "ATTACK" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_ROE"] };
 };
 _veh = _casArray select (lbCurSel _casUnitLb) select 0;
 _casRadiusSlider = _display displayCtrl 655592;
