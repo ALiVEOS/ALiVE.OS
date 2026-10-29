@@ -141,6 +141,10 @@ class FobUI_RscListBox
 	w = 0.4;
 	h = 0.4;
 	rowHeight = 0;
+	// row pictures drawn white, as the game's own lists (they default to black)
+	colorPicture[] = {1,1,1,1};
+	colorPictureSelected[] = {1,1,1,1};
+	colorPictureDisabled[] = {1,1,1,0.5};
 	colorText[] =
 	{
 		1,
