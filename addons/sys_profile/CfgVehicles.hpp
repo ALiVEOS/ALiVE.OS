@@ -157,15 +157,6 @@ class CfgVehicles {
                     };
                     class virtualcombat_rangemodifier : Edit { property = "ALiVE_sys_profile_virtualcombat_rangemodifier"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER_COMMENT"; defaultValue = """255"""; };
 
-                    // ---- Outbreak (Game Mode on the Required module) -----------------------
-                    class HDR_OUTBREAK : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_OUTBREAK"; displayName = "OUTBREAK GAME MODE"; };
-                    class zombieFactions : Edit { property = "ALiVE_sys_profile_zombieFactions"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS_COMMENT"; defaultValue = """"""; };
-                    class zombieMeleeDamage : Edit { property = "ALiVE_sys_profile_zombieMeleeDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE_COMMENT"; defaultValue = """0.015"""; };
-                    class zombieHuntRange : Edit { property = "ALiVE_sys_profile_zombieHuntRange"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE_COMMENT"; defaultValue = """100"""; };
-                    class zombieBiteDamage : Edit { property = "ALiVE_sys_profile_zombieBiteDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE_COMMENT"; defaultValue = """0.3"""; };
-                    class zombieInfection : Combo { property = "ALiVE_sys_profile_zombieInfection"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-                    class zombieInfectionCap : Edit { property = "ALiVE_sys_profile_zombieInfectionCap"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP_COMMENT"; defaultValue = """40"""; };
-
                     // ---- Pathfinding ----------------------------------------------------
                     class HDR_PATH : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_PATH"; displayName = "PATHFINDING"; };
                     class pathfinding : Combo { property = "ALiVE_sys_profile_pathfinding"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT"; defaultValue = """true"""; class Values { class No{name="No";value=false;}; class Yes{name="Yes";value=true;default=1;}; }; };
@@ -243,6 +234,15 @@ class CfgVehicles {
                                 class Never  { name = "Never (infantry stay on land)";  value = "never"; };
                             };
                     };
+
+                    // ---- Outbreak (Game Mode on the Required module) -----------------------
+                    class HDR_OUTBREAK : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_OUTBREAK"; displayName = "OUTBREAK GAME MODE"; };
+                    class zombieFactions : Edit { property = "ALiVE_sys_profile_zombieFactions"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS_COMMENT"; defaultValue = """"""; };
+                    class zombieMeleeDamage : Edit { property = "ALiVE_sys_profile_zombieMeleeDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE_COMMENT"; defaultValue = """0.015"""; };
+                    class zombieHuntRange : Edit { property = "ALiVE_sys_profile_zombieHuntRange"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE_COMMENT"; defaultValue = """100"""; };
+                    class zombieBiteDamage : Edit { property = "ALiVE_sys_profile_zombieBiteDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE_COMMENT"; defaultValue = """0.3"""; };
+                    class zombieInfection : Combo { property = "ALiVE_sys_profile_zombieInfection"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
+                    class zombieInfectionCap : Edit { property = "ALiVE_sys_profile_zombieInfectionCap"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP_COMMENT"; defaultValue = """40"""; };
 
                     class ModuleDescription : ModuleDescription {};
                 };

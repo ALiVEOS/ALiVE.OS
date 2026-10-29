@@ -732,7 +732,7 @@ switch(_operation) do {
             private _garrisonCompositions = ([_logic, "garrisonCompositions"] call MAINCLASS) in [true, "true"];
             private _objectiveObjectsRaw = [_logic, "objectiveObjects"] call MAINCLASS;
             private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
-            private _factionSideNumber = getNumber(_factionConfig >> "side");
+            private _factionSideNumber = _faction call ALiVE_fnc_placementSideNumber;
             private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             private _countProfiles = 0;
             private _position = position _logic;
@@ -1131,7 +1131,7 @@ switch(_operation) do {
                     ["CMP - Artillery faction %1 not found in CfgFactionClasses - artillery reverts to the composition factions",_artilleryDonor] call ALiVE_fnc_dump;
                     _artilleryDonor = "";
                 } else {
-                    if (getNumber (_donorConfig >> "side") != _factionSideNumber) then {
+                    if ((_artilleryDonor call ALiVE_fnc_placementSideNumber) != _factionSideNumber) then {
                         ["CMP - Artillery faction %1 does not fight for side %2 - artillery reverts to the composition factions",_artilleryDonor,_side] call ALiVE_fnc_dump;
                         _artilleryDonor = "";
                     };
@@ -1229,7 +1229,7 @@ switch(_operation) do {
                 if (count _artyClasses == 0) then {
                     ["CMP [%1] - no faction has artillery groups OR artillery vehicles - nothing to place",_artyPullFactions] call ALiVE_fnc_dump;
                 } else {
-                    private _artySideNum = getNumber ((_artyFaction call ALiVE_fnc_configGetFactionClass) >> "side");
+                    private _artySideNum = (_artyFaction call ALiVE_fnc_placementSideNumber);
                     private _artySide = _artySideNum call ALIVE_fnc_sideNumberToText;
                     private _usedArtyPositions = [];
                     // #876 - guns per vehicle-composed battery (Eden attribute, default 4).
@@ -1574,7 +1574,7 @@ switch(_operation) do {
                             };
 
                             private _groupFactionConfig = _groupFaction call ALiVE_fnc_configGetFactionClass;
-                            private _groupFactionSideNumber = getNumber(_groupFactionConfig >> "side");
+                            private _groupFactionSideNumber = _groupFaction call ALiVE_fnc_placementSideNumber;
                             private _groupSide = _groupFactionSideNumber call ALIVE_fnc_sideNumberToText;
                             private _emptyProfiles = [_vehicleReserveClass, _groupSide, _groupFaction, _vehiclePos, _vehicleDir, false, _groupFaction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
                             private _profileEntity = _emptyProfiles select 0;

@@ -282,7 +282,9 @@ switch (_mode) do {
                 // structured text 100) belongs to no section and always shows
                 private _info = _x controlsGroupCtrl 101;
                 if (!isNull _info && {ctrlType _info == 15} && {ctrlType (_info controlsGroupCtrl 100) == 13}) then { _show = true };
-                if (_show || {_x getVariable ["alive_secHdr", false]}) then {
+                // a setting that only applies to another choice (alive_rowOff, e.g. Zombie Side outside
+                // Outbreak: fnc_edenGameModeToggle.sqf) hides even in an open section
+                if ((_show && {!(_x getVariable ["alive_rowOff", false])}) || {_x getVariable ["alive_secHdr", false]}) then {
                     if (_x getVariable ["alive_secHidden", false]) then {
                         _x setVariable ["alive_secHidden", false];
                         _x ctrlShow true;

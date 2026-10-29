@@ -1748,6 +1748,13 @@ class factionSide
 	ALIVE_RECOMPILE;
 };
 
+class placementSideNumber
+{
+	file = "\x\alive\addons\x_lib\functions\misc\fnc_placementSideNumber.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class getDominantFaction
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_getDominantFaction.sqf";

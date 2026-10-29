@@ -333,7 +333,7 @@ switch(_operation) do {
             };
 
             private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
-            private _factionSideNumber = getNumber(_factionConfig >> "side");
+            private _factionSideNumber = _faction call ALiVE_fnc_placementSideNumber;
             private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
 						private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
             private _countProfiles = 0;

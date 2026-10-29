@@ -170,6 +170,17 @@ class Cfg3DEN
 
         class Combo; // Forward declaration of BI Combo attribute control
 
+        // Game Mode and Zombie Side on ALiVE (Required): Eden's own combo, then Zombie Side shows only
+        // while Game Mode is Outbreak (fnc_edenGameModeToggle.sqf).
+        class ALiVE_GameModeCombo: Combo
+        {
+            attributeLoad = "call compile getText (configFile >> 'Cfg3DEN' >> 'Attributes' >> 'Combo' >> 'attributeLoad'); ['gamemode', _this] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenGameModeToggle.sqf'";
+        };
+        class ALiVE_ZombieSideCombo: Combo
+        {
+            attributeLoad = "call compile getText (configFile >> 'Cfg3DEN' >> 'Attributes' >> 'Combo' >> 'attributeLoad'); ['zombieside', _this] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenGameModeToggle.sqf'";
+        };
+
         // ctrlControlsGroupNoScrollbars / ctrlListBox / ctrlStatic forward
         // declarations live at top-of-file (outside class Cfg3DEN), not
         // here - see the rationale there. Attempting to forward-decl them
@@ -2549,6 +2560,7 @@ class CfgVehicles {
             class ALiVE_GAMEMODE: Combo
             {
                 property =  MVAR(ALiVE_GAMEMODE);
+                control = "ALiVE_GameModeCombo";
                 displayName = "$STR_ALiVE_GAMEMODE";
                 tooltip = "$STR_ALiVE_GAMEMODE_COMMENT";
                 typeName = "STRING";
@@ -2570,6 +2582,7 @@ class CfgVehicles {
             class ALiVE_ZOMBIESIDE: Combo
             {
                 property =  MVAR(ALiVE_ZOMBIESIDE);
+                control = "ALiVE_ZombieSideCombo";
                 displayName = "$STR_ALiVE_ZOMBIESIDE";
                 tooltip = "$STR_ALiVE_ZOMBIESIDE_COMMENT";
                 typeName = "STRING";
