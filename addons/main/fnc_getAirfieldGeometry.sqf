@@ -251,7 +251,11 @@ if (count _retainedSurvey > 0) then {
             // One case-insensitive search. Global matches preserve objects whose
             // names contain both categories; repeated matches still emit one segment.
             // regexFind returns [[matched text, offset], ...] for each match.
-            private _matches = (str _x) regexFind ["runway_(?:main|secondary|beton)|taxiway/gi"];
+            // Altis lays its dirt airstrips (the AAC strip measured) from invisibleroadway pieces, 20 m
+            // squares from the vanilla runway set, with no runway_* piece at all. Counted as runway
+            // they keep a Field HQ and other compositions off those strips; they count as slabs, so
+            // the main runway's centreline is still drawn from runway_main / runway_secondary only.
+            private _matches = (str _x) regexFind ["runway_(?:main|secondary|beton)|invisibleroadway|taxiway/gi"];
             private _isRunway = false;
             private _isTaxiway = false;
             {
