@@ -61,4 +61,9 @@ class CfgALiVELists {
         staticTier = 2;
         fold = 1;
     };
+    // the Player FOBs' list when its Build List Preset is not set
+    class FOB_STANDARD {
+        inherit = "INFANTRY";
+        fold = 1;
+    };
 };

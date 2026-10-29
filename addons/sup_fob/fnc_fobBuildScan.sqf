@@ -144,6 +144,33 @@ _whitelist append ((([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB
 } forEach ((([_logic, "attribute", ["fob_only"]] call ALiVE_fnc_FOB) regexReplace [" *= *", "="] regexReplace ["\s*>\s*", ">"]) splitString ", ;");
 private _onlySeen = [];
 _only = _only select { private _k = toLower _x; if (_k in _onlySeen) then { false } else { _onlySeen pushBack _k; true } };
+// The Build List (Build List Preset, or Custom and a name): a named list from CfgALiVELists, ready-made
+// or the mission's. Its only, never and also join the lists above and its prices sit under theirs; its
+// kinds cut the scan below. Not set, or a name no list has, is FOB_STANDARD: Infantry, one of each model.
+private _listName = [_logic, "attribute", ["fob_buildpreset"]] call ALiVE_fnc_FOB;
+if (_listName == "CUSTOM") then {
+    _listName = trim ([_logic, "attribute", ["fob_buildpreset_name"]] call ALiVE_fnc_FOB);
+    if (_listName == "") then { ["ALiVE Player FOBs - Build List Preset is Custom but Custom List Name is empty, so FOB_STANDARD is used"] call ALiVE_fnc_dumpR };
+};
+if (_listName == "" || {!(isClass (missionConfigFile >> "CfgALiVELists" >> _listName) || {isClass (configFile >> "CfgALiVELists" >> _listName)})}) then {
+    if (_listName != "") then { ["ALiVE Player FOBs - Build List %1 isn't a list in CfgALiVELists, so FOB_STANDARD is used", _listName] call ALiVE_fnc_dumpR };
+    _listName = "FOB_STANDARD";
+};
+private _listRules = ["get", _listName] call ALIVE_fnc_lists;
+private _listToken = { if ((_x select 0) == "") then { _x select 1 } else { (_x select 0) + ">" + (_x select 1) } };
+// a backpack sits in both the Classes and Gear lists, so each name joins once
+{
+    if !((toLower _x) in _onlySeen) then { _onlySeen pushBack toLower _x; _only pushBack _x };
+} forEach ((_listRules get "onlyClasses") + ((_listRules get "onlyGroups") apply _listToken) + (_listRules get "onlyGear"));
+{ _blacklist pushBackUnique toLower _x } forEach ((_listRules get "neverClasses") + ((_listRules get "neverGroups") apply _listToken) + (_listRules get "neverGear"));
+{
+    private _k = toLower _x;
+    if ((_whitelist findIf { toLower _x == _k }) < 0) then { _whitelist pushBack _x };
+} forEach ((_listRules get "alsoClasses") + ((_listRules get "alsoGroups") apply _listToken) + (_listRules get "alsoGear"));
+{ if !(_x in _fixed) then { _fixed set [_x, _y] } } forEach (_listRules get "prices");
+// what the mission names (Build Only These, Also Build, its Build List, a FOB type's extras below) is
+// offered whatever faction it is from (ALiVE_fnc_FOB factionAllows)
+private _namedAll = (_only + _whitelist) apply { toLower _x };
 // never the kit or supply crate themselves: one built here would be a crate of supply for its build price
 _blacklist append ["alive_fob_kit", "alive_fob_supplycrate"];
 // nor a mod's stand-in that only looks like a vehicle to the config: the USS Nimitz mod's spawner (an
@@ -214,6 +241,20 @@ private _groupAlso = _whitelist select { [_x] call _isGroupToken };
 private _groupNever = _blacklist select { [_x] call _isGroupToken };
 _only = _only select { !([_x] call _isTroop) };
 _whitelist = _whitelist select { !([_x] call _isTroop) };
+// a Build List whose kinds leave out gear (Supplies, a mission's own) has no FOB Arsenal, unless Build
+// Only These or Also Build names gear, which the Arsenal then keeps alone. An Only list of objects sets
+// the build list itself, so its kinds don't count.
+ALiVE_FOB_gearCut = false;
+private _listKinds = _listRules get "kinds";
+if (_arsenal && {_listKinds isNotEqualTo []} && {!("GEAR" in _listKinds)} && {_only isEqualTo []}) then {
+    if ((_gearOnly + _gearAlso) isEqualTo []) then {
+        _blacklist pushBack "alive_fob_arsenal";
+        ALiVE_FOB_gearCut = true;
+        ["ALiVE Player FOBs - Build List %1 leaves out gear, so the FOB Arsenal is left out", _listName] call ALiVE_fnc_dumpR;
+    } else {
+        ALiVE_FOB_gearOverrides = [+_blacklist, _gearOnly + _gearAlso, [], +_fixed];
+    };
+};
 private _troopRules = createHashMap;
 // a FOB type's own groups answer only to Never Build, as its other extras do
 private _troopNeverRules = createHashMap;
@@ -486,22 +527,15 @@ private _add = {
 private _presetTroops = true;
 private _presetDropped = createHashMap;
 private _presetDrop = createHashMap;
+// a list's cut from CfgALiVELists (ALIVE_fnc_lists), [] when it cuts nothing
 private _presetSpec = {
     params ["_p"];
-    switch (_p) do {
-        case "OUTPOST": { [["FORTIFICATION", "SUPPLY"], [], 0, false, true] };
-        case "FORTIFIED": { [["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE"], ["CAR", "TRUCK", "BOAT"], 3, true, false] };
-        case "INFANTRY": { [["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE"], ["CAR", "TRUCK"], 2, true, true] };
-        case "LOGISTICS": { [["FORTIFICATION", "SUPPLY", "VEHICLE"], ["TRUCK", "BOAT"], 0, false, false] };
-        case "ALL";
-        case "": { [] };
-        default {
-            ["ALiVE Player FOBs - Build List Preset %1 is not one of Outpost, Fortified, Infantry or Logistics, so nothing is left out for it", _p] call ALiVE_fnc_dumpR;
-            []
-        };
-    }
+    private _r = ["get", _p] call ALIVE_fnc_lists;
+    private _k = _r get "kinds";
+    if (_k isEqualTo [] && {(_r get "staticTier") < 0} && {!(_r get "fieldWorksOnly")}) exitWith { [] };
+    [_k, _r get "vehicleKinds", [_r get "staticTier", 3] select ((_r get "staticTier") < 0), _k isEqualTo [] || {"TROOPS" in _k}, _r get "fieldWorksOnly"]
 };
-private _preset = [_logic, "attribute", ["fob_buildpreset"]] call ALiVE_fnc_FOB;
+private _preset = _listName;
 private _fobTypes = missionNamespace getVariable ["ALiVE_FOB_types", []];
 // The module's preset always counts, even when every type names its own: a FOB with no type (a saved
 // one whose type is gone) falls back to it
@@ -535,10 +569,10 @@ if (_cuts && {_only isEqualTo []}) then {
         if (_r isEqualTo []) exitWith {true};
         _r params ["_kinds", "_vehicles", "_staticTier", "", ["_fieldOnly", false]];
         _row params ["_class", "", "_kind", "", "", "_tier"];
-        (_kind in _kinds)
+        (_kinds isEqualTo [] || {_kind in _kinds})
         && {_kind != "FORTIFICATION" || {!_fieldOnly} || {[_class] call _isFieldWork}}
         && {_kind != "STATIC" || {_tier <= _staticTier && {getNumber (configFile >> "CfgVehicles" >> _class >> "artilleryScanner") != 1}}}
-        && {_kind != "VEHICLE" || {([_class] call _vehicleKind) in _vehicles}}
+        && {_kind != "VEHICLE" || {_vehicles isEqualTo []} || {([_class] call _vehicleKind) in _vehicles}}
     };
     private _before = count _rows;
     private _kept = [];
@@ -558,6 +592,43 @@ if (_cuts && {_only isEqualTo []}) then {
     } forEach _rows;
     _rows = _kept;
     ["ALiVE Player FOBs - Build List Preset %1 keeps %2 of %3 items", _inUse, count _rows, _before] call ALiVE_fnc_dumpR;
+};
+
+// One of each model when the Build List folds (FOB_STANDARD does): camo and loadout variants into the
+// plainest, per side and faction for vehicles and static weapons, as the menu offers those by faction.
+// Never what Also Build, a price or a FOB type names, nor anything under a Build Only These list.
+// A list in use that doesn't fold (a type's preset=ALL) keeps every variant: a row only some lists fold
+// away stays and is listed against those in _presetDrop, as the kind cut does.
+private _folders = _inUse select { ((["get", _x] call ALIVE_fnc_lists) get "fold") > 0 };
+if (_folders isNotEqualTo [] && {_only isEqualTo []}) then {
+    private _named = (_whitelist apply { toLower _x }) + (keys _fixed);
+    { _named append (_x select 5) } forEach _fobTypes;
+    private _foldRules = createHashMapFromArray [["fold", 1], ["alsoClasses", _named]];
+    private _groups = createHashMap;
+    {
+        private _g = if ((_x select 2) in ["VEHICLE", "STATIC"]) then { (_x select 6) + "|" + (_x select 7) } else { "" };
+        private _l = _groups getOrDefault [_g, []];
+        if (_l isEqualTo []) then { _groups set [_g, _l] };
+        _l pushBack (_x select 0);
+    } forEach _rows;
+    private _keepFold = createHashMap;
+    { { _keepFold set [toLower _x, true] } forEach (["fold", [_foldRules, _y]] call ALIVE_fnc_lists) } forEach _groups;
+    private _before = count _rows;
+    if (count _folders == count _inUse) then {
+        _rows = _rows select { (toLower (_x select 0)) in _keepFold };
+    } else {
+        {
+            private _c = toLower (_x select 0);
+            if !(_c in _keepFold) then {
+                {
+                    private _l = _presetDrop getOrDefault [_x, []];
+                    if (_l isEqualTo []) then { _presetDrop set [_x, _l] };
+                    _l pushBackUnique _c;
+                } forEach _folders;
+            };
+        } forEach _rows;
+    };
+    ["ALiVE Player FOBs - Build List %1: one of each model keeps %2 of %3 items", _folders, count _keepFold, _before] call ALiVE_fnc_dumpR;
 };
 
 if (_arsenal && {isClass (configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal")}) then { ["ALiVE_FOB_Arsenal", configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal", "SUPPLY"] call _add };
@@ -784,6 +855,12 @@ ALiVE_FOB_presetDrop = (keys _presetDrop) apply { [_x, _presetDrop get _x] };
 ALiVE_FOB_presetDefault = _preset;
 publicVariable "ALiVE_FOB_presetDrop";
 publicVariable "ALiVE_FOB_presetDefault";
+// the build menu offers static weapons, vehicles and troops from the player's own faction, or the side's
+ALiVE_FOB_factionScope = [_logic, "attribute", ["fob_faction_scope"]] call ALiVE_fnc_FOB;
+publicVariable "ALiVE_FOB_factionScope";
+{ _namedAll append (_x select 5) } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
+ALiVE_FOB_named = _namedAll arrayIntersect _namedAll;
+publicVariable "ALiVE_FOB_named";
 // a type's extra that can't be built after all says why, rather than just not being in the menu
 {
     private _tid = _x select 0;

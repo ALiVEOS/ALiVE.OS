@@ -279,7 +279,25 @@
                 <English>Build List Preset</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDPRESET_COMMENT">
-                <English>A ready-made build list to start from, worked out from what each item is, so it suits any mod. Every preset keeps the supplies; Outpost and Infantry keep field works only (sandbags, barriers, wire, small bunkers, camouflage nets and tents), the others every fortification. Never Build and Also Build still apply on top. A FOB type can set its own with preset= in FOB Types. A Build Only These list of objects replaces it; one naming only troops or gear leaves it in use.</English>
+                <English>A ready-made build list to start from, worked out from what each item is, so it suits any mod. Not set is Standard FOB: Infantry showing one of each vehicle, static weapon, fortification and crate model per faction, rather than every camo and loadout variant (crates with different contents count apart). Outpost and Infantry keep field works only (sandbags, barriers, wire, small bunkers, camouflage nets and tents). Custom uses any list in CfgALiVELists, built-in or your own in description.ext, named in Custom List Name; one whose kinds leave out gear also leaves out the FOB Arsenal. Never Build and Also Build still apply on top. A FOB type can set its own with preset= or catalogue= in FOB Types. A Build Only These list of objects replaces it; one naming only troops or gear leaves it in use.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET_NAME">
+                <English>Custom List Name</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET_NAME_COMMENT">
+                <English>With Build List Preset set to Custom, the name of a list in CfgALiVELists in your description.ext. It can start from a built-in list with inherit = "INFANTRY";, then only[], never[] and also[] add to it and a kinds[] of its own replaces the list's kinds. An unknown name is reported in the RPT and Standard FOB is used.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_FACTION_SCOPE">
+                <English>Vehicles And Troops From</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_FACTION_SCOPE_COMMENT">
+                <English>Whose static weapons, vehicles, soldiers and groups the Build Menu offers. The player's own faction (default) keeps the menu short: the faction of the player's unit, on the FOB's side; a faction with none of a kind there (Apex CTRG has no vehicles) gets the side's for that kind. Side offers every faction the side's AI Commanders field, or every faction on the side when it has none. Classes the mission names in Build Only These, Also Build, its Build List or a FOB type are offered whatever their faction.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_FACTION_SCOPE_FACTION">
+                <English>The player's own faction</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_FACTION_SCOPE_SIDE">
+                <English>Side: every faction its commanders field</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDPRESET_ALL">
                 <English>Everything</English>
@@ -603,7 +621,7 @@
                 <English>Static weapon, crewed by your side</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_STATIC_SIDE">
-                <English>Your side can only build the static weapons and vehicles its own forces use.</English>
+                <English>You can only build the static weapons and vehicles your own faction uses, or your side's forces when the mission allows it.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_STATIC_PROFILES">
                 <English>Static weapons and vehicles need the Virtual AI System module in the mission.</English>
@@ -798,7 +816,7 @@
                 <English>Raising troops needs the Virtual AI System module in the mission.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_TROOP_SIDE">
-                <English>Your side can only raise soldiers and groups its own forces use.</English>
+                <English>You can only raise the soldiers and groups your own faction uses, or your side's forces when the mission allows it.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REFUSED_TROOP_FAILED">
                 <English>The troops couldn't be raised. Nothing was charged.</English>
@@ -933,7 +951,7 @@
                 <English>Types</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_LIST_COMMENT">
-                <English>One type per line, each a set of key=value pairs separated by semicolons: id, name, prefix (the start of its FOBs' names, FOB by default), marker (a map marker class), hubs (headquarters classes, separated by commas), build (+class adds it, -class removes it; an added class no FOB could build before is kept for the types that add it), who (SIDE, LEADER or LIST, several separated by commas), list (player IDs, unit classes or Eden variable names, separated by commas, never semicolons), cost (taken when it's deployed), cap (most at once per side, 0 for no limit), respawn (the tier its respawn point comes at, 1 to 3, or 0 for none), supply (what a new one starts with, with FOB supply), trickle (supply per minute, with FOB supply), preset (its own Build List Preset: ALL, OUTPOST, FORTIFIED, INFANTRY or LOGISTICS) and role (not used yet). Respawn, supply, trickle and preset left out use the Player FOBs settings. The FOB Types editor writes it for you.</English>
+                <English>One type per line, each a set of key=value pairs separated by semicolons: id, name, prefix (the start of its FOBs' names, FOB by default), marker (a map marker class), hubs (headquarters classes, separated by commas), build (+class adds it, -class removes it; an added class no FOB could build before is kept for the types that add it), who (SIDE, LEADER or LIST, several separated by commas), list (player IDs, unit classes or Eden variable names, separated by commas, never semicolons), cost (taken when it's deployed), cap (most at once per side, 0 for no limit), respawn (the tier its respawn point comes at, 1 to 3, or 0 for none), supply (what a new one starts with, with FOB supply), trickle (supply per minute, with FOB supply), preset (its own Build List Preset: ALL, OUTPOST, FORTIFIED, INFANTRY, LOGISTICS or any list in CfgALiVELists), catalogue (a list in CfgALiVELists: its only and also add to this type's menu, its never removes from it, and when it has kinds, a static weapon tier or field works of its own those cut this type's menu in place of preset; the FOB Arsenal follows the Player FOBs list) and role (not used yet). Respawn, supply, trickle and preset left out use the Player FOBs settings. The FOB Types editor writes it for you.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_GENERAL">
                 <English>Offer the Plain FOB</English>

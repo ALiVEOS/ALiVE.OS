@@ -107,14 +107,29 @@ class CfgVehicles {
                                 property = "ALiVE_sup_fob_fob_buildpreset";
                                 displayName = "$STR_ALIVE_FOB_BUILDPRESET";
                                 tooltip = "$STR_ALIVE_FOB_BUILDPRESET_COMMENT";
-                                defaultValue = """ALL""";
+                                defaultValue = """""";
                                 class Values
                                 {
-                                    class ALL { name = "$STR_ALIVE_FOB_BUILDPRESET_ALL"; value = "ALL"; default = 1; };
+                                    class NotSet { name = "$STR_ALIVE_LISTS_FOB_STANDARD_DEFAULT"; value = ""; default = 1; };
+                                    class ALL { name = "$STR_ALIVE_FOB_BUILDPRESET_ALL"; value = "ALL"; };
                                     class OUTPOST { name = "$STR_ALIVE_FOB_BUILDPRESET_OUTPOST"; value = "OUTPOST"; };
                                     class FORTIFIED { name = "$STR_ALIVE_FOB_BUILDPRESET_FORTIFIED"; value = "FORTIFIED"; };
                                     class INFANTRY { name = "$STR_ALIVE_FOB_BUILDPRESET_INFANTRY"; value = "INFANTRY"; };
                                     class LOGISTICS { name = "$STR_ALIVE_FOB_BUILDPRESET_LOGISTICS"; value = "LOGISTICS"; };
+                                    class Custom { name = "$STR_ALIVE_LISTS_CUSTOM"; value = "CUSTOM"; };
+                                };
+                        };
+                        class fob_buildpreset_name : Edit { property = "ALiVE_sup_fob_fob_buildpreset_name"; displayName = "$STR_ALIVE_FOB_BUILDPRESET_NAME"; tooltip = "$STR_ALIVE_FOB_BUILDPRESET_NAME_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                        class fob_faction_scope : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_faction_scope";
+                                displayName = "$STR_ALIVE_FOB_FACTION_SCOPE";
+                                tooltip = "$STR_ALIVE_FOB_FACTION_SCOPE_COMMENT";
+                                defaultValue = """FACTION""";
+                                class Values
+                                {
+                                    class FACTION { name = "$STR_ALIVE_FOB_FACTION_SCOPE_FACTION"; value = "FACTION"; default = 1; };
+                                    class SIDE { name = "$STR_ALIVE_FOB_FACTION_SCOPE_SIDE"; value = "SIDE"; };
                                 };
                         };
                         class fob_only : Edit { property = "ALiVE_sup_fob_fob_only"; displayName = "$STR_ALIVE_FOB_ONLY"; tooltip = "$STR_ALIVE_FOB_ONLY_COMMENT"; typeName = "STRING"; defaultValue = """"""; };

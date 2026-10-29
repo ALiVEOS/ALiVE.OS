@@ -91,7 +91,9 @@ private _settings = createHashMapFromArray [
     ["fob_supply_cap_t2", [4000, [0, 1000000]]],
     ["fob_supply_cap_t3", [5000, [0, 1000000]]],
     ["fob_cost_scale", [1, [0, 100]]],
-    ["fob_buildpreset", ["ALL", "text"]],
+    ["fob_buildpreset", ["", "text"]],
+    ["fob_buildpreset_name", ["", "text"]],
+    ["fob_faction_scope", ["FACTION", "text"]],
     ["fob_only", ["", "text"]],
     ["fob_blacklist", ["", "text"]],
     ["fob_kit_class", ["", "text"]],
@@ -214,7 +216,8 @@ switch (_operation) do {
                 _logic setVariable ["startupComplete", true];
                 // the FOB Arsenal's gear, only with the Arsenal setting on: up to a quarter of a minute
                 // with a large mod set, so after the FOBs are ready (an arsenal says so if opened sooner)
-                if ([_logic, "attribute", ["fob_arsenal"]] call ALIVE_fnc_FOB) then {
+                // a Build List whose kinds leave out gear has no Arsenal either (ALiVE_fnc_fobBuildScan)
+                if ([_logic, "attribute", ["fob_arsenal"]] call ALIVE_fnc_FOB && {!(missionNamespace getVariable ["ALiVE_FOB_gearCut", false])}) then {
                     [] spawn ALiVE_fnc_fobGearScan;
                     // players' machines show the Open Arsenal action only with the setting on
                     ALiVE_FOB_arsenalOn = true;
@@ -319,7 +322,7 @@ switch (_operation) do {
             };
             case (_kind isEqualTo "text"): {
                 _value = if (_raw isEqualType "") then { _raw } else { str _raw };
-                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting", "fob_buildpreset"]) then { _value = toUpper _value };
+                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting", "fob_buildpreset", "fob_faction_scope"]) then { _value = toUpper _value };
             };
             default {
                 private _n = if (_raw isEqualType "") then { parseNumber _raw } else { _raw };
@@ -412,7 +415,8 @@ switch (_operation) do {
     // The FOB Types module's list, read once at start (and by typesReload): one type per line, or
     // types separated by |, each a set of key=value pairs separated by ; in any order. Published
     // as ALiVE_FOB_types, one row per type:
-    // [id, name, prefix, marker, hubs, extras, removals, role, who, names, cost, cap, own settings, preset]
+    // [id, name, prefix, marker, hubs, extras, removals, role, who, names, cost, cap, own settings,
+    //  list (catalogue= or preset=, "" for the module's), catalogue]
     case "typesParse": {
         private _tm = _logic getVariable ["ALiVE_FOB_typesModule", objNull];
         private _raw = if (isNull _tm) then { "" } else { _tm getVariable ["fob_types", ""] };
@@ -502,14 +506,33 @@ switch (_operation) do {
                                 };
                             };
                         } forEach [["respawn", "fob_respawn"], ["supply", "fob_supply_initial"], ["trickle", "fob_supply_trickle"]];
-                        // preset: the type's own Build List Preset (Jman, 29 Oct); left out, the Player FOBs one
+                        // preset: the type's own Build List Preset (Jman, 29 Oct), any list in CfgALiVELists;
+                        // catalogue: a list of the mission's, whose only and also become this type's extras
+                        // and whose never applies at this type alone. Left out, the Player FOBs one.
+                        private _isList = { params ["_n"]; _n != "" && {isClass (missionConfigFile >> "CfgALiVELists" >> _n) || {isClass (configFile >> "CfgALiVELists" >> _n)}} };
                         private _tp = toUpper trim (_h getOrDefault ["preset", ""]);
                         if (_tp == "EVERYTHING") then { _tp = "ALL" };
-                        if (_tp != "" && {!(_tp in ["ALL", "OUTPOST", "FORTIFIED", "INFANTRY", "LOGISTICS"])}) then {
-                            ["ALiVE Player FOBs - FOB Types: %1's preset %2 isn't ALL, OUTPOST, FORTIFIED, INFANTRY or LOGISTICS; the Player FOBs Build List Preset is used", _id, _tp] call ALiVE_fnc_dumpR;
+                        if (_tp != "" && {!([_tp] call _isList)}) then {
+                            ["ALiVE Player FOBs - FOB Types: %1's preset %2 isn't a list in CfgALiVELists; the Player FOBs Build List Preset is used", _id, _tp] call ALiVE_fnc_dumpR;
                             _tp = "";
                         };
-                        _rows pushBack [_id, _name, _prefix, _marker, _hubs, _plus, _minus, _role, _who, _h getOrDefault ["list", ""], _cost, _cap, _own, _tp];
+                        private _cat = trim (_h getOrDefault ["catalogue", ""]);
+                        if (_cat != "" && {!([_cat] call _isList)}) then {
+                            ["ALiVE Player FOBs - FOB Types: %1's catalogue %2 isn't a list in CfgALiVELists; left out", _id, _cat] call ALiVE_fnc_dumpR;
+                            _cat = "";
+                        };
+                        if (_cat != "") then {
+                            private _r = ["get", _cat] call ALIVE_fnc_lists;
+                            // its kinds cut this type's menu; a list with no cut of its own adds and
+                            // removes on top of the type's preset (or the module's list)
+                            if ((_r get "kinds") isNotEqualTo [] || {(_r get "staticTier") >= 0} || {_r get "fieldWorksOnly"}) then { _tp = _cat };
+                            private _token = { if ((_x select 0) == "") then { _x select 1 } else { (_x select 0) + ">" + (_x select 1) } };
+                            { _plus pushBackUnique toLower _x } forEach ((_r get "onlyClasses") + (_r get "alsoClasses"));
+                            { _plus pushBackUnique toLower (call _token) } forEach ((_r get "onlyGroups") + (_r get "alsoGroups"));
+                            { _minus pushBackUnique toLower _x } forEach (_r get "neverClasses");
+                            { _minus pushBackUnique toLower (call _token) } forEach (_r get "neverGroups");
+                        };
+                        _rows pushBack [_id, _name, _prefix, _marker, _hubs, _plus, _minus, _role, _who, _h getOrDefault ["list", ""], _cost, _cap, _own, _tp, _cat];
                     };
                 };
             };
@@ -553,7 +576,7 @@ switch (_operation) do {
     case "typeSpec": {
         _args params [["_id", "", [""]]];
         _result = if (_id == "") then {
-            ["", localize "STR_ALIVE_FOB_TYPE_GENERAL", "FOB", "mil_flag", [], [], [], "none", "SIDE", "", 0, 0, [], ""]
+            ["", localize "STR_ALIVE_FOB_TYPE_GENERAL", "FOB", "mil_flag", [], [], [], "none", "SIDE", "", 0, 0, [], "", ""]
         } else {
             private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
             _types param [_types findIf { (_x select 0) == _id }, []]
@@ -603,13 +626,57 @@ switch (_operation) do {
         // what this FOB's Build List Preset (its type's own, else the module's) leaves out, where another
         // preset in use keeps it (ALiVE_fnc_fobBuildScan dropped what every one leaves out)
         private _preset = _spec param [13, ""];
-        if (_preset == "") then { _preset = missionNamespace getVariable ["ALiVE_FOB_presetDefault", "ALL"] };
+        if (_preset == "") then { _preset = missionNamespace getVariable ["ALiVE_FOB_presetDefault", "FOB_STANDARD"] };
         private _drop = missionNamespace getVariable ["ALiVE_FOB_presetDrop", []];
         private _di = _drop findIf { (_x select 0) == _preset };
         if (_di >= 0 && {_c in ((_drop select _di) select 1)}) exitWith { _result = false };
         // before the build scan has run every extra counts as a type's own
         private _typeOnly = missionNamespace getVariable ["ALiVE_FOB_typeOnly", nil];
         _result = if (isNil "_typeOnly") then { (_types findIf { _c in (_x select 5) }) < 0 } else { !(_c in _typeOnly) };
+    };
+
+    // Whose static weapons, vehicles and troops a player may have at a FOB of a side, for the kinds
+    // asked: [factions (lower case), side too]. Vehicles And Troops From at its default is the player's
+    // own faction on that side; Side (or an own faction with none of those kinds there, Apex CTRG for one)
+    // the factions the side's commanders field, [] meaning the side's own. Works on any machine.
+    case "factionScope": {
+        _args params [["_unit", objNull, [objNull]], ["_fobSide", "", [""]], ["_kinds", [], [[]]]];
+        private _scope = if (isServer) then { [_logic, "attribute", ["fob_faction_scope"]] call MAINCLASS } else { missionNamespace getVariable ["ALiVE_FOB_factionScope", "FACTION"] };
+        _result = [[], false];
+        if (_scope != "SIDE" && {!isNull _unit}) then {
+            private _f = faction _unit;
+            private _own = [toLower _f];
+            // a faction that borrows its groups (S.O.G.'s B_MACV keeps them under VN_MACV) brings that folder too
+            if (!isNil "ALIVE_factionCustomMappings") then {
+                private _i = (ALIVE_factionCustomMappings select 1) findIf { toLower _x == toLower _f };
+                if (_i >= 0) then {
+                    private _g = [[ALIVE_factionCustomMappings, (ALIVE_factionCustomMappings select 1) select _i] call ALIVE_fnc_hashGet, "GroupFactionName", ""] call ALIVE_fnc_hashGet;
+                    if (_g isEqualType "" && {_g != ""}) then { _own pushBackUnique toLower _g };
+                };
+            };
+            if (((missionNamespace getVariable ["ALiVE_FOB_catalog", []]) findIf { (_x select 2) in _kinds && {(_x param [6, ""]) == _fobSide} && {(_x param [7, ""]) in _own} }) >= 0) then {
+                _result = [_own, true];
+            };
+        };
+        if ((_result select 0) isEqualTo []) then {
+            private _bySide = if (isServer) then { ["factions"] call ALiVE_fnc_fobBuildScan } else { missionNamespace getVariable ["ALiVE_FOB_sideFactions", []] };
+            _result = [(_bySide select { (_x select 0) == _fobSide }) param [0, ["", []]] select 1, false];
+        };
+    };
+
+    // Whether a catalog row may be had under factionScope's answer: a class the mission names (Also
+    // Build, Build Only These, its Build List, a FOB type's extras) always. Works on any machine.
+    case "factionAllows": {
+        _args params [["_scope", [[], false]], ["_fobSide", "", [""]], ["_row", []]];
+        _scope params ["_allowed", "_sideToo"];
+        _row params [["_class", ""], "", "", "", "", "", ["_rowSide", ""], ["_rowFaction", ""]];
+        private _c = toLower _class;
+        private _named = missionNamespace getVariable ["ALiVE_FOB_named", []];
+        _result = switch (true) do {
+            case (_c in _named || {(_c select [(_c find ">") + 1]) in _named}): { true };
+            case (_allowed isEqualTo []): { _rowSide == _fobSide };
+            default { _rowFaction in _allowed && {!_sideToo || {_rowSide == _fobSide}} };
+        };
     };
 
     // Whether a player may deploy a type: an admin always, the plain FOB anyone, a type by its own

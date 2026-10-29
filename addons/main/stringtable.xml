@@ -734,4 +734,7 @@
 <Key ID="STR_ALIVE_LISTS_STANDARD_DEFAULT">
     <English>Standard: light forces, one of each model (default)</English>
 </Key>
+<Key ID="STR_ALIVE_LISTS_FOB_STANDARD_DEFAULT">
+    <English>Standard FOB: infantry, one of each model (default)</English>
+</Key>
 </Container></Package></Project>

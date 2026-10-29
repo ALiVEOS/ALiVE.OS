@@ -87,18 +87,17 @@ switch (_operation) do {
         if (isNull BW_DISPLAY) exitWith {};
         private _kind = _args;
         uiNamespace setVariable ["ALiVE_FOB_buildCategory", _kind];
-        // static weapons and vehicles from the factions the side's commanders field (its own side's
-        // when it has none)
+        // static weapons, vehicles and troops from the player's own faction, or the side's (factionScope)
         private _side = str (side group player);
-        private _allowed = ((missionNamespace getVariable ["ALiVE_FOB_sideFactions", []]) select { (_x select 0) == _side }) param [0, ["", []]] select 1;
         // and only what this FOB's type may build (FOB Types)
         private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
         private _type = (call _fnc_fob) param [10, ""];
         // Troops holds soldiers and groups, from the same factions as static weapons and vehicles
         private _kinds = [[_kind], ["SOLDIER", "GROUP"]] select (_kind == "TROOPS");
+        private _scope = [_logic, "factionScope", [player, _side, _kinds]] call ALiVE_fnc_FOB;
         private _rows = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select {
             (_x select 2) in _kinds && {!(_kind in ["STATIC", "VEHICLE", "TROOPS"])
-                || {[(_x param [6, ""]) == _side, (_x param [7, ""]) in _allowed] select (_allowed isNotEqualTo [])}}
+                || {[_logic, "factionAllows", [_scope, _side, _x]] call ALiVE_fnc_FOB}}
                 && {[_logic, "typeAllows", [_type, _x select 0]] call ALiVE_fnc_FOB}
         };
         // cheapest first, then by name

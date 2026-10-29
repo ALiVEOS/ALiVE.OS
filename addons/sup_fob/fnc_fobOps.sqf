@@ -554,13 +554,12 @@ switch (_op) do {
         if (([_entry, "tier", 1] call ALIVE_fnc_hashGet) < _tierMin) exitWith { ["STR_ALIVE_FOB_REFUSED_TIER", [_tierMin]] call _tell };
         private _isStatic = _kind == "STATIC";
         private _isVehicle = _kind == "VEHICLE";
-        // static weapons and vehicles: from the factions the FOB side's commanders field now, or
-        // its own side's when it has no commander
+        // static weapons and vehicles: from the builder's own faction, or with Vehicles And Troops From
+        // set to Side, from the factions the FOB side's commanders field now (its own side's when none)
         if (_isStatic || _isVehicle) then {
             private _fobSide = [_entry, "side", ""] call ALIVE_fnc_hashGet;
-            private _allowed = ((["factions"] call ALiVE_fnc_fobBuildScan) select { (_x select 0) == _fobSide }) param [0, ["", []]] select 1;
-            if (_allowed isEqualTo [] && {((_row select 0) param [6, ""]) != _fobSide}) exitWith { _isStatic = "refused" };
-            if (_allowed isNotEqualTo [] && {!(((_row select 0) param [7, ""]) in _allowed)}) exitWith { _isStatic = "refused" };
+            private _scope = [_logic, "factionScope", [_caller, _fobSide, [_kind]]] call ALiVE_fnc_FOB;
+            if !([_logic, "factionAllows", [_scope, _fobSide, _row select 0]] call ALiVE_fnc_FOB) exitWith { _isStatic = "refused" };
         };
         if (_isStatic isEqualTo "refused") exitWith { ["STR_ALIVE_FOB_REFUSED_STATIC_SIDE"] call _tell };
         if ((_isStatic || _isVehicle) && {isNil "ALiVE_ProfileHandler"}) exitWith { ["STR_ALIVE_FOB_REFUSED_STATIC_PROFILES"] call _tell };
@@ -715,7 +714,7 @@ switch (_op) do {
         _args params [["_box", objNull, [objNull]], ["_haveList", false, [false]], ["_hqId", "", [""]]];
         if (isNull _caller || {!alive _caller} || {isNull _box && {_hqId == ""}}) exitWith {};
         // an arsenal saved with the setting on and loaded with it off is a plain crate
-        if !([_logic, "attribute", ["fob_arsenal"]] call ALiVE_fnc_FOB) exitWith { ["STR_ALIVE_FOB_ARSENAL_OFF"] call _tell };
+        if (!([_logic, "attribute", ["fob_arsenal"]] call ALiVE_fnc_FOB) || {missionNamespace getVariable ["ALiVE_FOB_gearCut", false]}) exitWith { ["STR_ALIVE_FOB_ARSENAL_OFF"] call _tell };
         // the gear list is worked out after start-up
         if (isNil "ALiVE_FOB_gearPrice") exitWith { ["STR_ALIVE_FOB_ARSENAL_LOADING"] call _tell };
         if (isNil "ALiVE_FOB_arsenalSessions") then { ALiVE_FOB_arsenalSessions = createHashMap };
@@ -1410,9 +1409,9 @@ switch (_op) do {
         (_row select 0) params ["", "_name", "_kind", "_cost", "", ["_tierMin", 1], ["_rowSide", ""], ["_rowFaction", ""], ["_men", 1], "", ["_spawn", ["", ""]]];
         private _tier = [_entry, "tier", 1] call ALIVE_fnc_hashGet;
         if (_tier < _tierMin) exitWith { ["STR_ALIVE_FOB_REFUSED_TIER", [_tierMin]] call _tell };
-        // the factions the side's commanders field, or its own side's when it has none, as for static weapons
-        private _allowed = ((["factions"] call ALiVE_fnc_fobBuildScan) select { (_x select 0) == _fobSide }) param [0, ["", []]] select 1;
-        if ((_allowed isEqualTo [] && {_rowSide != _fobSide}) || {_allowed isNotEqualTo [] && {!(_rowFaction in _allowed)}}) exitWith { ["STR_ALIVE_FOB_REFUSED_TROOP_SIDE"] call _tell };
+        // the caller's own faction, or the side's commanders' factions, as for static weapons
+        private _scope = [_logic, "factionScope", [_caller, _fobSide, ["SOLDIER", "GROUP"]]] call ALiVE_fnc_FOB;
+        if !([_logic, "factionAllows", [_scope, _fobSide, _row select 0]] call ALiVE_fnc_FOB) exitWith { ["STR_ALIVE_FOB_REFUSED_TROOP_SIDE"] call _tell };
         if (isNil "ALiVE_ProfileHandler") exitWith { ["STR_ALIVE_FOB_REFUSED_TROOP_PROFILES"] call _tell };
         private _cap = ([_logic, "attribute", ["fob_troop_cap"]] call ALiVE_fnc_FOB) * _tier;
         private _held = ["troopsHeld", [_id]] call ALiVE_fnc_fobOps;
