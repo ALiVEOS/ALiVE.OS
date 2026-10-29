@@ -275,6 +275,27 @@
             <Key ID="STR_ALIVE_FOB_CRATE_CLASS_COMMENT">
                 <English>The object a FOB supply crate is, in place of the ALiVE crate: one class name for every side, or one per side with the side first, for example WEST=B_CargoNet_01_ammo_F, EAST=O_CargoNet_01_ammo_F, GUER=I_CargoNet_01_ammo_F (WEST is BLUFOR, EAST OPFOR, GUER Independent; a side left out uses a class given without a side, if there is one). Empty (default) keeps the ALiVE crate.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET">
+                <English>Build List Preset</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET_COMMENT">
+                <English>A ready-made build list to start from, worked out from what each item is, so it suits any mod. Every preset keeps the fortifications and supplies. Never Build and Also Build still apply on top. A Build Only These list of objects replaces it; one naming only troops or gear leaves it in use.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET_ALL">
+                <English>Everything</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET_OUTPOST">
+                <English>Outpost: fortifications and supplies, no troops</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET_FORTIFIED">
+                <English>Fortified Base: all but armour, artillery and aircraft</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET_INFANTRY">
+                <English>Infantry: troops, light static weapons, cars and trucks</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILDPRESET_LOGISTICS">
+                <English>Logistics Hub: supplies, trucks and boats, no troops</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_ONLY">
                 <English>Build Only These</English>
             </Key>

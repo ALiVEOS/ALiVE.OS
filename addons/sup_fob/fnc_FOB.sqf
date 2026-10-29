@@ -91,6 +91,7 @@ private _settings = createHashMapFromArray [
     ["fob_supply_cap_t2", [4000, [0, 1000000]]],
     ["fob_supply_cap_t3", [5000, [0, 1000000]]],
     ["fob_cost_scale", [1, [0, 100]]],
+    ["fob_buildpreset", ["ALL", "text"]],
     ["fob_only", ["", "text"]],
     ["fob_blacklist", ["", "text"]],
     ["fob_kit_class", ["", "text"]],
@@ -318,7 +319,7 @@ switch (_operation) do {
             };
             case (_kind isEqualTo "text"): {
                 _value = if (_raw isEqualType "") then { _raw } else { str _raw };
-                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting"]) then { _value = toUpper _value };
+                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting", "fob_buildpreset"]) then { _value = toUpper _value };
             };
             default {
                 private _n = if (_raw isEqualType "") then { parseNumber _raw } else { _raw };

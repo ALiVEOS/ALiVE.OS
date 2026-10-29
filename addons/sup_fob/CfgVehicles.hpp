@@ -102,6 +102,21 @@ class CfgVehicles {
                         class HDR_BUILD : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_BUILD"; displayName = "BUILD MENU"; };
                         class fob_cost_scale : Edit { property = "ALiVE_sup_fob_fob_cost_scale"; displayName = "$STR_ALIVE_FOB_COST_SCALE"; tooltip = "$STR_ALIVE_FOB_COST_SCALE_COMMENT"; typeName = "STRING"; defaultValue = """1"""; };
                         class fob_buildlist : Default { property = "ALiVE_sup_fob_fob_buildlist"; displayName = "$STR_ALIVE_FOB_BUILDLIST"; tooltip = "$STR_ALIVE_FOB_BUILDLIST_COMMENT"; control = "ALiVE_FOBBuildListLink"; typeName = "STRING"; defaultValue = "''"; };
+                        class fob_buildpreset : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_buildpreset";
+                                displayName = "$STR_ALIVE_FOB_BUILDPRESET";
+                                tooltip = "$STR_ALIVE_FOB_BUILDPRESET_COMMENT";
+                                defaultValue = """ALL""";
+                                class Values
+                                {
+                                    class ALL { name = "$STR_ALIVE_FOB_BUILDPRESET_ALL"; value = "ALL"; default = 1; };
+                                    class OUTPOST { name = "$STR_ALIVE_FOB_BUILDPRESET_OUTPOST"; value = "OUTPOST"; };
+                                    class FORTIFIED { name = "$STR_ALIVE_FOB_BUILDPRESET_FORTIFIED"; value = "FORTIFIED"; };
+                                    class INFANTRY { name = "$STR_ALIVE_FOB_BUILDPRESET_INFANTRY"; value = "INFANTRY"; };
+                                    class LOGISTICS { name = "$STR_ALIVE_FOB_BUILDPRESET_LOGISTICS"; value = "LOGISTICS"; };
+                                };
+                        };
                         class fob_only : Edit { property = "ALiVE_sup_fob_fob_only"; displayName = "$STR_ALIVE_FOB_ONLY"; tooltip = "$STR_ALIVE_FOB_ONLY_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                         class fob_blacklist : Edit { property = "ALiVE_sup_fob_fob_blacklist"; displayName = "$STR_ALIVE_FOB_BLACKLIST"; tooltip = "$STR_ALIVE_FOB_BLACKLIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                         class fob_whitelist : Edit { property = "ALiVE_sup_fob_fob_whitelist"; displayName = "$STR_ALIVE_FOB_WHITELIST"; tooltip = "$STR_ALIVE_FOB_WHITELIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };

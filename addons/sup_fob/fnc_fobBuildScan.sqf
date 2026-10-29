@@ -460,14 +460,65 @@ private _add = {
         };
     };
 } forEach ("getNumber (_x >> 'scope') == 2" configClasses (configFile >> "CfgVehicles"));
+
+// Build List Preset (Jman, 29 Oct): a ready-made cut of what the scan found, by kind and by the kind
+// of vehicle, so it suits any mod. Build Only These sets the list itself, so a preset gives way to it.
+// Also Build and a FOB type's extras still add past it: what it drops is kept aside, and one of
+// those lists naming it puts its own row back (its real kind, price, tier and side).
+// [kinds, kinds of vehicle, the heaviest static weapon's tier, troops]. No preset keeps artillery,
+// a static weapon that fires as artillery (a mortar, a howitzer) included.
+private _presetTroops = true;
+private _presetDropped = createHashMap;
+private _preset = [_logic, "attribute", ["fob_buildpreset"]] call ALiVE_fnc_FOB;
+private _presetRules = switch (_preset) do {
+    case "OUTPOST": { [["FORTIFICATION", "SUPPLY"], [], 0, false] };
+    case "FORTIFIED": { [["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE"], ["CAR", "TRUCK", "BOAT"], 3, true] };
+    case "INFANTRY": { [["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE"], ["CAR", "TRUCK"], 2, true] };
+    case "LOGISTICS": { [["FORTIFICATION", "SUPPLY", "VEHICLE"], ["TRUCK", "BOAT"], 0, false] };
+    default { [] };
+};
+if (_presetRules isNotEqualTo [] && {_only isNotEqualTo []}) then {
+    ["ALiVE Player FOBs - Build List Preset %1 not used: a Build Only These list sets the build list", _preset] call ALiVE_fnc_dumpR;
+};
+if (_presetRules isNotEqualTo [] && {_only isEqualTo []}) then {
+    _presetRules params ["_kinds", "_vehicles", "_staticTier", "_troops"];
+    _presetTroops = _troops;
+    private _vehicleKind = {
+        params ["_class"];
+        switch (true) do {
+            case (_class isKindOf "Air"): {"AIR"};
+            case (_class isKindOf "Ship"): {"BOAT"};
+            case (getNumber (configFile >> "CfgVehicles" >> _class >> "artilleryScanner") == 1): {"ARTILLERY"};
+            case (_class isKindOf "Tank" || {_class isKindOf "Wheeled_APC_F"}): {"ARMOUR"};
+            case (_class isKindOf "Truck_F"): {"TRUCK"};
+            default {"CAR"};
+        }
+    };
+    private _keepRow = {
+        params ["_row"];
+        _row params ["_class", "", "_kind", "", "", "_tier"];
+        (_kind in _kinds)
+        && {_kind != "STATIC" || {_tier <= _staticTier && {getNumber (configFile >> "CfgVehicles" >> _class >> "artilleryScanner") != 1}}}
+        && {_kind != "VEHICLE" || {([_class] call _vehicleKind) in _vehicles}}
+    };
+    private _before = count _rows;
+    { _presetDropped set [toLower (_x select 0), _x] } forEach (_rows select { !([_x] call _keepRow) });
+    _rows = _rows select { [_x] call _keepRow };
+    ["ALiVE Player FOBs - Build List Preset %1 keeps %2 of %3 items", _preset, count _rows, _before] call ALiVE_fnc_dumpR;
+};
+
 if (_arsenal && {isClass (configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal")}) then { ["ALiVE_FOB_Arsenal", configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal", "SUPPLY"] call _add };
 
 // Whitelisted classes the rules didn't pick, priced as fortifications (an aircraft here is one the
 // rules turned down: a civilian one, a drone or one with no pilot's seat, so it stays one too)
 {
     private _cfg = configFile >> "CfgVehicles" >> _x;
-    if (isClass _cfg) then { [configName _cfg, _cfg, "FORTIFICATION"] call _add } else {
-        ["ALiVE Player FOBs - CfgALiVEFOBBuildables: whitelist class %1 isn't in this game", _x] call ALiVE_fnc_dumpR;
+    private _dropped = _presetDropped getOrDefault [toLower _x, []];
+    // a class the Build List Preset dropped comes back as it was
+    if (_dropped isNotEqualTo []) then { _rows pushBack _dropped; _presetDropped deleteAt toLower _x } else {
+        if (isClass _cfg) then { [configName _cfg, _cfg, "FORTIFICATION"] call _add } else {
+            ["ALiVE Player FOBs - CfgALiVEFOBBuildables: whitelist class %1 isn't in this game", _x] call ALiVE_fnc_dumpR;
+        };
     };
 } forEach _whitelist;
 
@@ -477,6 +528,12 @@ private _typeOnly = [];
 {
     {
         private _cfg = configFile >> "CfgVehicles" >> _x;
+        private _dropped = _presetDropped getOrDefault [toLower _x, []];
+        if (_dropped isNotEqualTo []) then {
+            _rows pushBack _dropped;
+            _presetDropped deleteAt toLower _x;
+            _typeOnly pushBackUnique toLower _x;
+        };
         if (isClass _cfg && {!(toLower _x in _seen)} && {!(toLower _x in _blacklist)} && {!([_x] call _isTroop)}) then {
             [configName _cfg, _cfg, "FORTIFICATION"] call _add;
             _typeOnly pushBackUnique toLower _x;
@@ -606,8 +663,8 @@ if (_troopCap > 0) then {
     { [_x] call _addSoldier } forEach (([[], _soldierOnly] select _troopOnly) + _soldierAlso);
     // with no troops on Build Only These, every faction's infantry groups: those in a category with
     // infantry in its name (a mod like RHS names its own, rhs_group_nato_usarmy_d_infantry), and those
-    // a faction's ALiVE mapping lists as Infantry
-    if (!_troopOnly) then {
+    // a faction's ALiVE mapping lists as Infantry. A Build List Preset without troops leaves them out.
+    if (!_troopOnly && {_presetTroops}) then {
         {
             private _gname = _x;
             if ((_y findIf { ((toLower (_x select 1)) find "infantry") > -1 }) > -1) then {
