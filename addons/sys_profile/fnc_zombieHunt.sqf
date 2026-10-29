@@ -10,6 +10,7 @@ slot included, and any human on the zombies' own side, whom the zombie mod never
 side is the civilians' enemy, so ALiVE drives the zombies at the nearest civilian and
 lands the bite itself. Soldiers stay the priority: while the group knows of an enemy in
 range, the zombie mod has it and this loop leaves the group alone.
+A garrison zombie leaves his post for prey within 60 m of it, then walks back and holds again.
 
 Runs on the server and on each headless client, over the zombie groups local to that
 machine (groups tagged ALiVE_zombieHunt at spawn), so a group the AI distributor hands
@@ -113,6 +114,25 @@ private _flee = {
         if (local _man) then { _man doMove _away } else { [_man, _away] remoteExecCall ["doMove", _man] };
     };
 };
+// A garrison zombie holds its post until prey comes within this many metres of it, chases, then
+// walks back and is pinned again as the garrison left him. Where he stood is kept on the man.
+private _leash = 60;
+private _goBack = {
+    private _post = _this getVariable ["ALiVE_zombiePost", []];
+    if (_post isEqualTo []) exitWith {};
+    // The garrison was let go meanwhile (a player joined the group, or the profile moved on): stay free.
+    if !(_this getVariable ["ALiVE_garrisonHeld", false]) exitWith { _this setVariable ["ALiVE_zombiePost", nil] };
+    _post params ["_pos", "_dir", "_stance"];
+    if (_this distance2D _pos < 2.5) then {
+        doStop _this;
+        _this setDir _dir;
+        _this setUnitPos _stance;
+        _this disableAI "PATH";
+        _this setVariable ["ALiVE_zombiePost", nil];
+    } else {
+        _this doMove _pos;
+    };
+};
 private _target = objNull;
 private _targetDist = 1e9;
 private _heard = false;
@@ -146,6 +166,7 @@ if (isNull _target) exitWith {
         { if !(_x getVariable ["ALiVE_garrisonHeld", false]) then { _x doFollow (leader _group) } } forEach _units;
         _group setVariable ["ALiVE_zombieHuntIssued", -1];
     };
+    { _x call _goBack } forEach _units;
     _group setVariable ["ALiVE_zombieHuntTarget", objNull];
     _group setVariable ["ALiVE_zombieHuntNext", _now + 5];
 };
@@ -160,8 +181,25 @@ if (
     || {_targetPos distance2D (_group getVariable ["ALiVE_zombieHuntPos", [0,0,0]]) > 3}
     || {_now > (_group getVariable ["ALiVE_zombieHuntIssued", 0]) + 5}
 ) then {
-    // A garrison the profile holds in place stays put.
-    { if !(_x getVariable ["ALiVE_garrisonHeld", false]) then { _x doMove _targetPos } } forEach _units;
+    {
+        if (_x getVariable ["ALiVE_garrisonHeld", false]) then {
+            // A garrison zombie leaves his post only for prey close to it, and goes back for anything further.
+            private _post = _x getVariable ["ALiVE_zombiePost", []];
+            private _postPos = if (_post isEqualTo []) then { getPosATL _x } else { _post select 0 };
+            if (_postPos distance2D _targetPos < _leash) then {
+                if (_post isEqualTo []) then {
+                    _x setVariable ["ALiVE_zombiePost", [getPosATL _x, getDir _x, toUpper (unitPos _x)]];
+                    _x enableAI "PATH";
+                    _x setUnitPos "AUTO";
+                };
+                _x doMove _targetPos;
+            } else {
+                _x call _goBack;
+            };
+        } else {
+            _x doMove _targetPos;
+        };
+    } forEach _units;
     _group setVariable ["ALiVE_zombieHuntTarget", _target];
     _group setVariable ["ALiVE_zombieHuntPos", _targetPos];
     _group setVariable ["ALiVE_zombieHuntIssued", _now];
