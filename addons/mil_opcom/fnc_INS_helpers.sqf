@@ -1523,7 +1523,7 @@ ALiVE_fnc_INS_addRoadblockHoldAction = {
 
                         [getPosATL _charge, 30] remoteExec ["ALiVE_fnc_RemoveComposition", 2];
 
-                        ["Nice Job", format ["%1 disabled the roadblock at grid %2!", name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle", side (group _caller)];
+                        ["Nice Job", format ["%1 disabled the roadblock at grid %2!", name _caller, mapGridPosition _target]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
 
                         if (_target getVariable [QGVAR(ROADBLOCK_HELPER), false]) then {
                             deleteVehicle _target;

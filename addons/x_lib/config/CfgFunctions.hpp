@@ -1958,6 +1958,13 @@ class radioBroadcastToSide
 	ALIVE_RECOMPILE;
 };
 
+class radioLog
+{
+	file = "\x\alive\addons\x_lib\functions\ui\fnc_radioLog.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class sendHint
 {
 	file = "\x\alive\addons\x_lib\functions\ui\fnc_sendHint.sqf";

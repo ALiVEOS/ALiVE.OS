@@ -222,10 +222,10 @@ private _processedBuildings = [];
                 if (isNull _caller) then {
                     private _msg = format [_subtitleText, "Friendly forces", mapGridPosition _building];
                     {
-                        [_subtitleTitle, _msg] remoteExec ["BIS_fnc_showSubtitle", _x];
+                        [_subtitleTitle, _msg] remoteExec ["ALIVE_fnc_taskSubtitle", _x];
                     } forEach _sideObjectsEnemy;
                 } else {
-                    [_subtitleTitle, format [_subtitleText, name _caller, mapGridPosition _building]] remoteExec ["BIS_fnc_showSubtitle", side (group _caller)];
+                    [_subtitleTitle, format [_subtitleText, name _caller, mapGridPosition _building]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
                 };
             };
         };

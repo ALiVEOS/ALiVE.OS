@@ -1334,6 +1334,8 @@ switch(_operation) do {
                     if (_audio) then {
 
                         ALIVE_PR_HQ kbTell [player, "ALIVE_PR_protocol", "Drop_Acknowledged", "GROUP"];
+                        // spoken only, so the RADIO LOG page gets the words
+                        ["HQ", "Request acknowledged, stand by"] call ALIVE_fnc_radioLog;
 
                     } else {
 
@@ -1341,7 +1343,7 @@ switch(_operation) do {
 
                         _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                        [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                        [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
                     };
 
 
@@ -1364,7 +1366,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
 
                 };
@@ -1383,7 +1385,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
 
                 };
@@ -1402,7 +1404,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
 
                 };
@@ -1449,7 +1451,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
 
                     // clear request markers
@@ -1530,7 +1532,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     // clear request markers
 
@@ -1556,7 +1558,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     // clear request markers
 
@@ -1582,7 +1584,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     _markers = [_logic,"marker"] call MAINCLASS;
 
@@ -1603,7 +1605,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     _markers = [_logic,"marker"] call MAINCLASS;
 
@@ -1624,7 +1626,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     // clear request markers
 
@@ -1649,7 +1651,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     // clear request markers
 
@@ -1674,7 +1676,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     // clear request markers
 
@@ -1699,7 +1701,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     // clear request markers
 
@@ -1870,7 +1872,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     // clear request markers
 
@@ -1895,7 +1897,7 @@ switch(_operation) do {
 
                     _radioBroadcast = [player,_radioMessage,"side",_sideObject,false,true,false,true,_HQ];
 
-                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                    [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
 
                     // clear request markers
 
@@ -3346,6 +3348,7 @@ switch(_operation) do {
                             if (_audio) then {
 
                                 player kbTell [ALIVE_PR_HQ, "ALIVE_PR_protocol", "Drop_Request", "GROUP"];
+                                [groupId group player, "Requesting logistics support at the supplied location"] call ALIVE_fnc_radioLog;
 
                             } else {
 
@@ -3373,7 +3376,7 @@ switch(_operation) do {
 
                                 _radioBroadcast = [player,_radioMessage,"side",_sideObject,true,false,true,false,_HQ];
 
-                                [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,true] spawn BIS_fnc_MP;
+                                [_radioBroadcast,"ALIVE_fnc_radioBroadcast",true,false] spawn BIS_fnc_MP;
                             };
 
                             // Reset after a succesful request

@@ -16,6 +16,9 @@ Side - the side
 Boolean - to HQ message is prefixed with HQ callsign
 Boolean - from HQ message is delivered from HQ callsign
 String - HQ Class the CfgHQIdentities class (AirBase,Base,BLU,HQ,IND,IND_G,OPF,PAPA_BEAR)
+Boolean - from group (optional)
+Boolean - to group (optional)
+Boolean - leave it off the RADIO LOG page (optional, default false; the kill feed sets it)
 
 Returns:
 
@@ -68,6 +71,7 @@ _fromHQ = if(count _this > 7) then {_this select 7} else {false};
 _hqClass = if(count _this > 8) then {_this select 8} else {"PAPA_BEAR"};
 _fromGroup = if(count _this > 9) then {_this select 9} else {false};
 _toGroup = if(count _this > 10) then {_this select 10} else {false};
+private _noLog = if(count _this > 11) then {_this select 11} else {false};
 
 if(isNil "_message") exitWith {};
 
@@ -156,4 +160,16 @@ switch (_channel) do
     case "sideRadio" : {
         _unit sideRadio _message
     };
+};
+
+// the RADIO LOG page in the map diary keeps it, on a player's machine that shows the line
+if (hasInterface && {!isNull player} && {!_noLog}) then {
+    private _hears = switch (_channel) do {
+        case "global": { true };
+        case "group": { group player == group _unit };
+        case "vehicle": { vehicle player == vehicle _unit };
+        case "side": { side group player == ([side group _unit, _side] select (_fromHQ && {_side isEqualType west})) };
+        default { side group player == side group _unit };
+    };
+    if (_hears) then { [["", "HQ"] select _fromHQ, _message] call ALIVE_fnc_radioLog };
 };

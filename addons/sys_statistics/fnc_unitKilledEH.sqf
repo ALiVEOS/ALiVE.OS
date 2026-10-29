@@ -161,7 +161,7 @@ if (_stats || {_killFeed != "None"}) then {
             };
 
             if (_killFeed != "None") then {
-                _radioBroadcast = [_killed,_message,_killFeed,_sideKilled];
+                _radioBroadcast = [_killed,_message,_killFeed,_sideKilled,false,false,false,false,"PAPA_BEAR",false,false,true];
                 [str(_sideKilled),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
 
@@ -169,7 +169,7 @@ if (_stats || {_killFeed != "None"}) then {
             // so the killer's Kill Shot is posted from here or it is never posted at all.
             if (isPlayer _killer && {_killer != _killed} && {_killFeed != "None"}) then {
                 private _shot = format ["Kill Shot! A %1 was killed by %2 with a %3 from %4m.", _killedtype, name _killer, _killerweapon, _distance];
-                [str(_sideKiller),[_killer,_shot,_killFeed,_sideKiller]] call ALIVE_fnc_radioBroadcastToSide;
+                [str(_sideKiller),[_killer,_shot,_killFeed,_sideKiller,false,false,false,false,"PAPA_BEAR",false,false,true]] call ALIVE_fnc_radioBroadcastToSide;
             };
 
             if (_stats) then {
@@ -188,7 +188,7 @@ if (_stats || {_killFeed != "None"}) then {
 
             if (_byPlayer && {_killFeed != "None"}) then {
                 _message = format ["Vehicle destroyed! %1 was destroyed by %2 with a %3 from %4m!", _killedtype, name _killer, _killerweapon, _distance];
-                _radioBroadcast = [_killer,_message,_killFeed,_sideKiller];
+                _radioBroadcast = [_killer,_message,_killFeed,_sideKiller,false,false,false,false,"PAPA_BEAR",false,false,true];
                 [str(_sideKiller),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
 
@@ -206,7 +206,7 @@ if (_stats || {_killFeed != "None"}) then {
 
             if (_killFeed != "None") then {
                 _message = format ["Kill Shot! A %1 was killed by %2 with a %3 from %4m.", _killedtype, name _killer, _killerweapon, _distance];
-                _radioBroadcast = [_killer,_message,_killFeed,_sideKiller];
+                _radioBroadcast = [_killer,_message,_killFeed,_sideKiller,false,false,false,false,"PAPA_BEAR",false,false,true];
                 [str(_sideKiller),_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
 

@@ -208,6 +208,11 @@
     <Chinesesimp>ALiVE</Chinesesimp>
     <Spanish>ALiVE</Spanish>
 </Key>
+<Key ID="STR_ALIVE_RADIO_LOG">
+    <English>RADIO LOG</English>
+    <Chinesesimp>无线电记录</Chinesesimp>
+    <Spanish>REGISTRO DE RADIO</Spanish>
+</Key>
 <Key ID="STR_ALIVE_SYSTEM">
     <English>ALiVE System</English>
     <Chinesesimp>ALiVE 系统</Chinesesimp>

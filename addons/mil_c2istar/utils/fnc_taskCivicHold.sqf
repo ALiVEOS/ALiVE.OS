@@ -37,7 +37,7 @@ private _now = serverTime;
 private _left = [_params, "holdLeft", -1] call ALIVE_fnc_hashGet;
 private _last = [_params, "holdLast", _now] call ALIVE_fnc_hashGet;
 private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
-private _say = { params ["_text"]; ["COIN Update", _text] remoteExec ["ALIVE_fnc_taskSubtitle", _sideObj] };
+private _say = { params ["_text", ["_noLog", false]]; ["COIN Update", _text, _noLog] remoteExec ["ALIVE_fnc_taskSubtitle", _sideObj] };
 
 if (_left < 0) exitWith {
     [_params, "holdLeft", _duration] call ALIVE_fnc_hashSet;
@@ -68,7 +68,7 @@ if (!_contested && {_near}) then { _left = _left - _step };
 
 if (_now >= ([_params, "holdNext", 0] call ALIVE_fnc_hashGet) && {_left > 0}) then {
     [_params, "holdNext", _now + 30] call ALIVE_fnc_hashSet;
-    [if (_contested) then { "Enemies close by: clear them to carry on." } else { format ["Hold position: %1:%2 left.", floor (_left / 60), [floor (_left mod 60), 2] call CBA_fnc_formatNumber] }] call _say;
+    [if (_contested) then { "Enemies close by: clear them to carry on." } else { format ["Hold position: %1:%2 left.", floor (_left / 60), [floor (_left mod 60), 2] call CBA_fnc_formatNumber] }, true] call _say;
 };
 
 _left <= 0

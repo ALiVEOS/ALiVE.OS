@@ -689,6 +689,7 @@ switch (_op) do {
         ["hubDown", [_netId, false, name _caller, _enemy]] call ALIVE_fnc_hub;
         if (_enemy) then {
             ["ALiVE", format [localize "STR_ALIVE_HUB_DISMANTLED_BY_US", mapGridPosition _hub]] remoteExec ["ALIVE_fnc_sendHint", side group _caller];
+            ["HQ", format [localize "STR_ALIVE_HUB_DISMANTLED_BY_US", mapGridPosition _hub]] remoteExec ["ALIVE_fnc_radioLog", side group _caller];
         };
         _result = true;
     };
@@ -709,6 +710,7 @@ switch (_op) do {
             if (_enemy) then { format [localize "STR_ALIVE_HUB_DISMANTLED", _grid] } else { format [localize "STR_ALIVE_HUB_DISMANTLED_OWN", _grid, _by] }
         };
         ["ALiVE", _msg] remoteExec ["ALIVE_fnc_sendHint", [_e select 0] call ALIVE_fnc_sideTextToObject];
+        ["HQ", _msg] remoteExec ["ALIVE_fnc_radioLog", [_e select 0] call ALIVE_fnc_sideTextToObject];
         ["ALiVE Logistics Hub: %1 at %2 is down (%3)", _e select 5, _grid, ["dismantled", "destroyed"] select _destroyed] call _debug;
 
         // a repair later, unless it is down and back up again before then
@@ -764,6 +766,7 @@ switch (_op) do {
         };
         ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
         ["ALiVE", format [localize "STR_ALIVE_HUB_BACK", mapGridPosition _pos]] remoteExec ["ALIVE_fnc_sendHint", [_side] call ALIVE_fnc_sideTextToObject];
+        ["HQ", format [localize "STR_ALIVE_HUB_BACK", mapGridPosition _pos]] remoteExec ["ALIVE_fnc_radioLog", [_side] call ALIVE_fnc_sideTextToObject];
     };
 };
 

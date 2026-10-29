@@ -30,7 +30,7 @@
 
     switch (_radio) do
     {
-        case "global" : { _unit globalChat _text };
+        case "global" : { _unit globalChat _text; if (!isNull _unit) then { ["", _text] call ALIVE_fnc_radioLog } };
         case "side" : {
             // A player on a friendly side gets it the way they chose for task updates (Addon Options, ALiVE,
             // Game, Task and radio updates): a subtitle or a hint from HQ, or side chat as it always was. (Jman)
@@ -57,11 +57,12 @@
                 };
             } else {
                 {[_x,"HQ"] sideChat _text} foreach _friendlySides;
+                if (hasInterface && {!isNull player} && {(side group player) in _friendlySides}) then { ["HQ", _text] call ALIVE_fnc_radioLog };
             };
         };
-        case "group" : { _unit groupChat _text };
-        case "vehicle" : { _unit vehicleChat _text };
-        case "sideRadio" : { _unit sideRadio _text };
+        case "group" : { _unit groupChat _text; if (hasInterface && {group player == group _unit}) then { ["", _text] call ALIVE_fnc_radioLog } };
+        case "vehicle" : { _unit vehicleChat _text; if (hasInterface && {vehicle player == vehicle _unit}) then { ["", _text] call ALIVE_fnc_radioLog } };
+        case "sideRadio" : { _unit sideRadio _text; if (hasInterface && {side group player == side group _unit}) then { ["", _text] call ALIVE_fnc_radioLog } };
     };
 
     //sleep 1;
