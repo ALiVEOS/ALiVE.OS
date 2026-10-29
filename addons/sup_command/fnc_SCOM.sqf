@@ -4830,6 +4830,27 @@ switch (_operation) do {
                 private _selectedEnd = (_editableOrders select _selectedOrderIndex) select 0;
                 _map drawLine [_selectedStart,_selectedEnd,[1,0.65,0.15,1]];
             };
+
+            // an icon on every order, one for each kind of order and numbered as in the list; the selected one in
+            // the same orange. The pictures are the game's own map markers
+            {
+                private _orderPos = _x param [0, []];
+                if (_orderPos isEqualType [] && {count _orderPos > 1}) then {
+                    private _iconColor = if (_forEachIndex == _selectedOrderIndex) then { [1,0.65,0.15,1] } else { _colorGreen };
+                    private _markerClass = switch (_x param [2, "MOVE"]) do {
+                        case "SAD": {"mil_destroy"};
+                        case "CYCLE": {"mil_circle"};
+                        case "LOAD": {"mil_pickup"};
+                        case "TR UNLOAD": {"mil_end"};
+                        case "LAND OFF";
+                        case "LAND HOVER": {"mil_triangle"};
+                        default {"waypoint"};
+                    };
+                    private _icon = getText (configFile >> "CfgMarkers" >> _markerClass >> "icon");
+                    if (_icon isEqualTo "") then { _icon = "\a3\ui_f\data\map\mapcontrol\waypoint_ca.paa" };
+                    _map drawIcon [_icon, _iconColor, _orderPos, 20, 20, 0, str (_forEachIndex + 1), 1, 0.05, "PuristaMedium", "right"];
+                };
+            } forEach _editableOrders;
         };
 
     };

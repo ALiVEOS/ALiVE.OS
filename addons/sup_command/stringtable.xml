@@ -476,7 +476,7 @@
     <Russian>Наблюдать за группой</Russian>
 </Key>
 <Key ID="STR_ALIVE_SCOM_UI_UNLOCK_GROUP">
-    <English>Unlock Group for AI Commander Control</English>
+    <English>Unlock Group for AI Commander</English>
     <Chinesesimp>解锁小组供 AI 指挥官控制</Chinesesimp>
     <Chinese>解鎖小組供 AI 指揮官控制</Chinese>
     <Spanish>Desbloquear el grupo para el comandante IA</Spanish>
@@ -485,7 +485,7 @@
     <Russian>Вернуть группу ИИ-командиру</Russian>
 </Key>
 <Key ID="STR_ALIVE_SCOM_UI_LOCK_GROUP">
-    <English>Lock Group from AI Commander Control</English>
+    <English>Lock Group from AI Commander</English>
     <Chinesesimp>锁定小组不受 AI 指挥官控制</Chinesesimp>
     <Chinese>鎖定小組不受 AI 指揮官控制</Chinese>
     <Spanish>Bloquear el grupo al comandante IA</Spanish>
