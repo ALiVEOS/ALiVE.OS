@@ -3,19 +3,19 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ZEUS_SAVE">
-    <English>ALiVE: Save Now</English>
+    <English>Save Now</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_DEBUG">
-    <English>ALiVE: Profile Debug Markers</English>
+    <English>Profile Debug Markers</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_SPOTREPORT">
-    <English>ALiVE: Spot Report</English>
+    <English>Spot Report</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_HANDGROUP">
-    <English>ALiVE: Hand Group To AI Commander</English>
+    <English>Hand Group To AI Commander</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_BOMBER">
-    <English>ALiVE: Suicide Bomber</English>
+    <English>Suicide Bomber</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_TELL_SIDE">
     <English>Tell the AI Commander of</English>
@@ -27,13 +27,16 @@
     <English>Faction</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_FACTION_TIP">
-    <English>Faction class name of the bomber. Leave empty for the Military IED module's bomber faction.</English>
+    <English>The bomber's faction. The first choice is the Military IED module's bomber faction.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FACTION_IED">
+    <English>The Military IED module's bomber faction</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_START_RADIUS">
     <English>Starts within (m)</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_NEED_UNIT">
-    <English>ALiVE: place this module on a unit of the group.</English>
+    <English>ALiVE: place this module on a man of the group, or within 25 m of one.</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_NEED_PNS">
     <English>ALiVE: saving needs the Data module set to local persistence.</English>
@@ -99,22 +102,22 @@
     <English>ALiVE: that came too soon after the last one. Place the module again.</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_CONVERTBOMBER">
-    <English>ALiVE: Make This Man A Suicide Bomber</English>
+    <English>Turn Man Into Bomber</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_CARBOMB">
-    <English>ALiVE: Car Bomb</English>
+    <English>Car Bomb</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_IED">
-    <English>ALiVE: IED</English>
+    <English>IED</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_IEDAMBUSH">
-    <English>ALiVE: IED Ambush Squad</English>
+    <English>IED Ambush Squad</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_SPAWNGROUP">
-    <English>ALiVE: Spawn ALiVE Group</English>
+    <English>Spawn ALiVE Group</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_REMOVEGROUP">
-    <English>ALiVE: Despawn Or Delete ALiVE Group</English>
+    <English>Remove ALiVE Group</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_IED_COUNT">
     <English>How many</English>
@@ -138,7 +141,7 @@
     <English>Delete for good</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_NEED_PERSON">
-    <English>ALiVE: place this module on a man on foot who isn't a player.</English>
+    <English>ALiVE: place this module on a man on foot who isn't a player, or within 25 m of one.</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_NEED_ZEN">
     <English>ALiVE: this module needs Zeus Enhanced to choose its options.</English>
@@ -198,22 +201,22 @@
     <English>ALiVE: he is a suicide bomber now, and goes for %1 within a minute.</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_OBJECTIVE">
-    <English>ALiVE: AI Commander Objective</English>
+    <English>AI Commander Objective</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_REVEAL">
-    <English>ALiVE: Reveal Insurgent Installations</English>
+    <English>Reveal Insurgent Sites</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_CREATETASK">
-    <English>ALiVE: Create Task</English>
+    <English>Create Task</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_CLOSETASK">
-    <English>ALiVE: Close Task</English>
+    <English>Close Task</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_AIRSTRIKE">
-    <English>ALiVE: Air Strike</English>
+    <English>Air Strike</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_RESUPPLY">
-    <English>ALiVE: Reinforcements</English>
+    <English>Reinforcements</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_SIDE_CIV">
     <English>Civilians</English>
@@ -378,13 +381,13 @@
     <English>ALiVE: %1 groups of %2 are on their way to grid %3, if the logistics module allows that kind.</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_TOWNMOOD">
-    <English>ALiVE: Town Mood</English>
+    <English>Town Mood</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_TIPOFF">
-    <English>ALiVE: Civilian Tip-off</English>
+    <English>Civilian Tip-off</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_ANGRYCROWD">
-    <English>ALiVE: Angry Crowd</English>
+    <English>Angry Crowd</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_NEED_CIVPOP">
     <English>ALiVE: needs Civilian Placement and Civilian Population in the mission.</English>
@@ -456,5 +459,98 @@
     <English>ALiVE: an angry crowd of %1 gathers for %2 minutes. They throw things at players who come within 40 m.</English>
 </Key>
 </Container>
+<Key ID="STR_ALIVE_ZEUS_CREATEHUB">
+    <English>Create Hub</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVEHUB">
+    <English>Remove Hub</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CREATEFOB">
+    <English>Create FOB</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVEFOB">
+    <English>Remove FOB</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CREATERALLY">
+    <English>Create Rally Point</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_REMOVERALLY">
+    <English>Remove Rally Point</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FOR_SIDE">
+    <English>For side</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FOB_TYPE">
+    <English>FOB type</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FOB_PLAIN">
+    <English>Plain FOB</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RALLY_NAME">
+    <English>Name</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RALLY_NAME_TIP">
+    <English>As players see it. Leave empty for the nearest place name.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_HUB">
+    <English>ALiVE: Needs a Logistics Hub module in the mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_HUB_SIDE">
+    <English>ALiVE: Needs a Logistics Hub module for %1 in the mission: a new hub takes its rules from one.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HUB_NOT_OBJECT">
+    <English>ALiVE: A hub has to be a building or crate, not a vehicle or a man. Place it on the ground for a container.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HUB_ALREADY">
+    <English>ALiVE: That object is a Logistics Hub already.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HUB_DONE">
+    <English>ALiVE: A %1 Logistics Hub is set up at grid %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NO_HUB">
+    <English>ALiVE: No Logistics Hub within %1 m.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HUB_REMOVED">
+    <English>ALiVE: The Logistics Hub at grid %1 is gone.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_FOB">
+    <English>ALiVE: Needs the Player FOBs module in the mission, started.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FOB_DONE">
+    <English>ALiVE: %1 is deployed for %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NO_FOB">
+    <English>ALiVE: No FOB within %1 m.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_FOB_REMOVED">
+    <English>ALiVE: %1 is taken down, with everything built at it.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_RALLY">
+    <English>ALiVE: Needs the Rally Points module in the mission.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RALLY_DONE">
+    <English>ALiVE: Rally point %1 is set up for %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HUB_NAME">
+    <English>Name</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HUB_NAME_TIP">
+    <English>Shown on the map and in the Manage Hub window. Leave it empty for the grid.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_HANDGROUP_CANT">
+    <English>ALiVE: that group can't be handed over. Civilians, crowds and support crews stay as they are.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_BOMBER_NOT_HIM">
+    <English>ALiVE: he can't be made a bomber. Pick a man who isn't in a player's group or held by ALiVE.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NO_FACTIONS">
+    <English>ALiVE: no faction with groups to spawn was found.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NO_RALLY">
+    <English>ALiVE: No rally point within %1 m.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_RALLY_REMOVED">
+    <English>ALiVE: Rally point %1 is gone.</English>
+</Key>
 </Package>
 </Project>

@@ -213,4 +213,64 @@ class CfgVehicles {
         icon = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
         picture = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
     };
+
+    class ALiVE_ModuleZeusCreateHub : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_CREATEHUB";
+        ALiVE_zeusAction = "createHub";
+        icon = "x\alive\addons\sup_player_resupply\icon_sup_logistics_hub.paa";
+        picture = "x\alive\addons\sup_player_resupply\icon_sup_logistics_hub.paa";
+    };
+
+    class ALiVE_ModuleZeusRemoveHub : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_REMOVEHUB";
+        ALiVE_zeusAction = "removeHub";
+        icon = "x\alive\addons\sup_player_resupply\icon_sup_logistics_hub.paa";
+        picture = "x\alive\addons\sup_player_resupply\icon_sup_logistics_hub.paa";
+    };
+
+    class ALiVE_ModuleZeusCreateFob : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 0;
+        displayName = "$STR_ALIVE_ZEUS_CREATEFOB";
+        ALiVE_zeusAction = "createFob";
+        icon = "x\alive\addons\sup_fob\icon_sup_fob.paa";
+        picture = "x\alive\addons\sup_fob\icon_sup_fob.paa";
+    };
+
+    class ALiVE_ModuleZeusRemoveFob : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 0;
+        displayName = "$STR_ALIVE_ZEUS_REMOVEFOB";
+        ALiVE_zeusAction = "removeFob";
+        icon = "x\alive\addons\sup_fob\icon_sup_fob.paa";
+        picture = "x\alive\addons\sup_fob\icon_sup_fob.paa";
+    };
+
+    class ALiVE_ModuleZeusCreateRally : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_CREATERALLY";
+        ALiVE_zeusAction = "createRally";
+        icon = "x\alive\addons\sup_group_manager\icon_sup_rally.paa";
+        picture = "x\alive\addons\sup_group_manager\icon_sup_rally.paa";
+    };
+
+    class ALiVE_ModuleZeusRemoveRally : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_REMOVERALLY";
+        ALiVE_zeusAction = "removeRally";
+        icon = "x\alive\addons\sup_group_manager\icon_sup_rally.paa";
+        picture = "x\alive\addons\sup_group_manager\icon_sup_rally.paa";
+    };
 };

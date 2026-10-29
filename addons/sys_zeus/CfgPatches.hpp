@@ -22,7 +22,13 @@ class CfgPatches {
             "ALiVE_ModuleZeusResupply",
             "ALiVE_ModuleZeusTownMood",
             "ALiVE_ModuleZeusTipOff",
-            "ALiVE_ModuleZeusAngryCrowd"
+            "ALiVE_ModuleZeusAngryCrowd",
+            "ALiVE_ModuleZeusCreateHub",
+            "ALiVE_ModuleZeusRemoveHub",
+            "ALiVE_ModuleZeusCreateFob",
+            "ALiVE_ModuleZeusRemoveFob",
+            "ALiVE_ModuleZeusCreateRally",
+            "ALiVE_ModuleZeusRemoveRally"
         };
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;

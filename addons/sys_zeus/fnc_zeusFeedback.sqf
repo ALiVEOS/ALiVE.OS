@@ -32,8 +32,11 @@ if !(_arguments isEqualTo []) then {
 };
 
 systemChat _message;
-if !(isNull (findDisplay 312)) then {
-    [_message] call BIS_fnc_showCuratorFeedbackMessage;
+// the game's popup takes the Zeus's curator logic first, then the text (Jman, 29 Oct: passing
+// the text alone threw a script error on every reply)
+private _curator = getAssignedCuratorLogic player;
+if (!isNull (findDisplay 312) && {!isNull _curator}) then {
+    [_curator, _message] call BIS_fnc_showCuratorFeedbackMessage;
 };
 
 true

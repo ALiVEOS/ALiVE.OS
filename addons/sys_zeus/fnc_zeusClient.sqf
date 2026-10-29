@@ -12,7 +12,8 @@ server, which checks the Zeus and does the work (ALiVE_fnc_zeusRequest).
 Parameters:
 String - the module: "save", "debug", "spotReport", "handGroup", "bomber", "convertBomber",
     "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "createTask",
-    "closeTask", "airStrike", "resupply", "townMood", "tipOff" or "angryCrowd"
+    "closeTask", "airStrike", "resupply", "townMood", "tipOff", "angryCrowd", "createHub", "removeHub",
+    "createFob", "removeFob", "createRally" or "removeRally"
 Array - position (ATL)
 Object - the unit the module was placed on, or objNull
 Bool - true when Zeus Enhanced is loaded, so its option dialogs can be used
@@ -36,6 +37,35 @@ params [
 private _send = {
     params ["_action", "_args"];
     [_action, _args] remoteExecCall ["ALiVE_fnc_zeusRequest", 2];
+};
+
+// Placed on the ground rather than on a man (Jman, 29 Oct: dropping it exactly on one is fiddly):
+// the nearest man within 25 m that the module can use, or objNull
+private _nearestMan = {
+    params ["_at", "_ok"];
+    private _men = (_at nearEntities ["CAManBase", 25]) select { alive _x && {_x call _ok} };
+    if (_men isEqualTo []) exitWith { objNull };
+    ([_men, [], { _x distance2D _at }, "ASCEND"] call BIS_fnc_sortBy) select 0
+};
+
+// The factions with men in them, for a faction picker (Jman, 29 Oct: typing a class name was no
+// use): [classes, names], the Military IED module's own bomber faction first. Worked out once.
+private _manFactions = {
+    private _have = uiNamespace getVariable "ALiVE_zeus_manFactions";
+    if (!isNil "_have") exitWith { _have };
+    private _seen = createHashMap;
+    {
+        private _f = getText (_x >> "faction");
+        if (_f != "" && {!(_f in _seen)} && {isClass (configFile >> "CfgFactionClasses" >> _f)}) then {
+            _seen set [_f, getText (configFile >> "CfgFactionClasses" >> _f >> "displayName")];
+        };
+    // men on a real side only: Virtual Entities (Zeus and spectator slots) is no faction to spawn
+    } forEach ("getNumber (_x >> 'scope') == 2 && {getNumber (_x >> 'side') in [0,1,2,3]} && {getText (_x >> 'faction') != 'Virtual_F'} && {configName _x isKindOf 'CAManBase'}" configClasses (configFile >> "CfgVehicles"));
+    private _rows = (keys _seen) apply { [_seen get _x, _x] };
+    _rows sort true;
+    private _r = [[""] + (_rows apply { _x select 1 }), [localize "STR_ALIVE_ZEUS_FACTION_IED"] + (_rows apply { format ["%1 (%2)", _x select 0, _x select 1] })];
+    uiNamespace setVariable ["ALiVE_zeus_manFactions", _r];
+    _r
 };
 
 switch (_action) do {
@@ -68,6 +98,10 @@ switch (_action) do {
     };
 
     case "handGroup": {
+        // placed on a vehicle: its commander, else anyone aboard
+        if (!isNull _attached && {!(_attached isKindOf "CAManBase")}) then { _attached = [effectiveCommander _attached, (crew _attached) param [0, objNull]] select (isNull effectiveCommander _attached) };
+        // on the ground: the nearest man the profiler would take (no civilians, no crowd or support crews)
+        if (isNull _attached) then { _attached = [_position, { !isPlayer _x && {side group _x != civilian} && {(_x getVariable ["agentID", ""]) == ""} && {!((group _x) getVariable ["ALIVE_profileIgnore", false])} && {(units group _x) findIf {isPlayer _x} < 0} && {((leader group _x) getVariable ["profileID", ""]) == ""} }] call _nearestMan };
         if (isNull _attached || {!(_attached isKindOf "CAManBase")} || {isNull group _attached}) exitWith {
             ["STR_ALIVE_ZEUS_NEED_UNIT"] call ALiVE_fnc_zeusFeedback;
         };
@@ -80,7 +114,7 @@ switch (_action) do {
             [
                 localize "STR_ALIVE_ZEUS_BOMBER",
                 [
-                    ["EDIT", [localize "STR_ALIVE_ZEUS_FACTION", localize "STR_ALIVE_ZEUS_FACTION_TIP"], [""]],
+                    ["COMBO", [localize "STR_ALIVE_ZEUS_FACTION", localize "STR_ALIVE_ZEUS_FACTION_TIP"], (call _manFactions) + [0]],
                     ["SLIDER:RADIUS", localize "STR_ALIVE_ZEUS_START_RADIUS", [20, 200, 50, 0, _position]]
                 ],
                 {
@@ -98,6 +132,7 @@ switch (_action) do {
     };
 
     case "convertBomber": {
+        if (isNull _attached) then { _attached = [_position, { !isPlayer _x && {vehicle _x == _x} && {(units group _x) findIf {isPlayer _x} < 0} && {(_x getVariable ["profileID", ""]) == ""} && {(_x getVariable ["agentID", ""]) == ""} }] call _nearestMan };
         if (isNull _attached || {!(_attached isKindOf "CAManBase")} || {!alive _attached} || {isPlayer _attached}) exitWith {
             ["STR_ALIVE_ZEUS_NEED_PERSON"] call ALiVE_fnc_zeusFeedback;
         };
@@ -114,7 +149,7 @@ switch (_action) do {
             [
                 localize "STR_ALIVE_ZEUS_CARBOMB",
                 [
-                    ["EDIT", [localize "STR_ALIVE_ZEUS_FACTION", localize "STR_ALIVE_ZEUS_FACTION_TIP"], [""]]
+                    ["COMBO", [localize "STR_ALIVE_ZEUS_FACTION", localize "STR_ALIVE_ZEUS_FACTION_TIP"], (call _manFactions) + [0]]
                 ],
                 {
                     params ["_values", "_args"];
@@ -180,7 +215,7 @@ switch (_action) do {
                 } forEach ("true" configClasses _sideCfg);
             } forEach ("true" configClasses (_root >> "CfgGroups"));
         } forEach [configFile, missionConfigFile];
-        if (_factions isEqualTo []) exitWith {};
+        if (_factions isEqualTo []) exitWith { ["STR_ALIVE_ZEUS_NO_FACTIONS"] call ALiVE_fnc_zeusFeedback };
         [
             localize "STR_ALIVE_ZEUS_SPAWNGROUP",
             [
@@ -236,6 +271,8 @@ switch (_action) do {
     // Placed on a man of an ALiVE group: despawn it (it comes back when someone is near), or with
     // Zeus Enhanced take it out of the mission for good
     case "removeGroup": {
+        if (!isNull _attached && {!(_attached isKindOf "CAManBase")}) then { _attached = [effectiveCommander _attached, (crew _attached) param [0, objNull]] select (isNull effectiveCommander _attached) };
+        if (isNull _attached) then { _attached = [_position, { ((leader group _x) getVariable ["profileID", _x getVariable ["profileID", ""]]) != "" && {(units group _x) findIf {isPlayer _x} < 0} }] call _nearestMan };
         if (isNull _attached || {!(_attached isKindOf "CAManBase")}) exitWith {
             ["STR_ALIVE_ZEUS_NEED_UNIT"] call ALiVE_fnc_zeusFeedback;
         };
@@ -461,6 +498,95 @@ switch (_action) do {
         } else {
             ["angryCrowd", [_position, 8, 10, false]] call _send;
         };
+    };
+
+    // Placed on a building or crate, that object becomes the hub; on the ground, a cargo container
+    // is put down. With Zeus Enhanced the side is chosen, else it is the nearest player's
+    case "createHub": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_CREATEHUB",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
+                    ["EDIT", [localize "STR_ALIVE_ZEUS_HUB_NAME", localize "STR_ALIVE_ZEUS_HUB_NAME_TIP"], [""]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send", "_attached"];
+                    ["createHub", [_position, _attached, _values select 0, _values select 1]] call _send;
+                },
+                {},
+                [_position, _send, _attached]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["createHub", [_position, _attached, "", ""]] call _send;
+        };
+    };
+
+    case "removeHub": {
+        ["removeHub", [_position, _attached]] call _send;
+    };
+
+    // With Zeus Enhanced the side and, with FOB Types in the mission, the type; else the nearest
+    // player's side and the first type
+    case "createFob": {
+        private _types = missionNamespace getVariable ["ALiVE_FOB_types", []];
+        private _ids = [];
+        private _names = [];
+        if (_types isEqualTo [] || {missionNamespace getVariable ["ALiVE_FOB_typesGeneral", true]}) then {
+            _ids pushBack "";
+            _names pushBack localize "STR_ALIVE_ZEUS_FOB_PLAIN";
+        };
+        { _ids pushBack (_x select 0); _names pushBack (_x select 1) } forEach _types;
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_CREATEFOB",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOB_TYPE", [_ids, _names, 0]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    ["createFob", [_position, _values select 0, _values select 1]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["createFob", [_position, "", _ids param [0, ""]]] call _send;
+        };
+    };
+
+    case "removeFob": {
+        ["removeFob", [_position]] call _send;
+    };
+
+    // Placed on an object, that object becomes the rally point; on the ground, a backpack is put
+    // down. With Zeus Enhanced the side (or every side) and a name are chosen
+    case "createRally": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_CREATERALLY",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER", "ANY"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER", localize "STR_ALIVE_ZEUS_SIDE_ALL"], 0]],
+                    ["EDIT", [localize "STR_ALIVE_ZEUS_RALLY_NAME", localize "STR_ALIVE_ZEUS_RALLY_NAME_TIP"], [""]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send", "_attached"];
+                    ["createRally", [_position, _attached, _values select 0, _values select 1]] call _send;
+                },
+                {},
+                [_position, _send, _attached]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["createRally", [_position, _attached, "", ""]] call _send;
+        };
+    };
+
+    case "removeRally": {
+        ["removeRally", [_position, _attached]] call _send;
     };
 };
 

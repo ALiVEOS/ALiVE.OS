@@ -139,6 +139,10 @@ switch (_action) do {
         if ((units _group) findIf {isPlayer _x} > -1) exitWith {
             ["STR_ALIVE_ZEUS_HANDGROUP_PLAYERS"] call _reply;
         };
+        // what the profiler leaves alone: civilians, ALiVE's own civilians, crowds and support crews
+        if (side _group == civilian || {((leader _group) getVariable ["agentID", ""]) != ""} || {_group getVariable ["ALIVE_profileIgnore", false]}) exitWith {
+            ["STR_ALIVE_ZEUS_HANDGROUP_CANT"] call _reply;
+        };
         // Riding in a vehicle another group crews: profiling deletes the vehicle, and that crew
         // with it
         if ((units _group) findIf { vehicle _x != _x && {(crew vehicle _x) findIf {group _x != _group} > -1} } > -1) exitWith {
@@ -189,6 +193,10 @@ switch (_action) do {
         _args params [["_unit", objNull, [objNull]]];
         if (isNull _unit || {!alive _unit} || {!(_unit isKindOf "CAManBase")} || {isPlayer _unit} || {vehicle _unit != _unit}) exitWith {
             ["STR_ALIVE_ZEUS_NEED_PERSON"] call _reply;
+        };
+        // not a player's squadmate, a soldier ALiVE holds as a profile or one of its civilians
+        if ((units group _unit) findIf {isPlayer _x} > -1 || {(_unit getVariable ["profileID", ""]) != ""} || {(_unit getVariable ["agentID", ""]) != ""}) exitWith {
+            ["STR_ALIVE_ZEUS_BOMBER_NOT_HIM"] call _reply;
         };
         if (isNil "ALiVE_mil_IED") exitWith {
             ["STR_ALIVE_ZEUS_NEED_IED"] call _reply;
@@ -302,7 +310,8 @@ switch (_action) do {
     // with the rest, and an AI Commander with its faction can give it orders
     case "spawnGroup": {
         _args params [["_position", [], [[]]], ["_faction", "", [""]], ["_group", "", [""]]];
-        if (count _position < 2 || {_group == ""}) exitWith {};
+        if (count _position < 2) exitWith {};
+        if (_group == "") exitWith { ["STR_ALIVE_ZEUS_SPAWNGROUP_FAILED", [""]] call _reply };
         if !(call _profilesReady) exitWith {
             ["STR_ALIVE_ZEUS_NEED_PROFILES"] call _reply;
         };
@@ -666,7 +675,7 @@ switch (_action) do {
     case "tipOff": {
         _args params [["_position", [], [[]]], ["_civ", objNull, [objNull]]];
         if (count _position < 2) exitWith {};
-        private _isCiv = { params ["_u"]; alive _u && {_u isKindOf "CAManBase"} && {!isPlayer _u} && {side group _u == civilian} && {vehicle _u == _u} };
+        private _isCiv = { params ["_u"]; alive _u && {_u isKindOf "CAManBase"} && {!isPlayer _u} && {side _u == civilian || {side group _u == civilian}} && {vehicle _u == _u} };
         if (isNull _civ || {!(_civ call _isCiv)}) then {
             private _near = (_position nearEntities ["CAManBase", 300]) select { _x call _isCiv };
             _civ = if (_near isEqualTo []) then { objNull } else { ([_near, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy) select 0 };
@@ -867,5 +876,146 @@ switch (_action) do {
                 _left isEqualTo []
             };
         };
+    };
+
+    // A Logistics Hub (Jman, 29 Oct): the object the module is dropped on, or a cargo container
+    // put down here. It takes its rules from a Hub module of the side chosen, as a hub synced in
+    // Eden does, so the mission needs one for that side.
+    case "createHub": {
+        _args params [["_position", [], [[]]], ["_on", objNull, [objNull]], ["_side", "", [""]], ["_name", "", [""]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALiVE_hub_modules" || {ALiVE_hub_modules isEqualTo []}) exitWith { ["STR_ALIVE_ZEUS_NEED_HUB"] call _reply };
+        if (_side == "") then { _side = [_position] call _playerSideNear };
+        if !(_side in ["WEST", "EAST", "GUER"]) exitWith { ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply };
+        private _i = ALiVE_hub_modules findIf { !isNull _x && {((["settings", [_x]] call ALIVE_fnc_hub) select 0) == _side} };
+        if (_i < 0) exitWith { ["STR_ALIVE_ZEUS_NEED_HUB_SIDE", [_side call _sideName]] call _reply };
+        private _module = ALiVE_hub_modules select _i;
+        if (!isNull _on && {(_on isKindOf "AllVehicles") || {isSimpleObject _on}}) exitWith { ["STR_ALIVE_ZEUS_HUB_NOT_OBJECT"] call _reply };
+        if (!isNull _on && {(_on call BIS_fnc_netId) in ALiVE_hub_registry}) exitWith { ["STR_ALIVE_ZEUS_HUB_ALREADY"] call _reply };
+        [_position, _on, _module, _side, _caller, _side call _sideName, ["cleanName", [_name]] call ALIVE_fnc_hub] spawn {
+            params ["_position", "_on", "_module", "_side", "_caller", "_sideShown", "_name"];
+            private _hub = _on;
+            if (isNull _hub) then {
+                _hub = createVehicle ["Land_Cargo20_military_green_F", _position, [], 0, "NONE"];
+                _hub setVectorUp (surfaceNormal (getPosATL _hub));
+                // a moment for players' machines to learn of it before its hold actions are sent
+                sleep 1;
+            };
+            // the hub takes its name as it is tagged
+            if (_name != "") then { _hub setVariable ["ALiVE_hub_name", _name] };
+            ["tag", [_hub, _module]] call ALIVE_fnc_hub;
+            publicVariable "ALiVE_hub_list";
+            ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
+            ["STR_ALIVE_ZEUS_HUB_DONE", [_sideShown, mapGridPosition _hub]] remoteExecCall ["ALiVE_fnc_zeusFeedback", _caller];
+            ["ALiVE Zeus - %1 made %2 at %3 a %4 Logistics Hub", name _caller, typeOf _hub, mapGridPosition _hub, _side] call ALiVE_fnc_dump;
+        };
+    };
+
+    // The hub nearest the spot, within 30 m, or the one the module is dropped on, is a hub no more
+    // and its object goes. It isn't rebuilt later, as a destroyed one would be.
+    case "removeHub": {
+        _args params [["_position", [], [[]]], ["_on", objNull, [objNull]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALiVE_hub_registry") exitWith { ["STR_ALIVE_ZEUS_NEED_HUB"] call _reply };
+        private _hub = objNull;
+        if (!isNull _on && {(_on call BIS_fnc_netId) in ALiVE_hub_registry}) then { _hub = _on } else {
+            private _near = (missionNamespace getVariable ["ALiVE_hub_list", []]) select { !isNull _x && {(_x distance2D _position) < 30} };
+            if (_near isNotEqualTo []) then { _hub = ([_near, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy) select 0 };
+        };
+        if (isNull _hub) exitWith { ["STR_ALIVE_ZEUS_NO_HUB", [30]] call _reply };
+        private _netId = _hub call BIS_fnc_netId;
+        ["nodeRemove", [_netId]] call ALIVE_fnc_hub;
+        remoteExec ["", "ALiVE_hub_enemy_" + _netId];
+        remoteExec ["", "ALiVE_hub_own_" + _netId];
+        remoteExec ["", "ALiVE_hub_manage_" + _netId];
+        ALiVE_hub_registry deleteAt _netId;
+        if (!isNil "ALiVE_hub_downs") then { ALiVE_hub_downs deleteAt _netId };
+        ALiVE_hub_list = ALiVE_hub_list select { !isNull _x && {_x != _hub} };
+        publicVariable "ALiVE_hub_list";
+        private _grid = mapGridPosition _hub;
+        ["ALiVE Zeus - %1 removed the Logistics Hub %2 at %3", name _caller, typeOf _hub, _grid] call ALiVE_fnc_dump;
+        deleteVehicle _hub;
+        ["STR_ALIVE_ZEUS_HUB_REMOVED", [_grid]] call _reply;
+    };
+
+    // A Player FOB here for the side chosen, of the type chosen: no kit and no cost (Jman, 29 Oct)
+    case "createFob": {
+        _args params [["_position", [], [[]]], ["_side", "", [""]], ["_type", "", [""]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALiVE_sup_fob" || {!(ALiVE_sup_fob getVariable ["startupComplete", false])}) exitWith { ["STR_ALIVE_ZEUS_NEED_FOB"] call _reply };
+        if (_side == "") then { _side = [_position] call _playerSideNear };
+        if !(_side in ["WEST", "EAST", "GUER"]) exitWith { ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply };
+        // fnc_fobOps takes a remote-executed call only with this set
+        private _ALiVE_fobCaller = _caller;
+        private _r = ["zeusDeploy", [_side, _position, 0, _type]] call ALiVE_fnc_fobOps;
+        _r params [["_id", ""], ["_key", ""], ["_fmt", []]];
+        if (_id == "") exitWith { [_key, _fmt] call _reply };
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        ["STR_ALIVE_ZEUS_FOB_DONE", [[_entry, "name", _id] call ALIVE_fnc_hashGet, _side call _sideName]] call _reply;
+    };
+
+    // The FOB nearest the spot, within 100 m, is taken down with everything built at it
+    case "removeFob": {
+        _args params [["_position", [], [[]]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALiVE_FOB_registry") exitWith { ["STR_ALIVE_ZEUS_NEED_FOB"] call _reply };
+        private _best = "";
+        private _bestD = 100;
+        {
+            private _d = ([[ALiVE_FOB_registry, _x] call ALIVE_fnc_hashGet, "pos", [0,0,0]] call ALIVE_fnc_hashGet) distance2D _position;
+            if (_d < _bestD) then { _best = _x; _bestD = _d };
+        } forEach (ALiVE_FOB_registry select 1);
+        if (_best == "") exitWith { ["STR_ALIVE_ZEUS_NO_FOB", [100]] call _reply };
+        private _name = [[ALiVE_FOB_registry, _best] call ALIVE_fnc_hashGet, "name", _best] call ALIVE_fnc_hashGet;
+        private _ALiVE_fobCaller = _caller;
+        ["cleanup", [_best]] call ALiVE_fnc_fobOps;
+        ["ALiVE Zeus - %1 removed %2 (%3)", name _caller, _best, _name] call ALiVE_fnc_dump;
+        ["STR_ALIVE_ZEUS_FOB_REMOVED", [_name]] call _reply;
+    };
+
+    // A rally point anyone on the side chosen can travel to: the object the module is dropped on,
+    // or a backpack put down here, as a squad leader's is
+    case "createRally": {
+        _args params [["_position", [], [[]]], ["_on", objNull, [objNull]], ["_side", "", [""]], ["_name", "", [""]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALiVE_rallyLogic") exitWith { ["STR_ALIVE_ZEUS_NEED_RALLY"] call _reply };
+        if (_side == "") then { _side = [_position] call _playerSideNear };
+        if !(_side in ["WEST", "EAST", "GUER", "ANY"]) exitWith { ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply };
+        private _obj = _on;
+        // "zeus" for the backpack put down here, which Remove Rally Point takes away again; "zeusObj"
+        // for an object it was dropped on, which stays
+        private _kind = "zeusObj";
+        if (isNull _obj || {_obj isKindOf "CAManBase"}) then {
+            _obj = createSimpleObject ["B_Carryall_oli", AGLToASL _position];
+            _obj setVectorUp (surfaceNormal _position);
+            _kind = "zeus";
+        };
+        ["add", [_obj, _name, _side, _kind, grpNull]] call ALiVE_fnc_rallyPoint;
+        private _row = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { (_x select 0) isEqualTo _obj };
+        private _shown = if (_row isEqualTo []) then { mapGridPosition _obj } else { (_row select 0) select 1 };
+        ["ALiVE Zeus - %1 made the rally point %2 for %3 at %4", name _caller, _shown, _side, mapGridPosition _obj] call ALiVE_fnc_dump;
+        ["STR_ALIVE_ZEUS_RALLY_DONE", [_shown, [_side call _sideName, localize "STR_ALIVE_ZEUS_SIDE_ALL"] select (_side == "ANY")]] call _reply;
+    };
+
+    // The rally point nearest the spot, within 50 m, or the one the module is dropped on. The backpack
+    // a squad leader or a Zeus put down goes; any other object stays, no longer a
+    // rally point.
+    case "removeRally": {
+        _args params [["_position", [], [[]]], ["_on", objNull, [objNull]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALiVE_rallyLogic") exitWith { ["STR_ALIVE_ZEUS_NEED_RALLY"] call _reply };
+        private _rows = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) };
+        private _i = if (isNull _on) then { -1 } else { _rows findIf { (_x select 0) isEqualTo _on } };
+        if (_i < 0) then {
+            private _near = _rows select { ((_x select 0) distance2D _position) < 50 };
+            if (_near isNotEqualTo []) then { _i = _rows find (([_near, [], { (_x select 0) distance2D _position }, "ASCEND"] call BIS_fnc_sortBy) select 0) };
+        };
+        if (_i < 0) exitWith { ["STR_ALIVE_ZEUS_NO_RALLY", [50]] call _reply };
+        (_rows select _i) params ["_obj", "_name", "", "_kind", ["_owner", grpNull]];
+        ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
+        if (_kind == "leader" && {!isNull _owner}) then { _owner setVariable ["ALiVE_rallyDeployed", objNull, true] };
+        if (_kind in ["zeus", "leader"]) then { deleteVehicle _obj };
+        ["ALiVE Zeus - %1 removed the rally point %2", name _caller, _name] call ALiVE_fnc_dump;
+        ["STR_ALIVE_ZEUS_RALLY_REMOVED", [_name]] call _reply;
     };
 };
