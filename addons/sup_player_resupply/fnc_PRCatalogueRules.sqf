@@ -19,14 +19,19 @@ list of vehicles leaves the Groups tab as it was.
 A name that is no vehicle, crate, soldier or group in this game is dropped with one RPT line, so a
 list written for a mod that isn't loaded behaves as an empty one.
 
+The yes and no answers come from ALIVE_fnc_lists, the rules engine the Logistics Hub and Player
+FOBs share. A named list picked in the module's List field (a built-in one such as SUPPLIES, or a
+mission's own from CfgALiVELists) goes under the three lists, and its kinds cut what the side or
+faction offers.
+
 Parameters:
     ["parse", [onlyString, neverString, alsoString]] - rules hash
-    ["parseLogic", logic] - reads the module's three lists plus the mission's custom lists, stores
-        the rules on the module as pr_catalogueRules and returns them
+    ["parseLogic", logic] - reads the module's List and three lists plus the mission's custom
+        lists, stores the rules on the module as pr_catalogueRules and returns them
     ["allows", [rules, class]] - true when the class may be offered
     ["allowsGroup", [rules, faction, groupClass]] - true when the group may be offered
     ["blocked", [rules, forceMakeup]] - the first class or group in a tablet request that Never
-        names, "" when none (the server's check on a request)
+        names or the List's kinds leave out, "" when none (the server's check on a request)
     ["filterGroups", [rules, sortedGroups, sideText]] - applies the lists to a sorted groups hash
         (faction > category > group) in place and adds the Also groups
     ["addAlso", [rules, sortedVehicles]] - adds the Also classes to a sorted vehicles hash in place
@@ -45,23 +50,6 @@ Jman
 ---------------------------------------------------------------------------- */
 
 params [["_operation", ""], ["_args", []]];
-
-// Every group class name in the game, lower case, for telling a bare group name from a typing mistake
-private _fnc_groupNames = {
-    private _cache = missionNamespace getVariable "ALiVE_PR_groupNameCache";
-    if (isNil "_cache") then {
-        _cache = createHashMap;
-        {
-            {
-                {
-                    { if (isClass _x) then { _cache set [toLower configName _x, true] } } forEach ("true" configClasses _x);
-                } forEach ("true" configClasses _x);
-            } forEach ("true" configClasses _x);
-        } forEach ("true" configClasses (configFile >> "CfgGroups"));
-        missionNamespace setVariable ["ALiVE_PR_groupNameCache", _cache];
-    };
-    _cache
-};
 
 // A faction as the groups hash keys it: the custom mappings name the CfgGroups faction a
 // CfgFactionClasses faction borrows its groups from
@@ -102,47 +90,8 @@ private _result = nil;
 
 switch (_operation) do {
 
-    case "parse": {
-        _args params [["_onlyText", ""], ["_neverText", ""], ["_alsoText", ""]];
-        private _rules = createHashMap;
-        {
-            _x params ["_text", "_name"];
-            private _classes = [];
-            private _groups = [];
-            if (_text isEqualType []) then { _text = _text joinString "," };
-            if !(_text isEqualType "") then { _text = "" };
-            // "BLU_F > BUS_InfSquad" is one token, not three
-            _text = _text regexReplace ["\s*>\s*", ">"];
-            {
-                private _token = _x trim [" ", 0];
-                if (_token != "") then {
-                    if ((_token find ">") > -1) then {
-                        private _parts = _token splitString ">";
-                        if (count _parts == 2) then {
-                            private _pair = [toLower ((_parts select 0) trim [" ", 0]), toLower ((_parts select 1) trim [" ", 0])];
-                            if !(_pair in _groups) then { _groups pushBack _pair };
-                        } else {
-                            ["SUP_PR - catalogue: '%1' is not a vehicle, crate, soldier or group in this game", _token] call ALiVE_fnc_dump;
-                        };
-                    } else {
-                        if (isClass (configFile >> "CfgVehicles" >> _token)) then {
-                            _classes pushBackUnique configName (configFile >> "CfgVehicles" >> _token);
-                        } else {
-                            if ((toLower _token) in (call _fnc_groupNames)) then {
-                                private _pair = ["", toLower _token];
-                                if !(_pair in _groups) then { _groups pushBack _pair };
-                            } else {
-                                ["SUP_PR - catalogue: '%1' is not a vehicle, crate, soldier or group in this game", _token] call ALiVE_fnc_dump;
-                            };
-                        };
-                    };
-                };
-            } forEach (_text splitString ",; []'""");
-            _rules set [_name + "Classes", _classes];
-            _rules set [_name + "Groups", _groups];
-        } forEach [[_onlyText, "only"], [_neverText, "never"], [_alsoText, "also"]];
-        _result = _rules;
-    };
+    // the yes and no come from the shared lists engine, so the tablet, hubs and FOBs agree
+    case "parse": { _result = ["parse", _args] call ALIVE_fnc_lists };
 
     case "parseLogic": {
         private _logic = _args;
@@ -166,74 +115,29 @@ switch (_operation) do {
             _never,
             ["pr_restrictionAlso", "ALiVE_PR_CUSTOM_ALSO"] call _list
         ]] call ALIVE_fnc_PRCatalogueRules;
+        // a named list (List, or Custom and its name) under the three lists: Never and Also from
+        // both, Only from both, its kinds cut what the side or faction offers
+        private _listName = _logic getVariable ["pr_list", ""];
+        if (_listName isEqualTo "CUSTOM") then { _listName = _logic getVariable ["pr_list_name", ""] };
+        if (_listName isEqualType "" && {(_listName trim [" ", 0]) != ""}) then {
+            _result = ["merge", [["get", _listName trim [" ", 0]] call ALIVE_fnc_lists, _result, false, true]] call ALIVE_fnc_lists;
+        };
         _logic setVariable ["pr_catalogueRules", _result];
     };
 
-    case "allows": {
-        _args params ["_rules", ["_class", ""]];
-        private _real = if (isClass (configFile >> "CfgVehicles" >> _class)) then { configName (configFile >> "CfgVehicles" >> _class) } else { _class };
-        _result = call {
-            if (_real in (_rules getOrDefault ["neverClasses", []])) exitWith { false };
-            if (_real in (_rules getOrDefault ["alsoClasses", []])) exitWith { true };
-            private _only = _rules getOrDefault ["onlyClasses", []];
-            (count _only == 0) || {_real in _only}
-        };
-    };
+    case "allows": { _result = ["allows", _args] call ALIVE_fnc_lists };
 
-    case "allowsGroup": {
-        _args params ["_rules", ["_faction", ""], ["_group", ""]];
-        _result = call {
-            if ([_faction, _group, _rules getOrDefault ["neverGroups", []]] call _fnc_groupIn) exitWith { false };
-            if ([_faction, _group, _rules getOrDefault ["alsoGroups", []]] call _fnc_groupIn) exitWith { true };
-            private _only = _rules getOrDefault ["onlyGroups", []];
-            (count _only == 0) || {[_faction, _group, _only] call _fnc_groupIn}
-        };
-    };
+    case "allowsGroup": { _result = ["allowsGroup", _args] call ALIVE_fnc_lists };
 
-    case "blocked": {
-        _args params ["_rules", ["_forceMakeup", []]];
-        _result = "";
-        private _neverClasses = _rules getOrDefault ["neverClasses", []];
-        private _neverGroups = _rules getOrDefault ["neverGroups", []];
-        if (count _neverClasses + count _neverGroups > 0 && {_forceMakeup isEqualType []}) then {
-            // [requestID, crates and stores, vehicles, 3 x individuals, 3 x groups]
-            private _isNever = {
-                params ["_class"];
-                private _real = if (isClass (configFile >> "CfgVehicles" >> _class)) then { configName (configFile >> "CfgVehicles" >> _class) } else { _class };
-                _real in _neverClasses
-            };
-            {
-                if (_x isEqualType "" && {[_x] call _isNever}) exitWith { _result = _x };
-            } forEach (_forceMakeup param [1, []]);
-            if (_result == "") then {
-                {
-                    {
-                        if (_x isEqualType [] && {[_x param [0, ""]] call _isNever}) exitWith { _result = _x select 0 };
-                    } forEach (_forceMakeup param [_x, []]);
-                    if (_result != "") exitWith {};
-                } forEach [2, 3, 4, 5];
-            };
-            if (_result == "") then {
-                {
-                    {
-                        if (_x isEqualType []) then {
-                            _x params [["_group", ""], ["_info", []]];
-                            private _faction = if (_info isEqualType []) then { _info param [1, ""] } else { "" };
-                            if (_group isEqualType "" && {_faction isEqualType ""} && {[_faction, _group, _neverGroups] call _fnc_groupIn}) exitWith { _result = _group };
-                        };
-                    } forEach (_forceMakeup param [_x, []]);
-                    if (_result != "") exitWith {};
-                } forEach [6, 7, 8];
-            };
-        };
-    };
+    case "blocked": { _result = ["blocked", _args] call ALIVE_fnc_lists };
 
     case "filterGroups": {
         _args params ["_rules", "_sortedGroups", ["_sideText", "WEST"]];
         private _never = _rules getOrDefault ["neverGroups", []];
         private _only = _rules getOrDefault ["onlyGroups", []];
         private _also = _rules getOrDefault ["alsoGroups", []];
-        if (count _never + count _only > 0) then {
+        // a List whose kinds leave troops out takes every group out too, bar the Also ones
+        if (count _never + count _only > 0 || {(_rules getOrDefault ["kinds", []]) isNotEqualTo []}) then {
             {
                 private _faction = _x;
                 private _categories = [_sortedGroups, _faction] call ALIVE_fnc_hashGet;

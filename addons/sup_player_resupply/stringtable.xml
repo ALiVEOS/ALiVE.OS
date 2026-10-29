@@ -786,4 +786,16 @@
 <Key ID="STR_ALIVE_HUB_PERMISSIONS_SET_DISMANTLE">
     <English>Who can dismantle is changed on %1 Logistics Hub module(s) until the mission restarts</English>
 </Key>
+<Key ID="STR_ALIVE_PR_LIST">
+    <English>List</English>
+</Key>
+<Key ID="STR_ALIVE_PR_LIST_COMMENT">
+    <English>A ready-made list that cuts what the tablet offers by kind, so it suits any mod: Supplies only; Light forces (supplies, cars, trucks, boats, machine guns, grenade launchers, troops); Static weapons and supplies (no mortars or howitzers); Troops only; Infantry (as Light forces without boats, plus Defence Stores); or Everything. Every list but Everything and Infantry leaves Defence Stores empty. Custom uses a list of your own from CfgALiVELists in description.ext, named in List Name. Never, Only These and Also below still apply on top: Never always wins, Also adds past the list, and an Only These list of vehicles or crates replaces its cut. Not set keeps the tablet as before.</English>
+</Key>
+<Key ID="STR_ALIVE_PR_LIST_NAME">
+    <English>List Name</English>
+</Key>
+<Key ID="STR_ALIVE_PR_LIST_NAME_COMMENT">
+    <English>With List set to Custom, the name of a list in CfgALiVELists in your description.ext. It can start from a built-in list with inherit = "SUPPLIES";, then only[], never[] and also[] add to it and a kinds[] of its own replaces the list's kinds. An unknown name is reported in the RPT and leaves the tablet as before.</English>
+</Key>
 </Container></Package></Project>

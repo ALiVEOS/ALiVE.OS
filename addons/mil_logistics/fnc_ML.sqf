@@ -7171,6 +7171,17 @@ switch(_operation) do {
                         if (!isNil "ALIVE_SUP_PLAYER_RESUPPLY" && {!isNull ALIVE_SUP_PLAYER_RESUPPLY}) then {
                             private _prRules = ALIVE_SUP_PLAYER_RESUPPLY getVariable "pr_catalogueRules";
                             if (!isNil "_prRules" && {_prRules isEqualType createHashMap}) then {
+                                // at a Logistics Hub, the hub's Also adds past the tablet's List as
+                                // it does on the Collect page; the hub's own lists are checked below
+                                private _netId = _eventData param [6, ""];
+                                if (_eventType == "PR_COLLECT" && {!isNil "ALiVE_hub_registry"} && {_netId isEqualType ""} && {_netId in ALiVE_hub_registry}) then {
+                                    private _hubModule = (ALiVE_hub_registry get _netId) param [2, objNull];
+                                    if (!isNull _hubModule) then {
+                                        private _hubRules = ["catalogueRules", [_hubModule]] call ALIVE_fnc_hub;
+                                        private _hubAlso = createHashMapFromArray [["alsoClasses", _hubRules getOrDefault ["alsoClasses", []]], ["alsoGroups", _hubRules getOrDefault ["alsoGroups", []]]];
+                                        _prRules = ["merge", [_prRules, _hubAlso]] call ALIVE_fnc_lists;
+                                    };
+                                };
                                 _blockedBy = ["blocked", [_prRules, _eventForceMakeup]] call ALIVE_fnc_PRCatalogueRules;
                             };
                         };

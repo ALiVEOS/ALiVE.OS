@@ -151,6 +151,26 @@ class CfgVehicles {
                     // their old property names so every saved mission keeps its lists.
                     class HDR_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_player_resupply_HDR_FILTERS"; displayName = "TABLET CATALOGUE"; };
                     class pr_catalogue : Default { property = "ALiVE_sup_player_resupply_pr_catalogue"; displayName = "$STR_ALIVE_PR_CATALOGUE"; tooltip = "$STR_ALIVE_PR_CATALOGUE_COMMENT"; control = "ALiVE_PRCatalogueLink"; typeName = "STRING"; defaultValue = "''"; };
+                    class pr_list : Combo
+                    {
+                            property = "ALiVE_sup_player_resupply_pr_list";
+                            displayName = "$STR_ALIVE_PR_LIST";
+                            tooltip = "$STR_ALIVE_PR_LIST_COMMENT";
+                            defaultValue = """""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                class NotSet { name = "$STR_ALIVE_LISTS_NOTSET"; value = ""; default = 1; };
+                                class All { name = "$STR_ALIVE_LISTS_ALL"; value = "ALL"; };
+                                class Supplies { name = "$STR_ALIVE_LISTS_SUPPLIES"; value = "SUPPLIES"; };
+                                class Light { name = "$STR_ALIVE_LISTS_LIGHT"; value = "LIGHT"; };
+                                class StaticsSupplies { name = "$STR_ALIVE_LISTS_STATICS_SUPPLIES"; value = "STATICS_SUPPLIES"; };
+                                class Troops { name = "$STR_ALIVE_LISTS_TROOPS"; value = "TROOPS"; };
+                                class Infantry { name = "$STR_ALIVE_LISTS_INFANTRY"; value = "INFANTRY"; };
+                                class Custom { name = "$STR_ALIVE_LISTS_CUSTOM"; value = "CUSTOM"; };
+                            };
+                    };
+                    class pr_list_name : Edit { property = "ALiVE_sup_player_resupply_pr_list_name"; displayName = "$STR_ALIVE_PR_LIST_NAME"; tooltip = "$STR_ALIVE_PR_LIST_NAME_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
                     class pr_restrictionWhitelist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionWhitelist"; displayName = "$STR_ALIVE_PR_RESTRICTION_WHITELIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
                     class pr_restrictionBlacklist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionBlacklist"; displayName = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
                     class pr_restrictionAlso : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionAlso"; displayName = "$STR_ALIVE_PR_RESTRICTION_ALSO"; tooltip = "$STR_ALIVE_PR_RESTRICTION_ALSO_COMMENT"; defaultValue = """"""; typeName = "STRING"; };

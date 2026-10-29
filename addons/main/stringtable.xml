@@ -704,4 +704,28 @@
     <Portuguese>o contacto que deviam encontrar</Portuguese>
     <Russian>связной, с которым вас послали встретиться</Russian>
 </Key>
+<Key ID="STR_ALIVE_LISTS_NOTSET">
+    <English>Not set (use the lists below)</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_ALL">
+    <English>Everything</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_SUPPLIES">
+    <English>Supplies only</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_LIGHT">
+    <English>Light forces (supplies, cars, trucks, boats, light static weapons, troops)</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_STATICS_SUPPLIES">
+    <English>Static weapons and supplies</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_TROOPS">
+    <English>Troops only</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_INFANTRY">
+    <English>Infantry (supplies, defences, cars, trucks, light static weapons, troops)</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_CUSTOM">
+    <English>Custom (named below)</English>
+</Key>
 </Container></Package></Project>

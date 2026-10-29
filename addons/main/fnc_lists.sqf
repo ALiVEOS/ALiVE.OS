@@ -36,8 +36,11 @@ Parameters:
     ["get", name] - rules of a named list, cached; "" or an unknown name gives empty rules
     ["reset"] - clears the caches
     ["parse", [onlyText, neverText, alsoText, [kinds, staticTier, fieldWorksOnly]]] - rules hash
-    ["merge", [base, over]] - one set of rules: lists joined, over's prices win, kinds and vehicle
-        kinds only what both keep, the lower static tier, field works when either asks
+    ["merge", [base, over, inherit, own]] - one set of rules: lists joined, over's prices win, kinds
+        and vehicle kinds only what both keep, the lower static tier, field works when either asks.
+        An Only list of objects turns the kind cut off only when the other side has no cut, unless
+        own is true: a module's named list (base) under its own typed lists (over), where the typed
+        Only list of objects sets the list, as it does today.
     ["allows", [rules, class]] - true when the class may be offered
     ["allowsGroup", [rules, faction, groupClass]] - true when the group may be offered
     ["blocked", [rules, forceMakeup]] - the first class or group in a tablet request that Never or
@@ -142,8 +145,13 @@ private _fnc_tokens = {
                 };
             } else {
                 call {
-                    // a backpack is a CfgVehicles class, but it is gear to the Arsenal
-                    if (getNumber (configFile >> "CfgVehicles" >> _token >> "isBackpack") == 1) exitWith { _gear pushBackUnique configName (configFile >> "CfgVehicles" >> _token) };
+                    // a backpack is gear to the Arsenal, and stays in the class list as well, where
+                    // the tablet's config sort and the placement blacklist (parachutes) expect it
+                    if (getNumber (configFile >> "CfgVehicles" >> _token >> "isBackpack") == 1) exitWith {
+                        private _real = configName (configFile >> "CfgVehicles" >> _token);
+                        _gear pushBackUnique _real;
+                        _classes pushBackUnique _real;
+                    };
                     if (isClass (configFile >> "CfgVehicles" >> _token)) exitWith {
                         private _real = configName (configFile >> "CfgVehicles" >> _token);
                         _classes pushBackUnique _real;
@@ -253,12 +261,12 @@ switch (_operation) do {
         // -1 (or false) is "not set", so a list that inherits keeps its parent's
         _rules set ["fieldWorksOnly", if (_fieldWorks isEqualType 0) then { _fieldWorks > 0 } else { _fieldWorks isEqualTo true }];
         _rules set ["fieldWorksSet", if (_fieldWorks isEqualType 0) then { _fieldWorks >= 0 } else { _fieldWorks isEqualTo true }];
-        _rules set ["onlyObjects", ((_rules get "onlyClasses") findIf { !(_x isKindOf "Man") }) > -1];
+        _rules set ["onlyObjects", ((_rules get "onlyClasses") findIf { !(_x isKindOf "Man") && {getNumber (configFile >> "CfgVehicles" >> _x >> "isBackpack") != 1} }) > -1];
         _result = _rules;
     };
 
     case "merge": {
-        _args params ["_base", "_over", ["_inherit", false]];
+        _args params ["_base", "_over", ["_inherit", false], ["_own", false]];
         private _rules = call _fnc_emptyRules;
         {
             private _key = _x;
@@ -288,7 +296,7 @@ switch (_operation) do {
         _rules set ["fieldWorksSet", (_base getOrDefault ["fieldWorksSet", false]) || {_over getOrDefault ["fieldWorksSet", false]}];
         private _objA = _base getOrDefault ["onlyObjects", false];
         private _objB = _over getOrDefault ["onlyObjects", false];
-        if (_inherit) then {
+        if (_inherit || _own) then {
             _rules set ["onlyObjects", _objA || _objB];
         } else {
             // an Only list of objects turns the kind cut off only when the other side has no cut
@@ -450,7 +458,9 @@ switch (_operation) do {
         private _cfg = configFile >> "CfgVehicles" >> _class;
         private _isGear = false;
         private _real = _class;
-        if (isClass _cfg) then { _real = configName _cfg; _isGear = getNumber (_cfg >> "isBackpack") == 1 } else {
+        // a backpack sits in the class lists as well as the gear ones, and is judged by the class
+        // lists, as the tablet always has; the kind cut still counts it as gear
+        if (isClass _cfg) then { _real = configName _cfg } else {
             private _gearCfg = [_class] call _fnc_gearConfig;
             if (!isNull _gearCfg) then { _real = configName _gearCfg; _isGear = true };
         };

@@ -327,7 +327,7 @@ switch(_operation) do {
         private _module = if (isNull _hub) then { objNull } else { (_hub getVariable ["ALiVE_hub", []]) param [3, objNull] };
         if (isNull _module) exitWith { _result = [_vehicles, _groups] };
         private _rules = ["catalogueRules", [_module]] call ALIVE_fnc_hub;
-        if ((values _rules) findIf { _x isNotEqualTo [] } < 0) exitWith { _result = [_vehicles, _groups] };
+        if (["empty", _rules] call ALIVE_fnc_lists) exitWith { _result = [_vehicles, _groups] };
         private _kept = _logic getVariable ["ALiVE_PR_collectCatalogue", []];
         if ((_kept param [0, objNull]) isEqualTo _module) exitWith { _result = [_kept select 1, _kept select 2] };
         _vehicles = +_vehicles;
@@ -602,6 +602,15 @@ switch(_operation) do {
         if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - sortedGroups factions: %1", _sortedGroups select 1] call ALiVE_fnc_dump;};
 
 
+        // the List's kinds (SUPPLIES, TROOPS and so on): what the side or faction offers, cut to
+        // the kinds it keeps; an Only These list of vehicles or crates sets the catalogue instead
+        if ((_rules getOrDefault ["kinds", []]) isNotEqualTo [] && {!(_rules getOrDefault ["onlyObjects", false])}) then {
+            {
+                private _category = _x;
+                private _list = ([_sortedVehicles, _category] call ALIVE_fnc_hashGet) select { ["allows", [_rules, _x]] call ALIVE_fnc_lists };
+                if (_list isEqualTo []) then { [_sortedVehicles, _category] call ALIVE_fnc_hashRem } else { [_sortedVehicles, _category, _list] call ALIVE_fnc_hashSet };
+            } forEach +(_sortedVehicles select 1);
+        };
         ["addAlso", [_rules, _sortedVehicles]] call ALIVE_fnc_PRCatalogueRules;
         ["filterGroups", [_rules, _sortedGroups, _sideText]] call ALIVE_fnc_PRCatalogueRules;
 
@@ -657,11 +666,11 @@ switch(_operation) do {
             // The Factions list has the same gap: a mission saved before its expression was made
             // to broadcast keeps the old one, so it's sent from here, then a flag to say it's there.
             _logic setVariable ["pr_factionWhitelist", _logic getVariable ["pr_factionWhitelist", []], true];
-            // The tablet catalogue's three lists, for the same reason: each machine reads them
-            // into its own rules below
+            // The tablet catalogue's List and three lists, for the same reason: each machine reads
+            // them into its own rules below
             {
                 _logic setVariable [_x, _logic getVariable [_x, ""], true];
-            } forEach ["pr_restrictionWhitelist", "pr_restrictionBlacklist", "pr_restrictionAlso"];
+            } forEach ["pr_restrictionWhitelist", "pr_restrictionBlacklist", "pr_restrictionAlso", "pr_list", "pr_list_name"];
             _logic setVariable ["pr_factionWhitelistSent", true, true];
         } else {
             // A player's machine waits for the server's copy, briefly: read too early, an empty
