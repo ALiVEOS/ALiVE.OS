@@ -160,5 +160,14 @@ class Cfg3DEN {
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
+        class ALiVE_Preset_outbreak {
+            path = "x\alive\addons\sys_presets\compositions\outbreak";
+            side = 0;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Outbreak: zombies hold an area";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
     };
 };

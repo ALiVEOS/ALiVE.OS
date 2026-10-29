@@ -1,0 +1,330 @@
+version=54;
+center[]={0,0,0};
+class items
+{
+	items=8;
+	class Item0
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={0,0,0};
+		};
+		id=0;
+		type="ALiVE_require";
+		class CustomAttributes
+		{
+			nAttributes=2;
+			class Attribute0
+			{
+				property="ALiVE_require_ALiVE_GAMEMODE";
+				expression="_this setVariable ['ALiVE_GAMEMODE',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="outbreak";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_require_ALiVE_ZOMBIESIDE";
+				expression="_this setVariable ['ALiVE_ZOMBIESIDE',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="EAST";
+					};
+				};
+			};
+		};
+	};
+	class Item1
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={8,0,0};
+		};
+		id=1;
+		type="ALiVE_sys_profile";
+		class CustomAttributes
+		{
+			nAttributes=1;
+			class Attribute0
+			{
+				property="ALiVE_sys_profile_zombieFactions";
+				expression="_this setVariable ['zombieFactions',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="WBK_AI_ZHAMBIES";
+					};
+				};
+			};
+		};
+	};
+	class Item2
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={16,0,0};
+		};
+		id=2;
+		type="ALiVE_mil_OPCOM";
+		class CustomAttributes
+		{
+			nAttributes=3;
+			class Attribute0
+			{
+				property="ALiVE_mil_opcom_customName";
+				expression="_this setVariable ['customName',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="Zombies";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_opcom_controltype";
+				expression="_this setVariable ['controltype',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="occupation";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_opcom_factions";
+				expression="_this setVariable ['factions', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="[""WBK_AI_ZHAMBIES""]";
+					};
+				};
+			};
+		};
+	};
+	class Item3
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={24,0,0};
+		};
+		id=3;
+		type="ALiVE_mil_placement";
+		class CustomAttributes
+		{
+			nAttributes=3;
+			class Attribute0
+			{
+				property="ALiVE_mil_placement_taor";
+				expression="_this setVariable ['taor',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="ZOMBIE_AREA";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_mil_placement_faction";
+				expression="_this setVariable ['faction', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="WBK_AI_ZHAMBIES";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_mil_placement_size";
+				expression="_this setVariable ['size',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="100";
+					};
+				};
+			};
+		};
+	};
+	class Item4
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={32,0,0};
+		};
+		id=4;
+		type="ALiVE_civ_placement";
+		class CustomAttributes
+		{
+			nAttributes=3;
+			class Attribute0
+			{
+				property="ALiVE_civ_placement_taor";
+				expression="_this setVariable ['taor',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="ZOMBIE_AREA";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_civ_placement_faction";
+				expression="_this setVariable ['faction', _value];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="WBK_AI_ZHAMBIES";
+					};
+				};
+			};
+			class Attribute2
+			{
+				property="ALiVE_civ_placement_size";
+				expression="_this setVariable ['size',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="100";
+					};
+				};
+			};
+		};
+	};
+	class Item5
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={40,0,0};
+		};
+		id=5;
+		type="ALiVE_amb_civ_placement";
+		class CustomAttributes
+		{
+			nAttributes=2;
+			class Attribute0
+			{
+				property="ALiVE_amb_civ_placement_taor";
+				expression="_this setVariable ['taor',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="ZOMBIE_AREA";
+					};
+				};
+			};
+			class Attribute1
+			{
+				property="ALiVE_amb_civ_placement_placementMultiplier";
+				expression="_this setVariable ['placementMultiplier',_value,true];";
+				class Value
+				{
+					class data
+					{
+						singleType="STRING";
+						value="1";
+					};
+				};
+			};
+		};
+	};
+	class Item6
+	{
+		dataType="Logic";
+		class PositionInfo
+		{
+			position[]={0,0,-8};
+		};
+		id=6;
+		type="ALiVE_amb_civ_population";
+		class CustomAttributes
+		{
+			nAttributes=0;
+		};
+	};
+	class Item7
+	{
+		dataType="Marker";
+		position[]={0,0,0};
+		name="ZOMBIE_AREA";
+		markerType="RECTANGLE";
+		type="";
+		a=3000;
+		b=1100;
+		colorName="ColorEAST";
+		alpha=0.5;
+		id=7;
+	};
+};
+class connections
+{
+	class LinkIDProvider
+	{
+		nextID=2;
+	};
+	class Links
+	{
+		items=2;
+		class Item0
+		{
+			linkID=0;
+			item0=2;
+			item1=3;
+			class CustomData
+			{
+				type="Sync";
+			};
+		};
+		class Item1
+		{
+			linkID=1;
+			item0=2;
+			item1=4;
+			class CustomData
+			{
+				type="Sync";
+			};
+		};
+	};
+};
