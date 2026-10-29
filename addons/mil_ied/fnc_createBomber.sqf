@@ -60,7 +60,8 @@ if (isNil "_bomber") then {
     } else {
         _class = (selectRandom (parseSimpleArray (ADDON getVariable "Bomber_Type")));
     };
-    if (isNil "_class") exitWith {["No bomber class defined."] call ALiVE_fnc_dump};
+    // the group goes too, or each failed call leaves an empty one behind
+    if (isNil "_class") exitWith {deleteGroup _grp; ["No bomber class defined."] call ALiVE_fnc_dump};
     _bomber = _grp createUnit [_class, _pos, [], _size, "NONE"];
 
     // ["SURFACE %1, %2", surfaceIsWater (position _bomber), (position _bomber)] call ALiVE_fnc_dump;

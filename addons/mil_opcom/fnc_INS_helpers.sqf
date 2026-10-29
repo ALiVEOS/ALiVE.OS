@@ -1293,14 +1293,16 @@ ALiVE_fnc_INS_suicide = {
                 waituntil {time - _timeTaken > 120};
                 if (isNil "_objective" || {[_objective,"deleted",false] call ALiVE_fnc_HashGet}) exitWith {};
 
-                // Place ambient suiciders trigger
-                if (!isnil "ALiVE_mil_IED") then {
+                // Place ambient suiciders trigger. The bomber is drawn from the map's civilian factions, so with no
+                // civilians there is nobody to send, unless Military IED names its own Bomber Type.
+                if (!isnil "ALiVE_mil_IED" && {count _civFactions > 0 || {(ALiVE_mil_IED getVariable ["Bomber_Type", ""]) != ""}}) then {
                     _trg = createTrigger ["EmptyDetector",_pos];
                     _trg setTriggerArea [_size + 250, _size + 250,0,false];
                     _trg setTriggerActivation ["ANY","PRESENT",false];
                     _trg setTriggerStatements [
                         "this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)",
-                        format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, (selectRandom _civFactions)],
+                        // no civilians: the faction Military IED picked for its own bombers, so the side matches
+                        format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, if (count _civFactions > 0) then {selectRandom _civFactions} else {ALiVE_mil_IED getVariable ["bomberFaction", "CIV_F"]}],
                          ""
                     ];
                     // Named for the town, so a retreat can tell it from Military IED's own bomber
