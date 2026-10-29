@@ -297,8 +297,6 @@ class Cfg3DEN
                     colorText[] = {1, 1, 1, 1};
                     text = "$STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SETTINGS";
                     tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SPAWNING_COMMENT";
-                    font = "RobotoCondensedLight";
-                    sizeEx = "pixelH * pixelGrid * 2.4";
                 };
 
                 class Enabled: ctrlCheckbox
