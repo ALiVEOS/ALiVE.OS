@@ -1,14 +1,26 @@
 // One map marker per C2ISTAR task and side: Arma's own icon for that kind of task in white on the side's
 // NATO frame (blue box BLUFOR, red diamond OPFOR, green square Independent, purple box Civilian),
 // alive_pin_<task>_<w|e|i|c>. color[] is white and the marker is made with colour "Default", so Arma does
-// not tint it. Scope 2 with their own marker class puts them in an "ALiVE task pins" group in Eden and in
+// not tint it. Scope 2 with their own marker class puts them in one "ALiVE Task Pins" group per side in Eden and in
 // the in-game map's marker list, so a mission maker can place them by hand. Used by
 // ALiVE_fnc_taskCreateMarker when the player has ALiVE pins on in Map pins and markers.
 class CfgMarkerClasses
 {
-    class ALiVE_TaskPins
+    class ALiVE_TaskPins_W
     {
-        displayName = "ALiVE Task Pins";
+        displayName = "ALiVE Task Pins: BLUFOR";
+    };
+    class ALiVE_TaskPins_E
+    {
+        displayName = "ALiVE Task Pins: OPFOR";
+    };
+    class ALiVE_TaskPins_I
+    {
+        displayName = "ALiVE Task Pins: Independent";
+    };
+    class ALiVE_TaskPins_C
+    {
+        displayName = "ALiVE Task Pins: Civilian";
     };
 };
 class CfgMarkers
@@ -21,7 +33,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_aiddelivery_e
@@ -32,7 +44,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_aiddelivery_i
@@ -43,7 +55,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_aiddelivery_c
@@ -54,7 +66,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_medicaloutreach_w
@@ -65,7 +77,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_medicaloutreach_e
@@ -76,7 +88,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_medicaloutreach_i
@@ -87,7 +99,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_medicaloutreach_c
@@ -98,7 +110,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_marketreopening_w
@@ -109,7 +121,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_marketreopening_e
@@ -120,7 +132,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_marketreopening_i
@@ -131,7 +143,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_marketreopening_c
@@ -142,7 +154,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_securecommunityevent_w
@@ -153,7 +165,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_securecommunityevent_e
@@ -164,7 +176,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_securecommunityevent_i
@@ -175,7 +187,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_securecommunityevent_c
@@ -186,7 +198,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_meetlocalleader_w
@@ -197,7 +209,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_meetlocalleader_e
@@ -208,7 +220,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_meetlocalleader_i
@@ -219,7 +231,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_meetlocalleader_c
@@ -230,7 +242,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_repaircriticalservice_w
@@ -241,7 +253,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_repaircriticalservice_e
@@ -252,7 +264,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_repaircriticalservice_i
@@ -263,7 +275,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_repaircriticalservice_c
@@ -274,7 +286,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_checkpointpartnership_w
@@ -285,7 +297,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_checkpointpartnership_e
@@ -296,7 +308,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_checkpointpartnership_i
@@ -307,7 +319,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_checkpointpartnership_c
@@ -318,7 +330,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_civassault_w
@@ -329,7 +341,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_civassault_e
@@ -340,7 +352,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_civassault_i
@@ -351,7 +363,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_civassault_c
@@ -362,7 +374,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_informantexfiltration_w
@@ -373,7 +385,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_informantexfiltration_e
@@ -384,7 +396,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_informantexfiltration_i
@@ -395,7 +407,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_informantexfiltration_c
@@ -406,7 +418,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_vipescort_w
@@ -417,7 +429,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_vipescort_e
@@ -428,7 +440,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_vipescort_i
@@ -439,7 +451,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_vipescort_c
@@ -450,7 +462,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_rescue_w
@@ -461,7 +473,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_rescue_e
@@ -472,7 +484,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_rescue_i
@@ -483,7 +495,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_rescue_c
@@ -494,7 +506,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_csar_w
@@ -505,7 +517,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_csar_e
@@ -516,7 +528,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_csar_i
@@ -527,7 +539,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_csar_c
@@ -538,7 +550,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_transportinsertion_w
@@ -549,7 +561,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_transportinsertion_e
@@ -560,7 +572,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_transportinsertion_i
@@ -571,7 +583,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_transportinsertion_c
@@ -582,7 +594,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_supplyconvoy_w
@@ -593,7 +605,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_supplyconvoy_e
@@ -604,7 +616,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_supplyconvoy_i
@@ -615,7 +627,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_supplyconvoy_c
@@ -626,7 +638,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_protectconvoy_w
@@ -637,7 +649,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_protectconvoy_e
@@ -648,7 +660,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_protectconvoy_i
@@ -659,7 +671,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_protectconvoy_c
@@ -670,7 +682,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_assassination_w
@@ -681,7 +693,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_assassination_e
@@ -692,7 +704,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_assassination_i
@@ -703,7 +715,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_assassination_c
@@ -714,7 +726,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroyvehicles_w
@@ -725,7 +737,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroyvehicles_e
@@ -736,7 +748,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroyvehicles_i
@@ -747,7 +759,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroyvehicles_c
@@ -758,7 +770,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroyinfantry_w
@@ -769,7 +781,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroyinfantry_e
@@ -780,7 +792,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroyinfantry_i
@@ -791,7 +803,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroyinfantry_c
@@ -802,7 +814,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroybuilding_w
@@ -813,7 +825,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroybuilding_e
@@ -824,7 +836,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroybuilding_i
@@ -835,7 +847,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_destroybuilding_c
@@ -846,7 +858,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_sabotagebuilding_w
@@ -857,7 +869,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_sabotagebuilding_e
@@ -868,7 +880,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_sabotagebuilding_i
@@ -879,7 +891,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_sabotagebuilding_c
@@ -890,7 +902,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_stopsaboteur_w
@@ -901,7 +913,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_stopsaboteur_e
@@ -912,7 +924,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_stopsaboteur_i
@@ -923,7 +935,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_stopsaboteur_c
@@ -934,7 +946,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_removeied_w
@@ -945,7 +957,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_removeied_e
@@ -956,7 +968,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_removeied_i
@@ -967,7 +979,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_removeied_c
@@ -978,7 +990,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_insurgencydestroyassets_w
@@ -989,7 +1001,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_insurgencydestroyassets_e
@@ -1000,7 +1012,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_insurgencydestroyassets_i
@@ -1011,7 +1023,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_insurgencydestroyassets_c
@@ -1022,7 +1034,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_insurgencypatrol_w
@@ -1033,7 +1045,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_insurgencypatrol_e
@@ -1044,7 +1056,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_insurgencypatrol_i
@@ -1055,7 +1067,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_insurgencypatrol_c
@@ -1066,7 +1078,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_cas_w
@@ -1077,7 +1089,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_cas_e
@@ -1088,7 +1100,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_cas_i
@@ -1099,7 +1111,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_cas_c
@@ -1110,7 +1122,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_sead_w
@@ -1121,7 +1133,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_sead_e
@@ -1132,7 +1144,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_sead_i
@@ -1143,7 +1155,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_sead_c
@@ -1154,7 +1166,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_dca_w
@@ -1165,7 +1177,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_dca_e
@@ -1176,7 +1188,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_dca_i
@@ -1187,7 +1199,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_dca_c
@@ -1198,7 +1210,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_oca_w
@@ -1209,7 +1221,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_oca_e
@@ -1220,7 +1232,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_oca_i
@@ -1231,7 +1243,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_oca_c
@@ -1242,7 +1254,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_laze_w
@@ -1253,7 +1265,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_laze_e
@@ -1264,7 +1276,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_laze_i
@@ -1275,7 +1287,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_laze_c
@@ -1286,7 +1298,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_reconobjective_w
@@ -1297,7 +1309,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_reconobjective_e
@@ -1308,7 +1320,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_reconobjective_i
@@ -1319,7 +1331,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_reconobjective_c
@@ -1330,7 +1342,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_wiretap_w
@@ -1341,7 +1353,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_wiretap_e
@@ -1352,7 +1364,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_wiretap_i
@@ -1363,7 +1375,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_wiretap_c
@@ -1374,7 +1386,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_captureobjective_w
@@ -1385,7 +1397,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_captureobjective_e
@@ -1396,7 +1408,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_captureobjective_i
@@ -1407,7 +1419,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_captureobjective_c
@@ -1418,7 +1430,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_milassault_w
@@ -1429,7 +1441,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_milassault_e
@@ -1440,7 +1452,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_milassault_i
@@ -1451,7 +1463,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_milassault_c
@@ -1462,7 +1474,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
     class alive_pin_mildefence_w
@@ -1473,7 +1485,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_W";
         showEditorMarkerColor = 0;
     };
     class alive_pin_mildefence_e
@@ -1484,7 +1496,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_E";
         showEditorMarkerColor = 0;
     };
     class alive_pin_mildefence_i
@@ -1495,7 +1507,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_I";
         showEditorMarkerColor = 0;
     };
     class alive_pin_mildefence_c
@@ -1506,7 +1518,7 @@ class CfgMarkers
         color[] = {1,1,1,1};
         size = 40;
         shadow = 0;
-        markerClass = "ALiVE_TaskPins";
+        markerClass = "ALiVE_TaskPins_C";
         showEditorMarkerColor = 0;
     };
 };
