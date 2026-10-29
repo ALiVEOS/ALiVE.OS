@@ -12,6 +12,9 @@
 //                    artillery static weapons.
 //   staticTier     - 2 machine guns and grenade launchers, 3 all
 //   fieldWorksOnly - fortifications no taller than 3 m (Player FOBs only)
+//   fold           - 1 shows one of each vehicle, static weapon and crate
+//                    model, the plainest of its camo and loadout variants;
+//                    soldiers and named classes are never folded
 //   inherit        - another list to start from
 //   class <Class> { cost = N; } - a FOB price
 //
@@ -51,5 +54,11 @@ class CfgALiVELists {
     };
     class TROOPS {
         kinds[] = {"TROOPS"};
+    };
+    // the resupply tablet's list when its List is not set
+    class STANDARD {
+        kinds[] = {"FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE:CAR,TRUCK,BOAT", "TROOPS"};
+        staticTier = 2;
+        fold = 1;
     };
 };

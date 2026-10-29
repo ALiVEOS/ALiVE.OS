@@ -374,7 +374,10 @@ switch (_op) do {
             };
             _result = _own;
             if (!isNil "_prRules") then {
-                private _cut = !(_prRules getOrDefault ["onlyObjects", false]);
+                // a tablet left on its default list cuts only a hub that has no List or Only
+                // These list of its own, so the hub's default follows the tablet's
+                private _hubChose = (_listName isEqualType "" && {_listName != ""}) || {_own getOrDefault ["onlyObjects", false]};
+                private _cut = !(_prRules getOrDefault ["onlyObjects", false]) && {!(_prRules getOrDefault ["listDefault", false]) || {!_hubChose}};
                 private _tablet = createHashMapFromArray [
                     ["neverClasses", _prRules getOrDefault ["neverClasses", []]],
                     ["neverGroups", _prRules getOrDefault ["neverGroups", []]],

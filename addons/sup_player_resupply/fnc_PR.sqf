@@ -37,7 +37,7 @@ Peer Reviewed:
 #define MTEMPLATE "ALiVE_PR_%1"
 #define DEFAULT_PR_ITEM "LaserDesignators"
 #define DEFAULT_PR_ITEM_CUSTOM ""
-#define DEFAULT_RESTRICTION_TYPE "SIDE"
+#define DEFAULT_RESTRICTION_TYPE "FACTION"
 #define DEFAULT_RESTRICTION_BLACKLIST []
 #define DEFAULT_RESTRICTION_WHITELIST []
 #define DEFAULT_SELECTED_INDEX 0
@@ -559,6 +559,27 @@ switch(_operation) do {
                 };
                 [_tempVehicles, _mergeHash] call CBA_fnc_hashEachPair;
             } foreach _factionList;
+            // the faction sort takes in every civilian-side object in the game, thousands of
+            // props on a modded game. Of those, keep the civilian vehicles and what a FOB would
+            // build: crates, helipads, military walls, fences and structures, portable lights. Not
+            // the gear lying on the ground (weapon holders), which counts as an ammo box too.
+            {
+                private _category = _x;
+                private _list = ([_sortedVehicles, _category] call ALIVE_fnc_hashGet) select {
+                    private _cfg = configFile >> "CfgVehicles" >> _x;
+                    private _cat = toLower getText (_cfg >> "editorCategory");
+                    private _sub = getText (_cfg >> "editorSubcategory");
+                    getNumber (_cfg >> "side") != 3
+                    || {getText (_cfg >> "faction") in _factionList}
+                    || {_x isKindOf "AllVehicles"}
+                    || {_x isKindOf "ReammoBox_F"}
+                    || {_sub == "EdSubcat_Helipads"}
+                    || {_sub == "EdSubcat_Military" && {(["walls", "fences", "structures"] findIf { _x in _cat }) >= 0} && {!("ruins" in _cat)} && {!("target" in toLower _x)}}
+                    || {_sub == "EdSubcat_Lamps" && {"portablelight" in toLower _x}}
+                    || {_x in _whitelist}
+                };
+                if (_list isEqualTo []) then { [_sortedVehicles, _category] call ALIVE_fnc_hashRem } else { [_sortedVehicles, _category, _list] call ALIVE_fnc_hashSet };
+            } forEach +(_sortedVehicles select 1);
         };
 
 
@@ -609,6 +630,19 @@ switch(_operation) do {
                 private _category = _x;
                 private _list = ([_sortedVehicles, _category] call ALIVE_fnc_hashGet) select { ["allows", [_rules, _x]] call ALIVE_fnc_lists };
                 if (_list isEqualTo []) then { [_sortedVehicles, _category] call ALIVE_fnc_hashRem } else { [_sortedVehicles, _category, _list] call ALIVE_fnc_hashSet };
+            } forEach +(_sortedVehicles select 1);
+        };
+        // one of each model when the List folds variants (Standard does); an Only These list of
+        // vehicles or crates is shown as written
+        // across the whole catalogue, as one model may sit in two categories
+        if ((_rules getOrDefault ["fold", -1]) > 0 && {!(_rules getOrDefault ["onlyObjects", false])}) then {
+            private _every = [];
+            { _every append ([_sortedVehicles, _x] call ALIVE_fnc_hashGet) } forEach (_sortedVehicles select 1);
+            private _kept = createHashMap;
+            { _kept set [_x, true] } forEach (["fold", [_rules, _every]] call ALIVE_fnc_lists);
+            {
+                private _list = ([_sortedVehicles, _x] call ALIVE_fnc_hashGet) select { _x in _kept };
+                if (_list isEqualTo []) then { [_sortedVehicles, _x] call ALIVE_fnc_hashRem } else { [_sortedVehicles, _x, _list] call ALIVE_fnc_hashSet };
             } forEach +(_sortedVehicles select 1);
         };
         ["addAlso", [_rules, _sortedVehicles]] call ALIVE_fnc_PRCatalogueRules;
@@ -666,6 +700,7 @@ switch(_operation) do {
             // The Factions list has the same gap: a mission saved before its expression was made
             // to broadcast keeps the old one, so it's sent from here, then a flag to say it's there.
             _logic setVariable ["pr_factionWhitelist", _logic getVariable ["pr_factionWhitelist", []], true];
+            _logic setVariable ["pr_restrictionType", _logic getVariable ["pr_restrictionType", DEFAULT_RESTRICTION_TYPE], true];
             // The tablet catalogue's List and three lists, for the same reason: each machine reads
             // them into its own rules below
             {
@@ -814,7 +849,8 @@ switch(_operation) do {
             // getFriend logic is consistent with how OPCOM computed it at init.
             // Only applies when no explicit pr_factionWhitelist has been set —
             // a non-empty whitelist already expresses deliberate mission designer intent.
-            if (_filterFriendlyFactions) then {
+            // Side mode only: Faction mode is the player's own faction, or the ticked ones.
+            if (_filterFriendlyFactions && {(_logic getVariable ["pr_restrictionType", DEFAULT_RESTRICTION_TYPE]) == "SIDE"}) then {
                 private _explicitWhitelist = _logic getVariable ["pr_factionWhitelist", ""];
                 if (_explicitWhitelist isEqualTo "" || {_explicitWhitelist isEqualTo []}) then {
                     private _friendlyFactions = [];
@@ -876,7 +912,7 @@ switch(_operation) do {
                     _logic setVariable ["pr_restrictionDeliveryConvoy", _restrictionTypeConvoy];
             };
 
-            _restrictionType = _logic getVariable ["pr_restrictionType","SIDE"];
+            _restrictionType = _logic getVariable ["pr_restrictionType", DEFAULT_RESTRICTION_TYPE];
 
             // set the counts
 

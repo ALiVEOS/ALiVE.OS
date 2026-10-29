@@ -18,6 +18,9 @@ A list holds:
             ARTILLERY,AIR,BOAT), TROOPS, GEAR; none means every kind
   staticTier     - the heaviest static weapon kept: 2 machine guns and grenade launchers, 3 all
   fieldWorksOnly - fortifications no taller than 3 m (the FOB only, it needs measured sizes)
+  fold           - 1 offers one of each vehicle, static weapon and crate model (camo and loadout
+                   variants folded into the plainest), never folding soldiers or a class the
+                   lists name; it changes what a catalogue shows, not what may be asked for
   inherit        - another list to start from; this one's kinds and tier replace its own. A
                    mission list named like a built-in one inherits it by naming itself
                    (class INFANTRY { inherit = "INFANTRY"; ... })
@@ -35,9 +38,9 @@ Artillery static weapons (mortars, howitzers) are left out by any kind cut.
 Parameters:
     ["get", name] - rules of a named list, cached; "" or an unknown name gives empty rules
     ["reset"] - clears the caches
-    ["parse", [onlyText, neverText, alsoText, [kinds, staticTier, fieldWorksOnly]]] - rules hash
+    ["parse", [onlyText, neverText, alsoText, [kinds, staticTier, fieldWorksOnly, fold]]] - rules hash
     ["merge", [base, over, inherit, own]] - one set of rules: lists joined, over's prices win, kinds
-        and vehicle kinds only what both keep, the lower static tier, field works when either asks.
+        and vehicle kinds only what both keep, the lower static tier, field works and fold when either asks.
         An Only list of objects turns the kind cut off only when the other side has no cut, unless
         own is true: a module's named list (base) under its own typed lists (over), where the typed
         Only list of objects sets the list, as it does today.
@@ -48,6 +51,10 @@ Parameters:
     ["kindOf", class] - [kind, tier, sub-kind]: the sub-kind is the kind of vehicle for VEHICLE
         and the weapon's role (MG, GMG, MORTAR, HOWITZER, AT, AA) for STATIC
     ["empty", rules] - true when the rules leave everything in
+    ["fold", [rules, classes]] - the classes with one of each model when the rules fold, the
+        plainest kept (shortest name, then shortest class name); crates of different contents and
+        vehicles of different support roles count apart; soldiers and the classes the lists name
+        are always kept
     ["report"] - one RPT line for every named list in the game and the mission
 
 Returns:
@@ -219,7 +226,7 @@ private _fnc_emptyRules = {
         ["onlyGroups", []], ["neverGroups", []], ["alsoGroups", []],
         ["onlyGear", []], ["neverGear", []], ["alsoGear", []],
         ["prices", createHashMap], ["kinds", []], ["vehicleKinds", []],
-        ["staticTier", -1], ["fieldWorksOnly", false], ["fieldWorksSet", false], ["onlyObjects", false], ["name", ""]
+        ["staticTier", -1], ["fieldWorksOnly", false], ["fieldWorksSet", false], ["fold", -1], ["onlyObjects", false], ["name", ""]
     ]
 };
 
@@ -253,7 +260,7 @@ switch (_operation) do {
             _rules set [_name + "Gear", _gear];
         } forEach [[_onlyText, "only"], [_neverText, "never"], [_alsoText, "also"]];
         if !(_kindsSpec isEqualType []) then { _kindsSpec = [] };
-        _kindsSpec params [["_kindList", []], ["_staticTier", -1], ["_fieldWorks", false]];
+        _kindsSpec params [["_kindList", []], ["_staticTier", -1], ["_fieldWorks", false], ["_fold", -1]];
         ([_kindList] call _fnc_kinds) params ["_kinds", "_vehicleKinds"];
         _rules set ["kinds", _kinds];
         _rules set ["vehicleKinds", _vehicleKinds];
@@ -261,6 +268,7 @@ switch (_operation) do {
         // -1 (or false) is "not set", so a list that inherits keeps its parent's
         _rules set ["fieldWorksOnly", if (_fieldWorks isEqualType 0) then { _fieldWorks > 0 } else { _fieldWorks isEqualTo true }];
         _rules set ["fieldWorksSet", if (_fieldWorks isEqualType 0) then { _fieldWorks >= 0 } else { _fieldWorks isEqualTo true }];
+        _rules set ["fold", if (_fold isEqualType 0) then { _fold max -1 min 1 } else { [-1, 1] select (_fold isEqualTo true) }];
         _rules set ["onlyObjects", ((_rules get "onlyClasses") findIf { !(_x isKindOf "Man") && {getNumber (configFile >> "CfgVehicles" >> _x >> "isBackpack") != 1} }) > -1];
         _result = _rules;
     };
@@ -294,6 +302,9 @@ switch (_operation) do {
         private _fwB = _over getOrDefault ["fieldWorksOnly", false];
         _rules set ["fieldWorksOnly", if (_inherit && {_over getOrDefault ["fieldWorksSet", false]}) then { _fwB } else { _fwA || _fwB }];
         _rules set ["fieldWorksSet", (_base getOrDefault ["fieldWorksSet", false]) || {_over getOrDefault ["fieldWorksSet", false]}];
+        private _foldA = _base getOrDefault ["fold", -1];
+        private _foldB = _over getOrDefault ["fold", -1];
+        _rules set ["fold", if (_inherit && {_foldB >= 0}) then { _foldB } else { _foldA max _foldB }];
         private _objA = _base getOrDefault ["onlyObjects", false];
         private _objB = _over getOrDefault ["onlyObjects", false];
         if (_inherit || _own) then {
@@ -325,7 +336,8 @@ switch (_operation) do {
                 private _rules = ["parse", [
                     [_cfg >> "only"] call _list, [_cfg >> "never"] call _list, [_cfg >> "also"] call _list,
                     [if (isText _kindsEntry) then { getText _kindsEntry } else { getArray _kindsEntry },
-                        if (isNumber (_cfg >> "staticTier")) then { getNumber (_cfg >> "staticTier") } else { -1 }, if (isNumber (_cfg >> "fieldWorksOnly")) then { getNumber (_cfg >> "fieldWorksOnly") } else { -1 }]
+                        if (isNumber (_cfg >> "staticTier")) then { getNumber (_cfg >> "staticTier") } else { -1 }, if (isNumber (_cfg >> "fieldWorksOnly")) then { getNumber (_cfg >> "fieldWorksOnly") } else { -1 },
+                        if (isNumber (_cfg >> "fold")) then { getNumber (_cfg >> "fold") } else { -1 }]
                 ]] call ALIVE_fnc_lists;
                 // class Land_HBarrier_5_F { cost = 7; };
                 private _prices = _rules get "prices";
@@ -538,6 +550,59 @@ switch (_operation) do {
             && {!(_rules getOrDefault ["fieldWorksOnly", false])};
     };
 
+    case "fold": {
+        _args params [["_rules", createHashMap], ["_classes", []]];
+        _result = _classes;
+        if ((_rules getOrDefault ["fold", -1]) > 0) then {
+            private _named = createHashMap;
+            { _named set [toLower _x, true] } forEach ((_rules getOrDefault ["onlyClasses", []]) + (_rules getOrDefault ["alsoClasses", []]));
+            // model and cargo -> [display name length, class name length, class name]; the order
+            // kept is the first appearance of each, so a sorted list stays sorted. The cargo keeps
+            // crates of different contents and ammo, fuel, repair and medical vehicles apart.
+            private _best = createHashMap;
+            private _order = [];
+            {
+                private _cfg = configFile >> "CfgVehicles" >> _x;
+                private _model = toLower getText (_cfg >> "model");
+                if (_model != "") then {
+                    private _cargo = [];
+                    {
+                        private _kind = _x;
+                        { _cargo pushBack (_kind + toLower getText (_x >> "name") + toLower getText (_x >> "magazine") + toLower getText (_x >> "weapon") + toLower getText (_x >> "backpack") + str getNumber (_x >> "count")) } forEach ("true" configClasses (_cfg >> _kind));
+                    } forEach ["TransportMagazines", "TransportWeapons", "TransportItems", "TransportBackpacks"];
+                    _cargo sort true;
+                    _model = _model + "|" + (_cargo joinString ",") + "|" + str (["transportAmmo", "transportFuel", "transportRepair", "attendant"] apply { getNumber (_cfg >> _x) > 0 });
+                };
+                if (_x isKindOf "Man" || {_model == ""} || {(toLower _x) in _named}) then {
+                    _order pushBack [_x];
+                } else {
+                    private _score = [count getText (_cfg >> "displayName"), count _x, toLower _x];
+                    private _have = _best get _model;
+                    if (isNil "_have") then {
+                        _best set [_model, [_score, _x]];
+                        _order pushBack _model;
+                    } else {
+                        // the plainest variant: shortest name, then shortest class name, then the
+                        // first by spelling, so every machine keeps the same one
+                        private _old = _have select 0;
+                        private _better = call {
+                            if ((_score select 0) != (_old select 0)) exitWith { (_score select 0) < (_old select 0) };
+                            if ((_score select 1) != (_old select 1)) exitWith { (_score select 1) < (_old select 1) };
+                            // strings don't compare with <, so sort the two
+                            private _pair = [_score select 2, _old select 2];
+                            _pair sort true;
+                            (_pair select 0) == (_score select 2) && {(_score select 2) != (_old select 2)}
+                        };
+                        if (_better) then {
+                            _best set [_model, [_score, _x]];
+                        };
+                    };
+                };
+            } forEach _classes;
+            _result = _order apply { if (_x isEqualType []) then { _x select 0 } else { (_best get _x) select 1 } };
+        };
+    };
+
     case "report": {
         private _names = [];
         { _names pushBackUnique configName _x } forEach ("true" configClasses (configFile >> "CfgALiVELists"));
@@ -548,7 +613,7 @@ switch (_operation) do {
             private _kinds = _rules get "kinds";
             private _vk = _rules get "vehicleKinds";
             private _tier = _rules get "staticTier";
-            ["ALiVE Lists: %1 (%2) - kinds %3%4%5%6, only %7, never %8, also %9, %10 prices", _x, _from,
+            ["ALiVE Lists: %1 (%2) - kinds %3%4%5%6%11, only %7, never %8, also %9, %10 prices", _x, _from,
                 ["every kind", _kinds joinString " "] select (_kinds isNotEqualTo []),
                 ["", format [", vehicles %1", _vk joinString " "]] select (_vk isNotEqualTo []),
                 ["", format [", statics to tier %1", _tier]] select (_tier >= 0),
@@ -556,7 +621,8 @@ switch (_operation) do {
                 count (_rules get "onlyClasses") + count (_rules get "onlyGroups") + count (_rules get "onlyGear"),
                 count (_rules get "neverClasses") + count (_rules get "neverGroups") + count (_rules get "neverGear"),
                 count (_rules get "alsoClasses") + count (_rules get "alsoGroups") + count (_rules get "alsoGear"),
-                count (_rules get "prices")
+                count (_rules get "prices"),
+                ["", ", one of each model"] select ((_rules get "fold") > 0)
             ] call ALiVE_fnc_dump;
         } forEach _names;
         _result = count _names;

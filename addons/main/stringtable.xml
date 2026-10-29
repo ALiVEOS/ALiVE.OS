@@ -731,4 +731,7 @@
 <Key ID="STR_ALIVE_LISTS_LOGISTICS">
     <English>Logistics (supplies, defences, trucks, boats)</English>
 </Key>
+<Key ID="STR_ALIVE_LISTS_STANDARD_DEFAULT">
+    <English>Standard: light forces, one of each model (default)</English>
+</Key>
 </Container></Package></Project>

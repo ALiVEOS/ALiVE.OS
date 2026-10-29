@@ -74,11 +74,11 @@ class CfgVehicles {
                             property = "ALiVE_sup_player_resupply_pr_restrictionType";
                             displayName = "$STR_ALIVE_PR_RESTRICTION_TYPE";
                             tooltip = "$STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT";
-                            defaultValue = """SIDE""";
+                            defaultValue = """FACTION""";
                             class Values
                             {
-                                class Side { name = "$STR_ALIVE_PR_RESTRICTION_TYPE_SIDE"; value = "SIDE"; default = 1; };
-                                class Faction { name = "$STR_ALIVE_PR_RESTRICTION_TYPE_FACTION"; value = "FACTION"; };
+                                class Side { name = "$STR_ALIVE_PR_RESTRICTION_TYPE_SIDE"; value = "SIDE"; };
+                                class Faction { name = "$STR_ALIVE_PR_RESTRICTION_TYPE_FACTION"; value = "FACTION"; default = 1; };
                             };
                     };
                     class pr_factionWhitelist
@@ -160,7 +160,7 @@ class CfgVehicles {
                             typeName = "STRING";
                             class Values
                             {
-                                class NotSet { name = "$STR_ALIVE_LISTS_NOTSET"; value = ""; default = 1; };
+                                class NotSet { name = "$STR_ALIVE_LISTS_STANDARD_DEFAULT"; value = ""; default = 1; };
                                 class All { name = "$STR_ALIVE_LISTS_ALL"; value = "ALL"; };
                                 class Supplies { name = "$STR_ALIVE_LISTS_SUPPLIES"; value = "SUPPLIES"; };
                                 class Light { name = "$STR_ALIVE_LISTS_LIGHT"; value = "LIGHT"; };

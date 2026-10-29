@@ -114,7 +114,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT">
-    <English>Controls which vehicles and groups are available to the player.\n\n• Side: shows the player's side-wide assets, narrowed to the active friendly factions (see Filter Friendly Factions below).\n• Faction: shows only assets from the player's own faction, or from the factions ticked in the Factions list below.</English>
+    <English>Controls which vehicles and groups are available to the player.\n\n• Faction (default): shows assets from the player's own faction, or from the factions ticked in the Factions list below. With no factions ticked, civilian vehicles are offered too.\n• Side: shows the player's side-wide assets, narrowed to the active friendly factions (see Filter Friendly Factions below).</English>
     <Chinese>控制玩家可使用哪些載具與編組。\n\n• 陣營 -- 顯示玩家所屬陣營全體的資產，並縮限至現役友軍派系（見下方「篩選友軍派系」）。\n• 派系 -- 僅顯示玩家所屬派系的資產，或下方「派系」清單中勾選的派系資產。</Chinese>
     <Chinesesimp>控制玩家可用的载具与队伍。\n\n• 阵营 — 显示玩家整个阵营的资产,并缩小至当前活跃的友方派系(参见下方的“过滤友方派系”)。\n• 派系 — 仅显示玩家自身派系的资产,或下方派系列表中勾选的派系。</Chinesesimp>
     <Spanish>Controla qué vehículos y grupos están disponibles para el jugador.\n\n• Bando — muestra los activos de todo el bando del jugador, acotados a las facciones amigas activas (ver Filtrar Facciones Amigas más abajo).\n• Facción — muestra solo los activos de la facción propia del jugador, o de las facciones marcadas en la lista de Facciones más abajo.</Spanish>
@@ -192,7 +192,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_FILTER_FRIENDLY_FACTIONS_COMMENT">
-    <English>When enabled, both the Supply List (vehicles) and the Reinforce List (groups) only show factions actively commanded by OPCOM modules friendly to the player's side. Disable to show all config factions. Has no effect if the Factions list above is set.</English>
+    <English>Side mode only. When enabled, both the Supply List (vehicles) and the Reinforce List (groups) only show factions actively commanded by OPCOM modules friendly to the player's side. Disable to show all config factions. Has no effect if the Factions list above is set.</English>
     <Chinese>啟用後，補給清單（載具）與增援清單（編組）都只會顯示由對玩家陣營友善的 OPCOM 模組實際指揮的派系。停用則顯示所有設定檔中的派系。若上方已設定「派系」清單，則此設定無效。</Chinese>
     <Chinesesimp>启用后,补给列表(载具)与增援列表(队伍)都只显示由友方 OPCOM 模块实际指挥、且与玩家阵营友好的派系。禁用则显示所有已配置派系。若上方已设置派系列表,此项将不起作用。</Chinesesimp>
     <Spanish>Cuando está activado, tanto la Lista de Suministro (vehículos) como la Lista de Refuerzo (grupos) solo muestran facciones comandadas activamente por módulos OPCOM amigos del bando del jugador. Desactive para mostrar todas las facciones de la configuración. No tiene efecto si la lista de Facciones anterior está definida.</Spanish>
@@ -790,13 +790,13 @@
     <English>List</English>
 </Key>
 <Key ID="STR_ALIVE_PR_LIST_COMMENT">
-    <English>A ready-made list that cuts what the tablet offers by kind, so it suits any mod: Supplies only; Light forces (supplies, cars, trucks, boats, machine guns, grenade launchers, troops); Static weapons and supplies (no mortars or howitzers); Troops only; Infantry (as Light forces without boats, plus Defence Stores); or Everything. Every list but Everything and Infantry leaves Defence Stores empty. Custom uses a list of your own from CfgALiVELists in description.ext, named in List Name. Never, Only These and Also below still apply on top: Never always wins, Also adds past the list, and an Only These list of vehicles or crates replaces its cut. Not set keeps the tablet as before.</English>
+    <English>A ready-made list that cuts what the tablet offers by kind, so it suits any mod: Supplies only; Light forces (supplies, cars, trucks, boats, machine guns, grenade launchers, troops); Static weapons and supplies (no mortars or howitzers); Troops only; Infantry (as Light forces without boats, plus Defence Stores); or Everything. Every list but Standard, Everything and Infantry leaves Defence Stores empty. Custom uses a list of your own from CfgALiVELists in description.ext, named in List Name. Never, Only These and Also below still apply on top: Never always wins, Also adds past the list, and an Only These list of vehicles or crates replaces its cut. Standard, the default, is Light forces plus Defence Stores, showing one of each vehicle, static weapon and crate model rather than every camo and loadout variant.</English>
 </Key>
 <Key ID="STR_ALIVE_PR_LIST_NAME">
     <English>List Name</English>
 </Key>
 <Key ID="STR_ALIVE_PR_LIST_NAME_COMMENT">
-    <English>With List set to Custom, the name of a list in CfgALiVELists in your description.ext. It can start from a built-in list with inherit = "SUPPLIES";, then only[], never[] and also[] add to it and a kinds[] of its own replaces the list's kinds. An unknown name is reported in the RPT and leaves the tablet as before.</English>
+    <English>With List set to Custom, the name of a list in CfgALiVELists in your description.ext. It can start from a built-in list with inherit = "SUPPLIES";, then only[], never[] and also[] add to it and a kinds[] of its own replaces the list's kinds. An unknown name is reported in the RPT and the tablet uses the Standard list.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_NAMEDLIST">
     <English>List</English>

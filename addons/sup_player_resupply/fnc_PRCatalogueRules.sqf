@@ -119,9 +119,16 @@ switch (_operation) do {
         // both, Only from both, its kinds cut what the side or faction offers
         private _listName = _logic getVariable ["pr_list", ""];
         if (_listName isEqualTo "CUSTOM") then { _listName = _logic getVariable ["pr_list_name", ""] };
-        if (_listName isEqualType "" && {(_listName trim [" ", 0]) != ""}) then {
-            _result = ["merge", [["get", _listName trim [" ", 0]] call ALIVE_fnc_lists, _result, false, true]] call ALIVE_fnc_lists;
+        _listName = if (_listName isEqualType "") then { _listName trim [" ", 0] } else { "" };
+        // no List, or a name no list has, is the Standard list: light forces, one of each model
+        private _default = _listName == "" || {!(isClass (missionConfigFile >> "CfgALiVELists" >> _listName) || {isClass (configFile >> "CfgALiVELists" >> _listName)})};
+        if (_default) then {
+            if (_listName != "") then { ["ALiVE Lists: no list named %1 (CfgALiVELists), so the resupply tablet uses STANDARD", _listName] call ALiVE_fnc_dumpR };
+            _listName = "STANDARD";
         };
+        _result = ["merge", [["get", _listName] call ALIVE_fnc_lists, _result, false, true]] call ALIVE_fnc_lists;
+        // a hub with a List or Only These list of its own isn't cut to a List nobody chose
+        _result set ["listDefault", _default];
         _logic setVariable ["pr_catalogueRules", _result];
     };
 
