@@ -205,8 +205,8 @@
 </Key>
 <Key ID="STR_ALIVE_MODULE">
     <English>ALiVE</English>
-    <Chinesesimp>ALiVE 模块</Chinesesimp>
-    <Spanish>Módulos ALiVE</Spanish>
+    <Chinesesimp>ALiVE</Chinesesimp>
+    <Spanish>ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SYSTEM">
     <English>ALiVE System</English>

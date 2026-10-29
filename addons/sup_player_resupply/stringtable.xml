@@ -742,7 +742,7 @@
     <English>Dismantle Time (s)</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE_TIME_COMMENT">
-    <English>How long the dismantle hold action takes, from 1 to 120 seconds. The same for the enemy and for the hub's own side.</English>
+    <English>How long the enemy's dismantle hold action takes, from 1 to 120 seconds. The hub's own side dismantles it from Manage Hub instead, with no wait.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_REPAIR_TIME">
     <English>Repair Time (s)</English>
@@ -754,7 +754,7 @@
     <English>Who Can Dismantle</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE_WHO_COMMENT">
-    <English>Who on the hub's own side may dismantle it with a hold action. Tick any number of rows: any ticked row lets a player in. Admins always can, so with nothing ticked only admins can. The enemy's hold action is Enemy Can Dismantle, above.</English>
+    <English>Who on the hub's own side may dismantle it, from the Dismantle button in Manage Hub (pressed twice within 10 seconds). Tick any number of rows: any ticked row lets a player in. Admins always can, so with nothing ticked only admins can. The same players can change the hub's permissions in Manage Hub. The enemy's hold action is Enemy Can Dismantle, above.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE_LIST">
     <English>Allowed Players</English>
