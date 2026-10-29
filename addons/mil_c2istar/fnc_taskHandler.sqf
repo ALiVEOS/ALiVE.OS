@@ -96,7 +96,9 @@ switch (_operation) do {
             // the Task Pins a mission maker placed in Eden (alive_pin_<task>_<side>), read now, before any task has a
             // marker of its own; generateTask sends an automatic task of that type and side to one of them. Hidden
             // from players: a pin with no task on it would read as a task, and tell them where the next one goes.
-            private _edenPins = allMapMarkers select { ((toLower markerType _x) select [0, 10]) == "alive_pin_" };
+            // ALiVE's own markers (ALiVE_hubMarker_0, ALiVE_FOB_..., ALiVE_rally_...) wear the same pins and can be
+            // on the map already, a hub's made on the player's machine a moment earlier: those stay shown
+            private _edenPins = allMapMarkers select { ((toLower markerType _x) select [0, 10]) == "alive_pin_" && {((toLower _x) select [0, 6]) != "alive_"} };
             ALiVE_C2_edenTaskPins = _edenPins apply { [toLower markerType _x, markerPos _x] };
             { _x setMarkerAlpha 0 } forEach _edenPins;
             if (_edenPins isNotEqualTo []) then {
