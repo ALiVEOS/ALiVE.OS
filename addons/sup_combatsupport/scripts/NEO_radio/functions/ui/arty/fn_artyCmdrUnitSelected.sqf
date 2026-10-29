@@ -29,7 +29,7 @@ private _sitRepButton = _display displayCtrl 655625;
 private _supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
 private _artyMarkers = NEO_radioLogic getVariable "NEO_supportArtyMarkers";
 
-_artyHelpUnitText ctrlSetStructuredText parseText format ["<t color='#627057' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CMDR_HELP"];
+_artyHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CMDR_HELP"];
 
 // SITREP, Move and Base belong to a battery of the players' own
 _sitRepButton ctrlEnable false;

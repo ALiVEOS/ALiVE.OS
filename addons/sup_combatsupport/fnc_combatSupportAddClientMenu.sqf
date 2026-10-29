@@ -179,4 +179,53 @@ if(!isNil "ace_fnc_startSpectator") then {ace_sys_spectator_can_exit_spectator =
         ]
 ] call CBA_fnc_flexiMenu_Add;
 
+// A pin on each of the player's support units (Jman, 29 Oct): the transport and CAS aircraft, the
+// artillery batteries and the ground vehicles, ALiVE's unit pin with the callsign beside it, on
+// every map (the tablet's too). Kept where the unit is every 2 s; gone when it dies or leaves the list.
+if (isNil "ALiVE_CS_unitPins") then {
+    ALiVE_CS_unitPins = [] spawn {
+        private _had = createHashMap;
+        while { true } do {
+            private _want = createHashMap;
+            {
+                _x params ["_key", "_kindOf"];
+                {
+                    _x params [["_veh", objNull, [objNull]], ["_grp", grpNull, [grpNull]], ["_callsign", "", [""]]];
+                    private _v = if (!isNull _grp && {{alive _x} count units _grp > 0}) then { vehicle leader _grp } else { vehicle _veh };
+                    if (!isNull _v && {alive _v} && {_callsign != ""}) then {
+                        private _pre = switch (side group _v) do { case EAST: {"o_"}; case RESISTANCE: {"n_"}; default {"b_"} };
+                        _want set [format ["ALiVE_csUnit_%1", _callsign], [_v, _pre + ([_v] call _kindOf), _callsign]];
+                    };
+                } forEach (NEO_radioLogic getVariable [format [_key, playerSide], []]);
+            } forEach [
+                ["NEO_radioTrasportArray_%1", { "air" }],
+                ["NEO_radioCasArray_%1", { ["air", "plane"] select ((_this select 0) isKindOf "Plane") }],
+                ["NEO_radioArtyArray_%1", { "art" }],
+                ["NEO_radioGroundArray_%1", { ["motor_inf", "armor"] select ((_this select 0) isKindOf "Tank") }]
+            ];
+            // gone, or now a different kind of pin
+            {
+                if (!(_x in _want) || {markerType _x != ((_want get _x) select 1)}) then {
+                    ["release", [_x]] call ALiVE_fnc_mapPins;
+                    deleteMarkerLocal _x;
+                    _had deleteAt _x;
+                };
+            } forEach (keys _had);
+            {
+                _y params ["_v", "_type", "_callsign"];
+                if !(_x in _had) then {
+                    createMarkerLocal [_x, getPosATL _v];
+                    _x setMarkerTypeLocal _type;
+                    _x setMarkerTextLocal _callsign;
+                    ["adopt", [_x, _callsign, 60, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
+                    _had set [_x, true];
+                };
+                _x setMarkerPosLocal getPosATL _v;
+                _x setMarkerDirLocal getDir _v;
+            } forEach _want;
+            sleep 2;
+        };
+    };
+};
+
 ALiVE_CS_menuInstalled = true;

@@ -20,16 +20,16 @@ else {
 
 _show = switch (toUpper (_lb lbData _index)) do
 {
-    case "PICKUP" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_PICKUP"] };
-    case "LAND" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_LAND"] };
-    case "LAND (ENG OFF)" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_LAND_ENG_OFF"] };
-    case "MOVE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_MOVE"] };
-    case "CIRCLE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_CIRCLE"] };
-    case "INSERTION" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_INSERTION"] };
-    case "SLINGLOAD" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_SLINGLOAD"] };
-    case "UNHOOK" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_UNHOOK"] };
-    case "MEDEVAC" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_MEDEVAC"] };
-    case "PARADROP" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_PARADROP"] };
+    case "PICKUP" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_PICKUP"] };
+    case "LAND" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_LAND"] };
+    case "LAND (ENG OFF)" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_LAND_ENG_OFF"] };
+    case "MOVE" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_MOVE"] };
+    case "CIRCLE" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_CIRCLE"] };
+    case "INSERTION" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_INSERTION"] };
+    case "SLINGLOAD" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_SLINGLOAD"] };
+    case "UNHOOK" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_UNHOOK"] };
+    case "MEDEVAC" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_MEDEVAC"] };
+    case "PARADROP" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_PARADROP"] };
 };
 
 //Help Text

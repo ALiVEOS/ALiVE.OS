@@ -29,3 +29,10 @@ if ((_pos select 0) < 0 || {(_pos select 0) > _mapSize} || {(_pos select 1) < 0}
 };
 
 [_pos] call NEO_fnc_supportSetTargetPos;
+
+// a typed grid is usually off screen, unlike a click: pan the map to it and keep the player's zoom
+private _map = (findDisplay 655555) displayCtrl 655560;
+if (!isNull _map) then {
+    _map ctrlMapAnimAdd [0.4, ctrlMapScale _map, _pos];
+    ctrlMapAnimCommit _map;
+};

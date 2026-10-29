@@ -60,6 +60,16 @@ if !(uinamespace getVariable ["NEO_radioTerrainMode", true]) then {
         [(findDisplay 655555) displayCtrl 655560, _vs, _vc] call NEO_fnc_mapRestoreView;
     };
 };
+// the map as it is now (a terrain swap above made a new one, already hooked up there)
+private _layerMap = (findDisplay 655555) displayCtrl 655560;
+// ALiVE's map layer (the support units' pins, ALiVE_fnc_mapPins) drawn from a handler of this
+// map's own (Jman, 29 Oct: CAS and artillery units had no icon here, as on the Command tablet:
+// the layer hides Arma's icon and its own handler never drew on the tablet maps). The variable
+// tells the layer this map is already drawn.
+private _layerEH = _layerMap getVariable ["ALiVE_mapPins_eh", -1];
+if (_layerEH isEqualType 0 && {_layerEH >= 0}) then { _layerMap ctrlRemoveEventHandler ["Draw", _layerEH] };
+if !(_layerEH isEqualTo -2) then { _layerMap ctrlAddEventHandler ["Draw", { _this call ALiVE_fnc_mapPinsDraw }] };
+_layerMap setVariable ["ALiVE_mapPins_eh", -2];
 
 private ["_available", "_transportArray", "_casArray", "_artyArray"];
 

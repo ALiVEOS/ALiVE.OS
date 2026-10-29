@@ -58,13 +58,13 @@ _ord = _battery getVariable "NEO_radioArtyBatteryRounds";
 //Help Text
 _artyHelpUnitText ctrlSetStructuredText parseText (switch (toUpper _status) do
 {
-    case "NONE" : { format ["<t color='#627057' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_AVAILABLE"] };
-    case "KILLED" : { format ["<t color='#603234' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_INEFFECTIVE"] };
-    case "MISSION" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_ON_MISSION"] };
-    case "MOVE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_MOVING"] };
-    case "RTB" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_RTB"] };
-    case "RESPONSE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_OUT_OF_RANGE"] };
-    case "NOAMMO" : { format ["<t color='#603234' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_NO_AMMO"] };
+    case "NONE" : { format ["<t color='#9FD88A' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_AVAILABLE"] };
+    case "KILLED" : { format ["<t color='#FF7070' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_INEFFECTIVE"] };
+    case "MISSION" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_ON_MISSION"] };
+    case "MOVE" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_MOVING"] };
+    case "RTB" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_RTB"] };
+    case "RESPONSE" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_OUT_OF_RANGE"] };
+    case "NOAMMO" : { format ["<t color='#FF7070' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_ARTY_NO_AMMO"] };
 });
 
 // SITREP reports on the selected battery - CAS/transport enable it in their unit

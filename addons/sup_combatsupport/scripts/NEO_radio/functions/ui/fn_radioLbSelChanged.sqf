@@ -126,7 +126,7 @@ switch (toUpper (_lb lbText _index)) do
         {
             { _x ctrlSetBackgroundColor _listBackground } forEach [_transportUnitLb, _transportTaskLb];
             _transportUnitText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT"];
-            _transportHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFF00' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_UNIT"];
+            _transportHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_UNIT"];
             //done
     _transportConfirmButton ctrlEnable false; _transportConfirmButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6848 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportConfirmButton ctrlCommit 0;
     _transportBaseButton ctrlEnable false; _transportBaseButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6512 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportBaseButton ctrlCommit 0;
@@ -173,7 +173,7 @@ switch (toUpper (_lb lbText _index)) do
         {
             { _x ctrlSetBackgroundColor _listBackground } forEach [_transportUnitLb, _transportTaskLb];
             _transportUnitText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT"];
-            _transportHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFF00' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_UNIT"];
+            _transportHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_UNIT"];
             _transportConfirmButton ctrlEnable false; _transportConfirmButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6848 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportConfirmButton ctrlCommit 0;
             _transportBaseButton ctrlEnable false; _transportBaseButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6512 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportBaseButton ctrlCommit 0;
             _transportUnitLb ctrlEnable true;
@@ -199,7 +199,7 @@ switch (toUpper (_lb lbText _index)) do
         {
             { _x ctrlSetBackgroundColor _listBackground } forEach [_casUnitLb, _casTaskLb];
             _casUnitText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT"];
-            _casHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFF00' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_UNIT"];
+            _casHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_UNIT"];
             //done
     _casConfirmButton ctrlEnable false; _casConfirmButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6848 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _casConfirmButton ctrlCommit 0;
     _casBaseButton ctrlEnable false; _casBaseButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6512 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _casBaseButton ctrlCommit 0;
@@ -250,7 +250,7 @@ switch (toUpper (_lb lbText _index)) do
         {
             { _x ctrlSetBackgroundColor _listBackground } forEach [_artyUnitLb, _artyOrdnanceTypeLb];
             _artyUnitText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_BATTERY"];
-            _artyHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFF00' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_BATTERY"];
+            _artyHelpUnitText ctrlSetStructuredText parseText format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_BATTERY"];
             //done
     _artyConfirmButton ctrlEnable false; _artyConfirmButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6848 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _artyConfirmButton ctrlCommit 0;
     _artyBaseButton ctrlEnable false; _artyBaseButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6512 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _artyBaseButton ctrlCommit 0;

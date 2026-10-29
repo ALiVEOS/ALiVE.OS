@@ -40,14 +40,14 @@ uinamespace setVariable ["NEO_radioCbVehicle", _chopper];
 //Help Text
 _text ctrlSetStructuredText parseText (switch (_status) do
 {
-    case "NONE" : { format ["<t color='#627057' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT_AVAILABLE"] };
-    case "KILLED" : { format ["<t color='#603234' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT_INEFFECTIVE"] };
-    case "MISSION" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT_ON_MISSION"] };
-    case "RTB" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT_RTB"] };
-    case "SMOKE" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_WAIT_SMOKE"] };
-    case "SMOKECONF" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_WAIT_SMOKE_CONFIRM"] };
-    case "CARGO" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_WAIT_CARGO"] };
-    case "MEDEVAC" : { format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_ON_MEDEVAC"] };
+    case "NONE" : { format ["<t color='#9FD88A' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT_AVAILABLE"] };
+    case "KILLED" : { format ["<t color='#FF7070' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT_INEFFECTIVE"] };
+    case "MISSION" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT_ON_MISSION"] };
+    case "RTB" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_UNIT_RTB"] };
+    case "SMOKE" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_WAIT_SMOKE"] };
+    case "SMOKECONF" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_WAIT_SMOKE_CONFIRM"] };
+    case "CARGO" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_WAIT_CARGO"] };
+    case "MEDEVAC" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TR_ON_MEDEVAC"] };
 });
 
 //Base Button
@@ -111,7 +111,7 @@ if (_status != "KILLED") then
 {
     //Help Text
     _transportTaskText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_TASK"];
-    _transportHelpTaskText ctrlSetStructuredText parseText format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_TASK"];
+    _transportHelpTaskText ctrlSetStructuredText parseText format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_SELECT_TASK"];
 
     _transportTaskLb ctrlEnable true;
     _sitRepButton ctrlEnable true;

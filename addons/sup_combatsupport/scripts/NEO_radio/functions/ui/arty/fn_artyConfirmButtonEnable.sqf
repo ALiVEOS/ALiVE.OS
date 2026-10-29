@@ -46,12 +46,12 @@ if (["selected"] call NEO_fnc_artyCmdrBoard) exitWith {
     if (_hasMarker) then {
         private _help = _display displayCtrl 655596;
         if (_ok) then {
-            _help ctrlSetStructuredText parseText format ["<t color='#627057' size='0.7' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CMDR_HELP"];
+            _help ctrlSetStructuredText parseText format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CMDR_HELP"];
         } else {
             private _key = if (_recent) then { "STR_ALIVE_CS_UI_CMDR_SENT" } else {
                 ["STR_ALIVE_CS_UI_CMDR_OUT_OF_RANGE", "STR_ALIVE_CS_UI_CMDR_BUSY"] select (["inReach", [_pos]] call NEO_fnc_artyCmdrBoard)
             };
-            _help ctrlSetStructuredText parseText format ["<t color='#FFFF73' size='0.7' font='PuristaMedium'>%1</t>", localize _key];
+            _help ctrlSetStructuredText parseText format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize _key];
         };
     };
 };

@@ -38,7 +38,7 @@ private _list = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", p
 private _entry = _list param [lbCurSel _unitLb, []];
 private _veh = _entry param [0, objNull];
 private _status = _veh getVariable ["NEO_radioGroundUnitStatus", "KILLED"];
-private _t = { params ["_colour", "_key", ["_size", "0.7"]]; parseText format ["<t color='%1' size='%3' font='PuristaMedium'>%2</t>", _colour, localize _key, _size] };
+private _t = { params ["_colour", "_key", ["_size", "0.8"]]; parseText format ["<t color='%1' size='%3' font='PuristaMedium'>%2</t>", _colour, localize _key, _size] };
 private _hide = { { _x ctrlEnable false; _x ctrlSetPosition [1, 1, _uiW / 1000, _uiH / 1000]; _x ctrlCommit 0 } forEach _this };
 private _markerB = NEO_radioLogic getVariable ["NEO_supportGroundMarkerB", ""];
 
@@ -48,13 +48,13 @@ switch (_op) do {
         uiNamespace setVariable ["NEO_radioCbVehicle", _veh];
         [_veh] call NEO_fnc_supportFocusMap; // show the player where the vehicle is
         _helpUnit ctrlSetStructuredText (switch (_status) do {
-            case "NONE": { ["#627057", "STR_ALIVE_CS_UI_UNIT_AVAILABLE"] call _t };
-            case "KILLED": { ["#603234", "STR_ALIVE_CS_UI_UNIT_INEFFECTIVE"] call _t };
-            case "RTB": { ["#FFFF73", "STR_ALIVE_CS_UI_UNIT_RTB"] call _t };
-            case "CARGO": { ["#FFFF73", "STR_ALIVE_CS_UI_GR_WAIT_CARGO"] call _t };
-            case "PATROL": { ["#FFFF73", "STR_ALIVE_CS_UI_GR_ON_PATROL"] call _t };
-            case "IMMOBILE": { ["#603234", "STR_ALIVE_CS_UI_GR_IMMOBILE"] call _t };
-            default { ["#FFFF73", "STR_ALIVE_CS_UI_UNIT_ON_MISSION"] call _t };
+            case "NONE": { ["#9FD88A", "STR_ALIVE_CS_UI_UNIT_AVAILABLE"] call _t };
+            case "KILLED": { ["#FF7070", "STR_ALIVE_CS_UI_UNIT_INEFFECTIVE"] call _t };
+            case "RTB": { ["#FFFFFF", "STR_ALIVE_CS_UI_UNIT_RTB"] call _t };
+            case "CARGO": { ["#FFFFFF", "STR_ALIVE_CS_UI_GR_WAIT_CARGO"] call _t };
+            case "PATROL": { ["#FFFFFF", "STR_ALIVE_CS_UI_GR_ON_PATROL"] call _t };
+            case "IMMOBILE": { ["#FF7070", "STR_ALIVE_CS_UI_GR_IMMOBILE"] call _t };
+            default { ["#FFFFFF", "STR_ALIVE_CS_UI_UNIT_ON_MISSION"] call _t };
         });
         _baseBtn ctrlEnable !(_status in ["RTB", "NONE", "KILLED", "IMMOBILE"]);
         [_ptA, _ptB, _heightCb, _escortCb] call _hide;
@@ -63,7 +63,7 @@ switch (_op) do {
         _taskText ctrlSetText ""; _helpTask ctrlSetText ""; _comboText ctrlSetText "";
         if (_status == "KILLED") exitWith { ["enable"] call NEO_fnc_groundPanel };
         _taskText ctrlSetStructuredText (["#B4B4B4", "STR_ALIVE_CS_UI_TASK", "0.8"] call _t);
-        _helpTask ctrlSetStructuredText (["#FFFF73", "STR_ALIVE_CS_UI_SELECT_TASK"] call _t);
+        _helpTask ctrlSetStructuredText (["#FFFFFF", "STR_ALIVE_CS_UI_SELECT_TASK"] call _t);
         _taskLb ctrlEnable true;
         (_d displayCtrl 655625) ctrlEnable true;
         {
@@ -98,7 +98,7 @@ switch (_op) do {
 
     case "task": {
         private _task = _taskLb lbData (lbCurSel _taskLb);
-        _helpTask ctrlSetStructuredText (["#FFFF73", "STR_ALIVE_CS_UI_GR_DESC_" + _task] call _t);
+        _helpTask ctrlSetStructuredText (["#FFFFFF", "STR_ALIVE_CS_UI_GR_DESC_" + _task] call _t);
         if (_task == "PATROL") then {
             _ptA ctrlSetText localize "STR_ALIVE_CS_UI_GR_POINT_A";
             _ptB ctrlSetText localize "STR_ALIVE_CS_UI_GR_POINT_B";
@@ -117,7 +117,7 @@ switch (_op) do {
 
     case "point": {
         uiNamespace setVariable ["NEO_groundPointSel", _args];
-        _helpTask ctrlSetStructuredText (["#FFFF73", "STR_ALIVE_CS_UI_GR_CLICK_" + _args] call _t);
+        _helpTask ctrlSetStructuredText (["#FFFFFF", "STR_ALIVE_CS_UI_GR_CLICK_" + _args] call _t);
     };
 
     case "target": {

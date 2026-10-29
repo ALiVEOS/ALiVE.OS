@@ -24,6 +24,14 @@ private _new = [655555, 655560, _class, {
     if (uinamespace getVariable ["NEO_radioMapClickArmed", false]) then {
         _newMap ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
     };
+    // ALiVE's map layer (the support units' pins, ALiVE_fnc_mapPins) drawn from a handler of this
+    // map's own (Jman, 29 Oct: CAS and artillery units had no icon here, as on the Command tablet:
+    // the layer hides Arma's icon and its own handler never drew on the tablet maps). The variable
+    // tells the layer this map is already drawn.
+    private _layerEH = _newMap getVariable ["ALiVE_mapPins_eh", -1];
+    if (_layerEH isEqualType 0 && {_layerEH >= 0}) then { _newMap ctrlRemoveEventHandler ["Draw", _layerEH] };
+    if !(_layerEH isEqualTo -2) then { _newMap ctrlAddEventHandler ["Draw", { _this call ALiVE_fnc_mapPinsDraw }] };
+    _newMap setVariable ["ALiVE_mapPins_eh", -2];
 }, _targetView] call NEO_fnc_mapControlSwap;
 
 if (isNull _new) exitWith { false };
