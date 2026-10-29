@@ -604,14 +604,28 @@ private _addGroup = {
 if (_troopCap > 0) then {
     private _troopOnly = (_soldierOnly + _groupOnly) isNotEqualTo [];
     { [_x] call _addSoldier } forEach (([[], _soldierOnly] select _troopOnly) + _soldierAlso);
-    // with no troops on Build Only These, every faction's infantry groups
+    // with no troops on Build Only These, every faction's infantry groups: those in a category with
+    // infantry in its name (a mod like RHS names its own, rhs_group_nato_usarmy_d_infantry), and those
+    // a faction's ALiVE mapping lists as Infantry
     if (!_troopOnly) then {
         {
             private _gname = _x;
-            if ((_y findIf { toLower (_x select 1) == "infantry" }) > -1) then {
+            if ((_y findIf { ((toLower (_x select 1)) find "infantry") > -1 }) > -1) then {
                 { [_x] call _addGroup } forEach ([_gname] call _resolveGroup);
             };
         } forEach _groupIndex;
+        if (!isNil "ALIVE_factionCustomMappings") then {
+            {
+                private _f = _x;
+                private _groups = [[ALIVE_factionCustomMappings, _f] call ALIVE_fnc_hashGet, "Groups", []] call ALIVE_fnc_hashGet;
+                if (_groups isEqualType [] && {count _groups > 2}) then {
+                    private _infantry = [_groups, "Infantry", []] call ALIVE_fnc_hashGet;
+                    if (_infantry isEqualType []) then {
+                        { if (_x isEqualType "") then { { [_x] call _addGroup } forEach ([_f + ">" + _x] call _resolveGroup) } } forEach _infantry;
+                    };
+                };
+            } forEach (ALIVE_factionCustomMappings select 1);
+        };
     };
     {
         private _hits = [_x] call _resolveGroup;
