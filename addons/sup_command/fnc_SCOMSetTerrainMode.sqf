@@ -57,8 +57,14 @@ params [["_terrainOn", true]];
 
             // ctrlDelete removes the original Draw EH. Reattach exactly one
             // waypoint-chain renderer to the replacement control.
+            // with ALiVE's map layer drawn from it too, as fnc_SCOM does on opening (the group symbols)
+            private _layerEH = _newMap getVariable ["ALiVE_mapPins_eh", -1];
+            if (_layerEH isEqualType 0 && {_layerEH >= 0}) then { _newMap ctrlRemoveEventHandler ["Draw", _layerEH] };
+            _newMap setVariable ["ALiVE_mapPins_eh", -2];
             private _drawEH = _newMap ctrlAddEventHandler ["Draw",{
                 [ALiVE_SUP_COMMAND,"opsDrawWaypoints",_this] call ALiVE_fnc_SCOM;
+                // pins last, so the group symbols and names sit on top of the waypoint lines
+                _this call ALiVE_fnc_mapPinsDraw;
             }];
             _newMap setVariable ["SCOM_opsDrawEH",_drawEH];
         };

@@ -3750,8 +3750,17 @@ switch (_operation) do {
             _editMap ctrlRemoveEventHandler ["Draw", _drawEH];
         };
 
+        // ALiVE's map layer (the group symbols, ALiVE_fnc_mapPins) is drawn from this same handler: its own
+        // handler on this map never ran (Jman 29 Oct, the Groups page showed no symbols), so it comes off
+        // and the variable tells the layer this map is already drawn
+        private _layerEH = _editMap getVariable ["ALiVE_mapPins_eh", -1];
+        if (_layerEH isEqualType 0 && {_layerEH >= 0}) then { _editMap ctrlRemoveEventHandler ["Draw", _layerEH] };
+        _editMap setVariable ["ALiVE_mapPins_eh", -2];
+
         _drawEH = _editMap ctrlAddEventHandler ["Draw",{
             [ALiVE_SUP_COMMAND,"opsDrawWaypoints", _this] call ALiVE_fnc_SCOM;
+            // pins last, so the group symbols and names sit on top of the waypoint lines
+            _this call ALiVE_fnc_mapPinsDraw;
         }];
 
         _editMap setVariable ["SCOM_opsDrawEH", _drawEH];
@@ -4761,27 +4770,54 @@ switch (_operation) do {
             _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
             _profilePos = _selectedProfile select 1;
 
+            // a line a few pixels wide over a dark edge, so the route reads over roads and contours
+            // (Jman, 29 Oct: the 1 px lines were hard to see). Built from 1 px lines side by side,
+            // offset across the line on screen, so it stays the same width at every zoom
+            private _thick = {
+                params ["_a", "_b", "_col", ["_w", 3]];
+                private _sa = _map ctrlMapWorldToScreen _a;
+                private _sb = _map ctrlMapWorldToScreen _b;
+                private _dx = ((_sb select 0) - (_sa select 0)) / pixelW;
+                private _dy = ((_sb select 1) - (_sa select 1)) / pixelH;
+                private _len = sqrt (_dx * _dx + _dy * _dy);
+                if (_len < 0.5) exitWith {};
+                // one pixel across the line, in screen units
+                private _nx = (-_dy / _len) * pixelW;
+                private _ny = (_dx / _len) * pixelH;
+                {
+                    _x params ["_width", "_colour"];
+                    for "_i" from 0 to (_width - 1) do {
+                        private _o = _i - (_width - 1) / 2;
+                        _map drawLine [
+                            _map ctrlMapScreenToWorld [(_sa select 0) + _nx * _o, (_sa select 1) + _ny * _o],
+                            _map ctrlMapScreenToWorld [(_sb select 0) + _nx * _o, (_sb select 1) + _ny * _o],
+                            _colour
+                        ];
+                    };
+                } forEach [[_w + 2, [0, 0, 0, 0.6]], [_w, _col]];
+            };
+
             // Draw active waypoints in blue
 
             _waypoints = [_commandState,"opsGroupWaypoints", []] call ALiVE_fnc_hashGet;
 
-            private _colorBlue = [0.427,0.463,0.988,1];
+            private _colorBlue = [0.25,0.5,1,1];
 
             {
                 if (_forEachIndex > 0) then {
                     // Draw line from waypoint to waypoint
-                    _map drawLine [
+                    [
                         _waypoints select (_forEachIndex - 1),
                         _x,
                         _colorBlue
-                    ];
+                    ] call _thick;
                 } else {
                     // Draw line from profile to waypoint
-                    _map drawLine [
+                    [
                         _profilePos,
                         _x,
                         _colorBlue
-                    ];
+                    ] call _thick;
                 };
             } foreach _waypoints;
 
@@ -4794,25 +4830,25 @@ switch (_operation) do {
             {
                 if (_forEachIndex > 0) then {
                     // Draw line from planned waypoint to planned waypoint
-                    _map drawLine [
+                    [
                         _plannedWaypoints select (_forEachIndex - 1),
                         _x,
                         _colorGreen
-                    ];
+                    ] call _thick;
                 } else {
                     if (count _waypoints > 0) then {
                         // Draw line from last waypoint to planned waypoint
-                        _map drawLine [
+                        [
                             _waypoints select (count _waypoints - 1),
                             _x,
                             _colorGreen
-                        ];
+                        ] call _thick;
                     } else {
-                        _map drawLine [
+                        [
                             _profilePos,
                             _x,
                             _colorGreen
-                        ];
+                        ] call _thick;
                     };
                 };
             } foreach _plannedWaypoints;
@@ -4828,7 +4864,7 @@ switch (_operation) do {
                     _profilePos
                 };
                 private _selectedEnd = (_editableOrders select _selectedOrderIndex) select 0;
-                _map drawLine [_selectedStart,_selectedEnd,[1,0.65,0.15,1]];
+                [_selectedStart, _selectedEnd, [1,0.65,0.15,1], 4] call _thick;
             };
 
             // an icon on every order, one for each kind of order and numbered as in the list; the selected one in
