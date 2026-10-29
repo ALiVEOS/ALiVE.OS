@@ -27,7 +27,7 @@ class SITREP_RscEdit
     x = "1";
     y = "1";
     w = "safeZoneW / 25";
-            h = "0.8 *                  (           (           ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+            h = 0.0176014 * GUI_GRID_HAbs; // tall enough for its text, as the KIA boxes
     sizeEx = "(         (           (           ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)";
     font = "PuristaMedium";
     text = "";
@@ -53,7 +53,7 @@ class SITREP_RscText
     x = "safeZoneX + (safeZoneW / 6)";
     y = "safeZoneY + (safeZoneH / 6)";
     w = "safeZoneW / 5";
-    h = "0.8 *                  (           (           ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";
+    h = 0.0176014 * GUI_GRID_HAbs; // tall enough for its text, as the KIA boxes
     class Attributes
     {
         font = "PuristaMedium";

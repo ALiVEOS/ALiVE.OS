@@ -291,7 +291,7 @@ class RscDisplayALiVESITREP
             text = "AMMO:"; //--- ToDo: Localize;
             x = 0.583011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.477998 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0637606 * GUI_GRID_WAbs;
+            w = 0.0570 * GUI_GRID_WAbs; // ends short of the dropdown
 
         };
         class SITREP_CASTEXT: SITREP_RscText_Right
@@ -302,7 +302,7 @@ class RscDisplayALiVESITREP
             text = "CASUALTIES:"; //--- ToDo: Localize;
             x = 0.583011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.511001 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0637606 * GUI_GRID_WAbs;
+            w = 0.0570 * GUI_GRID_WAbs; // ends short of the dropdown
 
         };
         class SITREP_AMMOLIST: SITREP_RscComboBox
@@ -329,7 +329,7 @@ class RscDisplayALiVESITREP
             text = "VEHICLES:"; //--- ToDo: Localize;
             x = 0.563011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.544004 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0837606 * GUI_GRID_WAbs;
+            w = 0.0770 * GUI_GRID_WAbs; // ends short of the dropdown
 
         };
         class SITREP_VEHLIST: SITREP_RscComboBox
@@ -348,7 +348,7 @@ class RscDisplayALiVESITREP
             text = "COMBAT SPT:"; //--- ToDo: Localize;
             x = 0.563011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.577007 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.0837606 * GUI_GRID_WAbs;
+            w = 0.0770 * GUI_GRID_WAbs; // ends short of the dropdown
 
         };
         class SITREP_CSLIST: SITREP_RscComboBox
