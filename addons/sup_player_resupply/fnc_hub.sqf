@@ -358,6 +358,11 @@ switch (_op) do {
             if (isNil "_s") exitWith { _result = createHashMap };
             private _own = ["parse", [_s select 4, _s select 5, _s select 6]] call ALIVE_fnc_PRCatalogueRules;
             private _listName = _s param [12, ""];
+            // a name no list has is Not set, as the tooltip says: the engine logs it, and the hub follows the tablet
+            if (_listName isEqualType "" && {_listName != ""} && {!(isClass (missionConfigFile >> "CfgALiVELists" >> _listName) || {isClass (configFile >> "CfgALiVELists" >> _listName)})}) then {
+                ["ALiVE Lists: no list named %1 (CfgALiVELists), so the Logistics Hub module at %2 is left as Not set", _listName, mapGridPosition _logic] call ALiVE_fnc_dumpR;
+                _listName = "";
+            };
             if (_listName isEqualType "" && {_listName != ""}) then {
                 _own = ["merge", [["get", _listName] call ALIVE_fnc_lists, _own, false, true]] call ALIVE_fnc_lists;
             };
@@ -393,7 +398,14 @@ switch (_op) do {
                 ];
                 _result = ["merge", [_tablet, _own]] call ALIVE_fnc_lists;
             };
-            if (_keep) then { _logic setVariable ["ALiVE_hub_catRules", _result] };
+            if (_keep) then {
+                _logic setVariable ["ALiVE_hub_catRules", _result];
+                // which list these hubs use, once a module, on the server
+                if (isServer && {isNil {_logic getVariable "ALiVE_hub_listReported"}}) then {
+                    _logic setVariable ["ALiVE_hub_listReported", true];
+                    ["ALiVE Lists: the Logistics Hub module at %1 uses %2, under the resupply tablet's lists", mapGridPosition _logic, ["no List of its own", _listName] select (_listName isEqualType "" && {_listName != ""})] call ALiVE_fnc_dumpR;
+                };
+            };
         };
     };
 

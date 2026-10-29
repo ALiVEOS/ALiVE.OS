@@ -130,6 +130,11 @@ switch (_operation) do {
         // a hub with a List or Only These list of its own isn't cut to a List nobody chose
         _result set ["listDefault", _default];
         _logic setVariable ["pr_catalogueRules", _result];
+        // which list the tablet ended up with, once a mission, so a mission maker can see it in the RPT
+        if (isServer && {isNil "ALiVE_PR_listReported"}) then {
+            ALiVE_PR_listReported = true;
+            ["ALiVE Lists: the resupply tablet uses %1%2, Restriction Type %3", _listName, ["", " (no List set, or its name isn't a list)"] select _default, _logic getVariable ["pr_restrictionType", "FACTION"]] call ALiVE_fnc_dumpR;
+        };
     };
 
     case "allows": { _result = ["allows", _args] call ALIVE_fnc_lists };
