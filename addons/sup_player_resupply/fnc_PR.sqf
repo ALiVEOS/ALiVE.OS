@@ -92,6 +92,7 @@ Peer Reviewed:
 #define PRTablet_CTRL_ButtonR1 60027
 #define PRTablet_CTRL_StatusMap 60028
 #define PRTablet_CTRL_ForcePool 60099
+#define PRTablet_CTRL_Preview 60051
 
 // Control Macros
 #define PR_getControl(disp,ctrl) ((findDisplay ##disp) displayCtrl ##ctrl)
@@ -1108,6 +1109,7 @@ switch(_operation) do {
                         [ALIVE_SUP_PLAYER_RESUPPLY, "selectedSupplyListValues",  _supplyListValues]  call MAINCLASS;
                         lbClear _supplyList;
                         { _supplyList lbAdd format["%1", _x]; } forEach _options;
+                        [ALIVE_SUP_PLAYER_RESUPPLY, "decorateLists", ["CACHE_READY", []]] call MAINCLASS;
                         if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - cache refresh complete for category '%1' (%2 items)", _pendingCategory, count _options - 1] call ALiVE_fnc_dump;};
                     };
                 };
@@ -1975,6 +1977,9 @@ switch(_operation) do {
 
                     };
                 };
+
+                // the restored lists get their pictures, and the preview the payload's last item
+                [_logic, "decorateLists", ["LOAD", []]] call MAINCLASS;
 
                 // Hide GPS
                 showGPS false;
@@ -3572,8 +3577,113 @@ switch(_operation) do {
 
             };
 
+            // whatever the action filled the lists with, each row gets its picture
+            [_logic, "decorateLists", [_action, _args]] call MAINCLASS;
+
         };
 
+    };
+
+    // A picture on every row of the Supply, Reinforce and Payload lists, and a preview of the item
+    // last added or picked in the payload, shown only on the request screen with the map
+    case "decorateLists": {
+        if (!hasInterface || {isNull (findDisplay PRTablet_CTRL_MainDisplay)}) exitWith {};
+        _args params [["_action", ""], ["_actionArgs", []]];
+        private _sideName = switch ([_logic, "side"] call MAINCLASS) do { case "EAST": {"East"}; case "GUER": {"Indep"}; case "CIV": {"Civilian"}; default {"West"} };
+
+        // [row picture, preview picture] for a list value: a vehicle or soldier class, or a group
+        // named under [Groups, faction, category]
+        private _pictures = {
+            params [["_value", ""], ["_parents", []]];
+            private _result = ["", ""];
+            if (_value isEqualType "" && {_value != ""}) then {
+                private _cfg = configFile >> "CfgVehicles" >> _value;
+                if (isClass _cfg && {getNumber (_cfg >> "scope") >= 1}) then {
+                    // a soldier's role icon; a vehicle's side-on picture where it has one
+                    private _row = getText (_cfg >> "icon");
+                    if (isText (configFile >> "CfgVehicleIcons" >> _row)) then { _row = getText (configFile >> "CfgVehicleIcons" >> _row) };
+                    if !(_value isKindOf "Man") then {
+                        private _picture = getText (_cfg >> "picture");
+                        if ("\" in _picture) then { _row = _picture };
+                    };
+                    _result = [["", _row] select ("\" in _row), getText (_cfg >> "editorPreview")];
+                } else {
+                    if (_parents isEqualType [] && {count _parents > 2} && {(_parents select 0) isEqualTo "Groups"}) then {
+                        private _group = configFile >> "CfgGroups" >> _sideName >> (_parents select 1) >> (_parents select 2) >> _value;
+                        if (isClass _group) then {
+                            // the group's map marker, and its leader's picture for the preview
+                            private _icon = getText (_group >> "icon");
+                            private _units = "isClass _x" configClasses _group;
+                            private _leader = if (_units isEqualTo []) then { "" } else { getText ((_units select 0) >> "vehicle") };
+                            if !("\" in _icon) then {
+                                _icon = getText (configFile >> "CfgVehicles" >> _leader >> "icon");
+                                if (isText (configFile >> "CfgVehicleIcons" >> _icon)) then { _icon = getText (configFile >> "CfgVehicleIcons" >> _icon) };
+                            };
+                            _result = [["", _icon] select ("\" in _icon), getText (configFile >> "CfgVehicles" >> _leader >> "editorPreview")];
+                        };
+                    };
+                };
+            };
+            _result
+        };
+
+        private _listsChanged = !(_action in ["MAP_CLICK", "MAP_CLICK_NULL", "PAYLOAD_LIST_SELECT", "PAYLOAD_COMBO_SELECT", "STATUS_LIST_SELECT", "STATUS_DETAILS_SHOW", "STATUS_DETAILS_HIDE", "STATUS_CANCEL_CLICK"]);
+        if (_listsChanged) then {
+            {
+                _x params ["_idc", "_valuesKey", "_depthKey", "_parentsKey"];
+                private _ctrl = (findDisplay PRTablet_CTRL_MainDisplay) displayCtrl _idc;
+                private _all = [_logic, _valuesKey] call MAINCLASS;
+                private _depth = [_logic, _depthKey] call MAINCLASS;
+                private _parents = [_logic, _parentsKey] call MAINCLASS;
+                if (isNil "_parents") then { _parents = [] };
+                private _values = [];
+                if (!isNil "_all" && {_all isEqualType []} && {!isNil "_depth"} && {_depth isEqualType 0} && {_depth >= 0} && {_depth < count _all}) then { _values = _all select _depth };
+                if !(_values isEqualType []) then { _values = [] };
+                // a list showing something other than its values (the loading line) keeps no pictures
+                private _match = (lbSize _ctrl) == count _values;
+                for "_i" from 0 to (lbSize _ctrl - 1) do {
+                    if (_match) then { _ctrl lbSetPicture [_i, ([_values select _i, _parents] call _pictures) select 0] } else { _ctrl lbSetPicture [_i, ""] };
+                };
+            } forEach [
+                [PRTablet_CTRL_SupplyList, "selectedSupplyListValues", "selectedSupplyListDepth", "selectedSupplyListParents"],
+                [PRTablet_CTRL_ReinforceList, "selectedReinforceListValues", "selectedReinforceListDepth", "selectedReinforceListParents"]
+            ];
+        };
+
+        // the payload's entries are [value, the parents it was picked under, ...]
+        private _payload = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
+        private _entries = [_logic, "payloadListValues"] call MAINCLASS;
+        if (isNil "_entries" || {!(_entries isEqualType [])}) then { _entries = [] };
+        private _entryPictures = { if (_this isEqualType []) then { [_this param [0, ""], _this param [1, []]] call _pictures } else { ["", ""] } };
+        if (_listsChanged) then {
+            for "_i" from 0 to ((lbSize _payload) min (count _entries)) - 1 do {
+                _payload lbSetPicture [_i, ((_entries select _i) call _entryPictures) select 0];
+            };
+        };
+
+        private _preview = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_Preview);
+        private _count = count _entries;
+        private _before = uiNamespace getVariable ["ALiVE_PR_previewCount", 0];
+        uiNamespace setVariable ["ALiVE_PR_previewCount", _count];
+        if (_count == 0) then {
+            _preview ctrlSetText "";
+        } else {
+            private _shown = -1;
+            if (_action == "PAYLOAD_LIST_SELECT") then {
+                _shown = (_actionArgs param [0, []]) param [1, -1];
+            } else {
+                if ((_action != "OPEN" && {_count > _before}) || {_action == "LOAD"}) then { _shown = _count - 1 };
+                if (_count < _before) then { _shown = lbCurSel _payload; if (_shown < 0) then { _preview ctrlSetText "" } };
+            };
+            if (_shown >= 0 && {_shown < _count}) then {
+                _preview ctrlSetText (((_entries select _shown) call _entryPictures) select 1);
+            };
+        };
+        // the box is as wide as a 16:9 editor picture at its height, so the picture sits on the map's left edge
+        private _box = ctrlPosition _preview;
+        _preview ctrlSetPosition [_box select 0, _box select 1, ((_box select 3) / pixelH) * (16 / 9) * pixelW, _box select 3];
+        _preview ctrlCommit 0;
+        _preview ctrlShow (ctrlShown (PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_Map)));
     };
 
     case "payloadUpdated": {

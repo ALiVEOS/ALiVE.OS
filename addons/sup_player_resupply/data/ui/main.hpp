@@ -85,6 +85,18 @@ class PRTablet
             sizeEx = 0.5 * GUI_GRID_H;
         };
 
+        // the editor picture of the item last added to the payload or picked in it
+        class PRTablet_preview : RscPicture
+        {
+            idc = 60051;
+            style = 2096; // ST_PICTURE + ST_KEEP_ASPECT_RATIO
+            text = "";
+            x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.6800 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.216525 * GUI_GRID_WAbs;
+            h = 0.0850 * GUI_GRID_HAbs;
+        };
+
         class PRTablet_currentForcePool : PRTablet_RscText
         {
             text = "";
@@ -239,7 +251,7 @@ class PRTablet
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.1430 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.0308 * GUI_GRID_HAbs;
+            h = 0.024 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
             class Attributes
             {
@@ -257,9 +269,9 @@ class PRTablet
         {
             idc = 60005;
             x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.1660 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.1670 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.054 * GUI_GRID_HAbs;
+            h = 0.081 * GUI_GRID_HAbs;
             colorBackground[] = {0.173,0.173,0.173,1};
             colorActive[] = {0.384,0.439,0.341,1};
             sizeEx = 0.5 * GUI_GRID_H;
@@ -271,9 +283,9 @@ class PRTablet
             idc = 60018;
             text = "$STR_ALIVE_PR_UI_SUPPLY_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.2170 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.2580 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.0308 * GUI_GRID_HAbs;
+            h = 0.024 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
             class Attributes
             {
@@ -291,9 +303,9 @@ class PRTablet
         {
             idc = 60006;
             x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.2400 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.2820 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.13 * GUI_GRID_HAbs;
+            h = 0.110 * GUI_GRID_HAbs;
             colorBackground[] = {0.173,0.173,0.173,1};
             colorActive[] = {0.384,0.439,0.341,1};
             sizeEx = 0.5 * GUI_GRID_H;
@@ -305,9 +317,9 @@ class PRTablet
             idc = 60019;
             text = "$STR_ALIVE_PR_UI_REINFORCE_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.3666 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.4020 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.0308 * GUI_GRID_HAbs;
+            h = 0.024 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
             class Attributes
             {
@@ -325,9 +337,9 @@ class PRTablet
         {
             idc = 60007;
             x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.3892 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.4260 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.13 * GUI_GRID_HAbs;
+            h = 0.110 * GUI_GRID_HAbs;
             colorBackground[] = {0.173,0.173,0.173,1};
             colorActive[] = {0.384,0.439,0.341,1};
             sizeEx = 0.5 * GUI_GRID_H;
@@ -339,9 +351,9 @@ class PRTablet
             idc = 60020;
             text = "$STR_ALIVE_PR_UI_PAYLOAD_HDR";
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.5174 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.5460 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.0308 * GUI_GRID_HAbs;
+            h = 0.024 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
             class Attributes
             {
@@ -359,9 +371,9 @@ class PRTablet
         {
             idc = 60008;
             x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.5400 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.5700 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.1 * GUI_GRID_HAbs;
+            h = 0.066 * GUI_GRID_HAbs;
             colorBackground[] = {0.173,0.173,0.173,1};
             colorActive[] = {0.384,0.439,0.341,1};
             sizeEx = 0.5 * GUI_GRID_H;
@@ -373,9 +385,9 @@ class PRTablet
             text = "";
             idc = 60009;
             x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.6730 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.6700 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.0308 * GUI_GRID_HAbs;
+            h = 0.028 * GUI_GRID_HAbs;
             colorBackground[] = {0,0,0,0};
             class Attributes
             {
@@ -407,9 +419,9 @@ class PRTablet
         {
             idc = 60011;
             x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.6900 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.7000 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.06 * GUI_GRID_HAbs;
+            h = 0.066 * GUI_GRID_HAbs;
             colorBackground[] = {0.173,0.173,0.173,1};
             colorActive[] = {0.384,0.439,0.341,1};
             sizeEx = 0.5 * GUI_GRID_H;

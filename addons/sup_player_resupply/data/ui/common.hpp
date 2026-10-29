@@ -93,6 +93,9 @@ class PRTablet_RscListBox {
     colorSelect2[] = {0.023529, 0, 0.0313725, 1};
     colorSelectBackground[] = {0.58, 0.1147, 0.1108, 1};
     colorSelectBackground2[] = {0.58, 0.1147, 0.1108, 1};
+    colorPicture[] = {1,1,1,1};
+    colorPictureSelected[] = {1,1,1,1};
+    colorPictureDisabled[] = {1,1,1,0.5};
     period = 1;
     colorBackground[] = {0,0,0,0};
     maxHistoryDelay = 1.0;
