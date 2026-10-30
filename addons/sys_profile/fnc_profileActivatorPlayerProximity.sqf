@@ -57,6 +57,9 @@ switch (_operation) do {
             private _spawnSourcesUnfiltered =
                 allPlayers +
                 (allUnitsUAV select {isUavConnected _x}) +
+                // A unit a Zeus is remote-controlling keeps itself and its
+                // surroundings live, or it could be put away mid-control.
+                (allUnits select {!isNull (_x getVariable ["bis_fnc_moduleRemoteControl_owner", objNull])}) +
                 ALiVE_SpawnSources;
 
             private _zeusSpawn = [MOD(profileSystem),"zeusSpawn"] call ALiVE_fnc_hashGet;

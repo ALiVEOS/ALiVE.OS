@@ -298,6 +298,7 @@ if (
                 private _spawnSources = (
                     allPlayers +
                     (allUnitsUAV select {isUavConnected _x}) +
+                    (allUnits select {!isNull (_x getVariable ["bis_fnc_moduleRemoteControl_owner", objNull])}) +
                     ALiVE_SpawnSources
                 ) select {!isNull _x};
 
