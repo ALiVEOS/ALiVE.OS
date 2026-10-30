@@ -81,19 +81,28 @@ switch (_taskState) do {
         private _targetEye = _targetPosition call _fnc_eye;
         private _cover = { count (nearestTerrainObjects [_this, ["TREE", "SMALL TREE", "BUSH", "FOREST", "ROCK", "ROCKS"], 25, false, true]) min 10 };
         private _inTown = count (nearestTerrainObjects [_targetPosition, ["HOUSE", "BUILDING"], 75, false, true]) > 3;
+        // inside the map with a margin: near a coast or the map edge a point can otherwise land off the terrain
+        private _onMap = { (_this select 0) > 50 && {(_this select 1) > 50} && {(_this select 0) < worldSize - 50} && {(_this select 1) < worldSize - 50} };
         private _enemySides = ["EAST", "WEST", "GUER"] select { (([_taskSide] call ALIVE_fnc_sideTextToObject) getFriend ([_x] call ALIVE_fnc_sideTextToObject)) < 0.6 };
 
         // FRV: on the players' side, 800 to 1200 m out, on land, out of town and away from the enemy, in cover and out
         // of sight of the objective where it can be. Each rule is dropped in turn if nothing passes
+        // when the players' side is all sea (a small island, or players coming in from the water), all round instead,
+        // rather than falling back to a point on the objective itself
         private _frvCandidates = [];
         {
-            private _r = _x;
-            for "_a" from -45 to 45 step 15 do {
-                private _p = _targetPosition getPos [_r, _bearing + _a];
-                _p set [2, 0];
-                if !(surfaceIsWater _p) then { _frvCandidates pushBack _p };
+            private _arc = _x;
+            if (_frvCandidates isEqualTo []) then {
+                {
+                    private _r = _x;
+                    for "_a" from -_arc to _arc step 15 do {
+                        private _p = _targetPosition getPos [_r, _bearing + _a];
+                        _p set [2, 0];
+                        if (!(surfaceIsWater _p) && {_p call _onMap}) then { _frvCandidates pushBack _p };
+                    };
+                } forEach RECON_FRV_RANGES;
             };
-        } forEach RECON_FRV_RANGES;
+        } forEach [45, 180];
         private _frvScore = {
             private _hidden = terrainIntersectASL [_targetEye, _this call _fnc_eye];
             (_this call _cover) + ([0, 10] select _hidden)
@@ -130,7 +139,7 @@ switch (_taskState) do {
             for "_a" from 0 to 345 step 15 do {
                 private _p = _targetPosition getPos [_r, _a];
                 _p set [2, 0];
-                if !(surfaceIsWater _p) then {
+                if (!(surfaceIsWater _p) && {_p call _onMap}) then {
                     private _eye = AGLToASL [_p select 0, _p select 1, 1.8];
                     private _h = (((_eye select 2) - (_targetEye select 2)) max -20) min 60;
                     private _los = !(terrainIntersectASL [_eye, _targetEye]);
@@ -140,11 +149,14 @@ switch (_taskState) do {
             };
         } forEach ([RECON_OP_RANGES, RECON_OP_RANGES_TOWN] select _inTown);
         private _angle = { private _d = abs ((_this select 0) - (_this select 1)) % 360; _d min (360 - _d) };
+        // the players' side of the objective: the first rules keep both OPs within 100 degrees of the FRV's bearing, so
+        // the team doesn't have to cross or go round the objective to reach them
+        private _frvBrg = if ((_frv distance2D _targetPosition) > 100) then { _targetPosition getDir _frv } else { _bearing };
         private _ops = [];
         {
-            _x params ["_needLos", "_needClear", "_sep"];
+            _x params ["_needLos", "_needClear", "_sep", ["_nearSide", false]];
             if (count _ops < 2) then {
-                private _pool = _opCandidates select { (!_needLos || {_x select 3}) && {!_needClear || {_x select 4}} };
+                private _pool = _opCandidates select { (!_needLos || {_x select 3}) && {!_needClear || {_x select 4}} && {!_nearSide || {([_x select 2, _frvBrg] call _angle) <= 100}} };
                 _pool sort false;
                 if (_pool isNotEqualTo []) then {
                     private _op1 = _pool select 0;
@@ -155,9 +167,9 @@ switch (_taskState) do {
                     };
                 };
             };
-        } forEach [[true, true, 90], [false, true, 90], [false, false, 90], [false, false, 60]];
+        } forEach [[true, true, 90, true], [false, true, 90, true], [false, false, 60, true], [true, true, 90], [false, true, 90], [false, false, 90], [false, false, 60]];
         if (count _ops < 2) then {
-            _ops = [_targetPosition getPos [450, _bearing + 60], _targetPosition getPos [450, _bearing - 60]];
+            _ops = [_targetPosition getPos [450, _frvBrg + 60], _targetPosition getPos [450, _frvBrg - 60]];
             { _x set [2, 0] } forEach _ops;
             ["C2ISTAR - Task ReconObjective %1: no land for two OPs; using two points 450 m out", _taskID] call ALiVE_fnc_Dump;
         };
