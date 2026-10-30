@@ -145,15 +145,8 @@ _task = switch (_lb lbData _index) do
             };
         } forEach _nearestObjects;
 
-        // no liftable cargo nearby - tell the player rather than leave a blank list + silent confirm
-        if (lbSize _objectLb == 0) then {
-            _sliderText ctrlSetText localize "STR_ALIVE_CS_UI_TR_NO_CARGO";
-        } else {
-            // only auto-select when there IS cargo; lbSetCurSel 0 on an empty list fires LBSelChanged
-            // with empty lbData, and parseSimpleArray "" throws a format error
-            _objectLb lbSetCurSel 0;
-        };
-
+        // the handler goes on before the first pick, or that pick never moved the marker to the cargo
+        // and the helicopter was sent to wherever the marker last was
         _objectLb ctrlSetEventHandler ["LBSelChanged",
         "
             private [""_lb"", ""_pos"", ""_sliderText""];
@@ -163,6 +156,16 @@ _task = switch (_lb lbData _index) do
             _marker setMarkerPosLocal _pos;
             uinamespace setVariable [""NEO_transportMarkerCreated"", _marker];
         "];
+
+        // no liftable cargo nearby - tell the player rather than leave a blank list + silent confirm
+        if (lbSize _objectLb == 0) then {
+            _sliderText ctrlSetText localize "STR_ALIVE_CS_UI_TR_NO_CARGO";
+        } else {
+            // only auto-select when there IS cargo; lbSetCurSel 0 on an empty list fires LBSelChanged
+            // with empty lbData, and parseSimpleArray "" throws a format error
+            _objectLb lbSetCurSel 0;
+        };
+
     };
     CASE DEFAULT
     {

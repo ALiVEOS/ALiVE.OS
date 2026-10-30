@@ -2125,6 +2125,8 @@ class FSM
                          "};" \n
                          "" \n
                          "[[_chopper,[""STR_ALIVE_CS_MSG_36"",_callsign],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
+                         "// load down: back to base, as if RTB were pressed, rather than hover there until the next order" \n
+                         "_chopper setVariable [""NEO_radioTransportNewTask"", [""RTB"", _base, 0, _player], true];" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
@@ -2214,7 +2216,14 @@ class FSM
                                          "private ""_wp"";" \n
                                          "_wp = group _chopper addWaypoint [_pos, 0]; " \n
                                          "_wp setWaypointType ""HOOK""; " \n
-                                         "_wp waypointAttachVehicle ((_pos nearObjects 0.5) select 0);"/*%FSM</ACTION""">*/;
+                                         "// the cargo the tablet picked: the nearest load this helicopter can lift, measured flat," \n
+                                         "// since a container on a ship deck sits well above the ground-level point the tablet sends" \n
+                                         "private _cargo = objNull;" \n
+                                         "private _best = 15;" \n
+                                         "{" \n
+                                         "    if (_chopper canSlingLoad _x && {(_x distance2D _pos) < _best}) then { _cargo = _x; _best = _x distance2D _pos };" \n
+                                         "} forEach (nearestObjects [_pos, [], 60]);" \n
+                                         "if (!isNull _cargo) then { _wp waypointAttachVehicle _cargo };"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
