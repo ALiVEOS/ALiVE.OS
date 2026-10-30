@@ -3095,7 +3095,10 @@ switch(_operation) do {
                                         _staticOptions = [ALIVE_sideDefaultResupplyGroupOptions,_side] call ALIVE_fnc_hashGet;
                                     };
 
-                                    _blacklistOptions = [_staticOptions,_selectedDeliveryValue] call ALIVE_fnc_hashGet;
+                                    // Collect at a hub takes the convoy's list: the table has no entry for it, and the missing list
+                                    // emptied the whole level, << Back too (Jman, 30 Oct)
+                                    _blacklistOptions = [_staticOptions, [_selectedDeliveryValue, "PR_STANDARD"] select (_selectedDeliveryValue == "PR_COLLECT"), []] call ALIVE_fnc_hashGet;
+                                    if !(_blacklistOptions isEqualType []) then { _blacklistOptions = [] };
 
                                     _options = _options - _blacklistOptions;
 
