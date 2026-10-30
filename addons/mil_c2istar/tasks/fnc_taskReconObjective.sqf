@@ -31,7 +31,8 @@ Jman
 #define RECON_OP_RANGES_TOWN [450, 600, 750]
 #define RECON_AT_FRV 150
 #define RECON_AT_OP 100
-#define RECON_WATCH_SECONDS 60
+// how long each OP is watched from: Recon OP Hold Time, a minute by default (milfmadness, 29 Oct)
+#define RECON_WATCH_SECONDS (missionNamespace getVariable ["ALiVE_c2istar_reconHold", 60])
 #define RECON_REPORT_RADIUS 500
 #define RECON_KNOW 1.5
 #define RECON_SIGHT 600
@@ -199,12 +200,13 @@ switch (_taskState) do {
         private _nearestTown = [_targetPosition] call ALIVE_fnc_taskGetNearestLocationName;
         if (isNil "_nearestTown" || {!(_nearestTown isEqualType "")} || {_nearestTown == ""}) then { _nearestTown = "grid " + mapGridPosition _targetPosition };
 
-        // the place name into each stage's text and its opening radio call
+        // the place name into each stage's text and its opening radio call, and how long to hold each OP
+        private _holdText = if (RECON_WATCH_SECONDS <= 60) then { "a minute" } else { format ["%1 minutes", round (RECON_WATCH_SECONDS / 60)] };
         {
             private _d = [_dialogOption, _x] call ALIVE_fnc_hashGet;
             if (!isNil "_d") then {
                 [_d, "title", format [[_d, "title", ""] call ALIVE_fnc_hashGet, _nearestTown]] call ALIVE_fnc_hashSet;
-                [_d, "description", format [[_d, "description", ""] call ALIVE_fnc_hashGet, _nearestTown]] call ALIVE_fnc_hashSet;
+                [_d, "description", format [[_d, "description", ""] call ALIVE_fnc_hashGet, _nearestTown, _holdText]] call ALIVE_fnc_hashSet;
                 private _chat = [_d, "chat_start", []] call ALIVE_fnc_hashGet;
                 if (_chat isNotEqualTo []) then {
                     private _m = _chat select 0;

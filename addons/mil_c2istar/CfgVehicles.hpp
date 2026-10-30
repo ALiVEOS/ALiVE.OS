@@ -161,6 +161,21 @@ class CfgVehicles {
                                     class Four { name = "$STR_ALIVE_C2ISTAR_RECON_OPS_4"; value = "4"; };
                             };
                     };
+                    // How long each Recon OP is held (milfmadness, 29 Oct)
+                    class reconHold : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_reconHold";
+                            displayName = "$STR_ALIVE_C2ISTAR_RECON_HOLD";
+                            tooltip = "$STR_ALIVE_C2ISTAR_RECON_HOLD_COMMENT";
+                            defaultValue = """60""";
+                            class Values
+                            {
+                                    class One   { name = "1 minute"; value = "60"; };
+                                    class Two   { name = "2 minutes"; value = "120"; };
+                                    class Three { name = "3 minutes"; value = "180"; };
+                                    class Five  { name = "5 minutes"; value = "300"; };
+                            };
+                    };
 
                     class HDR_TASK_AREA : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TASK_AREA"; displayName = "TASK AREA"; };
                     class taskMinDistance : Edit

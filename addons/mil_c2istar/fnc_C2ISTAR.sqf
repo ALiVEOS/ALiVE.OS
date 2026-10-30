@@ -1458,6 +1458,10 @@ switch(_operation) do {
             missionNamespace setVariable ["ALiVE_c2istar_hvtManhuntChance", (_manhunt max 0) min 100];
             // Recon Task OPs, read by ALIVE_fnc_taskReconObjective: 2, or 4 all round the objective
             missionNamespace setVariable ["ALiVE_c2istar_reconOPs", [2, 4] select ((_logic getVariable ["reconOPs", "2"]) in ["4", 4])];
+            // Recon OP Hold Time: seconds at each OP, a minute to five
+            private _hold = _logic getVariable ["reconHold", "60"];
+            if (_hold isEqualType "") then { _hold = parseNumber _hold };
+            missionNamespace setVariable ["ALiVE_c2istar_reconHold", (_hold max 60) min 300];
             missionNamespace setVariable ["ALiVE_c2istar_tasksKnownOnly", _knownOnly in ["true", true]];
             missionNamespace setVariable ["ALiVE_c2istar_assetTaskCap", floor (_assetCap max 0)];
             // Tablet Intel Log (Eric on Discord, 25 Oct): read by ALIVE_fnc_intelLog and by the tablet on each machine
@@ -1805,9 +1809,9 @@ switch(_operation) do {
                 private _ops = [_params, "ops"] call ALIVE_fnc_hashGet;
                 private _dwell = [_params, "opDwell"] call ALIVE_fnc_hashGet;
                 _pos = [_pos select 0, _pos select 1, 0];
-                // two OPs, or four with Recon Task OPs at 4: the nearest one not yet watched from for its minute moves
+                // two OPs, or four with Recon Task OPs at 4: the nearest one not yet watched from for its full time moves
                 private _open = [];
-                { if ((_dwell param [_forEachIndex, 0]) < 60) then { _open pushBack _forEachIndex } } forEach _ops;
+                { if ((_dwell param [_forEachIndex, 0]) < (missionNamespace getVariable ["ALiVE_c2istar_reconHold", 60])) then { _open pushBack _forEachIndex } } forEach _ops;
                 if (_open isEqualTo []) exitWith { "Every observation post has been watched from already." call _fnc_tell };
                 private _byDist = _open apply { [_pos distance2D (_ops select _x), _x] };
                 _byDist sort true;

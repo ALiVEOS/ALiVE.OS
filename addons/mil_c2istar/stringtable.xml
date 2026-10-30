@@ -2009,7 +2009,13 @@
     <English>Recon Task OPs:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_RECON_OPS_COMMENT">
-    <English>How many observation posts a Recon task gives. 2 (the default) puts both on the players' side of the objective. 4 puts them all round it, so the team works its way round and sees it from every side, as a close target recce would. The OPs can be manned in any order, a minute at each.</English>
+    <English>How many observation posts a Recon task gives. 2 (the default) puts both on the players' side of the objective. 4 puts them all round it, so the team works its way round and sees it from every side, as a close target recce would. The OPs can be manned in any order, for the Recon OP Hold Time at each.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_RECON_HOLD">
+    <English>Recon OP Hold Time:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_RECON_HOLD_COMMENT">
+    <English>How long a Recon task's team has to watch from each observation post before it's ticked off: 1 minute (the default), 2, 3 or 5. Watching longer spots more, and the task text says how long.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_RECON_OPS_2">
     <English>2, on the players' side</English>
