@@ -1382,7 +1382,7 @@ switch(_operation) do {
                     if (_audio) then {
 
                         ALIVE_PR_HQ kbTell [player, "ALIVE_PR_protocol", "Drop_Acknowledged", "GROUP"];
-                        // spoken only, so the RADIO LOG page gets the words
+                        // spoken only, so the Radio Log page gets the words
                         ["HQ", "Request acknowledged, stand by"] call ALIVE_fnc_radioLog;
 
                     } else {

@@ -5,10 +5,10 @@ SCRIPT(radioLog);
 Function: ALIVE_fnc_radioLog
 
 Description:
-Keeps an ALiVE radio message on this player's RADIO LOG page in the map diary, newest first, with
-the in-game time and who sent it. Called on the machine that shows the message: by
+Keeps an ALiVE radio message on this player's Radio Log page in the map diary: one entry, newest
+message first, each line with the in-game time and who sent it. Called on the machine that shows the message: by
 ALIVE_fnc_radioBroadcast, by Combat Support's message broadcast and by ALIVE_fnc_taskSubtitle.
-The page holds the last 100 messages. The same line twice within 3 seconds is kept once.
+The entry holds the last 100 messages. The same line twice within 3 seconds is kept once.
 
 Parameters:
     _this select 0: STRING - who it is from ("HQ", a callsign, a task title)
@@ -40,21 +40,22 @@ if !(player diarySubjectExists "ALiVE_RadioLog") then {
 };
 
 private _time = [daytime, "HH:MM"] call BIS_fnc_timeToString;
-// the page text is structured text, so a < or & in a name is escaped; the line in the list just leaves them out
+// the page text is structured text, so a < or & in a name is escaped
 private _esc = { ((_this regexReplace ["&", "&amp;"]) regexReplace ["<", "&lt;"]) regexReplace [">", "&gt;"] };
-private _plain = { (_this splitString "<>&") joinString "" };
-private _short = if (count _text > 48) then { (_text select [0, 45]) + "..." } else { _text };
-private _line = if (_from == "") then { format ["%1 %2", _time, _short call _plain] } else { format ["%1 %2: %3", _time, _from call _plain, _short call _plain] };
-private _body = if (_from == "") then { format ["%1: %2", _time, _text call _esc] } else { format ["%1, %2: %3", _time, _from call _esc, _text call _esc] };
-private _record = player createDiaryRecord ["ALiVE_RadioLog", [_line, _body]];
+private _line = if (_from == "") then { format ["<font color='#B4B4B4'>%1</font> %2", _time, _text call _esc] } else { format ["<font color='#B4B4B4'>%1</font> <font color='#E0C060'>%2:</font> %3", _time, _from call _esc, _text call _esc] };
 
-// oldest out past 100
-// the handles belong to the body that made them, so a respawned player starts a new count
-if (isNil "ALiVE_radioLog_records" || {!(missionNamespace getVariable ["ALiVE_radioLog_owner", objNull] isEqualTo player)}) then {
-    ALiVE_radioLog_records = [];
+// One entry holding the whole log, newest first, rather than an entry per message: the diary's list of entries is a
+// narrow column that cut every message short and ran off the bottom of the map screen, while an entry's own text has
+// a scroll bar. The last 100 messages are kept.
+if (isNil "ALiVE_radioLog_lines") then { ALiVE_radioLog_lines = [] };
+ALiVE_radioLog_lines = ([_line] + ALiVE_radioLog_lines) select [0, 100];
+private _title = localize "STR_ALIVE_RADIO_LOG";
+private _body = ALiVE_radioLog_lines joinString "<br/>";
+// the entry belongs to the body that made it, so a respawned player gets a new one with the same lines
+private _record = missionNamespace getVariable ["ALiVE_radioLog_record", diaryRecordNull];
+if (isNull _record || {!(missionNamespace getVariable ["ALiVE_radioLog_owner", objNull] isEqualTo player)}) then {
+    ALiVE_radioLog_record = player createDiaryRecord ["ALiVE_RadioLog", [_title, _body]];
     ALiVE_radioLog_owner = player;
-};
-ALiVE_radioLog_records pushBack _record;
-while { count ALiVE_radioLog_records > 100 } do {
-    player removeDiaryRecord ["ALiVE_RadioLog", ALiVE_radioLog_records deleteAt 0];
+} else {
+    player setDiaryRecordText [["ALiVE_RadioLog", _record], [_title, _body]];
 };

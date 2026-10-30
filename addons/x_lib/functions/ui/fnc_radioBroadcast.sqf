@@ -18,7 +18,7 @@ Boolean - from HQ message is delivered from HQ callsign
 String - HQ Class the CfgHQIdentities class (AirBase,Base,BLU,HQ,IND,IND_G,OPF,PAPA_BEAR)
 Boolean - from group (optional)
 Boolean - to group (optional)
-Boolean - leave it off the RADIO LOG page (optional, default false; the kill feed sets it)
+Boolean - leave it off the Radio Log page (optional, default false; the kill feed sets it)
 
 Returns:
 
@@ -162,7 +162,7 @@ switch (_channel) do
     };
 };
 
-// the RADIO LOG page in the map diary keeps it, on a player's machine that shows the line
+// the Radio Log page in the map diary keeps it, on a player's machine that shows the line
 if (hasInterface && {!isNull player} && {!_noLog}) then {
     private _hears = switch (_channel) do {
         case "global": { true };

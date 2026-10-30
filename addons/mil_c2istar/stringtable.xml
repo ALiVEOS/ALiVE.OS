@@ -556,19 +556,19 @@
     <English>Report Enemy Aircraft Losses</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_LOSS_COMMENT">
-    <English>When an aircraft goes down, players on the sides hostile to it get a line on the AIR PICTURE page of the map diary and a short notice: "Enemy fighter down near Agia Marina". It says what kind of aircraft (fighter, attack aircraft, helicopter, transport or drone), not the model. Covers the AI Commander's profiled aircraft, spawned or virtual, and the air commander's own.</English>
+    <English>When an aircraft goes down, players on the sides hostile to it get a line on the Air Picture page of the map diary and a short notice: "Enemy fighter down near Agia Marina". It says what kind of aircraft (fighter, attack aircraft, helicopter, transport or drone), not the model. Covers the AI Commander's profiled aircraft, spawned or virtual, and the air commander's own.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_ATTACK">
     <English>Report Enemy Air Attacks</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_ATTACK_COMMENT">
-    <English>When enemy aircraft kill your side's men or vehicles, your side's players get a line on the AIR PICTURE page of the map diary and a short notice: "Friendly forces under attack from an enemy helicopter near Agia Marina". At most once per 2 km area every 5 minutes.</English>
+    <English>When enemy aircraft kill your side's men or vehicles, your side's players get a line on the Air Picture page of the map diary and a short notice: "Friendly forces under attack from an enemy helicopter near Agia Marina". At most once per 2 km area every 5 minutes.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION">
     <English>Report Air Situation</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_REPORT_AIR_SITUATION_COMMENT">
-    <English>Players are told on the AIR PICTURE page of the map diary when the air situation changes: we hold air superiority, the enemy holds it, the air is contested, or the sky is clear of armed aircraft it knows of. It counts your side's armed aircraft in the air and the enemy ones your side knows about, and only reports a change once it has lasted about a minute.</English>
+    <English>Players are told on the Air Picture page of the map diary when the air situation changes: we hold air superiority, the enemy holds it, the air is contested, or the sky is clear of armed aircraft it knows of. It counts your side's armed aircraft in the air and the enemy ones your side knows about, and only reports a change once it has lasted about a minute.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_AIR_SITUATION_NEEDS_ATO">
     <English>Only Against An Enemy Air Commander</English>

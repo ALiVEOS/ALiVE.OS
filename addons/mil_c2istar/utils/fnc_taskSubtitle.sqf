@@ -14,7 +14,7 @@ BIS_fnc_showSubtitle.
 Parameters:
     _this select 0: STRING - the title ("COIN Update", "Task Accomplished")
     _this select 1: STRING - the message
-    _this select 2: BOOL - leave it off the RADIO LOG page (optional, default false; the hold countdown sets it)
+    _this select 2: BOOL - leave it off the Radio Log page (optional, default false; the hold countdown sets it)
 
 Author:
 Jman
@@ -23,7 +23,7 @@ Jman
 params [["_title", ""], ["_text", ""], ["_noLog", false]];
 if (!hasInterface) exitWith {};
 
-// the RADIO LOG page in the map diary keeps it too
+// the Radio Log page in the map diary keeps it too
 if (!_noLog) then { [_title, _text] call ALIVE_fnc_radioLog };
 
 switch (missionNamespace getVariable ["ALiVE_prefTaskMessages", "subtitle"]) do {

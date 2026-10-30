@@ -1172,7 +1172,7 @@ switch(_operation) do {
         ALIVE_MIL_C2ISTAR = _logic;
 
         // Enemy aircraft losses (#968): when an aircraft goes down, every player on a side hostile
-        // to it gets a line on the AIR PICTURE page of the map diary and a notification. Called by
+        // to it gets a line on the Air Picture page of the map diary and a notification. Called by
         // the profile system (spawned and virtual losses) and the air commander (its own aircraft,
         // which have no profile). One report per aircraft.
         private _reportAir = _logic getVariable ["reportEnemyAirLoss", true];
@@ -1215,7 +1215,7 @@ switch(_operation) do {
         };
 
         // Enemy air attacks (#968): a man or ground vehicle killed by an enemy aircraft tells his own
-        // side's players they're under air attack there, on the same AIR PICTURE page. Once per 2 km
+        // side's players they're under air attack there, on the same Air Picture page. Once per 2 km
         // square every 5 minutes, so a strafing run is one line, not twenty. Kills only: a hit that
         // doesn't kill isn't reported.
         private _reportCAS = _logic getVariable ["reportEnemyAirAttack", true];
@@ -1251,7 +1251,7 @@ switch(_operation) do {
         };
 
         // Air situation (#968): each side with players is told when the air over the battle changes
-        // hands, on the same AIR PICTURE page. Every 30 s it counts the side's own armed aircraft in
+        // hands, on the same Air Picture page. Every 30 s it counts the side's own armed aircraft in
         // the air and the enemy ones it knows about; a new state is said once it has held for a
         // minute, and an empty sky only after a minute and a half, so a single pass doesn't flap it.
         // Only what's spawned and seen counts, so it's honest about what the side can know. A side is
@@ -1326,9 +1326,20 @@ switch(_operation) do {
             ALiVE_c2istar_fnc_showAirLoss = {
                 params ["_sides", "_time", "_text"];
                 if !((side group player) in _sides) exitWith {};
-                if !(player diarySubjectExists "ALiVE_AirPicture") then { player createDiarySubject ["ALiVE_AirPicture", "AIR PICTURE"] };
-                player createDiaryRecord ["ALiVE_AirPicture", [format ["%1 %2", _time, _text], format ["%1: %2.", _time, _text]]];
-                [localize "STR_ALIVE_C2ISTAR", format ["AIR PICTURE\n%1", _text], true] call ALIVE_fnc_sendHint;
+                if !(player diarySubjectExists "ALiVE_AirPicture") then { player createDiarySubject ["ALiVE_AirPicture", "Air Picture"] };
+                // one entry with every report, newest first, as on the Radio Log page: an entry per report filled the
+                // diary's narrow list and cut each one short. The last 50 are kept
+                if (isNil "ALiVE_c2istar_airLines") then { ALiVE_c2istar_airLines = [] };
+                ALiVE_c2istar_airLines = ([format ["<font color='#B4B4B4'>%1</font> %2.", _time, _text]] + ALiVE_c2istar_airLines) select [0, 50];
+                private _body = ALiVE_c2istar_airLines joinString "<br/>";
+                private _rec = missionNamespace getVariable ["ALiVE_c2istar_airRecord", diaryRecordNull];
+                if (isNull _rec || {!(missionNamespace getVariable ["ALiVE_c2istar_airOwner", objNull] isEqualTo player)}) then {
+                    ALiVE_c2istar_airRecord = player createDiaryRecord ["ALiVE_AirPicture", ["Air Picture", _body]];
+                    ALiVE_c2istar_airOwner = player;
+                } else {
+                    player setDiaryRecordText [["ALiVE_AirPicture", _rec], ["Air Picture", _body]];
+                };
+                [localize "STR_ALIVE_C2ISTAR", format ["Air Picture\n%1", _text], true] call ALIVE_fnc_sendHint;
             };
             "ALiVE_c2istar_airLoss" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_showAirLoss };
         };
