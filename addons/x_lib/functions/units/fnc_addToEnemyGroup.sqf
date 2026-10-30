@@ -23,6 +23,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_unit","_target","_unitSide","_targetSide","_group","_currentGroup"];
@@ -34,6 +35,17 @@ _unitSide = side group _unit;
 _targetSide = side group _target;
 
 if!((_unitSide) getFriend (_targetSide) < 0.6) then {
+    // An insurgent commander's side comes first when it's hostile to the target, so a bomber or rogue
+    // in an Independent insurgency joins the insurgents, not OPFOR (NeisAEL, 30 Oct). Otherwise the
+    // side opposite the target, as before.
+    private _insurgentSides = ((missionNamespace getVariable ["OPCOM_instances", []]) select {
+        ([_x, "controltype", ""] call ALiVE_fnc_HashGet) == "asymmetric"
+    }) apply { [[_x, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_sideTextToObject };
+    private _pick = _insurgentSides findIf { _x in [west, east, resistance] && {(_x getFriend _targetSide) < 0.6} };
+    private _insurgentSide = [sideUnknown, _insurgentSides select (_pick max 0)] select (_pick > -1);
+    if (_insurgentSide != sideUnknown) then {
+        _group = createGroup _insurgentSide;
+    } else {
     switch (_targetSide) do {
         case west:{
             _group = createGroup east;
@@ -55,6 +67,7 @@ if!((_unitSide) getFriend (_targetSide) < 0.6) then {
                 _group = createGroup east;
             };
         };
+    };
     };
 
     _currentGroup = group _unit;
