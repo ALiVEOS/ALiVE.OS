@@ -457,13 +457,139 @@
     <Russian>Способ доставки  -  Как будет доставлен ваш запрос</Russian>
 </Key>
 <Key ID="STR_ALIVE_PR_UI_SUPPLY_HDR">
-    <English>Supply List  -  Vehicles and equipment to include in the payload</English>
-    <Chinesesimp>补给清单 - 要加入物资的车辆和装备</Chinesesimp>
-    <Chinese>補給清單 - 要加入物資的車輛和裝備</Chinese>
-    <Spanish>Lista de suministros  -  Vehículos y equipo para incluir en la carga</Spanish>
-    <French>Liste de ravitaillement  -  Véhicules et équipement à inclure dans le chargement</French>
-    <Portuguese>Lista de abastecimentos  -  Veículos e equipamento a incluir na carga</Portuguese>
-    <Russian>Список снабжения  -  Техника и снаряжение для груза</Russian>
+    <English>Supply List</English>
+    <Chinesesimp>补给清单</Chinesesimp>
+    <Chinese>補給清單</Chinese>
+    <Spanish>Lista de suministros</Spanish>
+    <French>Liste de ravitaillement</French>
+    <Portuguese>Lista de abastecimentos</Portuguese>
+    <Russian>Список снабжения</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_SEARCH_TIP">
+    <English>Search every folder: type part of a name</English>
+    <Chinesesimp>搜索所有文件夹：输入名称的一部分</Chinesesimp>
+    <Chinese>搜尋所有資料夾：輸入名稱的一部分</Chinese>
+    <Spanish>Buscar en todas las carpetas: escribe parte de un nombre</Spanish>
+    <French>Chercher dans tous les dossiers : tapez une partie du nom</French>
+    <Portuguese>Procurar em todas as pastas: escreva parte de um nome</Portuguese>
+    <Russian>Поиск по всем папкам: введите часть названия</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_FOLDER_COUNT">
+    <English>%1 (%2)</English>
+    <Chinesesimp>%1 (%2)</Chinesesimp>
+    <Chinese>%1 (%2)</Chinese>
+    <Spanish>%1 (%2)</Spanish>
+    <French>%1 (%2)</French>
+    <Portuguese>%1 (%2)</Portuguese>
+    <Russian>%1 (%2)</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_CAR">
+    <English>Cars</English>
+    <Chinesesimp>汽车</Chinesesimp>
+    <Chinese>汽車</Chinese>
+    <Spanish>Coches</Spanish>
+    <French>Voitures</French>
+    <Portuguese>Carros</Portuguese>
+    <Russian>Автомобили</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_TRUCK">
+    <English>Trucks</English>
+    <Chinesesimp>卡车</Chinesesimp>
+    <Chinese>卡車</Chinese>
+    <Spanish>Camiones</Spanish>
+    <French>Camions</French>
+    <Portuguese>Camiões</Portuguese>
+    <Russian>Грузовики</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_ARMOUR">
+    <English>Armour</English>
+    <Chinesesimp>装甲车辆</Chinesesimp>
+    <Chinese>裝甲車輛</Chinese>
+    <Spanish>Blindados</Spanish>
+    <French>Blindés</French>
+    <Portuguese>Blindados</Portuguese>
+    <Russian>Бронетехника</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_ARTILLERY">
+    <English>Artillery</English>
+    <Chinesesimp>火炮</Chinesesimp>
+    <Chinese>火砲</Chinese>
+    <Spanish>Artillería</Spanish>
+    <French>Artillerie</French>
+    <Portuguese>Artilharia</Portuguese>
+    <Russian>Артиллерия</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_AIR">
+    <English>Aircraft</English>
+    <Chinesesimp>飞行器</Chinesesimp>
+    <Chinese>飛行器</Chinese>
+    <Spanish>Aeronaves</Spanish>
+    <French>Aéronefs</French>
+    <Portuguese>Aeronaves</Portuguese>
+    <Russian>Авиация</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_BOAT">
+    <English>Boats</English>
+    <Chinesesimp>船只</Chinesesimp>
+    <Chinese>船隻</Chinese>
+    <Spanish>Embarcaciones</Spanish>
+    <French>Bateaux</French>
+    <Portuguese>Embarcações</Portuguese>
+    <Russian>Катера</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_STATIC">
+    <English>Static weapons</English>
+    <Chinesesimp>固定武器</Chinesesimp>
+    <Chinese>固定武器</Chinese>
+    <Spanish>Armas estáticas</Spanish>
+    <French>Armes statiques</French>
+    <Portuguese>Armas estáticas</Portuguese>
+    <Russian>Стационарное оружие</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_FORTIFICATION">
+    <English>Fortifications</English>
+    <Chinesesimp>工事</Chinesesimp>
+    <Chinese>工事</Chinese>
+    <Spanish>Fortificaciones</Spanish>
+    <French>Fortifications</French>
+    <Portuguese>Fortificações</Portuguese>
+    <Russian>Укрепления</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_SUPPLY">
+    <English>Supply crates</English>
+    <Chinesesimp>补给箱</Chinesesimp>
+    <Chinese>補給箱</Chinese>
+    <Spanish>Cajas de suministros</Spanish>
+    <French>Caisses de ravitaillement</French>
+    <Portuguese>Caixas de abastecimento</Portuguese>
+    <Russian>Ящики снабжения</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_GEAR">
+    <English>Gear</English>
+    <Chinesesimp>装备</Chinesesimp>
+    <Chinese>裝備</Chinese>
+    <Spanish>Equipo</Spanish>
+    <French>Équipement</French>
+    <Portuguese>Equipamento</Portuguese>
+    <Russian>Снаряжение</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_TROOPS">
+    <English>Troops</English>
+    <Chinesesimp>部队</Chinesesimp>
+    <Chinese>部隊</Chinese>
+    <Spanish>Tropas</Spanish>
+    <French>Troupes</French>
+    <Portuguese>Tropas</Portuguese>
+    <Russian>Войска</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_KIND_OTHER">
+    <English>Other</English>
+    <Chinesesimp>其他</Chinesesimp>
+    <Chinese>其他</Chinese>
+    <Spanish>Otros</Spanish>
+    <French>Autres</French>
+    <Portuguese>Outros</Portuguese>
+    <Russian>Прочее</Russian>
 </Key>
 <Key ID="STR_ALIVE_PR_UI_REINFORCE_HDR">
     <English>Reinforce  -  Personnel and groups to include in the payload</English>

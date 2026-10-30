@@ -93,6 +93,7 @@ Peer Reviewed:
 #define PRTablet_CTRL_StatusMap 60028
 #define PRTablet_CTRL_ForcePool 60099
 #define PRTablet_CTRL_Preview 60051
+#define PRTablet_CTRL_SupplySearch 60052
 
 // Control Macros
 #define PR_getControl(disp,ctrl) ((findDisplay ##disp) displayCtrl ##ctrl)
@@ -158,7 +159,7 @@ switch(_operation) do {
     };
     // [top-level choice] -> [names, values] of its categories, << Back first, each one leading to at least one item
     // once the vehicle cache is ready (before that, every category, as the items can't be checked yet)
-    case "supplyCategories": {
+    case "supplyRawCategories": {
         _args params ["_selectedValue"];
         private _sortedVehicles = [_logic,"sortedVehicles"] call MAINCLASS;
         if (isNil "_sortedVehicles" || {!(_sortedVehicles isEqualType [])} || {count _sortedVehicles < 2}) then { _sortedVehicles = [] call ALiVE_fnc_hashCreate };
@@ -301,10 +302,190 @@ switch(_operation) do {
         } forEach _values;
         _result = [_keep apply { _options select _x }, _keep apply { _values select _x }];
     };
+    // Folders by kind (Jman, 30 Oct): the second level used to be the config's own category names
+    // ("Weaponssecondary", "Structures_Military"). It's now the kinds the shared lists use (ALIVE_fnc_lists).
+    // [class] -> CAR, TRUCK, ARMOUR, ARTILLERY, AIR or BOAT for a vehicle, else STATIC, FORTIFICATION,
+    // SUPPLY, GEAR, TROOPS, or OTHER for what the lists don't place
+    case "supplyKindOf": {
+        (["kindOf", _args] call ALIVE_fnc_lists) params [["_kind", ""], "", ["_sub", ""]];
+        _result = switch (_kind) do {
+            case "VEHICLE": { ["CAR", _sub] select (_sub != "") };
+            case "": { "OTHER" };
+            default { _kind };
+        };
+    };
+    // What each top-level choice offers for the selected delivery, by kind: a HashMap of top ->
+    // [[kind, names, classes, categories], ...], folders in a fixed order and items by name. It's built
+    // from the same categories and the same delivery filter as before, so a choice offers exactly what it
+    // did. Each item keeps its category, because the delivery reads it (a helicopter's "Air" means it flies
+    // itself in). nil until the vehicle cache is ready; kept until the delivery or the catalogue changes.
+    case "supplyTree": {
+        _result = nil;
+        if (!isNil "ALIVE_PR_vehicleCacheReady" && {ALIVE_PR_vehicleCacheReady}) then {
+            private _delivery = [_logic,"selectedDeliveryListValue"] call MAINCLASS;
+            private _sorted = [_logic,"sortedVehicles"] call MAINCLASS;
+            if (isNil "_sorted" || {!(_sorted isEqualType [])} || {count _sorted < 2}) then { _sorted = [] call ALiVE_fnc_hashCreate };
+            // the catalogue itself is part of the key: at a hub, or back from one, it's a different list
+            private _key = [_delivery, count (ALIVE_PR_vehicleCache select 1), +(_sorted select 1), +(_sorted select 2)];
+            private _kept = _logic getVariable ["ALiVE_PR_supplyTree", []];
+            if ((_kept param [0, []]) isEqualTo _key) exitWith { _result = _kept select 1 };
+            private _order = ["CAR","TRUCK","ARMOUR","ARTILLERY","AIR","BOAT","STATIC","FORTIFICATION","SUPPLY","GEAR","TROOPS","OTHER"];
+            private _tree = createHashMap;
+            {
+                private _top = _x;
+                private _buckets = createHashMap;
+                private _seen = createHashMap;
+                {
+                    private _cat = _x;
+                    private _items = if (_cat == "<< Back") then { nil } else { [_logic, "supplyItems", [_cat, _top]] call MAINCLASS };
+                    if (!isNil "_items") then {
+                        private _names = _items select 0;
+                        {
+                            if !(_x in _seen) then {
+                                _seen set [_x, true];
+                                private _kind = [_logic, "supplyKindOf", _x] call MAINCLASS;
+                                if !(_kind in _buckets) then { _buckets set [_kind, []] };
+                                (_buckets get _kind) pushBack [_names select _forEachIndex, _x, _cat];
+                            };
+                        } forEach (_items select 1);
+                    };
+                } forEach (([_logic, "supplyRawCategories", [_top]] call MAINCLASS) select 1);
+                private _folders = [];
+                {
+                    if (_x in _buckets) then {
+                        private _b = _buckets get _x;
+                        _b sort true;
+                        _folders pushBack [_x, _b apply { _x select 0 }, _b apply { _x select 1 }, _b apply { _x select 2 }];
+                    };
+                } forEach _order;
+                _tree set [_top, _folders];
+            } forEach ["Vehicles","Defence Stores","Combat Supplies"];
+            // a crate is listed once, under Combat Supplies: the old categories put a category's crates under
+            // Defence Stores as well, which the kind folders made plain ("Supply crates" under both). Anything
+            // else a mission's lists bring into Combat Supplies (sandbags on an Also list) stays in both.
+            private _crates = createHashMap;
+            { if ((_x select 0) == "SUPPLY") then { { _crates set [_x, true] } forEach (_x select 2) } } forEach (_tree get "Combat Supplies");
+            private _defence = [];
+            {
+                _x params ["_kind", "_n", "_c", "_k"];
+                private _keep = [];
+                { if !(_x in _crates) then { _keep pushBack _forEachIndex } } forEach _c;
+                if (_keep isNotEqualTo []) then { _defence pushBack [_kind, _keep apply { _n select _x }, _keep apply { _c select _x }, _keep apply { _k select _x }] };
+            } forEach (_tree get "Defence Stores");
+            _tree set ["Defence Stores", _defence];
+            _logic setVariable ["ALiVE_PR_supplyTree", [_key, _tree]];
+            _result = _tree;
+        };
+    };
+    // [top-level choice] -> [names, values] of its folders, << Back first, each named with what it holds for
+    // this delivery ("Cars (12)"). Until the vehicle cache is ready, the categories as they were, unchecked.
+    case "supplyCategories": {
+        _args params ["_selectedValue"];
+        private _tree = [_logic, "supplyTree"] call MAINCLASS;
+        if (isNil "_tree") exitWith { _result = [_logic, "supplyRawCategories", [_selectedValue]] call MAINCLASS };
+        private _names = ["<< Back"];
+        private _values = ["<< Back"];
+        {
+            _names pushBack format [localize "STR_ALIVE_PR_UI_FOLDER_COUNT", localize format ["STR_ALIVE_PR_KIND_%1", _x select 0], count (_x select 1)];
+            _values pushBack ("KIND:" + (_x select 0));
+        } forEach (_tree getOrDefault [_selectedValue, []]);
+        _result = [_names, _values];
+    };
+    // [top-level choice, "KIND:x"] -> [names, classes, categories] in that folder
+    case "supplyFolder": {
+        _args params ["_top", "_value"];
+        _result = [[], [], []];
+        private _tree = [_logic, "supplyTree"] call MAINCLASS;
+        if (!isNil "_tree") then {
+            private _folders = _tree getOrDefault [_top, []];
+            private _i = _folders findIf { ("KIND:" + (_x select 0)) == _value };
+            if (_i > -1) then { _result = (_folders select _i) select [1, 3] };
+        };
+    };
+    // text -> [names, classes, categories, top-level choices] of the items whose name or class name holds
+    // it, from every folder, by name, at most 150
+    case "supplySearch": {
+        private _text = toLower _args;
+        private _hits = [];
+        private _tree = [_logic, "supplyTree"] call MAINCLASS;
+        if (!isNil "_tree" && {_text != ""}) then {
+            {
+                private _top = _x;
+                {
+                    _x params ["", "_n", "_c", "_k"];
+                    {
+                        if (_text in toLower _x || {_text in toLower (_c select _forEachIndex)}) then { _hits pushBack [_x, _c select _forEachIndex, _k select _forEachIndex, _top] };
+                    } forEach _n;
+                } forEach (_tree getOrDefault [_top, []]);
+            } forEach ["Vehicles","Defence Stores","Combat Supplies"];
+        };
+        _hits sort true;
+        _hits resize ((count _hits) min 150);
+        _result = [_hits apply { _x select 0 }, _hits apply { _x select 1 }, _hits apply { _x select 2 }, _hits apply { _x select 3 }];
+    };
+    // Leaves a search: the box emptied and, when asked, the top level drawn again
+    case "supplySearchClear": {
+        _args params [["_redraw", false]];
+        _logic setVariable ["ALiVE_PR_searchRows", []];
+        uiNamespace setVariable ["ALiVE_PR_lastSearch", ""];
+        private _box = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplySearch);
+        if (!isNull _box) then { _box ctrlSetText "" };
+        if (_redraw) then {
+            private _list = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplyList);
+            private _topChoices = [_logic,"supplyTop"] call MAINCLASS;
+            private _o = [_logic,"selectedSupplyListOptions"] call MAINCLASS;
+            private _v = [_logic,"selectedSupplyListValues"] call MAINCLASS;
+            _o set [0, _topChoices];
+            _v set [0, +_topChoices];
+            [_logic,"selectedSupplyListOptions",_o] call MAINCLASS;
+            [_logic,"selectedSupplyListValues",_v] call MAINCLASS;
+            [_logic,"selectedSupplyListDepth",0] call MAINCLASS;
+            if (!isNull _list) then {
+                lbClear _list;
+                { _list lbAdd format ["%1", _x] } forEach _topChoices;
+            };
+        };
+    };
+    // [name, class, parents]: one supply item into the payload, from a folder or a search
+    case "supplyAddPayload": {
+        _args params ["_name", "_class", "_parents"];
+        private _payloadListOptions = [_logic,"payloadListOptions"] call MAINCLASS;
+        private _payloadListValues = [_logic,"payloadListValues"] call MAINCLASS;
+        _payloadListOptions pushback _name;
+        _payloadListValues pushback [_class, _parents];
+        [_logic,"payloadListOptions",_payloadListOptions] call MAINCLASS;
+        [_logic,"payloadListValues",_payloadListValues] call MAINCLASS;
+        private _payloadList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
+        private _index = _payloadList lbAdd format["%1", _name];
+        _payloadList lbSetTooltip [_index, _class];
+        [_logic,"payloadUpdated"] call MAINCLASS;
+    };
     // the top-level choices that lead to at least one item for the selected delivery
     case "supplyTop": {
         private _all = ["Vehicles","Defence Stores","Combat Supplies"];
         _result = _all select { count (([_logic, "supplyCategories", [_x]] call MAINCLASS) select 1) > 1 };
+    };
+    // Reinforce offers Individuals only when the catalogue holds a soldier, and Groups only when it holds a
+    // group (Jman, 30 Oct). Both while the catalogue isn't built yet.
+    case "reinforceTop": {
+        private _sorted = [_logic,"sortedVehicles"] call MAINCLASS;
+        private _groups = [_logic,"sortedGroups"] call MAINCLASS;
+        if (isNil "_sorted" || {!(_sorted isEqualType [])} || {count _sorted < 2}) exitWith { _result = ["Individuals","Groups"] };
+        private _men = false;
+        {
+            private _list = [_sorted, _x, []] call ALIVE_fnc_hashGet;
+            if (_list isEqualType [] && {(_list findIf { _x isKindOf "Man" }) > -1}) exitWith { _men = true };
+        } forEach (_sorted select 1);
+        private _anyGroup = false;
+        if (!isNil "_groups" && {_groups isEqualType []} && {count _groups > 1}) then {
+            {
+                private _cats = [_groups, _x] call ALIVE_fnc_hashGet;
+                if (!isNil "_cats" && {_cats isEqualType []} && {count _cats > 1} && {(_cats select 1) isNotEqualTo []}) exitWith { _anyGroup = true };
+            } forEach (_groups select 1);
+        };
+        _result = [];
+        if (_men) then { _result pushBack "Individuals" };
+        if (_anyGroup) then { _result pushBack "Groups" };
     };
     case "destroy": {
         if (isServer) then {
@@ -1314,6 +1495,8 @@ switch(_operation) do {
                         [ALIVE_SUP_PLAYER_RESUPPLY, "selectedSupplyListValues", _v] call MAINCLASS;
                         lbClear _supplyList;
                         { _supplyList lbAdd format ["%1", _x] } forEach _topChoices;
+                        // the rows' pictures, and the search box, which waits for the cache
+                        [ALIVE_SUP_PLAYER_RESUPPLY, "decorateLists", ["CACHE_READY", []]] call MAINCLASS;
                     };
                 };
                 if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - vehicle cache built: %1 entries", count (ALIVE_PR_vehicleCache select 1)] call ALiVE_fnc_dump;};
@@ -2388,6 +2571,7 @@ switch(_operation) do {
                     _selectedSupplyListDepth = [_logic,"selectedSupplyListDepth"] call MAINCLASS;
 
                     // only the choices that lead to something for this delivery (the list is filtered again once the vehicle cache is ready)
+                    [_logic, "supplySearchClear", [false]] call MAINCLASS;
                     private _topChoices = [_logic, "supplyTop"] call MAINCLASS;
                     _selectedSupplyListOptions set [0, _topChoices];
                     _selectedSupplyListValues set [0, +_topChoices];
@@ -2413,6 +2597,13 @@ switch(_operation) do {
                     _selectedReinforceListOptions = [_logic,"selectedReinforceListOptions"] call MAINCLASS;
                     _selectedReinforceListValues = [_logic,"selectedReinforceListValues"] call MAINCLASS;
                     _selectedReinforceListDepth = [_logic,"selectedReinforceListDepth"] call MAINCLASS;
+
+                    // only Individuals or Groups that hold something
+                    private _reinforceTop = [_logic, "reinforceTop"] call MAINCLASS;
+                    _selectedReinforceListOptions set [0, _reinforceTop];
+                    _selectedReinforceListValues set [0, +_reinforceTop];
+                    [_logic,"selectedReinforceListOptions",_selectedReinforceListOptions] call MAINCLASS;
+                    [_logic,"selectedReinforceListValues",_selectedReinforceListValues] call MAINCLASS;
 
                     lbClear _reinforceList;
 
@@ -2467,6 +2658,34 @@ switch(_operation) do {
 
                 };
 
+                // the supply list's search box (Jman, 30 Oct; as the FOB build menu's): the items of every
+                // folder whose name or class name holds the text
+                case "SUPPLY_SEARCH": {
+                    private _box = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplySearch);
+                    private _text = ctrlText _box;
+                    if (_text isEqualTo (uiNamespace getVariable ["ALiVE_PR_lastSearch", ""])) exitWith {};
+                    uiNamespace setVariable ["ALiVE_PR_lastSearch", _text];
+                    if (_text == "") exitWith { [_logic, "supplySearchClear", [true]] call MAINCLASS };
+                    private _hits = [_logic, "supplySearch", _text] call MAINCLASS;
+                    private _o = [_logic,"selectedSupplyListOptions"] call MAINCLASS;
+                    private _v = [_logic,"selectedSupplyListValues"] call MAINCLASS;
+                    private _p = [_logic,"selectedSupplyListParents"] call MAINCLASS;
+                    _o set [1, ["<< Back"] + (_hits select 0)];
+                    _v set [1, ["<< Back"] + (_hits select 1)];
+                    _p set [0, "Search"];
+                    [_logic,"selectedSupplyListOptions",_o] call MAINCLASS;
+                    [_logic,"selectedSupplyListValues",_v] call MAINCLASS;
+                    [_logic,"selectedSupplyListParents",_p] call MAINCLASS;
+                    [_logic,"selectedSupplyListDepth",1] call MAINCLASS;
+                    _logic setVariable ["ALiVE_PR_searchRows", [[""] + (_hits select 3), [""] + (_hits select 2)]];
+                    private _supplyList = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplyList);
+                    lbClear _supplyList;
+                    {
+                        private _index = _supplyList lbAdd format ["%1", _x];
+                        if (_index > 0) then { _supplyList lbSetTooltip [_index, (_v select 1) select _index] };
+                    } forEach (_o select 1);
+                };
+
                 case "SUPPLY_LIST_SELECT": {
 
                     // supply list select
@@ -2487,6 +2706,19 @@ switch(_operation) do {
                     _selectedListValues = _selectedSupplyListValues select _selectedSupplyListDepth;
                     _selectedOption = _selectedListOptions select _selectedIndex;
                     _selectedValue = _selectedListValues select _selectedIndex;
+
+                    // a search result goes straight into the payload; << Back leaves the search
+                    private _searchRows = _logic getVariable ["ALiVE_PR_searchRows", []];
+                    if (_searchRows isNotEqualTo [] && {_selectedSupplyListDepth == 1}) exitWith {
+                        if (_selectedValue == "<< Back") then {
+                            [_logic, "supplySearchClear", [true]] call MAINCLASS;
+                        } else {
+                            if (_selectedIndex < count (_searchRows select 0)) then {
+                                [_logic, "supplyAddPayload", [_selectedOption, _selectedValue, [(_searchRows select 0) select _selectedIndex, (_searchRows select 1) select _selectedIndex, _selectedValue]]] call MAINCLASS;
+                            };
+                        };
+                    };
+
                     _sortedVehicles = [_logic,"sortedVehicles"] call MAINCLASS;
                     // Ensure _sortedVehicles is a valid hash regardless of init timing.
                     // DEFAULT_SORTED_VEHICLES is [] (plain array) — replace with an
@@ -2537,6 +2769,15 @@ switch(_operation) do {
 
                             };
                             case 1: {
+
+                                // a folder by kind: its items, each with the category the delivery reads
+                                if ((_selectedValue select [0, 5]) == "KIND:") exitWith {
+                                    _updateList = true;
+                                    private _folder = [_logic, "supplyFolder", [_selectedSupplyListParents select 0, _selectedValue]] call MAINCLASS;
+                                    _selectedSupplyListOptions set [2, ["<< Back"] + (_folder select 0)];
+                                    _selectedSupplyListValues set [2, ["<< Back"] + (_folder select 1)];
+                                    _logic setVariable ["ALiVE_PR_rowCategories", [""] + (_folder select 2)];
+                                };
 
                                 // selected something from the second level
                                 // get vehicle classes for the selected category
@@ -2652,26 +2893,14 @@ switch(_operation) do {
                                 // Guard: reject empty, placeholder or << Back selections
                                 if (_selectedValue isEqualTo "" || _selectedValue isEqualTo "<< Back" || _selectedOption isEqualTo "Please wait, loading data...") exitWith {};
 
-                                _payloadListOptions = [_logic,"payloadListOptions"] call MAINCLASS;
-                                _payloadListValues = [_logic,"payloadListValues"] call MAINCLASS;
+                                _selectedParents = +_selectedSupplyListParents;
+                                // picked from a folder by kind: the delivery reads the item's own category
+                                private _rowCategories = _logic getVariable ["ALiVE_PR_rowCategories", []];
+                                if (((_selectedParents param [1, ""]) select [0, 5]) == "KIND:" && {_selectedIndex < count _rowCategories}) then {
+                                    _selectedParents set [1, _rowCategories select _selectedIndex];
+                                };
 
-                                _selectedParents = [];
-                                {
-                                    _selectedParents pushback _x;
-                                } forEach _selectedSupplyListParents;
-
-                                _payloadListOptions pushback _selectedOption;
-                                _payloadListValues pushback [_selectedValue,_selectedParents];
-
-                                [_logic,"payloadListOptions",_payloadListOptions] call MAINCLASS;
-                                [_logic,"payloadListValues",_payloadListValues] call MAINCLASS;
-
-                                _payloadList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
-
-                                private _index = _payloadList lbAdd format["%1", _selectedOption];
-                                _payLoadList lbSetTooltip [_index, _selectedValue];
-
-                                [_logic,"payloadUpdated"] call MAINCLASS;
+                                [_logic, "supplyAddPayload", [_selectedOption, _selectedValue, _selectedParents]] call MAINCLASS;
 
                             };
                         };
@@ -2695,12 +2924,9 @@ switch(_operation) do {
                             {
                                 private _index = _supplyList lbAdd format["%1", _x];
 
-                                if (_selectedSupplyListDepth == 2 && _index > 0) then {
-                                    private _vehicleClasses = [_sortedVehicles, _selectedValue] call ALIVE_fnc_hashGet;
-                                    // Guard: hashGet returns nil if key missing; array must have enough entries
-                                    if (!isNil "_vehicleClasses" && {_vehicleClasses isEqualType []} && {count _vehicleClasses >= _index}) then {
-                                        _supplyList lbSetTooltip [_index, format ["%1", _vehicleClasses select (_index - 1)]];
-                                    };
+                                // an item row's tooltip is its class (the rows are filtered, so a row is no index into the category)
+                                if (_selectedSupplyListDepth == 2 && _index > 0 && {_index < count _values}) then {
+                                    _supplyList lbSetTooltip [_index, format ["%1", _values select _index]];
                                 };
                             } forEach _options;
 
@@ -3776,14 +4002,27 @@ switch(_operation) do {
             if (_value isEqualType "" && {_value != ""}) then {
                 private _cfg = configFile >> "CfgVehicles" >> _value;
                 if (isClass _cfg && {getNumber (_cfg >> "scope") >= 1}) then {
-                    // a soldier's role icon; a vehicle's side-on picture where it has one
-                    private _row = getText (_cfg >> "icon");
-                    if (isText (configFile >> "CfgVehicleIcons" >> _row)) then { _row = getText (configFile >> "CfgVehicleIcons" >> _row) };
-                    if !(_value isKindOf "Man") then {
-                        private _picture = getText (_cfg >> "picture");
-                        if ("\" in _picture) then { _row = _picture };
+                    // a soldier's role icon; anything else its editor picture, the thumbnail the preview shows
+                    // (Jman, 30 Oct), else its picture. Never the plain object icon, a white square in the list.
+                    // Checked once a class, so a mod's missing file isn't asked for on every draw.
+                    private _rowCache = missionNamespace getVariable "ALiVE_PR_rowPictures";
+                    if (isNil "_rowCache") then { _rowCache = createHashMap; ALiVE_PR_rowPictures = _rowCache };
+                    private _row = _rowCache get _value;
+                    if (isNil "_row") then {
+                        _row = "";
+                        if (_value isKindOf "Man") then {
+                            _row = getText (_cfg >> "icon");
+                            if (isText (configFile >> "CfgVehicleIcons" >> _row)) then { _row = getText (configFile >> "CfgVehicleIcons" >> _row) };
+                            if !("\" in _row) then { _row = "" };
+                        } else {
+                            private _exists = { params ["_f"]; _f != "" && {fileExists _f || {fileExists (_f + ".paa")}} };
+                            {
+                                if (_row == "" && {"\" in _x} && {[_x] call _exists}) then { _row = _x };
+                            } forEach [getText (_cfg >> "editorPreview"), getText (_cfg >> "picture")];
+                        };
+                        _rowCache set [_value, _row];
                     };
-                    _result = [["", _row] select ("\" in _row), getText (_cfg >> "editorPreview")];
+                    _result = [_row, getText (_cfg >> "editorPreview")];
                 } else {
                     if (_parents isEqualType [] && {count _parents > 2} && {(_parents select 0) isEqualTo "Groups"}) then {
                         private _group = configFile >> "CfgGroups" >> _sideName >> (_parents select 1) >> (_parents select 2) >> _value;
@@ -3855,6 +4094,11 @@ switch(_operation) do {
             if (_shown >= 0 && {_shown < _count}) then {
                 _preview ctrlSetText (((_entries select _shown) call _entryPictures) select 1);
             };
+        };
+        private _search = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplySearch);
+        if (!isNull _search) then {
+            _search ctrlShow (ctrlShown (PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplyList)));
+            _search ctrlEnable (!isNil "ALIVE_PR_vehicleCacheReady" && {ALIVE_PR_vehicleCacheReady});
         };
         // the box is as wide as a 16:9 editor picture at its height, so the picture sits on the map's left edge
         private _box = ctrlPosition _preview;
@@ -4279,6 +4523,7 @@ switch(_operation) do {
         [_logic,"selectedSupplyListDepth",0] call MAINCLASS;
 
         // only the choices that lead to something for this delivery (the list is filtered again once the vehicle cache is ready)
+        [_logic, "supplySearchClear", [false]] call MAINCLASS;
         private _topChoices = [_logic, "supplyTop"] call MAINCLASS;
         _selectedSupplyListOptions set [0, _topChoices];
         _selectedSupplyListValues set [0, +_topChoices];
@@ -4304,6 +4549,13 @@ switch(_operation) do {
         _selectedReinforceListOptions = [_logic,"selectedReinforceListOptions"] call MAINCLASS;
         _selectedReinforceListValues = [_logic,"selectedReinforceListValues"] call MAINCLASS;
         [_logic,"selectedReinforceListDepth",0] call MAINCLASS;
+
+        // only Individuals or Groups that hold something
+        private _reinforceTop = [_logic, "reinforceTop"] call MAINCLASS;
+        _selectedReinforceListOptions set [0, _reinforceTop];
+        _selectedReinforceListValues set [0, +_reinforceTop];
+        [_logic,"selectedReinforceListOptions",_selectedReinforceListOptions] call MAINCLASS;
+        [_logic,"selectedReinforceListValues",_selectedReinforceListValues] call MAINCLASS;
 
         lbClear _reinforceList;
 
@@ -4513,6 +4765,7 @@ switch(_operation) do {
         [_logic,"selectedSupplyListDepth",0] call MAINCLASS;
 
         // only the choices that lead to something for this delivery (the list is filtered again once the vehicle cache is ready)
+        [_logic, "supplySearchClear", [false]] call MAINCLASS;
         private _topChoices = [_logic, "supplyTop"] call MAINCLASS;
         _selectedSupplyListOptions set [0, _topChoices];
         _selectedSupplyListValues set [0, +_topChoices];
@@ -4538,6 +4791,13 @@ switch(_operation) do {
         _selectedReinforceListOptions = [_logic,"selectedReinforceListOptions"] call MAINCLASS;
         _selectedReinforceListValues = [_logic,"selectedReinforceListValues"] call MAINCLASS;
         [_logic,"selectedReinforceListDepth",0] call MAINCLASS;
+
+        // only Individuals or Groups that hold something
+        private _reinforceTop = [_logic, "reinforceTop"] call MAINCLASS;
+        _selectedReinforceListOptions set [0, _reinforceTop];
+        _selectedReinforceListValues set [0, +_reinforceTop];
+        [_logic,"selectedReinforceListOptions",_selectedReinforceListOptions] call MAINCLASS;
+        [_logic,"selectedReinforceListValues",_selectedReinforceListValues] call MAINCLASS;
 
         lbClear _reinforceList;
 

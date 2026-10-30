@@ -299,6 +299,31 @@ class PRTablet
             };
         };
 
+        // the supply list's search box (Jman, 30 Oct), on the right of its title, as in the FOB build menu
+        class PRTablet_supplySearch
+        {
+            idc = 60052;
+            type = 2;
+            style = 0;
+            access = 0;
+            x = 0.4075 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.2600 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.1050 * GUI_GRID_WAbs;
+            h = 0.020 * GUI_GRID_HAbs;
+            font = "PuristaMedium";
+            sizeEx = 0.5 * GUI_GRID_H;
+            text = "";
+            autocomplete = "";
+            shadow = 0;
+            canModify = 1;
+            tooltip = "$STR_ALIVE_PR_UI_SEARCH_TIP";
+            colorBackground[] = {0.173,0.173,0.173,1};
+            colorText[] = {1,1,1,1};
+            colorDisabled[] = {1,1,1,0.25};
+            colorSelection[] = {0.384,0.439,0.341,1};
+            onKeyUp = "['SUPPLY_SEARCH', _this] call ALIVE_fnc_PRTabletOnAction";
+        };
+
         class PRTablet_supplyList : PRTablet_RscGUIListBox
         {
             idc = 60006;
