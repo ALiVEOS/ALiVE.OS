@@ -517,8 +517,13 @@ private _fnc_hangarBayCentre = {
         ((_min select 1) + (_max select 1)) / 2,
         0
     ];
+    // Returned on the ground (height 0 above terrain). It used to carry the
+    // terrain's height above sea level, which callers stored as a height above
+    // ground: on a 30 m high airfield the aircraft was made 30 m up and dropped
+    // through the hangar roof, and the bay-occupied check looked 30 m above
+    // the floor and never saw a parked aircraft.
     private _world = _hangar modelToWorld _localCentre;
-    _world set [2, getTerrainHeightASL _world];
+    _world set [2, 0];
     _world
 };
 
@@ -586,7 +591,7 @@ private _fnc_orientHangar = {
 
     private _fnc_clearDist = {
         params ["_dir"];
-        private _start = _bayCentre vectorAdd [0, 0, 1.5];
+        private _start = AGLToASL (_bayCentre vectorAdd [0, 0, 1.5]);
         private _end = _start vectorAdd [_rayLen * sin _dir, _rayLen * cos _dir, 0];
         private _hits = lineIntersectsSurfaces [_start, _end, objNull, objNull, true, 1, "GEOM", "NONE"];
         if (count _hits == 0) exitWith { _rayLen };
