@@ -2214,6 +2214,8 @@ class FSM
                                          "};  " \n
                                          "" \n
                                          "private ""_wp"";" \n
+                                         "// landed at base its engine was switched off, and a waypoint alone doesn't start it again (doMoveRemote has the same fix)" \n
+                                         "[_chopper, true] remoteExecCall [""engineOn"", owner _chopper];" \n
                                          "_wp = group _chopper addWaypoint [_pos, 0]; " \n
                                          "_wp setWaypointType ""HOOK""; " \n
                                          "// the cargo the tablet picked: the nearest load this helicopter can lift, measured flat," \n
@@ -2270,6 +2272,7 @@ class FSM
                                          "};  " \n
                                          "" \n
                                          "private ""_wp"";" \n
+                                         "[_chopper, true] remoteExecCall [""engineOn"", owner _chopper];" \n
                                          "_wp = group _chopper addWaypoint [_pos, 0]; " \n
                                          "_wp setWaypointType ""UNHOOK""; "/*%FSM</ACTION""">*/;
                                 };
