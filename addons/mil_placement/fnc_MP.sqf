@@ -208,6 +208,12 @@ switch(_operation) do {
     case "guardRadius": {
         _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_RADIUS] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "vehiclePatrolRadius": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "patrolInsideTAOR": {
+        _result = [_logic,_operation,_args,"true"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "guardPatrolPercentage": {
         _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_PATROL_PERCENT] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -2840,6 +2846,13 @@ switch(_operation) do {
                     };
             
                     private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
+                    // How far vehicle patrols drive, and the area every patrol keeps to (WoodenPlankGames, 30 Oct).
+                    // Handed to each patrol command, and to reserves through the module.
+                    private _patrolAreas = [[], []];
+                    if (([_logic, "patrolInsideTAOR"] call MAINCLASS) isEqualTo "true") then {
+                        _patrolAreas = [([_logic, "taor"] call MAINCLASS) select { [_x] call ALIVE_fnc_markerExists }, ([_logic, "blacklist"] call MAINCLASS) select { [_x] call ALIVE_fnc_markerExists }];
+                    };
+                    _logic setVariable ["ALiVE_patrolLimits", [parseNumber ([_logic, "vehiclePatrolRadius"] call MAINCLASS), _patrolAreas]];
                     private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
                     private _garrisonPatrolBehaviour = toUpper ([_logic, "garrisonPatrolBehaviour"] call MAINCLASS);
                     // Preferred garrison buildings, still in the canonical Class=idx,idx;... string the
@@ -3063,7 +3076,7 @@ switch(_operation) do {
                                     // percentage is the infantry-on-patrol fraction.
                                     if (_isVehicle) then {
                                         _command = "ALIVE_fnc_ambientMovement";
-                                        _radius = [_guardRadius,"SAFE",[0,0,0]];
+                                        _radius = [_guardRadius,"SAFE",[0,0,0],_logic getVariable ["ALiVE_patrolLimits", []]];
                                     } else {
                                         if (_infantryActivePlacedCount < _garrisonCount) then {
                                             _command = "ALIVE_fnc_garrison";
@@ -3071,7 +3084,7 @@ switch(_operation) do {
                                             _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size, true, _logic getVariable ["ALiVE_fieldworkGarrison", false]];
                                         } else {
                                             _command = "ALIVE_fnc_ambientMovement";
-                                            _radius = [_guardRadius,"SAFE",[0,0,0]];
+                                            _radius = [_guardRadius,"SAFE",[0,0,0],_logic getVariable ["ALiVE_patrolLimits", []]];
 
                                             // DEBUG -------------------------------------------------------------------------------------
                                             if(_debug) then {
@@ -3266,7 +3279,7 @@ switch(_operation) do {
                                 // multi-group branch above).
                                 if (_isVehicle) then {
                                     _command = "ALIVE_fnc_ambientMovement";
-                                    _radius = [_guardRadius,"SAFE",[0,0,0]];
+                                    _radius = [_guardRadius,"SAFE",[0,0,0],_logic getVariable ["ALiVE_patrolLimits", []]];
                                 } else {
                                     if (_infantryActivePlacedCount < _garrisonCount) then {
                                         _command = "ALIVE_fnc_garrison";
@@ -3274,7 +3287,7 @@ switch(_operation) do {
                                         _radius = [_guardRadius,"true",_center,"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed, _preferredGarrisonPositions, true, _size, true, _logic getVariable ["ALiVE_fieldworkGarrison", false]];
                                     } else {
                                         _command = "ALIVE_fnc_ambientMovement";
-                                        _radius = [_guardRadius,"SAFE",[0,0,0]];
+                                        _radius = [_guardRadius,"SAFE",[0,0,0],_logic getVariable ["ALiVE_patrolLimits", []]];
 
                                         // DEBUG -------------------------------------------------------------------------------------
                                         if(_debug) then {

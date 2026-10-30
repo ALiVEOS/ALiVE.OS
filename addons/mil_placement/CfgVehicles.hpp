@@ -171,6 +171,19 @@ class CfgVehicles {
                                     class Full { name = "Full (run)"; value = "FULL"; };
                                 };
                         };
+                        class vehiclePatrolRadius : Edit { property = "ALiVE_mil_placement_vehiclePatrolRadius"; displayName = "$STR_ALIVE_MP_VEHICLE_PATROL_RADIUS"; tooltip = "$STR_ALIVE_MP_VEHICLE_PATROL_RADIUS_COMMENT"; defaultValue = """"""; };
+                        class patrolInsideTAOR : Combo
+                        {
+                                property = "ALiVE_mil_placement_patrolInsideTAOR";
+                                displayName = "$STR_ALIVE_MP_PATROL_INSIDE_TAOR";
+                                tooltip = "$STR_ALIVE_MP_PATROL_INSIDE_TAOR_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = "true"; default = 1; };
+                                    class No { name = "No"; value = "false"; };
+                                };
+                        };
 
                         class HDR_GARRISON_BLDG : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_GARRISON_BLDG"; displayName = "GARRISON BUILDINGS"; };
                         class preferredGarrisonPositions : ALiVE_EditMultilineSQF

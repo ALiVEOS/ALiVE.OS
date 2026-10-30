@@ -9,7 +9,8 @@ Ambient movement command for active profiles
 
 Parameters:
 Profile - profile
-Args - array
+Args - radius, or [radius, behaviour, unused, limits]. Limits, from a Military Placement module, is
+       [vehicle patrol radius (0 for the usual one), [[markers to stay inside], [markers to stay out of]]]
 
 Returns:
 
@@ -41,11 +42,13 @@ private _group = [_profile,"group"] call ALiVE_fnc_HashGet;
 
 // Handle inputs types
 private ["_radius","_behaviour"];
+private _limits = [];
 
 switch (typename _params) do {
     case "ARRAY" : {
         _radius = _params select 0;
         _behaviour = _params select 1;
+        _limits = _params param [3, [], [[]]];
     };
     default {
         _radius = _params;
@@ -108,6 +111,18 @@ if (count _vehiclesInCommandOf > 0) then {
     } forEach _vehiclesInCommandOf;
 };
 
+// A Military Placement module can set how far its vehicle patrols drive, and keep every patrol point
+// inside its TAOR and out of its blacklist (WoodenPlankGames, 30 Oct)
+_limits params [["_vehicleRadius", 0, [0]], ["_areas", [], [[]]]];
+_areas params [["_inside", [], [[]]], ["_outside", [], [[]]]];
+if (_vehicleRadius > 0 && {!_parkedAir} && {_vehicleObjectType in ["Car", "Truck", "Tank", "Ship", "Helicopter", "Plane"]}) then {
+    _radius = _vehicleRadius;
+};
+private _inAreas = {
+    params ["_p"];
+    (_inside isEqualTo [] || {(_inside findIf { _p inArea _x }) > -1}) && {(_outside findIf { _p inArea _x }) == -1}
+};
+
 if (_debug) then {
     ["ALIVE_fnc_ambientMovement prepared data for %1: _group: %7, _radius %2 | _useLocations %3 | _parkedAir %4 | _roads %5 | _vehicleObjectType %6",
         _profileID,
@@ -126,7 +141,7 @@ if (count _waypoints == 0 && {!_parkedAir} && {([_profile,"pendingWaypointPaths"
     
     //get locations in case
     if (_useLocations) then {
-        _locations = nearestLocations [_pos, ["NameCity","NameVillage","NameLocal"], _radius];
+        _locations = (nearestLocations [_pos, ["NameCity","NameVillage","NameLocal"], _radius]) select { [locationPosition _x] call _inAreas };
     };
 
     //defaults
@@ -197,7 +212,7 @@ if (count _waypoints == 0 && {!_parkedAir} && {([_profile,"pendingWaypointPaths"
                 };
             };
 
-            if (count _candidate >= 2) then {
+            if (count _candidate >= 2 && {[_candidate] call _inAreas}) then {
                 private _tooClose = (_candidate distance2D _startPos) < _minimumWaypointSeparation;
                 if (!_tooClose) then {
                     _tooClose = (_routePositions findIf {(_candidate distance2D _x) < _minimumWaypointSeparation}) >= 0;

@@ -387,7 +387,7 @@ if (_entryType == "VEHICLE") then {
                             {
                                 switch ([_x, "type"] call ALiVE_fnc_hashGet) do {
                                     case "entity": {
-                                        [_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement", "spawn", [_guardRadius, "SAFE", [0,0,0]]]] call ALIVE_fnc_profileEntity;
+                                        [_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement", "spawn", [_guardRadius, "SAFE", [0,0,0], _logic getVariable ["ALiVE_patrolLimits", []]]]] call ALIVE_fnc_profileEntity;
                                         [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
                                     };
                                     case "vehicle": {
@@ -442,7 +442,7 @@ if (_entryType == "VEHICLE") then {
         // group that joins the cluster's active force; OPCOM picks
         // them up at next tick (busy=false above) and re-tasks as
         // needed.
-        [_profileEntity, "setActiveCommand", ["ALIVE_fnc_ambientMovement", "spawn", [_guardRadius, "SAFE", [0,0,0]]]] call ALIVE_fnc_profileEntity;
+        [_profileEntity, "setActiveCommand", ["ALIVE_fnc_ambientMovement", "spawn", [_guardRadius, "SAFE", [0,0,0], _logic getVariable ["ALiVE_patrolLimits", []]]]] call ALIVE_fnc_profileEntity;
 
         // Despawn + spawn cycle on the entity to materialise the new
         // crew. The vehicle profile is independent and stays as-is, so

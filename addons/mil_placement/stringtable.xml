@@ -1120,6 +1120,18 @@
     <Portuguese>Raio em metros dentro do qual os grupos de guarnição procuram edifícios acessíveis para ocupar. Aumente para objetivos grandes e dispersos.</Portuguese>
     <Russian>Радиус в метрах, в пределах которого гарнизонные группы ищут здания для занятия. Увеличьте для больших разбросанных объектов.</Russian>
 </Key>
+<Key ID="STR_ALIVE_MP_VEHICLE_PATROL_RADIUS">
+    <English>Vehicle Patrol Radius (m):</English>
+</Key>
+<Key ID="STR_ALIVE_MP_VEHICLE_PATROL_RADIUS_COMMENT">
+    <English>How far a patrol with vehicles drives from where it starts, in metres. Leave it empty for the usual distances: 800 for cars, trucks and boats, 1000 for armour, 1500 for helicopters in the air and 2000 for planes in the air.</English>
+</Key>
+<Key ID="STR_ALIVE_MP_PATROL_INSIDE_TAOR">
+    <English>Patrols Stay Inside TAOR:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_PATROL_INSIDE_TAOR_COMMENT">
+    <English>Yes keeps every patrol point inside this module's TAOR markers and out of its blacklist markers, so vehicle patrols don't drive off into other parts of the map. A group that finds no point inside stays where it is. No lets patrols go anywhere within their radius, as before. Has no effect when the module has no TAOR or blacklist.</English>
+</Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT">
     <English>Garrisoned Building Patrol (%):</English>
     <Chinese>駐防建築巡邏（%）：</Chinese>
