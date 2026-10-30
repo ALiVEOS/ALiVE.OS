@@ -291,7 +291,10 @@ switch(_operation) do {
 
     case "position": {
         if (_args isEqualType []) then {
-            if (_args isnotequalto [0,0]) then {
+            // Refuse the map corner as well as an empty pair: the position of a group
+            // whose leader is gone reads [0,0,0], and storing it moved the group there
+            // (the Command tablet then drew it in the bottom-left corner)
+            if (count _args >= 2 && {(_args select [0,2]) isNotEqualTo [0,0]}) then {
                 if (count _args == 2) then  {
                     _args pushback 0;
                 };

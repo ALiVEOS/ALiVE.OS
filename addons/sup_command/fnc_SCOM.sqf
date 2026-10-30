@@ -4040,10 +4040,13 @@ switch (_operation) do {
                                     _m setMarkerSizeLocal [0.5,0.5];
                                     _m setMarkerTypeLocal _profileMarker;
                                     _m setMarkerColorLocal (if (_sectionLocked) then {"ColorOrange"} else {_color});
-                                    _m setMarkerAlphaLocal _alpha;
+                                    // a group without a known position stays in the list but gets no pin in the map corner
+                                    _m setMarkerAlphaLocal (if ((_position select [0,2]) isEqualTo [0,0]) then {0} else {_alpha});
                                     _m setMarkerTextLocal format["%1%2",if (_sectionLocked) then {"P"} else {"e"},_label];
                                     // the map layer draws it as its side's NATO frame when ALiVE's pins are on, grouped with others close by (ALiVE_fnc_mapPins)
-                                    ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
+                                    if ((_position select [0,2]) isNotEqualTo [0,0]) then {
+                                        ["adopt", [_m, markerText _m, 45, "auto", {}, [], "auto"]] call ALiVE_fnc_mapPins;
+                                    };
                                     _markers pushback _m;
                                 };
                             } forEach _categoryGroups;
