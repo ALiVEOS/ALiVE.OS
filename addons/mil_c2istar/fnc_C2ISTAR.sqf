@@ -1458,6 +1458,16 @@ switch(_operation) do {
                 && {(((toLower _m) splitString " _-") param [0, ""]) == "prison" || {(((toLower markerText _m) splitString " _-") param [0, ""]) == "prison"}}
                 && {if (markerShape _m in ["RECTANGLE", "ELLIPSE"]) then { _pos inArea _m } else { (_pos distance2D markerPos _m) < 50 }}
             } > -1
+            // a players' FOB serves as one too (Eric on Discord, 30 Oct: take a prisoner back to base to question him)
+            || {((missionNamespace getVariable ["ALiVE_FOB_registryMirror", []]) findIf { (_x select 4) == "active" && {(_pos distance2D (_x select 3)) < 100} }) > -1}
+        };
+        // An enemy the players hold themselves: cuffed or surrendered under ACE, or tied up. He can be
+        // questioned like one who gave himself up (Eric on Discord, 30 Oct: shot unconscious, cuffed, patched up)
+        ALiVE_c2istar_fnc_isHeld = {
+            params ["_u", "_by"];
+            (_u getVariable ["ace_captives_isHandcuffed", false] || {_u getVariable ["ace_captives_isSurrendering", false]}
+                || {_u getVariable ["ALiVE_restrained", false]})
+            && {((side group _by) getFriend (_u getVariable ["ALiVE_prisonerSide", side group _u])) < 0.6}
         };
         ALiVE_c2istar_fnc_canBeQuestioned = {
             params ["_prisoner", ["_atPrison", false]];
@@ -1466,7 +1476,8 @@ switch(_operation) do {
         };
         if (isServer) then {
             ALiVE_c2istar_fnc_surrender = {
-                params ["_u"];
+                // _taken: already in the players' hands (cuffed or tied), so no hands-up of his own
+                params ["_u", ["_taken", false]];
                 if (!alive _u || {_u getVariable ["ALiVE_surrendered", false]}) exitWith {};
                 _u setVariable ["ALiVE_surrendered", true, true];
                 // his own side, kept: told to follow a player he joins that player's group
@@ -1489,11 +1500,13 @@ switch(_operation) do {
                 private _g = createGroup [side group _u, true];
                 _g setVariable ["ALIVE_profileIgnore", true, true];
                 [_u] joinSilent _g;
-                if (isClass (configFile >> "CfgPatches" >> "ace_captives")) then {
-                    ["ace_captives_setSurrendered", [_u, true], _u] call CBA_fnc_targetEvent;
-                } else {
-                    [_u, true] remoteExecCall ["setCaptive", _u];
-                    [_u, ["Surrender", _u]] remoteExecCall ["action", _u];
+                if (!_taken) then {
+                    if (isClass (configFile >> "CfgPatches" >> "ace_captives")) then {
+                        ["ace_captives_setSurrendered", [_u, true], _u] call CBA_fnc_targetEvent;
+                    } else {
+                        [_u, true] remoteExecCall ["setCaptive", _u];
+                        [_u, ["Surrender", _u]] remoteExecCall ["action", _u];
+                    };
                 };
                 [_u, { removeAllWeapons _this; _this disableAI "PATH"; _this disableAI "AUTOTARGET"; _this disableAI "TARGET" }] remoteExecCall ["call", _u];
                 ["C2ISTAR: %1 (%2) surrendered at %3", name _u, side _g, mapGridPosition _u] call ALiVE_fnc_dump;
@@ -1623,6 +1636,10 @@ switch(_operation) do {
             ALiVE_c2istar_fnc_interrogate = {
                 params ["_prisoner", "_caller"];
                 if (!alive _prisoner) exitWith {};
+                // one the players took themselves becomes a prisoner now: off his profile, so he isn't brought back armed
+                if (!(_prisoner getVariable ["ALiVE_surrendered", false]) && {[_prisoner, _caller] call ALiVE_c2istar_fnc_isHeld}) then {
+                    [_prisoner, true] call ALiVE_c2istar_fnc_surrender;
+                };
                 private _atPrison = [getPosATL _prisoner] call ALiVE_c2istar_fnc_atPrison;
                 private _pSide = _prisoner getVariable ["ALiVE_prisonerSide", side group _prisoner];
                 private _sideText = str _pSide;
@@ -1831,7 +1848,7 @@ switch(_operation) do {
             };
             ALiVE_c2istar_fnc_canQuestion = {
                 params ["_target", "_caller"];
-                !isNull _target && {alive _target} && {_target getVariable ["ALiVE_surrendered", false]}
+                !isNull _target && {alive _target} && {_target getVariable ["ALiVE_surrendered", false] || {[_target, _caller] call ALiVE_c2istar_fnc_isHeld}}
                 && {[_target, [getPosATL _target] call ALiVE_c2istar_fnc_atPrison] call ALiVE_c2istar_fnc_canBeQuestioned} && {(_caller distance _target) < 3}
             };
         };

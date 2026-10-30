@@ -87,6 +87,8 @@ switch (_operation) do {
             || {vehicle _target != _target} || {(_caller distance _target) > 4.5}) exitWith { false };
         if (lifeState _target == "INCAPACITATED") exitWith { false };
         if (_target getVariable ["ALiVE_surrendered", false]) exitWith { !isNil "ALiVE_c2istar_fnc_askQuestion" };
+        // an enemy the players cuffed or tied up themselves is a prisoner too
+        if (!isNil "ALiVE_c2istar_fnc_isHeld" && {[_target, _caller] call ALiVE_c2istar_fnc_isHeld}) exitWith { !isNil "ALiVE_c2istar_fnc_askQuestion" };
         (side group _target) isEqualTo (side group _caller) && {!(group _target isEqualTo group _caller)}
     };
 
@@ -96,7 +98,7 @@ switch (_operation) do {
         if (!isNull SI_DISPLAY) exitWith {};
         createDialog "ALiVE_SoldierInteraction";
         uiNamespace setVariable ["ALiVE_soldierInteractTarget", _target];
-        private _prisoner = _target getVariable ["ALiVE_surrendered", false];
+        private _prisoner = _target getVariable ["ALiVE_surrendered", false] || {!isNil "ALiVE_c2istar_fnc_isHeld" && {[_target, player] call ALiVE_c2istar_fnc_isHeld}};
         (SI_DISPLAY displayCtrl 92601) ctrlSetText (if (_prisoner) then { format [localize "STR_ALIVE_C2ISTAR_SI_PRISONER_NAME", name _target] } else { name _target });
         { (SI_DISPLAY displayCtrl _x) ctrlShow _prisoner } forEach SI_PRISONER_BUTTONS;
         { (SI_DISPLAY displayCtrl _x) ctrlShow !_prisoner } forEach SI_FRIENDLY_BUTTONS;
@@ -182,6 +184,11 @@ switch (_operation) do {
         _args params [["_op", ""], ["_target", objNull], ["_caller", objNull]];
         if (isNull _target || {!alive _target} || {isNull _caller} || {(_caller distance _target) > 10}) exitWith {};
         private _prisoner = _target getVariable ["ALiVE_surrendered", false];
+        // one the players cuffed or tied up themselves is taken off his profile the first time they give him an order
+        if (!_prisoner && {!isNil "ALiVE_c2istar_fnc_isHeld"} && {[_target, _caller] call ALiVE_c2istar_fnc_isHeld} && {!isNil "ALiVE_c2istar_fnc_surrender"}) then {
+            [_target, true] call ALiVE_c2istar_fnc_surrender;
+            _prisoner = true;
+        };
         // Orders to the man himself, on the machine that owns him. A group change hands him to
         // the new group's owner a moment later, and orders sent before that are lost with the
         // move (AI switches don't travel), so they wait for it to settle first.
