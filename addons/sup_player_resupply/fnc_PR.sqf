@@ -3158,7 +3158,9 @@ switch(_operation) do {
                                     {
 
                                         if (_x != "<< Back") then {
-                                            private _displayName = getText(configFile >> "CfgGroups" >> _side >> _groupFaction >> _x >> "name");
+                                            // named from the faction being browsed, not the player's own (Jman, 30 Oct)
+                                            private _displayName = getText(configFile >> "CfgGroups" >> _side >> _selectedValue >> _x >> "name");
+                                            if (_displayName == "") then { _displayName = getText(configFile >> "CfgGroups" >> _side >> _groupFaction >> _x >> "name") };
 
                                             _options set [_foreachindex, _displayName];
                                             _values set [_foreachindex, _x];
