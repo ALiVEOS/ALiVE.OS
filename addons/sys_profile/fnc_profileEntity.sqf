@@ -784,6 +784,46 @@ switch(_operation) do {
                     && {(_terminalStatements select 1) == "_disableSimulation = true;"};
                 [_waypointTemplate,"statements", if (_spawnedOnly) then {["true","_disableSimulation = true;"]} else {""}] call ALiVE_fnc_hashSet;
 
+                // A route comes back as a point per grid node, so a long drive handed a group 50 or 100 waypoints
+                // and more (WoodenPlankGames, 30 Oct). A point is dropped when the route still passes within 40 m
+                // of it going straight from the last kept point to the next one, the straight run is no longer
+                // than 400 m and it doesn't cross water, checked every 25 m. Boat routes keep every node: they
+                // thread between coast and shallows.
+                if (!_navalRoute && {count _path > 2}) then {
+                    private _last = count _path - 1;
+                    private _kept = [_path select 0];
+                    private _anchor = 0;
+                    for "_i" from 1 to (_last - 1) do {
+                        private _a = _path select _anchor;
+                        _a = [_a select 0, _a select 1, 0];
+                        private _b = _path select (_i + 1);
+                        _b = [_b select 0, _b select 1, 0];
+                        private _ab = _b vectorDiff _a;
+                        private _len2 = _ab vectorDotProduct _ab;
+                        private _straight = _len2 <= 160000;
+                        if (_straight) then {
+                            for "_j" from (_anchor + 1) to _i do {
+                                private _p = _path select _j;
+                                _p = [_p select 0, _p select 1, 0];
+                                private _t = if (_len2 > 0) then { ((((_p vectorDiff _a) vectorDotProduct _ab) / _len2) max 0) min 1 } else { 0 };
+                                if ((_p distance (_a vectorAdd (_ab vectorMultiply _t))) > 40) exitWith { _straight = false };
+                            };
+                        };
+                        if (_straight) then {
+                            private _steps = ceil ((sqrt _len2) / 25);
+                            for "_s" from 1 to (_steps - 1) do {
+                                if (surfaceIsWater (_a vectorAdd (_ab vectorMultiply (_s / _steps)))) exitWith { _straight = false };
+                            };
+                        };
+                        if (!_straight) then {
+                            _kept pushBack (_path select _i);
+                            _anchor = _i;
+                        };
+                    };
+                    _kept pushBack (_path select _last);
+                    _path = _kept;
+                };
+
                 if (count _path > 0) then {
                     _path = _path apply {
                         private _tempWP = +_waypointTemplate;
