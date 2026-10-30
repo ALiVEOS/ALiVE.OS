@@ -19,7 +19,9 @@ class CfgVehicles {
         scopeCurator = 0;
         function = "ALiVE_fnc_zeusModule";
         functionPriority = 1;
-        isGlobal = 0;
+        // runs on every machine and goes on only on the one where the module is local, the placing
+        // Zeus's: at 0 it ran on the server alone, so on a dedicated server nothing happened
+        isGlobal = 1;
         isDisposable = 1;
         curatorCanAttach = 0;
         author = MODULE_AUTHOR;

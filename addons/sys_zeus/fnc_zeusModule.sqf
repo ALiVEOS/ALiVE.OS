@@ -29,6 +29,10 @@ params [
 ];
 
 if (isNull _logic || {!_activated}) exitWith {false};
+// The module runs on every machine (isGlobal 1); only the placing Zeus's machine, where the logic
+// is local, acts on it. It used to run on the server alone, which on a dedicated server has no
+// interface, so nothing happened there.
+if (!local _logic) exitWith {false};
 if (!hasInterface) exitWith {
     deleteVehicle _logic;
     false

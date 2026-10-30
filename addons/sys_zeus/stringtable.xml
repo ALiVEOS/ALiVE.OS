@@ -477,9 +477,6 @@
 <Key ID="STR_ALIVE_ZEUS_REMOVERALLY">
     <English>Remove Rally Point</English>
 </Key>
-<Key ID="STR_ALIVE_ZEUS_FOR_SIDE">
-    <English>For side</English>
-</Key>
 <Key ID="STR_ALIVE_ZEUS_FOB_TYPE">
     <English>FOB type</English>
 </Key>
