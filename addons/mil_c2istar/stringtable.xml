@@ -2005,6 +2005,18 @@
 <Key ID="STR_ALIVE_C2ISTAR_HVT_MANHUNT_COMMENT">
     <English>The chance that an HVT task is a manhunt rather than a tip-off. A manhunt shows a search area instead of a target. Civilians telling you of enemies near it, intel read from his men, and prisoners' or informants' answers each narrow it. After three, a Wiretap task comes up near him; done, it tells you where he will be and when, for about ten minutes. Miss him and he moves, and half of what was known goes with him. Clues come from the Civilian Population and AI Commander modules; without them, players can still search the area. 0 (the default) keeps every HVT task as it is.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_RECON_OPS">
+    <English>Recon Task OPs:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_RECON_OPS_COMMENT">
+    <English>How many observation posts a Recon task gives. 2 (the default) puts both on the players' side of the objective. 4 puts them all round it, so the team works its way round and sees it from every side, as a close target recce would. The OPs can be manned in any order, a minute at each.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_RECON_OPS_2">
+    <English>2, on the players' side</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_RECON_OPS_4">
+    <English>4, all round the objective</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_MANHUNT_DESC_AREA">
     <English>His whereabouts aren't known. Intel places him inside the %1 m search area on your map. Ask civilians about enemies near it, read intel from his men and question prisoners: each clue narrows the search. With enough, a wiretap can tell us where he will be and when.</English>
 </Key>

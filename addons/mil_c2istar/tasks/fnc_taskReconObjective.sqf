@@ -13,6 +13,8 @@ its next preparation tasks go after them. Watching longer, from either OP, spots
 
 Stages: Parent, Travel (reach the FRV), Observe1 (a minute at OP 1), Observe (a minute at OP 2, then report).
 The OPs can be manned in either order: OP 2 done first is ticked off at once and OP 1 then closes the task.
+With the C2ISTAR module's Recon Task OPs at 4 (Ando on Discord, 30 Oct) there are four OPs all round the objective,
+stages Observe1 to Observe4, manned in any order; the last one done closes the task.
 
 Parameters:
 The usual task parameters (see ALIVE_fnc_taskWiretap).
@@ -152,26 +154,45 @@ switch (_taskState) do {
         // the players' side of the objective: the first rules keep both OPs within 100 degrees of the FRV's bearing, so
         // the team doesn't have to cross or go round the objective to reach them
         private _frvBrg = if ((_frv distance2D _targetPosition) > 100) then { _targetPosition getDir _frv } else { _bearing };
+        // the C2ISTAR module's Recon Task OPs (Ando on Discord, 30 Oct): 2, both on the players' side, or 4 all round
+        // the objective, so the team works its way round it as a close target recce would
+        private _opCount = [2, 4] select ((missionNamespace getVariable ["ALiVE_c2istar_reconOPs", 2]) == 4);
+        // the best-scoring candidate first, then each next one at least _sep degrees round from every OP already taken
+        private _fnc_pickOps = {
+            params ["_pool", "_sep", "_n"];
+            private _taken = [];
+            {
+                private _c = _x;
+                if (count _taken < _n && {(_taken findIf { ([_x select 2, _c select 2] call _angle) < _sep }) < 0}) then { _taken pushBack _c };
+            } forEach _pool;
+            _taken
+        };
         private _ops = [];
         {
             _x params ["_needLos", "_needClear", "_sep", ["_nearSide", false]];
-            if (count _ops < 2) then {
+            if (count _ops < _opCount) then {
                 private _pool = _opCandidates select { (!_needLos || {_x select 3}) && {!_needClear || {_x select 4}} && {!_nearSide || {([_x select 2, _frvBrg] call _angle) <= 100}} };
                 _pool sort false;
-                if (_pool isNotEqualTo []) then {
-                    private _op1 = _pool select 0;
-                    private _i = _pool findIf { ([_x select 2, _op1 select 2] call _angle) >= _sep };
-                    if (_i >= 0) then {
-                        _ops = [_op1 select 1, (_pool select _i) select 1];
-                        if (_forEachIndex > 0) then { ["C2ISTAR - Task ReconObjective %1: OPs picked with looser rules (%2)", _taskID, _x] call ALiVE_fnc_Dump };
+                private _taken = [_pool, _sep, _opCount] call _fnc_pickOps;
+                if (count _taken == _opCount) then {
+                    // in order round the objective, starting on the players' side, so the team walks one way round
+                    if (_opCount > 2) then {
+                        private _keyed = _taken apply { [((_x select 2) - (_frvBrg - 60) + 720) % 360, _x] };
+                        _keyed sort true;
+                        _taken = _keyed apply { _x select 1 };
                     };
+                    _ops = _taken apply { _x select 1 };
+                    if (_forEachIndex > 0) then { ["C2ISTAR - Task ReconObjective %1: OPs picked with looser rules (%2)", _taskID, _x] call ALiVE_fnc_Dump };
                 };
             };
-        } forEach [[true, true, 90, true], [false, true, 90, true], [false, false, 60, true], [true, true, 90], [false, true, 90], [false, false, 90], [false, false, 60]];
-        if (count _ops < 2) then {
-            _ops = [_targetPosition getPos [450, _frvBrg + 60], _targetPosition getPos [450, _frvBrg - 60]];
-            { _x set [2, 0] } forEach _ops;
-            ["C2ISTAR - Task ReconObjective %1: no land for two OPs; using two points 450 m out", _taskID] call ALiVE_fnc_Dump;
+        } forEach ([
+            [[true, true, 90, true], [false, true, 90, true], [false, false, 60, true], [true, true, 90], [false, true, 90], [false, false, 90], [false, false, 60]],
+            [[true, true, 70], [false, true, 70], [false, false, 60], [false, false, 45]]
+        ] select (_opCount > 2));
+        if (count _ops < _opCount) then {
+            private _brgs = [[_frvBrg + 60, _frvBrg - 60], [_frvBrg - 45, _frvBrg + 45, _frvBrg + 135, _frvBrg + 225]] select (_opCount > 2);
+            _ops = _brgs apply { private _p = _targetPosition getPos [450, _x]; _p set [2, 0]; _p };
+            ["C2ISTAR - Task ReconObjective %1: no land for %2 OPs; using points 450 m out", _taskID, _opCount] call ALiVE_fnc_Dump;
         };
 
         private _dialogOption = +(selectRandom (([ALIVE_generatedTasks, "ReconObjective"] call ALIVE_fnc_hashGet) select 1));
@@ -181,15 +202,17 @@ switch (_taskState) do {
         // the place name into each stage's text and its opening radio call
         {
             private _d = [_dialogOption, _x] call ALIVE_fnc_hashGet;
-            [_d, "title", format [[_d, "title", ""] call ALIVE_fnc_hashGet, _nearestTown]] call ALIVE_fnc_hashSet;
-            [_d, "description", format [[_d, "description", ""] call ALIVE_fnc_hashGet, _nearestTown]] call ALIVE_fnc_hashSet;
-            private _chat = [_d, "chat_start", []] call ALIVE_fnc_hashGet;
-            if (_chat isNotEqualTo []) then {
-                private _m = _chat select 0;
-                _m set [1, format [_m select 1, _nearestTown]];
-                [_d, "chat_start", _chat] call ALIVE_fnc_hashSet;
+            if (!isNil "_d") then {
+                [_d, "title", format [[_d, "title", ""] call ALIVE_fnc_hashGet, _nearestTown]] call ALIVE_fnc_hashSet;
+                [_d, "description", format [[_d, "description", ""] call ALIVE_fnc_hashGet, _nearestTown]] call ALIVE_fnc_hashSet;
+                private _chat = [_d, "chat_start", []] call ALIVE_fnc_hashGet;
+                if (_chat isNotEqualTo []) then {
+                    private _m = _chat select 0;
+                    _m set [1, format [_m select 1, _nearestTown]];
+                    [_d, "chat_start", _chat] call ALIVE_fnc_hashSet;
+                };
             };
-        } forEach ["Parent", "Travel", "Observe1", "Observe"];
+        } forEach ["Parent", "Travel", "Observe1", "Observe", "Observe2", "Observe3", "Observe4"];
 
         private _state = ["Created", "Assigned"] select (_taskCurrent == "Y");
         private _tasks = [];
@@ -205,15 +228,16 @@ switch (_taskState) do {
             _taskPlayers, _state, _taskApplyType, _taskCurrent, _taskID, format ["%1-ReconObjective-Travel", _taskID], false];
         _taskIDs pushBack format ["%1_c1", _taskID];
 
-        _d = [_dialogOption, "Observe1"] call ALIVE_fnc_hashGet;
-        _tasks pushBack [format ["%1_c2", _taskID], _requestPlayerID, _taskSide, _ops select 0, _taskFaction, [_d, "title"] call ALIVE_fnc_hashGet, [_d, "description"] call ALIVE_fnc_hashGet,
-            _taskPlayers, "Created", _taskApplyType, "N", _taskID, format ["%1-ReconObjective-Observe1", _taskID], false];
-        _taskIDs pushBack format ["%1_c2", _taskID];
-
-        _d = [_dialogOption, "Observe"] call ALIVE_fnc_hashGet;
-        _tasks pushBack [format ["%1_c3", _taskID], _requestPlayerID, _taskSide, _ops select 1, _taskFaction, [_d, "title"] call ALIVE_fnc_hashGet, [_d, "description"] call ALIVE_fnc_hashGet,
-            _taskPlayers, "Created", _taskApplyType, "N", _taskID, format ["%1-ReconObjective-Observe", _taskID], true];
-        _taskIDs pushBack format ["%1_c3", _taskID];
+        // one stage per OP: with 2, Observe1 and Observe as before; with 4, Observe1 to Observe4
+        private _stages = [["Observe1", "Observe"], ["Observe1", "Observe2", "Observe3", "Observe4"]] select (_opCount > 2);
+        {
+            private _last = _forEachIndex == (count _ops - 1);
+            // custom task text without the 4-OP stages borrows OP 1's
+            _d = [_dialogOption, _stages select _forEachIndex, [_dialogOption, "Observe1"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashGet;
+            _tasks pushBack [format ["%1_c%2", _taskID, _forEachIndex + 2], _requestPlayerID, _taskSide, _x, _taskFaction, [_d, "title"] call ALIVE_fnc_hashGet, [_d, "description"] call ALIVE_fnc_hashGet,
+                _taskPlayers, "Created", _taskApplyType, "N", _taskID, format ["%1-ReconObjective-%2", _taskID, _stages select _forEachIndex], _last];
+            _taskIDs pushBack format ["%1_c%2", _taskID, _forEachIndex + 2];
+        } forEach _ops;
 
         private _taskParams = [] call ALIVE_fnc_hashCreate;
         [_taskParams, "nextTask", _taskIDs select 1] call ALIVE_fnc_hashSet;
@@ -223,13 +247,13 @@ switch (_taskState) do {
         [_taskParams, "target", _targetPosition] call ALIVE_fnc_hashSet;
         [_taskParams, "frv", _frv] call ALIVE_fnc_hashSet;
         [_taskParams, "ops", _ops] call ALIVE_fnc_hashSet;
-        [_taskParams, "opDwell", [0, 0]] call ALIVE_fnc_hashSet;
-        // OP 2 manned and ticked off before OP 1 (either OP can be done first)
-        [_taskParams, "op2Done", false] call ALIVE_fnc_hashSet;
+        [_taskParams, "opDwell", _ops apply { 0 }] call ALIVE_fnc_hashSet;
+        // each OP watched from for its full minute and ticked off, in any order
+        [_taskParams, "opDone", _ops apply { false }] call ALIVE_fnc_hashSet;
         // what the players have spotted: unit -> [its group's profile id, position, class, how well]
         [_taskParams, "seen", createHashMap] call ALIVE_fnc_hashSet;
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
-        ["C2ISTAR - Task ReconObjective %1: FRV %2, OP 1 %3, OP 2 %4 round %5", _taskID, mapGridPosition _frv, mapGridPosition (_ops select 0), mapGridPosition (_ops select 1), mapGridPosition _targetPosition] call ALiVE_fnc_Dump;
+        ["C2ISTAR - Task ReconObjective %1: FRV %2, %3 OPs %4 round %5", _taskID, mapGridPosition _frv, count _ops, _ops apply { mapGridPosition _x }, mapGridPosition _targetPosition] call ALiVE_fnc_Dump;
 
         _result = [_tasks, _taskParams];
     };
@@ -258,12 +282,28 @@ switch (_taskState) do {
     // a minute at each OP, in either order, then the report. Both OPs count whichever stage is open, and every tick
     // with someone at an OP adds what they can see. OP 2 manned first is ticked off straight away (A. Ares on Discord,
     // 23 Oct: it sat by the FRV and waited for OP 1); OP 1 then closes the task with the report
+    // with Recon Task OPs at 4 the stages are Observe1 to Observe4, and any OP can be manned first: each one watched from
+    // for its minute is ticked off, and the task moves on to the next OP not yet done
     case "Observe1";
+    case "Observe2";
+    case "Observe3";
+    case "Observe4";
     case "Observe": {
         private _taskSide = _task select 2;
         private _taskFaction = _task select 4;
         private _taskPlayers = _task select 7 select 0;
-        private _final = _taskState == "Observe";
+        private _taskIDs = [_params, "taskIDs"] call ALIVE_fnc_hashGet;
+        private _opsNow = [_params, "ops"] call ALIVE_fnc_hashGet;
+        // the OP this stage is on: its place in the task's list of ids, after the parent and the FRV
+        private _k = (_taskIDs find (_task select 0)) - 2;
+        if (_k < 0 || {_k >= count _opsNow}) then { _k = [count _opsNow - 1, 0] select (_taskState == "Observe1") };
+        // a task saved before the 4-OP change has op2Done rather than opDone
+        private _done = [_params, "opDone"] call ALIVE_fnc_hashGet;
+        if (isNil "_done") then {
+            _done = _opsNow apply { false };
+            if ([_params, "op2Done", false] call ALIVE_fnc_hashGet) then { _done set [1, true] };
+            [_params, "opDone", _done] call ALIVE_fnc_hashSet;
+        };
         private _currentTaskDialog = [[_params, "dialog"] call ALIVE_fnc_hashGet, _taskState] call ALIVE_fnc_hashGet;
         if !([_params, "chatStartDone_" + _taskState, false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
@@ -276,7 +316,7 @@ switch (_taskState) do {
 
         private _target = [_params, "target"] call ALIVE_fnc_hashGet;
         private _ops = [_params, "ops"] call ALIVE_fnc_hashGet;
-        private _dwell = [_params, "opDwell", [0, 0]] call ALIVE_fnc_hashGet;
+        private _dwell = [_params, "opDwell", _ops apply { 0 }] call ALIVE_fnc_hashGet;
         private _seen = [_params, "seen", createHashMap] call ALIVE_fnc_hashGet;
         private _players = (_taskPlayers apply { [_x] call ALIVE_fnc_getPlayerByUID }) select { !isNull _x && {alive _x} };
         private _watchers = [];
@@ -287,21 +327,25 @@ switch (_taskState) do {
         } forEach _ops;
         [_params, "opDwell", _dwell] call ALIVE_fnc_hashSet;
 
-        // OP 2 done while OP 1 is still the open stage: tick it off now and say so
-        if (!_final && {(_dwell select 1) >= RECON_WATCH_SECONDS} && {!([_params, "op2Done", false] call ALIVE_fnc_hashGet)}) then {
-            private _op2 = [ALiVE_TaskHandler, "getTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 3] call ALiVE_fnc_TaskHandler;
-            if (!isNil "_op2") then {
-                _op2 set [8, "Succeeded"];
-                _op2 set [10, "N"];
-                [ALiVE_TaskHandler, "TASK_UPDATE", _op2] call ALiVE_fnc_TaskHandler;
+        // another OP done while this one is still the open stage: tick it off now and say so
+        {
+            if (_forEachIndex != _k && {_x >= RECON_WATCH_SECONDS} && {!(_done select _forEachIndex)}) then {
+                private _row = [ALiVE_TaskHandler, "getTask", _taskIDs select (2 + _forEachIndex)] call ALiVE_fnc_TaskHandler;
+                if (!isNil "_row") then {
+                    _row set [8, "Succeeded"];
+                    _row set [10, "N"];
+                    [ALiVE_TaskHandler, "TASK_UPDATE", _row] call ALiVE_fnc_TaskHandler;
+                };
+                _done set [_forEachIndex, true];
+                // said only while this OP still needs time: a team split over the OPs closing together just gets the report
+                if ((_dwell select _k) < RECON_WATCH_SECONDS) then {
+                    private _line = ["chat_early", "chat_early_any"] select (count _ops > 2);
+                    [_line, [[_params, "dialog"] call ALIVE_fnc_hashGet, "Observe"] call ALIVE_fnc_hashGet, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                };
+                ["C2ISTAR - Task ReconObjective %1: OP %2 manned before OP %3", _taskID, _forEachIndex + 1, _k + 1] call ALiVE_fnc_Dump;
             };
-            [_params, "op2Done", true] call ALIVE_fnc_hashSet;
-            // said only while OP 1 still needs time: a team split over both OPs closing together just gets the report
-            if ((_dwell select 0) < RECON_WATCH_SECONDS) then {
-                ["chat_early", [[_params, "dialog"] call ALIVE_fnc_hashGet, "Observe"] call ALIVE_fnc_hashGet, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            };
-            ["C2ISTAR - Task ReconObjective %1: OP 2 manned before OP 1", _taskID] call ALiVE_fnc_Dump;
-        };
+        } forEach _dwell;
+        [_params, "opDone", _done] call ALIVE_fnc_hashSet;
 
         // what is spotted from the OPs: an enemy unit round the objective that the side knows about, or that a player
         // at an OP has a clear line of sight to within 600 m (a remote player's own knowledge isn't held on the server)
@@ -342,10 +386,15 @@ switch (_taskState) do {
             } forEach (_target nearEntities [["LandVehicle", "StaticWeapon", "Ship"], RECON_REPORT_RADIUS]);
         };
 
-        private _index = [0, 1] select _final;
-        if ((_dwell select _index) >= RECON_WATCH_SECONDS) then {
-            if (!_final && {!([_params, "op2Done", false] call ALIVE_fnc_hashGet)}) exitWith {
-                [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 3] call ALIVE_fnc_hashSet;
+        if ((_dwell select _k) >= RECON_WATCH_SECONDS) then {
+            _done set [_k, true];
+            [_params, "opDone", _done] call ALIVE_fnc_hashSet;
+            // the next OP not yet done, going on round from this one
+            private _n = count _done;
+            private _next = -1;
+            for "_j" from 1 to (_n - 1) do { if (_next < 0 && {!(_done select ((_k + _j) % _n))}) then { _next = (_k + _j) % _n } };
+            if (_next >= 0) exitWith {
+                [_params, "nextTask", _taskIDs select (2 + _next)] call ALIVE_fnc_hashSet;
                 _task set [8, "Succeeded"];
                 _task set [10, "N"];
                 _result = _task;

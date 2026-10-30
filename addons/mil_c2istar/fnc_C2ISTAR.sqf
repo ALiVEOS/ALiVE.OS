@@ -1456,6 +1456,8 @@ switch(_operation) do {
         if (_manhunt isEqualType "") then { _manhunt = parseNumber _manhunt };
         if (isServer) then {
             missionNamespace setVariable ["ALiVE_c2istar_hvtManhuntChance", (_manhunt max 0) min 100];
+            // Recon Task OPs, read by ALIVE_fnc_taskReconObjective: 2, or 4 all round the objective
+            missionNamespace setVariable ["ALiVE_c2istar_reconOPs", [2, 4] select ((_logic getVariable ["reconOPs", "2"]) in ["4", 4])];
             missionNamespace setVariable ["ALiVE_c2istar_tasksKnownOnly", _knownOnly in ["true", true]];
             missionNamespace setVariable ["ALiVE_c2istar_assetTaskCap", floor (_assetCap max 0)];
             // Tablet Intel Log (Eric on Discord, 25 Oct): read by ALIVE_fnc_intelLog and by the tablet on each machine
@@ -1781,8 +1783,9 @@ switch(_operation) do {
             "ALiVE_c2istar_questionAsk" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_interrogate };
             // A Recon task's team moves one of its observation posts to a spot of its own (Will501 on Discord, 29 Oct):
             // the OP nearer the click moves there, if the spot is on land, 250 to 900 m from the objective with a clear
-            // line of sight to it, and at least 60 degrees round from the other OP. An OP already watched from for its
-            // full minute stays where it is. The time spent at a moved OP starts again.
+            // line of sight to it, and at least 60 degrees round from the other OP (45 from each of the others when the
+            // task has four). An OP already watched from for its full minute stays where it is. The time spent at a moved
+            // OP starts again.
             ALiVE_c2istar_fnc_reconMoveOP = {
                 params [["_player", objNull], ["_pos", []]];
                 if (isNull _player || {count _pos < 2} || {isNil "ALiVE_TaskHandler"}) exitWith {};
@@ -1802,10 +1805,13 @@ switch(_operation) do {
                 private _ops = [_params, "ops"] call ALIVE_fnc_hashGet;
                 private _dwell = [_params, "opDwell"] call ALIVE_fnc_hashGet;
                 _pos = [_pos select 0, _pos select 1, 0];
-                private _open = [0, 1] select { (_dwell select _x) < 60 };
-                if (_open isEqualTo []) exitWith { "Both observation posts have been watched from already." call _fnc_tell };
-                private _i = _open select 0;
-                if (count _open > 1 && {(_pos distance2D (_ops select 1)) < (_pos distance2D (_ops select 0))}) then { _i = 1 };
+                // two OPs, or four with Recon Task OPs at 4: the nearest one not yet watched from for its minute moves
+                private _open = [];
+                { if ((_dwell param [_forEachIndex, 0]) < 60) then { _open pushBack _forEachIndex } } forEach _ops;
+                if (_open isEqualTo []) exitWith { "Every observation post has been watched from already." call _fnc_tell };
+                private _byDist = _open apply { [_pos distance2D (_ops select _x), _x] };
+                _byDist sort true;
+                private _i = (_byDist select 0) select 1;
                 private _d = _pos distance2D _target;
                 if (surfaceIsWater _pos) exitWith { "An observation post has to be on land." call _fnc_tell };
                 if (_d < 250 || {_d > 900}) exitWith { format ["An observation post has to be 250 to 900 m from the objective; that spot is %1 m.", round _d] call _fnc_tell };
@@ -1813,9 +1819,13 @@ switch(_operation) do {
                 private _tEye = AGLToASL [_target select 0, _target select 1, 0];
                 _tEye set [2, (_tEye select 2) + 2];
                 if (terrainIntersectASL [_eye, _tEye]) exitWith { "The ground blocks the view of the objective from there; pick a spot that can see it." call _fnc_tell };
-                private _other = _ops select (1 - _i);
-                private _diff = abs ((_target getDir _pos) - (_target getDir _other)) % 360;
-                if ((_diff min (360 - _diff)) < 60) exitWith { "That's too close round to the other observation post; they need to watch from different sides." call _fnc_tell };
+                // 60 degrees from the other OP, or 45 from each of the others when there are four
+                private _sep = [60, 45] select (count _ops > 2);
+                private _tooClose = (_ops findIf {
+                    private _diff = abs ((_target getDir _pos) - (_target getDir _x)) % 360;
+                    _x isNotEqualTo (_ops select _i) && {(_diff min (360 - _diff)) < _sep}
+                }) >= 0;
+                if (_tooClose) exitWith { "That's too close round to another observation post; they need to watch from different sides." call _fnc_tell };
                 _ops set [_i, _pos];
                 _dwell set [_i, 0];
                 [_params, "ops", _ops] call ALIVE_fnc_hashSet;

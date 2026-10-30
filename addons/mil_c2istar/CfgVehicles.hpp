@@ -148,6 +148,19 @@ class CfgVehicles {
                             defaultValue = """0""";
                             typeName = "NUMBER";
                     };
+                    // How many observation posts a Recon task gives (Ando on Discord, 30 Oct)
+                    class reconOPs : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_reconOPs";
+                            displayName = "$STR_ALIVE_C2ISTAR_RECON_OPS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_RECON_OPS_COMMENT";
+                            defaultValue = """2""";
+                            class Values
+                            {
+                                    class Two  { name = "$STR_ALIVE_C2ISTAR_RECON_OPS_2"; value = "2"; };
+                                    class Four { name = "$STR_ALIVE_C2ISTAR_RECON_OPS_4"; value = "4"; };
+                            };
+                    };
 
                     class HDR_TASK_AREA : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TASK_AREA"; displayName = "TASK AREA"; };
                     class taskMinDistance : Edit
