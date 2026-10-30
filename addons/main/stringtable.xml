@@ -149,6 +149,12 @@
 <Key ID="STR_ALIVE_SETTINGS_TASKGROUP">
     <English>Group target tasks</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_WIDELIST">
+    <English>Wider task list</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_WIDELIST_COMMENT">
+    <English>Makes the list of tasks, notes and log pages on the map screen wider, so long task names aren't cut off. The text beside it moves right to make room. Turn it off if another mod also rearranges the map screen.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_TASKGROUP_COMMENT">
     <English>Puts target tasks of one kind (air defences to suppress, high-value targets, vehicles, infantry, insurgent assets) under one entry in your task list, each target a task under it. Off gives every target its own entry. Tasks you already have stay where they are.</English>
 </Key>

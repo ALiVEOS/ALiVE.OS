@@ -98,6 +98,48 @@ if (hasInterface) then {
     }, true, [], true] call CBA_fnc_addClassEventHandler;
 };
 
+// Wider task list (Jman, 30 Oct): the map screen's list of tasks and diary pages is 10 grid units wide, so a task name
+// such as "Intercept Communications near Kavala" was cut off. While the map is open, the list (and the Players page's
+// header row in the same column) is kept 4 units wider and the text pane beside it 4 units further right. Checked twice
+// a second, as the game may lay the screen out again when a page is opened. ALiVE > Game > Wider task list turns it off.
+if (hasInterface) then {
+    addMissionEventHandler ["Map", {
+        params ["_open"];
+        if (!_open || {!(missionNamespace getVariable ["ALiVE_prefWideTaskList", true])}) exitWith {};
+        if (!isNil "ALiVE_wideTaskListLoop" && {!scriptDone ALiVE_wideTaskListLoop}) exitWith {};
+        ALiVE_wideTaskListLoop = [] spawn {
+            waitUntil { visibleMap || {!isNull findDisplay 12} };
+            private _w = ((safezoneW / safezoneH) min 1.2) / 40;
+            private _more = 4;
+            // [idc, x in grid units from the left of the safe zone or -1 to keep, width in grid units or -1 to keep]
+            private _layout = [
+                [1022, -1, 10 + _more], [1002, -1, 10 + _more], [117, -1, 8.6 + _more],
+                [118, 15 + _more, -1], [119, 15.8 + _more, -1],
+                [1023, 17.4 + _more, -1], [1013, 17.4 + _more, -1]
+            ];
+            while { visibleMap && {missionNamespace getVariable ["ALiVE_prefWideTaskList", true]} } do {
+                private _d = findDisplay 12;
+                if (!isNull _d) then {
+                    {
+                        _x params ["_idc", "_gx", "_gw"];
+                        private _c = _d displayCtrl _idc;
+                        if (!isNull _c) then {
+                            private _p = ctrlPosition _c;
+                            private _x0 = if (_gx < 0) then { _p select 0 } else { safezoneX + _gx * _w };
+                            private _w0 = if (_gw < 0) then { _p select 2 } else { _gw * _w };
+                            if (abs ((_p select 0) - _x0) > 0.0005 || {abs ((_p select 2) - _w0) > 0.0005}) then {
+                                _c ctrlSetPosition [_x0, _p select 1, _w0, _p select 3];
+                                _c ctrlCommit 0;
+                            };
+                        };
+                    } forEach _layout;
+                };
+                sleep 0.5;
+            };
+        };
+    }];
+};
+
 //Automated tests (define in script_mod.hpp)
 #ifdef AUTOMATED_TESTS
 [AUTOMATED_TESTS] spawn {

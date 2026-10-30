@@ -49,6 +49,8 @@ LOG(MSG_INIT);
 ["ALiVE_prefTaskMessages", "LIST", [localize "STR_ALIVE_SETTINGS_MSG", localize "STR_ALIVE_SETTINGS_MSG_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["subtitle", "hint", "chat"], [localize "STR_ALIVE_SETTINGS_MSG_SUB", localize "STR_ALIVE_SETTINGS_MSG_HINT", localize "STR_ALIVE_SETTINGS_MSG_CHAT"], 0]] call CBA_fnc_addSetting;
 // target tasks of one kind under one entry in the task list (fnc_taskHandlerClient)
 ["ALiVE_prefTaskGroup", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_TASKGROUP", localize "STR_ALIVE_SETTINGS_TASKGROUP_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], true] call CBA_fnc_addSetting;
+// the map screen's task list 4 grid units wider, so long task names aren't cut off (XEH_postInit.sqf)
+["ALiVE_prefWideTaskList", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_WIDELIST", localize "STR_ALIVE_SETTINGS_WIDELIST_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], true] call CBA_fnc_addSetting;
 // ALiVE's pins for tasks, units, FOBs and rally points on the map and in the task list (Arma's own icons on the side's NATO frame), (the default), or Arma's own markers (ALIVE_fnc_taskCreateMarker, ALIVE_fnc_taskHandlerClient, ALiVE_fnc_mapPins)
 ["ALiVE_prefTaskPins", "LIST", [localize "STR_ALIVE_SETTINGS_PINS", localize "STR_ALIVE_SETTINGS_PINS_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["default", "alive"], [localize "STR_ALIVE_SETTINGS_PINS_DEFAULT", localize "STR_ALIVE_SETTINGS_PINS_ALIVE"], 1], 0, {
     // FOBs and rally points pick their pin from this too, so they redraw straight away
