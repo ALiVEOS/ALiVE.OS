@@ -117,6 +117,31 @@ GVAR(UNIT_DATA) = [
         // made before this field existed has no value for it and the restore skips it.
         ["ordersOptOut", {(group (_this select 0)) getVariable ["ALiVE_mil_c2istar_playerOrdersOptOut", false];},
             {if ((_this select 1) isEqualTo true) then {(group (_this select 0)) setVariable ["ALiVE_mil_c2istar_playerOrdersOptOut", true, true]};}],
+        // The player's traits: the game's own (medic, engineer, explosive specialist, UAV hacker, the
+        // camouflage, audible and load coefficients, and any a mission added) and ACE's medic, engineer
+        // and EOD flags. A mission that hands them out from a loadout script at the start lost them
+        // on a restore (NeisAEL, 30 Oct). Traits exist only on the player's own machine, so it shares
+        // them and the restore sets them there.
+        // A save made before this field existed has no value for it and the restore skips it.
+        ["traits", {
+            private _unit = _this select 0;
+            private _known = ["audiblecoef", "camouflagecoef", "engineer", "explosivespecialist", "loadcoef", "medic", "staminadraincoef", "uavhacker"];
+            // the player's machine shares them (fnc_player.sqf), each marked custom or not; a custom trait's
+            // value comes from getUnitTrait, as getAllUnitTraits only says "custom"
+            private _list = _unit getVariable QGVAR(traits);
+            if (isNil "_list") then {
+                _list = if (local _unit) then { (getAllUnitTraits _unit) apply { private _n = _x select 0; [_n, _unit getUnitTrait _n, (_x select 1) isEqualTo "custom"] } } else { [] };
+            };
+            [
+                _list apply { [_x select 0, _x select 1, _x param [2, !(toLower (_x select 0) in _known)]] },
+                ["ace_medical_medicClass", "ACE_IsEngineer", "ACE_isEOD"] select { !isNil {_unit getVariable _x} } apply { [_x, _unit getVariable _x] }
+            ]
+        }, {
+            params ["_unit", "_traits"];
+            if !(_traits isEqualType [] && {count _traits == 2}) exitWith {};
+            { [_unit, _x] remoteExecCall ["setUnitTrait", _unit] } forEach ((_traits select 0) select { _x isEqualType [] && {count _x == 3} });
+            { _unit setVariable [_x select 0, _x select 1, true] } forEach ((_traits select 1) select { _x isEqualType [] && {count _x == 2} });
+        }],
         // The men the player recruited (Recruitment module): class, kit, skill, damage and where
         // they stood from the player. They're put back round the player once the player's own
         // position is restored, and only into a group that has no recruits already, so a second

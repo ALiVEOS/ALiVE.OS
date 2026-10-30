@@ -330,6 +330,22 @@ switch(_operation) do {
 
                     MOD(sys_player) setVariable [_puid, true, true];
 
+                    // Traits live on the player's own machine only, so they're shared for the server to save:
+                    // at the start and whenever they change, checked every 10 s (NeisAEL, 30 Oct)
+                    [] spawn {
+                        private _last = [];
+                        while {true} do {
+                            if (!isNull player) then {
+                                private _now = (getAllUnitTraits player) apply { private _n = _x select 0; [_n, player getUnitTrait _n, (_x select 1) isEqualTo "custom"] };
+                                if (_now isNotEqualTo _last || {isNil {player getVariable QGVAR(traits)}}) then {
+                                    _last = _now;
+                                    player setVariable [QGVAR(traits), _now, true];
+                                };
+                            };
+                            sleep 10;
+                        };
+                    };
+
                     // Save initial start state on client if reset is allowed
                     sleep 20;
                     if (MOD(sys_player) getVariable ["allowReset", DEFAULT_RESET]) then {
