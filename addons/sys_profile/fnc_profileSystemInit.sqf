@@ -241,8 +241,11 @@ if(isServer) then {
     // that reads them changes.
     ALiVE_zombieFactions = [];
     ALiVE_zombieMelee = 0.015;
+    // No sleep in the check: on a hosted game's briefing screen mission time stands still, so a
+    // sleep there doesn't return until the briefing ends, and everything that waits on this
+    // module (placement, the AI Commanders) would start only then
     private _modeWait = time + 60;
-    waitUntil { sleep 0.2; !isNil "ALiVE_GAMEMODE" || {time > _modeWait} };
+    waitUntil { !isNil "ALiVE_GAMEMODE" || {time > _modeWait} };
     if (isNil "ALiVE_GAMEMODE") then {
         ["ALiVE Profile System - the Required module's Game Mode never arrived; zombie factions are not set up."] call ALiVE_fnc_dumpR;
     };

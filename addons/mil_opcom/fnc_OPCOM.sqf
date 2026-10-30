@@ -345,10 +345,12 @@ switch (_operation) do {
 
         // Outbreak: a faction listed as zombies answers the zombie side only once the Virtual AI module has set
         // it up, and that module may start after this one. Not forever: without a Virtual AI module nothing waits.
+        // No sleep in these checks: on a hosted game's briefing screen mission time stands still,
+        // so a sleep wouldn't return until the briefing ends and the commander would start late
         private _zombieWait = time + 60;
-        waitUntil { sleep 0.2; !isNil "ALiVE_GAMEMODE" || {time > _zombieWait} };
+        waitUntil { !isNil "ALiVE_GAMEMODE" || {time > _zombieWait} };
         if ((missionNamespace getVariable ["ALiVE_GAMEMODE", ""]) == "outbreak") then {
-            waitUntil { sleep 0.5; !isNil "ALiVE_zombieFactionsReady" || {time > _zombieWait} };
+            waitUntil { !isNil "ALiVE_zombieFactionsReady" || {time > _zombieWait} };
             if (isNil "ALiVE_zombieFactionsReady") then {
                 ["ALiVE OPCOM - Outbreak: the Virtual AI module never set up the zombie factions, so %1 is read by its config side", _factions select 0] call ALiVE_fnc_dumpR;
             };
