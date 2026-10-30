@@ -258,6 +258,40 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result && {((entities "Module_F") findIf { (typeOf _x) isEqualTo "ALiVE_mil_ato" }) > -1}
                 ],
+                // Move an observation post of the player's Recon task to a spot of his own (Will501 on Discord, 29 Oct):
+                // the OP nearer the click moves there, once the server has checked the spot. Shown while the player has
+                // a Recon task whose OPs aren't done
+                ["Move a recon OP",
+                    {
+                        openMap [true, false];
+                        [] spawn {
+                            private _t = diag_tickTime + 3;
+                            waitUntil { sleep 0.1; visibleMap || {diag_tickTime > _t} };
+                            if (!visibleMap) exitWith {};
+                            hint "Click the map where you want an observation post. The one nearer your click moves there.";
+                            if (!isNil "ALiVE_c2istar_opClickEH") then { removeMissionEventHandler ["MapSingleClick", ALiVE_c2istar_opClickEH] };
+                            ALiVE_c2istar_opClickEH = addMissionEventHandler ["MapSingleClick", {
+                                params ["", "_pos"];
+                                removeMissionEventHandler ["MapSingleClick", _thisEventHandler];
+                                ALiVE_c2istar_opClickEH = nil;
+                                ALiVE_c2istar_reconMoveOP = [player, _pos];
+                                if (isServer) then { ALiVE_c2istar_reconMoveOP call ALiVE_c2istar_fnc_reconMoveOP } else { publicVariableServer "ALiVE_c2istar_reconMoveOP" };
+                            }];
+                            waitUntil { sleep 0.2; !visibleMap };
+                            if (!isNil "ALiVE_c2istar_opClickEH") then { removeMissionEventHandler ["MapSingleClick", ALiVE_c2istar_opClickEH]; ALiVE_c2istar_opClickEH = nil };
+                        };
+                    },
+                    "",
+                    "Click the map to move the nearer observation post of your Recon task",
+                     "",
+                     -1,
+                     true,
+                     _result && {!isNil "ALIVE_taskHandlerClient"} && {
+                        ((([ALIVE_taskHandlerClient, "tasks", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet) select 2) findIf {
+                            ((_x param [9, ""]) find "-ReconObjective-Observe") > -1 && {!((_x param [6, ""]) in ["Succeeded", "Failed", "Canceled"])}
+                        }) > -1
+                     }
+                ],
                 [
                     // Caption reflects current state — flexi menu re-runs
                     // C2MenuDef on each open, so the label flips correctly

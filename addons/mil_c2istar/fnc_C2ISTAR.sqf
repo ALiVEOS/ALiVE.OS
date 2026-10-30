@@ -1768,6 +1768,56 @@ switch(_operation) do {
             };
             // Asked and answered by broadcast, so a mission's remote-execution whitelist can't stop it.
             "ALiVE_c2istar_questionAsk" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_interrogate };
+            // A Recon task's team moves one of its observation posts to a spot of its own (Will501 on Discord, 29 Oct):
+            // the OP nearer the click moves there, if the spot is on land, 250 to 900 m from the objective with a clear
+            // line of sight to it, and at least 60 degrees round from the other OP. An OP already watched from for its
+            // full minute stays where it is. The time spent at a moved OP starts again.
+            ALiVE_c2istar_fnc_reconMoveOP = {
+                params [["_player", objNull], ["_pos", []]];
+                if (isNull _player || {count _pos < 2} || {isNil "ALiVE_TaskHandler"}) exitWith {};
+                private _fnc_tell = { [localize "STR_ALIVE_C2ISTAR", _this] remoteExec ["ALIVE_fnc_sendHint", owner _player] };
+                private _uid = getPlayerUID _player;
+                private _managed = [ALiVE_TaskHandler, "managedTaskParams"] call ALIVE_fnc_hashGet;
+                private _params = nil;
+                {
+                    private _p = [_managed, _x] call ALIVE_fnc_hashGet;
+                    if (isNil "_params" && {!isNil "_p"} && {!isNil {[_p, "ops"] call ALIVE_fnc_hashGet}} && {!isNil {[_p, "opDwell"] call ALIVE_fnc_hashGet}}) then {
+                        private _parent = [ALiVE_TaskHandler, "getTask", _x] call ALiVE_fnc_TaskHandler;
+                        if (!isNil "_parent" && {_uid in ((_parent select 7) select 0)} && {!((_parent select 8) in ["Succeeded", "Failed", "Canceled"])}) then { _params = _p };
+                    };
+                } forEach (_managed select 1);
+                if (isNil "_params") exitWith { "You have no Recon task with observation posts to move." call _fnc_tell };
+                private _target = [_params, "target"] call ALIVE_fnc_hashGet;
+                private _ops = [_params, "ops"] call ALIVE_fnc_hashGet;
+                private _dwell = [_params, "opDwell"] call ALIVE_fnc_hashGet;
+                _pos = [_pos select 0, _pos select 1, 0];
+                private _open = [0, 1] select { (_dwell select _x) < 60 };
+                if (_open isEqualTo []) exitWith { "Both observation posts have been watched from already." call _fnc_tell };
+                private _i = _open select 0;
+                if (count _open > 1 && {(_pos distance2D (_ops select 1)) < (_pos distance2D (_ops select 0))}) then { _i = 1 };
+                private _d = _pos distance2D _target;
+                if (surfaceIsWater _pos) exitWith { "An observation post has to be on land." call _fnc_tell };
+                if (_d < 250 || {_d > 900}) exitWith { format ["An observation post has to be 250 to 900 m from the objective; that spot is %1 m.", round _d] call _fnc_tell };
+                private _eye = AGLToASL [_pos select 0, _pos select 1, 1.8];
+                private _tEye = AGLToASL [_target select 0, _target select 1, 0];
+                _tEye set [2, (_tEye select 2) + 2];
+                if (terrainIntersectASL [_eye, _tEye]) exitWith { "The ground blocks the view of the objective from there; pick a spot that can see it." call _fnc_tell };
+                private _other = _ops select (1 - _i);
+                private _diff = abs ((_target getDir _pos) - (_target getDir _other)) % 360;
+                if ((_diff min (360 - _diff)) < 60) exitWith { "That's too close round to the other observation post; they need to watch from different sides." call _fnc_tell };
+                _ops set [_i, _pos];
+                _dwell set [_i, 0];
+                [_params, "ops", _ops] call ALIVE_fnc_hashSet;
+                [_params, "opDwell", _dwell] call ALIVE_fnc_hashSet;
+                private _row = [ALiVE_TaskHandler, "getTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select (2 + _i)] call ALiVE_fnc_TaskHandler;
+                if (!isNil "_row") then {
+                    _row set [3, _pos];
+                    [ALiVE_TaskHandler, "TASK_UPDATE", _row] call ALiVE_fnc_TaskHandler;
+                };
+                format ["Observation post %1 moved to grid %2.", _i + 1, mapGridPosition _pos] call _fnc_tell;
+                ["C2ISTAR: %1 moved recon OP %2 to %3", name _player, _i + 1, mapGridPosition _pos] call ALiVE_fnc_dump;
+            };
+            "ALiVE_c2istar_reconMoveOP" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_reconMoveOP };
         };
         if (hasInterface) then {
             // A tablet's Back on its first page (#1089): closes it and opens the C2ISTAR menu again, at its list of
