@@ -999,7 +999,7 @@ switch (_operation) do {
                             [_o,"minefield",_left] call ALiVE_fnc_HashSet;
                         };
                     } forEach _fields;
-                    if (_max > 0 && {count _fields < _max}) then {
+                    if (_max > 0 && {count _fields < _max} && {!([_handler,"pause",false] call ALiVE_fnc_HashGet)}) then {
                         private _side = [[_handler,"side","EAST"] call ALiVE_fnc_HashGet] call ALiVE_fnc_sideTextToObject;
                         private _held = ([_handler,"objectives",[]] call ALiVE_fnc_HashGet) select {
                             private _oid = [_x,"objectiveID",""] call ALiVE_fnc_HashGet;
@@ -1082,10 +1082,23 @@ switch (_operation) do {
                 params ["_handler"];
                 private _heldSince = createHashMap;
                 private _skip = createHashMap;
+                private _pausedAt = -1;
                 sleep 180;
                 while { !isNil "_handler" && {!([_handler,"stopped",false] call ALiVE_fnc_HashGet)} } do {
                     private _max = switch (toLower ([_handler,"preparedDefences","none"] call ALiVE_fnc_HashGet)) do { case "few": {3}; case "many": {8}; default {0} };
                     private _built = [_handler,"defences",[]] call ALiVE_fnc_HashGet;
+                    // A paused commander builds nothing, and the time it spends paused doesn't count
+                    // as holding: each clock is moved on by the length of the pause when it resumes.
+                    private _paused = [_handler,"pause",false] call ALiVE_fnc_HashGet;
+                    if (_paused) then {
+                        if (_pausedAt < 0) then { _pausedAt = time };
+                    } else {
+                        if (_pausedAt >= 0) then {
+                            private _gap = time - _pausedAt;
+                            { _heldSince set [_x, (_heldSince get _x) + _gap] } forEach (keys _heldSince);
+                            _pausedAt = -1;
+                        };
+                    };
                     // How long each objective has been held, kept every pass so a lost and retaken
                     // objective starts again, however many forts are already up.
                     {
@@ -1096,7 +1109,7 @@ switch (_operation) do {
                             _heldSince deleteAt _oid;
                         };
                     } forEach ([_handler,"objectives",[]] call ALiVE_fnc_HashGet);
-                    if (_max > 0 && {count _built < _max}) then {
+                    if (!_paused && {_max > 0} && {count _built < _max}) then {
                         private _sideText = [_handler,"side","EAST"] call ALiVE_fnc_HashGet;
                         private _side = [_sideText] call ALiVE_fnc_sideTextToObject;
                         private _candidates = [];
@@ -1153,7 +1166,7 @@ switch (_operation) do {
                     };
                     // Second stage, Many only: an objective that has kept its fort for another 30 minutes
                     // gets a medium fort on one flank, up to 4 per commander, under the same rules.
-                    if (_max == 8) then {
+                    if (!_paused && {_max == 8}) then {
                         private _medium = [_handler,"defencesMedium",[]] call ALiVE_fnc_HashGet;
                         private _sideText = [_handler,"side","EAST"] call ALiVE_fnc_HashGet;
                         if (count _medium < 4) then {
