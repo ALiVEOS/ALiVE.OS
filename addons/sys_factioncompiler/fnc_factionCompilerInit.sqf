@@ -516,6 +516,17 @@ if (_debug) then {
     ["Faction compiler [%1] registered %2 groups for side %3 - mode: %4", _factionId, _groupIndex, _sideText, _modeLabel] call ALIVE_fnc_dump;
 };
 
+// Always say which categories Override mode leaves alone. Those keep the faction's
+// own groups with their own kit, which is easy to mistake for the compiled loadout
+// not being applied.
+if (_isOverride) then {
+    private _replaced = _standardCategories select {count ([_groupsByCategory, _x, []] call ALIVE_fnc_hashGet) > 0};
+    private _kept = _standardCategories - _replaced;
+    if (count _kept > 0) then {
+        ["Faction compiler [%1] override: replaced %2; these keep %1's own groups and loadouts: %3", _factionId, _replaced joinString ", ", _kept joinString ", "] call ALIVE_fnc_dump;
+    };
+};
+
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
 true
 
