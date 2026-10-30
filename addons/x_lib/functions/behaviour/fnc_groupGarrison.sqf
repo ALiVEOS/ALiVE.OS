@@ -163,6 +163,38 @@ private _fnc_hold = {
             private _owners = [[clientOwner], (entities "HeadlessClient_F") select { isPlayer _x } apply { owner _x }] select isServer;
             [_unit, ["Local", { params ["_u", "_isLocal"]; if (_isLocal && {_u getVariable ["ALiVE_garrisonHeld", false]}) then { doStop _u; _u disableAI "PATH" } }]] remoteExecCall ["addEventHandler", ([2] + _owners) arrayIntersect ([2] + _owners)];
         };
+        // A man up on an open roof, with no roof over him and no parapet to stand behind, is an easy
+        // kill held there, so he's let go the first time enemy fire comes close (Ares, 30 Oct). A man
+        // inside a building or behind a parapet keeps his post, as before.
+        if ((((getPosATL _unit) select 2) > 1.5) && {!(_unit getVariable ["ALiVE_garrisonExposedEH", false])}) then {
+            private _eye = eyePos _unit;
+            private _roofed = (lineIntersectsSurfaces [_eye, _eye vectorAdd [0, 0, 6], _unit, objNull, true, 1]) isNotEqualTo [];
+            // Nothing at knee or chest height on any side: a tower's parapet stops at least some of these
+            // (a Cargo Patrol's top stopped 4 of 8), so only a bare roof counts
+            private _feet = getPosASL _unit;
+            private _walls = 0;
+            {
+                private _dir = _x;
+                {
+                    private _from = _feet vectorAdd [0, 0, _x];
+                    if ((lineIntersectsSurfaces [_from, _from vectorAdd [1.5 * sin _dir, 1.5 * cos _dir, 0], _unit, objNull, true, 1]) isNotEqualTo []) then { _walls = _walls + 1 };
+                } forEach [0.5, 0.9];
+            } forEach [0, 45, 90, 135, 180, 225, 270, 315];
+            if (!_roofed && {_walls == 0}) then {
+                _unit setVariable ["ALiVE_garrisonExposedEH", true];
+                private _release = ["Suppressed", {
+                    params ["_u", "", "_shooter"];
+                    if !(_u getVariable ["ALiVE_garrisonHeld", false]) exitWith { _u removeEventHandler [_thisEvent, _thisEventHandler] };
+                    if (isNull _shooter || {((side group _shooter) getFriend (side group _u)) >= 0.6}) exitWith {};
+                    _u removeEventHandler [_thisEvent, _thisEventHandler];
+                    _u setVariable ["ALiVE_garrisonHeld", false, true];
+                    _u enableAI "PATH";
+                    _u setUnitPos "AUTO";
+                    _u doFollow (leader _u);
+                }];
+                if (local _unit) then { _unit addEventHandler _release } else { [_unit, _release] remoteExecCall ["addEventHandler", _unit] };
+            };
+        };
     };
 };
 
