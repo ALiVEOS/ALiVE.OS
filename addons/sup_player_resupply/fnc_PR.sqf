@@ -94,6 +94,7 @@ Peer Reviewed:
 #define PRTablet_CTRL_ForcePool 60099
 #define PRTablet_CTRL_Preview 60051
 #define PRTablet_CTRL_SupplySearch 60052
+#define PRTablet_CTRL_PayloadAdd 60053
 
 // Control Macros
 #define PR_getControl(disp,ctrl) ((findDisplay ##disp) displayCtrl ##ctrl)
@@ -459,6 +460,41 @@ switch(_operation) do {
         private _index = _payloadList lbAdd format["%1", _name];
         _payloadList lbSetTooltip [_index, _class];
         [_logic,"payloadUpdated"] call MAINCLASS;
+    };
+    // [list idc, row, name, SUPPLY or REINFORCE, value, parents]: the item a click picked out, for Add; [] for none
+    case "pendingAdd": {
+        _logic setVariable ["ALiVE_PR_pendingAdd", _args];
+    };
+    // true while the picked item's row is still the one highlighted in its list
+    case "pendingLive": {
+        private _pending = _logic getVariable ["ALiVE_PR_pendingAdd", []];
+        _result = false;
+        if (count _pending > 5) then {
+            private _list = (findDisplay PRTablet_CTRL_MainDisplay) displayCtrl (_pending select 0);
+            private _row = _pending select 1;
+            _result = !isNull _list && {ctrlShown _list} && {lbCurSel _list == _row} && {(_list lbText _row) == format ["%1", _pending select 2]};
+        };
+    };
+    // Add: the picked item into the payload; it stays picked, so Add again adds another
+    case "addPending": {
+        _result = false;
+        if !([_logic, "pendingLive"] call MAINCLASS) exitWith {};
+        (_logic getVariable ["ALiVE_PR_pendingAdd", []]) params ["_idc", "_row", "_name", "_kind", "_value", "_parents"];
+        if (_kind == "SUPPLY") then {
+            [_logic, "supplyAddPayload", [_name, _value, +_parents]] call MAINCLASS;
+        } else {
+            private _payloadListOptions = [_logic,"payloadListOptions"] call MAINCLASS;
+            private _payloadListValues = [_logic,"payloadListValues"] call MAINCLASS;
+            _payloadListOptions pushback _name;
+            _payloadListValues pushback [_value, +_parents, "Reinforce"];
+            [_logic,"payloadListOptions",_payloadListOptions] call MAINCLASS;
+            [_logic,"payloadListValues",_payloadListValues] call MAINCLASS;
+            private _payloadList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
+            private _index = _payloadList lbAdd format["%1", _name];
+            _payloadList lbSetTooltip [_index, _value];
+            [_logic,"payloadUpdated"] call MAINCLASS;
+        };
+        _result = true;
     };
     // the top-level choices that lead to at least one item for the selected delivery
     case "supplyTop": {
@@ -2660,6 +2696,10 @@ switch(_operation) do {
 
                 // the supply list's search box (Jman, 30 Oct; as the FOB build menu's): the items of every
                 // folder whose name or class name holds the text
+                case "ADD_CLICK": {
+                    [_logic, "addPending"] call MAINCLASS;
+                };
+
                 case "SUPPLY_SEARCH": {
                     private _box = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplySearch);
                     private _text = ctrlText _box;
@@ -2707,14 +2747,17 @@ switch(_operation) do {
                     _selectedOption = _selectedListOptions select _selectedIndex;
                     _selectedValue = _selectedListValues select _selectedIndex;
 
-                    // a search result goes straight into the payload; << Back leaves the search
+                    // a click only picks a row out; Add puts an item in the payload (Jman, 30 Oct)
+                    [_logic, "pendingAdd", []] call MAINCLASS;
+
+                    // a search result is picked out for Add; << Back leaves the search
                     private _searchRows = _logic getVariable ["ALiVE_PR_searchRows", []];
                     if (_searchRows isNotEqualTo [] && {_selectedSupplyListDepth == 1}) exitWith {
                         if (_selectedValue == "<< Back") then {
                             [_logic, "supplySearchClear", [true]] call MAINCLASS;
                         } else {
                             if (_selectedIndex < count (_searchRows select 0)) then {
-                                [_logic, "supplyAddPayload", [_selectedOption, _selectedValue, [(_searchRows select 0) select _selectedIndex, (_searchRows select 1) select _selectedIndex, _selectedValue]]] call MAINCLASS;
+                                [_logic, "pendingAdd", [PRTablet_CTRL_SupplyList, _selectedIndex, _selectedOption, "SUPPLY", _selectedValue, [(_searchRows select 0) select _selectedIndex, (_searchRows select 1) select _selectedIndex, _selectedValue]]] call MAINCLASS;
                             };
                         };
                     };
@@ -2900,7 +2943,7 @@ switch(_operation) do {
                                     _selectedParents set [1, _rowCategories select _selectedIndex];
                                 };
 
-                                [_logic, "supplyAddPayload", [_selectedOption, _selectedValue, _selectedParents]] call MAINCLASS;
+                                [_logic, "pendingAdd", [PRTablet_CTRL_SupplyList, _selectedIndex, _selectedOption, "SUPPLY", _selectedValue, _selectedParents]] call MAINCLASS;
 
                             };
                         };
@@ -2947,6 +2990,7 @@ switch(_operation) do {
 
                     _reinforceList = _args select 0 select 0;
                     _selectedIndex = _args select 0 select 1;
+                    [_logic, "pendingAdd", []] call MAINCLASS;
                     _selectedDeliveryValue = [_logic,"selectedDeliveryListValue"] call MAINCLASS;
                     _selectedReinforceListOptions = [_logic,"selectedReinforceListOptions"] call MAINCLASS;
                     _selectedReinforceListValues = [_logic,"selectedReinforceListValues"] call MAINCLASS;
@@ -3180,62 +3224,18 @@ switch(_operation) do {
 
                                 }else{
 
-                                    private ["_payloadListOptions","_payloadListValues","_payloadList","_selectedParents"];
-
-                                    // selected something from the third level
-                                    // a vehicle has been selected..          
-
-                                    _payloadListOptions = [_logic,"payloadListOptions"] call MAINCLASS;
-                                    _payloadListValues = [_logic,"payloadListValues"] call MAINCLASS;
-
-                                    _selectedParents = [];
-                                    {
-                                        _selectedParents pushback _x;
-                                    } forEach _selectedReinforceListParents;
-
-                                    _payloadListOptions pushback _selectedOption;
-                                    _payloadListValues pushback [_selectedValue,_selectedParents,"Reinforce"];
-
-                                    [_logic,"payloadListOptions",_payloadListOptions] call MAINCLASS;
-                                    [_logic,"payloadListValues",_payloadListValues] call MAINCLASS;
-
-                                    _payloadList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
-
-                                    private _index = _payloadList lbAdd format["%1", _selectedOption];
-                                    _payLoadList lbSetTooltip [_index, _selectedValue];
-
-                                    [_logic,"payloadUpdated"] call MAINCLASS;
+                                    // a soldier: picked out for Add
+                                    if (_selectedValue isEqualTo "<< Back") exitWith {};
+                                    [_logic, "pendingAdd", [PRTablet_CTRL_ReinforceList, _selectedIndex, _selectedOption, "REINFORCE", _selectedValue, +_selectedReinforceListParents]] call MAINCLASS;
 
                                 };
 
                             };
                             case 3: {
 
-                                private ["_payloadListOptions","_payloadListValues","_payloadList","_selectedParents"];
-
-                                // selected something from the third level
-                                // a vehicle has been selected..
-
-                                _payloadListOptions = [_logic,"payloadListOptions"] call MAINCLASS;
-                                _payloadListValues = [_logic,"payloadListValues"] call MAINCLASS;
-
-                                _selectedParents = [];
-                                {
-                                    _selectedParents pushback _x;
-                                } forEach _selectedReinforceListParents;
-
-                                _payloadListOptions pushback _selectedOption;
-                                _payloadListValues pushback [_selectedValue,_selectedParents,"Reinforce"];
-
-                                [_logic,"payloadListOptions",_payloadListOptions] call MAINCLASS;
-                                [_logic,"payloadListValues",_payloadListValues] call MAINCLASS;
-
-                                _payloadList = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadList);
-
-                                private _index = _payloadList lbAdd format["%1", _selectedOption];
-                                _payLoadList lbSetTooltip [_index, _selectedValue];
-
-                                [_logic,"payloadUpdated"] call MAINCLASS;
+                                // a group: picked out for Add
+                                if (_selectedValue isEqualTo "<< Back") exitWith {};
+                                [_logic, "pendingAdd", [PRTablet_CTRL_ReinforceList, _selectedIndex, _selectedOption, "REINFORCE", _selectedValue, +_selectedReinforceListParents]] call MAINCLASS;
 
                             };
                         };
@@ -3317,6 +3317,8 @@ switch(_operation) do {
                     _selectedIndex = _args select 0 select 1;
                     _payloadListOptions = [_logic,"payloadListOptions"] call MAINCLASS;
                     _payloadListValues = [_logic,"payloadListValues"] call MAINCLASS;
+                    // no row (the list was cleared after a Remove)
+                    if (_selectedIndex < 0 || {_selectedIndex >= count _payloadListValues}) exitWith {};
 
                     _selectedOption = _payloadListOptions select _selectedIndex;
                     _selectedValue = _payloadListValues select _selectedIndex;
@@ -3411,6 +3413,8 @@ switch(_operation) do {
                     _selectedIndex = lbCurSel _payloadList;
                     _payloadListOptions = [_logic,"payloadListOptions"] call MAINCLASS;
                     _payloadListValues = [_logic,"payloadListValues"] call MAINCLASS;
+                    // Remove with nothing highlighted does nothing
+                    if (_selectedIndex < 0 || {_selectedIndex >= count _payloadListValues}) exitWith {};
 
                     _payloadListOptions set [_selectedIndex,"del"];
                     _payloadListValues set [_selectedIndex,"del"];
@@ -3425,7 +3429,10 @@ switch(_operation) do {
 
                     _payloadList lbDelete _selectedIndex;
 
-                    _payloadDeleteButton ctrlShow false;
+                    // nothing is highlighted after a Remove, so the next Remove needs a fresh pick
+                    _payloadList lbSetCurSel -1;
+                    (PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadInfo)) ctrlSetText "";
+                    (PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_PayloadOptions)) ctrlShow false;
 
                     [_logic,"payloadUpdated"] call MAINCLASS;
 
@@ -4080,6 +4087,20 @@ switch(_operation) do {
             };
         };
 
+        // Add is live while a picked item is still highlighted, Remove while a payload row is;
+        // both sit on the payload's heading, so they show with the request lists
+        private _requestShown = ctrlShown (PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplyList));
+        private _pickLive = [_logic, "pendingLive"] call MAINCLASS;
+        private _addButton = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_PayloadAdd);
+        if (!isNull _addButton) then {
+            _addButton ctrlShow _requestShown;
+            _addButton ctrlEnable _pickLive;
+        };
+        private _removeButton = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_PayloadDelete);
+        _removeButton ctrlShow _requestShown;
+        _removeButton ctrlEnable (lbCurSel _payload > -1 && {lbCurSel _payload < count _entries});
+        _removeButton ctrlSetEventHandler ["MouseButtonClick", "['PAYLOAD_DELETE_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
+
         private _preview = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_Preview);
         private _count = count _entries;
         private _before = uiNamespace getVariable ["ALiVE_PR_previewCount", 0];
@@ -4097,6 +4118,11 @@ switch(_operation) do {
             if (_shown >= 0 && {_shown < _count}) then {
                 _preview ctrlSetText (((_entries select _shown) call _entryPictures) select 1);
             };
+        };
+        // a picked item shows in the preview before it's added
+        if (_pickLive && {_action in ["SUPPLY_LIST_SELECT", "REINFORCE_LIST_SELECT"]}) then {
+            private _pending = _logic getVariable ["ALiVE_PR_pendingAdd", []];
+            _preview ctrlSetText (([_pending select 4, _pending select 5] call _pictures) select 1);
         };
         private _search = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplySearch);
         if (!isNull _search) then {

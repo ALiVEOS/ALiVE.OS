@@ -426,14 +426,32 @@ class PRTablet
             };
         };
 
+        // Add and Remove on the payload's heading: a click in a list only picks a row out (Jman, 30 Oct)
+        class PRTablet_selectedAdd : PRTablet_RscButton
+        {
+            idc = 60053;
+            x = 0.4075 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.5475 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.0500 * GUI_GRID_WAbs;
+            h = 0.021 * GUI_GRID_HAbs;
+            text = "$STR_ALIVE_PR_UI_ADD";
+            tooltip = "$STR_ALIVE_PR_UI_ADD_TIP";
+            sizeEx = 0.5 * GUI_GRID_H;
+            colorBackground[] = {1,1,1,0.07};
+            colorBackgroundFocused[] = {1,1,1,0.14};
+            colorFocused[] = {1,1,1,1};
+            onButtonClick = "['ADD_CLICK', []] call ALIVE_fnc_PRTabletOnAction";
+        };
+
         class PRTablet_selectedDelete : PRTablet_RscButton
         {
             idc = 60010;
-            x = 0.271203 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.6400 * GUI_GRID_HAbs + GUI_GRID_Y;
-            w = 0.241271 * GUI_GRID_WAbs;
-            h = 0.028 * GUI_GRID_HAbs;
-            text = "$STR_ALIVE_PR_UI_DELETE";
+            x = 0.4625 * GUI_GRID_WAbs + GUI_GRID_X;
+            y = 0.5475 * GUI_GRID_HAbs + GUI_GRID_Y;
+            w = 0.0500 * GUI_GRID_WAbs;
+            h = 0.021 * GUI_GRID_HAbs;
+            text = "$STR_ALIVE_PR_UI_REMOVE";
+            tooltip = "$STR_ALIVE_PR_UI_REMOVE_TIP";
             sizeEx = 0.5 * GUI_GRID_H;
             colorBackground[] = {1,1,1,0.07};
             colorBackgroundFocused[] = {1,1,1,0.14};

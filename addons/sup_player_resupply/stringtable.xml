@@ -609,6 +609,42 @@
     <Portuguese>Carga  -  O conteúdo atual do seu pedido</Portuguese>
     <Russian>Груз  -  Текущее содержимое запроса</Russian>
 </Key>
+<Key ID="STR_ALIVE_PR_UI_ADD">
+    <English>Add</English>
+    <Chinesesimp>添加</Chinesesimp>
+    <Chinese>添加</Chinese>
+    <Spanish>Añadir</Spanish>
+    <French>Ajouter</French>
+    <Portuguese>Adicionar</Portuguese>
+    <Russian>Добавить</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_REMOVE">
+    <English>Remove</English>
+    <Chinesesimp>移除</Chinesesimp>
+    <Chinese>移除</Chinese>
+    <Spanish>Quitar</Spanish>
+    <French>Retirer</French>
+    <Portuguese>Remover</Portuguese>
+    <Russian>Убрать</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_ADD_TIP">
+    <English>Add the highlighted item to the payload</English>
+    <Chinesesimp>将选中的项目加入载荷</Chinesesimp>
+    <Chinese>將選中的項目加入載荷</Chinese>
+    <Spanish>Añade el elemento marcado a la carga</Spanish>
+    <French>Ajoute l'élément sélectionné au chargement</French>
+    <Portuguese>Adiciona o item selecionado à carga</Portuguese>
+    <Russian>Добавить выбранное в груз</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_UI_REMOVE_TIP">
+    <English>Take the highlighted item out of the payload</English>
+    <Chinesesimp>从载荷中移除选中的项目</Chinesesimp>
+    <Chinese>從載荷中移除選中的項目</Chinese>
+    <Spanish>Quita el elemento marcado de la carga</Spanish>
+    <French>Retire l'élément sélectionné du chargement</French>
+    <Portuguese>Remove o item selecionado da carga</Portuguese>
+    <Russian>Убрать выбранное из груза</Russian>
+</Key>
 <Key ID="STR_ALIVE_PR_UI_DELETE">
     <English>Delete</English>
     <Chinesesimp>删除</Chinesesimp>
