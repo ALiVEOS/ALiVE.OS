@@ -31,7 +31,8 @@ if (typeName (_this select 0) == "ARRAY") then {
 private _aiCounts = ADDON getVariable ["aiTriggerable", false];
 _victim = ((_this select 1) select {
     private _person = if (vehicle _x != _x) then { driver (vehicle _x) } else { _x };
-    !isNull _person && {isNull (getAssignedCuratorLogic _person)} &&
+    // A Zeus counts with the Zeus modules' Solo Test on, so one Zeus can try a bomber alone
+    !isNull _person && {(missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _person)}} &&
     {if (_aiCounts) then { _x call ALiVE_fnc_iedAICounts } else { ((crew _x) findIf {isPlayer _x}) > -1 }}
 }) param [0, objNull];
 

@@ -5,6 +5,7 @@ class CfgPatches {
         units[] = {
             "ALiVE_ModuleZeusSave",
             "ALiVE_ModuleZeusDebug",
+            "ALiVE_ModuleZeusSoloTest",
             "ALiVE_ModuleZeusSpotReport",
             "ALiVE_ModuleZeusHandGroup",
             "ALiVE_ModuleZeusBomber",

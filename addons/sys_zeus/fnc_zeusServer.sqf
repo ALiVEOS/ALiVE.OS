@@ -40,12 +40,13 @@ private _reply = {
     [_key, _fmt] remoteExecCall ["ALiVE_fnc_zeusFeedback", _caller];
 };
 
-// The nearest living player within range who isn't a Zeus, or objNull. A Zeus is never a target:
-// the IED module's own bomber leaves out anyone with Zeus and deletes itself with no one left
+// The nearest living player within range who isn't a Zeus, or objNull. A Zeus is only a target with
+// Solo Test on, so one Zeus can try the modules alone (NeisAEL, 29 Oct): the IED module's own bomber
+// leaves out anyone with Zeus and deletes itself with no one left
 private _nearestVictim = {
     params ["_at", "_range"];
     private _near = allPlayers select {
-        alive _x && {isNull (getAssignedCuratorLogic _x)} && {(vehicle _x) distance2D _at < _range}
+        alive _x && {((missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _x)})} && {(vehicle _x) distance2D _at < _range}
     };
     if (_near isEqualTo []) exitWith { objNull };
     ([_near, [], { (vehicle _x) distance2D _at }, "ASCEND"] call BIS_fnc_sortBy) select 0
@@ -69,7 +70,7 @@ private _sideName = {
 // module works for when it can't ask
 private _playerSideNear = {
     params ["_at"];
-    private _near = allPlayers select { alive _x && {isNull (getAssignedCuratorLogic _x)} && {side group _x != civilian} };
+    private _near = allPlayers select { alive _x && {((missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _x)})} && {side group _x != civilian} };
     if (_near isEqualTo []) exitWith { "" };
     (side group (([_near, [], { (vehicle _x) distance2D _at }, "ASCEND"] call BIS_fnc_sortBy) select 0)) call _sideText
 };
@@ -97,6 +98,13 @@ switch (_action) do {
     };
 
     // Profile debug markers on or off, for everyone, as the admin action does
+    // A Zeus testing alone becomes a target for the modules, until it's placed again
+    case "soloTest": {
+        private _on = !(missionNamespace getVariable ["ALiVE_zeusSoloTest", false]);
+        missionNamespace setVariable ["ALiVE_zeusSoloTest", _on, true];
+        [["STR_ALIVE_ZEUS_SOLOTEST_OFF", "STR_ALIVE_ZEUS_SOLOTEST_ON"] select _on] call _reply;
+    };
+
     case "debug": {
         if (isNil "ALIVE_profileHandler") exitWith {
             ["STR_ALIVE_ZEUS_NEED_PROFILES"] call _reply;
@@ -297,7 +305,7 @@ switch (_action) do {
             ["STR_ALIVE_ZEUS_NEED_PROFILES"] call _reply;
         };
         private _targets = allPlayers select {
-            alive _x && {isNull (getAssignedCuratorLogic _x)} && {(vehicle _x) distance2D _position < 300}
+            alive _x && {((missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _x)})} && {(vehicle _x) distance2D _position < 300}
         };
         if (_targets isEqualTo []) exitWith {
             ["STR_ALIVE_ZEUS_AMBUSH_NOTARGET"] call _reply;
@@ -441,7 +449,7 @@ switch (_action) do {
             ["STR_ALIVE_ZEUS_NEED_C2ISTAR"] call _reply;
         };
         if (_side == "") then { _side = [_position] call _playerSideNear };
-        private _players = allPlayers select { isNull (getAssignedCuratorLogic _x) && {((side group _x) call _sideText) == _side} };
+        private _players = allPlayers select { ((missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _x)}) && {((side group _x) call _sideText) == _side} };
         if (_side == "" || {_players isEqualTo []}) exitWith {
             ["STR_ALIVE_ZEUS_TASK_NOPLAYERS"] call _reply;
         };
@@ -683,7 +691,7 @@ switch (_action) do {
         if (isNull _civ) exitWith {
             ["STR_ALIVE_ZEUS_TIPOFF_NOCIV"] call _reply;
         };
-        private _players = allPlayers select { alive _x && {isNull (getAssignedCuratorLogic _x)} && {side group _x != civilian} && {(vehicle _x) distance2D _civ < 300} };
+        private _players = allPlayers select { alive _x && {((missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _x)})} && {side group _x != civilian} && {(vehicle _x) distance2D _civ < 300} };
         if (_players isEqualTo []) exitWith {
             ["STR_ALIVE_ZEUS_TIPOFF_NOPLAYER"] call _reply;
         };
@@ -807,7 +815,7 @@ switch (_action) do {
                 };
                 {
                     private _man = _x;
-                    private _targets = allPlayers select { alive _x && {isNull (getAssignedCuratorLogic _x)} && {side group _x != civilian} && {(vehicle _x) distance2D _man < 40} };
+                    private _targets = allPlayers select { alive _x && {((missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _x)})} && {side group _x != civilian} && {(vehicle _x) distance2D _man < 40} };
                     if (_targets isEqualTo []) then {
                         if (_man distance2D _position > 20) then {
                             [_man, _position] call ALiVE_fnc_doMoveRemote;

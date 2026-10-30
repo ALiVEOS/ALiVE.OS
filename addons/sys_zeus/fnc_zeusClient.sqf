@@ -10,7 +10,7 @@ in a dialog first; a plain Zeus module uses the defaults. Then it sends the requ
 server, which checks the Zeus and does the work (ALiVE_fnc_zeusRequest).
 
 Parameters:
-String - the module: "save", "debug", "spotReport", "handGroup", "bomber", "convertBomber",
+String - the module: "save", "debug", "soloTest", "spotReport", "handGroup", "bomber", "convertBomber",
     "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "createTask",
     "closeTask", "airStrike", "resupply", "townMood", "tipOff", "angryCrowd", "createHub", "removeHub",
     "createFob", "removeFob", "createRally" or "removeRally"
@@ -71,6 +71,7 @@ private _manFactions = {
 switch (_action) do {
 
     case "save";
+    case "soloTest";
     case "debug": {
         [_action, []] call _send;
     };

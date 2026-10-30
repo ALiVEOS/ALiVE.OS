@@ -48,6 +48,17 @@ class CfgVehicles {
         picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
     };
 
+    // A Zeus testing alone: turns on (and off again) the Zeus modules picking the Zeus as their
+    // target, as they pick any other player
+    class ALiVE_ModuleZeusSoloTest : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_SOLOTEST";
+        ALiVE_zeusAction = "soloTest";
+        icon = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+        picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+    };
+
     class ALiVE_ModuleZeusSpotReport : ALiVE_ModuleZeusBase
     {
         scopeCurator = 2;

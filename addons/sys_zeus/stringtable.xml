@@ -8,6 +8,9 @@
 <Key ID="STR_ALIVE_ZEUS_DEBUG">
     <English>Profile Debug Markers</English>
 </Key>
+<Key ID="STR_ALIVE_ZEUS_SOLOTEST">
+    <English>Solo Test (Zeus Is a Target)</English>
+</Key>
 <Key ID="STR_ALIVE_ZEUS_SPOTREPORT">
     <English>Spot Report</English>
 </Key>
@@ -61,6 +64,12 @@
 </Key>
 <Key ID="STR_ALIVE_ZEUS_DEBUG_OFF">
     <English>ALiVE: profile debug markers off.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SOLOTEST_ON">
+    <English>ALiVE: solo test on. Zeus modules now pick a Zeus as their target like any other player: bombers, informants, angry crowds and so on. Place it again to turn it off.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SOLOTEST_OFF">
+    <English>ALiVE: solo test off. Zeus modules leave a Zeus out again.</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_SPOTREPORT_DONE">
     <English>ALiVE: spot report at grid %2 passed to the AI Commander of %1.</English>
