@@ -2757,7 +2757,7 @@ switch(_operation) do {
                             [_logic, "supplySearchClear", [true]] call MAINCLASS;
                         } else {
                             if (_selectedIndex < count (_searchRows select 0)) then {
-                                [_logic, "pendingAdd", [PRTablet_CTRL_SupplyList, _selectedIndex, _selectedOption, "SUPPLY", _selectedValue, [(_searchRows select 0) select _selectedIndex, (_searchRows select 1) select _selectedIndex, _selectedValue]]] call MAINCLASS;
+                                [_logic, "pendingAdd", [PRTablet_CTRL_SupplyList, _selectedIndex, _supplyList lbText _selectedIndex, "SUPPLY", _selectedValue, [(_searchRows select 0) select _selectedIndex, (_searchRows select 1) select _selectedIndex, _selectedValue]]] call MAINCLASS;
                             };
                         };
                     };
@@ -2943,7 +2943,7 @@ switch(_operation) do {
                                     _selectedParents set [1, _rowCategories select _selectedIndex];
                                 };
 
-                                [_logic, "pendingAdd", [PRTablet_CTRL_SupplyList, _selectedIndex, _selectedOption, "SUPPLY", _selectedValue, _selectedParents]] call MAINCLASS;
+                                [_logic, "pendingAdd", [PRTablet_CTRL_SupplyList, _selectedIndex, _supplyList lbText _selectedIndex, "SUPPLY", _selectedValue, _selectedParents]] call MAINCLASS;
 
                             };
                         };
@@ -3228,7 +3228,7 @@ switch(_operation) do {
 
                                     // a soldier: picked out for Add
                                     if (_selectedValue isEqualTo "<< Back") exitWith {};
-                                    [_logic, "pendingAdd", [PRTablet_CTRL_ReinforceList, _selectedIndex, _selectedOption, "REINFORCE", _selectedValue, +_selectedReinforceListParents]] call MAINCLASS;
+                                    [_logic, "pendingAdd", [PRTablet_CTRL_ReinforceList, _selectedIndex, _reinforceList lbText _selectedIndex, "REINFORCE", _selectedValue, +_selectedReinforceListParents]] call MAINCLASS;
 
                                 };
 
@@ -3237,7 +3237,7 @@ switch(_operation) do {
 
                                 // a group: picked out for Add
                                 if (_selectedValue isEqualTo "<< Back") exitWith {};
-                                [_logic, "pendingAdd", [PRTablet_CTRL_ReinforceList, _selectedIndex, _selectedOption, "REINFORCE", _selectedValue, +_selectedReinforceListParents]] call MAINCLASS;
+                                [_logic, "pendingAdd", [PRTablet_CTRL_ReinforceList, _selectedIndex, _reinforceList lbText _selectedIndex, "REINFORCE", _selectedValue, +_selectedReinforceListParents]] call MAINCLASS;
 
                             };
                         };

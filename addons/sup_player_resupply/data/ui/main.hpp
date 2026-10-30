@@ -431,9 +431,17 @@ class PRTablet
         {
             idc = 60053;
             x = 0.4075 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.5475 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.5460 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0500 * GUI_GRID_WAbs;
-            h = 0.021 * GUI_GRID_HAbs;
+            h = 0.024 * GUI_GRID_HAbs;
+            class TextPos
+            {
+                // the heading row is shorter than the tablet's other buttons, so the text sits higher
+                left = 0;
+                top = 0.05 * GUI_GRID_H;
+                right = 0;
+                bottom = 0;
+            };
             text = "$STR_ALIVE_PR_UI_ADD";
             tooltip = "$STR_ALIVE_PR_UI_ADD_TIP";
             sizeEx = 0.5 * GUI_GRID_H;
@@ -447,9 +455,17 @@ class PRTablet
         {
             idc = 60010;
             x = 0.4625 * GUI_GRID_WAbs + GUI_GRID_X;
-            y = 0.5475 * GUI_GRID_HAbs + GUI_GRID_Y;
+            y = 0.5460 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0500 * GUI_GRID_WAbs;
-            h = 0.021 * GUI_GRID_HAbs;
+            h = 0.024 * GUI_GRID_HAbs;
+            class TextPos
+            {
+                // the heading row is shorter than the tablet's other buttons, so the text sits higher
+                left = 0;
+                top = 0.05 * GUI_GRID_H;
+                right = 0;
+                bottom = 0;
+            };
             text = "$STR_ALIVE_PR_UI_REMOVE";
             tooltip = "$STR_ALIVE_PR_UI_REMOVE_TIP";
             sizeEx = 0.5 * GUI_GRID_H;
