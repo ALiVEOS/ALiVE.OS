@@ -29,9 +29,12 @@ _distance = if(count _this > 1) then {_this select 1} else {1000};
 
 if(isnil "_taskLocation" || {count _taskLocation == 0}) exitWith {""};
 
-// a location with no name (some terrains have nameless NameLocal ones) is no use in a sentence
-_nearLocations = (nearestLocations [_taskLocation, ["NameVillage","NameCity","NameCityCapital","NameLocal"], _distance]) select {text _x != ""};
-
+// A town or village first, and a local name only when none is in reach: Altis's local names include plain labels
+// such as "military", "factory", "power plant" and "quarry", which read badly in a task title ("Reconnoitre
+// military") and say nothing about where the place is, while real local names (Kavala Pier, Cape Thelos) still
+// serve where there is no settlement nearby.
+// A location with no name (some terrains have nameless NameLocal ones) is no use in a sentence.
+//
 // Bounded expansion. Without an upper bound, callers passing an
 // off-map position get a location name from far away that bears
 // no real relation to the position -- Rujasu's 2026-05-19 report
@@ -42,10 +45,18 @@ _nearLocations = (nearestLocations [_taskLocation, ["NameVillage","NameCity","Na
 // fnc_taskVIPEscort:258) already handle "" by substituting "the
 // destination settlement".
 private _maxDistance = 5000;
-while {count _nearLocations < 1 && {_distance < _maxDistance}} do {
-    _distance = _distance + 500;
-    _nearLocations = (nearestLocations [_taskLocation, ["NameVillage","NameCity","NameCityCapital","NameLocal"], _distance]) select {text _x != ""};
-};
+private _startDistance = _distance;
+_nearLocations = [];
+{
+    private _types = _x;
+    _distance = _startDistance;
+    _nearLocations = (nearestLocations [_taskLocation, _types, _distance]) select {text _x != ""};
+    while {count _nearLocations < 1 && {_distance < _maxDistance}} do {
+        _distance = _distance + 500;
+        _nearLocations = (nearestLocations [_taskLocation, _types, _distance]) select {text _x != ""};
+    };
+    if (count _nearLocations > 0) exitWith {};
+} forEach [["NameVillage","NameCity","NameCityCapital"], ["NameLocal"]];
 
 if (count _nearLocations < 1) exitWith {""};
 
