@@ -112,6 +112,200 @@ switch(_operation) do {
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
+    // The supply list shows only folders that lead to something (Jman, 30 Oct): a top-level choice or a category
+    // whose every item is filtered out by the delivery (too heavy for an airdrop, a car that can't be slung) used to
+    // open onto nothing but << Back.
+    // [category, top-level choice, stop at the first item] -> [names, classes] of what that category offers for the
+    // selected delivery, the same filter the third level applies; nil while the vehicle cache is still building
+    case "supplyItems": {
+        _args params ["_category", ["_top", ""], ["_anyOnly", false]];
+        _result = nil;
+        if (!isNil "ALIVE_PR_vehicleCacheReady" && {ALIVE_PR_vehicleCacheReady}) then {
+            private _sortedVehicles = [_logic,"sortedVehicles"] call MAINCLASS;
+            if (isNil "_sortedVehicles" || {!(_sortedVehicles isEqualType [])} || {count _sortedVehicles < 2}) then { _sortedVehicles = [] call ALiVE_fnc_hashCreate };
+            private _classes = [_sortedVehicles, _category, []] call ALIVE_fnc_hashGet;
+            if !(_classes isEqualType []) then { _classes = [] };
+            // under Combat Supplies only the crates of a category are listed
+            if (_top == "Combat Supplies") then {
+                _classes = _classes select {
+                    _x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
+                    || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])} || {_x in (missionNamespace getVariable ["ALiVE_PR_HUB_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}
+                };
+            };
+            private _deliveryType = [_logic,"selectedDeliveryListValue"] call MAINCLASS;
+            private _counts = switch (_deliveryType) do {
+                case "PR_AIRDROP":     { [_logic,"countsAir"] call MAINCLASS };
+                case "PR_HELI_INSERT": { [_logic,"countsInsert"] call MAINCLASS };
+                default                { [_logic,"countsConvoy"] call MAINCLASS };
+            };
+            private _maxWeight = _counts select 0;
+            private _names = [];
+            private _vals = [];
+            {
+                private _cached = [ALIVE_PR_vehicleCache, _x, ["", 0]] call ALIVE_fnc_hashGet;
+                private _ok = false;
+                if (_deliveryType == "PR_HELI_INSERT" || _deliveryType == "PR_AIRDROP") then {
+                    private _slingable = count ([(configFile >> "CfgVehicles" >> _x >> "slingLoadCargoMemoryPoints")] call ALiVE_fnc_getConfigValue) > 0;
+                    _ok = (_slingable || {_deliveryType != "PR_HELI_INSERT"} || {!(_category in ["Car", "Ship"])}) && {(_cached select 1) < _maxWeight};
+                } else {
+                    _ok = _deliveryType in ["PR_STANDARD", "PR_COLLECT"];
+                };
+                if (_ok) then { _names pushBack (_cached select 0); _vals pushBack _x };
+                if (_anyOnly && {_vals isNotEqualTo []}) exitWith {};
+            } forEach _classes;
+            _result = [_names, _vals];
+        };
+    };
+    // [top-level choice] -> [names, values] of its categories, << Back first, each one leading to at least one item
+    // once the vehicle cache is ready (before that, every category, as the items can't be checked yet)
+    case "supplyCategories": {
+        _args params ["_selectedValue"];
+        private _sortedVehicles = [_logic,"sortedVehicles"] call MAINCLASS;
+        if (isNil "_sortedVehicles" || {!(_sortedVehicles isEqualType [])} || {count _sortedVehicles < 2}) then { _sortedVehicles = [] call ALiVE_fnc_hashCreate };
+        private _faction = [_logic,"faction"] call MAINCLASS;
+        private _side = [_logic,"side"] call MAINCLASS;
+        private _selectedDeliveryValue = [_logic,"selectedDeliveryListValue"] call MAINCLASS;
+        private _selectedSupplyListOptions = [[], ["<< Back"]];
+        private _selectedSupplyListValues = [[], ["<< Back"]];
+        private _options = [];
+        private _values = [];
+
+        switch(_selectedValue) do {
+            case "Vehicles": {
+
+                private ["_staticOptions"];
+
+                // attempt to get options by faction
+                _staticOptions = [ALIVE_factionDefaultResupplyVehicleOptions,_faction,[]] call ALIVE_fnc_hashGet;
+
+                // if no options found for the faction use side options
+                if(count _staticOptions == 0) then {
+                    _staticOptions = [ALIVE_sideDefaultResupplyVehicleOptions,_side] call ALIVE_fnc_hashGet;
+                };
+
+                // Collect at a hub offers what a convoy would bring (Jman, 29 Oct: the
+                // table has no entry for it, so the list came up empty with no way back)
+                private _optionsKey = [_selectedDeliveryValue, "PR_STANDARD"] select (_selectedDeliveryValue == "PR_COLLECT");
+                _staticOptions = [_staticOptions,_optionsKey,[]] call ALIVE_fnc_hashGet;
+                if !(_staticOptions isEqualTypeArray [[], []]) then { _staticOptions = [["<< Back"], ["<< Back"]] };
+
+                _options = +(_staticOptions select 0);
+                _values = +(_staticOptions select 1);
+                // always a way back, whatever a faction's own table holds
+                if !("<< Back" in _values) then { _options = ["<< Back"] + _options; _values = ["<< Back"] + _values };
+
+                // PR_HELI_INSERT: static data only includes "Air" by default.
+                // Supplement with slingable ground categories so players can
+                // request vehicles that can be underslung and delivered by heli.
+                if (_selectedDeliveryValue == "PR_HELI_INSERT") then {
+                    private _extraCategories = ["Car","Armored","Support","Static"];
+                    {
+                        if !(_x in _values) then {
+                            _options pushBack _x;
+                            _values pushBack _x;
+                        };
+                    } forEach _extraCategories;
+                };
+
+                _selectedSupplyListOptions set [1,_options];
+                _selectedSupplyListValues set [1,_values];
+            };
+            case "Defence Stores": {
+
+                // Scan sortedVehicles for categories containing static/structure objects
+                // (not Man, not crewed vehicles, not ammo boxes).
+                // The static side options ("Fortifications", "Tents" etc.) are vanilla
+                // vehicleClass names that mod factions don't use.
+                _options = ["<< Back"];
+                _values  = ["<< Back"];
+
+                private _vehicleCats = ["Car","Armored","Air","Ship","Support","Static","StaticWeapon"];
+
+                {
+                    private _catKey = _x;
+                    if !(_catKey in _vehicleCats) then {
+                        private _classList = [_sortedVehicles, _catKey] call ALIVE_fnc_hashGet;
+                        if (!isNil "_classList" && {_classList isEqualType []} && {count _classList > 0}) then {
+                            private _hasStatic = false;
+                            {
+                                if (!(_x isKindOf "Man") && !(_x isKindOf "LandVehicle") && !(_x isKindOf "Air") && !(_x isKindOf "Ship") && !(_x isKindOf "Ammo")) exitWith {
+                                    _hasStatic = true;
+                                };
+                            } forEach _classList;
+                            if (_hasStatic && !(_catKey in _values)) then {
+                                private _parts = [_catKey, "_"] call CBA_fnc_split;
+                                private _catName = (_parts select (count _parts - 1)) call CBA_fnc_capitalize;
+                                _options pushBack _catName;
+                                _values  pushBack _catKey;
+                            };
+                        };
+                    };
+                } forEach (_sortedVehicles select 1);
+
+                // Always include Static (sandbags, barbed wire etc.)
+                if !("Static" in _values) then {
+                    private _staticList = [_sortedVehicles, "Static"] call ALIVE_fnc_hashGet;
+                    if (!isNil "_staticList" && {count _staticList > 0}) then {
+                        _options pushBack "Static";
+                        _values  pushBack "Static";
+                    };
+                };
+
+                _selectedSupplyListOptions set [1,_options];
+                _selectedSupplyListValues  set [1,_values];
+            };
+            case "Combat Supplies": {
+
+                // Scan sortedVehicles for categories containing ammo/supply objects.
+                // The static side option ("Ammo") is a vanilla vehicleClass name
+                // that mod factions may not use.
+                _options = ["<< Back"];
+                _values  = ["<< Back"];
+
+                {
+                    private _catKey = _x;
+                    private _classList = [_sortedVehicles, _catKey] call ALIVE_fnc_hashGet;
+                    if (!isNil "_classList" && {_classList isEqualType []} && {count _classList > 0}) then {
+                        private _hasAmmo = false;
+                        {
+                            // Arma 3's ammo and supply crates descend from ReammoBox_F, a
+                            // separate base from ReammoBox, so without it no crate counted
+                            // and the category holding them was never offered.
+                            // A box the mission whitelists counts too: cardboard and wooden
+                            // boxes are plain objects, not ammo crates (AshTray on Discord). The Also list
+                            // brings boxes in the same way.
+                            if (_x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
+                                || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])} || {_x in (missionNamespace getVariable ["ALiVE_PR_HUB_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}) exitWith {
+                                _hasAmmo = true;
+                            };
+                        } forEach _classList;
+                        if (_hasAmmo && !(_catKey in _values)) then {
+                            private _parts = [_catKey, "_"] call CBA_fnc_split;
+                            private _catName = (_parts select (count _parts - 1)) call CBA_fnc_capitalize;
+                            _options pushBack _catName;
+                            _values  pushBack _catKey;
+                        };
+                    };
+                } forEach (_sortedVehicles select 1);
+
+                _selectedSupplyListOptions set [1,_options];
+                _selectedSupplyListValues  set [1,_values];
+            };
+        };
+        _options = _selectedSupplyListOptions select 1;
+        _values = _selectedSupplyListValues select 1;
+        private _keep = [];
+        {
+            private _items = [_logic, "supplyItems", [_x, _selectedValue, true]] call MAINCLASS;
+            if (_x == "<< Back" || {isNil "_items"} || {(_items select 1) isNotEqualTo []}) then { _keep pushBack _forEachIndex };
+        } forEach _values;
+        _result = [_keep apply { _options select _x }, _keep apply { _values select _x }];
+    };
+    // the top-level choices that lead to at least one item for the selected delivery
+    case "supplyTop": {
+        private _all = ["Vehicles","Defence Stores","Combat Supplies"];
+        _result = _all select { count (([_logic, "supplyCategories", [_x]] call MAINCLASS) select 1) > 1 };
+    };
     case "destroy": {
         if (isServer) then {
             // if server
@@ -1105,6 +1299,23 @@ switch(_operation) do {
                 } forEach _categoryKeys;
 
                 ALIVE_PR_vehicleCacheReady = true;
+                // the top level was drawn before items could be checked: drawn again now without the choices that hold nothing
+                if ((isNil "ALIVE_PR_pendingSupplyCategory" || {ALIVE_PR_pendingSupplyCategory == ""}) && {!isNil "ALIVE_SUP_PLAYER_RESUPPLY"} && {([ALIVE_SUP_PLAYER_RESUPPLY, "selectedSupplyListDepth"] call MAINCLASS) == 0}) then {
+                    [] spawn {
+                        disableSerialization;
+                        private _supplyList = PR_getControl(PRTablet_CTRL_MainDisplay, PRTablet_CTRL_SupplyList);
+                        if (isNull _supplyList) exitWith {};
+                        private _topChoices = [ALIVE_SUP_PLAYER_RESUPPLY, "supplyTop"] call MAINCLASS;
+                        private _o = [ALIVE_SUP_PLAYER_RESUPPLY, "selectedSupplyListOptions"] call MAINCLASS;
+                        private _v = [ALIVE_SUP_PLAYER_RESUPPLY, "selectedSupplyListValues"] call MAINCLASS;
+                        _o set [0, _topChoices];
+                        _v set [0, +_topChoices];
+                        [ALIVE_SUP_PLAYER_RESUPPLY, "selectedSupplyListOptions", _o] call MAINCLASS;
+                        [ALIVE_SUP_PLAYER_RESUPPLY, "selectedSupplyListValues", _v] call MAINCLASS;
+                        lbClear _supplyList;
+                        { _supplyList lbAdd format ["%1", _x] } forEach _topChoices;
+                    };
+                };
                 if (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]) then {["SUP_PR - vehicle cache built: %1 entries", count (ALIVE_PR_vehicleCache select 1)] call ALiVE_fnc_dump;};
 
                 // If the user selected a category while the cache was still building,
@@ -2176,6 +2387,13 @@ switch(_operation) do {
                     _selectedSupplyListValues = [_logic,"selectedSupplyListValues"] call MAINCLASS;
                     _selectedSupplyListDepth = [_logic,"selectedSupplyListDepth"] call MAINCLASS;
 
+                    // only the choices that lead to something for this delivery (the list is filtered again once the vehicle cache is ready)
+                    private _topChoices = [_logic, "supplyTop"] call MAINCLASS;
+                    _selectedSupplyListOptions set [0, _topChoices];
+                    _selectedSupplyListValues set [0, +_topChoices];
+                    [_logic,"selectedSupplyListOptions",_selectedSupplyListOptions] call MAINCLASS;
+                    [_logic,"selectedSupplyListValues",_selectedSupplyListValues] call MAINCLASS;
+
                     lbClear _supplyList;
 
                     {
@@ -2313,128 +2531,9 @@ switch(_operation) do {
 
                                 _updateList = true;
 
-                                switch(_selectedValue) do {
-                                    case "Vehicles": {
-
-                                        private ["_staticOptions"];
-
-                                        // attempt to get options by faction
-                                        _staticOptions = [ALIVE_factionDefaultResupplyVehicleOptions,_faction,[]] call ALIVE_fnc_hashGet;
-
-                                        // if no options found for the faction use side options
-                                        if(count _staticOptions == 0) then {
-                                            _staticOptions = [ALIVE_sideDefaultResupplyVehicleOptions,_side] call ALIVE_fnc_hashGet;
-                                        };
-
-                                        // Collect at a hub offers what a convoy would bring (Jman, 29 Oct: the
-                                        // table has no entry for it, so the list came up empty with no way back)
-                                        private _optionsKey = [_selectedDeliveryValue, "PR_STANDARD"] select (_selectedDeliveryValue == "PR_COLLECT");
-                                        _staticOptions = [_staticOptions,_optionsKey,[]] call ALIVE_fnc_hashGet;
-                                        if !(_staticOptions isEqualTypeArray [[], []]) then { _staticOptions = [["<< Back"], ["<< Back"]] };
-
-                                        _options = +(_staticOptions select 0);
-                                        _values = +(_staticOptions select 1);
-                                        // always a way back, whatever a faction's own table holds
-                                        if !("<< Back" in _values) then { _options = ["<< Back"] + _options; _values = ["<< Back"] + _values };
-
-                                        // PR_HELI_INSERT: static data only includes "Air" by default.
-                                        // Supplement with slingable ground categories so players can
-                                        // request vehicles that can be underslung and delivered by heli.
-                                        if (_selectedDeliveryValue == "PR_HELI_INSERT") then {
-                                            private _extraCategories = ["Car","Armored","Support","Static"];
-                                            {
-                                                if !(_x in _values) then {
-                                                    _options pushBack _x;
-                                                    _values pushBack _x;
-                                                };
-                                            } forEach _extraCategories;
-                                        };
-
-                                        _selectedSupplyListOptions set [1,_options];
-                                        _selectedSupplyListValues set [1,_values];
-                                    };
-                                    case "Defence Stores": {
-
-                                        // Scan sortedVehicles for categories containing static/structure objects
-                                        // (not Man, not crewed vehicles, not ammo boxes).
-                                        // The static side options ("Fortifications", "Tents" etc.) are vanilla
-                                        // vehicleClass names that mod factions don't use.
-                                        _options = ["<< Back"];
-                                        _values  = ["<< Back"];
-
-                                        private _vehicleCats = ["Car","Armored","Air","Ship","Support","Static","StaticWeapon"];
-
-                                        {
-                                            private _catKey = _x;
-                                            if !(_catKey in _vehicleCats) then {
-                                                private _classList = [_sortedVehicles, _catKey] call ALIVE_fnc_hashGet;
-                                                if (!isNil "_classList" && {_classList isEqualType []} && {count _classList > 0}) then {
-                                                    private _hasStatic = false;
-                                                    {
-                                                        if (!(_x isKindOf "Man") && !(_x isKindOf "LandVehicle") && !(_x isKindOf "Air") && !(_x isKindOf "Ship") && !(_x isKindOf "Ammo")) exitWith {
-                                                            _hasStatic = true;
-                                                        };
-                                                    } forEach _classList;
-                                                    if (_hasStatic && !(_catKey in _values)) then {
-                                                        private _parts = [_catKey, "_"] call CBA_fnc_split;
-                                                        private _catName = (_parts select (count _parts - 1)) call CBA_fnc_capitalize;
-                                                        _options pushBack _catName;
-                                                        _values  pushBack _catKey;
-                                                    };
-                                                };
-                                            };
-                                        } forEach (_sortedVehicles select 1);
-
-                                        // Always include Static (sandbags, barbed wire etc.)
-                                        if !("Static" in _values) then {
-                                            private _staticList = [_sortedVehicles, "Static"] call ALIVE_fnc_hashGet;
-                                            if (!isNil "_staticList" && {count _staticList > 0}) then {
-                                                _options pushBack "Static";
-                                                _values  pushBack "Static";
-                                            };
-                                        };
-
-                                        _selectedSupplyListOptions set [1,_options];
-                                        _selectedSupplyListValues  set [1,_values];
-                                    };
-                                    case "Combat Supplies": {
-
-                                        // Scan sortedVehicles for categories containing ammo/supply objects.
-                                        // The static side option ("Ammo") is a vanilla vehicleClass name
-                                        // that mod factions may not use.
-                                        _options = ["<< Back"];
-                                        _values  = ["<< Back"];
-
-                                        {
-                                            private _catKey = _x;
-                                            private _classList = [_sortedVehicles, _catKey] call ALIVE_fnc_hashGet;
-                                            if (!isNil "_classList" && {_classList isEqualType []} && {count _classList > 0}) then {
-                                                private _hasAmmo = false;
-                                                {
-                                                    // Arma 3's ammo and supply crates descend from ReammoBox_F, a
-                                                    // separate base from ReammoBox, so without it no crate counted
-                                                    // and the category holding them was never offered.
-                                                    // A box the mission whitelists counts too: cardboard and wooden
-                                                    // boxes are plain objects, not ammo crates (AshTray on Discord). The Also list
-                                                    // brings boxes in the same way.
-                                                    if (_x isKindOf "Ammo" || {_x isKindOf "ReammoBox"} || {_x isKindOf "AmmoBox"} || {_x isKindOf "ReammoBox_F"}
-                                                        || {(_x in ALiVE_PR_WHITELIST || {_x in (missionNamespace getVariable ["ALiVE_PR_ALSO", []])} || {_x in (missionNamespace getVariable ["ALiVE_PR_HUB_ALSO", []])}) && {!(_x isKindOf "AllVehicles")}}) exitWith {
-                                                        _hasAmmo = true;
-                                                    };
-                                                } forEach _classList;
-                                                if (_hasAmmo && !(_catKey in _values)) then {
-                                                    private _parts = [_catKey, "_"] call CBA_fnc_split;
-                                                    private _catName = (_parts select (count _parts - 1)) call CBA_fnc_capitalize;
-                                                    _options pushBack _catName;
-                                                    _values  pushBack _catKey;
-                                                };
-                                            };
-                                        } forEach (_sortedVehicles select 1);
-
-                                        _selectedSupplyListOptions set [1,_options];
-                                        _selectedSupplyListValues  set [1,_values];
-                                    };
-                                };
+                                private _cats = [_logic, "supplyCategories", [_selectedValue]] call MAINCLASS;
+                                _selectedSupplyListOptions set [1, _cats select 0];
+                                _selectedSupplyListValues set [1, _cats select 1];
 
                             };
                             case 1: {
@@ -4179,6 +4278,13 @@ switch(_operation) do {
         _selectedSupplyListValues = [_logic,"selectedSupplyListValues"] call MAINCLASS;
         [_logic,"selectedSupplyListDepth",0] call MAINCLASS;
 
+        // only the choices that lead to something for this delivery (the list is filtered again once the vehicle cache is ready)
+        private _topChoices = [_logic, "supplyTop"] call MAINCLASS;
+        _selectedSupplyListOptions set [0, _topChoices];
+        _selectedSupplyListValues set [0, +_topChoices];
+        [_logic,"selectedSupplyListOptions",_selectedSupplyListOptions] call MAINCLASS;
+        [_logic,"selectedSupplyListValues",_selectedSupplyListValues] call MAINCLASS;
+
         lbClear _supplyList;
 
         {
@@ -4405,6 +4511,13 @@ switch(_operation) do {
         _selectedSupplyListOptions = [_logic,"selectedSupplyListOptions"] call MAINCLASS;
         _selectedSupplyListValues = [_logic,"selectedSupplyListValues"] call MAINCLASS;
         [_logic,"selectedSupplyListDepth",0] call MAINCLASS;
+
+        // only the choices that lead to something for this delivery (the list is filtered again once the vehicle cache is ready)
+        private _topChoices = [_logic, "supplyTop"] call MAINCLASS;
+        _selectedSupplyListOptions set [0, _topChoices];
+        _selectedSupplyListValues set [0, +_topChoices];
+        [_logic,"selectedSupplyListOptions",_selectedSupplyListOptions] call MAINCLASS;
+        [_logic,"selectedSupplyListValues",_selectedSupplyListValues] call MAINCLASS;
 
         lbClear _supplyList;
 
