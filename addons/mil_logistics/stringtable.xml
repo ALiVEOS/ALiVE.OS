@@ -544,6 +544,39 @@
     <Portuguese>Coloque um módulo de Logística militar para reforçar e reabastecer as facções sob o controle do módulo Comandante IA militar sincronizado.</Portuguese>
     <Russian>Разместите модуль «Военная логистика», чтобы пополнять и снабжать фракции под управлением синхронизированного модуля «Военный ИИ-командир».</Russian>
 </Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME">
+    <English>Income per Held Objective:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_COMMENT">
+    <English>Force pool added for each objective this side holds, every Income Interval. 0 turns income off. Not paid with an Infinite force pool.</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_INTERVAL">
+    <English>Income Interval (minutes):</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_INTERVAL_COMMENT">
+    <English>How often the income is paid. Pausing the module pauses the income too.</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES">
+    <English>Income From:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES_COMMENT">
+    <English>Which held objectives pay income.</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES_ALL">
+    <English>All objectives</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES_MIL">
+    <English>Military objectives only</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES_MILCUS">
+    <English>Military and custom objectives</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_CAP">
+    <English>Income Cap:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_FORCE_POOL_INCOME_CAP_COMMENT">
+    <English>Income stops once the force pool reaches this number. 0 means no cap. A pool already above it is left as it is.</English>
+</Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC">
     <English>Inc. Force Strength (Obj. Capture):</English>
     <Chinese>增加部隊兵力（佔領目標）：</Chinese>

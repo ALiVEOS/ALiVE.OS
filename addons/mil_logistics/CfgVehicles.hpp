@@ -364,6 +364,37 @@ class CfgVehicles
                                 };
                         };
                         class startForceStrengthDecFactor : Edit { property = "ALiVE_mil_logistics_startForceStrengthDecFactor"; displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR"; tooltip = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR_COMMENT"; defaultValue = """1"""; };
+                        // ---- Force Pool Income ----------------------------------------------
+                        class forcePoolIncome : Edit { property = "ALiVE_mil_logistics_forcePoolIncome"; displayName = "$STR_ALIVE_ML_FORCE_POOL_INCOME"; tooltip = "$STR_ALIVE_ML_FORCE_POOL_INCOME_COMMENT"; defaultValue = """0"""; };
+                        class forcePoolIncomeInterval : Combo
+                        {
+                                property = "ALiVE_mil_logistics_forcePoolIncomeInterval";
+                                displayName = "$STR_ALIVE_ML_FORCE_POOL_INCOME_INTERVAL";
+                                tooltip = "$STR_ALIVE_ML_FORCE_POOL_INCOME_INTERVAL_COMMENT";
+                                defaultValue = """15""";
+                                class Values
+                                {
+                                    class M5 { name = "5"; value = "5"; };
+                                    class M10 { name = "10"; value = "10"; };
+                                    class M15 { name = "15"; value = "15"; default = 1; };
+                                    class M30 { name = "30"; value = "30"; };
+                                    class M60 { name = "60"; value = "60"; };
+                                };
+                        };
+                        class forcePoolIncomeObjectives : Combo
+                        {
+                                property = "ALiVE_mil_logistics_forcePoolIncomeObjectives";
+                                displayName = "$STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES";
+                                tooltip = "$STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES_COMMENT";
+                                defaultValue = """ALL""";
+                                class Values
+                                {
+                                    class All { name = "$STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES_ALL"; value = "ALL"; default = 1; };
+                                    class Mil { name = "$STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES_MIL"; value = "MIL"; };
+                                    class MilCus { name = "$STR_ALIVE_ML_FORCE_POOL_INCOME_OBJECTIVES_MILCUS"; value = "MILCUS"; };
+                                };
+                        };
+                        class forcePoolIncomeCap : Edit { property = "ALiVE_mil_logistics_forcePoolIncomeCap"; displayName = "$STR_ALIVE_ML_FORCE_POOL_INCOME_CAP"; tooltip = "$STR_ALIVE_ML_FORCE_POOL_INCOME_CAP_COMMENT"; defaultValue = """0"""; };
                         // ---- On Spawn Hook (#1083) --------------------------------------------
                         class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
                         class onEachSpawn : ALiVE_EditMultilineSQF
