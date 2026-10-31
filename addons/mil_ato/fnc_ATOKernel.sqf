@@ -818,6 +818,19 @@ private _fnc_radioOnce = {
     [_logic, _key, _say] call _fnc_radio
 };
 
+// Find Out Before Attacking (mil_opcom): a ground commander that asked for a recce hears how it goes, as
+// ATO_RECCE_REPORT [request ID, "denied"|"accepted"|"onstation", aircraft]. A player's request, or one ATO made itself,
+// is not reported.
+private _fnc_recceReport = {
+    params [["_requester", [], [[]]], ["_type", "", [""]], ["_state", "", [""]], ["_aircraft", [], [[]]]];
+    if !(_type isEqualTo "Recce") exitWith { false };
+    if (isNil "ALIVE_eventLog" || {!([_requester] call ALIVE_fnc_isHash)}) exitWith { false };
+    if (([_requester, "kind", ""] call ALIVE_fnc_hashGet) in ["player", "ATO"]) exitWith { false };
+    private _e = ["ATO_RECCE_REPORT", [[_requester, "requestId", ""] call ALIVE_fnc_hashGet, _state, _aircraft], "ATO"] call ALIVE_fnc_event;
+    [ALIVE_eventLog, "addEvent", _e] call ALIVE_fnc_eventLog;
+    true
+};
+
 // Tell the side, and the player if it was theirs, that a request is refused.
 // The unavailable key when the fleet is the reason, the denied key otherwise:
 // they are different messages and the old module chose between them.
@@ -830,6 +843,7 @@ private _fnc_denyOnRadio = {
         [_logic, "STR_ALIVE_ATO_REQUEST_DENIED", [_hqName, _type, [_targetPos] call _fnc_grid], _type, _requester] call _fnc_radioOnce;
     };
     [_requester, "DENIED_ATO_UNAVAILABLE", []] call _fnc_playerResponse;
+    [_requester, _type, "denied"] call _fnc_recceReport;
     true
 };
 
@@ -1063,6 +1077,18 @@ private _fnc_transition = {
             // it read as never having flown: no call on the radio, and a pair's
             // sortie planned again when the other then failed to launch.
             [_row2, "flew", true] call ALIVE_fnc_hashSet;
+
+            // a ground commander's recce over its objective: it watches from the aircraft (Find Out Before Attacking)
+            if (_from isEqualTo "ENROUTE" && {_type isEqualTo "Recce"} && {!(_task isEqualTo [])} && {!isNull _obj}) then {
+                private _sid = [_sortieOf, _tail, ""] call ALIVE_fnc_hashGet;
+                private _rec = [_task, "sortie", _sid] call ALIVE_fnc_ATOTask;
+                if ([_rec] call ALIVE_fnc_isHash) then {
+                    private _req = [_task, "request", [_rec, "requestId", ""] call ALIVE_fnc_hashGet] call ALIVE_fnc_ATOTask;
+                    if ([_req] call ALIVE_fnc_isHash) then {
+                        [[_req, "requester", []] call ALIVE_fnc_hashGet, _type, "onstation", [_obj]] call _fnc_recceReport;
+                    };
+                };
+            };
 
             // A suppression sortie arriving is something the rest of the mod
             // may want to know about: the old module raised this event.
@@ -1621,6 +1647,7 @@ private _fnc_drain = {
                 private _req = [_task, "request", [_s, "requestId", ""] call ALIVE_fnc_hashGet] call ALIVE_fnc_ATOTask;
                 if ([_req] call ALIVE_fnc_isHash) then {
                     [[_req, "requester", []] call ALIVE_fnc_hashGet, "DENIED_ATO_UNAVAILABLE", []] call _fnc_playerResponse;
+                    [[_req, "requester", []] call ALIVE_fnc_hashGet, [_req, "type", ""] call ALIVE_fnc_hashGet, "denied"] call _fnc_recceReport;
                 };
             };
         } forEach _stale;
@@ -2787,6 +2814,7 @@ switch(_operation) do {
             private _factionName = getText ((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
             if (_factionName isEqualTo "") then { _factionName = _faction };
             [_logic, "STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED", [[_logic] call _fnc_hqName, _factionName, _type, [_targetPos] call _fnc_grid], _type, _requester] call _fnc_radioOnce;
+            [_requester, _type, "accepted"] call _fnc_recceReport;
             if ([_logic] call _fnc_debugOn) then {
                 ["ALIVE_fnc_ATOKernel - %1 request %2 from %3 accepted as sortie %4", _type, _requestId, _from, _r] call ALiVE_fnc_dump;
             };

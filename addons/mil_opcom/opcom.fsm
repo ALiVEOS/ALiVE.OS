@@ -1693,6 +1693,7 @@ class FSM
                          "private _RECONtype = _recon select 0;" \n
                          "private _target = _recon select 1;" \n
                          "private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
+                         "private _reconSent = false;" \n
                          "" \n
                          "// Passed Target is an objective" \n
                          "if !(isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) then {" \n
@@ -1737,7 +1738,12 @@ class FSM
                          "					15,			 // DURATION in mins" \n
                          "					[_building]  // TARGETS either profile or unit" \n
                          "				];" \n
-                         "				_event = ['ATO_REQUEST', [""Recce"", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, position _building, _args],""OPCOM""] call ALIVE_fnc_event;" \n
+                         "				private _reqData = [""Recce"", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, position _building, _args];" \n
+                         "				// Find Out Before Attacking: the request ID the objective's intel waits on, so ATO can say how the recce goes" \n
+                         "				private _intelNow = [_objective,""intel""] call ALiVE_fnc_HashGet;" \n
+                         "				if (!isNil ""_intelNow"" && {(_intelNow param [9, """"]) != """"} && {!(_intelNow param [10, false])}) then {_reqData pushBack (_intelNow select 9); _intelNow set [10, true]};" \n
+                         "				_event = ['ATO_REQUEST', _reqData,""OPCOM""] call ALIVE_fnc_event;" \n
+                         "				_reconSent = true;" \n
                          "				_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "                } else {" \n
                          "                    if (_debug && {!_exitFSM}) then {" \n
@@ -1753,6 +1759,8 @@ class FSM
                          "	};" \n
                          "};" \n
                          "" \n
+                         "// Find Out Before Attacking: no recce went, so the objective's intel has no air source to wait on" \n
+                         "if (!isNil ""_objective"" && {!_reconSent}) then {[_OPCOM_HANDLER,""intelAir"",[_objective,""notsent""]] call ALiVE_fnc_OPCOM};" \n
                          "_OPCOM_QUEUE pushBack [""analyze"",nil]; _recon = nil; _busy = false;" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

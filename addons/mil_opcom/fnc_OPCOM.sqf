@@ -1272,6 +1272,17 @@ switch (_operation) do {
                 };
             };
 
+            // Find Out Before Attacking: ATO on the recce asked for an objective (intelCollect), [request ID, state, aircraft]
+            case "ATO_RECCE_REPORT": {
+                _eventData params [["_requestId", "", [""]], ["_state", "", [""]], ["_aircraft", [], [[]]]];
+                if (_requestId == "") exitWith {};
+                private _objective = ([_logic, "objectives", []] call ALiVE_fnc_HashGet) select {
+                    private _i = [_x, "intel"] call ALiVE_fnc_HashGet;
+                    !isNil "_i" && {(_i param [9, ""]) == _requestId}
+                };
+                if (_objective isNotEqualTo []) then { [_logic, "intelAir", [_objective select 0, _state, _aircraft]] call MAINCLASS };
+            };
+
             case "PROFILE_ATTACK_END": {
                 _eventData params ["_attackID","_attackerID","_targetsLeft","_targetsKilled","_attackPosition","_attackerSide","_timeStarted","_maxRange","_cyclesLeft"];
 
@@ -5761,7 +5772,15 @@ switch (_operation) do {
         private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
         private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
         private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
-        private _intel = [time, "closed", "open", "closed", [], [], -1, "", ""];
+        private _intel = [time, "closed", "open", "closed", [], [], -1, "", "", "", false];
+        // the air: the recce that follows the attack order (REQUEST_RECON) carries this request ID, and ATO says how it goes
+        if (["ALiVE_mil_ato"] call ALiVE_fnc_isModuleAvailable && {["ALiVE_mil_ato"] call ALiVE_fnc_isModuleInitialised} && {!isNil "ALIVE_eventLog"}) then {
+            _intel set [1, "open"];
+            _intel set [9, format ["OPCOM_%1_%2", _objectiveID, floor time]];
+            if (isNil {[_logic, "intelListenerID"] call ALiVE_fnc_HashGet}) then {
+                [_logic, "intelListenerID", [ALIVE_eventLog, "addListener", [_logic, ["ATO_RECCE_REPORT"]]] call ALIVE_fnc_eventLog] call ALiVE_fnc_HashSet;
+            };
+        };
         // the players: a recon task, unless Preparation Tasks already sent them to reconnoitre this one
         private _module = [_logic, "module"] call ALiVE_fnc_HashGet;
         private _taskID = "";
@@ -5783,7 +5802,83 @@ switch (_operation) do {
         };
         if (_taskID != "") then { _intel set [3, "open"]; _intel set [8, _taskID] };
         [_objective, "intel", _intel] call ALiVE_fnc_HashSet;
-        ["[OPCOM INTEL] %1 %2: collection ordered (ground recon%3)", _side, _objectiveID, ["", ", players' recon task " + _taskID] select (_taskID != "")] call ALiVE_fnc_dump;
+        ["[OPCOM INTEL] %1 %2: collection ordered (ground recon%3%4)", _side, _objectiveID, ["", ", air recon " + (_intel select 9)] select ((_intel select 9) != ""),
+            ["", ", players' recon task " + _taskID] select (_taskID != "")] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    // [objective, state, aircraft]: how the air recon for an objective goes, from ATO (ATO_RECCE_REPORT) or REQUEST_RECON.
+    // The air source is "open" when asked for, "accepted" once ATO takes it, "watching" while the aircraft is over the
+    // objective (checked every minute while the intel is still wanted), and "closed" when it is turned down, never sent,
+    // unanswered, or the aircraft leave, are lost or have watched for 15 minutes
+    case "intelAir": {
+        _args params ["_objective", ["_state", "", [""]], ["_aircraft", [], [[]]]];
+        _result = false;
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        // nothing is wanted once the assault has gone ahead
+        if (isNil "_intel" || {(_intel select 6) >= 0}) exitWith {};
+        private _air = _intel select 1;
+        private _side = [_logic, "side", ""] call ALiVE_fnc_HashGet;
+        private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
+        private _close = {
+            _intel set [1, "closed"];
+            ["[OPCOM INTEL] %1 %2: %3", _side, _objectiveID, _this] call ALiVE_fnc_dump;
+        };
+        switch (_state) do {
+            // the request ID goes to ATO once, so a refusal is about this recce: asked for, or accepted then held too long
+            case "denied": { if (_air in ["open", "accepted"]) then { "air recon turned down" call _close } };
+            case "notsent": { if (_air == "open" && {!(_intel param [10, false])}) then { "no air recon sent" call _close } };
+            case "unanswered": { if (_air == "open") then { "no answer about the air recon" call _close } };
+            case "done": { if (_air != "closed") then { format ["the air recon has left (%1 contacts known there)", count (_intel select 4)] call _close } };
+            case "accepted": {
+                if (_air == "open") then {
+                    _intel set [1, "accepted"];
+                    ["[OPCOM INTEL] %1 %2: air recon accepted", _side, _objectiveID] call ALiVE_fnc_dump;
+                };
+            };
+            case "onstation": {
+                // a recce that comes late is still watched, as long as the assault waits
+                if (_air == "watching") exitWith {};
+                _intel set [1, "watching"];
+                ["[OPCOM INTEL] %1 %2: air recon on station (%3 aircraft)", _side, _objectiveID, count _aircraft] call ALiVE_fnc_dump;
+                [_logic, _objective, _aircraft select { _x isEqualType objNull && {!isNull _x} }] spawn {
+                    params ["_logic", "_objective", "_aircraft"];
+                    private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+                    private _r = ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 200;
+                    private _sidesEnemy = [_logic, "sidesenemy", []] call ALiVE_fnc_HashGet;
+                    private _until = time + 900;
+                    while {
+                        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+                        !isNil "_intel" && {(_intel select 6) < 0} && {(_intel select 1) == "watching"} && {time < _until}
+                        && {(_aircraft findIf { alive _x }) > -1} && {!([_objective, "deleted", false] call ALiVE_fnc_HashGet)}
+                    } do {
+                        {
+                            private _from = getPosASL _x;
+                            if (alive _x && {(_x distance2D _center) < 2500}) then {
+                                // seen from the aircraft: no ground in the way, as findProfilesNearPosition looks from the ground
+                                private _ids = [];
+                                private _poss = [];
+                                {
+                                    private _p = [_x, "position", []] call ALiVE_fnc_HashGet;
+                                    if (count _p > 1) then {
+                                        private _to = ATLtoASL [_p select 0, _p select 1, 0];
+                                        _to set [2, (_to select 2) + 2];
+                                        if !(terrainIntersectASL [_from, _to]) then {
+                                            _ids pushBack ([_x, "profileID", ""] call ALiVE_fnc_HashGet);
+                                            _poss pushBack _p;
+                                        };
+                                    };
+                                } forEach ([_center, _r * 1.5, [_sidesEnemy, "entity"]] call ALIVE_fnc_getNearProfiles);
+                                // the side of the objective it looked from
+                                [_logic, "intelReport", [_objective, "air", _ids, _poss, _center getPos [_r, _center getDir _x]]] call ALiVE_fnc_OPCOM;
+                            };
+                        } forEach _aircraft;
+                        sleep 60;
+                    };
+                    [_logic, "intelAir", [_objective, "done"]] call ALiVE_fnc_OPCOM;
+                };
+            };
+        };
         _result = true;
     };
 
@@ -5836,6 +5931,11 @@ switch (_operation) do {
                 // a task that ended without a report (failed, cancelled, or never given to anyone) closes the source too
                 if (!isNil "ALiVE_TaskHandler" && {isNil {[ALiVE_TaskHandler, "getTask", _taskID] call ALIVE_fnc_taskHandler}} && {time - (_intel select 0) > 60}) then { _intel set [3, "closed"] };
             };
+        };
+        // an air recon ATO has said nothing about after 10 minutes (no ATO answers for this side, or it was dropped) is given
+        // up; one ATO accepted is waited for, as long as the Intel Wait allows
+        if ((_intel select 1) == "open" && {time - (_intel select 0) > 600}) then {
+            [_logic, "intelAir", [_objective, "unanswered"]] call MAINCLASS;
         };
         private _contacts = (_intel select 4) select { time - (_x select 2) <= 1800 };
         _intel set [4, _contacts];
