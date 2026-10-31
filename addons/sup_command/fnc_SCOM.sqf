@@ -4933,7 +4933,7 @@ switch (_operation) do {
                 if (_cmds isEqualTo [] && {!(missionNamespace getVariable ["ALiVE_OPCOM_held", false])}
                     && {(_notes findIf { (_x param [1, 0]) > 0 || {(_x param [4, ""]) != ""} }) >= 0}) then { _status = "" };
                 {
-                    _x params [["_nFaction",""], ["_occLeft",0], ["_occPlace",""], ["_prepLeft",0], ["_prepPlace",""], ["_prepTasks",0]];
+                    _x params [["_nFaction",""], ["_occLeft",0], ["_occPlace",""], ["_prepLeft",0], ["_prepPlace",""], ["_prepTasks",0], ["_rate",[]]];
                     private _fName = getText (configFile >> "CfgFactionClasses" >> _nFaction >> "displayName");
                     private _who = ["", ([_fName, _nFaction] select (_fName == "")) + ": "] select _many;
                     if (_occLeft > 0) then {
@@ -4941,6 +4941,16 @@ switch (_operation) do {
                     };
                     if (_prepPlace != "") then {
                         _status = _status + " " + _who + format [localize "STR_ALIVE_SCOM_CMD_PREP", _prepPlace, _prepTasks, ceil (_prepLeft / 60)];
+                    };
+                    // the force pool its Military Logistics module has left, and what held objectives are paying into it
+                    if (_rate isEqualType [] && {count _rate >= 4}) then {
+                        _rate params ["_pool", "_each", "_mins", "_paused"];
+                        _status = _status + " " + _who + (switch (true) do {
+                            case (_pool < 0): { localize "STR_ALIVE_SCOM_CMD_FP_INFINITE" };
+                            case (_paused): { format [localize "STR_ALIVE_SCOM_CMD_FP_PAUSED", round _pool] };
+                            case (_each > 0): { format [localize "STR_ALIVE_SCOM_CMD_FP_INCOME", round _pool, round _each, _mins] };
+                            default { format [localize "STR_ALIVE_SCOM_CMD_FP", round _pool] };
+                        });
                     };
                 } forEach _notes;
                 _status = _status trim [" ", 0];

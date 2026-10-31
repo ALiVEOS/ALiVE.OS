@@ -745,6 +745,18 @@
 <Key ID="STR_ALIVE_SCOM_CMD_OCC_SOMEWHERE">
     <English>an objective</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_CMD_FP">
+    <English>Force pool: %1.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_FP_INCOME">
+    <English>Force pool: %1, with %2 more every %3 min from held objectives.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_FP_PAUSED">
+    <English>Force pool: %1. Logistics is paused, so no income comes in.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_FP_INFINITE">
+    <English>Force pool: unlimited.</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_CMD_PREP">
     <English>Preparing to assault %1: %2 tasks asked for, %3 min until it goes ahead.</English>
 </Key>

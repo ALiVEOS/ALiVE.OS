@@ -2679,13 +2679,29 @@ switch(_operation) do {
                                 if (_o isNotEqualTo []) then { _occPlace = "grid " + mapGridPosition ([_o,"center",[0,0,0]] call ALiVE_fnc_hashGet) };
                             };
                             private _prep = (_module getVariable ["ALiVE_prep_state", ""]) == "requested";
+                            // the force pool of the Military Logistics module that supplies this commander's first
+                            // faction: [pool (-1 Infinite), income each payment, minutes apart, paused], [] when none does
+                            private _fpFaction = toLower (([_opcom,"factions",[]] call ALiVE_fnc_hashGet) param [0, ""]);
+                            private _rate = [];
+                            if (!isNil "ALIVE_MLGlobalRegistry" && {_fpFaction != ""}) then {
+                                private _mls = [ALIVE_MLGlobalRegistry, "getModules"] call ALIVE_fnc_MLGlobalRegistry;
+                                if (!isNil "_mls") then {
+                                    {
+                                        private _ml = [_mls, _x] call ALIVE_fnc_hashGet;
+                                        private _fs = [];
+                                        { _fs append ((_x param [1, []]) apply { toLower _x }) } forEach (_ml getVariable ["factions", []]);
+                                        if (_rate isEqualTo [] && {_fpFaction in _fs}) then { _rate = [_ml, "incomeRate"] call ALIVE_fnc_ML };
+                                    } forEach (_mls select 1);
+                                };
+                            };
                             _notes pushBack [
                                 ([_opcom,"factions",[]] call ALiVE_fnc_hashGet) param [0, ""],
                                 _occLeft,
                                 _occPlace,
                                 [0, round (((_module getVariable ["ALiVE_prep_deadline", -1]) - time) max 0)] select _prep,
                                 ["", _module getVariable ["ALiVE_prep_place", ""]] select _prep,
-                                [0, count (_module getVariable ["ALiVE_prep_taskIDs", []])] select _prep
+                                [0, count (_module getVariable ["ALiVE_prep_taskIDs", []])] select _prep,
+                                _rate
                             ];
                         };
                     };

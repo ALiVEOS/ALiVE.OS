@@ -7964,11 +7964,38 @@ switch(_operation) do {
         if (time - _last < _interval) exitWith {};
         _logic setVariable ["forcePoolIncomeLast", time];
 
-        // the factions this module supplies; each module pays its own, so two modules on a side never pay one faction twice
-        private _mine = [];
-        { _mine append ((_x param [1, []]) apply { toLower _x }) } forEach (_logic getVariable ["factions", []]);
+        // each module pays its own factions' pool (faction 0's, which all of them share), so two modules on a side
+        // never pay one faction twice
         private _faction = (((_logic getVariable ["factions", []]) param [0, []]) param [1, []]) param [0, ""];
         if (_faction == "") exitWith {};
+        private _held = [_logic, "incomeHeld"] call MAINCLASS;
+        if (_held == 0) exitWith {};
+
+        private _add = _income * _held;
+        private _pool = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+        if (_pool isEqualType "") then { _pool = parseNumber _pool };
+        private _cap = parseNumber format ["%1", _logic getVariable ["forcePoolIncomeCap", "0"]];
+        private _new = _pool + _add;
+        // a cap never lowers a pool that is already over it
+        if (_cap > 0) then { _new = (_new min _cap) max _pool };
+        if (_new == _pool) exitWith {};
+        [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [[_logic, "registryID"] call MAINCLASS, _new]] call ALIVE_fnc_MLGlobalRegistry;
+        // a Dynamic pool sets itself to the held objectives' total at its first reinforcement request; what was paid
+        // before then is added to that total, so it isn't lost
+        if (([_logic, "forcePoolType"] call MAINCLASS) == "DYNAMIC" && {count ([_logic, "reinforcementAnalysis"] call MAINCLASS) == 0}
+            && {!(_logic getVariable ["dynamicPoolTypedStart", false])}) then {
+            _logic setVariable ["forcePoolIncomeEarned", (_logic getVariable ["forcePoolIncomeEarned", 0]) + (_new - _pool)];
+        };
+        ["ML - Force pool income: +%1 for %2 held objectives, %3 pool %4 -> %5", _new - _pool, _held, _faction, _pool, _new] call ALiVE_fnc_dump;
+    };
+
+    // how many objectives pay this module's income now: those its side's AI Commanders hold (sharing a faction with the
+    // module), of the kinds Income From picks, each place once however many commanders list it
+    case "incomeHeld": {
+        _result = 0;
+        if (isNil "OPCOM_INSTANCES") exitWith {};
+        private _mine = [];
+        { _mine append ((_x param [1, []]) apply { toLower _x }) } forEach (_logic getVariable ["factions", []]);
         private _side = [_logic, "side"] call MAINCLASS;
         private _kinds = switch (_logic getVariable ["forcePoolIncomeObjectives", "ALL"]) do {
             case "MIL": { ["MIL"] };
@@ -7990,24 +8017,24 @@ switch(_operation) do {
                 } forEach ([_opcom, "objectives", []] call ALiVE_fnc_hashGet);
             };
         } forEach OPCOM_INSTANCES;
-        if (_held isEqualTo []) exitWith {};
+        _result = count _held;
+    };
 
-        private _add = _income * count _held;
-        private _pool = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+    // what the tablet shows for a faction this module supplies: [pool, income each payment, minutes between payments,
+    // paused]. Pool -1 is Infinite; income 0 is no income (off, Infinite, nothing held)
+    case "incomeRate": {
+        private _faction = (((_logic getVariable ["factions", []]) param [0, []]) param [1, []]) param [0, ""];
+        private _pool = if (isNil "ALIVE_globalForcePool" || {_faction == ""}) then { 0 } else { [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet };
         if (_pool isEqualType "") then { _pool = parseNumber _pool };
+        private _setting = [_logic, "forcePool"] call MAINCLASS;
+        if (_setting isEqualType "") then { _setting = parseNumber _setting };
+        private _income = parseNumber format ["%1", _logic getVariable ["forcePoolIncome", "0"]];
+        private _mins = (parseNumber format ["%1", _logic getVariable ["forcePoolIncomeInterval", "15"]]) max 1;
+        if (_setting == 100000) exitWith { _result = [-1, 0, _mins, false] };
+        private _each = if (_income > 0) then { _income * ([_logic, "incomeHeld"] call MAINCLASS) } else { 0 };
         private _cap = parseNumber format ["%1", _logic getVariable ["forcePoolIncomeCap", "0"]];
-        private _new = _pool + _add;
-        // a cap never lowers a pool that is already over it
-        if (_cap > 0) then { _new = (_new min _cap) max _pool };
-        if (_new == _pool) exitWith {};
-        [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [[_logic, "registryID"] call MAINCLASS, _new]] call ALIVE_fnc_MLGlobalRegistry;
-        // a Dynamic pool sets itself to the held objectives' total at its first reinforcement request; what was paid
-        // before then is added to that total, so it isn't lost
-        if (([_logic, "forcePoolType"] call MAINCLASS) == "DYNAMIC" && {count ([_logic, "reinforcementAnalysis"] call MAINCLASS) == 0}
-            && {!(_logic getVariable ["dynamicPoolTypedStart", false])}) then {
-            _logic setVariable ["forcePoolIncomeEarned", (_logic getVariable ["forcePoolIncomeEarned", 0]) + (_new - _pool)];
-        };
-        ["ML - Force pool income: +%1 for %2 held objectives, %3 pool %4 -> %5", _new - _pool, count _held, _faction, _pool, _new] call ALiVE_fnc_dump;
+        if (_cap > 0) then { _each = ((_cap - _pool) max 0) min _each };
+        _result = [_pool, _each, _mins, [_logic, "pause", objNull] call MAINCLASS];
     };
 
     case "monitorEvent": {
