@@ -475,6 +475,13 @@ class FSM
                          "                    // or scouting is under way there, each new wave joins it (the ""wave"" row), whatever the attack capacity" \n
                          "                    case (""assault"") : {" \n
                          "                        _assaultTgt = [_OPCOM_HANDLER,""assaultTarget"",_obj] call ALiVE_fnc_OPCOM;" \n
+                         "                        // the target may be any objective (the most important first), not only the first one free" \n
+                         "                        // in the list, so the rows below look at it rather than at the first unassigned or attack one" \n
+                         "                        private _tgtUsable = _assaultTgt isNotEqualTo [] && {!(([_assaultTgt,""objectiveID"",""""] call ALiVE_fnc_HashGet) in _OPCOM_SKIP_OBJECTIVES)}" \n
+                         "                            && {(_unconfirmedOrders findIf {((_x select 2) isEqualRef _assaultTgt)}) < 0};" \n
+                         "                        private _tgtState = if (_tgtUsable) then {[_assaultTgt,""opcom_state"",""""] call ALiVE_fnc_HashGet} else {""""};" \n
+                         "                        _un = [[], [_assaultTgt]] select (_tgtUsable && {_tgtState == ""unassigned""});" \n
+                         "                        _at = [[], [_assaultTgt]] select (_tgtUsable && {_tgtState == ""attack""});" \n
                          "                        private _tgtOpen = _assaultTgt isNotEqualTo [] && {[_OPCOM_HANDLER,""assaultWaveOpen"",_assaultTgt] call ALiVE_fnc_OPCOM};" \n
                          "                        private _tgtFree = _tgtOpen && {(_unconfirmedOrders findIf {((_x select 2) isEqualRef _assaultTgt)}) < 0};" \n
                          "                        _priorities = [" \n
@@ -592,6 +599,9 @@ class FSM
                          "                    };" \n
                          "                    _unconfirmedOrders deleteAt _unconfirmedOrderIndex;" \n
                          "                    [_OPCOM_HANDLER,""releaseOrder"",_orderID] call ALiVE_fnc_OPCOM;" \n
+                         "                    // Assault (waves): a wave TACOM didn't answer in time tries again in a minute, as one it turned" \n
+                         "                    // down does, rather than on the very next pass (a busy TACOM answered each of those just too late)" \n
+                         "                    if (([_OPCOM_HANDLER,""controltype"",""""] call ALiVE_fnc_HashGet) == ""assault"" && {(_unconfirmedOrder select 1) == ""attack""}) then {[_OPCOM_HANDLER,""assaultWaveRetry""] call ALiVE_fnc_OPCOM};" \n
                          "                    _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
                          "                };" \n
                          "            };" \n
