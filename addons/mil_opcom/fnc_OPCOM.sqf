@@ -132,6 +132,10 @@ switch (_operation) do {
         // Occupation pause (The Horny Latino on Discord, 19 Oct): minutes an Occupation commander holds new attacks after
         // each capture while players clear up and meet the locals; 0 (the default) is off
         private _occPauseMins = (parseNumber format ["%1", _logic getVariable ["occPauseMins", 0]]) max 0;
+        // Assault (waves): one target at a time; every Wave Interval minutes another Groups Per Wave join the attack on
+        // it until it falls, then the next target. Groups Per Wave 0 sends every group that's free
+        private _assaultWaveMins = (parseNumber format ["%1", _logic getVariable ["assaultWaveMins", 15]]) max 1;
+        private _assaultWaveGroups = (parseNumber format ["%1", _logic getVariable ["assaultWaveGroups", 4]]) max 0;
         // Preparation tasks (The Horny Latino on Discord, 19 Oct): an Invasion commander's attacks wait for a player
         // wiretap task at the objective, or for Preparation Timeout minutes; off by default
         private _prepTasks = (toLower format ["%1", _logic getVariable ["prepTasks", "false"]]) in ["true", "1"];
@@ -485,6 +489,8 @@ switch (_operation) do {
             ["intelchance", _intelChance],
             ["hvt", _hvt],
             ["occPauseMins", _occPauseMins],
+            ["assaultWaveMins", _assaultWaveMins],
+            ["assaultWaveGroups", _assaultWaveGroups],
             // Invasion and Occupation both (A. Ares on Discord, 22 Oct); the type is checked when an attack is picked,
             // so a commander switched from one to the other part way through keeps it
             ["prepTasks", _prepTasks],
@@ -777,6 +783,12 @@ switch (_operation) do {
                 [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
                 [_handler, "sectionsamount_defend", 5] call ALiVE_fnc_HashSet;
             };
+            // Assault: a wave is Groups Per Wave groups (0, every free group); defence and reserve as on Invasion
+            case ("assault") : {
+                [_handler, "sectionsamount_attack", [_assaultWaveGroups, 99] select (_assaultWaveGroups == 0)] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_defend", 2] call ALiVE_fnc_HashSet;
+            };
             case ("asymmetric") : {
                 [_handler, "sectionsamount_attack", 1] call ALiVE_fnc_HashSet;
                 [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
@@ -917,6 +929,7 @@ switch (_operation) do {
                 case ("occupation") :   { "strategic" };
                 case ("dugin")      :   { "strategic" };
                 case ("invasion")   :   { "distance" };
+                case ("assault")    :   { "distance" };
                 case ("asymmetric") :   { "asymmetric" };
             };
 
@@ -999,6 +1012,13 @@ switch (_operation) do {
                 [_handler,"OPCOM_FSM", _opcomFSM] call ALiVE_fnc_HashSet;
                 [_handler,"TACOM_FSM", _tacomFSM] call ALiVE_fnc_HashSet;
             };
+            case "assault": {
+                private _opcomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
+                private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
+
+                [_handler,"OPCOM_FSM", _opcomFSM] call ALiVE_fnc_HashSet;
+                [_handler,"TACOM_FSM", _tacomFSM] call ALiVE_fnc_HashSet;
+            };
             case "asymmetric": {
                 private _fsm = [_handler] execFSM "\x\alive\addons\mil_opcom\insurgency.fsm";
 
@@ -1013,7 +1033,7 @@ switch (_operation) do {
         // side and friendly sides are told where the mines are. Few allows 2 fields, Many 6; one
         // field per objective, at most one every 5 min; never within 300 m of a player. Fields stay until cleared.
         // The mines still in the ground are kept on their objective, so a saved mission lays them again on load.
-        if (_type in ["occupation","invasion","dugin"]) then {
+        if (_type in ["occupation","invasion","dugin","assault"]) then {
             [_handler] spawn {
                 params ["_handler"];
                 sleep 180;
@@ -1135,7 +1155,7 @@ switch (_operation) do {
         // compositions) at its edge facing the enemy. Few allows 3, Many 8; at most one every 5 min,
         // never within 300 m of a player, and not where fortifications already stand (which also
         // covers a fort restored from a save).
-        if (_type in ["occupation","invasion","dugin"]) then {
+        if (_type in ["occupation","invasion","dugin","assault"]) then {
             [_handler] spawn {
                 params ["_handler"];
                 private _heldSince = createHashMap;
@@ -4180,6 +4200,17 @@ switch (_operation) do {
                     [_handler, "TACOM_FSM",_TACOM] call ALiVE_fnc_HashSet;
                 };
             };
+            case ("assault") : {
+                _OPCOM = [_logic] call {
+                    _handler = _this select 0;
+
+                    _OPCOM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
+                    _TACOM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
+
+                    [_handler, "OPCOM_FSM",_OPCOM] call ALiVE_fnc_HashSet;
+                    [_handler, "TACOM_FSM",_TACOM] call ALiVE_fnc_HashSet;
+                };
+            };
             case ("invasion") : {
                 _OPCOM = [_logic] call {
                     _handler = _this select 0;
@@ -4888,6 +4919,14 @@ switch (_operation) do {
                 ]
             };
 
+            case ("assault") : {
+                [
+                    [_friendlyObjectives,"reserve"],
+                    [_enemyObjectives,"attack"],
+                    [_contestedObjectives,"defend"]
+                ]
+            };
+
             case ("occupation") : {
                 [
                     [_friendlyObjectives,"reserve"],
@@ -5222,7 +5261,7 @@ switch (_operation) do {
         _result = true;
         if !([_logic, "prepTasks", false] call ALiVE_fnc_HashGet) exitWith {};
         // a conventional commander only: an insurgent one has no attacks to prepare
-        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation"]) exitWith {};
+        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation", "assault"]) exitWith {};
         private _module = [_logic, "module"] call ALiVE_fnc_HashGet;
         // no attack while a pause after a capture or a high value target hold is on, so nothing is prepared then
         // either: the preparation and its timeout would run out inside the hold
@@ -5859,7 +5898,7 @@ switch (_operation) do {
         private _objective = _args;
         _result = false;
         if !([_logic, "intelCycle", false] call ALiVE_fnc_HashGet) exitWith {};
-        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation"]) exitWith {};
+        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation", "assault"]) exitWith {};
         // only an objective TACOM will reconnoitre first: one it has looked at goes straight to capture, as before
         if (([_objective, "danger", -1] call ALiVE_fnc_HashGet) >= 0) exitWith {};
         private _old = [_objective, "intel"] call ALiVE_fnc_HashGet;
@@ -6189,7 +6228,7 @@ switch (_operation) do {
     case "intelExploit": {
         _result = [];
         if !([_logic, "intelCycle", false] call ALiVE_fnc_HashGet) exitWith {};
-        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation"]) exitWith {};
+        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation", "assault"]) exitWith {};
         private _now = [_logic, "clusteroccupation", []] call ALiVE_fnc_HashGet;
         private _prev = [_logic, "clusteroccupationPrevious", []] call ALiVE_fnc_HashGet;
         if (count _prev < 3 || {count _now < 3}) exitWith {};
@@ -6860,6 +6899,71 @@ switch (_operation) do {
         };
     };
 
+    // Assault (waves). The target is the first objective in the commander's order that it doesn't hold (["assaultTarget",
+    // objectives] -> objective or []). A wave on it waits Wave Interval minutes after the last one confirmed there; the
+    // first wave on a new target goes at once (["assaultWaveOpen", objective] -> bool). TACOM confirming a wave starts
+    // the wait (["assaultWaveSent", objective]). The timer lives on the module: ALiVE_Assault_targetID,
+    // ALiVE_Assault_waveNo, ALiVE_Assault_nextWaveAt (mission time)
+    case "assaultTarget": {
+        private _objectives = _args;
+        _result = [];
+        private _i = _objectives findIf { ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["unassigned", "attack", "attacking"] };
+        if (_i >= 0) then { _result = _objectives select _i };
+    };
+    case "assaultWaveOpen": {
+        private _module = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
+        private _id = [_args, "objectiveID", ""] call ALiVE_fnc_HashGet;
+        _result = isNull _module || {
+            time >= (_module getVariable ["ALiVE_Assault_retryAt", -1])
+            && {(_module getVariable ["ALiVE_Assault_targetID", ""]) != _id || {time >= (_module getVariable ["ALiVE_Assault_nextWaveAt", -1])}}
+        };
+    };
+    // a wave TACOM turned down (no free groups, say) tries again in a minute rather than on the very next pass
+    case "assaultWaveRetry": {
+        private _module = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
+        if (isNull _module) exitWith {};
+        _module setVariable ["ALiVE_Assault_retryAt", time + 60];
+    };
+    case "assaultWaveSent": {
+        private _module = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
+        if (isNull _module) exitWith {};
+        private _id = [_args, "objectiveID", ""] call ALiVE_fnc_HashGet;
+        private _mins = [_logic, "assaultWaveMins", 15] call ALiVE_fnc_HashGet;
+        private _n = 1;
+        if ((_module getVariable ["ALiVE_Assault_targetID", ""]) == _id) then { _n = (_module getVariable ["ALiVE_Assault_waveNo", 0]) + 1 };
+        _module setVariable ["ALiVE_Assault_targetID", _id, true];
+        _module setVariable ["ALiVE_Assault_waveNo", _n, true];
+        _module setVariable ["ALiVE_Assault_nextWaveAt", time + _mins * 60, true];
+        ["OPCOM %1: assault wave %2 on %3 (%4 groups there now), the next in %5 min", [_logic, "side", ""] call ALiVE_fnc_HashGet, _n, _id,
+            count ([_args, "section", []] call ALiVE_fnc_HashGet), _mins] call ALiVE_fnc_dump;
+
+        // During a steady fight the decision loop only looks at its orders when something reports in, or every 5 minutes,
+        // so once the next wave is due this asks it to look every 20 seconds until a wave goes, the commander leaves
+        // Assault or nothing is left to take
+        private _old = [_logic, "assaultWatch", scriptNull] call ALiVE_fnc_HashGet;
+        if (!isNull _old) then { terminate _old };
+        [_logic, "assaultWatch", [_logic, _module] spawn {
+            params ["_logic", "_module"];
+            private _fsm = [_logic, "OPCOM_FSM", -1] call ALiVE_fnc_HashGet;
+            waitUntil { sleep 5; time >= (_module getVariable ["ALiVE_Assault_nextWaveAt", 0]) };
+            while {
+                ([_logic, "controltype", ""] call ALiVE_fnc_HashGet) == "assault"
+                && {([_logic, "OPCOM_FSM", -1] call ALiVE_fnc_HashGet) isEqualTo _fsm}
+                && {!completedFSM _fsm}
+                && {([_logic, "assaultTarget", [_logic, "objectives", []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM) isNotEqualTo []}
+            } do {
+                if (time >= (_module getVariable ["ALiVE_Assault_retryAt", -1])) then {
+                    private _queue = _fsm getFSMVariable ["_OPCOM_QUEUE", []];
+                    if ((_queue findIf { (_x param [0, ""]) isEqualTo "analyze" }) < 0) then {
+                        _queue pushBack ["analyze", nil];
+                        _fsm setFSMVariable ["_OPCOM_QUEUE", _queue];
+                    };
+                };
+                sleep 20;
+            };
+        }] call ALiVE_fnc_HashSet;
+    };
+
     // true while no pause is running: the time is up, or every task it gave players is closed
     case "occPauseOpen": {
         private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
@@ -7117,8 +7221,8 @@ switch (_operation) do {
 
         _result = false;
 
-        if !(_newControlType in ["invasion","occupation","asymmetric","dugin"]) exitwith {
-            ["ALiVE_fnc_OPCOM | Operation '%1' | Invalid value for _newControlType %2, must be one of %3", _operation, _newControlType, ["invasion","occupation","asymmetric","dugin"]] call ALiVE_fnc_Dump;
+        if !(_newControlType in ["invasion","occupation","asymmetric","dugin","assault"]) exitwith {
+            ["ALiVE_fnc_OPCOM | Operation '%1' | Invalid value for _newControlType %2, must be one of %3", _operation, _newControlType, ["invasion","occupation","asymmetric","dugin","assault"]] call ALiVE_fnc_Dump;
         };
 
         if !([_logic,"startupComplete", false] call ALiVE_fnc_hashGet) exitwith {
@@ -7128,13 +7232,13 @@ switch (_operation) do {
         private _existingControlType = [_logic,"controltype"] call ALiVE_fnc_hashGet;
         if (_newControlType == _existingControlType) exitwith {};
         // Start From Ship needs a conventional commander: an Asymmetric one leaves anything still aboard there
-        if (!(_newControlType in ["invasion","occupation"]) && {[_logic, "shipStart", false] call ALiVE_fnc_hashGet}) then {
+        if (!(_newControlType in ["invasion","occupation","assault"]) && {[_logic, "shipStart", false] call ALiVE_fnc_hashGet}) then {
             ["AI Commander %1 switched to %2: Start From Ship is off and the groups still aboard stay there", [_logic, "name", ""] call ALiVE_fnc_hashGet, _newControlType] call ALiVE_fnc_dump;
             [_logic, "shipStart", false] call ALiVE_fnc_hashSet;
             [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_hashSet;
         };
 
-        private _conventionalTypes = ["invasion","occupation","dugin"];
+        private _conventionalTypes = ["invasion","occupation","dugin","assault"];
 
         private _opcomFSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
         private _tacomFSM = [_logic,"TACOM_FSM",-1] call ALiVE_fnc_HashGet;
@@ -7172,6 +7276,7 @@ switch (_operation) do {
             case "occupation": {"strategic"};
             case "dugin": {"strategic"};
             case "invasion": {"distance"};
+            case "assault": {"distance"};
             default {"asymmetric"};
         };
         _objectives = [_logic,"objectives",
@@ -7190,10 +7295,12 @@ switch (_operation) do {
             [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
         };
 
-        // into or out of Dug In: how many groups an order takes, as the module's start would have set them
-        if ("dugin" in [_newControlType, _existingControlType] && {_newControlType in _conventionalTypes}) then {
+        // into or out of Dug In or Assault: how many groups an order takes, as the module's start would have set them
+        if (({_x in ["dugin","assault"]} count [_newControlType, _existingControlType]) > 0 && {_newControlType in _conventionalTypes}) then {
+            private _wave = [_logic, "assaultWaveGroups", 4] call ALiVE_fnc_HashGet;
             private _amounts = switch (_newControlType) do {
                 case "dugin": { [0, 1, 5] };
+                case "assault": { [[_wave, 99] select (_wave == 0), 1, 2] };
                 case "occupation": { [4, 1, 5] };
                 default { [4, 1, 2] };
             };

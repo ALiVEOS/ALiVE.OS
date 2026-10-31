@@ -407,6 +407,17 @@ class FSM
                          "                case (""attack"") : {" \n
                          "                    _danger = [_objective,""danger"",-1] call AliVE_fnc_HashGet;" \n
                          "                    _size = _sectionsamount_attack;" \n
+                         "                    // Assault (waves): the first wave scouts with at most 4 groups; once a capture is under way each wave adds" \n
+                         "                    // its groups to those still there. A wave falling due while the target is still being scouted goes in" \n
+                         "                    // to take it with the scouts rather than scouting it again. The danger stays unknown on a target taken" \n
+                         "                    // that way, so a wave joins on what is there, not on the danger" \n
+                         "                    if (_controltype == ""assault"") then {" \n
+                         "                        private _tstate = [_objective,""tacom_state"",""""] call AliVE_fnc_HashGet;" \n
+                         "                        private _there = count ([_objective,""section"",[]] call AliVE_fnc_HashGet);" \n
+                         "                        if (_danger < 0 && {_tstate in [""recon"",""capture""]} && {_there > 0}) then {_danger = 0};" \n
+                         "                        if (_danger < 0) then {_size = _size min 4};" \n
+                         "                        if (_danger >= 0 && {_tstate in [""capture"",""recon""]}) then {_size = _there + _sectionsamount_attack};" \n
+                         "                    };" \n
                          "" \n
                          "                    switch (_danger < 0) do {" \n
                          "                        case (true) : {_recon = [_objective,_size]};" \n
@@ -803,7 +814,8 @@ class FSM
                          "    case ( ""recon"") : {" \n
                          "        _turn = true;" \n
                          "" \n
-                         "        if (_manualOrder || {count _section >= _sectionsamount_attack}) then {" \n
+                         "        // an Assault wave goes with whatever groups it found, so a commander short of groups still sends one" \n
+                         "        if (_manualOrder || {count _section >= _sectionsamount_attack} || {_controltype == ""assault"" && {count _section > 0}}) then {" \n
                          "            {" \n
                          "                _profileID = _x;" \n
                          "" \n

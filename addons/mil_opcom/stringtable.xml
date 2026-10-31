@@ -86,7 +86,7 @@
     <Russian>Тип управления:</Russian>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CONTROLTYPE_COMMENT">
-    <English>Selects the commander's operational doctrine. Invasion: aggressively captures objectives and pushes the front line. Occupation: holds captured objectives with static and patrolling defences; slower to advance. Asymmetric: operates as an insurgent force using recruitment centres, installations (IED factories, HQs), roadblocks and hit-and-run tactics rather than head-on objective capture. Dug In: holds what it has and takes nothing more. Ground vehicles stay parked at their objective and infantry garrisons; when an objective is attacked, groups from the others go to help and then return to where they came from. It won't take on new objectives from players either. Aircraft still fly, and Security Patrols don't go out.</English>
+    <English>Selects the commander's operational doctrine. Invasion: aggressively captures objectives and pushes the front line. Occupation: holds captured objectives with static and patrolling defences; slower to advance. Asymmetric: operates as an insurgent force using recruitment centres, installations (IED factories, HQs), roadblocks and hit-and-run tactics rather than head-on objective capture. Dug In: holds what it has and takes nothing more. Ground vehicles stay parked at their objective and infantry garrisons; when an objective is attacked, groups from the others go to help and then return to where they came from. It won't take on new objectives from players either. Aircraft still fly, and Security Patrols don't go out. Assault (waves): one target at a time, nearest first. Every Wave Interval minutes another Groups Per Wave groups join the attack on it until it falls, then it moves on to the next. Defence and reserve work as on Invasion.</English>
     <Chinese>選擇指揮官的作戰準則。入侵：積極佔領目標並推進戰線。佔領：以靜態和巡邏防禦守住已佔領目標；推進較慢。非對稱：作為叛亂分子部隊運作，使用招募中心、設施（IED 工廠、總部）、路障和打了就跑戰術，而非正面佔領目標。</Chinese>
     <Chinesesimp>选择指挥官的作战准则。入侵：积极占领目标并推进战线。占领：以静态和巡逻防御守住已占领目标；推进较慢。非对称：作为叛乱分子部队运作，使用招募中心、设施（IED 工厂、总部）、路障和打了就跑战术，而非正面占领目标。</Chinesesimp>
     <Spanish>Selecciona la doctrina operativa del comandante. Invasión: captura agresivamente objetivos y empuja la línea del frente. Ocupación: mantiene los objetivos capturados con defensas estáticas y patrullas; avanza más lento. Asimétrico: opera como fuerza insurgente usando centros de reclutamiento, instalaciones (fábricas de IED, cuarteles generales), controles de carretera y tácticas de ataque y huida en lugar de capturar objetivos frontalmente.</Spanish>
@@ -371,6 +371,18 @@
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_CHOICE_COMMENT">
     <English>Needs Preparation Tasks and Tasks Only Against Known Enemy. When the players' reconnaissance has reported, they choose from the OPCOM Orders menu (it needs the C2ISTAR item): take the targets themselves, with further preparation tasks against any vehicles and emplacements, or hand them to the commander, which sends its own units against up to four of the targets still alive that its units can reach, while the players stay in overwatch. The assault waits up to 5 minutes for those units. Nothing found, nothing asked. No answer by the Preparation Timeout counts as handing over. With Military AI Commander Artillery present, the commander may also call fire on the targets.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_WAVE_MINS">
+    <English>Wave Interval (min)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_WAVE_MINS_COMMENT">
+    <English>Assault (waves) only. Minutes between waves at the same target. The first wave at a new target goes at once.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_WAVE_GROUPS">
+    <English>Groups Per Wave</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_WAVE_GROUPS_COMMENT">
+    <English>Assault (waves) only. How many groups each wave adds to the attack. The first wave scouts the target with up to 4 of them. 0 sends every group that's free.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OCC_PAUSE">
     <English>Pause After Capture (min)</English>

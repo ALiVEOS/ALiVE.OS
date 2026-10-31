@@ -82,7 +82,24 @@ class CfgVehicles {
                                     class occupation { name = "Occupation"; value = "occupation"; };
                                     class asymmetric { name = "Asymmetric"; value = "asymmetric"; };
                                     class dugin { name = "Dug In"; value = "dugin"; };
+                                    class assault { name = "Assault (waves)"; value = "assault"; };
                                 };
+                        };
+                        class assaultWaveMins : Edit
+                        {
+                                property = "ALiVE_mil_opcom_assaultWaveMins";
+                                displayName = "$STR_ALIVE_OPCOM_ASSAULT_WAVE_MINS";
+                                tooltip = "$STR_ALIVE_OPCOM_ASSAULT_WAVE_MINS_COMMENT";
+                                defaultValue = """15""";
+                                typeName = "NUMBER";
+                        };
+                        class assaultWaveGroups : Edit
+                        {
+                                property = "ALiVE_mil_opcom_assaultWaveGroups";
+                                displayName = "$STR_ALIVE_OPCOM_ASSAULT_WAVE_GROUPS";
+                                tooltip = "$STR_ALIVE_OPCOM_ASSAULT_WAVE_GROUPS_COMMENT";
+                                defaultValue = """4""";
+                                typeName = "NUMBER";
                         };
                         class holdForGo : Combo
                         {

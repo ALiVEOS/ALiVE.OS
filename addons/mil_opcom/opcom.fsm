@@ -448,6 +448,7 @@ class FSM
                          "" \n
                          "            //AnalyzeResults - prepare orders" \n
                          "" \n
+                         "                private _assaultTgt = [];" \n
                          "                switch (_controltype) do {" \n
                          "                    case (""invasion"") : {" \n
                          "" \n
@@ -467,6 +468,21 @@ class FSM
                          "                            [(count _def > 0),""defend""]," \n
                          "                            [(count _at > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_at select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_at select 0] call ALiVE_fnc_OPCOM},""attack""]," \n
                          "                            [(count _un > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]" \n
+                         "                        ];" \n
+                         "                    };" \n
+                         "" \n
+                         "                    // Assault (waves): only its current target is attacked, and only once its wave is due. Once a capture" \n
+                         "                    // or scouting is under way there, each new wave joins it (the ""wave"" row), whatever the attack capacity" \n
+                         "                    case (""assault"") : {" \n
+                         "                        _assaultTgt = [_OPCOM_HANDLER,""assaultTarget"",_obj] call ALiVE_fnc_OPCOM;" \n
+                         "                        private _tgtOpen = _assaultTgt isNotEqualTo [] && {[_OPCOM_HANDLER,""assaultWaveOpen"",_assaultTgt] call ALiVE_fnc_OPCOM};" \n
+                         "                        private _tgtFree = _tgtOpen && {(_unconfirmedOrders findIf {((_x select 2) isEqualRef _assaultTgt)}) < 0};" \n
+                         "                        _priorities = [" \n
+                         "                            [(count _res > 0),""reserve""]," \n
+                         "                            [(count _un > 0) && {_tgtOpen} && {(_un select 0) isEqualRef _assaultTgt} && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]," \n
+                         "                            [(count _at > 0) && {_tgtOpen} && {(_at select 0) isEqualRef _assaultTgt} && {[_OPCOM_HANDLER,""prepReady"",_at select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_at select 0] call ALiVE_fnc_OPCOM},""attack""]," \n
+                         "                            [_tgtFree && {([_assaultTgt,""opcom_state"",""""] call ALiVE_fnc_HashGet) == ""attacking""} && {([_assaultTgt,""tacom_state"",""""] call ALiVE_fnc_HashGet) in [""capture"",""recon""]},""wave""]," \n
+                         "                            [(count _def > 0),""defend""]" \n
                          "                        ];" \n
                          "                    };" \n
                          "" \n
@@ -492,10 +508,11 @@ class FSM
                          "                    case (""attack"") : {_at select 0};" \n
                          "                    case (""defend"") : {_def select 0};" \n
                          "                    case (""reserve"") : {_res select 0};" \n
+                         "                    case (""wave"") : {_assaultTgt};" \n
                          "                };" \n
                          "" \n
                          "                private _selectionAllowed = true;" \n
-                         "                if (_selectedState in [""attack"",""unassigned""]) then {" \n
+                         "                if (_selectedState in [""attack"",""unassigned"",""wave""]) then {" \n
                          "                    private _module = [_OPCOM_HANDLER,""module""] call ALiVE_fnc_HashGet;" \n
                          "                    _selectionAllowed = {((typeof _x) == ""EmptyDetector"") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0" \n
                          "                        && {time >= (_module getVariable [""ALiVE_HVT_holdUntil"", -1])}" \n
@@ -506,11 +523,14 @@ class FSM
                          "                    _operation = switch (_selectedState) do {" \n
                          "                        case (""unassigned"") : {""attack""};" \n
                          "                        case (""attack"") : {""attack""};" \n
+                         "                        case (""wave"") : {""attack""};" \n
                          "                        case (""defend"") : {""defend""};" \n
                          "                        case (""reserve"") : {""reserve""};" \n
                          "                    };" \n
                          "" \n
                          "                    [_selectedObjective,""opcom_orders"",_operation] call AliVE_fnc_HashSet;" \n
+                         "                    // an Assault wave counts once TACOM confirms it (assaultWaveSent), so one refused for want of groups doesn't start the wait" \n
+                         "                    if (_controltype == ""assault"" && {_operation == ""attack""}) then {[_selectedObjective,""assaultWave"",true] call ALiVE_fnc_HashSet};" \n
                          "" \n
                          "                    switch (_operation) do {" \n
                          "                        case (""attack"") : {" \n
@@ -639,6 +659,10 @@ class FSM
                          "                switch (_operation) do {" \n
                          "                    case (""attack"") : {" \n
                          "                        [_target,""opcom_state"",""attacking""] call AliVE_fnc_HashSet;" \n
+                         "                        if ([_target,""assaultWave"",false] call ALiVE_fnc_HashGet) then {" \n
+                         "                            [_target,""assaultWave"",false] call ALiVE_fnc_HashSet;" \n
+                         "                            [_OPCOM_HANDLER,""assaultWaveSent"",_target] call ALiVE_fnc_OPCOM;" \n
+                         "                        };" \n
                          "                        if (_debug) then {format [""ALiVE_OPCOM_%1"",[_target,""objectiveID""] call ALiVE_fnc_HashGet] setMarkerColor ""ColorRed""};" \n
                          "" \n
                          "                        if ([_side,[""attacking""]] call ALIVE_fnc_OPCOMgetHighestPrioObjective == _targetId) then {" \n
@@ -707,6 +731,12 @@ class FSM
                          "                _skipObjective = true;" \n
                          "" \n
                          "                [_target,""opcom_orders"",""none""] call ALiVE_fnc_HashSet;" \n
+                         "                // a capture order is never confirmed: TACOM answers that the attack isn't finished once its groups are on" \n
+                         "                // their way, so an Assault wave joining a capture counts then. Any other answer means it didn't go" \n
+                         "                if ([_target,""assaultWave"",false] call ALiVE_fnc_HashGet) then {" \n
+                         "                    [_target,""assaultWave"",false] call ALiVE_fnc_HashSet;" \n
+                         "                    if ((_return param [0, """"]) isEqualTo ""operation attack not finished"") then {[_OPCOM_HANDLER,""assaultWaveSent"",_target] call ALiVE_fnc_OPCOM} else {[_OPCOM_HANDLER,""assaultWaveRetry"",_target] call ALiVE_fnc_OPCOM};" \n
+                         "                };" \n
                          "" \n
                          "                if(_debug) then {" \n
                          "                    // Out of groups: said once, not once per objective per cycle (413 lines in one testers log)." \n
