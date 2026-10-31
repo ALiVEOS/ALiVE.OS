@@ -4797,7 +4797,7 @@ switch (_operation) do {
             if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
             if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
 
-            _args params ["_uid", ["_mode","READ"], ["_cmds",[]]];
+            _args params ["_uid", ["_mode","READ"], ["_cmds",[]], ["_notes",[]]];
 
             [_logic,"clearCmdMarkers"] call MAINCLASS;
 
@@ -4924,6 +4924,26 @@ switch (_operation) do {
                 case (!_anyPos): { format [localize "STR_ALIVE_SCOM_CMD_ROWS_NO_POSITIONS", count _rows] };
                 case (_mode == "ORDERS"): { format [localize "STR_ALIVE_SCOM_CMD_ROWS_ORDERS", count _rows] };
                 default { format [localize "STR_ALIVE_SCOM_CMD_ROWS", count _rows] };
+            };
+            // what is holding the side's commanders back: the pause after a capture and the preparations before an
+            // assault, with the time left on each
+            if (_mode != "OFF") then {
+                private _many = count _notes > 1;
+                // with no commander finding out first, "nothing to show" would read against what follows
+                if (_cmds isEqualTo [] && {!(missionNamespace getVariable ["ALiVE_OPCOM_held", false])}
+                    && {(_notes findIf { (_x param [1, 0]) > 0 || {(_x param [4, ""]) != ""} }) >= 0}) then { _status = "" };
+                {
+                    _x params [["_nFaction",""], ["_occLeft",0], ["_occPlace",""], ["_prepLeft",0], ["_prepPlace",""], ["_prepTasks",0]];
+                    private _fName = getText (configFile >> "CfgFactionClasses" >> _nFaction >> "displayName");
+                    private _who = ["", ([_fName, _nFaction] select (_fName == "")) + ": "] select _many;
+                    if (_occLeft > 0) then {
+                        _status = _status + " " + _who + format [localize "STR_ALIVE_SCOM_CMD_OCC_HOLD", [_occPlace, localize "STR_ALIVE_SCOM_CMD_OCC_SOMEWHERE"] select (_occPlace == ""), ceil (_occLeft / 60)];
+                    };
+                    if (_prepPlace != "") then {
+                        _status = _status + " " + _who + format [localize "STR_ALIVE_SCOM_CMD_PREP", _prepPlace, _prepTasks, ceil (_prepLeft / 60)];
+                    };
+                } forEach _notes;
+                _status = _status trim [" ", 0];
             };
             [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _status]] call MAINCLASS;
 

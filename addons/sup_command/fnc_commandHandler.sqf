@@ -2632,7 +2632,8 @@ switch(_operation) do {
         // Tablet Commander's Picture: what the caller's own side's commanders have found out about the objectives they
         // are finding out about (Find Out Before Attacking). The side is the server's own, never the client's; each
         // commander also passes the Intel limit, and sends positions only when its Intel Markers setting is on.
-        // Reply: [uid, mode, [[faction, stance, Intel Wait minutes, positions shared, rows], ...]]
+        // Reply: [uid, mode, [[faction, stance, Intel Wait minutes, positions shared, rows], ...], [[faction, seconds left
+        // holding after a capture, its place, seconds left to prepare, its place, tasks asked for], ...]]
 
         if (_args isEqualType []) then {
 
@@ -2644,6 +2645,7 @@ switch(_operation) do {
             // the C2ISTAR setting; a mission made before it existed reads as Read only
             private _mode = missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"];
             private _out = [];
+            private _notes = [];
 
             if (_mode != "OFF" && {!isNil "OPCOM_instances"}) then {
                 private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
@@ -2662,9 +2664,35 @@ switch(_operation) do {
                         ];
                     };
                 } forEach OPCOM_instances;
+                // what holds each of the side's commanders back right now, for the status line: the pause after a
+                // capture and the preparations before an assault (any of its commanders, finding out first or not)
+                {
+                    private _opcom = _x;
+                    if (([_opcom,"side",""] call ALiVE_fnc_hashGet) == _side
+                        && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"intelLimit"]] call MAINCLASS}) then {
+                        private _module = [_opcom,"module",objNull] call ALiVE_fnc_hashGet;
+                        if (!isNull _module) then {
+                            private _occLeft = round (((_module getVariable ["ALiVE_Occ_holdUntil", -1]) - time) max 0);
+                            private _occPlace = _module getVariable ["ALiVE_Occ_place", ""];
+                            if (_occLeft > 0 && {_occPlace == ""}) then {
+                                private _o = ([_opcom,"objectivesByID",createHashMap] call ALiVE_fnc_hashGet) getOrDefault [_module getVariable ["ALiVE_Occ_objectiveID", ""], []];
+                                if (_o isNotEqualTo []) then { _occPlace = "grid " + mapGridPosition ([_o,"center",[0,0,0]] call ALiVE_fnc_hashGet) };
+                            };
+                            private _prep = (_module getVariable ["ALiVE_prep_state", ""]) == "requested";
+                            _notes pushBack [
+                                ([_opcom,"factions",[]] call ALiVE_fnc_hashGet) param [0, ""],
+                                _occLeft,
+                                _occPlace,
+                                [0, round (((_module getVariable ["ALiVE_prep_deadline", -1]) - time) max 0)] select _prep,
+                                ["", _module getVariable ["ALiVE_prep_place", ""]] select _prep,
+                                [0, count (_module getVariable ["ALiVE_prep_taskIDs", []])] select _prep
+                            ];
+                        };
+                    };
+                } forEach OPCOM_instances;
             };
 
-            ["INTEL_PICTURE", [_playerID, _mode, _out]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+            ["INTEL_PICTURE", [_playerID, _mode, _out, _notes]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
 
         };
 
