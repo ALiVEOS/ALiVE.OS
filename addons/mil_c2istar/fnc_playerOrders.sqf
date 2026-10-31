@@ -1014,6 +1014,22 @@ switch (_operation) do {
 
         if (isNull _player) exitWith {};
 
+        // The server asks what the C2ISTAR menu asks before it shows OPCOM Stance: the request comes from the
+        // player it names, the mission maker allowed stance changes, and that player carries a C2ISTAR access
+        // item. Until now only the menu asked, so a script on any client could change any side's stance
+        if (remoteExecutedOwner > 0 && {owner _player != remoteExecutedOwner}) exitWith {};
+        if !(missionNamespace getVariable ["ALIVE_OPCOM_StanceControlEnabled", false]) exitWith {
+            ["notify", [_player, "The mission maker hasn't allowed OPCOM stance changes."]] call MAINCLASS;
+        };
+        if (isNil QMOD(MIL_C2ISTAR) || {!([
+            [MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR,
+            [MOD(MIL_C2ISTAR),"c2_item_custom"] call ALIVE_fnc_C2ISTAR,
+            ["ALIVE_Tablet"],
+            _player
+        ] call ALIVE_fnc_playerHasAccessItems)}) exitWith {
+            ["notify", [_player, "You need a C2ISTAR access item to change the OPCOM stance."]] call MAINCLASS;
+        };
+
         if !(_newControlType in ["invasion","occupation","asymmetric","dugin"]) exitWith {
             ["notify", [_player, "Invalid OPCOM stance."]] call MAINCLASS;
         };
