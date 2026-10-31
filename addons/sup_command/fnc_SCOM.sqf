@@ -843,6 +843,11 @@ switch (_operation) do {
 
                             case "INTEL":{
                                 [_logic,"enableIntelInterface"] call MAINCLASS;
+                                // opened from the C2ISTAR menu's Commander's Picture entry: straight to that page
+                                if ([_commandState,"intelOpenCommander",false] call ALIVE_fnc_hashGet) then {
+                                    [_commandState,"intelOpenCommander",false] call ALIVE_fnc_hashSet;
+                                    ["INTEL_VIEW_COMMANDER",[]] call ALIVE_fnc_SCOMTabletOnAction;
+                                };
                             };
                             case "OPS":{
                                 [_logic,"enableOpsInterface"] call MAINCLASS;
@@ -955,6 +960,19 @@ switch (_operation) do {
 
                     [_commandState,"commandInterface","INTEL"] call ALIVE_fnc_hashSet;
 
+                    [_logic,"commandState",_commandState] call MAINCLASS;
+
+                    ["SCOMTablet"] call ALiVE_fnc_tabletOpen;
+
+                };
+
+                case "OPEN_COMMANDER": {
+
+                    // the C2ISTAR menu's Commander's Picture entry: the Intel tablet, opened on that page
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    [_commandState,"commandInterface","INTEL"] call ALIVE_fnc_hashSet;
+                    [_commandState,"intelOpenCommander",true] call ALIVE_fnc_hashSet;
                     [_logic,"commandState",_commandState] call MAINCLASS;
 
                     ["SCOMTablet"] call ALiVE_fnc_tabletOpen;

@@ -204,6 +204,16 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result
                 ],
+                // the Intel tablet opened on the Commander's Picture page, unless the mission maker has turned it off
+                ["Commander's Picture",
+                    {["OPEN_COMMANDER",[]] call ALIVE_fnc_SCOMTabletOnAction},
+                    "",
+                    "What your AI Commander has found out about the objectives it is about to attack",
+                     "",
+                     -1,
+                     true,
+                     _result && {(missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "OFF"}
+                ],
                 ["Logistics",
                     {["OPEN",[]] call ALIVE_fnc_PRTabletOnAction},
                     "",
