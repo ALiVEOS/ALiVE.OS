@@ -153,6 +153,8 @@ switch (_operation) do {
         private _intelCycle = (toLower format ["%1", _logic getVariable ["intelCycle", "false"]]) in ["true", "1"];
         private _intelConfidence = ((parseNumber format ["%1", _logic getVariable ["intelConfidence", 0.5]]) max 0) min 1;
         private _intelTimeout = ((parseNumber format ["%1", _logic getVariable ["intelTimeoutMins", 20]]) max 1) * 60;
+        // Intel Markers: what it finds out is shown on its own side's maps (intelMarkers); off by default
+        private _intelMarkers = (toLower format ["%1", _logic getVariable ["intelMarkers", "false"]]) in ["true", "1"];
         // Follow The Players Up (Occupation): no attack of its own; it garrisons what players clear (kawi0756, 25 Oct)
         private _followPlayers = (toLower format ["%1", _logic getVariable ["followPlayers", "false"]]) in ["true", "1"];
         // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
@@ -493,6 +495,7 @@ switch (_operation) do {
             ["intelCycle", _intelCycle],
             ["intelConfidence", _intelConfidence],
             ["intelTimeout", _intelTimeout],
+            ["intelMarkers", _intelMarkers],
             ["followPlayers", _followPlayers],
             ["callForHelp", _callForHelp],
             // per group: [peak men, men last pass, time of the last loss, time it last asked]; runtime only, not saved
@@ -3939,7 +3942,7 @@ switch (_operation) do {
 
             _result = [false,[]];
             // the intel picture (Find Out Before Attacking) is rebuilt as it is needed, so it is never saved
-            _blacklist = ["code","actions","intel"];
+            _blacklist = ["code","actions","intel","intelMarked","intelMarkLast"];
 
             //Save only every 60 seconds, bad hack because of this http://dev.withsix.com/issues/74321
             //For normal each instance would save their own objectives but the hack collects all objectives of all OPCOMs on one save, FIFO principle
@@ -5949,6 +5952,7 @@ switch (_operation) do {
         if (_source == "air" && {(_intel select 1) == "closed"}) then { _intel set [1, "open"] };
         ["[OPCOM INTEL] %1 %2: %3 report, %4 seen, %5 contacts known there", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _source, count _ids, count _contacts] call ALiVE_fnc_dump;
         _result = count _contacts;
+        [_logic, "intelMarkers", [_objective]] call MAINCLASS;
     };
 
     // objective: [confidence 0 to 1, contacts]. Sure (1) when what was seen, or seen from, covers at least two of the four
@@ -6020,6 +6024,54 @@ switch (_operation) do {
         [_objective, "danger", round ((count (_assess select 1)) max ([_objective, "danger", 0] call ALiVE_fnc_HashGet))] call ALiVE_fnc_HashSet;
         ["[OPCOM INTEL] %1 %2: the assault goes ahead, %3 (%4 contacts, sure %5 after %6 s)", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet,
             _why, count (_assess select 1), (round ((_assess select 0) * 100)) / 100, round (time - (_intel select 0))] call ALiVE_fnc_dump;
+        [_logic, "intelMarkers", [_objective, _assess]] call MAINCLASS;
+    };
+
+    // [objective, assessment if already made]: with Intel Markers on, what the commander knows of it goes to the maps of the
+    // players on its side (ALiVE_fnc_OPCOMIntelMarkers), joiners included; a picture the same as the last one isn't sent
+    // again. The markers are named for this commander and objective, so two commanders at one town keep their own. The
+    // first time, a watch starts that takes them off once the objective is no longer being attacked: taken, given up
+    // (an enemy objective is labelled "attack" again then) or removed
+    case "intelMarkers": {
+        _args params ["_objective", ["_assess", []]];
+        _result = false;
+        if !([_logic, "intelMarkers", false] call ALiVE_fnc_HashGet) exitWith {};
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel") exitWith {};
+        private _sideObj = switch ([_logic, "side", ""] call ALiVE_fnc_HashGet) do {
+            case "WEST": { west }; case "EAST": { east }; case "GUER": { resistance }; default { sideUnknown };
+        };
+        if (_sideObj == sideUnknown) exitWith {};
+        private _id = format ["%1_%2", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet];
+        private _jip = "ALiVE_intel_" + _id;
+        if (_assess isEqualTo []) then { _assess = [_logic, "intelAssess", _objective] call MAINCLASS };
+        private _dots = (_assess select 1) apply {
+            private _p = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+            private _s = if (isNil "_p") then { "" } else { [_p, "side", ""] call ALiVE_fnc_HashGet };
+            [_x select 1, switch (_s) do { case "WEST": { "ColorBLUFOR" }; case "EAST": { "ColorOPFOR" }; case "GUER": { "ColorIndependent" }; default { "ColorRed" } }]
+        };
+        // red once it is as sure as this commander needs to be (Intel Needed Before Attacking)
+        private _sure = (_assess select 0) >= ([_logic, "intelConfidence", 0.5] call ALiVE_fnc_HashGet);
+        private _picture = [[_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet, ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 200, _assess select 0, _dots select [0, 100], _sure];
+        if (_picture isEqualTo ([_objective, "intelMarkLast", []] call ALiVE_fnc_HashGet)) exitWith {};
+        [_objective, "intelMarkLast", _picture] call ALiVE_fnc_HashSet;
+        [_id, _picture] remoteExecCall ["ALiVE_fnc_OPCOMIntelMarkers", _sideObj, _jip];
+        if !([_objective, "intelMarked", false] call ALiVE_fnc_HashGet) then {
+            [_objective, "intelMarked", true] call ALiVE_fnc_HashSet;
+            [_objective, _id, _sideObj, _jip] spawn {
+                params ["_objective", "_id", "_sideObj", "_jip"];
+                waitUntil {
+                    sleep 15;
+                    [_objective, "deleted", false] call ALiVE_fnc_HashGet
+                    || {([_objective, "opcom_state", ""] call ALiVE_fnc_HashGet) != "attacking"}
+                };
+                [_objective, "intelMarked", false] call ALiVE_fnc_HashSet;
+                [_objective, "intelMarkLast", []] call ALiVE_fnc_HashSet;
+                remoteExecCall ["", _jip];
+                [_id, []] remoteExecCall ["ALiVE_fnc_OPCOMIntelMarkers", _sideObj];
+            };
+        };
+        _result = true;
     };
 
     // objective: its recon is done but intelReady says wait. The groups stay where they are, and once it is ready the

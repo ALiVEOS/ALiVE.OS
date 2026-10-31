@@ -86,6 +86,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMdecrementStartForceStrength.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class OPCOMIntelMarkers {
+                                description = "Intel Markers: what the commander knows of an objective, on its side's maps";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMIntelMarkers.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class OPCOMsecurityPatrols {
                                 description = "Issue #1087: reserve groups patrol between quiet rear objectives";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMsecurityPatrols.sqf";

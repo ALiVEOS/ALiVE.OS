@@ -414,6 +414,15 @@
 <Key ID="STR_ALIVE_OPCOM_INTEL_TIMEOUT_COMMENT">
     <English>The longest the commander holds an assault while it finds out what is at the objective, in minutes (20 is the default, at least 1). When it runs out, the assault goes ahead on what is known. With Find Out Before Attacking off this does nothing.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_MARKERS">
+    <English>Intel Markers</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_MARKERS_COMMENT">
+    <English>No (the default) keeps what the commander finds out to itself. Yes shows it on the maps of players on the commander's side: an area round each objective it is finding out about, yellow until it is sure enough and red after, labelled with how many groups it has seen and how sure it is, and a dot for each group seen. They go when the objective is taken or given up. With Find Out Before Attacking off this does nothing.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_MARKER">
+    <English>Intel: %1 seen, %2%% sure</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_FOLLOW_PLAYERS">
     <English>Follow The Players Up</English>
 </Key>

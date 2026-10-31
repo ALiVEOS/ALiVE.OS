@@ -471,6 +471,18 @@ class CfgVehicles {
                                 defaultValue = """20""";
                                 typeName = "NUMBER";
                         };
+                        class intelMarkers : Combo
+                        {
+                                property = "ALiVE_mil_opcom_intelMarkers";
+                                displayName = "$STR_ALIVE_OPCOM_INTEL_MARKERS";
+                                tooltip = "$STR_ALIVE_OPCOM_INTEL_MARKERS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class HDR_SHIP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_SHIP"; displayName = "START FROM SHIP"; };
                         class shipStart : Combo
                         {
