@@ -3964,7 +3964,7 @@ switch (_operation) do {
 
             _result = [false,[]];
             // the intel picture (Find Out Before Attacking) is rebuilt as it is needed, so it is never saved
-            _blacklist = ["code","actions","intel","intelMarked","intelMarkLast","intelExploitedAt"];
+            _blacklist = ["code","actions","intel","intelMarked","intelMarkLast","intelExploitedAt","intelExploitText"];
 
             //Save only every 60 seconds, bad hack because of this http://dev.withsix.com/issues/74321
             //For normal each instance would save their own objectives but the hack collects all objectives of all OPCOMs on one save, FIFO principle
@@ -6043,10 +6043,22 @@ switch (_operation) do {
         if ((_intel select 1) == "open" && {time - (_intel select 0) > 600}) then {
             [_logic, "intelAir", [_objective, "unanswered"]] call MAINCLASS;
         };
+        _intel set [4, (_intel select 4) select { time - (_x select 2) <= 1800 }];
+        _intel set [5, (_intel select 5) select { time - (_x select 1) <= 1800 }];
+        _result = [_logic, "intelScore", _objective] call MAINCLASS;
+    };
+
+    // objective: how sure the commander is there, [0..1, contacts seen in the last 30 minutes], from where and how lately
+    // anyone looked. Reads only, so the tablet can ask as often as it likes without moving the cycle on
+    case "intelScore": {
+        private _objective = _args;
+        _result = [1, []];
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel") exitWith {};
+        private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+        private _r = ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 200;
         private _contacts = (_intel select 4) select { time - (_x select 2) <= 1800 };
-        _intel set [4, _contacts];
         private _looks = (_intel select 5) select { time - (_x select 1) <= 1800 };
-        _intel set [5, _looks];
         private _quarters = [];
         private _newest = -1;
         {
@@ -6260,8 +6272,78 @@ switch (_operation) do {
         if (_unaccounted > 0) then { _text = _text + format [", %1 not accounted for", _unaccounted] };
         _text = _text + ".";
         if (_next != "") then { _text = _text + format [" %1 is next.", _nextPlace] };
+        [_obj, "intelExploitText", format ["%1 %2", [daytime, "HH:MM"] call BIS_fnc_timeToString, _text]] call ALiVE_fnc_HashSet;
         [_logic, "opRadio", _text] call MAINCLASS;
         _result = _next;
+    };
+
+    // the tablet's Commander's Picture: one plain row per objective this commander is finding out about or has found out
+    // about, newest first, at most 20. With _withPos false (the commander's Intel Markers off) no position leaves the
+    // server: the rows carry counts only. Reads only (intelScore), never moves the cycle on.
+    // Row: [objectiveID, place, grid, centre, radius, state, seconds since, sure 0..1, sure enough, air, ground, players,
+    // players' task title, contacts [[kind, grid, position, age, source]] (6 newest), contact count, vehicle count,
+    // why it went in, danger, looks [position], what was found once it fell]
+    case "intelPicture": {
+        _args params [["_withPos", false, [false]]];
+        _result = [];
+        if !([_logic, "intelCycle", false] call ALiVE_fnc_HashGet) exitWith {};
+        private _bar = [_logic, "intelConfidence", 0.5] call ALiVE_fnc_HashGet;
+        private _rows = [];
+        {
+            private _obj = _x;
+            private _intel = [_obj, "intel"] call ALiVE_fnc_HashGet;
+            if (!isNil "_intel") then {
+                private _center = [_obj, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+                private _r = ([_obj, "size", 150] call ALiVE_fnc_HashGet) max 200;
+                private _score = [_logic, "intelScore", _obj] call MAINCLASS;
+                private _opState = [_obj, "opcom_state", ""] call ALiVE_fnc_HashGet;
+                private _state = switch (true) do {
+                    case ((_intel select 6) < 0): { "looking" };
+                    case (_intel param [13, false]): { "taken" };
+                    case (_opState in ["attack", "attacking"]): { "going in" };
+                    case (_opState in ["defend", "defending", "reserve", "reserving", "idle"]): { "taken" };
+                    default { "let go" };
+                };
+                private _taskTitle = "";
+                if ((_intel select 8) != "" && {!isNil "ALiVE_TaskHandler"}) then {
+                    private _task = [ALiVE_TaskHandler, "getTask", _intel select 8] call ALIVE_fnc_taskHandler;
+                    if (!isNil "_task" && {_task isEqualType []}) then { _taskTitle = _task param [5, ""]; if !(_taskTitle isEqualType "") then { _taskTitle = "" } };
+                };
+                private _contacts = +(_score select 1);
+                _contacts = [_contacts, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
+                private _veh = 0;
+                private _shown = [];
+                {
+                    _x params ["_id", "_p", "_t", ["_src", ""]];
+                    private _prof = [ALiVE_ProfileHandler, "getProfile", _id] call ALiVE_fnc_ProfileHandler;
+                    private _kind = switch (true) do {
+                        case (isNil "_prof"): { "lost" };
+                        case (([_prof, "type", ""] call ALiVE_fnc_HashGet) == "vehicle"): { "vehicle" };
+                        case (count (([_prof, "vehicleAssignments", [[],[]]] call ALiVE_fnc_HashGet) select 1) > 0): { "vehicle" };
+                        default { "group" };
+                    };
+                    if (_kind == "vehicle") then { _veh = _veh + 1 };
+                    if (count _shown < 6) then {
+                        _shown pushBack [_kind, if (_withPos) then { mapGridPosition _p } else { "" }, if (_withPos) then { _p } else { [] }, round (time - _t), _src];
+                    };
+                } forEach _contacts;
+                private _looks = if (_withPos) then {
+                    (((_intel select 5) select { time - (_x select 1) <= 1800 }) apply { _x select 0 }) select [0, 20]
+                } else { [] };
+                _rows pushBack [
+                    [_obj, "objectiveID", ""] call ALiVE_fnc_HashGet,
+                    [_center] call ALIVE_fnc_taskGetNearestLocationName,
+                    mapGridPosition _center, _center, _r, _state,
+                    round (time - (_intel select 0)), _score select 0, (_score select 0) >= _bar,
+                    _intel select 1, _intel select 2, _intel select 3, _taskTitle,
+                    _shown, count _contacts, _veh, _intel select 7,
+                    [_obj, "danger", -1] call ALiVE_fnc_HashGet, _looks,
+                    [_obj, "intelExploitText", ""] call ALiVE_fnc_HashGet
+                ];
+            };
+        } forEach ([_logic, "objectives", []] call ALiVE_fnc_HashGet);
+        _rows = [_rows, [], { _x select 6 }, "ASCEND"] call BIS_fnc_sortBy;
+        _result = _rows select [0, 20];
     };
 
     // objective: its recon is done but intelReady says wait. The groups stay where they are, and once it is ready the

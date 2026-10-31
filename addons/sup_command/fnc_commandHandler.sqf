@@ -315,6 +315,12 @@ switch(_operation) do {
 
                 };
 
+                case "INTEL_GET_PICTURE": {
+
+                    [_logic,"intelGetPicture", _data] call MAINCLASS;
+
+                };
+
                 case "OPS_ADD_OBJECTIVE": {
 
                     // a marker is only ever linked by the server's own marker watch
@@ -2580,6 +2586,49 @@ switch(_operation) do {
             };
 
             ["INTEL_LOG", [_playerID, _rows]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+        };
+
+    };
+
+    case "intelGetPicture": {
+
+        // Tablet Commander's Picture: what the caller's own side's commanders have found out about the objectives they
+        // are finding out about (Find Out Before Attacking). The side is the server's own, never the client's; each
+        // commander also passes the Intel limit, and sends positions only when its Intel Markers setting is on.
+        // Reply: [uid, mode, [[faction, stance, Intel Wait minutes, positions shared, rows], ...]]
+
+        if (_args isEqualType []) then {
+
+            _args params [["_playerID","",[""]]];
+
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _player) exitWith {};
+
+            // the C2ISTAR setting; a mission made before it existed reads as Read only
+            private _mode = missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"];
+            private _out = [];
+
+            if (_mode != "OFF" && {!isNil "OPCOM_instances"}) then {
+                private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+                {
+                    private _opcom = _x;
+                    if (([_opcom,"side",""] call ALiVE_fnc_hashGet) == _side
+                        && {[_opcom,"intelCycle",false] call ALiVE_fnc_hashGet}
+                        && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"intelLimit"]] call MAINCLASS}) then {
+                        private _withPos = [_opcom,"intelMarkers",false] call ALiVE_fnc_hashGet;
+                        _out pushBack [
+                            ([_opcom,"factions",[]] call ALiVE_fnc_hashGet) param [0, ""],
+                            [_opcom,"controltype",""] call ALiVE_fnc_hashGet,
+                            round (([_opcom,"intelTimeout",1200] call ALiVE_fnc_hashGet) / 60),
+                            _withPos,
+                            [_opcom,"intelPicture",[_withPos]] call ALiVE_fnc_OPCOM
+                        ];
+                    };
+                } forEach OPCOM_instances;
+            };
+
+            ["INTEL_PICTURE", [_playerID, _mode, _out]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
 
         };
 
