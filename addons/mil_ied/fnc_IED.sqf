@@ -242,6 +242,30 @@ switch(_operation) do {
                         (ALiVE_IED_playerSides findIf {(_x getFriend _side) >= 0.6}) > -1
                     };
 
+                    // A player a suicide bomber leaves alone: one on the insurgents' side or a side friendly
+                    // to it (A. Ares on Discord, 28 Oct, playing as the insurgents). The insurgents are the
+                    // sides of the asymmetric AI Commanders, worked out at most every 10 s; with none, every
+                    // player is a target, as before. Takes a man or a crewed vehicle.
+                    ALiVE_fnc_iedBomberSpares = {
+                        if (time - (missionNamespace getVariable ["ALiVE_IED_insSidesAt", -20]) > 10) then {
+                            private _sides = [];
+                            {
+                                if (_x isEqualType [] && {([_x, "controltype", ""] call ALiVE_fnc_hashGet) == "asymmetric"}) then {
+                                    private _s = [_x, "side", ""] call ALiVE_fnc_hashGet;
+                                    if (_s isEqualType "") then { _s = [_s] call ALIVE_fnc_sideTextToObject };
+                                    if (_s isEqualType west) then { _sides pushBackUnique _s };
+                                };
+                            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                            ALiVE_IED_insSides = _sides;
+                            ALiVE_IED_insSidesAt = time;
+                        };
+                        if (ALiVE_IED_insSides isEqualTo []) exitWith { false };
+                        private _crew = (crew _this) select {alive _x};
+                        if (_crew isEqualTo []) then { _crew = [_this] };
+                        private _side = side group (_crew select 0);
+                        (ALiVE_IED_insSides findIf {(_x getFriend _side) >= 0.6}) > -1
+                    };
+
                     // Normalize numeric/bool Combo attributes through their case handlers.
                     // Eden can store the raw defaultValue string ("0"/"1"/"0.02") when the
                     // user never touched an attribute; each case handler coerces to the
@@ -995,7 +1019,9 @@ switch(_operation) do {
                         _trg setTriggerArea[(_size+250),(_size+250),0,false];
 
                         _trg setTriggerActivation["ANY","PRESENT",false];
-                        _trg setTriggerStatements[format["this && {%1}", _trgCondPresence], format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
+                        // only someone the bomber would go after sets it off, so an insurgent player walking through
+                        // doesn't use up the town's bomber
+                        _trg setTriggerStatements[format["this && {%1} && {thislist findIf {!(_x call ALiVE_fnc_iedBomberSpares)} > -1}", _trgCondPresence], format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
 
                         if (_debug) then {
                             ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
@@ -1257,6 +1283,7 @@ switch(_operation) do {
                         private _player = _x;
                         private _veh = vehicle _player;
                         if (alive _player
+                            && {!(_player call ALiVE_fnc_iedBomberSpares)}
                             && {isNull (getAssignedCuratorLogic _player)}
                             && {((getPosATL _veh) select 2) < 25}
                             && {time > (_player getVariable ["ALiVE_IED_dispatchNext", 0])}
