@@ -314,6 +314,63 @@
     <Chinesesimp>仅限爆发游戏模式。被僵尸杀死的任何人几秒后会穿着同样的衣服作为僵尸重新站起来：平民、任何一方的士兵以及玩家。玩家仍按任务设置重生，他尸体变成的僵尸可以去攻击其他玩家。</Chinesesimp>
     <Spanish>Solo en el modo de juego Brote. Quien muere a manos de un zombi se levanta como zombi unos segundos después, con la misma ropa: civiles, soldados de cualquier bando y jugadores. El jugador reaparece según lo configurado en la misión, y el zombi de su cuerpo puede ir a por otros jugadores.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHES">
+    <English>Supply Caches:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHES_COMMENT">
+    <English>Outbreak game mode only. Hide supply caches in towns for players to find: crates in houses holding weapons and magazines of the mission's own AI Commanders' factions, first aid kits, food and water.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_COUNT">
+    <English>Number of Caches:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_COUNT_COMMENT">
+    <English>Outbreak game mode only. How many supply caches are hidden at once, 1 to 50. One town holds one cache at most.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE">
+    <English>Caches Hidden In:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_COMMENT">
+    <English>Outbreak game mode only. Fallen Towns: only towns where fewer than a quarter of the people are left, or zombies are in the town and fewer than 60% are left, so caches appear as the outbreak spreads. Any Town: every town from the start.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_FALLEN">
+    <English>Fallen Towns</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_ANY">
+    <English>Any Town</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_REFILL">
+    <English>Cache Refill (minutes):</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_REFILL_COMMENT">
+    <English>Outbreak game mode only. Minutes after players empty a cache before it is taken away and a new one is hidden in another town. 0 leaves an emptied cache where it is and hides no new one.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS">
+    <English>Cache Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_COMMENT">
+    <English>Outbreak game mode only. When a cache shows on the map: once a player has found it, never, or as soon as it is hidden.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_FOUND">
+    <English>Once Found</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_HIDDEN">
+    <English>Never</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_ALL">
+    <English>Always</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_LOOT">
+    <English>Cache Loot:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_LOOT_COMMENT">
+    <English>Outbreak game mode only. Leave empty for the automatic loot. Or list what every cache holds, separated by commas, as a class name or class:min-max, for example arifle_MX_F:1-1, 30Rnd_65x39_caseless_mag:3-6, FirstAidKit:2-4. Classes this game doesn't have are left out.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKER">
+    <English>Supply cache</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKER_EMPTY">
+    <English>Supply cache (empty)</English>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP">
     <English>Zombie Infection Cap:</English>
     <Chinesesimp>僵尸感染上限：</Chinesesimp>

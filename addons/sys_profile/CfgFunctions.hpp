@@ -36,6 +36,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_zombieFactionCompile.sqf";
                 ALIVE_RECOMPILE;
             };
+            class outbreakCaches {
+                description = "Outbreak: supply caches hidden in fallen towns for players to find (server), and their marker labels (players)";
+                file = "\x\alive\addons\sys_profile\fnc_outbreakCaches.sqf";
+                ALIVE_RECOMPILE;
+            };
             class zombieInfect {
                 description = "Outbreak: anyone a zombie kills rises as a zombie (every machine watches its own deaths, the server raises them)";
                 file = "\x\alive\addons\sys_profile\fnc_zombieInfect.sqf";

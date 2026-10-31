@@ -301,6 +301,11 @@ if(isServer) then {
         if (ALiVE_zombieFactions isNotEqualTo [] && {ALiVE_zombieHuntRange > 0}) then {
             [] remoteExecCall ["ALiVE_fnc_zombieHunt", 0, "ALiVE_zombieHunt"];
         };
+        // supply caches for players to find, when the mission asks for them
+        private _caches = _logic getVariable ["outbreakCaches", "false"];
+        if ((_caches isEqualType true && {_caches}) || {_caches isEqualType "" && {toLower _caches == "true"}}) then {
+            ["init", _logic] call ALiVE_fnc_outbreakCaches;
+        };
     };
     // The AI Commander waits on this in Outbreak before it reads a faction's side.
     ALiVE_zombieFactionsReady = true;
