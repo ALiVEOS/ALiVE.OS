@@ -669,7 +669,8 @@ switch (_operation) do {
                     sleep 60;
                     private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
                     if (isNull _module) exitWith {};
-                    if !([_handler, "pause", false] call ALiVE_fnc_HashGet) then {
+                    // and not while Dug In, which sends nobody out after a contact (the stance can change mid-mission)
+                    if (!([_handler, "pause", false] call ALiVE_fnc_HashGet) && {([_handler, "controltype", ""] call ALiVE_fnc_HashGet) != "dugin"}) then {
                         [_handler, "callForHelp"] call ALiVE_fnc_OPCOM;
                     };
                 };
@@ -758,6 +759,14 @@ switch (_operation) do {
             };
             case ("occupation") : {
                 [_handler, "sectionsamount_attack", 4] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_defend", 5] call ALiVE_fnc_HashSet;
+            };
+            // Dug In (WoodenPlankGames, Discord 30 Oct): never attacks. Defend is 5 as on Occupation: a section of 5
+            // or more may call on groups holding another objective, which is how they come to help (they're sent
+            // back after), and parked vehicles are never called
+            case ("dugin") : {
+                [_handler, "sectionsamount_attack", 0] call ALiVE_fnc_HashSet;
                 [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
                 [_handler, "sectionsamount_defend", 5] call ALiVE_fnc_HashSet;
             };
@@ -897,6 +906,7 @@ switch (_operation) do {
 
             private _objectiveSortStrategy = switch (_type) do {
                 case ("occupation") :   { "strategic" };
+                case ("dugin")      :   { "strategic" };
                 case ("invasion")   :   { "distance" };
                 case ("asymmetric") :   { "asymmetric" };
             };
@@ -939,8 +949,18 @@ switch (_operation) do {
         ["OPCOM %1 Initial analysis done...", _side] call ALiVE_fnc_dump;
         ["OPCOM and TACOM %1 starting...",_side] call ALiVE_fnc_Dump;
 
+        // Dug In: the ground vehicles at the objectives it holds are parked where they are before anything is ordered
+        if (_type == "dugin") then { [_handler, "dugInPin"] call MAINCLASS };
+
         switch _type do {
             case "occupation": {
+                private _opcomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
+                private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
+
+                [_handler,"OPCOM_FSM", _opcomFSM] call ALiVE_fnc_HashSet;
+                [_handler,"TACOM_FSM", _tacomFSM] call ALiVE_fnc_HashSet;
+            };
+            case "dugin": {
                 private _opcomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
                 private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
 
@@ -968,7 +988,7 @@ switch (_operation) do {
         // side and friendly sides are told where the mines are. Few allows 2 fields, Many 6; one
         // field per objective, at most one every 5 min; never within 300 m of a player. Fields stay until cleared.
         // The mines still in the ground are kept on their objective, so a saved mission lays them again on load.
-        if (_type in ["occupation","invasion"]) then {
+        if (_type in ["occupation","invasion","dugin"]) then {
             [_handler] spawn {
                 params ["_handler"];
                 sleep 180;
@@ -1090,7 +1110,7 @@ switch (_operation) do {
         // compositions) at its edge facing the enemy. Few allows 3, Many 8; at most one every 5 min,
         // never within 300 m of a player, and not where fortifications already stand (which also
         // covers a fort restored from a save).
-        if (_type in ["occupation","invasion"]) then {
+        if (_type in ["occupation","invasion","dugin"]) then {
             [_handler] spawn {
                 params ["_handler"];
                 private _heldSince = createHashMap;
@@ -4086,6 +4106,17 @@ switch (_operation) do {
 
         //Restart OPCOM
         switch ([_logic,"controltype","invasion"] call ALiVE_fnc_HashGet) do {
+            case ("dugin") : {
+                _OPCOM = [_logic] call {
+                    _handler = _this select 0;
+
+                    _OPCOM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
+                    _TACOM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
+
+                    [_handler, "OPCOM_FSM",_OPCOM] call ALiVE_fnc_HashSet;
+                    [_handler, "TACOM_FSM",_TACOM] call ALiVE_fnc_HashSet;
+                };
+            };
             case ("occupation") : {
                 _OPCOM = [_logic] call {
                     _handler = _this select 0;
@@ -4204,6 +4235,8 @@ switch (_operation) do {
                     "actionsFulfilled",
                     // Frontline Minefields (#979): the mines left in each field, so they are laid again
                     "minefield","minefieldLaid",
+                    // Dug In: the groups that hold each objective and the vehicles parked there
+                    "dugInMembers","dugInPinned",
                     "_rev"
                 ];
 
@@ -4804,6 +4837,14 @@ switch (_operation) do {
             };
 
             case ("occupation") : {
+                [
+                    [_friendlyObjectives,"reserve"],
+                    [_enemyObjectives,"attack"],
+                    [_contestedObjectives,"defend"]
+                ]
+            };
+            // Dug In marks enemy objectives the same way, but its order table never picks "attack"
+            case ("dugin") : {
                 [
                     [_friendlyObjectives,"reserve"],
                     [_enemyObjectives,"attack"],
@@ -6004,6 +6045,120 @@ switch (_operation) do {
         _result = true;
     };
 
+    // Dug In (WoodenPlankGames, Discord 30 Oct). [profile IDs] or nothing for all: every group of this commander's
+    // factions at an objective it holds is written on that objective as one of its own ("dugInMembers"), so a group
+    // sent to help elsewhere is sent back there. Ground vehicles among them are parked where they are, with the same
+    // pin roadblock guards use ("dugInPinned"); aircraft and boats are left to fly and sail. The lists are on the
+    // objective, which is saved with the commander, and the pin is saved with the profile.
+    // "unassigned" counts as held: that's every objective just after the start or a change of stance, before the
+    // first look at who is where, and parking then is what keeps the vehicles from being sent off by the first orders
+    case "dugInPin": {
+        private _only = if (_args isEqualType []) then { _args } else { [] };
+        private _side = [_logic, "side", "EAST"] call ALiVE_fnc_HashGet;
+        private _factions = ([_logic, "factions", []] call ALiVE_fnc_HashGet) apply { toLower _x };
+        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate };
+        private _objectives = [_logic, "objectives", []] call ALiVE_fnc_HashGet;
+        private _held = _objectives select { ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["unassigned", "reserve", "reserving", "defend", "defending", "idle"] };
+        private _members = 0;
+        private _pinned = 0;
+        // a group already written on one objective keeps that one as its home
+        private _known = [];
+        { _known append ([_x, "dugInMembers", []] call ALiVE_fnc_HashGet) } forEach _objectives;
+        // a group with an order still running is never parked: clearing its waypoint would leave the order open
+        private _ordered = ([_logic, "pendingorders", []] call ALiVE_fnc_HashGet) apply { _x select 1 };
+        // nor one on its way to defend somewhere, or held by another objective, as it passes
+        private _sections = _objectives apply {
+            [_x, [_x, "section", []] call ALiVE_fnc_HashGet, ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["defend", "defending"]]
+        };
+
+        private _take = {
+            params ["_objective", "_profile"];
+            private _pid = [_profile, "profileID", ""] call ALiVE_fnc_HashGet;
+            if (_pid == "" || {!(toLower ([_profile, "faction", ""] call ALiVE_fnc_HashGet) in _factions)}) exitWith {};
+            if !(_pid in _known) then {
+                private _mine = [_objective, "dugInMembers", []] call ALiVE_fnc_HashGet;
+                _mine pushBack _pid;
+                [_objective, "dugInMembers", _mine] call ALiVE_fnc_HashSet;
+                _known pushBack _pid;
+                _members = _members + 1;
+            };
+            private _parked = [_objective, "dugInPinned", []] call ALiVE_fnc_HashGet;
+            if (_pid in _parked || {_pid in _ordered}) exitWith {};
+            private _vehIDs = [_profile, "vehiclesInCommandOf", []] call ALiVE_fnc_HashGet;
+            private _aa = if (!isNil "ALIVE_aaProfileBehaviour") then { [ALIVE_aaProfileBehaviour, _pid] call ALIVE_fnc_hashGet } else { nil };
+            private _ground = _vehIDs isNotEqualTo [] && {(_vehIDs findIf {
+                private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                private _class = if (isNil "_vp") then { "" } else { [_vp, "vehicleClass", ""] call ALiVE_fnc_HashGet };
+                _class isKindOf "Air" || {_class isKindOf "Ship"}
+            }) < 0};
+            private _moving = _sections findIf { (_x select 2 || {!((_x select 0) isEqualTo _objective)}) && {_pid in (_x select 1)} } >= 0;
+            if (_ground && {isNil "_aa"} && {!_moving}) then {
+                [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
+                [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+                _parked pushBack _pid;
+                [_objective, "dugInPinned", _parked] call ALiVE_fnc_HashSet;
+                _pinned = _pinned + 1;
+            };
+        };
+
+        if (_only isEqualTo []) then {
+            {
+                private _objective = _x;
+                private _r = ([_objective, "size", 150] call ALiVE_fnc_HashGet) + 50;
+                {
+                    [_objective, _x] call _take;
+                } forEach ([[_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet, _r, [_side, "entity"]] call ALIVE_fnc_getNearProfiles);
+            } forEach _held;
+        } else {
+            // named groups (a reserve vehicle just crewed, which can stand a few hundred metres out) go to the
+            // nearest objective it holds within a kilometre
+            {
+                private _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                if (!isNil "_profile" && {_held isNotEqualTo []}) then {
+                    private _pos = [_profile, "position", [0,0,0]] call ALiVE_fnc_HashGet;
+                    private _near = [_held, [_pos], { _input0 distance2D ([_x, "center", [0,0,0]] call ALiVE_fnc_HashGet) }, "ASCEND"] call BIS_fnc_sortBy;
+                    private _objective = _near select 0;
+                    if ((_pos distance2D ([_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet)) < 1000) then {
+                        [_objective, _profile] call _take;
+                    };
+                };
+            } forEach _only;
+        };
+
+        if (_members + _pinned > 0) then {
+            ["[OPCOM DUGIN] %1: %2 groups now hold an objective, %3 ground vehicle groups parked", _side, _members, _pinned] call ALiVE_fnc_dump;
+        };
+        _result = _pinned;
+    };
+
+    // Leaving Dug In: only the vehicles Dug In parked are let go, never a roadblock's or a composition's
+    case "dugInUnpin": {
+        private _freed = 0;
+        {
+            private _objective = _x;
+            {
+                if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem };
+                private _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                if (!isNil "_profile") then { [_profile, "busy", false] call ALiVE_fnc_HashSet };
+                _freed = _freed + 1;
+            } forEach ([_objective, "dugInPinned", []] call ALiVE_fnc_HashGet);
+            [_objective, "dugInPinned", []] call ALiVE_fnc_HashSet;
+            [_objective, "dugInMembers", []] call ALiVE_fnc_HashSet;
+        } forEach ([_logic, "objectives", []] call ALiVE_fnc_HashGet);
+        ["[OPCOM DUGIN] %1: %2 parked vehicle groups free to move", [_logic, "side", ""] call ALiVE_fnc_HashGet, _freed] call ALiVE_fnc_dump;
+        _result = _freed;
+    };
+
+    // [profile ID]: the objective a Dug In group holds, or nothing if it isn't one of them
+    case "dugInHome": {
+        private _pid = _args;
+        _result = nil;
+        {
+            if (_pid in ([_x, "dugInMembers", []] call ALiVE_fnc_HashGet)) exitWith { _result = _x };
+        } forEach ([_logic, "objectives", []] call ALiVE_fnc_HashGet);
+    };
+
     // What this commander knows of the enemy (A. Ares on Discord, 21 Oct), for Tasks Only Against Known Enemy:
     // [entity profile IDs, their last known positions], from what its units have seen in the last 30 minutes, its spot
     // reports (when C2ISTAR shows intel) and the groups its units can see now
@@ -6506,8 +6661,8 @@ switch (_operation) do {
 
         _result = false;
 
-        if !(_newControlType in ["invasion","occupation","asymmetric"]) exitwith {
-            ["ALiVE_fnc_OPCOM | Operation '%1' | Invalid value for _newControlType %2, must be one of %3", _operation, _newControlType, ["invasion","occupation","asymmetric"]] call ALiVE_fnc_Dump;
+        if !(_newControlType in ["invasion","occupation","asymmetric","dugin"]) exitwith {
+            ["ALiVE_fnc_OPCOM | Operation '%1' | Invalid value for _newControlType %2, must be one of %3", _operation, _newControlType, ["invasion","occupation","asymmetric","dugin"]] call ALiVE_fnc_Dump;
         };
 
         if !([_logic,"startupComplete", false] call ALiVE_fnc_hashGet) exitwith {
@@ -6523,7 +6678,7 @@ switch (_operation) do {
             [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_hashSet;
         };
 
-        private _conventionalTypes = ["invasion","occupation"];
+        private _conventionalTypes = ["invasion","occupation","dugin"];
 
         private _opcomFSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
         private _tacomFSM = [_logic,"TACOM_FSM",-1] call ALiVE_fnc_HashGet;
@@ -6547,6 +6702,9 @@ switch (_operation) do {
             };
         };
 
+        // leaving Dug In: the vehicles it parked are free to move again (the list of them is on the objectives)
+        if (_existingControlType == "dugin") then { [_logic, "dugInUnpin"] call MAINCLASS };
+
         // remove objectives
 
         private _objectives = +([_logic,"objectives"] call ALiVE_fnc_HashGet);
@@ -6556,6 +6714,7 @@ switch (_operation) do {
 
         private _sortType = switch (_newControlType) do {
             case "occupation": {"strategic"};
+            case "dugin": {"strategic"};
             case "invasion": {"distance"};
             default {"asymmetric"};
         };
@@ -6574,6 +6733,19 @@ switch (_operation) do {
             _prepModule setVariable ["ALiVE_prep_choiceTargets", []];
             [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
         };
+
+        // into or out of Dug In: how many groups an order takes, as the module's start would have set them
+        if ("dugin" in [_newControlType, _existingControlType] && {_newControlType in _conventionalTypes}) then {
+            private _amounts = switch (_newControlType) do {
+                case "dugin": { [0, 1, 5] };
+                case "occupation": { [4, 1, 5] };
+                default { [4, 1, 2] };
+            };
+            [_logic, "sectionsamount_attack", _amounts select 0] call ALiVE_fnc_HashSet;
+            [_logic, "sectionsamount_reserve", _amounts select 1] call ALiVE_fnc_HashSet;
+            [_logic, "sectionsamount_defend", _amounts select 2] call ALiVE_fnc_HashSet;
+        };
+        if (_newControlType == "dugin") then { [_logic, "dugInPin"] call MAINCLASS };
 
         // reboot FSMs
 

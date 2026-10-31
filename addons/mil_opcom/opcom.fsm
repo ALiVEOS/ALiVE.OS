@@ -469,6 +469,14 @@ class FSM
                          "                            [(count _un > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]" \n
                          "                        ];" \n
                          "                    };" \n
+                         "" \n
+                         "                    // Dug In holds what it has: it never sends anyone to take an objective" \n
+                         "                    case (""dugin"") : {" \n
+                         "                        _priorities = [" \n
+                         "                            [(count _res > 0),""reserve""]," \n
+                         "                            [(count _def > 0),""defend""]" \n
+                         "                        ];" \n
+                         "                    };" \n
                          "                };" \n
                          "" \n
                          "                {" \n
@@ -1473,6 +1481,9 @@ class FSM
                         itemno = 33;
                         init = /*%FSM<STATEINIT""">*/"" \n
                          "private [""_reinforce""];" \n
+                         "" \n
+                         "// Dug In: groups that have reached an objective it holds since the last look are written down there, and their vehicles parked" \n
+                         "if (([_OPCOM_HANDLER,""controltype"",""""] call ALiVE_fnc_HashGet) == ""dugin"") then {[_OPCOM_HANDLER,""dugInPin""] call ALiVE_fnc_OPCOM};" \n
                          "" \n
                          "//Analyze Forces State" \n
                          "_startForcesStrength = [_OPCOM_HANDLER,""startForceStrength"",[]] call ALiVE_fnc_HashGet;" \n

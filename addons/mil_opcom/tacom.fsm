@@ -131,6 +131,7 @@ class FSM
                          "_cycleTime = 120;" \n
                          "_pause = false;" \n
                          "" \n
+                         "_controltype = [_OPCOM_HANDLER,""controltype"",""""] call ALiVE_fnc_HashGet;" \n
                          "_sectionsamount_attack = [_OPCOM_HANDLER,""sectionsamount_attack"",4] call ALiVE_fnc_HashGet;" \n
                          "_sectionsamount_reserve = [_OPCOM_HANDLER,""sectionsamount_reserve"",1] call ALiVE_fnc_HashGet;" \n
                          "_sectionsamount_defend = [_OPCOM_HANDLER,""sectionsamount_defend"",2] call ALiVE_fnc_HashGet;" \n
@@ -312,6 +313,8 @@ class FSM
                          "                    if !(isnil ""_target"") then {" \n
                          "                        private _vehicle = ([_target,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
                          "" \n
+                         "                        // Dug In sends nobody out after a contact: an enemy near an objective it holds makes that a defence" \n
+                         "                        if (_controltype != ""dugin"") then {" \n
                          "                        if (count _vehicle > 0) then {" \n
                          "                            if (_debug) then {[""TACOM %2 sends QRF request to OPCOM (%1)"",_targetID,_side] call ALiVE_fnc_DumpR};" \n
                          "" \n
@@ -321,6 +324,7 @@ class FSM
                          "                        } else {" \n
                          "                            if (_debug) then {[""TACOM %2 sends QRF of type infantry on %1"",_targetID,_side] call ALiVE_fnc_DumpR};" \n
                          "                            [_OPCOM_HANDLER, ""attackentity"",[_targetID,2,""infantry""]] call ALIVE_fnc_OPCOM;" \n
+                         "                        };" \n
                          "                        };" \n
                          "                    };" \n
                          "                };" \n
@@ -434,6 +438,29 @@ class FSM
                          "                        _size = _sectionsamount_defend;" \n
                          "                        _defend = [_objective,_size];" \n
                          "                    } else {" \n
+                         "                        // Dug In: the groups that came to help from another objective it holds go back there" \n
+                         "                        if (_controltype == ""dugin"") then {" \n
+                         "                            private _section = +([_objective,""section"",[]] call AliVE_fnc_HashGet);" \n
+                         "                            private _sent = [];" \n
+                         "                            {" \n
+                         "                                private _home = [_OPCOM_HANDLER,""dugInHome"",_x] call ALiVE_fnc_OPCOM;" \n
+                         "                                private _p = [ALIVE_profileHandler,""getProfile"",_x] call ALIVE_fnc_profileHandler;" \n
+                         "                                if (!isNil ""_home"" && {!isNil ""_p""} && {!(_home isEqualTo _objective)} && {([_home,""opcom_state"",""""] call AliVE_fnc_HashGet) in [""unassigned"",""reserve"",""reserving"",""idle"",""defend"",""defending""]}) then {" \n
+                         "                                    [_p, ""clearWaypoints""] call ALIVE_fnc_profileEntity;" \n
+                         "                                    [_p, ""clearActiveCommands""] call ALIVE_fnc_profileEntity;" \n
+                         "                                    [_p, ""setActiveCommand"", [""ALIVE_fnc_garrison"",""spawn"",[200,""true"",[_home,""center"",[0,0,0]] call AliVE_fnc_HashGet]]] call ALIVE_fnc_profileEntity;" \n
+                         "                                    _sent pushBack [_x,_home];" \n
+                         "                                };" \n
+                         "                            } forEach _section;" \n
+                         "                            if (_sent isNotEqualTo []) then {" \n
+                         "                                [_OPCOM_HANDLER,""setObjectiveSection"",[_objective,_section - (_sent apply {_x select 0})]] call ALiVE_fnc_OPCOM;" \n
+                         "                                {" \n
+                         "                                    _x params [""_pid"",""_home""];" \n
+                         "                                    [_OPCOM_HANDLER,""setObjectiveSection"",[_home,([_home,""section"",[]] call AliVE_fnc_HashGet) + [_pid]]] call ALiVE_fnc_OPCOM;" \n
+                         "                                } forEach _sent;" \n
+                         "                                [""[OPCOM DUGIN] %1 %2: enemy gone, %3 groups go back to where they came from"", _side, _objectiveID, count _sent] call ALiVE_fnc_dump;" \n
+                         "                            };" \n
+                         "                        };" \n
                          "                        _size = _sectionsamount_reserve;" \n
                          "                        _reserve = [_objective,_size];" \n
                          "                        " \n
@@ -560,9 +587,12 @@ class FSM
                          "                    _events pushBack (['OPCOM_DEFEND', [_side,_objective],""OPCOM""] call ALIVE_fnc_event);" \n
                          "                };" \n
                          "                case (""reserve"") : {" \n
+                         "                    // Dug In keeps nobody back: every group it holds an objective with is free to answer an attack" \n
+                         "                    if (_controltype != ""dugin"") then {" \n
                          "                    _ProfilesReserve = [_OPCOM_HANDLER,""ProfileIDsReserve"",[]] call ALiVE_fnc_HashGet;" \n
                          "                    if !(_ProfileID in _ProfilesReserve) then {" \n
                          "                        [_OPCOM_HANDLER,""ProfileIDsReserve"",_ProfilesReserve + [_ProfileID]] call ALiVE_fnc_HashSet;" \n
+                         "                    };" \n
                          "                    };" \n
                          "" \n
                          "                    if !([_OPCOM_HANDLER,""synchronizeorders"",_ProfileID] call ALiVE_fnc_OPCOM) exitwith {" \n
@@ -583,6 +613,11 @@ class FSM
                          "                    //left men in the open at one side of a large objective. There is no size to" \n
                          "                    //hand it here, so the 200 m below is still the reach." \n
                          "                    _objCentre = [_objective,""center"",[0,0,0]] call AliVE_fnc_HashGet;" \n
+                         "                    if (_controltype == ""dugin"") then {" \n
+                         "                        private _home = [_OPCOM_HANDLER,""dugInHome"",_ProfileID] call ALiVE_fnc_OPCOM;" \n
+                         "                        if (!isNil ""_home"" && {!(_home isEqualTo _objective)}) then {[_home,""dugInMembers"",([_home,""dugInMembers"",[]] call AliVE_fnc_HashGet) - [_ProfileID]] call AliVE_fnc_HashSet};" \n
+                         "                        [_objective,""dugInMembers"",(([_objective,""dugInMembers"",[]] call AliVE_fnc_HashGet) - [_ProfileID]) + [_ProfileID]] call AliVE_fnc_HashSet;" \n
+                         "                    };" \n
                          "                    [_profile, ""setActiveCommand"", [""ALIVE_fnc_garrison"",""spawn"",[200,""true"",_objCentre]]] call ALIVE_fnc_profileEntity;" \n
                          "" \n
                          "                    //transmit to OPCOM as objective was completed" \n

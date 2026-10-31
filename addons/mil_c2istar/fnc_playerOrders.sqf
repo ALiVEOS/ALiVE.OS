@@ -1012,7 +1012,7 @@ switch (_operation) do {
 
         if (isNull _player) exitWith {};
 
-        if !(_newControlType in ["invasion","occupation","asymmetric"]) exitWith {
+        if !(_newControlType in ["invasion","occupation","asymmetric","dugin"]) exitWith {
             ["notify", [_player, "Invalid OPCOM stance."]] call MAINCLASS;
         };
 

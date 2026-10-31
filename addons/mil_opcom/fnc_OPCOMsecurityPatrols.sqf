@@ -55,6 +55,8 @@ params ["_handler"];
 private _share = [_handler, "securityPatrols", 0] call ALiVE_fnc_HashGet;
 if !(_share isEqualType 0) exitWith {};
 if (_share <= 0) exitWith {};
+// a Dug In commander keeps everyone at the places it holds (WoodenPlankGames, Discord 30 Oct)
+if (([_handler, "controltype", ""] call ALiVE_fnc_HashGet) == "dugin") exitWith {};
 
 private _ledger = [_handler, "securityPatrolLedger", createHashMap] call ALiVE_fnc_HashGet;
 [_handler, "securityPatrolLedger", _ledger] call ALiVE_fnc_HashSet;

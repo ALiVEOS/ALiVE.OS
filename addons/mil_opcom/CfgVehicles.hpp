@@ -81,6 +81,7 @@ class CfgVehicles {
                                     class invasion { name = "Invasion"; value = "invasion"; default = 1; };
                                     class occupation { name = "Occupation"; value = "occupation"; };
                                     class asymmetric { name = "Asymmetric"; value = "asymmetric"; };
+                                    class dugin { name = "Dug In"; value = "dugin"; };
                                 };
                         };
                         class reinforcements : Combo

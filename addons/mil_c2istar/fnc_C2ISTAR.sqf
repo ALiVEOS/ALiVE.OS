@@ -2949,6 +2949,7 @@ if (isServer) then {
                     _x params ["", "_factions", "_type", "_objectives"];
                     private _what = switch (_type) do {
                         case "occupation": { "holding the ground it has" };
+                        case "dugin": { "dug in where it stands" };
                         case "asymmetric": { "running an insurgency" };
                         default { "on the offensive" };
                     };

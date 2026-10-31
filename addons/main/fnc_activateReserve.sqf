@@ -388,6 +388,15 @@ if (_entryType == "VEHICLE") then {
                                 switch ([_x, "type"] call ALiVE_fnc_hashGet) do {
                                     case "entity": {
                                         [_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement", "spawn", [_guardRadius, "SAFE", [0,0,0], _logic getVariable ["ALiVE_patrolLimits", []]]]] call ALIVE_fnc_profileEntity;
+                                        // a woken vehicle of a Dug In commander parks at the objective it holds instead of patrolling (WoodenPlankGames,
+                                        // Discord 30 Oct)
+                                        private _wokenFaction = toLower ([_x, "faction", ""] call ALiVE_fnc_hashGet);
+                                        private _wokenID = [_x, "profileID", ""] call ALiVE_fnc_hashGet;
+                                        {
+                                            if (([_x, "controltype", ""] call ALiVE_fnc_HashGet) == "dugin" && {_wokenFaction in (([_x, "factions", []] call ALiVE_fnc_HashGet) apply { toLower _x })}) exitWith {
+                                                [_x, "dugInPin", [_wokenID]] call ALiVE_fnc_OPCOM;
+                                            };
+                                        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
                                         [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
                                     };
                                     case "vehicle": {
@@ -443,6 +452,15 @@ if (_entryType == "VEHICLE") then {
         // them up at next tick (busy=false above) and re-tasks as
         // needed.
         [_profileEntity, "setActiveCommand", ["ALIVE_fnc_ambientMovement", "spawn", [_guardRadius, "SAFE", [0,0,0], _logic getVariable ["ALiVE_patrolLimits", []]]]] call ALIVE_fnc_profileEntity;
+        // a woken vehicle of a Dug In commander parks at the objective it holds instead of patrolling (WoodenPlankGames,
+        // Discord 30 Oct)
+        private _wokenFaction = toLower ([_profileEntity, "faction", ""] call ALiVE_fnc_hashGet);
+        private _wokenID = [_profileEntity, "profileID", ""] call ALiVE_fnc_hashGet;
+        {
+            if (([_x, "controltype", ""] call ALiVE_fnc_HashGet) == "dugin" && {_wokenFaction in (([_x, "factions", []] call ALiVE_fnc_HashGet) apply { toLower _x })}) exitWith {
+                [_x, "dugInPin", [_wokenID]] call ALiVE_fnc_OPCOM;
+            };
+        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
         // Despawn + spawn cycle on the entity to materialise the new
         // crew. The vehicle profile is independent and stays as-is, so

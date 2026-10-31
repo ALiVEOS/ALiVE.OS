@@ -519,6 +519,15 @@ if (_menuName == "C2_OPCOM_STANCE") then {
                     -1,
                     true,
                     _result
+                ],
+                ["Dug In",
+                    {["changeStance", [player, "dugin"]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "OPCOM holds the objectives it has and takes no more. Vehicles stay parked, and groups from other objectives answer an attack and go back.",
+                    "",
+                    -1,
+                    true,
+                    _result
                 ]
             ]
         ]
