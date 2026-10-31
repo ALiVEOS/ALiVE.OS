@@ -118,6 +118,11 @@ switch(_operation) do {
                         private _orderMarkers = NEO_radioLogic getVariable ["combatsupport_ordermarkers", true];
                         if !(_orderMarkers isEqualType true) then { _orderMarkers = parseNumber format ["%1", _orderMarkers] > 0; };
                         NEO_radioLogic setVariable ["combatsupport_ordermarkers", _orderMarkers, true];
+                        // Share With Friendly Sides (A. Ares on Discord, 27 Oct): No keeps each side's supports to its
+                        // own players; bool when binarised, "0"/"1" on a packed build, like audio
+                        private _shareFriendly = NEO_radioLogic getVariable ["combatsupport_sharefriendly", true];
+                        if !(_shareFriendly isEqualType true) then { _shareFriendly = parseNumber format ["%1", _shareFriendly] > 0; };
+                        NEO_radioLogic setVariable ["combatsupport_sharefriendly", _shareFriendly, true];
 
                         // #940 follow-up: "Support Access" attribute. Default "First player only"
                         // restricts support-calling to one operator per side; "All players" is the
@@ -1463,7 +1468,7 @@ switch(_operation) do {
                             _sideIn = _sides select _i;
 
                             {
-                                if (!(_sideIn == _x) && {(_sideIn getfriend _x >= 0.6)}) then {
+                                if (!(_sideIn == _x) && {(_sideIn getfriend _x >= 0.6)} && {NEO_radioLogic getVariable ["combatsupport_sharefriendly", true]}) then {
                                     private ["_sideInArray","_xArray"];
                                     _sideInArray = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _sideIn];
                                     _xArray = NEO_radioLogic getVariable format["NEO_radioTrasportArray_%1", _x];

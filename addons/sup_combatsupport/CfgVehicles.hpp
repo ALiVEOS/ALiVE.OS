@@ -109,6 +109,19 @@ class CfgVehicles {
                                     class false { name="No"; value = 0; };
                                 };
                         };
+                        // Share With Friendly Sides (A. Ares on Discord, 27 Oct): No keeps each side's supports to its own players
+                        class combatsupport_sharefriendly : Combo
+                        {
+                                property = "ALiVE_sup_combatsupport_combatsupport_sharefriendly";
+                                displayName = "$STR_ALIVE_CS_SHAREFRIENDLY";
+                                tooltip = "$STR_ALIVE_CS_SHAREFRIENDLY_COMMENT";
+                                defaultValue = """1""";
+                                class Values
+                                {
+                                    class true { name="Yes"; value = 1; default = 1; };
+                                    class false { name="No"; value = 0; };
+                                };
+                        };
                         // the tablet may call the AI Commander's own batteries (mil_artillery) at a grid
                         class combatsupport_artycommander : Combo
                         {

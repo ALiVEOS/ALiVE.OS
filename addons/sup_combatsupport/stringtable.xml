@@ -2707,6 +2707,12 @@
     <Portuguese>Ponto B</Portuguese>
     <Russian>Точка B</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_SHAREFRIENDLY">
+    <English>Share With Friendly Sides:</English>
+</Key>
+<Key ID="STR_ALIVE_CS_SHAREFRIENDLY_COMMENT">
+    <English>Yes (the default) lets players call on the transport, CAS, artillery and ground support of any side friendly to theirs, as well as their own. No keeps each side's supports to that side's own players, so allied sides each have their own.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_ORDERMARKERS">
     <English>Keep Order Markers</English>
     <Chinesesimp>保留命令标记</Chinesesimp>

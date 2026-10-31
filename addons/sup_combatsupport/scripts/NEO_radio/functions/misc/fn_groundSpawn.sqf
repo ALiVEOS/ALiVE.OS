@@ -92,10 +92,11 @@ private _audio = NEO_radioLogic getVariable ["combatsupport_audio", true];
 private _brain = [_veh, _grp, _callsign, _pos, _dir, _type, CS_RESPAWN, _code, _audio, _settings] spawn NEO_fnc_groundBrain;
 _veh setVariable ["NEO_groundBrain", _brain];
 
-// listed for its own side and every side friendly to it
+// listed for its own side and every side friendly to it, unless Share With Friendly Sides is No
 private _entry = [_veh, _grp, _callsign, _brain];
+private _share = NEO_radioLogic getVariable ["combatsupport_sharefriendly", true];
 {
-    if (_x == _side || {(_side getFriend _x) >= 0.6}) then {
+    if (_x == _side || {_share && {(_side getFriend _x) >= 0.6}}) then {
         private _list = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", _x], []];
         _list pushBack _entry;
         NEO_radioLogic setVariable [format ["NEO_radioGroundArray_%1", _x], _list, true];
