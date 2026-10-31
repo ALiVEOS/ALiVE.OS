@@ -731,6 +731,12 @@
 <Key ID="STR_ALIVE_LISTS_INFANTRY">
     <English>Infantry (supplies, defences, cars, trucks, light static weapons, troops)</English>
 </Key>
+<Key ID="STR_ALIVE_LISTS_CHECK">
+    <English>Check The Lists</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_CHECK_COMMENT">
+    <English>Says which list this module uses, what its lists keep, and which names in them aren't a vehicle, crate, soldier, gear item or group in this game. It reads the settings as last saved with OK. What players are finally offered depends on their side and the AI Commanders, so the mission's RPT reports that when it starts.</English>
+</Key>
 <Key ID="STR_ALIVE_LISTS_CUSTOM">
     <English>Custom (named below)</English>
 </Key>

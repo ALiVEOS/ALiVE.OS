@@ -181,6 +181,29 @@ class Cfg3DEN
             attributeLoad = "call compile getText (configFile >> 'Cfg3DEN' >> 'Attributes' >> 'Combo' >> 'attributeLoad'); ['zombieside', _this] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenGameModeToggle.sqf'";
         };
 
+        // Check the lists: a button on the resupply tablet, Logistics Hub and Player FOBs modules that says which list
+        // the module uses, what its lists keep and which names in them aren't in this game (fnc_edenListsCheckLoad.sqf).
+        // It saves nothing.
+        class ALiVE_ListsCheck: Title
+        {
+            attributeLoad = "_this call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenListsCheckLoad.sqf'";
+            attributeSave = "''";
+            class Controls: Controls
+            {
+                class Title: Title {};
+                class Check: ctrlButton
+                {
+                    idc = 310;
+                    x = "48 * (pixelW * pixelGrid * 0.50)";
+                    y = 0;
+                    w = "82 * (pixelW * pixelGrid * 0.50)";
+                    h = "5 * (pixelH * pixelGrid * 0.50)";
+                    text = "Check the lists";
+                    tooltip = "Say which list this module uses, what its lists keep, and which names in them aren't in this game. Reads the settings as last saved with OK.";
+                };
+            };
+        };
+
         // ctrlControlsGroupNoScrollbars / ctrlListBox / ctrlStatic forward
         // declarations live at top-of-file (outside class Cfg3DEN), not
         // here - see the rationale there. Attempting to forward-decl them

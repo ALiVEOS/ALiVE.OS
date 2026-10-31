@@ -174,6 +174,7 @@ class CfgVehicles {
                     class pr_restrictionWhitelist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionWhitelist"; displayName = "$STR_ALIVE_PR_RESTRICTION_WHITELIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
                     class pr_restrictionBlacklist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionBlacklist"; displayName = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
                     class pr_restrictionAlso : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionAlso"; displayName = "$STR_ALIVE_PR_RESTRICTION_ALSO"; tooltip = "$STR_ALIVE_PR_RESTRICTION_ALSO_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+                    class pr_listcheck : Default { property = "ALiVE_sup_player_resupply_pr_listcheck"; displayName = "$STR_ALIVE_LISTS_CHECK"; tooltip = "$STR_ALIVE_LISTS_CHECK_COMMENT"; control = "ALiVE_ListsCheck"; typeName = "STRING"; defaultValue = "''"; };
                     class ModuleDescription : ModuleDescription {};
                 };
         };
@@ -240,6 +241,7 @@ class CfgVehicles {
                     class hub_only : Edit { property = "ALiVE_sup_logistics_hub_hub_only"; displayName = "$STR_ALIVE_HUB_ONLY"; tooltip = "$STR_ALIVE_HUB_ONLY_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_never : Edit { property = "ALiVE_sup_logistics_hub_hub_never"; displayName = "$STR_ALIVE_HUB_NEVER"; tooltip = "$STR_ALIVE_HUB_NEVER_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_also : Edit { property = "ALiVE_sup_logistics_hub_hub_also"; displayName = "$STR_ALIVE_HUB_ALSO"; tooltip = "$STR_ALIVE_HUB_ALSO_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                    class hub_listcheck : Default { property = "ALiVE_sup_logistics_hub_hub_listcheck"; displayName = "$STR_ALIVE_LISTS_CHECK"; tooltip = "$STR_ALIVE_LISTS_CHECK_COMMENT"; control = "ALiVE_ListsCheck"; typeName = "STRING"; defaultValue = "''"; };
 
                     // losing a hub: destroyed, or dismantled by the enemy or its own side, and the repair
                     class HDR_LOSING : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_LOSING"; displayName = "LOSING A HUB"; };

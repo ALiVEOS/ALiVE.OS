@@ -135,6 +135,7 @@ class CfgVehicles {
                         class fob_only : Edit { property = "ALiVE_sup_fob_fob_only"; displayName = "$STR_ALIVE_FOB_ONLY"; tooltip = "$STR_ALIVE_FOB_ONLY_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                         class fob_blacklist : Edit { property = "ALiVE_sup_fob_fob_blacklist"; displayName = "$STR_ALIVE_FOB_BLACKLIST"; tooltip = "$STR_ALIVE_FOB_BLACKLIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                         class fob_whitelist : Edit { property = "ALiVE_sup_fob_fob_whitelist"; displayName = "$STR_ALIVE_FOB_WHITELIST"; tooltip = "$STR_ALIVE_FOB_WHITELIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                        class fob_listcheck : Default { property = "ALiVE_sup_fob_fob_listcheck"; displayName = "$STR_ALIVE_LISTS_CHECK"; tooltip = "$STR_ALIVE_LISTS_CHECK_COMMENT"; control = "ALiVE_ListsCheck"; typeName = "STRING"; defaultValue = "''"; };
 
                         class HDR_KITS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_KITS"; displayName = "KITS AND CRATES"; };
                         class fob_kit_class : Edit { property = "ALiVE_sup_fob_fob_kit_class"; displayName = "$STR_ALIVE_FOB_KIT_CLASS"; tooltip = "$STR_ALIVE_FOB_KIT_CLASS_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
