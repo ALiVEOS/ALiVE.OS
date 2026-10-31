@@ -789,6 +789,12 @@ switch (_operation) do {
 
                 };
 
+                case "INTEL_SETTINGS": {
+
+                    [_logic,"enableCommanderSettings", _data] call MAINCLASS;
+
+                };
+
                 case "INTEL_ORDER_ACK": {
 
                     [_logic,"cmdOrderAck", _data] call MAINCLASS;
@@ -1450,7 +1456,9 @@ switch (_operation) do {
 
                     private _commandState = [_logic,"commandState"] call MAINCLASS;
                     if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitWith {};
-                    if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "COMMANDER") exitWith {};
+                    private _tab = [_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet;
+                    if (_tab == "SETTINGS") exitWith { ["INTEL_GET_SETTINGS", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2] };
+                    if (_tab != "COMMANDER") exitWith {};
                     ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
@@ -1499,6 +1507,16 @@ switch (_operation) do {
                         [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_WAITING"]] call MAINCLASS;
                         ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
                     } else {
+                        // the commander's settings: pause, stance, Intel Wait and how sure it must be
+                        if (_tab == "SETTINGS") exitWith {
+                            _editMap ctrlShow false;
+                            _detail ctrlShow false;
+                            [_logic,"cmdListWidth","WIDE"] call MAINCLASS;
+                            _title ctrlSetText localize "STR_ALIVE_SCOM_SET_TITLE";
+                            _editList ctrlSetEventHandler ["LBSelChanged", "['INTEL_SET_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                            [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_WAITING"]] call MAINCLASS;
+                            ["INTEL_GET_SETTINGS", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+                        };
                         _editMap ctrlShow false;
                         _detail ctrlShow false;
                         _editList ctrlSetEventHandler ["LBSelChanged", ""];
@@ -1566,6 +1584,39 @@ switch (_operation) do {
                     } foreach [SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
                     [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_ORDER_SENT"]] call MAINCLASS;
                     ["INTEL_ORDER", [getPlayerUID player, _kind, _sel]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
+                case "INTEL_SET_SELECT": {
+
+                    // a settings row picked: its buttons show
+
+                    (_args select 0) params ["_selectedList","_selectedIndex"];
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _rows = [_commandState,"cmdSetRows",[]] call ALIVE_fnc_hashGet;
+                    if (_selectedIndex >= 0 && {_selectedIndex < count _rows}) then {
+                        private _row = _rows select _selectedIndex;
+                        [_commandState,"cmdSetSel",_row select 0] call ALIVE_fnc_hashSet;
+                        [_logic,"cmdSetButtons",_row] call MAINCLASS;
+                    };
+
+                };
+
+                case "INTEL_CMD_CONTROL": {
+
+                    // a change to the picked commander's settings; the server checks it is allowed and answers
+
+                    _args params [["_kind",""], ["_value",0]];
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _rows = [_commandState,"cmdSetRows",[]] call ALIVE_fnc_hashGet;
+                    private _sel = [_commandState,"cmdSetSel",""] call ALIVE_fnc_hashGet;
+                    private _i = _rows findIf { (_x select 0) == _sel };
+                    if (_i < 0) exitWith {};
+                    {
+                        (SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x)) ctrlEnable false;
+                    } foreach [SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR3];
+                    [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_ORDER_SENT"]] call MAINCLASS;
+                    ["INTEL_CONTROL", [getPlayerUID player, (_rows select _i) select 2, _kind, _value]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
 
@@ -4447,11 +4498,12 @@ switch (_operation) do {
         private _go = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
         private _look = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
         // with no objective picked, BR1 is Start the war while the commanders hold until Go, for whoever may give it
-        private _warGo = _row isEqualTo [] && {([_commandState,"cmdMode","READ"] call ALIVE_fnc_hashGet) != "OFF"}
-            && {missionNamespace getVariable ["ALiVE_OPCOM_held", false]} && {!isMultiplayer || {isServer} || {(call BIS_fnc_admin) > 0}};
+        private _cmdTabOn = _row isEqualTo [] && {([_commandState,"cmdMode","READ"] call ALIVE_fnc_hashGet) != "OFF"}
+            && {([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) == "COMMANDER"};
+        private _warGo = _cmdTabOn && {missionNamespace getVariable ["ALiVE_OPCOM_held", false]} && {!isMultiplayer || {isServer} || {(call BIS_fnc_admin) > 0}};
         _go ctrlShow ((_orders && _looking) || _warGo);
         _go ctrlEnable true;
-        _look ctrlShow (_orders && _looking && {(_row param [23, 0]) < 2});
+        _look ctrlShow ((_orders && _looking && {(_row param [23, 0]) < 2}) || _cmdTabOn);
         _look ctrlEnable true;
         private _strike = _orders && {_row isNotEqualTo []} && {(_row select 5) in ["looking","going in"]} && {(_row select 15) > 0};
         private _b2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
@@ -4476,6 +4528,12 @@ switch (_operation) do {
             _go ctrlSetTooltip "";
             _look ctrlSetTooltip "";
         };
+        // with no objective picked, BR3 opens the commander's settings
+        if (_cmdTabOn) then {
+            _look ctrlSetText localize "STR_ALIVE_SCOM_SET_BUTTON";
+            _look ctrlSetTooltip localize "STR_ALIVE_SCOM_SET_BUTTON_COMMENT";
+            _look ctrlSetEventHandler ["MouseButtonClick", "['INTEL_CMD_TAB',['SETTINGS']] call ALIVE_fnc_SCOMTabletOnAction"];
+        };
         if (_warGo) then {
             _go ctrlSetText localize "STR_ALIVE_SCOM_CMD_WARGO";
             _go ctrlSetTooltip localize "STR_ALIVE_SCOM_CMD_WARGO_COMMENT";
@@ -4491,11 +4549,137 @@ switch (_operation) do {
         _args params ["_uid", ["_text",""]];
         private _commandState = [_logic,"commandState"] call MAINCLASS;
         if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
+        if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) == "SETTINGS") exitwith {
+            [_commandState,"cmdSetAck",[_text, diag_tickTime]] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+            [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _text]] call MAINCLASS;
+            ["INTEL_GET_SETTINGS", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+        };
         if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
         [_commandState,"cmdAck",[_text, [_commandState,"cmdSelected",""] call ALIVE_fnc_hashGet, diag_tickTime]] call ALIVE_fnc_hashSet;
         [_logic,"commandState",_commandState] call MAINCLASS;
         [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _text]] call MAINCLASS;
         ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+    };
+
+    case "enableCommanderSettings": {
+
+        // the commander's settings reply: [uid, stance changes allowed, [[commander ID, faction, stance, paused,
+        // holding until Go, changing stance, finds out first, Intel Wait minutes, sure enough percent, may change], ...]]
+
+        if (_args isEqualType []) then {
+
+            private _commandState = [_logic,"commandState"] call MAINCLASS;
+            if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
+            if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "SETTINGS") exitwith {};
+
+            _args params ["_uid", ["_stanceOK",false], ["_cmds",[]]];
+            private _names = createHashMapFromArray [["invasion",localize "STR_ALIVE_SCOM_SET_INVASION"],["occupation",localize "STR_ALIVE_SCOM_SET_OCCUPATION"],
+                ["asymmetric",localize "STR_ALIVE_SCOM_SET_ASYMMETRIC"],["dugin",localize "STR_ALIVE_SCOM_SET_DUGIN"]];
+
+            // rows: [key, kind, commander ID, label, [stance, paused, held, changing, may change, stance changes allowed, value]]
+            private _rows = [];
+            private _any = false;
+            {
+                _x params ["_id","_faction","_stance","_paused","_held","_changing","_intel","_waitMin","_surePct","_may"];
+                _any = _any || _may;
+                private _fname = getText (configFile >> "CfgFactionClasses" >> _faction >> "displayName");
+                if (_fname == "") then { _fname = _faction };
+                private _info = [_stance, _paused, _held, _changing, _may, _stanceOK];
+                private _state = localize (switch (true) do {
+                    case (_changing): { "STR_ALIVE_SCOM_SET_CHANGING" };
+                    case (_held): { "STR_ALIVE_SCOM_SET_HELD" };
+                    case (_paused): { "STR_ALIVE_SCOM_SET_PAUSED" };
+                    default { "STR_ALIVE_SCOM_SET_RUNNING" };
+                });
+                _rows pushBack [_id + "|STATE", "STATE", _id, format [localize "STR_ALIVE_SCOM_SET_STATE_ROW", _fname, _state], _info + [0]];
+                {
+                    _rows pushBack [_id + "|" + _x, "STANCE", _id,
+                        format [localize (["STR_ALIVE_SCOM_SET_STANCE_ROW", "STR_ALIVE_SCOM_SET_STANCE_NOW"] select (_x == _stance)), _names getOrDefault [_x, _x]], _info + [_x]];
+                } forEach ["invasion","occupation","asymmetric","dugin"];
+                if (_intel) then {
+                    _rows pushBack [_id + "|WAIT", "WAIT", _id, format [localize "STR_ALIVE_SCOM_SET_WAIT_ROW", _waitMin], _info + [_waitMin]];
+                    _rows pushBack [_id + "|SURE", "SURE", _id, format [localize "STR_ALIVE_SCOM_SET_SURE_ROW", _surePct, "%"], _info + [_surePct]];
+                };
+            } forEach _cmds;
+
+            private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+            lbClear _editList;
+            {
+                private _i = _editList lbAdd (_x select 3);
+                _editList lbSetSelectColor [_i, [1,1,1,1]];
+            } forEach _rows;
+            [_commandState,"cmdSetRows",_rows] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+
+            ([_commandState,"cmdSetAck",["",-1]] call ALIVE_fnc_hashGet) params ["_ack","_ackAt"];
+            private _status = switch (true) do {
+                case (_rows isEqualTo []): { localize "STR_ALIVE_SCOM_SET_NONE" };
+                case (_ack != "" && {diag_tickTime - _ackAt < 20}): { _ack };
+                case (!_any): { localize "STR_ALIVE_SCOM_SET_READONLY" };
+                default { localize "STR_ALIVE_SCOM_SET_PICK" };
+            };
+            [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _status]] call MAINCLASS;
+
+            // the picked row stays picked across a refresh
+            private _sel = [_commandState,"cmdSetSel",""] call ALIVE_fnc_hashGet;
+            private _idx = _rows findIf { (_x select 0) == _sel };
+            [_logic,"cmdSetButtons",[]] call MAINCLASS;
+            if (_idx >= 0) then { _editList lbSetCurSel _idx };
+
+        };
+
+    };
+
+    case "cmdSetButtons": {
+
+        // the settings list's buttons for a picked row ([] hides them): Pause or Resume, Set stance, or up and down for
+        // Intel Wait and Sure enough. Only for a player the server says may change them
+
+        private _row = _args;
+        private _b1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+        private _b3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+        _b1 ctrlShow false;
+        _b3 ctrlShow false;
+        _b1 ctrlEnable true;
+        _b3 ctrlEnable true;
+        if (_row isEqualTo []) exitWith {};
+        _row params ["_key","_kind","_id","_label","_info"];
+        _info params ["_stance","_paused","_held","_changing","_may","_stanceOK","_value"];
+        private _set = { params ["_b","_text","_tip","_kind","_value"];
+            _b ctrlSetText _text; _b ctrlSetTooltip _tip; _b ctrlShow true;
+            _b ctrlSetEventHandler ["MouseButtonClick", format ["['INTEL_CMD_CONTROL',[%1,%2]] call ALIVE_fnc_SCOMTabletOnAction", str _kind, str _value]] };
+        private _note = "";
+        switch (true) do {
+            case (!_may): { _note = localize "STR_ALIVE_SCOM_SET_READONLY" };
+            case (_changing): { _note = localize "STR_ALIVE_SCOM_SET_CHANGING_NOTE" };
+            case (_kind == "STATE"): {
+                if (_held) then { _note = localize "STR_ALIVE_SCOM_SET_HELD_NOTE" } else {
+                    if (_paused) then {
+                        [_b1, localize "STR_ALIVE_SCOM_SET_RESUME", localize "STR_ALIVE_SCOM_SET_RESUME_COMMENT", "PAUSE", false] call _set;
+                    } else {
+                        [_b1, localize "STR_ALIVE_SCOM_SET_PAUSE", localize "STR_ALIVE_SCOM_SET_PAUSE_COMMENT", "PAUSE", true] call _set;
+                    };
+                };
+            };
+            case (_kind == "STANCE"): {
+                switch (true) do {
+                    case (!_stanceOK): { _note = localize "STR_ALIVE_SCOM_SET_NO_STANCE" };
+                    case (_value == _stance): {};
+                    default { [_b1, localize "STR_ALIVE_SCOM_SET_STANCE", format [localize "STR_ALIVE_SCOM_SET_STANCE_COMMENT", localize ("STR_ALIVE_SCOM_SET_" + toUpper _value)], "STANCE", _value] call _set };
+                };
+            };
+            case (_kind == "WAIT"): {
+                [_b1, localize "STR_ALIVE_SCOM_SET_WAIT_UP", localize "STR_ALIVE_SCOM_SET_WAIT_COMMENT", "WAIT", 5] call _set;
+                [_b3, localize "STR_ALIVE_SCOM_SET_WAIT_DOWN", localize "STR_ALIVE_SCOM_SET_WAIT_COMMENT", "WAIT", -5] call _set;
+            };
+            case (_kind == "SURE"): {
+                [_b1, localize "STR_ALIVE_SCOM_SET_SURE_UP", localize "STR_ALIVE_SCOM_SET_SURE_COMMENT", "SURE", 10] call _set;
+                [_b3, localize "STR_ALIVE_SCOM_SET_SURE_DOWN", localize "STR_ALIVE_SCOM_SET_SURE_COMMENT", "SURE", -10] call _set;
+            };
+        };
+        if (_note != "") then { [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _note]] call MAINCLASS };
 
     };
 

@@ -680,6 +680,18 @@ class CfgVehicles {
                                     class Orders { name = "Read and orders"; value = "ORDERS"; };
                             };
                     };
+                    class commanderControls : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_commanderControls";
+                            displayName = "$STR_ALIVE_C2ISTAR_COMMANDER_CONTROLS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COMMANDER_CONTROLS_COMMENT";
+                            defaultValue = """ADMIN""";
+                            class Values
+                            {
+                                    class Admin { name = "Admins only";                     value = "ADMIN"; };
+                                    class Ops   { name = "Anyone allowed to give orders"; value = "OPS"; };
+                            };
+                    };
                     class scomIntelLog : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_scomIntelLog";

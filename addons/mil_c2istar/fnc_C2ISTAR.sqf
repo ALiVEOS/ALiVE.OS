@@ -1496,6 +1496,9 @@ switch(_operation) do {
             // Commander's Picture on the tablet: OFF, READ or ORDERS, read by the tablet and the command handler
             private _cp = toUpper format ["%1", _logic getVariable ["commanderPicture", "READ"]];
             missionNamespace setVariable ["ALiVE_c2istar_commanderPicture", ["READ", _cp] select (_cp in ["OFF","READ","ORDERS"]), true];
+            // who may pause the commander or change its settings from the page
+            private _cc = toUpper format ["%1", _logic getVariable ["commanderControls", "ADMIN"]];
+            missionNamespace setVariable ["ALiVE_c2istar_commanderControls", ["ADMIN", _cc] select (_cc in ["ADMIN","OPS"]), true];
         };
         ALiVE_c2istar_fnc_atPrison = {
             params ["_pos"];

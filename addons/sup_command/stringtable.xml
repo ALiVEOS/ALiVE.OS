@@ -592,6 +592,108 @@
 <Key ID="STR_ALIVE_SCOM_CMD_STRIKE_COMMENT">
     <English>Ask for close air support on the latest vehicle seen at %1</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_SET_BUTTON">
+    <English>Commander &gt;</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_BUTTON_COMMENT">
+    <English>Pause, resume or change your side's AI Commander</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_TITLE">
+    <English>AI Commander settings</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_RUNNING">
+    <English>running</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_PAUSED">
+    <English>paused</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_HELD">
+    <English>holding until Go</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_CHANGING">
+    <English>changing stance</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_STATE_ROW">
+    <English>%1: %2</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_STANCE_ROW">
+    <English>    Stance: %1</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_STANCE_NOW">
+    <English>    Stance: %1 (now)</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_WAIT_ROW">
+    <English>    Intel Wait: %1 min</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_SURE_ROW">
+    <English>    Attacks when sure: %1%2</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_INVASION">
+    <English>Invasion</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_OCCUPATION">
+    <English>Occupation</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_ASYMMETRIC">
+    <English>Asymmetric</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_DUGIN">
+    <English>Dug In</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_PAUSE">
+    <English>Pause</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_PAUSE_COMMENT">
+    <English>Stop the commander giving new orders. Groups already moving carry on.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_RESUME">
+    <English>Resume</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_RESUME_COMMENT">
+    <English>Let the commander give orders again</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_STANCE">
+    <English>Set stance</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_STANCE_COMMENT">
+    <English>Change the commander's stance to %1. It takes about a minute.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_WAIT_UP">
+    <English>+5 min</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_WAIT_DOWN">
+    <English>-5 min</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_WAIT_COMMENT">
+    <English>How long the commander tries to find out about an objective before it attacks anyway, 1 to 120 min. A mission loaded from a save goes back to the module's setting.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_SURE_UP">
+    <English>+10%</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_SURE_DOWN">
+    <English>-10%</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_SURE_COMMENT">
+    <English>How sure the commander must be of what's at an objective before it attacks, 10 to 100%. A mission loaded from a save goes back to the module's setting.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_PICK">
+    <English>Pick a setting to change it.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_READONLY">
+    <English>You can't change the commander from your tablet.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_NONE">
+    <English>No AI Commander on your side to show.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_NO_STANCE">
+    <English>The mission maker hasn't allowed stance changes.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_HELD_NOTE">
+    <English>This commander is holding until Go.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_CHANGING_NOTE">
+    <English>The commander is changing stance. Its settings come back when it has finished.</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_CMD_WARGO">
     <English>Start the war</English>
 </Key>

@@ -327,6 +327,18 @@ switch(_operation) do {
 
                 };
 
+                case "INTEL_GET_SETTINGS": {
+
+                    [_logic,"intelSettings", _data] call MAINCLASS;
+
+                };
+
+                case "INTEL_CONTROL": {
+
+                    [_logic,"intelControl", _data] call MAINCLASS;
+
+                };
+
                 case "INTEL_WAR_GO": {
 
                     [_logic,"intelWarGo", _data] call MAINCLASS;
@@ -2641,6 +2653,130 @@ switch(_operation) do {
             };
 
             ["INTEL_PICTURE", [_playerID, _mode, _out]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+        };
+
+    };
+
+    case "intelMayControl": {
+
+        // may this player change this commander from the tablet: C2ISTAR's Commander's Picture at Read and orders, the
+        // Ops limit, and the C2ISTAR Commander Controls setting (admins only, the default, or anyone the Ops limit
+        // admits). The host and singleplayer count as an admin. [player, uid, commander]
+
+        _args params ["_player","_playerID","_opcom"];
+        _result = (missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) == "ORDERS"
+            && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS}
+            && {(missionNamespace getVariable ["ALiVE_c2istar_commanderControls", "ADMIN"]) == "OPS"
+                || {!isMultiplayer} || {owner _player == 2} || {(admin owner _player) > 0}};
+
+    };
+
+    case "intelSettings": {
+
+        // the commander's settings for the tablet: each of the caller's own side's commanders under the Ops limit.
+        // Reply: [uid, stance changes allowed, [[commander ID, faction, stance, paused, holding until Go, changing stance,
+        // finds out first, Intel Wait minutes, sure enough percent, may change], ...]]
+
+        if (_args isEqualType []) then {
+
+            _args params [["_playerID","",[""]]];
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _player) exitWith {};
+            private _out = [];
+            if ((missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "OFF" && {!isNil "OPCOM_instances"}) then {
+                private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+                {
+                    private _opcom = _x;
+                    if (([_opcom,"side",""] call ALiVE_fnc_hashGet) == _side
+                        && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS}) then {
+                        _out pushBack [
+                            [_opcom,"opcomID",""] call ALiVE_fnc_hashGet,
+                            ([_opcom,"factions",[]] call ALiVE_fnc_hashGet) param [0, ""],
+                            [_opcom,"controltype",""] call ALiVE_fnc_hashGet,
+                            [_opcom,"pause",false] call ALiVE_fnc_hashGet,
+                            [_opcom,"startPaused",false] call ALiVE_fnc_hashGet,
+                            [_opcom,"stanceChangeInProgress",false] call ALiVE_fnc_hashGet,
+                            [_opcom,"intelCycle",false] call ALiVE_fnc_hashGet,
+                            round (([_opcom,"intelTimeout",1200] call ALiVE_fnc_hashGet) / 60),
+                            round (([_opcom,"intelConfidence",0.5] call ALiVE_fnc_hashGet) * 100),
+                            [_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS
+                        ];
+                    };
+                } forEach OPCOM_instances;
+            };
+            ["INTEL_SETTINGS", [_playerID, missionNamespace getVariable ["ALIVE_OPCOM_StanceControlEnabled", false], _out]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+        };
+
+    };
+
+    case "intelControl": {
+
+        // a change from the tablet's commander settings: [uid, commander ID, "PAUSE"|"STANCE"|"WAIT"|"SURE", value].
+        // The commander must be on the caller's own side and the caller allowed to change it (intelMayControl);
+        // one change every 2 seconds per player. Changes last until the mission is loaded from a save
+
+        if (_args isEqualType []) then {
+
+            _args params [["_playerID","",[""]],["_id","",[""]],["_kind","",[""]],["_value",0,[0,true,""]]];
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _player) exitWith {};
+            private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+            if (isNil "OPCOM_instances") exitWith {};
+
+            private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+            private _i = OPCOM_instances findIf { ([_x,"opcomID",""] call ALiVE_fnc_hashGet) == _id && {([_x,"side",""] call ALiVE_fnc_hashGet) == _side} };
+            if (_i < 0) exitWith { "That commander isn't on your side." call _reply };
+            private _opcom = OPCOM_instances select _i;
+            if !([_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS) exitWith {
+                "You can't change the commander from your tablet." call _reply;
+            };
+            if (isNil "ALiVE_c2istar_controlTimes") then { ALiVE_c2istar_controlTimes = createHashMap };
+            if (time < (ALiVE_c2istar_controlTimes getOrDefault [_playerID, -10]) + 2) exitWith {};
+            ALiVE_c2istar_controlTimes set [_playerID, time];
+            if ([_opcom,"stanceChangeInProgress",false] call ALiVE_fnc_hashGet) exitWith {
+                "The commander is changing stance. Try again in a minute." call _reply;
+            };
+
+            switch (_kind) do {
+                case "PAUSE": {
+                    if !(_value isEqualType true) exitWith {};
+                    if ([_opcom,"startPaused",false] call ALiVE_fnc_hashGet) exitWith { "This commander is holding until Go." call _reply };
+                    if (([_opcom,"pause",false] call ALiVE_fnc_hashGet) isEqualTo _value) exitWith {};
+                    // the pause waits for the commander to finish starting, so it runs scheduled
+                    [_opcom, _value] spawn { params ["_o","_v"]; [_o,"pause",_v] call ALiVE_fnc_OPCOM };
+                    ["SCOM commander settings: %1 %2 commander %3", name _player, ["resumed", "paused"] select _value, _id] call ALiVE_fnc_dump;
+                    (["Commander resumed.", "Commander paused. Groups already moving carry on."] select _value) call _reply;
+                };
+                case "STANCE": {
+                    if !(missionNamespace getVariable ["ALIVE_OPCOM_StanceControlEnabled", false]) exitWith { "The mission maker hasn't allowed stance changes." call _reply };
+                    if (!(_value isEqualType "") || {!(_value in ["invasion","occupation","asymmetric","dugin"])}) exitWith {};
+                    if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == _value) exitWith {};
+                    if !([_opcom,"startupComplete",false] call ALiVE_fnc_hashGet) exitWith { "The commander is still starting. Try again shortly." call _reply };
+                    // the same latch the C2ISTAR menu's stance change uses
+                    [_opcom,"stanceChangeInProgress",true] call ALiVE_fnc_hashSet;
+                    [_opcom, _value] spawn {
+                        params ["_o","_v"];
+                        [_o,"changeControlType",[_v]] call ALiVE_fnc_OPCOM;
+                        [_o,"stanceChangeInProgress",false] call ALiVE_fnc_hashSet;
+                    };
+                    ["SCOM commander settings: %1 set commander %2 to %3", name _player, _id, _value] call ALiVE_fnc_dump;
+                    "Changing stance. It takes about a minute." call _reply;
+                };
+                case "WAIT": {
+                    if !(_value isEqualType 0) exitWith {};
+                    private _min = (round (([_opcom,"intelTimeout",1200] call ALiVE_fnc_hashGet) / 60) + _value) max 1 min 120;
+                    [_opcom,"intelTimeout",_min * 60] call ALiVE_fnc_hashSet;
+                    (format ["Intel Wait is now %1 min.", _min]) call _reply;
+                };
+                case "SURE": {
+                    if !(_value isEqualType 0) exitWith {};
+                    private _pct = (round (([_opcom,"intelConfidence",0.5] call ALiVE_fnc_hashGet) * 100) + _value) max 10 min 100;
+                    [_opcom,"intelConfidence",_pct / 100] call ALiVE_fnc_hashSet;
+                    (format ["The commander now attacks when %1%2 sure.", _pct, "%"]) call _reply;
+                };
+            };
 
         };
 

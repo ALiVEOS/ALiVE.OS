@@ -488,6 +488,12 @@
     <English>Seconds a player must wait between designating objectives</English>
     <Spanish>Segundos que un jugador debe esperar entre designaciones de objetivos</Spanish>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_COMMANDER_CONTROLS">
+    <English>Commander Controls</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COMMANDER_CONTROLS_COMMENT">
+    <English>Who may pause and resume the AI Commander, change its stance, and set its Intel Wait and how sure it must be, from the Commander &gt; button on the tablet's Commander's Picture page. Only with Commander's Picture at Read and orders, and only for players the Ops limit admits. Admins only (the default): a logged-in admin, the host of a hosted game, or the player in singleplayer. Anyone allowed to give orders: every player the Ops limit admits. A stance change also needs the OPCOM stance control setting on. Changes last until the mission is loaded from a save.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_COMMANDER_PICTURE">
     <English>Commander's Picture</English>
 </Key>
