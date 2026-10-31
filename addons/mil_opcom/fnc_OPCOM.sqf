@@ -136,6 +136,8 @@ switch (_operation) do {
         // it until it falls, then the next target. Groups Per Wave 0 sends every group that's free
         private _assaultWaveMins = (parseNumber format ["%1", _logic getVariable ["assaultWaveMins", 15]]) max 1;
         private _assaultWaveGroups = (parseNumber format ["%1", _logic getVariable ["assaultWaveGroups", 4]]) max 0;
+        // Assault Targets: marker or object variable names, in the order they're attacked
+        private _assaultTargets = (((format ["%1", _logic getVariable ["assaultTargets", ""]]) splitString ",") apply { _x trim [" ", 0] }) select { _x != "" };
         // Preparation tasks (The Horny Latino on Discord, 19 Oct): an Invasion commander's attacks wait for a player
         // wiretap task at the objective, or for Preparation Timeout minutes; off by default
         private _prepTasks = (toLower format ["%1", _logic getVariable ["prepTasks", "false"]]) in ["true", "1"];
@@ -491,6 +493,7 @@ switch (_operation) do {
             ["occPauseMins", _occPauseMins],
             ["assaultWaveMins", _assaultWaveMins],
             ["assaultWaveGroups", _assaultWaveGroups],
+            ["assaultTargets", _assaultTargets],
             // Invasion and Occupation both (A. Ares on Discord, 22 Oct); the type is checked when an attack is picked,
             // so a commander switched from one to the other part way through keeps it
             ["prepTasks", _prepTasks],
@@ -6899,8 +6902,10 @@ switch (_operation) do {
         };
     };
 
-    // Assault (waves). The target is the objective it doesn't hold with the highest Objective priority, the nearest
-    // first among equals (the list is in distance order), and it stays the target until it falls (["assaultTarget",
+    // Assault (waves). With Assault Targets set, the target is the first place on that list it doesn't hold (the
+    // objective nearest the marker or object named, within 500 m), and once it holds them all it carries on as
+    // Invasion. Otherwise it's the objective it doesn't hold with the highest Objective priority, the nearest first
+    // among equals (the list is in distance order). Either way it stays the target until it falls (["assaultTarget",
     // objectives] -> objective or []). A wave on it waits Wave Interval minutes after the last one confirmed there; the
     // first wave on a new target goes at once (["assaultWaveOpen", objective] -> bool). TACOM confirming a wave starts
     // the wait (["assaultWaveSent", objective]). The timer lives on the module: ALiVE_Assault_targetID,
@@ -6914,6 +6919,50 @@ switch (_operation) do {
         private _current = if (isNull _module) then { "" } else { _module getVariable ["ALiVE_Assault_targetID", ""] };
         private _i = _open findIf { ([_x, "objectiveID", ""] call ALiVE_fnc_HashGet) == _current };
         if (_i >= 0) exitWith { _result = _open select _i };
+
+        // the Assault Targets list, in its order
+        private _listed = [];
+        private _warned = [_logic, "assaultTargetsWarned", []] call ALiVE_fnc_HashGet;
+        {
+            private _name = _x;
+            private _pos = [];
+            if (getMarkerType _name != "") then {
+                _pos = getMarkerPos _name;
+            } else {
+                private _o = missionNamespace getVariable [_name, objNull];
+                if (_o isEqualType objNull && {!isNull _o}) then { _pos = getPosATL _o };
+            };
+            private _best = [];
+            private _bestDist = 500;
+            if (_pos isNotEqualTo []) then {
+                {
+                    private _d = ([_x, "center", [0,0,0]] call ALiVE_fnc_HashGet) distance2D _pos;
+                    if (_d < _bestDist) then { _best = _x; _bestDist = _d };
+                } forEach _objectives;
+            };
+            if (_best isEqualTo []) then {
+                if !(_name in _warned) then {
+                    _warned pushBack _name;
+                    ["OPCOM %1: Assault target %2 is no marker or named object with an objective within 500 m, so it's left out",
+                        [_logic, "side", ""] call ALiVE_fnc_HashGet, _name] call ALiVE_fnc_dump;
+                };
+            } else {
+                if ((_listed findIf { _x isEqualRef _best }) < 0) then { _listed pushBack _best };
+            };
+        } forEach ([_logic, "assaultTargets", []] call ALiVE_fnc_HashGet);
+        [_logic, "assaultTargetsWarned", _warned] call ALiVE_fnc_HashSet;
+        if (_listed isNotEqualTo []) then {
+            private _todo = _listed select { private _l = _x; (_open findIf { _x isEqualRef _l }) >= 0 };
+            if (_todo isNotEqualTo []) exitWith { _result = _todo select 0 };
+            // every place on the list is held: carry on as Invasion (a fresh script, as the switch waits for this
+            // decision loop to stop)
+            if !([_logic, "assaultListDone", false] call ALiVE_fnc_HashGet) then {
+                [_logic, "assaultListDone", true] call ALiVE_fnc_HashSet;
+                ["OPCOM %1: every Assault target is held, so it carries on as Invasion", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
+                [_logic] spawn { params ["_logic"]; [_logic, "changeControlType", ["invasion"]] call ALiVE_fnc_OPCOM };
+            };
+        };
+        if (_result isNotEqualTo []) exitWith {};
         _result = _open select 0;
         private _best = parseNumber format ["%1", [_result, "priority", 0] call ALiVE_fnc_HashGet];
         {
@@ -7242,6 +7291,8 @@ switch (_operation) do {
 
         private _existingControlType = [_logic,"controltype"] call ALiVE_fnc_hashGet;
         if (_newControlType == _existingControlType) exitwith {};
+        // switched to Assault again: its targets list is worked through afresh
+        if (_newControlType == "assault") then { [_logic, "assaultListDone", false] call ALiVE_fnc_hashSet };
         // Start From Ship needs a conventional commander: an Asymmetric one leaves anything still aboard there
         if (!(_newControlType in ["invasion","occupation","assault"]) && {[_logic, "shipStart", false] call ALiVE_fnc_hashGet}) then {
             ["AI Commander %1 switched to %2: Start From Ship is off and the groups still aboard stay there", [_logic, "name", ""] call ALiVE_fnc_hashGet, _newControlType] call ALiVE_fnc_dump;

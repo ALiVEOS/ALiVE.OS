@@ -384,6 +384,12 @@
 <Key ID="STR_ALIVE_OPCOM_ASSAULT_WAVE_GROUPS_COMMENT">
     <English>Assault (waves) only. How many groups each wave adds to the attack. The first wave scouts the target with up to 4 of them. 0 sends every group that's free.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_TARGETS">
+    <English>Assault Targets</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_TARGETS_COMMENT">
+    <English>Assault (waves) only. Marker names or object variable names, separated by commas, attacked in that order: each one means the objective nearest it, within 500 m. Places it already holds are passed over, and once it holds them all the commander carries on as Invasion. Empty takes the most important objective first.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_OCC_PAUSE">
     <English>Pause After Capture (min)</English>
 </Key>

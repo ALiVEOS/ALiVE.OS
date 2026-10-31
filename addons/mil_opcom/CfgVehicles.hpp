@@ -101,6 +101,14 @@ class CfgVehicles {
                                 defaultValue = """4""";
                                 typeName = "NUMBER";
                         };
+                        class assaultTargets : Edit
+                        {
+                                property = "ALiVE_mil_opcom_assaultTargets";
+                                displayName = "$STR_ALIVE_OPCOM_ASSAULT_TARGETS";
+                                tooltip = "$STR_ALIVE_OPCOM_ASSAULT_TARGETS_COMMENT";
+                                defaultValue = """""";
+                                typeName = "STRING";
+                        };
                         class holdForGo : Combo
                         {
                                 property = "ALiVE_mil_opcom_holdForGo";
