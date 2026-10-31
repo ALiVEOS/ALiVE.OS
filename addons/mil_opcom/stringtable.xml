@@ -429,6 +429,12 @@
 <Key ID="STR_ALIVE_OPCOM_FOLLOW_PLAYERS_COMMENT">
     <English>Occupation only. Yes stops the commander attacking on its own: it leaves enemy-held places to the players. Once players of its side are in an objective with no enemy left within 500 m, it sends a group to garrison it, and Security Patrols then walk it. It still defends a place under attack, takes an objective players order it to (OPCOM Orders), and retakes a place it had garrisoned. Players need to be on foot there: a player who stays in a vehicle isn't counted.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_HOLD_FOR_GO">
+    <English>Hold Until Go</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HOLD_FOR_GO_COMMENT">
+    <English>Yes keeps this commander from ordering anything until an admin gives Go, so players can brief, kit up and get in place first. The Air Tasking Order module is held with it. An admin gives Go from the Commander's Picture page on the tablet (C2ISTAR Commander's Picture not Off), or a script on the server runs [nil, "go", "a name"] call ALiVE_fnc_OPCOM. One Go starts every commander that is holding. In singleplayer, and for the host of a hosted game, the Go button shows too. A campaign loaded from a save doesn't hold again. No (the default) starts the war as soon as the mission does.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_CALL_FOR_HELP">
     <English>Groups Call For Help</English>
 </Key>

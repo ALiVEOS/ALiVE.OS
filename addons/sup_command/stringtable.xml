@@ -592,6 +592,18 @@
 <Key ID="STR_ALIVE_SCOM_CMD_STRIKE_COMMENT">
     <English>Ask for close air support on the latest vehicle seen at %1</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_CMD_WARGO">
+    <English>Start the war</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_WARGO_COMMENT">
+    <English>Give Go: every AI Commander holding until Go starts, and the air commander with them</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_HELD">
+    <English>The AI Commanders are holding until an admin gives Go.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_HELD_CANGO">
+    <English>The AI Commanders are holding until Go. Press Start the war when everyone is ready.</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_CMD_GO">
     <English>Go now</English>
 </Key>

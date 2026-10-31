@@ -84,6 +84,18 @@ class CfgVehicles {
                                     class dugin { name = "Dug In"; value = "dugin"; };
                                 };
                         };
+                        class holdForGo : Combo
+                        {
+                                property = "ALiVE_mil_opcom_holdForGo";
+                                displayName = "$STR_ALIVE_OPCOM_HOLD_FOR_GO";
+                                tooltip = "$STR_ALIVE_OPCOM_HOLD_FOR_GO_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class reinforcements : Combo
                         {
                                 property = "ALiVE_mil_opcom_reinforcements";

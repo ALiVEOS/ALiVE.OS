@@ -157,6 +157,8 @@ switch (_operation) do {
         private _intelMarkers = (toLower format ["%1", _logic getVariable ["intelMarkers", "false"]]) in ["true", "1"];
         // Follow The Players Up (Occupation): no attack of its own; it garrisons what players clear (kawi0756, 25 Oct)
         private _followPlayers = (toLower format ["%1", _logic getVariable ["followPlayers", "false"]]) in ["true", "1"];
+        // Hold Until Go: the commander orders nothing until an admin gives Go (see case "go")
+        private _holdForGo = (toLower format ["%1", _logic getVariable ["holdForGo", "false"]]) in ["true", "1"];
         // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
         private _callForHelp = (toLower format ["%1", _logic getVariable ["callForHelp", "false"]]) in ["true", "1"];
         // Start From Ship (Ando on Discord, 24 Oct): the starting force is aboard a static ship and lands by helicopter
@@ -498,6 +500,8 @@ switch (_operation) do {
             ["intelMarkers", _intelMarkers],
             ["followPlayers", _followPlayers],
             ["callForHelp", _callForHelp],
+            // true while it waits for Go; only "go" clears it, so the empty-server pause and the save menu can't lift it
+            ["startPaused", false],
             // per group: [peak men, men last pass, time of the last loss, time it last asked]; runtime only, not saved
             ["helpState", createHashMap],
             // per group that was answered: [enemy, helpers, time]
@@ -841,6 +845,7 @@ switch (_operation) do {
         //waituntil {["OPCOM Waiting for Sector Grid System..."] call ALiVE_fnc_dump; count (([([ALIVE_sectorGrid, "positionToSector", [1,1,0]] call ALIVE_fnc_sectorGrid),"data"] call ALIVE_fnc_hashGet) select 1) > 0};
 
         private _objectives = [];
+        private _fromSave = false;
 
         // The starting forces are saved under a name built from this commander's
         // position, which only it knows. Passing it makes it known to Clear Current
@@ -859,6 +864,7 @@ switch (_operation) do {
         //Load Data from DB
         if (_persistent && { !isNil "ALIVE_sys_data" } && {!ALIVE_sys_data_DISABLED}) then {
             _objectives = [_handler,"loadObjectivesDB"] call MAINCLASS;
+            _fromSave = count _objectives > 0;
 
             ["OPCOM loaded %1 objectives from DB!", count _objectives] call ALiVE_fnc_dump;
         
@@ -950,6 +956,22 @@ switch (_operation) do {
         };
 
         ["OPCOM %1 Initial analysis done...", _side] call ALiVE_fnc_dump;
+
+        // Hold Until Go: paused before its FSMs start, which read the pause when they begin, so nothing is ordered in
+        // between. A campaign loaded from a save started its war before it was saved, and a Go already given stands.
+        // The air commander is held with it (it plans sorties of its own); Military Logistics answers only requests
+        if (_holdForGo && {!_fromSave} && {!(missionNamespace getVariable ["ALiVE_OPCOM_goGiven", false])}) then {
+            [_handler,"startPaused",true] call ALiVE_fnc_HashSet;
+            [_handler,"pause",true] call ALiVE_fnc_HashSet;
+            ALiVE_OPCOM_held = true;
+            publicVariable "ALiVE_OPCOM_held";
+            if (isNil "ALiVE_OPCOM_heldATO") then {
+                ALiVE_OPCOM_heldATO = true;
+                [] spawn { ["ALIVE_MIL_ATO"] call ALiVE_fnc_pauseModule };
+            };
+            ["OPCOM %1 holds until Go is given", _side] call ALiVE_fnc_dump;
+        };
+
         ["OPCOM and TACOM %1 starting...",_side] call ALiVE_fnc_Dump;
 
         // Dug In: the ground vehicles at the objectives it holds are parked where they are before anything is ordered
@@ -3340,6 +3362,11 @@ switch (_operation) do {
         } else {
                 // if a new value was provided set groups list
                 ASSERT_TRUE(typeName _args == "BOOL",str typeName _args);
+
+                // a commander holding until Go stays paused until "go"
+                if (!_args && {[_logic,"startPaused",false] call ALiVE_fnc_HashGet}) exitWith {
+                    ["OPCOM %1 is holding until Go: resume ignored", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
+                };
 
                 waituntil {[_logic,"startupComplete",false] call ALiVE_fnc_HashGet && {([_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet) > -1} && {!isNil {([_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet) getFSMVariable "_pause"}}};
 
@@ -6645,6 +6672,30 @@ switch (_operation) do {
 
     // a radio call to the commander's side from its HQ (The Horny Latino on Discord, 20 Oct); the last one sent is kept
     // on the module for tests
+    ///////////////////////////////////////////////////
+    // Go (Hold Until Go): every commander holding lets go and starts, and the air commander with them.
+    // Server only; the caller has already checked who may give it. [name of who gave it]
+    ///////////////////////////////////////////////////
+    case "go": {
+        if !(isServer) exitWith {};
+        private _by = if (_args isEqualType "") then {_args} else {""};
+        missionNamespace setVariable ["ALiVE_OPCOM_goGiven", true];
+        private _held = (missionNamespace getVariable ["OPCOM_instances", []]) select { [_x,"startPaused",false] call ALiVE_fnc_HashGet };
+        _result = count _held;
+        {
+            [_x,"startPaused",false] call ALiVE_fnc_HashSet;
+            [_x] spawn { params ["_h"]; [_h,"pause",false] call ALiVE_fnc_OPCOM };
+            [_x, "opRadio", [format ["All units, the war has started. Go given by %1.", _by], "All units, the war has started."] select (_by == "")] call ALiVE_fnc_OPCOM;
+        } forEach _held;
+        if !(isNil "ALiVE_OPCOM_heldATO") then {
+            ALiVE_OPCOM_heldATO = nil;
+            [] spawn { ["ALIVE_MIL_ATO"] call ALiVE_fnc_unPauseModule };
+        };
+        ALiVE_OPCOM_held = false;
+        publicVariable "ALiVE_OPCOM_held";
+        ["OPCOM Go given by %1: %2 commanders start", _by, _result] call ALiVE_fnc_dump;
+    };
+
     case "opRadio": {
         private _text = _args;
         if (!(_text isEqualType "") || {_text == ""}) exitWith {};

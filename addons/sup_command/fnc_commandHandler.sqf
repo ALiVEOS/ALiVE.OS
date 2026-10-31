@@ -327,6 +327,12 @@ switch(_operation) do {
 
                 };
 
+                case "INTEL_WAR_GO": {
+
+                    [_logic,"intelWarGo", _data] call MAINCLASS;
+
+                };
+
                 case "OPS_ADD_OBJECTIVE": {
 
                     // a marker is only ever linked by the server's own marker watch
@@ -2635,6 +2641,34 @@ switch(_operation) do {
             };
 
             ["INTEL_PICTURE", [_playerID, _mode, _out]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+        };
+
+    };
+
+    case "intelWarGo": {
+
+        // Start the war (Hold Until Go): [uid]. An admin, the host, or the player in singleplayer, with the
+        // Commander's Picture page on, while a commander is holding
+
+        if (_args isEqualType []) then {
+
+            _args params [["_playerID","",[""]]];
+
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _player) exitWith {};
+            private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+
+            if ((missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) == "OFF") exitWith {};
+            if !(missionNamespace getVariable ["ALiVE_OPCOM_held", false]) exitWith {
+                "The war has already started." call _reply;
+            };
+            if !(!isMultiplayer || {owner _player == 2} || {(admin owner _player) > 0}) exitWith {
+                "Only an admin can start the war." call _reply;
+            };
+            private _n = [nil, "go", name _player] call ALiVE_fnc_OPCOM;
+            ["SCOM Commander's Picture: %1 gave Go, %2 commanders start", name _player, _n] call ALiVE_fnc_dump;
+            "Go given. The AI Commanders are starting." call _reply;
 
         };
 

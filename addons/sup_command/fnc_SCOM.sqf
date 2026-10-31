@@ -1569,6 +1569,16 @@ switch (_operation) do {
 
                 };
 
+                case "INTEL_CMD_WARGO": {
+
+                    // Start the war (Hold Until Go): the server checks the caller may give it and answers
+
+                    (SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1)) ctrlEnable false;
+                    [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_ORDER_SENT"]] call MAINCLASS;
+                    ["INTEL_WAR_GO", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
                 case "INTEL_LOG_LIST_SELECT": {
 
                     // a row picked: the map goes to it and its detail shows below
@@ -4436,7 +4446,10 @@ switch (_operation) do {
         private _looking = _row isNotEqualTo [] && {(_row select 5) == "looking"};
         private _go = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
         private _look = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
-        _go ctrlShow (_orders && _looking);
+        // with no objective picked, BR1 is Start the war while the commanders hold until Go, for whoever may give it
+        private _warGo = _row isEqualTo [] && {([_commandState,"cmdMode","READ"] call ALIVE_fnc_hashGet) != "OFF"}
+            && {missionNamespace getVariable ["ALiVE_OPCOM_held", false]} && {!isMultiplayer || {isServer} || {(call BIS_fnc_admin) > 0}};
+        _go ctrlShow ((_orders && _looking) || _warGo);
         _go ctrlEnable true;
         _look ctrlShow (_orders && _looking && {(_row param [23, 0]) < 2});
         _look ctrlEnable true;
@@ -4462,6 +4475,11 @@ switch (_operation) do {
         } else {
             _go ctrlSetTooltip "";
             _look ctrlSetTooltip "";
+        };
+        if (_warGo) then {
+            _go ctrlSetText localize "STR_ALIVE_SCOM_CMD_WARGO";
+            _go ctrlSetTooltip localize "STR_ALIVE_SCOM_CMD_WARGO_COMMENT";
+            _go ctrlSetEventHandler ["MouseButtonClick", "['INTEL_CMD_WARGO',[]] call ALIVE_fnc_SCOMTabletOnAction"];
         };
 
     };
@@ -4612,6 +4630,9 @@ switch (_operation) do {
 
             private _status = switch (true) do {
                 case (_mode == "OFF"): { localize "STR_ALIVE_SCOM_CMD_OFF" };
+                case (missionNamespace getVariable ["ALiVE_OPCOM_held", false]): {
+                    localize (["STR_ALIVE_SCOM_CMD_HELD", "STR_ALIVE_SCOM_CMD_HELD_CANGO"] select (!isMultiplayer || {isServer} || {(call BIS_fnc_admin) > 0}))
+                };
                 case (_cmds isEqualTo []): { localize "STR_ALIVE_SCOM_CMD_NO_CYCLE" };
                 case (_rows isEqualTo []): { localize "STR_ALIVE_SCOM_CMD_NO_ROWS" };
                 case (!_anyPos): { format [localize "STR_ALIVE_SCOM_CMD_ROWS_NO_POSITIONS", count _rows] };
