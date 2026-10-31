@@ -1565,6 +1565,22 @@ class FSM
                          "	private _center = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "	private _size = [_objective,""size"",100] call ALiVE_fnc_HashGet;" \n
                          "" \n
+                         "   // Find Out Before Attacking: with the intel cycle on, the strike goes for the vehicles the commander knows are there," \n
+                         "   // the most recently seen first and up to three, at where they were last seen. With none known it hits a building as before" \n
+                         "   private _known = [];" \n
+                         "   private _knownPos = [];" \n
+                         "   private _intelQ = [_objective,""intel""] call ALiVE_fnc_HashGet;" \n
+                         "   if (!isNil ""_intelQ"" && {[_OPCOM_HANDLER,""intelCycle"",false] call ALiVE_fnc_HashGet}) then {" \n
+                         "   	private _newest = +(_intelQ select 4); reverse _newest;" \n
+                         "   	{" \n
+                         "   		private _id = _x select 0;" \n
+                         "   		if (count _known < 3 && {!(_id in _known)}) then {" \n
+                         "   			private _kp = [ALiVE_ProfileHandler,""getProfile"",_id] call ALiVE_fnc_ProfileHandler;" \n
+                         "   			if (!isNil ""_kp"" && {count (([_kp,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1) > 0}) then {_known pushBack _id; _knownPos pushBack (_x select 1)};" \n
+                         "   		};" \n
+                         "   	} forEach _newest;" \n
+                         "   };" \n
+                         "" \n
                          "   // Get objective buildings and filter for ALiVE types" \n
                          "   private _buildings = nearestObjects [_center, [""House_F""], _size];" \n
                          "   {" \n
@@ -1575,7 +1591,7 @@ class FSM
                          "   } foreach _buildings;" \n
                          "   _buildings = _buildings - [-1];" \n
                          "" \n
-                         "	if (count _buildings > 0) then {" \n
+                         "	if (count _known == 0 && {count _buildings > 0}) then {" \n
                          "		private _building = selectRandom _buildings;" \n
                          "" \n
                          "		if ([""ALiVE_mil_ATO""] call ALiVE_fnc_IsModuleAvailable) then {" \n
@@ -1599,6 +1615,13 @@ class FSM
                          "			_event = ['ATO_REQUEST', [""Strike"", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, position _building, _args],""OPCOM""] call ALIVE_fnc_event;" \n
                          "			_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "   		};" \n
+                         "	};" \n
+                         "" \n
+                         "	if (count _known > 0 && {[""ALiVE_mil_ATO""] call ALiVE_fnc_IsModuleAvailable}) then {" \n
+                         "		[""[OPCOM INTEL] %1 %2: strike asked for on %3 known vehicles"", _side, _target, count _known] call ALiVE_fnc_dump;" \n
+                         "		_args = [""RED"", 200, ""FULL"", 0.1, 0.1, 2000, 10, _known];" \n
+                         "		_event = ['ATO_REQUEST', [""Strike"", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _knownPos select 0, _args],""OPCOM""] call ALIVE_fnc_event;" \n
+                         "		_eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "	};" \n
                          "" \n
                          "// If not an objective assume its a profile" \n
