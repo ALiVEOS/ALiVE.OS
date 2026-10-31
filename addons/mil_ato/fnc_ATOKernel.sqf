@@ -819,8 +819,8 @@ private _fnc_radioOnce = {
 };
 
 // Find Out Before Attacking (mil_opcom): a ground commander that asked for a recce hears how it goes, as
-// ATO_RECCE_REPORT [request ID, "denied"|"accepted"|"onstation", aircraft]. A player's request, or one ATO made itself,
-// is not reported.
+// ATO_RECCE_REPORT [request ID, "denied"|"accepted"|"onstation"|"complete", aircraft]. "complete" is said when the
+// sortie's last aircraft is home or lost. A player's request, or one ATO made itself, is not reported.
 private _fnc_recceReport = {
     params [["_requester", [], [[]]], ["_type", "", [""]], ["_state", "", [""]], ["_aircraft", [], [[]]]];
     if !(_type isEqualTo "Recce") exitWith { false };
@@ -1053,6 +1053,14 @@ private _fnc_transition = {
                         if (_announce isEqualTo "") then {
                             private _rec = [_task, "sortie", _sid] call ALIVE_fnc_ATOTask;
                             if ([_rec] call ALIVE_fnc_isHash) then { _announce = [_rec, "landedBy", ""] call ALIVE_fnc_hashGet };
+                        };
+                        // the last aircraft of a ground commander's recce is home: that recce is over
+                        if (_type isEqualTo "Recce") then {
+                            private _rr = [_task, "sortie", _sid] call ALIVE_fnc_ATOTask;
+                            if ([_rr] call ALIVE_fnc_isHash) then {
+                                private _rq = [_task, "request", [_rr, "requestId", ""] call ALIVE_fnc_hashGet] call ALIVE_fnc_ATOTask;
+                                if ([_rq] call ALIVE_fnc_isHash) then { [[_rq, "requester", []] call ALIVE_fnc_hashGet, _type, "complete", []] call _fnc_recceReport };
+                            };
                         };
                         [_task, "complete", [_sid, if (_landed) then { "landed" } else { if (_standDown) then { "targets gone" } else { "recovered" } }]] call ALIVE_fnc_ATOTask;
                     };
@@ -2352,6 +2360,11 @@ switch(_operation) do {
             if (([_sortieOf, _sid, _tail] call _fnc_othersOn) isEqualTo []) then {
                 private _rec = [_task, "sortie", _sid] call ALIVE_fnc_ATOTask;
                 private _by = if ([_rec] call ALIVE_fnc_isHash) then { [_rec, "landedBy", ""] call ALIVE_fnc_hashGet } else { "" };
+                // a ground commander's recce ends with its last aircraft, lost or home
+                if ([_rec] call ALIVE_fnc_isHash && {([_rec, "type", ""] call ALIVE_fnc_hashGet) isEqualTo "Recce"}) then {
+                    private _rq = [_task, "request", [_rec, "requestId", ""] call ALIVE_fnc_hashGet] call ALIVE_fnc_ATOTask;
+                    if ([_rq] call ALIVE_fnc_isHash) then { [[_rq, "requester", []] call ALIVE_fnc_hashGet, "Recce", "complete", []] call _fnc_recceReport };
+                };
                 [_task, "complete", [_sid, if (_by isEqualTo "") then { "retired" } else { "landed" }]] call ALIVE_fnc_ATOTask;
                 [[_k, "tuples", []] call ALIVE_fnc_hashGet, _sid] call ALIVE_fnc_hashRem;
                 if !(_by isEqualTo "") then {

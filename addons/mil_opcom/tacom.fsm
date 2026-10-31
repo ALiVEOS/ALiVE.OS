@@ -540,9 +540,11 @@ class FSM
                          "                    // All groups are in position" \n
                          "                    // Scan for visible enemies (done only once on recon for performance sake - regulary scan every 2 minutes done by OPCOM)" \n
                          "                    private _seenNow = [_OPCOM_HANDLER,""scanForNearEnemies"", [_posP, true]] call ALiVE_fnc_OPCOM;" \n
-                         "                    _danger = count _seenNow;" \n
-                         "                    // what the recon groups saw goes into the objective intel picture (Find Out Before Attacking)" \n
-                         "                    [_OPCOM_HANDLER,""intelReport"",[_objective,""ground"",_seenNow apply {_x select 0},_seenNow apply {_x select 1},_posP]] call ALiVE_fnc_OPCOM;" \n
+                         "                    // what the recon groups saw goes into the objective intel picture (Find Out Before Attacking), and how" \n
+                         "                    // dangerous it looks counts what the air recon saw before they got there too (0 with the intel cycle off)" \n
+                         "                    private _knownHere = [_OPCOM_HANDLER,""intelReport"",[_objective,""ground"",_seenNow apply {_x select 0},_seenNow apply {_x select 1},_posP]] call ALiVE_fnc_OPCOM;" \n
+                         "                    if (isNil ""_knownHere"") then {_knownHere = 0};" \n
+                         "                    _danger = (count _seenNow) max _knownHere;" \n
                          "" \n
                          "                    // TBD: Calculate danger level depending on recon outcome (sector analysis)" \n
                          "                    [_objective,""danger"",_danger] call AliVE_fnc_HashSet;" \n

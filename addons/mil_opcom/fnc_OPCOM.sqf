@@ -2253,7 +2253,29 @@ switch (_operation) do {
             && {["ALiVE_mil_artillery"] call ALiVE_fnc_IsModuleAvailable}) then {
             private _center = [_targetObjective,"center",[0,0,0]] call ALiVE_fnc_HashGet;
             private _sidesEnemy = [_logic,"sidesenemy",[]] call ALiVE_fnc_HashGet;
-            private _defenders = ([_logic,"findProfilesNearPosition",[_center,_sidesEnemy,false]] call MAINCLASS) select { ((_x select 1) distance2D _center) < 250 };
+            private _defenders = [];
+            // Find Out Before Attacking: the guns fire on where the side has seen the enemy there in the last 10 minutes, the
+            // newer of the objective's intel and the commander's own sightings, not on what is there unseen
+            private _intelPF = [_targetObjective, "intel"] call ALiVE_fnc_HashGet;
+            if (!isNil "_intelPF" && {[_logic, "intelCycle", false] call ALiVE_fnc_HashGet}) then {
+                private _seenPF = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+                private _cands = (_intelPF select 4) apply { [_x select 0, _x select 1, _x select 2] };
+                if (!isNil "_seenPF") then {
+                    { if ((_x find "report_") != 0 && {time - (_y select 1) <= 600} && {((_y select 0) distance2D _center) < 250}) then { _cands pushBack [_x, _y select 0, _y select 1] } } forEach _seenPF;
+                };
+                {
+                    _x params ["_cid", "_cpos", "_ctime"];
+                    private _k = if (isNil "_seenPF") then { nil } else { _seenPF get _cid };
+                    if (!isNil "_k" && {(_k select 1) > _ctime}) then { _cpos = _k select 0; _ctime = _k select 1 };
+                    if (time - _ctime <= 600 && {(_cpos distance2D _center) < 250} && {(_defenders findIf { (_x select 0) == _cid }) < 0}
+                        && {!isNil {[ALiVE_ProfileHandler, "getProfile", _cid] call ALiVE_fnc_ProfileHandler}}) then { _defenders pushBack [_cid, _cpos] };
+                } forEach _cands;
+                if (_defenders isEqualTo []) then {
+                    ["[OPCOM INTEL] %1 %2: no preparation fire, nobody seen there in the last 10 minutes", [_logic,"side",""] call ALiVE_fnc_HashGet, _objectiveID] call ALiVE_fnc_dump;
+                };
+            } else {
+                _defenders = ([_logic,"findProfilesNearPosition",[_center,_sidesEnemy,false]] call MAINCLASS) select { ((_x select 1) distance2D _center) < 250 };
+            };
             if (_defenders isEqualTo []) exitWith {};
             _defenders = [_defenders, [], { (_x select 1) distance2D _center }, "ASCEND"] call BIS_fnc_sortBy;
             (_defenders select 0) params ["_targetID","_targetPos"];
@@ -3942,7 +3964,7 @@ switch (_operation) do {
 
             _result = [false,[]];
             // the intel picture (Find Out Before Attacking) is rebuilt as it is needed, so it is never saved
-            _blacklist = ["code","actions","intel","intelMarked","intelMarkLast"];
+            _blacklist = ["code","actions","intel","intelMarked","intelMarkLast","intelExploitedAt"];
 
             //Save only every 60 seconds, bad hack because of this http://dev.withsix.com/issues/74321
             //For normal each instance would save their own objectives but the hack collects all objectives of all OPCOMs on one save, FIFO principle
@@ -5802,7 +5824,9 @@ switch (_operation) do {
     // (intelHold) until intelReady says the commander knows enough. Per objective, under "intel", plain arrays so a
     // save never meets a HashMap (it is left out of saves anyway, see saveData):
     // [0 requested at, 1 air state, 2 ground state, 3 player state, 4 contacts [[id, pos, time, source]], 5 looks
-    // [[pos, time]], 6 released at (-1 while collecting), 7 why it was released, 8 the players' recon task ID]
+    // [[pos, time]], 6 released at (-1 while collecting), 7 why it was released, 8 the players' recon task ID, 9 the air
+    // recon's request ID, 10 that ID already sent, 11 when ATO accepted the recce (-1 until then), 12 the recce is over,
+    // 13 gone over once taken (intelExploit)]
     // A source's state is "open" while it may still report, "closed" once it has or never will.
     case "intelCollect": {
         private _objective = _args;
@@ -5816,7 +5840,7 @@ switch (_operation) do {
         private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
         private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
         private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
-        private _intel = [time, "closed", "open", "closed", [], [], -1, "", "", "", false];
+        private _intel = [time, "closed", "open", "closed", [], [], -1, "", "", "", false, -1, false, false];
         // the air: the recce that follows the attack order (REQUEST_RECON) carries this request ID, and ATO says how it goes
         if (["ALiVE_mil_ato"] call ALiVE_fnc_isModuleAvailable && {["ALiVE_mil_ato"] call ALiVE_fnc_isModuleInitialised} && {!isNil "ALIVE_eventLog"}) then {
             _intel set [1, "open"];
@@ -5845,9 +5869,29 @@ switch (_operation) do {
             };
         };
         if (_taskID != "") then { _intel set [3, "open"]; _intel set [8, _taskID] };
+        // what the side already knows there (seen in the last 30 minutes), kept with when it was seen, so a place the
+        // enemy fell back to from one just taken starts partly known and its Find is shorter
+        private _seeded = 0;
+        private _seenC = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+        if (!isNil "_seenC") then {
+            private _rC = ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 200;
+            {
+                if ((_x find "report_") != 0 && {time - (_y select 1) <= 1800} && {((_y select 0) distance2D _center) <= _rC * 1.5}
+                    && {!isNil {[ALiVE_ProfileHandler, "getProfile", _x] call ALiVE_fnc_ProfileHandler}}) then {
+                    (_intel select 4) pushBack [_x, _y select 0, _y select 1, "known"];
+                    _seeded = _seeded + 1;
+                };
+            } forEach _seenC;
+        };
         [_objective, "intel", _intel] call ALiVE_fnc_HashSet;
-        ["[OPCOM INTEL] %1 %2: collection ordered (ground recon%3%4)", _side, _objectiveID, ["", ", air recon " + (_intel select 9)] select ((_intel select 9) != ""),
-            ["", ", players' recon task " + _taskID] select (_taskID != "")] call ALiVE_fnc_dump;
+        ["[OPCOM INTEL] %1 %2: collection ordered (ground recon%3%4)%5", _side, _objectiveID, ["", ", air recon " + (_intel select 9)] select ((_intel select 9) != ""),
+            ["", ", players' recon task " + _taskID] select (_taskID != ""), ["", format [" (%1 known there before anyone looked)", _seeded]] select (_seeded > 0)] call ALiVE_fnc_dump;
+        // the side hears it for the place Analyse sent the commander to next, not for every attack
+        if (_seeded > 0 && {([_logic, "intelNextID", ""] call ALiVE_fnc_HashGet) == _objectiveID}) then {
+            [_logic, "intelNextID", ""] call ALiVE_fnc_HashSet;
+            [_logic, "opRadio", format ["Moving on %1. %2 enemy %3 already known there.", [_center] call ALIVE_fnc_taskGetNearestLocationName, _seeded, ["groups are", "group is"] select (_seeded == 1)]] call MAINCLASS;
+        };
+        if (_seeded > 0) then { [_logic, "intelMarkers", [_objective]] call MAINCLASS };
         _result = true;
     };
 
@@ -5873,10 +5917,19 @@ switch (_operation) do {
             case "denied": { if (_air in ["open", "accepted"]) then { "air recon turned down" call _close } };
             case "notsent": { if (_air == "open" && {!(_intel param [10, false])}) then { "no air recon sent" call _close } };
             case "unanswered": { if (_air == "open") then { "no answer about the air recon" call _close } };
-            case "done": { if (_air != "closed") then { format ["the air recon has left (%1 contacts known there)", count (_intel select 4)] call _close } };
+            case "done": {
+                _intel set [12, true];
+                if (_air != "closed") then { format ["the air recon has left (%1 contacts known there)", count (_intel select 4)] call _close };
+            };
+            // ATO: the recce's last aircraft is home or lost. A report already on its way can't open it again
+            case "complete": {
+                _intel set [12, true];
+                if (_air != "closed") then { format ["the air recon is home (%1 contacts known there)", count (_intel select 4)] call _close };
+            };
             case "accepted": {
                 if (_air == "open") then {
                     _intel set [1, "accepted"];
+                    _intel set [11, time];
                     ["[OPCOM INTEL] %1 %2: air recon accepted", _side, _objectiveID] call ALiVE_fnc_dump;
                 };
             };
@@ -5949,9 +6002,17 @@ switch (_operation) do {
         if (_look isNotEqualTo []) then { (_intel select 5) pushBack [_look, time] };
         // the ground recon scans once, and the players' recon reports once
         if (_source in ["ground", "player"]) then { _intel set [[2, 3] select (_source == "player"), "closed"] };
-        if (_source == "air" && {(_intel select 1) == "closed"}) then { _intel set [1, "open"] };
+        if (_source == "air" && {(_intel select 1) == "closed"} && {!(_intel param [12, false])}) then { _intel set [1, "open"] };
         ["[OPCOM INTEL] %1 %2: %3 report, %4 seen, %5 contacts known there", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _source, count _ids, count _contacts] call ALiVE_fnc_dump;
-        _result = count _contacts;
+        // what counts for danger: groups still in the game, seen there in the last 15 minutes
+        _result = { time - (_x select 2) <= 900 && {!isNil {[ALiVE_ProfileHandler, "getProfile", _x select 0] call ALiVE_fnc_ProfileHandler}} } count _contacts;
+        // once TACOM has looked (danger 0 or more), a later report can only make it look more dangerous. Before that it
+        // stays -1, which is what sends TACOM's recon in the first place
+        private _danger = [_objective, "danger", -1] call ALiVE_fnc_HashGet;
+        if (_danger >= 0 && {_result > _danger}) then {
+            [_objective, "danger", _result] call ALiVE_fnc_HashSet;
+            ["[OPCOM INTEL] %1 %2: danger raised to %3 by a %4 report", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _result, _source] call ALiVE_fnc_dump;
+        };
         [_logic, "intelMarkers", [_objective]] call MAINCLASS;
     };
 
@@ -6014,7 +6075,8 @@ switch (_operation) do {
             case ((_assess select 0) >= ([_logic, "intelConfidence", 0.5] call ALiVE_fnc_HashGet)): { "sure enough" };
             case ((_intel select 3) == "closed" && {(_intel select 8) != ""} && {(_intel select 2) == "closed"}): { "the players' recon has reported" };
             case ((_intel select [1, 3]) isEqualTo ["closed", "closed", "closed"]): { "everyone sent has reported" };
-            case (time - (_intel select 0) >= ([_logic, "intelTimeout", 1200] call ALiVE_fnc_HashGet)): { "the Intel Wait ran out" };
+            // counted from when ATO took the recce, if it did, so a slow recce that is coming still gets its full wait
+            case (time - ((_intel select 0) max (_intel param [11, -1])) >= ([_logic, "intelTimeout", 1200] call ALiVE_fnc_HashGet)): { "the Intel Wait ran out" };
             default { "" };
         };
         if (_why == "") exitWith { _result = false };
@@ -6072,6 +6134,134 @@ switch (_operation) do {
             };
         };
         _result = true;
+    };
+
+    // Exploit (Find Out Before Attacking): once an objective this commander was finding out about has changed hands to its
+    // side (the occupation look, not the capture groups' arrival), or one it held came through a fight, it goes over what
+    // its side saw there. Each group seen is judged only from what the side knows: gone from the game where it was last
+    // seen, destroyed; seen again since, farther off, falling back (towards the nearest objective that covers where it was
+    // last seen); otherwise unaccounted for. Called unscheduled after each occupation look, as intelAnalyse may reorder
+    // the objectives. Returns [[objectiveID, seen, destroyed, [[towardID, groups], ...], unaccounted, falling back], ...]
+    case "intelExploit": {
+        _result = [];
+        if !([_logic, "intelCycle", false] call ALiVE_fnc_HashGet) exitWith {};
+        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation"]) exitWith {};
+        private _now = [_logic, "clusteroccupation", []] call ALiVE_fnc_HashGet;
+        private _prev = [_logic, "clusteroccupationPrevious", []] call ALiVE_fnc_HashGet;
+        if (count _prev < 3 || {count _now < 3}) exitWith {};
+        private _prevEnemy = (_prev select 1) apply { _x select 0 };
+        private _prevContested = (_prev select 2) apply { _x select 0 };
+        private _byID = [_logic, "objectivesByID"] call ALiVE_fnc_HashGet;
+        if (isNil "_byID") exitWith {};
+        private _objectives = [_logic, "objectives", []] call ALiVE_fnc_HashGet;
+        private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+        private _side = [_logic, "side", ""] call ALiVE_fnc_HashGet;
+        {
+            private _oid = _x select 0;
+            private _obj = _byID get _oid;
+            if (!isNil "_obj" && {_oid in _prevEnemy || {_oid in _prevContested}} && {time - ([_obj, "intelExploitedAt", -1e9] call ALiVE_fnc_HashGet) >= 600}) then {
+                private _intel = [_obj, "intel"] call ALiVE_fnc_HashGet;
+                // taken: its assault went ahead in the last 30 minutes and this picture hasn't been gone over yet. An
+                // objective taken long ago, lost and back again isn't judged on that old picture
+                private _taken = !isNil "_intel" && {(_intel select 6) >= 0} && {time - (_intel select 6) <= 1800} && {!(_intel param [13, false])};
+                private _held = !_taken && {_oid in _prevContested} && {([_obj, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["defend", "defending", "reserve", "reserving", "idle"]};
+                if (_taken || _held) then {
+                    [_obj, "intelExploitedAt", time] call ALiVE_fnc_HashSet;
+                    if (_taken) then { _intel set [13, true] };
+                    private _center = [_obj, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+                    private _r = ([_obj, "size", 150] call ALiVE_fnc_HashGet) max 200;
+                    private _sightings = [];
+                    if (_taken) then {
+                        _sightings = (_intel select 4) apply { [_x select 0, _x select 1, _x select 2] };
+                    } else {
+                        if (!isNil "_seen") then {
+                            // the attackers seen at it in the last 30 minutes
+                            { if ((_x find "report_") != 0 && {time - (_y select 1) <= 1800} && {((_y select 0) distance2D _center) <= _r * 1.5}) then { _sightings pushBack [_x, _y select 0, _y select 1] } } forEach _seen;
+                        };
+                    };
+                    private _destroyed = 0;
+                    private _unaccounted = 0;
+                    private _back = 0;
+                    private _toward = createHashMap;
+                    {
+                        _x params ["_id", "_p", "_t"];
+                        private _prof = [ALiVE_ProfileHandler, "getProfile", _id] call ALiVE_fnc_ProfileHandler;
+                        private _k = if (isNil "_seen") then { nil } else { _seen get _id };
+                        // where it was last seen: a newer sighting than the one at the objective wins
+                        private _newer = !isNil "_k" && {(_k select 1) > _t};
+                        private _lastP = if (_newer) then { _k select 0 } else { _p };
+                        switch (true) do {
+                            case (isNil "_prof" && {(_lastP distance2D _center) <= _r * 1.5}): { _destroyed = _destroyed + 1 };
+                            // a held objective's fight: only what was destroyed there is known for sure
+                            case (_held): {};
+                            case (!isNil "_prof" && {_newer} && {((_k select 0) distance2D _center) > _r * 1.5}): {
+                                _back = _back + 1;
+                                private _lp = _k select 0;
+                                private _best = "";
+                                private _bestD = 1e9;
+                                {
+                                    private _oc = [_x, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+                                    private _d = _lp distance2D _oc;
+                                    if (!(_x isEqualRef _obj) && {([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["attack", "unassigned"]}
+                                        && {_d <= 3 * (([_x, "size", 150] call ALiVE_fnc_HashGet) max 200)} && {_d < _bestD}) then {
+                                        _bestD = _d;
+                                        _best = [_x, "objectiveID", ""] call ALiVE_fnc_HashGet;
+                                    };
+                                } forEach _objectives;
+                                if (_best != "") then { _toward set [_best, (_toward getOrDefault [_best, 0]) + 1] };
+                            };
+                            default { _unaccounted = _unaccounted + 1 };
+                        };
+                    } forEach _sightings;
+                    private _towardList = [];
+                    { _towardList pushBack [_x, _y] } forEach _toward;
+                    _towardList = [_towardList, [], { _x select 1 }, "DESCEND"] call BIS_fnc_sortBy;
+                    ["[OPCOM INTEL] %1 %2 %3: %4 groups seen there, %5 destroyed, %6 last seen falling back (%7), %8 unaccounted for", _side, _oid, ["held", "taken"] select _taken,
+                        count _sightings, _destroyed, _back, (_towardList apply { format ["%1 toward %2", _x select 1, _x select 0] }) joinString ", ", _unaccounted] call ALiVE_fnc_dump;
+                    // a held objective is only worth a word when the enemy lost groups there
+                    if (_held) then { _unaccounted = 0 };
+                    private _ex = [_oid, [_destroyed, count _sightings] select _taken, _destroyed, _towardList, _unaccounted, _back];
+                    if (_taken || {_destroyed > 0}) then { [_logic, "intelAnalyse", _ex] call MAINCLASS };
+                    _result pushBack _ex;
+                };
+            };
+        } forEach (_now select 0);
+    };
+
+    // Analyse: what Exploit found decides what comes next. The objective most of the fallen-back groups were last seen
+    // heading for goes to the front of the commander's list, as long as it is one it may attack, and the side hears why.
+    // Its Find then starts from what is already known there (intelCollect). Nothing seen, nothing said or changed
+    case "intelAnalyse": {
+        _args params ["_oid", "_seenN", "_destroyed", "_toward", "_unaccounted", "_back"];
+        _result = "";
+        private _byID = [_logic, "objectivesByID"] call ALiVE_fnc_HashGet;
+        if (isNil "_byID") exitWith {};
+        private _obj = _byID get _oid;
+        if (isNil "_obj" || {_seenN < 1}) exitWith {};
+        private _side = [_logic, "side", ""] call ALiVE_fnc_HashGet;
+        private _place = [[_obj, "center", [0,0,0]] call ALiVE_fnc_HashGet] call ALIVE_fnc_taskGetNearestLocationName;
+        private _next = "";
+        private _nextPlace = "";
+        if (_toward isNotEqualTo []) then {
+            (_toward select 0) params ["_nid", "_groups"];
+            private _nobj = _byID get _nid;
+            if (!isNil "_nobj" && {_groups >= 1} && {([_nobj, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["attack", "unassigned"]}) then {
+                [_logic, "reorderObjective", [_nid, 0]] call MAINCLASS;
+                [_logic, "intelNextID", _nid] call ALiVE_fnc_HashSet;
+                _next = _nid;
+                _nextPlace = [[_nobj, "center", [0,0,0]] call ALiVE_fnc_HashGet] call ALIVE_fnc_taskGetNearestLocationName;
+                ["[OPCOM INTEL] %1: %2 moved to the front, %3 groups last seen heading there from %4", _side, _nid, _groups, _oid] call ALiVE_fnc_dump;
+            };
+        };
+        private _text = format ["At %1, %2 seen: %3 destroyed", _place, [format ["%1 enemy groups were", _seenN], "1 enemy group was"] select (_seenN == 1), _destroyed];
+        if (_back > 0) then {
+            _text = _text + format [", %1 last seen falling back%2", _back, ["", " toward " + _nextPlace] select (_nextPlace != "")];
+        };
+        if (_unaccounted > 0) then { _text = _text + format [", %1 not accounted for", _unaccounted] };
+        _text = _text + ".";
+        if (_next != "") then { _text = _text + format [" %1 is next.", _nextPlace] };
+        [_logic, "opRadio", _text] call MAINCLASS;
+        _result = _next;
     };
 
     // objective: its recon is done but intelReady says wait. The groups stay where they are, and once it is ready the

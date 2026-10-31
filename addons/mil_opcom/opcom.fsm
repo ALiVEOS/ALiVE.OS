@@ -643,8 +643,26 @@ class FSM
                          "" \n
                          "                        if ([_side,[""attacking""]] call ALIVE_fnc_OPCOMgetHighestPrioObjective == _targetId) then {" \n
                          "                            // Match the radius the capture task verifies with, see fnc_taskCaptureObjective.sqf." \n
-                         "                            _targets = [_pos, (([_target,""size"",150] call AliVE_fnc_HashGet) min 500) max 200, [_sidesEnemy,""entity""],true] call ALIVE_fnc_getNearProfiles;" \n
-                         "                            if (!isNil ""ALiVE_c2istar_taskDiag"" && {ALiVE_c2istar_taskDiag}) then {[""[OPCOM REQ] obj=%1 radius=%2 sides=%3 targets=%4"", _targetId, ((([_target,""size"",150] call AliVE_fnc_HashGet) min 500) max 200), _sidesEnemy, count _targets] call ALiVE_fnc_dump}; // DIAG-STRIP (order rate measurement)" \n
+                         "                            private _capR = (([_target,""size"",150] call AliVE_fnc_HashGet) min 500) max 200;" \n
+                         "                            private _targetsSrc = ""ground"";" \n
+                         "                            _targets = [];" \n
+                         "                            // Find Out Before Attacking: the players are sent after the groups the commander knows are there (its" \n
+                         "                            // sightings, spot reports and recon reports), still standing within the capture radius, as the task" \n
+                         "                            // goes to where each one is now. None known, and they're found the old way" \n
+                         "                            if ([_OPCOM_HANDLER,""intelCycle"",false] call ALiVE_fnc_HashGet) then {" \n
+                         "                                private _known = [_OPCOM_HANDLER,""knownEnemy""] call ALiVE_fnc_OPCOM;" \n
+                         "                                private _kIDs = [];" \n
+                         "                                {" \n
+                         "                                    private _kp = (_known select 1) param [_forEachIndex, []];" \n
+                         "                                    if (_kp isEqualType [] && {count _kp > 1} && {(_kp distance2D _pos) <= _capR} && {!(_x in _kIDs)}) then {" \n
+                         "                                        private _prof = [ALiVE_ProfileHandler,""getProfile"",_x] call ALiVE_fnc_ProfileHandler;" \n
+                         "                                        if (!isNil ""_prof"" && {(([_prof,""position"",[0,0,0]] call ALiVE_fnc_HashGet) distance2D _pos) <= _capR}) then {_kIDs pushBack _x; _targets pushBack _prof};" \n
+                         "                                    };" \n
+                         "                                } forEach (_known select 0);" \n
+                         "                                if (_targets isNotEqualTo []) then {_targetsSrc = ""known""};" \n
+                         "                            };" \n
+                         "                            if (_targets isEqualTo []) then {_targets = [_pos, _capR, [_sidesEnemy,""entity""],true] call ALIVE_fnc_getNearProfiles};" \n
+                         "                            if (!isNil ""ALiVE_c2istar_taskDiag"" && {ALiVE_c2istar_taskDiag}) then {[""[OPCOM REQ] obj=%1 radius=%2 sides=%3 targets=%4 src=%5"", _targetId, _capR, _sidesEnemy, count _targets, _targetsSrc] call ALiVE_fnc_dump}; // DIAG-STRIP (order rate measurement)" \n
                          "                            [_side,_faction,""CaptureObjective"",_targets,""OPCOM"",true,_targetId] call ALiVE_fnc_taskRequest;" \n
                          "                        };" \n
                          "" \n
@@ -1484,6 +1502,8 @@ class FSM
                          "" \n
                          "// Dug In: groups that have reached an objective it holds since the last look are written down there, and their vehicles parked" \n
                          "if (([_OPCOM_HANDLER,""controltype"",""""] call ALiVE_fnc_HashGet) == ""dugin"") then {[_OPCOM_HANDLER,""dugInPin""] call ALiVE_fnc_OPCOM};" \n
+                         "// Find Out Before Attacking: an objective that has just changed hands is gone over (Exploit), and what was found there picks the next one (Analyse)" \n
+                         "if ([_OPCOM_HANDLER,""intelCycle"",false] call ALiVE_fnc_HashGet) then {[_OPCOM_HANDLER,""intelExploit""] call ALiVE_fnc_OPCOM};" \n
                          "" \n
                          "//Analyze Forces State" \n
                          "_startForcesStrength = [_OPCOM_HANDLER,""startForceStrength"",[]] call ALiVE_fnc_HashGet;" \n
