@@ -160,6 +160,10 @@ switch (_operation) do {
         // groups per wave and seconds between waves (TheLogatron on Discord, 26 Oct); 2 and 200 were the fixed pacing
         private _shipWaveSize = floor ((parseNumber format ["%1", _logic getVariable ["shipWaveSize", 2]]) max 1);
         private _shipWaveGap = (parseNumber format ["%1", _logic getVariable ["shipWaveGap", 200]]) max 0;
+        // Go Ashore By (Start From Ship): "auto", by helicopter when the faction has its own, else by boat; "boats",
+        // by boat first, by helicopter when there are no boats or no beach
+        private _shipLandBy = toLower format ["%1", _logic getVariable ["shipLandBy", "auto"]];
+        if !(_shipLandBy in ["auto", "boats"]) then { _shipLandBy = "auto" };
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -492,6 +496,7 @@ switch (_operation) do {
             ["shipAboard", [_shipInf, _shipMot, 0, 0, 0, 0, 0, 0]],
             ["shipWaveSize", _shipWaveSize],
             ["shipWaveGap", _shipWaveGap],
+            ["shipLandBy", _shipLandBy],
             // waves whose vehicles no helicopter could lift: three and the motorised groups are left out
             ["shipMotRefused", 0],
             // motorised waves that came back empty with no reason given (enemy at the landing, the lift throttled):
@@ -6463,14 +6468,32 @@ switch (_operation) do {
         // WWII faction, puts its infantry ashore in its own boats (seating at least 4) before it borrows the side's
         // helicopters, which for a WWII side are the game's modern ones. With neither, the side's helicopters, then the
         // boats of the side's other commanders (whose factions Military Logistics serves) unless Limit Transport To
-        // Faction is on. A faction with a helicopter of its own never uses boats.
+        // Faction is on. A faction with a helicopter of its own uses boats only when Go Ashore By says boats first (A.
+        // Ares on Discord), and then the side's other commanders' boats come before any helicopter.
         private _fnc_boats = {
             private _found = ([4, _this, "Ship"] call ALiVE_fnc_findVehicleType) - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
             _found select { _x isKindOf "Ship" && {!(_x isKindOf "StaticShip")} && {!(_x isKindOf "Submarine")}
                 && {getNumber (configFile >> "CfgVehicles" >> _x >> "transportSoldier") >= 4} }
         };
+        // the boats of the side's other commanders, unless Military Logistics limits transport to the faction
+        private _fnc_sideBoats = {
+            private _found = [];
+            if (((allMissionObjects "ALiVE_mil_logistics") findIf { [_x, "limitTransportToFaction"] call ALIVE_fnc_ML }) < 0) then {
+                private _sideFacs = [];
+                {
+                    if (_x isEqualType [] && {([_x, "side", ""] call ALiVE_fnc_HashGet) == _side}) then {
+                        { _sideFacs pushBackUnique _x } forEach ([_x, "factions", []] call ALiVE_fnc_HashGet);
+                    };
+                } forEach OPCOM_instances;
+                _sideFacs = _sideFacs - _factions;
+                if (_sideFacs isNotEqualTo []) then { _found = _sideFacs call _fnc_boats };
+            };
+            _found
+        };
+        private _byBoat = ([_logic, "shipLandBy", "auto"] call ALiVE_fnc_HashGet) == "boats";
         private _boats = [];
-        if ((_heli select { _x isKindOf "Helicopter" }) isEqualTo []) then { _boats = _factions call _fnc_boats };
+        if (_byBoat || {(_heli select { _x isKindOf "Helicopter" }) isEqualTo []}) then { _boats = _factions call _fnc_boats };
+        if (_byBoat && {_boats isEqualTo []}) then { _boats = call _fnc_sideBoats };
         if (_boats isEqualTo [] && {(_heli select { _x isKindOf "Helicopter" }) isEqualTo []} && {!isNil "ALIVE_sideDefaultAirTransport"}) then {
             _heli = +([ALIVE_sideDefaultAirTransport, _side, []] call ALIVE_fnc_hashGet);
         };
@@ -6489,18 +6512,7 @@ switch (_operation) do {
             [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashSet;
         };
 
-        if (_boats isEqualTo [] && {(_heli select { _x isKindOf "Helicopter" }) isEqualTo []}) then {
-            if (((allMissionObjects "ALiVE_mil_logistics") findIf { [_x, "limitTransportToFaction"] call ALIVE_fnc_ML }) < 0) then {
-                private _sideFacs = [];
-                {
-                    if (_x isEqualType [] && {([_x, "side", ""] call ALiVE_fnc_HashGet) == _side}) then {
-                        { _sideFacs pushBackUnique _x } forEach ([_x, "factions", []] call ALiVE_fnc_HashGet);
-                    };
-                } forEach OPCOM_instances;
-                _sideFacs = _sideFacs - _factions;
-                if (_sideFacs isNotEqualTo []) then { _boats = _sideFacs call _fnc_boats };
-            };
-        };
+        if (_boats isEqualTo [] && {(_heli select { _x isKindOf "Helicopter" }) isEqualTo []}) then { _boats = call _fnc_sideBoats };
         if ((_heli select { _x isKindOf "Helicopter" }) isEqualTo [] && {_boats isEqualTo []}) exitWith {
             [format ["neither faction %1 nor its side has a transport helicopter or a boat that carries troops", _factions]] call _dropAll;
             call _fsmDone;

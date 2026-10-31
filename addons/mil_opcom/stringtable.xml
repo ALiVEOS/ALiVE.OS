@@ -432,6 +432,12 @@
 <Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_SIZE_COMMENT">
     <English>How many groups leave the ship in each wave with Start From Ship on, 2 by default. The infantry goes first, then the motorised groups in waves of their own. Every wave lands at the same place: the objective nearest the ship that the commander is attacking or holding. A bigger wave needs more helicopters or boats at once, and Military Logistics may take longer to send it.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_LAND_BY">
+    <English>Go Ashore By</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_LAND_BY_COMMENT">
+    <English>How the force aboard the ship goes ashore. Helicopters, boats with none (the default): by the faction's own transport helicopters, and by boat only when it has none. Boats, helicopters with none: by the faction's boats that seat 4 or more, then the boats of the side's other commanders (unless Military Logistics limits transport to the faction), and by helicopter only when there are no boats or no beach near the landing. Vehicles go ashore in landing craft by boat, or slung under a helicopter.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_GAP">
     <English>Seconds Between Waves</English>
 </Key>

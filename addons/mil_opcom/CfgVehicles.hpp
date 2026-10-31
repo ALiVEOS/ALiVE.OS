@@ -488,6 +488,18 @@ class CfgVehicles {
                                 defaultValue = """200""";
                                 typeName = "NUMBER";
                         };
+                        class shipLandBy : Combo
+                        {
+                                property = "ALiVE_mil_opcom_shipLandBy";
+                                displayName = "$STR_ALIVE_OPCOM_SHIP_LAND_BY";
+                                tooltip = "$STR_ALIVE_OPCOM_SHIP_LAND_BY_COMMENT";
+                                defaultValue = """auto""";
+                                class Values
+                                {
+                                        class Auto  { name = "Helicopters, boats with none";  value = "auto"; };
+                                        class Boats { name = "Boats, helicopters with none"; value = "boats"; };
+                                };
+                        };
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {
