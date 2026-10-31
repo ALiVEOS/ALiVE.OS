@@ -538,6 +538,15 @@ if (_menuName == "C2_OPCOM_STANCE") then {
                     -1,
                     true,
                     _result
+                ],
+                ["Assault (waves)",
+                    {["changeStance", [player, "assault"]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "OPCOM takes one objective at a time, most important first, sending a fresh wave at it every Wave Interval minutes until it falls.",
+                    "",
+                    -1,
+                    true,
+                    _result
                 ]
             ]
         ]

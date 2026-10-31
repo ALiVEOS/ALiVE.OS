@@ -1030,7 +1030,7 @@ switch (_operation) do {
             ["notify", [_player, "You need a C2ISTAR access item to change the OPCOM stance."]] call MAINCLASS;
         };
 
-        if !(_newControlType in ["invasion","occupation","asymmetric","dugin"]) exitWith {
+        if !(_newControlType in ["invasion","occupation","asymmetric","dugin","assault"]) exitWith {
             ["notify", [_player, "Invalid OPCOM stance."]] call MAINCLASS;
         };
 

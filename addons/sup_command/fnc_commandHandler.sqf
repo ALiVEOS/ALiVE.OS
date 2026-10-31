@@ -2807,7 +2807,7 @@ switch(_operation) do {
                 };
                 case "STANCE": {
                     if !(missionNamespace getVariable ["ALIVE_OPCOM_StanceControlEnabled", false]) exitWith { "The mission maker hasn't allowed stance changes." call _reply };
-                    if (!(_value isEqualType "") || {!(_value in ["invasion","occupation","asymmetric","dugin"])}) exitWith {};
+                    if (!(_value isEqualType "") || {!(_value in ["invasion","occupation","asymmetric","dugin","assault"])}) exitWith {};
                     if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == _value) exitWith {};
                     if !([_opcom,"startupComplete",false] call ALiVE_fnc_hashGet) exitWith { "The commander is still starting. Try again shortly." call _reply };
                     // the same latch the C2ISTAR menu's stance change uses

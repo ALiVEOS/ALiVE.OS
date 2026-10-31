@@ -640,6 +640,9 @@
 <Key ID="STR_ALIVE_SCOM_SET_DUGIN">
     <English>Dug In</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_SET_ASSAULT">
+    <English>Assault (waves)</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_SET_PAUSE">
     <English>Pause</English>
 </Key>

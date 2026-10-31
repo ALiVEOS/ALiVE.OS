@@ -4628,7 +4628,8 @@ switch (_operation) do {
 
             _args params ["_uid", ["_stanceOK",false], ["_cmds",[]]];
             private _names = createHashMapFromArray [["invasion",localize "STR_ALIVE_SCOM_SET_INVASION"],["occupation",localize "STR_ALIVE_SCOM_SET_OCCUPATION"],
-                ["asymmetric",localize "STR_ALIVE_SCOM_SET_ASYMMETRIC"],["dugin",localize "STR_ALIVE_SCOM_SET_DUGIN"]];
+                ["asymmetric",localize "STR_ALIVE_SCOM_SET_ASYMMETRIC"],["dugin",localize "STR_ALIVE_SCOM_SET_DUGIN"],
+                ["assault",localize "STR_ALIVE_SCOM_SET_ASSAULT"]];
 
             // rows: [key, kind, commander ID, label, [stance, paused, held, changing, may change, stance changes allowed, value]]
             private _rows = [];
@@ -4649,7 +4650,7 @@ switch (_operation) do {
                 {
                     _rows pushBack [_id + "|" + _x, "STANCE", _id,
                         format [localize (["STR_ALIVE_SCOM_SET_STANCE_ROW", "STR_ALIVE_SCOM_SET_STANCE_NOW"] select (_x == _stance)), _names getOrDefault [_x, _x]], _info + [_x]];
-                } forEach ["invasion","occupation","asymmetric","dugin"];
+                } forEach ["invasion","occupation","asymmetric","dugin","assault"];
                 if (_intel) then {
                     _rows pushBack [_id + "|WAIT", "WAIT", _id, format [localize "STR_ALIVE_SCOM_SET_WAIT_ROW", _waitMin], _info + [_waitMin]];
                     _rows pushBack [_id + "|SURE", "SURE", _id, format [localize "STR_ALIVE_SCOM_SET_SURE_ROW", _surePct, "%"], _info + [_surePct]];

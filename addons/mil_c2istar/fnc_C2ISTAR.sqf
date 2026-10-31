@@ -3022,6 +3022,7 @@ if (isServer) then {
                     private _what = switch (_type) do {
                         case "occupation": { "holding the ground it has" };
                         case "dugin": { "dug in where it stands" };
+                        case "assault": { "attacking one objective at a time, in waves" };
                         case "asymmetric": { "running an insurgency" };
                         default { "on the offensive" };
                     };

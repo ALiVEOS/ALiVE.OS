@@ -6899,7 +6899,8 @@ switch (_operation) do {
         };
     };
 
-    // Assault (waves). The target is the first objective in the commander's order that it doesn't hold (["assaultTarget",
+    // Assault (waves). The target is the objective it doesn't hold with the highest Objective priority, the nearest
+    // first among equals (the list is in distance order), and it stays the target until it falls (["assaultTarget",
     // objectives] -> objective or []). A wave on it waits Wave Interval minutes after the last one confirmed there; the
     // first wave on a new target goes at once (["assaultWaveOpen", objective] -> bool). TACOM confirming a wave starts
     // the wait (["assaultWaveSent", objective]). The timer lives on the module: ALiVE_Assault_targetID,
@@ -6907,8 +6908,18 @@ switch (_operation) do {
     case "assaultTarget": {
         private _objectives = _args;
         _result = [];
-        private _i = _objectives findIf { ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["unassigned", "attack", "attacking"] };
-        if (_i >= 0) then { _result = _objectives select _i };
+        private _open = _objectives select { ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["unassigned", "attack", "attacking"] };
+        if (_open isEqualTo []) exitWith {};
+        private _module = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
+        private _current = if (isNull _module) then { "" } else { _module getVariable ["ALiVE_Assault_targetID", ""] };
+        private _i = _open findIf { ([_x, "objectiveID", ""] call ALiVE_fnc_HashGet) == _current };
+        if (_i >= 0) exitWith { _result = _open select _i };
+        _result = _open select 0;
+        private _best = parseNumber format ["%1", [_result, "priority", 0] call ALiVE_fnc_HashGet];
+        {
+            private _p = parseNumber format ["%1", [_x, "priority", 0] call ALiVE_fnc_HashGet];
+            if (_p > _best) then { _result = _x; _best = _p };
+        } forEach _open;
     };
     case "assaultWaveOpen": {
         private _module = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
