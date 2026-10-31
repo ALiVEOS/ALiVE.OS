@@ -148,6 +148,11 @@ switch (_operation) do {
         // Tasks Only Against Known Enemy (A. Ares on Discord, 21 Oct): those tasks aim only at what this commander has
         // found, so they don't give hidden positions away; off by default
         private _opTasksKnownOnly = (toLower format ["%1", _logic getVariable ["opTasksKnownOnly", "false"]]) in ["true", "1"];
+        // Find Out Before Attacking (Ando on Discord): an Invasion or Occupation commander finds out what is at an objective
+        // before its assault goes in (intelCollect, intelReady); off by default
+        private _intelCycle = (toLower format ["%1", _logic getVariable ["intelCycle", "false"]]) in ["true", "1"];
+        private _intelConfidence = ((parseNumber format ["%1", _logic getVariable ["intelConfidence", 0.5]]) max 0) min 1;
+        private _intelTimeout = ((parseNumber format ["%1", _logic getVariable ["intelTimeoutMins", 20]]) max 1) * 60;
         // Follow The Players Up (Occupation): no attack of its own; it garrisons what players clear (kawi0756, 25 Oct)
         private _followPlayers = (toLower format ["%1", _logic getVariable ["followPlayers", "false"]]) in ["true", "1"];
         // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
@@ -485,6 +490,9 @@ switch (_operation) do {
             ["opTasksMin", _opTasksMin],
             ["opTasksMax", _opTasksMax],
             ["opTasksKnownOnly", _opTasksKnownOnly],
+            ["intelCycle", _intelCycle],
+            ["intelConfidence", _intelConfidence],
+            ["intelTimeout", _intelTimeout],
             ["followPlayers", _followPlayers],
             ["callForHelp", _callForHelp],
             // per group: [peak men, men last pass, time of the last loss, time it last asked]; runtime only, not saved
@@ -3899,7 +3907,8 @@ switch (_operation) do {
             };
 
             _result = [false,[]];
-            _blacklist = ["code","actions"];
+            // the intel picture (Find Out Before Attacking) is rebuilt as it is needed, so it is never saved
+            _blacklist = ["code","actions","intel"];
 
             //Save only every 60 seconds, bad hack because of this http://dev.withsix.com/issues/74321
             //For normal each instance would save their own objectives but the hack collects all objectives of all OPCOMs on one save, FIFO principle
@@ -4859,7 +4868,7 @@ switch (_operation) do {
             // stays known for a while after it goes out of sight, whether or not C2ISTAR shows intel. The C2ISTAR
             // module's own Tasks Only Against Known Enemy reads it too (ALIVE_fnc_taskKnownEnemy), and so does
             // Reinforcements Match the Enemy
-            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet || {[_logic, "reinforceMatchEnemy", false] call ALiVE_fnc_HashGet} || {missionNamespace getVariable ["ALiVE_c2istar_tasksKnownOnly", false]}) then {
+            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet || {[_logic, "reinforceMatchEnemy", false] call ALiVE_fnc_HashGet} || {[_logic, "intelCycle", false] call ALiVE_fnc_HashGet} || {missionNamespace getVariable ["ALiVE_c2istar_tasksKnownOnly", false]}) then {
                 private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
                 if (isNil "_seen") then { _seen = createHashMap; [_logic, "knownSeen", _seen] call ALiVE_fnc_HashSet };
                 // every reader looks back 30 minutes, so older sightings go here too, between reinforcement requests
@@ -5730,6 +5739,169 @@ switch (_operation) do {
             ["OPCOM %1 reinforcements match the enemy: enemy seen %2, own losses %3, short of start by %4, kinds open %5, request %6%7", _side, _E, _L, _startCount - _currentCount, _open, _R,
                 ["", format [", %1 left out over the limits", _dropped]] select (_dropped > 0)] call ALiVE_fnc_dumpR;
         };
+    };
+
+    // Find Out Before Attacking (Ando on Discord): an intelligence cycle before an assault. When the first attack order on an
+    // objective that nobody has looked at is confirmed, collection starts (intelCollect); TACOM's recon groups report what
+    // they see (intelReport); players can be sent to reconnoitre it too; and the move from recon to capture waits
+    // (intelHold) until intelReady says the commander knows enough. Per objective, under "intel", plain arrays so a
+    // save never meets a HashMap (it is left out of saves anyway, see saveData):
+    // [0 requested at, 1 air state, 2 ground state, 3 player state, 4 contacts [[id, pos, time, source]], 5 looks
+    // [[pos, time]], 6 released at (-1 while collecting), 7 why it was released, 8 the players' recon task ID]
+    // A source's state is "open" while it may still report, "closed" once it has or never will.
+    case "intelCollect": {
+        private _objective = _args;
+        _result = false;
+        if !([_logic, "intelCycle", false] call ALiVE_fnc_HashGet) exitWith {};
+        if !(([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation"]) exitWith {};
+        // only an objective TACOM will reconnoitre first: one it has looked at goes straight to capture, as before
+        if (([_objective, "danger", -1] call ALiVE_fnc_HashGet) >= 0) exitWith {};
+        private _old = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (!isNil "_old" && {(_old select 6) < 0}) exitWith {};
+        private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
+        private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+        private _intel = [time, "closed", "open", "closed", [], [], -1, "", ""];
+        // the players: a recon task, unless Preparation Tasks already sent them to reconnoitre this one
+        private _module = [_logic, "module"] call ALiVE_fnc_HashGet;
+        private _taskID = "";
+        if ((_module getVariable ["ALiVE_prep_objectiveID", ""]) == _objectiveID) then { _taskID = _module getVariable ["ALiVE_prep_reconID", ""] };
+        if (_taskID == "" && {!isNil "ALIVE_fnc_taskReconObjective"} && {!isNil "ALIVE_MIL_C2ISTAR"} && {!isNil "ALiVE_TaskHandler"} && {!isNil "ALIVE_eventLog"}
+            && {missionNamespace getVariable ["ALiVE_c2istar_autoPlayerTasks", true]}) then {
+            private _players = [_logic, "prepTestPlayers", []] call ALiVE_fnc_HashGet;      // a test sets this; empty in play
+            if (_players isEqualTo []) then { private _p = [_side] call ALiVE_fnc_getPlayersDataSource; _players = [_p select 1, _p select 0] };
+            private _enemyFaction = "";
+            {
+                private _near = [_center, 500, [_x, "entity"]] call ALIVE_fnc_getNearProfiles;
+                if (_enemyFaction == "" && {_near isNotEqualTo []}) then { _enemyFaction = [_near select 0, "faction", ""] call ALiVE_fnc_HashGet };
+            } forEach ([_logic, "sidesenemy", []] call ALiVE_fnc_HashGet);
+            if ((_players select 0) isNotEqualTo [] && {_enemyFaction != ""}) then {
+                private _faction = ([_logic, "factions", [""]] call ALiVE_fnc_HashGet) param [0, ""];
+                _taskID = format ["INTEL_%1_%2", _objectiveID, floor time];
+                [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", [_taskID, "OPCOM", _side, _faction, "ReconObjective", "Map", +_center, _players, _enemyFaction, "Y", "Side"], "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+            };
+        };
+        if (_taskID != "") then { _intel set [3, "open"]; _intel set [8, _taskID] };
+        [_objective, "intel", _intel] call ALiVE_fnc_HashSet;
+        ["[OPCOM INTEL] %1 %2: collection ordered (ground recon%3)", _side, _objectiveID, ["", ", players' recon task " + _taskID] select (_taskID != "")] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    // [objective, source "air"|"ground"|"player", entity profile IDs, their positions, where it was seen from]
+    case "intelReport": {
+        _args params ["_objective", "_source", ["_ids", [], [[]]], ["_poss", [], [[]]], ["_look", [], [[]]]];
+        _result = 0;
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel") exitWith {};
+        // what anyone saw is known to the commander as a whole, for Tasks Only Against Known Enemy too
+        [_logic, "reportSeen", [_ids, _poss]] call MAINCLASS;
+        private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+        private _r = ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 200;
+        private _contacts = _intel select 4;
+        {
+            private _id = _x;
+            private _p = _poss param [_forEachIndex, []];
+            if (_p isEqualType [] && {count _p > 1} && {(_p distance2D _center) <= _r * 1.5}) then {
+                private _i = _contacts findIf { (_x select 0) == _id };
+                if (_i < 0) then { _contacts pushBack [_id, _p, time, _source] } else { _contacts set [_i, [_id, _p, time, _source]] };
+            };
+        } forEach _ids;
+        if (count _contacts > 500) then { _contacts deleteRange [0, count _contacts - 500] };
+        if (_look isNotEqualTo []) then { (_intel select 5) pushBack [_look, time] };
+        // the ground recon scans once, and the players' recon reports once
+        if (_source in ["ground", "player"]) then { _intel set [[2, 3] select (_source == "player"), "closed"] };
+        if (_source == "air" && {(_intel select 1) == "closed"}) then { _intel set [1, "open"] };
+        ["[OPCOM INTEL] %1 %2: %3 report, %4 seen, %5 contacts known there", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _source, count _ids, count _contacts] call ALiVE_fnc_dump;
+        _result = count _contacts;
+    };
+
+    // objective: [confidence 0 to 1, contacts]. Sure (1) when what was seen, or seen from, covers at least two of the four
+    // quarters around the objective in the last 10 minutes; less than that counts for less, and nothing after 30 minutes
+    case "intelAssess": {
+        private _objective = _args;
+        _result = [1, []];
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel") exitWith {};
+        private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+        private _r = ([_objective, "size", 150] call ALiVE_fnc_HashGet) max 200;
+        // the players' recon: its report (ALIVE_fnc_taskReconObjective) is [side, position, time, group ids, group
+        // positions, task ID], and reporting closes that source
+        private _taskID = _intel select 8;
+        if (_taskID != "" && {(_intel select 3) == "open"}) then {
+            private _i = (missionNamespace getVariable ["ALiVE_reconReports", []]) findIf { (_x param [5, ""]) == _taskID };
+            if (_i > -1) then {
+                private _rep = (missionNamespace getVariable ["ALiVE_reconReports", []]) select _i;
+                [_logic, "intelReport", [_objective, "player", _rep param [3, []], _rep param [4, []], _rep param [1, []]]] call MAINCLASS;
+            } else {
+                // a task that ended without a report (failed, cancelled, or never given to anyone) closes the source too
+                if (!isNil "ALiVE_TaskHandler" && {isNil {[ALiVE_TaskHandler, "getTask", _taskID] call ALIVE_fnc_taskHandler}} && {time - (_intel select 0) > 60}) then { _intel set [3, "closed"] };
+            };
+        };
+        private _contacts = (_intel select 4) select { time - (_x select 2) <= 1800 };
+        _intel set [4, _contacts];
+        private _looks = (_intel select 5) select { time - (_x select 1) <= 1800 };
+        _intel set [5, _looks];
+        private _quarters = [];
+        private _newest = -1;
+        {
+            _x params ["_p", "_t"];
+            if ((_p distance2D _center) <= _r * 3) then { _quarters pushBackUnique (floor ((_center getDir _p) / 90) min 3) };
+            _newest = _newest max _t;
+        } forEach ((_looks apply { [_x select 0, _x select 1] }) + (_contacts apply { [_x select 1, _x select 2] }));
+        private _coverage = (count _quarters) / 4;
+        private _age = time - _newest;
+        private _conf = if (_newest < 0) then { 0 } else {
+            if (_coverage >= 0.5 && {_age <= 600}) then { 1 } else { _coverage * ((1 - ((_age - 600) max 0) / 1200) max 0) }
+        };
+        _result = [_conf, _contacts];
+    };
+
+    // objective: true when its assault may go ahead. Always, unless Find Out Before Attacking is collecting there: then once
+    // the commander is sure enough, everyone sent has reported, or the Intel Wait has run out
+    case "intelReady": {
+        private _objective = _args;
+        _result = true;
+        if !([_logic, "intelCycle", false] call ALiVE_fnc_HashGet) exitWith {};
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel" || {(_intel select 6) >= 0}) exitWith {};
+        private _assess = [_logic, "intelAssess", _objective] call MAINCLASS;
+        private _why = switch (true) do {
+            case ((_assess select 0) >= ([_logic, "intelConfidence", 0.5] call ALiVE_fnc_HashGet)): { "sure enough" };
+            case ((_intel select 3) == "closed" && {(_intel select 8) != ""} && {(_intel select 2) == "closed"}): { "the players' recon has reported" };
+            case ((_intel select [1, 3]) isEqualTo ["closed", "closed", "closed"]): { "everyone sent has reported" };
+            case (time - (_intel select 0) >= ([_logic, "intelTimeout", 1200] call ALiVE_fnc_HashGet)): { "the Intel Wait ran out" };
+            default { "" };
+        };
+        if (_why == "") exitWith { _result = false };
+        _intel set [6, time];
+        _intel set [7, _why];
+        // what was found sets how dangerous it looks, for TACOM's call for help on the way in
+        [_objective, "danger", round ((count (_assess select 1)) max ([_objective, "danger", 0] call ALiVE_fnc_HashGet))] call ALiVE_fnc_HashSet;
+        ["[OPCOM INTEL] %1 %2: the assault goes ahead, %3 (%4 contacts, sure %5 after %6 s)", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet,
+            _why, count (_assess select 1), (round ((_assess select 0) * 100)) / 100, round (time - (_intel select 0))] call ALiVE_fnc_dump;
+    };
+
+    // objective: its recon is done but intelReady says wait. The groups stay where they are, and once it is ready the
+    // recon's completion goes back on the commander's queue, so the capture is ordered as it would have been. An
+    // objective no longer being attacked (lost, given up, removed) is let go
+    case "intelHold": {
+        private _objective = _args;
+        ["[OPCOM INTEL] %1 %2: the assault waits for intel", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
+        [_logic, _objective] spawn {
+            params ["_logic", "_objective"];
+            waitUntil {
+                sleep 15;
+                [_objective, "deleted", false] call ALiVE_fnc_HashGet
+                || {([_objective, "opcom_state", ""] call ALiVE_fnc_HashGet) != "attacking"}
+                || {[_logic, "intelReady", _objective] call ALiVE_fnc_OPCOM}
+            };
+            if ([_objective, "deleted", false] call ALiVE_fnc_HashGet || {([_objective, "opcom_state", ""] call ALiVE_fnc_HashGet) != "attacking"}) exitWith {};
+            private _fsm = [_logic, "OPCOM_FSM", -1] call ALiVE_fnc_HashGet;
+            private _queue = _fsm getFSMVariable ["_OPCOM_QUEUE", []];
+            _queue pushBack ["completed", ["recon", _objective]];
+            _fsm setFSMVariable ["_OPCOM_QUEUE", _queue];
+        };
+        _result = true;
     };
 
     // What this commander knows of the enemy (A. Ares on Discord, 21 Oct), for Tasks Only Against Known Enemy:

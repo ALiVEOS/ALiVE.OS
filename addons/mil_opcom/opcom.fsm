@@ -455,8 +455,8 @@ class FSM
                          "                        // and reserve orders go on meanwhile" \n
                          "                        _priorities = [" \n
                          "                            [(count _res > 0),""reserve""]," \n
-                         "                            [(count _un > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]," \n
-                         "                            [(count _at > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_at select 0] call ALiVE_fnc_OPCOM},""attack""]," \n
+                         "                            [(count _un > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]," \n
+                         "                            [(count _at > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_at select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_at select 0] call ALiVE_fnc_OPCOM},""attack""]," \n
                          "                            [(count _def > 0),""defend""]" \n
                          "                        ];" \n
                          "                    };" \n
@@ -465,8 +465,8 @@ class FSM
                          "                        _priorities = [" \n
                          "                            [(count _res > 0),""reserve""]," \n
                          "                            [(count _def > 0),""defend""]," \n
-                         "                            [(count _at > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_at select 0] call ALiVE_fnc_OPCOM},""attack""]," \n
-                         "                            [(count _un > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]" \n
+                         "                            [(count _at > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_at select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_at select 0] call ALiVE_fnc_OPCOM},""attack""]," \n
+                         "                            [(count _un > 0) && _attackCapacityAvailable && {[_OPCOM_HANDLER,""prepReady"",_un select 0] call ALiVE_fnc_OPCOM} && {[_OPCOM_HANDLER,""intelReady"",_un select 0] call ALiVE_fnc_OPCOM},""unassigned""]" \n
                          "                        ];" \n
                          "                    };" \n
                          "                };" \n
@@ -541,6 +541,9 @@ class FSM
                          "                || {_followUpInFlight}" \n
                          "                || {[_completedObjective,""deleted"",false] call ALiVE_fnc_HashGet}" \n
                          "            ) exitwith {_busy = false};" \n
+                         "" \n
+                         "            // Find Out Before Attacking: the recon is done but the commander does not know enough yet, so the capture waits (intelHold)" \n
+                         "            if (_completedOperation == ""recon"" && {!([_OPCOM_HANDLER,""intelReady"",_completedObjective] call ALiVE_fnc_OPCOM)}) exitwith {[_OPCOM_HANDLER,""intelHold"",_completedObjective] call ALiVE_fnc_OPCOM; _busy = false};" \n
                          "" \n
                          "            [_completedObjective,""opcom_orders"",_nextOperation] call ALiVE_fnc_HashSet;" \n
                          "            switch (_nextOperation) do {" \n
@@ -637,6 +640,8 @@ class FSM
                          "                            [_side,_faction,""CaptureObjective"",_targets,""OPCOM"",true,_targetId] call ALiVE_fnc_taskRequest;" \n
                          "                        };" \n
                          "" \n
+                         "                        // Find Out Before Attacking: collection starts with the first attack order on an objective nobody has looked at" \n
+                         "                        [_OPCOM_HANDLER,""intelCollect"",_target] call ALiVE_fnc_OPCOM;" \n
                          "                        //Assist TACOM by sending air recon after TACOMs attack confirmation" \n
                          "                        _OPCOM_QUEUE pushBack [""RECON"",[[_target,""objectiveID"",""""] call AliVE_fnc_HashGet]];" \n
                          "                    };" \n

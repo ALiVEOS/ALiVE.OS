@@ -396,6 +396,24 @@
 <Key ID="STR_ALIVE_OPCOM_OP_TASKS_KNOWN_COMMENT">
     <English>No (the default) aims the preparation and clean-up tasks at what is really at the objective, whether or not anyone has seen it. Yes aims them only at what this commander has found: enemy vehicles and emplacements whose crews its units have seen in the last 30 minutes, and an insurgent installation only once a seen enemy group or one of its own groups has been near it. A kind with nothing known is left out, and so is removing IEDs after a capture, as nobody has seen those. The wiretap is always offered, as gathering intel is the point of it. With nothing known at an objective about to be attacked, players are also sent to reconnoitre it, and what they report brings a second round of tasks before the Preparation Timeout.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_CYCLE">
+    <English>Find Out Before Attacking</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_CYCLE_COMMENT">
+    <English>No (the default) attacks as soon as the first groups have looked at the objective. Yes makes an Invasion or Occupation commander find out what is there first: once its recon groups have looked, it also sends players to reconnoitre the objective (when C2ISTAR is placed and players are on its side) and holds the assault, with its groups waiting where they are, until it knows enough (Intel Needed Before Attacking), everyone sent has reported, or the Intel Wait runs out. What it found joins what it knows of the enemy, so Tasks Only Against Known Enemy can use it.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_CONFIDENCE">
+    <English>Intel Needed Before Attacking</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_CONFIDENCE_COMMENT">
+    <English>How sure the commander must be of what is at the objective before it attacks, from 0 to 1 (0.5 is the default). It is sure when what it has seen covers at least half of the ground around the objective, seen in the last 10 minutes; less than that counts for less, and nothing counts after 30 minutes. With Find Out Before Attacking off this does nothing.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_TIMEOUT">
+    <English>Intel Wait (minutes)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_INTEL_TIMEOUT_COMMENT">
+    <English>The longest the commander holds an assault while it finds out what is at the objective, in minutes (20 is the default, at least 1). When it runs out, the assault goes ahead on what is known. With Find Out Before Attacking off this does nothing.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_FOLLOW_PLAYERS">
     <English>Follow The Players Up</English>
 </Key>

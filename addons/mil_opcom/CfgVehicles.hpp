@@ -442,6 +442,34 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        class intelCycle : Combo
+                        {
+                                property = "ALiVE_mil_opcom_intelCycle";
+                                displayName = "$STR_ALIVE_OPCOM_INTEL_CYCLE";
+                                tooltip = "$STR_ALIVE_OPCOM_INTEL_CYCLE_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+                        class intelConfidence : Edit
+                        {
+                                property = "ALiVE_mil_opcom_intelConfidence";
+                                displayName = "$STR_ALIVE_OPCOM_INTEL_CONFIDENCE";
+                                tooltip = "$STR_ALIVE_OPCOM_INTEL_CONFIDENCE_COMMENT";
+                                defaultValue = """0.5""";
+                                typeName = "NUMBER";
+                        };
+                        class intelTimeoutMins : Edit
+                        {
+                                property = "ALiVE_mil_opcom_intelTimeoutMins";
+                                displayName = "$STR_ALIVE_OPCOM_INTEL_TIMEOUT";
+                                tooltip = "$STR_ALIVE_OPCOM_INTEL_TIMEOUT_COMMENT";
+                                defaultValue = """20""";
+                                typeName = "NUMBER";
+                        };
                         class HDR_SHIP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_SHIP"; displayName = "START FROM SHIP"; };
                         class shipStart : Combo
                         {
