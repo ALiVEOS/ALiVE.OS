@@ -76,7 +76,9 @@ if (typeName _slotSelections != "ARRAY") then { _slotSelections = []; };
 // namespace state outside the LOAD handler's invariant).
 while {count _slotSelections < 6} do { _slotSelections pushBack ""; };
 
-private _result = _slotSelections joinString "|";
+// a seventh piece, 2, marks a save from a picker that offers The mission's enemy (AUTO), so six
+// pieces matching the old defaults can be told from a choice (fnc_C2ISTAR, the LOAD handler)
+private _result = ((_slotSelections select [0, 6]) joinString "|") + "|2";
 
 // Path 1: Eden value slot for SQM serialisation of the consolidated attr.
 _display setVariable ["value", _result];

@@ -1324,9 +1324,10 @@ class Cfg3DEN
         //   selected row's lbData (faction classname) under the current
         //   slot key in `alive_slotSelections` on the display namespace.
         //
-        //   Storage shape: consolidated string "BLU_F|OPF_F|OPF_F|BLU_F|
-        //   IND_F|OPF_F" (six pipe-separated tokens, slot order matches
-        //   the cycle order). SAVE also writes each token to its legacy
+        //   Storage shape: consolidated string "BLU_F|AUTO|OPF_F|AUTO|
+        //   IND_F|AUTO|2" (six pipe-separated tokens, slot order matches
+        //   the cycle order, then a 2 marking a picker that offers AUTO,
+        //   The mission's enemy: the AI Commanders hostile to the side). SAVE also writes each token to its legacy
         //   per-slot attribute (autoGenerateBluforFaction etc.) so the
         //   runtime path in fnc_C2ISTAR.sqf (which reads each by name)
         //   continues to work unchanged.
@@ -1357,7 +1358,7 @@ class Cfg3DEN
                 // smaller size suits the long comma-separated lists of the multi-selects
                 class Override: Override { sizeEx = "pixelH * pixelGrid * 2.2"; };
             };
-            attributeLoad = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction', 'BLU Friendly,BLU Enemy,OPF Friendly,OPF Enemy,IND Friendly,IND Enemy', '1|0,2|0|1,2|2|0,1', 'BLU_F,OPF_F,OPF_F,BLU_F,IND_F,OPF_F', _value, 'Auto Task Factions:'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceLoad.sqf'";
+            attributeLoad = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction', 'BLU Friendly,BLU Enemy,OPF Friendly,OPF Enemy,IND Friendly,IND Enemy', '1|0,2|0|1,2|2|0,1', 'BLU_F,AUTO,OPF_F,AUTO,IND_F,AUTO', _value, 'Auto Task Factions:'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceLoad.sqf'";
             attributeSave = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceSave.sqf'";
         };
 

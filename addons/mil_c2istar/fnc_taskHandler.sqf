@@ -547,7 +547,11 @@ switch (_operation) do {
             [_autoGenerateSides, _taskSide, [_taskAutoGenerate, _taskEnemyFaction]] call ALIVE_fnc_hashSet;
 
             // A side's Enemy setting may list several factions (#1061): the side keeps the list above,
-            // and each task is aimed at one of them, drawn here.
+            // and each task is aimed at one of them, drawn here. AUTO (The mission's enemy) is the
+            // factions of the AI Commanders hostile to the side, read now
+            if (_taskEnemyFaction isEqualType "") then {
+                _taskEnemyFaction = [objNull, "resolveEnemyFaction", [_taskSide, _taskEnemyFaction]] call ALIVE_fnc_C2ISTAR;
+            };
             if (_taskEnemyFaction isEqualType "" && {_taskEnemyFaction find "," >= 0}) then {
                 private _enemies = (_taskEnemyFaction splitString ", ") select { _x != "" };
                 if (_enemies isNotEqualTo []) then { _taskEnemyFaction = selectRandom _enemies };

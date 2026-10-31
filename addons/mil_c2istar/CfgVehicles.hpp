@@ -333,7 +333,7 @@ class CfgVehicles {
                             control = "ALiVE_HiddenAttribute";
                             typeName = "STRING";
                             expression = "_this setVariable ['autoGenerateBluforEnemyFaction', _value];";
-                            defaultValue = """OPF_F""";
+                            defaultValue = """AUTO""";
                     };
                     class autoGenerateOpforFaction
                     {
@@ -351,7 +351,7 @@ class CfgVehicles {
                             control = "ALiVE_HiddenAttribute";
                             typeName = "STRING";
                             expression = "_this setVariable ['autoGenerateOpforEnemyFaction', _value];";
-                            defaultValue = """BLU_F""";
+                            defaultValue = """AUTO""";
                     };
                     class autoGenerateIndforFaction
                     {
@@ -369,7 +369,7 @@ class CfgVehicles {
                             control = "ALiVE_HiddenAttribute";
                             typeName = "STRING";
                             expression = "_this setVariable ['autoGenerateIndforEnemyFaction', _value];";
-                            defaultValue = """OPF_F""";
+                            defaultValue = """AUTO""";
                     };
 
                     class HDR_TASK_TYPES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TASK_TYPES"; displayName = "TASK TYPES"; };

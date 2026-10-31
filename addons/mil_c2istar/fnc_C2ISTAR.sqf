@@ -381,6 +381,25 @@ switch(_operation) do {
     case "autoGenerateOpforEnemyFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
     };
+    // [side text, a side's Enemy setting]: AUTO (or nothing) is the factions of the mission's AI
+    // Commanders hostile to that side, comma-separated like a picked list; with no such commander,
+    // the enemy these slots always defaulted to. Any other setting comes back as it is. Server side,
+    // read when a task is made, so commanders that start late still count
+    case "resolveEnemyFaction": {
+        _args params [["_sideText", "WEST", [""]], ["_value", "", [""]]];
+        _result = _value;
+        if !((toUpper trim _value) in ["", "AUTO"]) exitWith {};
+        private _sideOf = { switch (toUpper _this) do { case "EAST": { east }; case "WEST": { west }; case "GUER": { resistance }; default { sideUnknown } } };
+        private _own = _sideText call _sideOf;
+        private _found = [];
+        {
+            private _opSide = ([_x, "side", ""] call ALiVE_fnc_HashGet) call _sideOf;
+            if (_opSide != sideUnknown && {_opSide != _own} && {(_own getFriend _opSide) < 0.6}) then {
+                { if (_x isEqualType "" && {_x != ""}) then { _found pushBackUnique _x } } forEach ([_x, "factions", []] call ALiVE_fnc_HashGet);
+            };
+        } forEach ((missionNamespace getVariable ["OPCOM_instances", []]) select { _x isEqualType [] });
+        _result = if (_found isEqualTo []) then { ["OPF_F", "BLU_F"] select (_own == east) } else { _found joinString "," };
+    };
     case "gmLimit": {
         _result = [_logic,_operation,_args,DEFAULT_GM_LIMIT,["SIDE","FACTION"]] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -1148,6 +1167,14 @@ switch(_operation) do {
             };
             _slots pushBack _rest;
             private _slotVars = ["autoGenerateBluforFaction","autoGenerateBluforEnemyFaction","autoGenerateOpforFaction","autoGenerateOpforEnemyFaction","autoGenerateIndforFaction","autoGenerateIndforEnemyFaction"];
+            // A seventh piece marks a picker that offers The mission's enemy (AUTO). Before it, opening
+            // the module and pressing OK saved the old defaults as they stood, so six pieces that are
+            // exactly those defaults were never chosen: their Enemy slots follow the AI Commanders
+            if (count _slots == 7) then { _slots resize 6 } else {
+                if (_slots isEqualTo ["BLU_F","OPF_F","OPF_F","BLU_F","IND_F","OPF_F"]) then {
+                    { _slots set [_x, "AUTO"] } forEach [1, 3, 5];
+                };
+            };
             if (count _slots == count _slotVars) then {
                 {
                     private _tok = _slots select _forEachIndex;
@@ -2234,6 +2261,44 @@ if (isServer) then {
                 _autoGenerateINDFOR = _sideNow param [0, _autoGenerateINDFOR];
                 _autoGenerateINDFOREnemyFaction = _sideNow param [1, _autoGenerateINDFOREnemyFaction];
 
+                // NeisAEL (30 Oct): a side's tasks bring their own enemy. One picked in Auto Task Factions
+                // that no AI Commander here uses spawns units nobody else in the mission has (vanilla CSAT
+                // in a mission without any), so say so to the mission maker: RPT and a hint to admins
+                private _allOpcomFactions = [];
+                {
+                    { if (_x isEqualType "") then { _allOpcomFactions pushBackUnique toLower _x } } forEach ([_x, "factions", []] call ALiVE_fnc_HashGet);
+                } forEach ((missionNamespace getVariable ["OPCOM_instances", []]) select { _x isEqualType [] });
+                if (_allOpcomFactions isNotEqualTo []) then {
+                    private _odd = [];
+                    {
+                        _x params ["_mode", "_enemy", "_slot"];
+                        if (_mode != "None" && {_enemy isEqualType ""} && {!((toUpper trim _enemy) in ["", "AUTO"])}) then {
+                            private _notHere = ((_enemy splitString ", ") select { _x != "" && {!((toLower _x) in _allOpcomFactions)} });
+                            if (_notHere isNotEqualTo []) then {
+                                _odd pushBack format ["%1 tasks bring %2, which no AI Commander here uses", _slot, _notHere joinString ", "];
+                                ["ALiVE C2ISTAR WARNING: Auto Task Factions' %1 Enemy is %2, but no AI Commander in this mission uses %3, so %1 tasks spawn units nobody else in the mission has. Set it to The mission's enemy to follow the AI Commanders.", _slot, _enemy, _notHere joinString ", "] call ALiVE_fnc_DumpR;
+                            };
+                        };
+                    } forEach [
+                        [_autoGenerateBLUFOR, _autoGenerateBLUFOREnemyFaction, "BLU"],
+                        [_autoGenerateOPFOR, _autoGenerateOPFOREnemyFaction, "OPF"],
+                        [_autoGenerateINDFOR, _autoGenerateINDFOREnemyFaction, "IND"]
+                    ];
+                    if (_odd isNotEqualTo []) then {
+                        missionNamespace setVariable ["ALiVE_c2istar_enemyFactionWarning", _odd, true];
+                        // admins now and admins who join later: the hint is shown where the admin is
+                        [[], {
+                            if (!hasInterface) exitWith {};
+                            [] spawn {
+                                waitUntil { sleep 5; !isNull player };
+                                if !(call ALIVE_fnc_isServerAdmin) exitWith {};
+                                hint parseText format ["<t size='1.1'>ALiVE C2ISTAR</t><br/><t align='left' size='0.9'>%1.<br/>To fix it, pick The mission's enemy in C2ISTAR's Auto Task Factions.</t>",
+                                    (missionNamespace getVariable ["ALiVE_c2istar_enemyFactionWarning", []]) joinString ".<br/>"];
+                            };
+                        }] remoteExec ["call", 0, "ALiVE_c2istar_enemyFactionWarning"];
+                    };
+                };
+
                 if(_autoGenerateBLUFOR == "Constant") then {
 
                     private _taskData = [];
@@ -2578,7 +2643,8 @@ if (isServer) then {
                 _x params ["_modeProperty", "_factionProperty", "_enemyFactionProperty"];
                 if (([_logic, _modeProperty] call MAINCLASS) != "None") then {
                     _findVehicleTypeFactions pushBackUnique ([_logic, _factionProperty] call MAINCLASS);
-                    _findVehicleTypeFactions pushBackUnique ([_logic, _enemyFactionProperty] call MAINCLASS);
+                    // an Enemy setting may be several factions, or AUTO (the AI Commanders' own, cached by their placements)
+                    { if ((toUpper _x) != "AUTO") then { _findVehicleTypeFactions pushBackUnique _x } } forEach ((([_logic, _enemyFactionProperty] call MAINCLASS) splitString ", ") select { _x != "" });
                 };
             } forEach [
                 ["autoGenerateBlufor", "autoGenerateBluforFaction", "autoGenerateBluforEnemyFaction"],

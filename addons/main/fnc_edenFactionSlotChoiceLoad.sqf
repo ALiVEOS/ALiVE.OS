@@ -181,6 +181,12 @@ if (_raw != "") then {
         _at = _rest find "|";
     };
     _parts pushBack _rest;
+    // A seventh piece marks a save from a picker that offers The mission's enemy (AUTO). Six pieces
+    // that are exactly the old defaults were saved by pressing OK without choosing, so their Enemy
+    // slots show The mission's enemy, as fnc_C2ISTAR reads them
+    if (count _parts == 6 && {_consolidatedVar == "autoGenerateFactions"} && {_parts isEqualTo ["BLU_F","OPF_F","OPF_F","BLU_F","IND_F","OPF_F"]}) then {
+        { _parts set [_x, "AUTO"] } forEach [1, 3, 5];
+    };
     {
         if (_forEachIndex < 6) then {
             _slotSelections set [_forEachIndex, _x];
@@ -246,6 +252,22 @@ _display setVariable ["alive_slotLabels", _slotLabels];
 // Enemy slots take several factions, comma-separated in the stored value (#1061): a click adds
 // or removes one. Every other slot holds one.
 _display setVariable ["alive_multiSlots", _legacyVars apply { (toLower _x) find "enemy" >= 0 }];
+// The factions the mission's AI Commanders are set to, lower case, for the Enemy slots' note when a
+// picked faction is used by none of them (NeisAEL, 30 Oct: tasks brought vanilla CSAT to a mission
+// without any). Read from the commanders' Factions setting as text; empty when there's no commander
+private _opcomText = "";
+{
+    private _e = _x;
+    private _v = (_e get3DENAttribute "ALiVE_mil_opcom_factions") param [0, ""];
+    if (_v isEqualType []) then { _v = str _v };
+    if !(_v isEqualType "") then { _v = "" };
+    // none picked: the commander runs BLU_F (fnc_OPCOM's fallback)
+    if ((_v splitString "[]"" ,'") isEqualTo []) then { _v = "blu_f" };
+    private _m = (_e get3DENAttribute "ALiVE_mil_opcom_factionsManual") param [0, ""];
+    if !(_m isEqualType "") then { _m = "" };
+    _opcomText = _opcomText + " " + toLower _v + " " + toLower _m;
+} forEach ((all3DENEntities select 3) select { (toLower typeOf _x) find "alive_mil_opcom" == 0 });
+_display setVariable ["alive_opcomText", _opcomText];
 
 // ---- Populate function ----------------------------------------------------
 //
@@ -275,6 +297,15 @@ private _populateFn = {
     private _multi = (_display getVariable ["alive_multiSlots", []]) param [_currentSlot, false];
     private _picked = (_selectedClass splitString ", ") select { _x != "" };
     private _selectedIdx = -1;
+    // an Enemy slot's first row: The mission's enemy, the AI Commanders hostile to the side, read
+    // when each task is made
+    if (_multi) then {
+        private _isAuto = "AUTO" in _picked;
+        private _idx = _listCtrl lbAdd (if (_isAuto) then { "[+] The mission's enemy (its AI Commanders)" } else { "The mission's enemy (its AI Commanders)" });
+        _listCtrl lbSetData [_idx, "AUTO"];
+        _listCtrl lbSetTooltip [_idx, "Tasks for this side fight the factions of the AI Commanders hostile to it, whichever those are when the task is made"];
+        if (_isAuto) then { _selectedIdx = _idx; _listCtrl lbSetColor [_idx, [0.55, 0.85, 0.55, 1]] };
+    };
     {
         _x params ["_classname", "_displayName", "_side"];
         if (_side in _allowedSides) then {
@@ -299,7 +330,15 @@ private _populateFn = {
     private _sideFilterLabelCtrl = _display controlsGroupCtrl 1201;
     if (!isNull _filterLabelCtrl) then {
         private _slotLabel = _slotLabels param [_currentSlot, format ["Slot %1", _currentSlot]];
-        _filterLabelCtrl ctrlSetText (if (_multi) then { format ["Slot: %1 (click to add or remove)", _slotLabel] } else { format ["Slot: %1", _slotLabel] });
+        // a picked enemy no AI Commander here uses brings units nobody else in the mission has
+        private _opcomText = _display getVariable ["alive_opcomText", ""];
+        private _notHere = if (_multi && {_opcomText != ""}) then { _picked select { _x != "AUTO" && {_opcomText find (toLower _x) < 0} } } else { [] };
+        _filterLabelCtrl ctrlSetText (switch (true) do {
+            case (_notHere isNotEqualTo []): { format ["Slot: %1 (no AI Commander here uses %2)", _slotLabel, _notHere joinString ", "] };
+            case (_multi): { format ["Slot: %1 (click to add or remove)", _slotLabel] };
+            default { format ["Slot: %1", _slotLabel] };
+        });
+        _filterLabelCtrl ctrlSetTextColor ([[1, 1, 1, 1], [1, 0.6, 0.4, 1]] select (_notHere isNotEqualTo []));
     };
     if (!isNull _sideFilterLabelCtrl) then {
         _sideFilterLabelCtrl ctrlSetText format ["Side: %1", _sideMode];
@@ -338,11 +377,13 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
     while {count _slotSelections < 6} do { _slotSelections pushBack ""; };
     if ((_disp getVariable ["alive_multiSlots", []]) param [_currentSlot, false]) then {
         // Toggle it in the list, keeping at least one, then redraw to show which are picked.
-        private _picked = ((_slotSelections select _currentSlot) splitString ", ") select { _x != "" };
-        if (_classname in _picked) then {
-            if (count _picked > 1) then { _picked = _picked - [_classname] };
-        } else {
-            _picked pushBack _classname;
+        // The mission's enemy (AUTO) stands alone: picking it clears the factions, picking a faction
+        // clears it, and taking off the last faction goes back to it
+        private _picked = (((_slotSelections select _currentSlot) splitString ", ") select { _x != "" }) - ["AUTO"];
+        switch (true) do {
+            case (_classname == "AUTO"): { _picked = ["AUTO"] };
+            case (_classname in _picked): { _picked = _picked - [_classname]; if (_picked isEqualTo []) then { _picked = ["AUTO"] } };
+            default { _picked pushBack _classname };
         };
         _slotSelections set [_currentSlot, _picked joinString ","];
         _disp setVariable ["alive_slotSelections", _slotSelections];

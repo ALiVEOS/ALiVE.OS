@@ -846,7 +846,9 @@ switch (_operation) do {
         if (_refused) exitWith {};
 
         private _sideSettings = ["getSideSettings", [_side]] call MAINCLASS;
-        private _enemyFaction = _sideSettings param [1, "OPF_F"];
+        private _enemyFaction = _sideSettings param [1, "AUTO"];
+        // AUTO (The mission's enemy) is the AI Commanders hostile to this side
+        if (_enemyFaction isEqualType "") then { _enemyFaction = [objNull, "resolveEnemyFaction", [_side, _enemyFaction]] call ALiVE_fnc_C2ISTAR };
         // One faction from the side's enemy list for this order (#1061).
         if (_enemyFaction isEqualType "" && {_enemyFaction find "," >= 0}) then {
             private _enemies = (_enemyFaction splitString ", ") select { _x != "" };
@@ -993,7 +995,7 @@ switch (_operation) do {
                 private _autoGenerate = _sideSettings param [0, "None"];
 
                 if (_autoGenerate == "Constant") then {
-                    private _enemyFaction = _sideSettings param [1, "OPF_F"];
+                    private _enemyFaction = _sideSettings param [1, "AUTO"];
                     private _generate = [format ["%1_%2", _side, time], _requestPlayerID, _side, _faction, _enemyFaction, _autoGenerate];
                     [ALIVE_taskHandler, "autoGenerateTasks", _generate] call ALiVE_fnc_taskHandler;
                 };
