@@ -123,18 +123,39 @@ switch (_operation) do {
         // no List, or a name no list has, is the Standard list: light forces, one of each model
         private _default = _listName == "" || {!(isClass (missionConfigFile >> "CfgALiVELists" >> _listName) || {isClass (configFile >> "CfgALiVELists" >> _listName)})};
         if (_default) then {
-            if (_listName != "") then { ["ALiVE Lists: no list named %1 (CfgALiVELists), so the resupply tablet uses STANDARD", _listName] call ALiVE_fnc_dumpR };
+            if (_listName != "") then {
+                ["ALiVE Lists: no list named %1 (CfgALiVELists), so the resupply tablet uses STANDARD", _listName] call ALiVE_fnc_dumpR;
+                ["problem", format ["the resupply tablet's List %1 isn't a list, so it uses STANDARD", _listName]] call ALIVE_fnc_lists;
+            };
             _listName = "STANDARD";
         };
         _result = ["merge", [["get", _listName] call ALIVE_fnc_lists, _result, false, true]] call ALIVE_fnc_lists;
         // a hub with a List or Only These list of its own isn't cut to a List nobody chose
         _result set ["listDefault", _default];
         _logic setVariable ["pr_catalogueRules", _result];
-        // which list the tablet ended up with, once a mission, so a mission maker can see it in the RPT
+        // which list the tablet ended up with and what it keeps, once a mission, so a mission maker
+        // can see it in the RPT
         if (isServer && {isNil "ALiVE_PR_listReported"}) then {
             ALiVE_PR_listReported = true;
-            ["ALiVE Lists: the resupply tablet uses %1%2, Restriction Type %3", _listName, ["", " (no List set, or its name isn't a list)"] select _default, _logic getVariable ["pr_restrictionType", "FACTION"]] call ALiVE_fnc_dumpR;
+            ["report", ["Player Combat Logistics (the resupply tablet)", _listName, _default, _result, format ["Restriction Type %1", _logic getVariable ["pr_restrictionType", "FACTION"]]]] call ALIVE_fnc_PRCatalogueRules;
+            ["ALiVE Lists:   what it offers is counted on each player's machine as they join"] call ALiVE_fnc_dumpR;
         };
+    };
+
+    // [module, list name, list not set or unknown, rules, more] - the RPT block for one module's lists:
+    // which list, what it keeps, and the typed names that aren't in this game
+    case "report": {
+        _args params ["_module", "_listName", "_default", "_rules", ["_more", ""]];
+        ["ALiVE Lists: %1%2", _module, ["", ", " + _more] select (_more != "")] call ALiVE_fnc_dumpR;
+        ["ALiVE Lists:   list %1%2", [_listName, "none of its own"] select (_listName == ""), ["", " (no List set, or its name isn't a list)"] select _default] call ALiVE_fnc_dumpR;
+        ["ALiVE Lists:   %1", ["describe", [_rules, false]] call ALIVE_fnc_lists] call ALiVE_fnc_dumpR;
+        if (_listName != "") then {
+            private _bad = (["get", _listName] call ALIVE_fnc_lists) getOrDefault ["listMissing", []];
+            if (_bad isNotEqualTo []) then { ["ALiVE Lists:   list %1 names %2 not in this game; its own line in the list report says which", _listName, count _bad] call ALiVE_fnc_dumpR };
+        };
+        private _missing = _rules getOrDefault ["missing", []];
+        if (_missing isNotEqualTo []) then { ["problem", format ["%1: %2 not in this game", _module, (_missing apply { format ["%1 (%2)", _x select 0, _x select 1] }) joinString ", "]] call ALIVE_fnc_lists };
+        _result = _missing isNotEqualTo [];
     };
 
     case "allows": { _result = ["allows", _args] call ALIVE_fnc_lists };

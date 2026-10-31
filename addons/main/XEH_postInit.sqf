@@ -18,6 +18,13 @@
     ALiVE_simulationTimeLastUpdate = _now;
 }, 0, []] call CBA_fnc_addPerFrameHandler;
 
+// List problems the server found (a List that isn't a list, names not in this game): a hint to an
+// admin, now and whenever another is found
+if (hasInterface && {!isServer}) then {
+    "ALiVE_lists_problems" addPublicVariableEventHandler { ["show"] call ALIVE_fnc_lists };
+    [] spawn { sleep 10; ["show"] call ALIVE_fnc_lists };
+};
+
 //To be enabled when ZEUS is stable
 PREPMAIN(ZEUSinit);
 [] call ALIVE_fnc_ZEUSinit;

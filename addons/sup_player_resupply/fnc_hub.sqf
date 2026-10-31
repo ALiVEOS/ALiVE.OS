@@ -194,6 +194,8 @@ switch (_op) do {
         private _settings = [_side, _radius, _who, _names, ["hub_only", ""] call _text, ["hub_never", ""] call _text, ["hub_also", ""] call _text,
             _dismantle, _dismantleTime, _repairTime, _dWho, ["hub_dismantle_list", ""] call _text, _list];
         _logic setVariable ["ALiVE_hub_settings", _settings, true];
+        // the module's lists in the RPT now, whichever of it and the tablet starts first
+        ["catalogueRules", [_logic]] call ALIVE_fnc_hub;
 
         private _debugOn = (toLower (["hub_debug", "false"] call _text)) in ["true", "1", "yes"];
         if (_debugOn) then { ALiVE_hub_debug = true; publicVariable "ALiVE_hub_debug" };
@@ -361,6 +363,7 @@ switch (_op) do {
             // a name no list has is Not set, as the tooltip says: the engine logs it, and the hub follows the tablet
             if (_listName isEqualType "" && {_listName != ""} && {!(isClass (missionConfigFile >> "CfgALiVELists" >> _listName) || {isClass (configFile >> "CfgALiVELists" >> _listName)})}) then {
                 ["ALiVE Lists: no list named %1 (CfgALiVELists), so the Logistics Hub module at %2 is left as Not set", _listName, mapGridPosition _logic] call ALiVE_fnc_dumpR;
+                if (isServer) then { ["problem", format ["the Logistics Hub at %1: List %2 isn't a list, so it's left as Not set", mapGridPosition _logic, _listName]] call ALIVE_fnc_lists };
                 _listName = "";
             };
             if (_listName isEqualType "" && {_listName != ""}) then {
@@ -403,7 +406,9 @@ switch (_op) do {
                 // which list these hubs use, once a module, on the server
                 if (isServer && {isNil {_logic getVariable "ALiVE_hub_listReported"}}) then {
                     _logic setVariable ["ALiVE_hub_listReported", true];
-                    ["ALiVE Lists: the Logistics Hub module at %1 uses %2, under the resupply tablet's lists", mapGridPosition _logic, ["no List of its own", _listName] select (_listName isEqualType "" && {_listName != ""})] call ALiVE_fnc_dumpR;
+                    // the hub's own rules, so its typed names aren't mixed with the tablet's
+                    ["report", [format ["Logistics Hub module at %1 (%2)", mapGridPosition _logic, _s select 0], [_listName, ""] select !(_listName isEqualType ""), false,
+                        _own, ["no tablet lists over it", "under the resupply tablet's lists"] select (!isNil "_prRules")]] call ALIVE_fnc_PRCatalogueRules;
                 };
             };
         };

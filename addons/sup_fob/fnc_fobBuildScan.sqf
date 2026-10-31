@@ -142,6 +142,10 @@ _whitelist append ((([_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB
         };
     };
 } forEach ((([_logic, "attribute", ["fob_only"]] call ALiVE_fnc_FOB) regexReplace [" *= *", "="] regexReplace ["\s*>\s*", ">"]) splitString ", ;");
+// the names typed into the three boxes that aren't in this game, for the lists lines at the end
+private _typedMissing = (["parse", [[_logic, "attribute", ["fob_only"]] call ALiVE_fnc_FOB, [_logic, "attribute", ["fob_blacklist"]] call ALiVE_fnc_FOB,
+    [_logic, "attribute", ["fob_whitelist"]] call ALiVE_fnc_FOB]] call ALIVE_fnc_lists) getOrDefault ["missing", []];
+_typedMissing = _typedMissing apply { format ["%1 (%2)", _x select 0, ["Build Only These", "Never Build", "Also Build"] select ((["Only", "Never", "Also"] find (_x select 1)) max 0)] };
 private _onlySeen = [];
 _only = _only select { private _k = toLower _x; if (_k in _onlySeen) then { false } else { _onlySeen pushBack _k; true } };
 // The Build List (Build List Preset, or Custom and a name): a named list from CfgALiVELists, ready-made
@@ -153,7 +157,10 @@ if (_listName == "CUSTOM") then {
     if (_listName == "") then { ["ALiVE Player FOBs - Build List Preset is Custom but Custom List Name is empty, so FOB_STANDARD is used"] call ALiVE_fnc_dumpR };
 };
 if (_listName == "" || {!(isClass (missionConfigFile >> "CfgALiVELists" >> _listName) || {isClass (configFile >> "CfgALiVELists" >> _listName)})}) then {
-    if (_listName != "") then { ["ALiVE Player FOBs - Build List %1 isn't a list in CfgALiVELists, so FOB_STANDARD is used", _listName] call ALiVE_fnc_dumpR };
+    if (_listName != "") then {
+        ["ALiVE Player FOBs - Build List %1 isn't a list in CfgALiVELists, so FOB_STANDARD is used", _listName] call ALiVE_fnc_dumpR;
+        ["problem", format ["Player FOBs' Build List %1 isn't a list, so FOB_STANDARD is used", _listName]] call ALIVE_fnc_lists;
+    };
     _listName = "FOB_STANDARD";
 };
 private _listRules = ["get", _listName] call ALIVE_fnc_lists;
@@ -880,5 +887,19 @@ if ([_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB) then {
     { (_x select 2) == "FORTIFICATION" } count _rows, { (_x select 2) == "SUPPLY" } count _rows, { (_x select 2) == "STATIC" } count _rows,
     { (_x select 2) == "VEHICLE" } count _rows, _measured, round ((diag_tickTime - _t0) * 1000),
     { (_x select 2) == "SOLDIER" } count _rows, { (_x select 2) == "GROUP" } count _rows] call ALiVE_fnc_dump;
+// the module's lists in one place: which Build List, and the names in them that aren't in this game
+["ALiVE Lists: Player FOBs, Build List %1%2", _listName, ["", format [", FOB types also use %1", _inUse - [_listName]]] select ((_inUse - [_listName]) isNotEqualTo [])] call ALiVE_fnc_dumpR;
+if (_typedMissing isNotEqualTo []) then {
+    ["ALiVE Lists:   %1 not in this game: %2", count _typedMissing, _typedMissing joinString ", "] call ALiVE_fnc_dumpR;
+    ["problem", format ["Player FOBs: %1 not in this game", _typedMissing joinString ", "]] call ALIVE_fnc_lists;
+};
+{
+    private _bad = (["get", _x] call ALIVE_fnc_lists) getOrDefault ["listMissing", []];
+    if (_bad isNotEqualTo []) then { ["ALiVE Lists:   list %1 names %2 not in this game; its own line in the list report says which", _x, count _bad] call ALiVE_fnc_dumpR };
+} forEach _inUse;
+if (_rows isEqualTo []) then {
+    ["ALiVE Lists:   the build list is empty: check the Build List and the three boxes"] call ALiVE_fnc_dumpR;
+    ["problem", "Player FOBs: the build list is empty"] call ALIVE_fnc_lists;
+};
 ["factions"] call ALiVE_fnc_fobBuildScan;
 count _rows

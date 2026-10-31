@@ -55,6 +55,10 @@ Parameters:
         plainest kept (shortest name, then shortest class name); crates of different contents and
         vehicles of different support roles count apart; soldiers and the classes the lists name
         are always kept
+    ["describe", [rules, withList]] - one line of what the rules keep and the names in them that aren't in
+        this game (a module's typed fields, and the named list's own when withList is true)
+    ["problem", text] - (server) a list problem for admins: kept in ALiVE_lists_problems and shown as a hint
+    ["show"] - (a player's machine) the hint of list problems, to an admin only
     ["report"] - one RPT line for every named list in the game and the mission
 
 Returns:
@@ -123,9 +127,10 @@ private _fnc_gearConfig = {
     _cfg
 };
 
-// One typed list: [classes, groups, gear, prices]
+// One typed list: [classes, groups, gear, names not in this game]
 private _fnc_tokens = {
     params ["_text", "_prices"];
+    private _missing = [];
     private _classes = [];
     private _groups = [];
     private _gear = [];
@@ -148,7 +153,7 @@ private _fnc_tokens = {
                     private _pair = [toLower ((_parts select 0) trim [" ", 0]), toLower ((_parts select 1) trim [" ", 0])];
                     if !(_pair in _groups) then { _groups pushBack _pair };
                 } else {
-                    ["ALiVE Lists: '%1' is not a vehicle, crate, soldier, gear item or group in this game", _token] call ALiVE_fnc_dump;
+                    _missing pushBackUnique _token;
                 };
             } else {
                 call {
@@ -170,12 +175,13 @@ private _fnc_tokens = {
                     };
                     private _gearCfg = [_token] call _fnc_gearConfig;
                     if (!isNull _gearCfg) exitWith { _gear pushBackUnique configName _gearCfg };
-                    ["ALiVE Lists: '%1' is not a vehicle, crate, soldier, gear item or group in this game", _token] call ALiVE_fnc_dump;
+                    // kept, not logged here: the module that reads the list says which field it was in
+                    _missing pushBackUnique _token;
                 };
             };
         };
     } forEach (_text splitString ",; []'""");
-    [_classes, _groups, _gear]
+    [_classes, _groups, _gear, _missing]
 };
 
 // kinds[] into [kinds, vehicle kinds]; VEHICLE:CAR,TRUCK keeps VEHICLE and names the kinds of vehicle
@@ -226,7 +232,9 @@ private _fnc_emptyRules = {
         ["onlyGroups", []], ["neverGroups", []], ["alsoGroups", []],
         ["onlyGear", []], ["neverGear", []], ["alsoGear", []],
         ["prices", createHashMap], ["kinds", []], ["vehicleKinds", []],
-        ["staticTier", -1], ["fieldWorksOnly", false], ["fieldWorksSet", false], ["fold", -1], ["onlyObjects", false], ["name", ""]
+        ["staticTier", -1], ["fieldWorksOnly", false], ["fieldWorksSet", false], ["fold", -1], ["onlyObjects", false], ["name", ""],
+        // names not in this game: [name, field] typed into a module, and a named list's own
+        ["missing", []], ["listMissing", []]
     ]
 };
 
@@ -252,13 +260,15 @@ switch (_operation) do {
         _args params [["_onlyText", ""], ["_neverText", ""], ["_alsoText", ""], ["_kindsSpec", []]];
         private _rules = call _fnc_emptyRules;
         private _prices = _rules get "prices";
+        private _missing = _rules get "missing";
         {
-            _x params ["_text", "_name"];
-            ([_text, _prices] call _fnc_tokens) params ["_classes", "_groups", "_gear"];
+            _x params ["_text", "_name", "_field"];
+            ([_text, _prices] call _fnc_tokens) params ["_classes", "_groups", "_gear", "_bad"];
+            { _missing pushBackUnique [_x, _field] } forEach _bad;
             _rules set [_name + "Classes", _classes];
             _rules set [_name + "Groups", _groups];
             _rules set [_name + "Gear", _gear];
-        } forEach [[_onlyText, "only"], [_neverText, "never"], [_alsoText, "also"]];
+        } forEach [[_onlyText, "only", "Only"], [_neverText, "never", "Never"], [_alsoText, "also", "Also"]];
         if !(_kindsSpec isEqualType []) then { _kindsSpec = [] };
         _kindsSpec params [["_kindList", []], ["_staticTier", -1], ["_fieldWorks", false], ["_fold", -1]];
         ([_kindList] call _fnc_kinds) params ["_kinds", "_vehicleKinds"];
@@ -282,6 +292,9 @@ switch (_operation) do {
             { if !(_x in _list) then { _list pushBack _x } } forEach (_over getOrDefault [_key, []]);
             _rules set [_key, _list];
         } forEach ["onlyClasses", "neverClasses", "alsoClasses", "onlyGroups", "neverGroups", "alsoGroups", "onlyGear", "neverGear", "alsoGear"];
+        private _missing = +(_base getOrDefault ["missing", []]);
+        { _missing pushBackUnique _x } forEach (_over getOrDefault ["missing", []]);
+        _rules set ["missing", _missing];
         private _prices = +(_base getOrDefault ["prices", createHashMap]);
         _prices merge [_over getOrDefault ["prices", createHashMap], true];
         _rules set ["prices", _prices];
@@ -379,6 +392,10 @@ switch (_operation) do {
                 _result = call _fnc_emptyRules;
             } else {
                 _result = [_cfg, _depth] call _fnc_read;
+                // a named list's bad names are its own: the list report prints them once, and a
+                // module that picks the list doesn't repeat them as its typed fields' mistakes
+                _result set ["listMissing", _result getOrDefault ["missing", []]];
+                _result set ["missing", []];
             };
             // only a list asked for by name is kept: one read part way down another's inherit
             // chain may have been cut short there
@@ -603,6 +620,51 @@ switch (_operation) do {
         };
     };
 
+    case "describe": {
+        // [rules, with the list's own bad names] - one line: what the rules keep, and the names not in this game
+        _args params ["_rules", ["_withList", false]];
+        private _kinds = _rules getOrDefault ["kinds", []];
+        private _vk = _rules getOrDefault ["vehicleKinds", []];
+        private _tier = _rules getOrDefault ["staticTier", -1];
+        private _n = { params ["_box"]; count (_rules getOrDefault [_box + "Classes", []]) + count (_rules getOrDefault [_box + "Groups", []]) + count (_rules getOrDefault [_box + "Gear", []]) };
+        private _bad = (_rules getOrDefault ["missing", []]) apply { format ["%1 (%2)", _x select 0, _x select 1] };
+        if (_withList) then { _bad append ((_rules getOrDefault ["listMissing", []]) apply { format ["%1 (%2 in list %3)", _x select 0, _x select 1, _rules getOrDefault ["name", ""]] }) };
+        _result = format ["kinds %1%2%3%4%5, only %6, never %7, also %8, %9 prices%10",
+            ["every kind", _kinds joinString " "] select (_kinds isNotEqualTo []),
+            ["", format [", vehicles %1", _vk joinString " "]] select (_vk isNotEqualTo []),
+            ["", format [", statics to tier %1", _tier]] select (_tier >= 0),
+            ["", ", field works only"] select (_rules getOrDefault ["fieldWorksOnly", false]),
+            ["", ", one of each model"] select ((_rules getOrDefault ["fold", -1]) > 0),
+            ["only"] call _n, ["never"] call _n, ["also"] call _n,
+            count (_rules getOrDefault ["prices", createHashMap]),
+            ["", format ["; %1 not in this game: %2", count _bad, _bad joinString ", "]] select (_bad isNotEqualTo [])
+        ];
+    };
+
+    // [text] on the server - a list problem a mission maker should fix: kept for admins who join later,
+    // and shown to every admin as a hint (main's postInit listens on players' machines)
+    case "problem": {
+        if (!isServer) exitWith {};
+        if (isNil "ALiVE_lists_problems") then { ALiVE_lists_problems = [] };
+        if (_args isEqualType "" && {!(_args in ALiVE_lists_problems)}) then {
+            ALiVE_lists_problems pushBack _args;
+            publicVariable "ALiVE_lists_problems";
+            // a public variable's handler doesn't run where it was sent from: a hosted or SP server shows it here
+            if (hasInterface) then { ["show"] call ALIVE_fnc_lists };
+        };
+    };
+
+    // a hint to an admin of what's wrong with the mission's lists, with the RPT for the rest
+    case "show": {
+        if (!hasInterface || {!(call ALIVE_fnc_isServerAdmin)}) exitWith {};
+        private _all = missionNamespace getVariable ["ALiVE_lists_problems", []];
+        if (_all isEqualTo []) exitWith {};
+        hintSilent parseText format ["<t size='1.1'>ALiVE lists: %1 to fix</t><br/><t align='left' size='0.9'>%2%3</t><br/><t size='0.8'>The server's RPT has the full lists report (ALiVE Lists).</t>",
+            [format ["%1 problems", count _all], "1 problem"] select (count _all == 1),
+            ((_all select [0, 3]) apply { "- " + (_x regexReplace ["<", "&lt;"]) }) joinString "<br/>",
+            ["", format ["<br/>and %1 more", count _all - 3]] select (count _all > 3)];
+    };
+
     case "report": {
         private _names = [];
         { _names pushBackUnique configName _x } forEach ("true" configClasses (configFile >> "CfgALiVELists"));
@@ -610,20 +672,9 @@ switch (_operation) do {
         {
             private _rules = ["get", _x] call ALIVE_fnc_lists;
             private _from = ["mod", "mission"] select (isClass (missionConfigFile >> "CfgALiVELists" >> _x));
-            private _kinds = _rules get "kinds";
-            private _vk = _rules get "vehicleKinds";
-            private _tier = _rules get "staticTier";
-            ["ALiVE Lists: %1 (%2) - kinds %3%4%5%6%11, only %7, never %8, also %9, %10 prices", _x, _from,
-                ["every kind", _kinds joinString " "] select (_kinds isNotEqualTo []),
-                ["", format [", vehicles %1", _vk joinString " "]] select (_vk isNotEqualTo []),
-                ["", format [", statics to tier %1", _tier]] select (_tier >= 0),
-                ["", ", field works only"] select (_rules get "fieldWorksOnly"),
-                count (_rules get "onlyClasses") + count (_rules get "onlyGroups") + count (_rules get "onlyGear"),
-                count (_rules get "neverClasses") + count (_rules get "neverGroups") + count (_rules get "neverGear"),
-                count (_rules get "alsoClasses") + count (_rules get "alsoGroups") + count (_rules get "alsoGear"),
-                count (_rules get "prices"),
-                ["", ", one of each model"] select ((_rules get "fold") > 0)
-            ] call ALiVE_fnc_dump;
+            ["ALiVE Lists: %1 (%2) - %3", _x, _from, ["describe", [_rules, true]] call ALIVE_fnc_lists] call ALiVE_fnc_dump;
+            private _bad = _rules getOrDefault ["listMissing", []];
+            if (_bad isNotEqualTo []) then { ["problem", format ["list %1 names %2, not in this game", _x, (_bad apply { _x select 0 }) joinString ", "]] call ALIVE_fnc_lists };
         } forEach _names;
         _result = count _names;
     };
