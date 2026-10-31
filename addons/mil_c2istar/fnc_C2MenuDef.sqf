@@ -205,10 +205,10 @@ if (_menuName == "C2ISTAR") then {
                      _result
                 ],
                 // the Intel tablet opened on the Commander's Picture page, unless the mission maker has turned it off
-                ["Commander's Picture",
+                [localize "STR_ALIVE_C2ISTAR_COMMANDER_PICTURE",
                     {["OPEN_COMMANDER",[]] call ALIVE_fnc_SCOMTabletOnAction},
                     "",
-                    "What your AI Commander has found out about the objectives it is about to attack",
+                    localize "STR_ALIVE_C2ISTAR_COMMANDER_PICTURE_MENU_COMMENT",
                      "",
                      -1,
                      true,

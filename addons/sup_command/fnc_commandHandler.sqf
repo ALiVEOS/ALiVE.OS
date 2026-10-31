@@ -321,6 +321,12 @@ switch(_operation) do {
 
                 };
 
+                case "INTEL_ORDER": {
+
+                    [_logic,"intelOrder", _data] call MAINCLASS;
+
+                };
+
                 case "OPS_ADD_OBJECTIVE": {
 
                     // a marker is only ever linked by the server's own marker watch
@@ -2629,6 +2635,104 @@ switch(_operation) do {
             };
 
             ["INTEL_PICTURE", [_playerID, _mode, _out]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+        };
+
+    };
+
+    case "intelOrder": {
+
+        // Commander's Picture orders: [uid, "GO"|"LOOK", objective ID]. Only with C2ISTAR's setting at Read and orders,
+        // only for an objective one of the caller's own side's commanders is still finding out about, under the Ops
+        // limit, and not more than once a minute per objective or once every two minutes per player
+
+        if (_args isEqualType []) then {
+
+            _args params [["_playerID","",[""]],["_kind","",[""]],["_oid","",[""]]];
+
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _player) exitWith {};
+            private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+
+            if ((missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "ORDERS") exitWith {
+                "The mission maker hasn't allowed orders from the tablet." call _reply;
+            };
+            if !(_kind in ["GO","LOOK","STRIKE"]) exitWith {};
+
+            private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+            private _opcom = nil;
+            private _obj = nil;
+            {
+                if (([_x,"side",""] call ALiVE_fnc_hashGet) == _side && {[_x,"intelCycle",false] call ALiVE_fnc_hashGet}
+                    && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_x,"opsLimit"]] call MAINCLASS}) then {
+                    private _byID = [_x,"objectivesByID"] call ALiVE_fnc_hashGet;
+                    if (!isNil "_byID") then {
+                        private _o = _byID get _oid;
+                        if (!isNil "_o") exitWith { _opcom = _x; _obj = _o };
+                    };
+                };
+                if (!isNil "_obj") exitWith {};
+            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+            if (isNil "_obj") exitWith { "That objective isn't one your commander is working on." call _reply };
+
+            private _place = [[_obj,"center",[0,0,0]] call ALiVE_fnc_hashGet] call ALIVE_fnc_taskGetNearestLocationName;
+            private _intel = [_obj,"intel"] call ALiVE_fnc_hashGet;
+            if (isNil "_intel") exitWith { "That objective isn't one your commander is working on." call _reply };
+            // Go now and Look again only while it is still finding out; Strike until the objective is taken
+            if (_kind != "STRIKE" && {(_intel select 6) >= 0}) exitWith { format ["The attack on %1 has already gone in.", _place] call _reply };
+            private _known = [[], []];
+            private _macc = objNull;
+            if (_kind == "STRIKE") then {
+                _known = [_opcom,"intelKnownVehicles",[_obj,1]] call ALiVE_fnc_OPCOM;
+                _macc = ((entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" }) param [0, objNull];
+            };
+            // as the picture has it: still finding out, or going in and not yet taken
+            if (_kind == "STRIKE" && {(_intel select 6) >= 0} && {(_intel param [13, false]) || {!(([_obj,"opcom_state",""] call ALiVE_fnc_hashGet) in ["attack","attacking"])}}) exitWith {
+                format ["The commander isn't attacking %1 any more.", _place] call _reply;
+            };
+            if (_kind == "STRIKE" && {(_known select 0) isEqualTo []}) exitWith { format ["No enemy vehicles are known at %1.", _place] call _reply };
+            if (_kind == "STRIKE" && {isNull _macc}) exitWith { "There's no air commander in this mission to ask." call _reply };
+
+            if (isNil "ALiVE_c2istar_orderTimes") then { ALiVE_c2istar_orderTimes = createHashMap };
+            if (time - (ALiVE_c2istar_orderTimes getOrDefault ["o" + _oid, -1e9]) < 60) exitWith {
+                format ["Give the commander a minute before the next order on %1.", _place] call _reply;
+            };
+            if (time - (ALiVE_c2istar_orderTimes getOrDefault ["u" + _playerID, -1e9]) < 120) exitWith {
+                "Give the commander two minutes between your orders." call _reply;
+            };
+
+            private _name = name _player;
+            private _text = "";
+            if (_kind == "STRIKE") then {
+                private _at = (_known select 1) select 0;
+                if ([_macc,"playerRequest",[_player,"CAS",_at]] call ALIVE_fnc_ATOKernel) then {
+                    _text = format ["Air support asked for on the latest vehicle seen at %1, grid %2. Asked by %3.", _place, mapGridPosition _at, _name];
+                } else {
+                    _text = "No air commander flies close air support for your side.";
+                };
+            };
+            if (_kind == "GO") then {
+                if ([_opcom,"intelRelease",[_obj,_name]] call ALiVE_fnc_OPCOM) then {
+                    _text = format ["The attack on %1 goes ahead now. Ordered by %2.", _place, _name];
+                };
+            };
+            if (_kind == "LOOK") then {
+                ([_opcom,"intelLook",_obj] call ALiVE_fnc_OPCOM) params ["_done","_air"];
+                if (_done) then {
+                    _text = format ["The commander looks again at %1 for up to 10 minutes, unless it becomes sure first%2. Asked by %3.", _place,
+                        ["", ", and asks for another air recce"] select _air, _name];
+                } else {
+                    _text = format ["The commander has already looked again twice at %1.", _place];
+                };
+            };
+            if (_text == "") exitWith { format ["The attack on %1 has already gone in.", _place] call _reply };
+            if ((_text find "already looked") < 0 && {(_text find "No air commander") < 0}) then {
+                ALiVE_c2istar_orderTimes set ["o" + _oid, time];
+                ALiVE_c2istar_orderTimes set ["u" + _playerID, time];
+                [_opcom,"opRadio",_text] call ALiVE_fnc_OPCOM;
+                ["[OPCOM INTEL] %1 %2: tablet order %3 by %4", _side, _oid, _kind, _name] call ALiVE_fnc_dump;
+            };
+            _text call _reply;
 
         };
 

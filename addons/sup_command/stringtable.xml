@@ -538,4 +538,175 @@
     <Portuguese>Terreno</Portuguese>
     <Russian>Местность</Russian>
 </Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TAB_COMMANDER">
+    <English>Commander</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TAB_COMMANDER_COMMENT">
+    <English>The objectives your AI Commander is finding out about</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TAB_RADIO">
+    <English>Radio</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TAB_RADIO_COMMENT">
+    <English>What you have heard on the radio</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TAB_AIR">
+    <English>Air</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TAB_AIR_COMMENT">
+    <English>The air picture reports</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_WAITING">
+    <English>Waiting...</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TITLE">
+    <English>Commander's Picture</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_TITLE">
+    <English>Air Picture</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_RADIO_TITLE">
+    <English>Radio Log</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_EMPTY">
+    <English>No air reports since you joined.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_RADIO_EMPTY">
+    <English>Nothing heard on the radio since you joined.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_LINES">
+    <English>%1 messages, newest first.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_LINE">
+    <English>1 message.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_ORDER_SENT">
+    <English>Order sent, waiting for the commander...</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_BUTTON_COMMENT">
+    <English>What your AI Commander has found out about the objectives it is about to attack</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_STRIKE">
+    <English>Strike</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_STRIKE_COMMENT">
+    <English>Ask for close air support on the latest vehicle seen at %1</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_GO">
+    <English>Go now</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_GO_COMMENT">
+    <English>Tell the commander to attack %1 now with what it knows</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_LOOK">
+    <English>Look again</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_LOOK_COMMENT">
+    <English>Ask the commander to find out more at %1 for up to 10 minutes (%2 of 2 used)</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_JUST_NOW">
+    <English>just now</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_MIN_AGO">
+    <English>%1 min ago</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_ASKED">
+    <English>asked</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_ACCEPTED">
+    <English>accepted</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_WATCHING">
+    <English>on station</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_DONE">
+    <English>watched, done</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_DENIED">
+    <English>turned down</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_UNANSWERED">
+    <English>no answer</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_AIR_CLOSED">
+    <English>not asked</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_HEADER">
+    <English>Commander's Picture: %1, Intel Wait %2 min</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_SURE">
+    <English>sure %1%2</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_SURE_ENOUGH">
+    <English>sure %1%2 (enough)</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_GOING_IN">
+    <English>going in</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TAKEN">
+    <English>taken</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_LET_GO">
+    <English>let go</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_SOURCES">
+    <English>Air: %1. Ground recon: %2. Players: %3.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_REPORTED">
+    <English>reported</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_ON_THE_WAY">
+    <English>on the way</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TASK_OUT_NAMED">
+    <English>task out (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TASK_OUT">
+    <English>task out</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_NONE">
+    <English>none</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_NOBODY_SEEN">
+    <English>Nobody seen there yet.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_SEEN">
+    <English>%1 seen (%2 with vehicles), newest %3.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_FINDING_OUT">
+    <English>Finding out for %1 min. %2</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_WENT_IN">
+    <English>Went in: %1. %2</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_TAKEN_SEEN">
+    <English>Taken. %1</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_LET_GO_SEEN">
+    <English>Let go. %1</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_DANGER">
+    <English>Looks dangerous: %1.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_NO_POSITIONS_HEADER">
+    <English>, positions not shared</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_OFF">
+    <English>The mission maker has turned the Commander's Picture off.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_NO_CYCLE">
+    <English>Your side's AI Commander isn't set to Find Out Before Attacking, so there's nothing to show.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_NO_ROWS">
+    <English>Nothing to show: your AI Commander isn't finding out about any objective right now.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_ROWS_NO_POSITIONS">
+    <English>%1 objectives. This commander doesn't share positions with players.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_ROWS_ORDERS">
+    <English>%1 objectives. Pick one to see it on the map, or to give the commander an order about it.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_ROWS">
+    <English>%1 objectives. Pick one to see it on the map.</English>
+</Key>
 </Container></Package></Project>

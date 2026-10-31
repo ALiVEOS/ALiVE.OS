@@ -3964,7 +3964,7 @@ switch (_operation) do {
 
             _result = [false,[]];
             // the intel picture (Find Out Before Attacking) is rebuilt as it is needed, so it is never saved
-            _blacklist = ["code","actions","intel","intelMarked","intelMarkLast","intelExploitedAt","intelExploitText"];
+            _blacklist = ["code","actions","intel","intelMarked","intelMarkLast","intelExploitedAt","intelExploitText","intelGoBy","intelLookUntil","intelLooks"];
 
             //Save only every 60 seconds, bad hack because of this http://dev.withsix.com/issues/74321
             //For normal each instance would save their own objectives but the hack collects all objectives of all OPCOMs on one save, FIFO principle
@@ -5929,7 +5929,7 @@ switch (_operation) do {
             case "accepted": {
                 if (_air == "open") then {
                     _intel set [1, "accepted"];
-                    _intel set [11, time];
+                    if ((_intel param [14, -1]) < 0) then { _intel set [11, time] };
                     ["[OPCOM INTEL] %1 %2: air recon accepted", _side, _objectiveID] call ALiVE_fnc_dump;
                 };
             };
@@ -6040,7 +6040,7 @@ switch (_operation) do {
         };
         // an air recon ATO has said nothing about after 10 minutes (no ATO answers for this side, or it was dropped) is given
         // up; one ATO accepted is waited for, as long as the Intel Wait allows
-        if ((_intel select 1) == "open" && {time - (_intel select 0) > 600}) then {
+        if ((_intel select 1) == "open" && {time - ((_intel select 0) max (_intel param [14, -1])) > 600}) then {
             [_logic, "intelAir", [_objective, "unanswered"]] call MAINCLASS;
         };
         _intel set [4, (_intel select 4) select { time - (_x select 2) <= 1800 }];
@@ -6083,8 +6083,13 @@ switch (_operation) do {
         private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
         if (isNil "_intel" || {(_intel select 6) >= 0}) exitWith {};
         private _assess = [_logic, "intelAssess", _objective] call MAINCLASS;
+        private _goBy = [_objective, "intelGoBy", ""] call ALiVE_fnc_HashGet;
+        // a player's Look again (tablet): for its 10 minutes only being sure enough, or a Go now, lets the assault go
+        private _looking = time < ([_objective, "intelLookUntil", -1] call ALiVE_fnc_HashGet);
         private _why = switch (true) do {
+            case (_goBy != ""): { format ["ordered by %1", _goBy] };
             case ((_assess select 0) >= ([_logic, "intelConfidence", 0.5] call ALiVE_fnc_HashGet)): { "sure enough" };
+            case (_looking): { "" };
             case ((_intel select 3) == "closed" && {(_intel select 8) != ""} && {(_intel select 2) == "closed"}): { "the players' recon has reported" };
             case ((_intel select [1, 3]) isEqualTo ["closed", "closed", "closed"]): { "everyone sent has reported" };
             // counted from when ATO took the recce, if it did, so a slow recce that is coming still gets its full wait
@@ -6282,7 +6287,7 @@ switch (_operation) do {
     // server: the rows carry counts only. Reads only (intelScore), never moves the cycle on.
     // Row: [objectiveID, place, grid, centre, radius, state, seconds since, sure 0..1, sure enough, air, ground, players,
     // players' task title, contacts [[kind, grid, position, age, source]] (6 newest), contact count, vehicle count,
-    // why it went in, danger, looks [position], what was found once it fell]
+    // why it went in, danger, looks [position], what was found once it fell, Look agains used]
     case "intelPicture": {
         _args params [["_withPos", false, [false]]];
         _result = [];
@@ -6338,12 +6343,88 @@ switch (_operation) do {
                     _intel select 1, _intel select 2, _intel select 3, _taskTitle,
                     _shown, count _contacts, _veh, _intel select 7,
                     [_obj, "danger", -1] call ALiVE_fnc_HashGet, _looks,
-                    [_obj, "intelExploitText", ""] call ALiVE_fnc_HashGet
+                    [_obj, "intelExploitText", ""] call ALiVE_fnc_HashGet,
+                    [_obj, "intelLooks", 0] call ALiVE_fnc_HashGet
                 ];
             };
         } forEach ([_logic, "objectives", []] call ALiVE_fnc_HashGet);
         _rows = [_rows, [], { _x select 6 }, "ASCEND"] call BIS_fnc_sortBy;
         _result = _rows select [0, 20];
+    };
+
+    // [objective, how many]: the vehicles the commander knows are at an objective, from what its intel has seen, the most
+    // recently seen first: [[profile IDs], [where each was last seen]]. Used by the strike that follows the attack order
+    // and by a player's Strike from the tablet
+    case "intelKnownVehicles": {
+        _args params ["_objective", ["_max", 3]];
+        _result = [[], []];
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel" || {isNil "ALiVE_ProfileHandler"}) exitWith {};
+        private _newest = +(_intel select 4);
+        reverse _newest;
+        {
+            private _id = _x select 0;
+            if (count (_result select 0) < _max && {!(_id in (_result select 0))}) then {
+                private _kp = [ALiVE_ProfileHandler, "getProfile", _id] call ALiVE_fnc_ProfileHandler;
+                if (!isNil "_kp" && {count (([_kp, "vehicleAssignments", [[],[]]] call ALIVE_fnc_hashGet) select 1) > 0}) then {
+                    (_result select 0) pushBack _id;
+                    (_result select 1) pushBack (_x select 1);
+                };
+            };
+        } forEach _newest;
+    };
+
+    // a player's Go now from the tablet: [objective, player name]. The assault goes ahead at the next look (intelHold
+    // checks every 15 seconds), or at once if the commander is already asking. Returns true when it was still waiting
+    case "intelRelease": {
+        _args params ["_objective", ["_by", "a player", [""]]];
+        _result = false;
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel" || {(_intel select 6) >= 0}) exitWith {};
+        [_objective, "intelGoBy", _by] call ALiVE_fnc_HashSet;
+        [_logic, "intelReady", _objective] call MAINCLASS;
+        _result = true;
+    };
+
+    // a player's Look again from the tablet: [objective]. The commander waits up to 10 minutes more there unless it
+    // becomes sure first, and asks the air commander for another recce when the last one is over. Twice at most.
+    // Returns [done, air asked again]
+    case "intelLook": {
+        private _objective = _args;
+        _result = [false, false];
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel" || {(_intel select 6) >= 0}) exitWith {};
+        private _n = [_objective, "intelLooks", 0] call ALiVE_fnc_HashGet;
+        if (_n >= 2) exitWith {};
+        [_objective, "intelLooks", _n + 1] call ALiVE_fnc_HashSet;
+        [_objective, "intelLookUntil", time + 600] call ALiVE_fnc_HashSet;
+        private _air = false;
+        if ((_intel select 1) != "open" && {(_intel select 1) != "accepted"} && {(_intel select 1) != "watching"}
+            && {["ALiVE_mil_ato"] call ALiVE_fnc_isModuleAvailable} && {["ALiVE_mil_ato"] call ALiVE_fnc_isModuleInitialised} && {!isNil "ALIVE_eventLog"}) then {
+            private _oid = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
+            private _reqID = format ["OPCOM_%1_%2", _oid, floor time];
+            if (isNil {[_logic, "intelListenerID"] call ALiVE_fnc_HashGet}) then {
+                [_logic, "intelListenerID", [ALIVE_eventLog, "addListener", [_logic, ["ATO_RECCE_REPORT"]]] call ALIVE_fnc_eventLog] call ALiVE_fnc_HashSet;
+            };
+            _intel set [1, "open"];
+            _intel set [9, _reqID];
+            _intel set [10, true];
+            _intel set [12, false];
+            if (count _intel < 15) then { _intel resize 15 };
+            _intel set [14, time];
+            // the same recce the attack order asks for (REQUEST_RECON), over the objective
+            private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+            private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+            private _factions = [_logic, "factions", []] call ALiVE_fnc_HashGet;
+            private _building = (nearestObjects [_center, ["House"], 150]) param [0, objNull];
+            private _reqData = ["Recce", [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _center,
+                ["GREEN", 1200, "NORMAL", 0.1, 0.75, 1000, 15, [[_building], []] select (isNull _building)], _reqID];
+            [ALIVE_eventLog, "addEvent", ['ATO_REQUEST', _reqData, "OPCOM"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+            _air = true;
+        };
+        ["[OPCOM INTEL] %1 %2: a player asked to look again (%3 of 2)%4", [_logic, "side", ""] call ALiVE_fnc_HashGet,
+            [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _n + 1, ["", ", air recon asked again"] select _air] call ALiVE_fnc_dump;
+        _result = [true, _air];
     };
 
     // objective: its recon is done but intelReady says wait. The groups stay where they are, and once it is ready the

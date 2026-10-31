@@ -789,6 +789,12 @@ switch (_operation) do {
 
                 };
 
+                case "INTEL_ORDER_ACK": {
+
+                    [_logic,"cmdOrderAck", _data] call MAINCLASS;
+
+                };
+
                 default {
 
                     [_logic,_type, _data] call MAINCLASS;
@@ -1411,9 +1417,9 @@ switch (_operation) do {
                         _b ctrlSetTooltip _tip;
                         _b ctrlSetEventHandler ["MouseButtonClick", format ["['INTEL_CMD_TAB',['%1']] call ALIVE_fnc_SCOMTabletOnAction", _tab]];
                     } foreach [
-                        [SCOMTablet_CTRL_BL1, "Commander", "COMMANDER", "The objectives your AI Commander is finding out about"],
-                        [SCOMTablet_CTRL_BL2, "Radio", "RADIO", "What you have heard on the radio"],
-                        [SCOMTablet_CTRL_BL3, "Air", "AIR", "The air picture reports"]
+                        [SCOMTablet_CTRL_BL1, localize "STR_ALIVE_SCOM_CMD_TAB_COMMANDER", "COMMANDER", localize "STR_ALIVE_SCOM_CMD_TAB_COMMANDER_COMMENT"],
+                        [SCOMTablet_CTRL_BL2, localize "STR_ALIVE_SCOM_CMD_TAB_RADIO", "RADIO", localize "STR_ALIVE_SCOM_CMD_TAB_RADIO_COMMENT"],
+                        [SCOMTablet_CTRL_BL3, localize "STR_ALIVE_SCOM_CMD_TAB_AIR", "AIR", localize "STR_ALIVE_SCOM_CMD_TAB_AIR_COMMENT"]
                     ];
 
                     private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
@@ -1426,6 +1432,26 @@ switch (_operation) do {
                     _editMap ctrlSetEventHandler ["MouseButtonDblClick", ""];
 
                     ["INTEL_CMD_TAB", [[_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet]] call ALIVE_fnc_SCOMTabletOnAction;
+
+                    // the picture keeps itself up to date every 30 seconds while the tablet is open (one loop per machine)
+                    if (isNil "ALiVE_SCOM_cmdPoll" || {scriptDone ALiVE_SCOM_cmdPoll}) then {
+                        ALiVE_SCOM_cmdPoll = [] spawn {
+                            while { sleep 30; !isNull (findDisplay SCOMTablet_CTRL_MainDisplay) } do {
+                                ["INTEL_CMD_POLL",[]] call ALIVE_fnc_SCOMTabletOnAction;
+                            };
+                        };
+                    };
+
+                };
+
+                case "INTEL_CMD_POLL": {
+
+                    // the 30 second refresh: only while the Commander tab is the one showing
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitWith {};
+                    if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "COMMANDER") exitWith {};
+                    ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
 
@@ -1440,6 +1466,8 @@ switch (_operation) do {
                     [_logic,"commandState",_commandState] call MAINCLASS;
 
                     [_logic,"clearCmdMarkers"] call MAINCLASS;
+                    [_logic,"cmdOrderButtons",[]] call MAINCLASS;
+                    [_commandState,"cmdShown",""] call ALIVE_fnc_hashSet;
 
                     {
                         _x params ["_idc","_t"];
@@ -1466,9 +1494,9 @@ switch (_operation) do {
                         _editMap ctrlShow true;
                         _detail ctrlShow true;
                         _detail ctrlSetText "";
-                        _title ctrlSetText "Commander's Picture";
+                        _title ctrlSetText localize "STR_ALIVE_SCOM_CMD_TITLE";
                         _editList ctrlSetEventHandler ["LBSelChanged", "['INTEL_CMD_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
-                        [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, "Waiting..."]] call MAINCLASS;
+                        [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_WAITING"]] call MAINCLASS;
                         ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
                     } else {
                         _editMap ctrlShow false;
@@ -1480,7 +1508,7 @@ switch (_operation) do {
                         } else {
                             missionNamespace getVariable ["ALiVE_c2istar_airLines", []]
                         };
-                        _title ctrlSetText (["Air Picture", "Radio Log"] select (_tab == "RADIO"));
+                        _title ctrlSetText ([localize "STR_ALIVE_SCOM_CMD_AIR_TITLE", localize "STR_ALIVE_SCOM_CMD_RADIO_TITLE"] select (_tab == "RADIO"));
                         {
                             // the diary keeps structured text: tags out, escapes back
                             private _plain = ((((_x regexReplace ["<[^>]*>", ""]) regexReplace ["&lt;", "<"]) regexReplace ["&gt;", ">"]) regexReplace ["&amp;", "&"]);
@@ -1489,8 +1517,8 @@ switch (_operation) do {
                             _editList lbSetSelectColor [_i, [1,1,1,1]];
                         } foreach _lines;
                         [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, if (_lines isEqualTo []) then {
-                            ["No air reports since you joined.", "Nothing heard on the radio since you joined."] select (_tab == "RADIO")
-                        } else { format ["%1 %2, newest first.", count _lines, ["messages", "message"] select (count _lines == 1)] }]] call MAINCLASS;
+                            [localize "STR_ALIVE_SCOM_CMD_AIR_EMPTY", localize "STR_ALIVE_SCOM_CMD_RADIO_EMPTY"] select (_tab == "RADIO")
+                        } else { format [[localize "STR_ALIVE_SCOM_CMD_LINES", localize "STR_ALIVE_SCOM_CMD_LINE"] select (count _lines == 1), count _lines] }]] call MAINCLASS;
                     };
 
                 };
@@ -1506,16 +1534,38 @@ switch (_operation) do {
 
                     if (_selectedIndex >= 0 && {_selectedIndex < count _rows}) then {
                         private _row = _rows select _selectedIndex;
+                        private _same = ([_commandState,"cmdShown",""] call ALIVE_fnc_hashGet) == (_row select 0);
                         [_commandState,"cmdSelected",_row select 0] call ALIVE_fnc_hashSet;
+                        [_commandState,"cmdShown",_row select 0] call ALIVE_fnc_hashSet;
                         private _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
-                        if (count (_row select 3) > 1) then {
+                        if (!_same && {count (_row select 3) > 1}) then {
                             ctrlMapAnimClear _map;
                             _map ctrlMapAnimAdd [0.5, 0.08, _row select 3];
                             ctrlMapAnimCommit _map;
                         };
                         [_logic,"cmdText",[SCOMTablet_CTRL_IntelTypeTitle, _row select 21]] call MAINCLASS;
-                        [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _row select 22]] call MAINCLASS;
+                        // the answer to an order on this objective stays up through the list being rebuilt (for 20 seconds)
+                        ([_commandState,"cmdAck",["","",-1]] call ALIVE_fnc_hashGet) params ["_ack","_ackOid","_ackAt"];
+                        if (_ackOid != (_row select 0) || {diag_tickTime - _ackAt > 20}) then { _ack = "" };
+                        [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, [_row select 22, _ack] select (_ack != "")]] call MAINCLASS;
+                        [_logic,"cmdOrderButtons",_row] call MAINCLASS;
                     };
+
+                };
+
+                case "INTEL_CMD_ORDER": {
+
+                    // Go now, Look again or Strike on the picked objective; the server checks it is allowed and answers
+
+                    private _kind = _args param [0, ""];
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _sel = [_commandState,"cmdSelected",""] call ALIVE_fnc_hashGet;
+                    if (_sel == "" || {!(_kind in ["GO","LOOK","STRIKE"])}) exitWith {};
+                    {
+                        (SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x)) ctrlEnable false;
+                    } foreach [SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
+                    [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_ORDER_SENT"]] call MAINCLASS;
+                    ["INTEL_ORDER", [getPlayerUID player, _kind, _sel]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
 
@@ -3032,8 +3082,8 @@ switch (_operation) do {
             _buttonR2 ctrlCommit 0;
             _buttonR2 ctrlShow true;
             _buttonR2 ctrlEnable true;
-            _buttonR2 ctrlSetText "Commander";
-            _buttonR2 ctrlSetTooltip "What your AI Commander has found out about the objectives it is about to attack";
+            _buttonR2 ctrlSetText localize "STR_ALIVE_SCOM_CMD_TAB_COMMANDER";
+            _buttonR2 ctrlSetTooltip localize "STR_ALIVE_SCOM_CMD_BUTTON_COMMENT";
             _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['INTEL_VIEW_COMMANDER',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
         };
 
@@ -4374,6 +4424,63 @@ switch (_operation) do {
 
     };
 
+    case "cmdOrderButtons": {
+
+        // Go now (BR1) and Look again (BR3) for a picked Commander row: only with the C2ISTAR setting at Read and orders,
+        // only while the commander is still finding out there, and Look again only twice. Strike (BR2, in Refresh's place
+        // while it shows) while it is finding out or going in and vehicles have been seen there. [] hides them
+
+        private _row = _args;
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        private _orders = ([_commandState,"cmdMode","READ"] call ALIVE_fnc_hashGet) == "ORDERS";
+        private _looking = _row isNotEqualTo [] && {(_row select 5) == "looking"};
+        private _go = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+        private _look = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+        _go ctrlShow (_orders && _looking);
+        _go ctrlEnable true;
+        _look ctrlShow (_orders && _looking && {(_row param [23, 0]) < 2});
+        _look ctrlEnable true;
+        private _strike = _orders && {_row isNotEqualTo []} && {(_row select 5) in ["looking","going in"]} && {(_row select 15) > 0};
+        private _b2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
+        _b2 ctrlEnable true;
+        if (_strike) then {
+            _b2 ctrlSetText localize "STR_ALIVE_SCOM_CMD_STRIKE";
+            _b2 ctrlSetTooltip format [localize "STR_ALIVE_SCOM_CMD_STRIKE_COMMENT", _row select 1];
+            _b2 ctrlSetEventHandler ["MouseButtonClick", "['INTEL_CMD_ORDER',['STRIKE']] call ALIVE_fnc_SCOMTabletOnAction"];
+        } else {
+            _b2 ctrlSetText localize "STR_ALIVE_SCOM_UI_REFRESH";
+            _b2 ctrlSetTooltip "";
+            _b2 ctrlSetEventHandler ["MouseButtonClick", format ["['INTEL_CMD_TAB',['%1']] call ALIVE_fnc_SCOMTabletOnAction", [_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet]];
+        };
+        if (_orders && _looking) then {
+            _go ctrlSetText localize "STR_ALIVE_SCOM_CMD_GO";
+            _go ctrlSetTooltip format [localize "STR_ALIVE_SCOM_CMD_GO_COMMENT", _row select 1];
+            _go ctrlSetEventHandler ["MouseButtonClick", "['INTEL_CMD_ORDER',['GO']] call ALIVE_fnc_SCOMTabletOnAction"];
+            _look ctrlSetText localize "STR_ALIVE_SCOM_CMD_LOOK";
+            _look ctrlSetTooltip format [localize "STR_ALIVE_SCOM_CMD_LOOK_COMMENT", _row select 1, _row param [23, 0]];
+            _look ctrlSetEventHandler ["MouseButtonClick", "['INTEL_CMD_ORDER',['LOOK']] call ALIVE_fnc_SCOMTabletOnAction"];
+        } else {
+            _go ctrlSetTooltip "";
+            _look ctrlSetTooltip "";
+        };
+
+    };
+
+    case "cmdOrderAck": {
+
+        // the server's answer to Go now or Look again: shown in the status line, then the picture is asked for again
+
+        _args params ["_uid", ["_text",""]];
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
+        if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
+        [_commandState,"cmdAck",[_text, [_commandState,"cmdSelected",""] call ALIVE_fnc_hashGet, diag_tickTime]] call ALIVE_fnc_hashSet;
+        [_logic,"commandState",_commandState] call MAINCLASS;
+        [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _text]] call MAINCLASS;
+        ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+    };
+
     case "enableCommanderPicture": {
 
         // Commander's Picture reply: [uid, mode, [[faction, stance, Intel Wait minutes, positions shared, rows], ...]]
@@ -4393,8 +4500,8 @@ switch (_operation) do {
             private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
             lbClear _editList;
 
-            private _fmtAge = { private _m = round (_this / 60); if (_m < 1) then { "just now" } else { format ["%1 min ago", _m] } };
-            private _air = createHashMapFromArray [["open","asked"],["accepted","accepted"],["watching","on station"],["done","watched, done"],["denied","turned down"],["unanswered","no answer"],["closed","not asked"]];
+            private _fmtAge = { private _m = round (_this / 60); if (_m < 1) then { localize "STR_ALIVE_SCOM_CMD_JUST_NOW" } else { format [localize "STR_ALIVE_SCOM_CMD_MIN_AGO", _m] } };
+            private _air = createHashMapFromArray [["open",localize "STR_ALIVE_SCOM_CMD_AIR_ASKED"],["accepted",localize "STR_ALIVE_SCOM_CMD_AIR_ACCEPTED"],["watching",localize "STR_ALIVE_SCOM_CMD_AIR_WATCHING"],["done",localize "STR_ALIVE_SCOM_CMD_AIR_DONE"],["denied",localize "STR_ALIVE_SCOM_CMD_AIR_DENIED"],["unanswered",localize "STR_ALIVE_SCOM_CMD_AIR_UNANSWERED"],["closed",localize "STR_ALIVE_SCOM_CMD_AIR_CLOSED"]];
 
             private _rows = [];
             private _markers = [];
@@ -4403,35 +4510,35 @@ switch (_operation) do {
             {
                 _x params ["_faction","_stance","_waitMin","_withPos","_objRows"];
                 _anyPos = _anyPos || _withPos;
-                if (_header == "") then { _header = format ["Commander's Picture: %1, Intel Wait %2 min", _stance, _waitMin] };
+                if (_header == "") then { _header = format [localize "STR_ALIVE_SCOM_CMD_HEADER", _stance, _waitMin] };
                 {
                     _x params ["_oid","_place","_grid","_center","_r","_state","_since","_conf","_sure","_airS","_groundS","_playersS","_taskTitle",
-                        "_contacts","_nContacts","_nVeh","_why","_danger","_looks","_found"];
+                        "_contacts","_nContacts","_nVeh","_why","_danger","_looks","_found",["_lookCount",0]];
                     private _stateText = switch (_state) do {
-                        case "looking": { format ["sure %1%2%3", round (_conf * 100), "%", ["", " (enough)"] select _sure] };
-                        case "going in": { "going in" };
-                        case "taken": { "taken" };
-                        default { "let go" };
+                        case "looking": { format [[localize "STR_ALIVE_SCOM_CMD_SURE", localize "STR_ALIVE_SCOM_CMD_SURE_ENOUGH"] select _sure, round (_conf * 100), "%"] };
+                        case "going in": { localize "STR_ALIVE_SCOM_CMD_GOING_IN" };
+                        case "taken": { localize "STR_ALIVE_SCOM_CMD_TAKEN" };
+                        default { localize "STR_ALIVE_SCOM_CMD_LET_GO" };
                     };
                     private _label = format ["%1%2  %3", ["", _faction + " "] select (count _cmds > 1), _place, _stateText];
-                    private _sources = format ["Air: %1. Ground recon: %2. Players: %3.",
+                    private _sources = format [localize "STR_ALIVE_SCOM_CMD_SOURCES",
                         _air getOrDefault [_airS, _airS],
-                        ["reported", "on the way"] select (_groundS == "open"),
+                        [localize "STR_ALIVE_SCOM_CMD_REPORTED", localize "STR_ALIVE_SCOM_CMD_ON_THE_WAY"] select (_groundS == "open"),
                         switch (true) do {
-                            case (_playersS == "open"): { if (_taskTitle != "") then { format ["task out (%1)", _taskTitle] } else { "task out" } };
-                            case (_taskTitle != "" || {_playersS == "closed" && {_state != "looking"}}): { "reported" };
-                            default { "none" };
+                            case (_playersS == "open"): { if (_taskTitle != "") then { format [localize "STR_ALIVE_SCOM_CMD_TASK_OUT_NAMED", _taskTitle] } else { localize "STR_ALIVE_SCOM_CMD_TASK_OUT" } };
+                            case (_taskTitle != "" || {_playersS == "closed" && {_state != "looking"}}): { localize "STR_ALIVE_SCOM_CMD_REPORTED" };
+                            default { localize "STR_ALIVE_SCOM_CMD_NONE" };
                         }];
-                    private _seen = if (_nContacts == 0) then { "Nobody seen there yet." } else {
-                        format ["%1 seen (%2 with vehicles), newest %3.", _nContacts, _nVeh, ((_contacts select 0) select 3) call _fmtAge]
+                    private _seen = if (_nContacts == 0) then { localize "STR_ALIVE_SCOM_CMD_NOBODY_SEEN" } else {
+                        format [localize "STR_ALIVE_SCOM_CMD_SEEN", _nContacts, _nVeh, ((_contacts select 0) select 3) call _fmtAge]
                     };
                     private _status = switch (_state) do {
-                        case "looking": { format ["Finding out for %1 min. %2", round (_since / 60), _seen] };
-                        case "going in": { format ["Went in: %1. %2", _why, _seen] };
-                        case "taken": { if (_found != "") then { _found } else { format ["Taken. %1", _seen] } };
-                        default { format ["Let go. %1", _seen] };
+                        case "looking": { format [localize "STR_ALIVE_SCOM_CMD_FINDING_OUT", round (_since / 60), _seen] };
+                        case "going in": { format [localize "STR_ALIVE_SCOM_CMD_WENT_IN", _why, _seen] };
+                        case "taken": { if (_found != "") then { _found } else { format [localize "STR_ALIVE_SCOM_CMD_TAKEN_SEEN", _seen] } };
+                        default { format [localize "STR_ALIVE_SCOM_CMD_LET_GO_SEEN", _seen] };
                     };
-                    if (_danger >= 0 && {_state != "taken"}) then { _status = _status + format [" Looks dangerous: %1.", _danger] };
+                    if (_danger >= 0 && {_state != "taken"}) then { _status = _status + format [" " + localize "STR_ALIVE_SCOM_CMD_DANGER", _danger] };
                     private _i = _editList lbAdd _label;
                     _editList lbSetTooltip [_i, _sources + " " + _status];
                     _editList lbSetSelectColor [_i, [1,1,1,1]];
@@ -4442,7 +4549,7 @@ switch (_operation) do {
                         case (_conf >= 0.3): { [1,0.75,0.3,1] };
                         default { [0.7,0.7,0.7,1] };
                     }];
-                    _rows pushBack ([_oid, _place, _grid, _center] + [_r, _state, _since, _conf, _sure, _airS, _groundS, _playersS, _taskTitle, _contacts, _nContacts, _nVeh, _why, _danger, _looks, _found, _faction, _sources, _status]);
+                    _rows pushBack ([_oid, _place, _grid, _center] + [_r, _state, _since, _conf, _sure, _airS, _groundS, _playersS, _taskTitle, _contacts, _nContacts, _nVeh, _why, _danger, _looks, _found, _faction, _sources, _status, _lookCount]);
 
                     // the objective and, when the commander shares positions, what was seen and where anyone looked
                     private _n = count _markers;
@@ -4494,19 +4601,22 @@ switch (_operation) do {
             } forEach _cmds;
 
             [_commandState,"cmdRows",_rows] call ALIVE_fnc_hashSet;
+            [_commandState,"cmdMode",_mode] call ALIVE_fnc_hashSet;
             [_logic,"commandState",_commandState] call MAINCLASS;
             [_logic,"cmdMarkers",_markers] call MAINCLASS;
+            [_logic,"cmdOrderButtons",[]] call MAINCLASS;
 
             private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
-            if (_header != "" && {!_anyPos}) then { _header = _header + ", positions not shared" };
-            _title ctrlSetText (if (_header == "") then { "Commander's Picture" } else { _header });
+            if (_header != "" && {!_anyPos}) then { _header = _header + localize "STR_ALIVE_SCOM_CMD_NO_POSITIONS_HEADER" };
+            _title ctrlSetText (if (_header == "") then { localize "STR_ALIVE_SCOM_CMD_TITLE" } else { _header });
 
             private _status = switch (true) do {
-                case (_mode == "OFF"): { "The mission maker has turned the Commander's Picture off." };
-                case (_cmds isEqualTo []): { "Your side's AI Commander isn't set to Find Out Before Attacking, so there's nothing to show." };
-                case (_rows isEqualTo []): { "Nothing to show: your AI Commander isn't finding out about any objective right now." };
-                case (!_anyPos): { format ["%1 objectives. This commander doesn't share positions with players.", count _rows] };
-                default { format ["%1 objectives. Pick one to see it on the map.", count _rows] };
+                case (_mode == "OFF"): { localize "STR_ALIVE_SCOM_CMD_OFF" };
+                case (_cmds isEqualTo []): { localize "STR_ALIVE_SCOM_CMD_NO_CYCLE" };
+                case (_rows isEqualTo []): { localize "STR_ALIVE_SCOM_CMD_NO_ROWS" };
+                case (!_anyPos): { format [localize "STR_ALIVE_SCOM_CMD_ROWS_NO_POSITIONS", count _rows] };
+                case (_mode == "ORDERS"): { format [localize "STR_ALIVE_SCOM_CMD_ROWS_ORDERS", count _rows] };
+                default { format [localize "STR_ALIVE_SCOM_CMD_ROWS", count _rows] };
             };
             [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _status]] call MAINCLASS;
 

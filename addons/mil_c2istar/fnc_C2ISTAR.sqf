@@ -1493,6 +1493,9 @@ switch(_operation) do {
             missionNamespace setVariable ["ALiVE_c2istar_assetTaskCap", floor (_assetCap max 0)];
             // Tablet Intel Log (Eric on Discord, 25 Oct): read by ALIVE_fnc_intelLog and by the tablet on each machine
             missionNamespace setVariable ["ALiVE_c2istar_intelLogEnabled", (_logic getVariable ["scomIntelLog", "false"]) in ["true", true], true];
+            // Commander's Picture on the tablet: OFF, READ or ORDERS, read by the tablet and the command handler
+            private _cp = toUpper format ["%1", _logic getVariable ["commanderPicture", "READ"]];
+            missionNamespace setVariable ["ALiVE_c2istar_commanderPicture", ["READ", _cp] select (_cp in ["OFF","READ","ORDERS"]), true];
         };
         ALiVE_c2istar_fnc_atPrison = {
             params ["_pos"];

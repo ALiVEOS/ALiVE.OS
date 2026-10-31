@@ -667,6 +667,19 @@ class CfgVehicles {
                             };
                     };
                     // Eric on Discord, 25 Oct: the intel a side was given, in one list on the tablet
+                    class commanderPicture : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_commanderPicture";
+                            displayName = "$STR_ALIVE_C2ISTAR_COMMANDER_PICTURE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COMMANDER_PICTURE_COMMENT";
+                            defaultValue = """READ""";
+                            class Values
+                            {
+                                    class Off    { name = "Off";             value = "OFF"; };
+                                    class Read   { name = "Read only";       value = "READ"; };
+                                    class Orders { name = "Read and orders"; value = "ORDERS"; };
+                            };
+                    };
                     class scomIntelLog : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_scomIntelLog";

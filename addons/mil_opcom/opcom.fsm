@@ -1600,16 +1600,9 @@ class FSM
                          "   // the most recently seen first and up to three, at where they were last seen. With none known it hits a building as before" \n
                          "   private _known = [];" \n
                          "   private _knownPos = [];" \n
-                         "   private _intelQ = [_objective,""intel""] call ALiVE_fnc_HashGet;" \n
-                         "   if (!isNil ""_intelQ"" && {[_OPCOM_HANDLER,""intelCycle"",false] call ALiVE_fnc_HashGet}) then {" \n
-                         "   	private _newest = +(_intelQ select 4); reverse _newest;" \n
-                         "   	{" \n
-                         "   		private _id = _x select 0;" \n
-                         "   		if (count _known < 3 && {!(_id in _known)}) then {" \n
-                         "   			private _kp = [ALiVE_ProfileHandler,""getProfile"",_id] call ALiVE_fnc_ProfileHandler;" \n
-                         "   			if (!isNil ""_kp"" && {count (([_kp,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1) > 0}) then {_known pushBack _id; _knownPos pushBack (_x select 1)};" \n
-                         "   		};" \n
-                         "   	} forEach _newest;" \n
+                         "   if ([_OPCOM_HANDLER,""intelCycle"",false] call ALiVE_fnc_HashGet) then {" \n
+                         "   	([_OPCOM_HANDLER,""intelKnownVehicles"",[_objective,3]] call ALiVE_fnc_OPCOM) params [""_k"",""_kPos""];" \n
+                         "   	_known = _k; _knownPos = _kPos;" \n
                          "   };" \n
                          "" \n
                          "   // Get objective buildings and filter for ALiVE types" \n
