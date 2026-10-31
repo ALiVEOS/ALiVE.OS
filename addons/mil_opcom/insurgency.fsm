@@ -134,7 +134,7 @@ class FSM
                          "_cycleTime = 30;" \n
                          "" \n
                          "_busy = false;" \n
-                         "_pause = false;" \n
+                         "_pause = [_OPCOM_HANDLER,""pause"",false] call ALiVE_fnc_HashGet;" \n
                          "_exitFSM = false;" \n
                          "_objectiveDeleted = false;" \n
                          "_time = 0;" \n

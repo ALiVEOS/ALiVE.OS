@@ -228,7 +228,7 @@ class FSM
                          "private _reinforcementRatio = [_OPCOM_HANDLER, ""reinforcements"",0.9] call ALiVE_fnc_HashGet;" \n
                          "private _reconBuildingTypes = (ALiVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes + ALIVE_civilianPopulationBuildingTypes + ALIVE_militaryParkingBuildingTypes + ALIVE_civilianHQBuildingTypes + ALIVE_civilianCommsBuildingTypes + ALIVE_civilianFuelBuildingTypes) apply {toLower _x};" \n
                          "" \n
-                         "private _pause = false;" \n
+                         "private _pause = [_OPCOM_HANDLER,""pause"",false] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "private _OPCOM_DATA = [];" \n
                          "private _OPCOM_QUEUE = [];" \n

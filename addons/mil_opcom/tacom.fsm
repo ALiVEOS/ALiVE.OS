@@ -129,7 +129,7 @@ class FSM
                          "_enemyScanDeadline = -1;" \n
                          "_enemyScanTimeout = 120;" \n
                          "_cycleTime = 120;" \n
-                         "_pause = false;" \n
+                         "_pause = [_OPCOM_HANDLER,""pause"",false] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "_controltype = [_OPCOM_HANDLER,""controltype"",""""] call ALiVE_fnc_HashGet;" \n
                          "_sectionsamount_attack = [_OPCOM_HANDLER,""sectionsamount_attack"",4] call ALiVE_fnc_HashGet;" \n
