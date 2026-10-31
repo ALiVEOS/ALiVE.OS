@@ -339,6 +339,18 @@ switch(_operation) do {
 
                 };
 
+                case "INTEL_AIR_MINE": {
+
+                    [_logic,"intelAirMine", _data] call MAINCLASS;
+
+                };
+
+                case "INTEL_AIR_CANCEL": {
+
+                    [_logic,"intelAirCancel", _data] call MAINCLASS;
+
+                };
+
                 case "INTEL_WAR_GO": {
 
                     [_logic,"intelWarGo", _data] call MAINCLASS;
@@ -2778,6 +2790,49 @@ switch(_operation) do {
                 };
             };
 
+        };
+
+    };
+
+    case "intelAirMine": {
+
+        // the caller's own air requests for the tablet's Air tab: [uid]. Reply: [uid, [[request ID, type, state, grid, asked at], ...]]
+
+        if (_args isEqualType []) then {
+            _args params [["_playerID","",[""]]];
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _player) exitWith {};
+            private _rows = [];
+            if (!isNil "ALIVE_fnc_ATOKernel" && {(missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "OFF"}) then {
+                _rows = [objNull, "playerRequests", _playerID] call ALIVE_fnc_ATOKernel;
+                if (isNil "_rows" || {!(_rows isEqualType [])}) then { _rows = [] };
+            };
+            ["INTEL_AIR_MINE", [_playerID, _rows]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+        };
+
+    };
+
+    case "intelAirCancel": {
+
+        // the caller cancels one of their own air requests: [uid, request ID]. One every 2 seconds per player
+
+        if (_args isEqualType []) then {
+            _args params [["_playerID","",[""]],["_reqId","",[""]]];
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _player || {isNil "ALIVE_fnc_ATOKernel"}) exitWith {};
+            private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+            if (isNil "ALiVE_c2istar_controlTimes") then { ALiVE_c2istar_controlTimes = createHashMap };
+            if (time < (ALiVE_c2istar_controlTimes getOrDefault [_playerID, -10]) + 2) exitWith {};
+            ALiVE_c2istar_controlTimes set [_playerID, time];
+            private _r = [objNull, "playerCancel", [_playerID, _reqId]] call ALIVE_fnc_ATOKernel;
+            if (isNil "_r") then { _r = "none" };
+            ["SCOM air requests: %1 cancel %2: %3", name _player, _reqId, _r] call ALiVE_fnc_dump;
+            (switch (_r) do {
+                case "cancelled": { "Air request cancelled." };
+                case "not yours": { "That request isn't yours." };
+                case "over": { "That request is already over." };
+                default { "The air commander has no such request." };
+            }) call _reply;
         };
 
     };

@@ -2486,6 +2486,63 @@ switch(_operation) do {
     // the same request a player always could make (its own id, so a status or cancel can quote it), filed under that
     // commander's own faction so it is taken whatever faction the player is. The side hears it acknowledged or turned
     // down on the radio as for any player request; with no commander to ask, the player is told so.
+    // A player's own requests to every air commander, for the tablet: [uid] ->
+    // [[request ID, type, state, grid, asked at], ...], newest first, at most 8.
+    // Only requests the air commander took on are kept; a refused one isn't.
+    case "playerRequests": {
+        _result = [];
+        if (!isServer || {!(_args isEqualType "")} || {_args isEqualTo ""}) exitWith {};
+        private _uid = _args;
+        {
+            private _task = [_x, "task"] call _fnc_piece;
+            if !(_task isEqualTo []) then {
+                private _reqs = [_task, "requests", []] call ALIVE_fnc_hashGet;
+                if ([_reqs] call ALIVE_fnc_isHash) then {
+                    {
+                        private _r = [_reqs, _x, []] call ALIVE_fnc_hashGet;
+                        private _who = [_r, "requester", []] call ALIVE_fnc_hashGet;
+                        if (([_who] call ALIVE_fnc_isHash) && {([_who, "playerId", ""] call ALIVE_fnc_hashGet) isEqualTo _uid}) then {
+                            private _s = [_task, "status", _x] call ALIVE_fnc_ATOTask;
+                            _result pushBack [_x, [_r, "type", ""] call ALIVE_fnc_hashGet,
+                                if (_s isEqualType [] && {count _s >= 2}) then { _s select 1 } else { "complete" },
+                                [[_r, "targetPos", [0,0,0]] call ALIVE_fnc_hashGet] call _fnc_grid,
+                                [_r, "receivedAt", 0] call ALIVE_fnc_hashGet];
+                        };
+                    } forEach (_reqs select 1);
+                };
+            };
+        } forEach ((entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" && {!(([_x] call _fnc_kernel) isEqualTo [])} });
+        _result = [_result, [], { _x select 4 }, "DESCEND"] call BIS_fnc_sortBy;
+        _result resize ((count _result) min 8);
+    };
+
+    // A player cancels one of their own requests: [uid, request ID] -> "cancelled",
+    // "not yours", "over" or "none". Only the player who asked can cancel it.
+    case "playerCancel": {
+        _result = "none";
+        if (!isServer || {!(_args isEqualType [])}) exitWith {};
+        _args params [["_uid", "", [""]], ["_reqId", "", [""]]];
+        if (_uid isEqualTo "" || {_reqId isEqualTo ""}) exitWith {};
+        {
+            private _macc = _x;
+            private _task = [_macc, "task"] call _fnc_piece;
+            if !(_task isEqualTo []) then {
+                private _r = [[_task, "requests", []] call ALIVE_fnc_hashGet, _reqId, []] call ALIVE_fnc_hashGet;
+                if ([_r] call ALIVE_fnc_isHash) exitWith {
+                    private _who = [_r, "requester", []] call ALIVE_fnc_hashGet;
+                    if !(([_who] call ALIVE_fnc_isHash) && {([_who, "playerId", ""] call ALIVE_fnc_hashGet) isEqualTo _uid}) exitWith { _result = "not yours" };
+                    private _s = [_task, "status", _reqId] call ALIVE_fnc_ATOTask;
+                    if (!(_s isEqualType []) || {count _s < 2} || {(_s select 1) in ["complete","denied"]}) exitWith { _result = "over" };
+                    // the same path as any other cancel, so the aircraft are told and the event is raised
+                    private _e = ["ATO_CANCEL_REQUEST", [[_r, "faction", ""] call ALIVE_fnc_hashGet, [_r, "side", ""] call ALIVE_fnc_hashGet, _reqId, _uid, _reqId], "PLAYER"] call ALIVE_fnc_event;
+                    [_macc, "ATO_CANCEL_REQUEST", _e] call MAINCLASS;
+                    _s = [_task, "status", _reqId] call ALIVE_fnc_ATOTask;
+                    _result = ["over", "cancelled"] select (_s isEqualType [] && {count _s >= 2} && {(_s select 1) isEqualTo "complete"});
+                };
+            };
+        } forEach ((entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" && {!(([_x] call _fnc_kernel) isEqualTo [])} });
+    };
+
     case "playerRequest": {
         _result = false;
         if (!isServer || {!(_args isEqualType [])}) exitWith {};

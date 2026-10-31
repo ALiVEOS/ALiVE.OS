@@ -789,6 +789,12 @@ switch (_operation) do {
 
                 };
 
+                case "INTEL_AIR_MINE": {
+
+                    [_logic,"enableAirMine", _data] call MAINCLASS;
+
+                };
+
                 case "INTEL_SETTINGS": {
 
                     [_logic,"enableCommanderSettings", _data] call MAINCLASS;
@@ -1458,6 +1464,7 @@ switch (_operation) do {
                     if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitWith {};
                     private _tab = [_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet;
                     if (_tab == "SETTINGS") exitWith { ["INTEL_GET_SETTINGS", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2] };
+                    if (_tab == "AIR") exitWith { ["INTEL_AIR_MINE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2] };
                     if (_tab != "COMMANDER") exitWith {};
                     ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
@@ -1537,6 +1544,12 @@ switch (_operation) do {
                         [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, if (_lines isEqualTo []) then {
                             [localize "STR_ALIVE_SCOM_CMD_AIR_EMPTY", localize "STR_ALIVE_SCOM_CMD_RADIO_EMPTY"] select (_tab == "RADIO")
                         } else { format [[localize "STR_ALIVE_SCOM_CMD_LINES", localize "STR_ALIVE_SCOM_CMD_LINE"] select (count _lines == 1), count _lines] }]] call MAINCLASS;
+                        // the Air tab also lists the player's own requests, from the server, with Cancel on an open one
+                        if (_tab == "AIR") then {
+                            [_commandState,"cmdAirRows",[]] call ALIVE_fnc_hashSet;
+                            _editList ctrlSetEventHandler ["LBSelChanged", "['INTEL_AIR_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                            ["INTEL_AIR_MINE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+                        };
                     };
 
                 };
@@ -1617,6 +1630,39 @@ switch (_operation) do {
                     } foreach [SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR3];
                     [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_ORDER_SENT"]] call MAINCLASS;
                     ["INTEL_CONTROL", [getPlayerUID player, (_rows select _i) select 2, _kind, _value]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
+                case "INTEL_AIR_SELECT": {
+
+                    // one of the player's own air requests picked: Cancel while it is still open
+
+                    (_args select 0) params ["_selectedList","_selectedIndex"];
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _rows = [_commandState,"cmdAirRows",[]] call ALIVE_fnc_hashGet;
+                    private _b1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+                    _b1 ctrlShow false;
+                    _b1 ctrlEnable true;
+                    if (_selectedIndex < 0 || {_selectedIndex >= count _rows}) exitWith {};
+                    private _row = _rows select _selectedIndex;
+                    [_commandState,"cmdAirSel",_row select 0] call ALIVE_fnc_hashSet;
+                    if !((_row select 2) in ["complete","denied"]) then {
+                        _b1 ctrlSetText localize "STR_ALIVE_SCOM_AIR_CANCEL";
+                        _b1 ctrlSetTooltip format [localize "STR_ALIVE_SCOM_AIR_CANCEL_COMMENT", _row select 1, _row select 3];
+                        _b1 ctrlSetEventHandler ["MouseButtonClick", "['INTEL_AIR_CANCEL',[]] call ALIVE_fnc_SCOMTabletOnAction"];
+                        _b1 ctrlShow true;
+                    };
+
+                };
+
+                case "INTEL_AIR_CANCEL": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _sel = [_commandState,"cmdAirSel",""] call ALIVE_fnc_hashGet;
+                    if (_sel == "") exitWith {};
+                    (SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1)) ctrlEnable false;
+                    [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_ORDER_SENT"]] call MAINCLASS;
+                    ["INTEL_AIR_CANCEL", [getPlayerUID player, _sel]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
 
@@ -4549,6 +4595,12 @@ switch (_operation) do {
         _args params ["_uid", ["_text",""]];
         private _commandState = [_logic,"commandState"] call MAINCLASS;
         if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
+        if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) == "AIR") exitwith {
+            [_commandState,"cmdAirAck",[_text, diag_tickTime]] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+            [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _text]] call MAINCLASS;
+            ["INTEL_AIR_MINE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+        };
         if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) == "SETTINGS") exitwith {
             [_commandState,"cmdSetAck",[_text, diag_tickTime]] call ALIVE_fnc_hashSet;
             [_logic,"commandState",_commandState] call MAINCLASS;
@@ -4626,6 +4678,56 @@ switch (_operation) do {
             private _sel = [_commandState,"cmdSetSel",""] call ALIVE_fnc_hashGet;
             private _idx = _rows findIf { (_x select 0) == _sel };
             [_logic,"cmdSetButtons",[]] call MAINCLASS;
+            if (_idx >= 0) then { _editList lbSetCurSel _idx };
+
+        };
+
+    };
+
+    case "enableAirMine": {
+
+        // the player's own air requests: [uid, [[request ID, type, state, grid, asked at], ...]]. The Air tab is rebuilt
+        // with them first and the radio's air lines after
+
+        if (_args isEqualType []) then {
+
+            private _commandState = [_logic,"commandState"] call MAINCLASS;
+            if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
+            if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "AIR") exitwith {};
+            _args params ["_uid", ["_mine",[]]];
+
+            private _states = createHashMapFromArray [["planning",localize "STR_ALIVE_SCOM_AIR_PLANNING"],["queued",localize "STR_ALIVE_SCOM_AIR_QUEUED"],
+                ["complete",localize "STR_ALIVE_SCOM_AIR_OVER"],["denied",localize "STR_ALIVE_SCOM_AIR_REFUSED"],
+                ["assigned",localize "STR_ALIVE_SCOM_AIR_ASSIGNED"],["returning",localize "STR_ALIVE_SCOM_AIR_RETURNING"]];
+            private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+            lbClear _editList;
+            // rows the list holds, in order: [request ID or "", type, state, grid]
+            private _rows = [];
+            if (_mine isNotEqualTo []) then {
+                _editList lbAdd localize "STR_ALIVE_SCOM_AIR_MINE";
+                _rows pushBack ["", "", "complete", ""];
+                {
+                    _x params ["_id","_type","_state","_grid","_at"];
+                    private _i = _editList lbAdd format [localize "STR_ALIVE_SCOM_AIR_ROW", _type, _grid, _states getOrDefault [_state, localize "STR_ALIVE_SCOM_AIR_FLYING"]];
+                    _editList lbSetSelectColor [_i, [1,1,1,1]];
+                    _rows pushBack [_id, _type, _state, _grid];
+                } forEach _mine;
+            };
+            {
+                private _plain = ((((_x regexReplace ["<[^>]*>", ""]) regexReplace ["&lt;", "<"]) regexReplace ["&gt;", ">"]) regexReplace ["&amp;", "&"]);
+                private _i = _editList lbAdd _plain;
+                _editList lbSetTooltip [_i, _plain];
+                _editList lbSetSelectColor [_i, [1,1,1,1]];
+                _rows pushBack ["", "", "complete", ""];
+            } foreach (missionNamespace getVariable ["ALiVE_c2istar_airLines", []]);
+            [_commandState,"cmdAirRows",_rows] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+
+            ([_commandState,"cmdAirAck",["",-1]] call ALIVE_fnc_hashGet) params ["_ack","_ackAt"];
+            if (_ack != "" && {diag_tickTime - _ackAt < 20}) then { [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _ack]] call MAINCLASS };
+            (SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1)) ctrlShow false;
+            private _sel = [_commandState,"cmdAirSel",""] call ALIVE_fnc_hashGet;
+            private _idx = if (_sel == "") then { -1 } else { _rows findIf { (_x select 0) == _sel } };
             if (_idx >= 0) then { _editList lbSetCurSel _idx };
 
         };

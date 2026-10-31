@@ -694,6 +694,39 @@
 <Key ID="STR_ALIVE_SCOM_SET_CHANGING_NOTE">
     <English>The commander is changing stance. Its settings come back when it has finished.</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_AIR_MINE">
+    <English>Your air requests:</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_ROW">
+    <English>    %1 at %2: %3</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_PLANNING">
+    <English>being planned</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_QUEUED">
+    <English>waiting for an aircraft</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_FLYING">
+    <English>under way</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_ASSIGNED">
+    <English>aircraft on the way</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_RETURNING">
+    <English>aircraft heading home</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_OVER">
+    <English>over</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_REFUSED">
+    <English>refused</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_CANCEL">
+    <English>Cancel</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_AIR_CANCEL_COMMENT">
+    <English>Cancel your %1 request at %2.</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_CMD_WARGO">
     <English>Start the war</English>
 </Key>
