@@ -957,6 +957,22 @@ switch(_operation) do {
                     };
                 };
             } forEach (_allVehicles select 1);
+            // A listed faction from another side (an allied AAF for a NATO player, or an allied
+            // commander's faction) isn't in the side-wide sort at all, so the tablet came up with
+            // no vehicles. Its own vehicles are taken as Faction mode takes them.
+            {
+                private _faction = _x;
+                private _tempVehicles = [_faction, _blacklist, _whitelist, false] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
+                {
+                    private _category = _x;
+                    private _add = ([_tempVehicles, _category] call ALiVE_fnc_hashGet) select { getText (configFile >> "CfgVehicles" >> _x >> "faction") == _faction };
+                    if (_add isNotEqualTo []) then {
+                        private _list = [_sortedVehicles, _category, []] call ALiVE_fnc_hashGet;
+                        { _list pushBackUnique _x } forEach _add;
+                        [_sortedVehicles, _category, _list] call ALiVE_fnc_hashSet;
+                    };
+                } forEach (_tempVehicles select 1);
+            } forEach (_sideFactions select { getNumber (configFile >> "CfgFactionClasses" >> _x >> "side") != _sideNumber });
         }else{
             {
                 private _tempVehicles = [_x,_blacklist,_whitelist, _civ] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
@@ -1024,6 +1040,14 @@ switch(_operation) do {
                     };
                 };
             } forEach (_allGroups select 1);
+            // a listed faction from another side has its groups under that side, so read them by faction
+            {
+                private _faction = _x;
+                private _factionGroups = [[_sideText, _faction] call ALIVE_fnc_sortCFGGroupsByFaction, _faction] call ALiVE_fnc_hashGet;
+                if (!isNil "_factionGroups" && {_factionGroups isEqualType []} && {count (_factionGroups select 1) > 0}) then {
+                    [_sortedGroups, _faction, _factionGroups] call ALiVE_fnc_hashSet;
+                };
+            } forEach (_sideFactions select { !(_x in (_sortedGroups select 1)) && {getNumber (configFile >> "CfgFactionClasses" >> _x >> "side") != _sideNumber} });
         }else{
             {
                 private _tempGroups = [_sideText, _x] call ALIVE_fnc_sortCFGGroupsByFaction;
