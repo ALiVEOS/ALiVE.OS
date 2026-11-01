@@ -120,13 +120,19 @@
             <English>Ingress Marker</English>
         </Key>
         <Key ID="STR_ALIVE_ATO_INGRESSMARKER_COMMENT">
-            <English>Name of a map marker to fly from when this commander finds no airfield, helipad or other military site at all inside its airspace. Leave blank for no fallback: a commander with none of those inside its airspace simply does not start. Name a marker and it will instead hold its aircraft at that point and fly them from there. The marker may be anywhere, including out at sea or off the edge of the map. It is ignored entirely when a carrier or any military site is found, even one with no runway. The aircraft are created for you at that point, as many as Ingress Aircraft asks for, whatever Place Air Assets is set to: nothing else can give this commander aircraft, because a commander flying from a marker cannot take over one that already exists. Aircraft waiting at the marker cannot be seen or flown by players: they are out of sight and stopped until they launch, so put the marker somewhere nobody expects to walk up to an aircraft.</English>
+            <English>Name of a map marker to fly from when this commander finds no airfield, helipad or other military site at all inside its airspace. Leave blank for no fallback: a commander with none of those inside its airspace simply does not start. Name a marker and it will instead hold its aircraft at that point and fly them from there. The marker may be anywhere, including out at sea or off the edge of the map. It is ignored when a carrier or any military site is found, even one with no runway, unless Always Fly From Ingress Marker is Yes. The aircraft are created for you at that point, as many as Ingress Aircraft asks for, whatever Place Air Assets is set to: nothing else can give this commander aircraft, because a commander flying from a marker cannot take over one that already exists. Aircraft waiting at the marker cannot be seen or flown by players: they are out of sight and stopped until they launch, so put the marker somewhere nobody expects to walk up to an aircraft.</English>
+        </Key>
+        <Key ID="STR_ALIVE_ATO_INGRESSALWAYS">
+            <English>Always Fly From Ingress Marker</English>
+        </Key>
+        <Key ID="STR_ALIVE_ATO_INGRESSALWAYS_COMMENT">
+            <English>Yes flies this commander from the Ingress Marker even when it finds an airfield, so you choose where its aircraft come from. It then has no airbase on the map: no HQ, no guards and no parked aircraft, just the Ingress Aircraft held at the marker. A carrier is still used if the module is on one. Needs an Ingress Marker; with the marker missing it flies from the airfield it found. No, the default, uses the marker only when no airfield is found.</English>
         </Key>
         <Key ID="STR_ALIVE_ATO_VIRTUALSLOTS">
             <English>Ingress Aircraft</English>
         </Key>
         <Key ID="STR_ALIVE_ATO_VIRTUALSLOTS_COMMENT">
-            <English>How many aircraft to fly from the Ingress Marker, from 1 to 12. Planes and helicopters take turns when the faction has both, and the planes alternate between fighters and the faction's other planes (attack jets where it has them), a fighter first. Only used when that marker is named and this commander has no airfield. Has no effect on a commander flying from a real airfield or a carrier.</English>
+            <English>How many aircraft to fly from the Ingress Marker, from 1 to 12. Planes and helicopters take turns when the faction has both, and the planes alternate between fighters and the faction's other planes (attack jets where it has them), a fighter first. Only used when that marker is named and this commander has no airfield, or Always Fly From Ingress Marker is Yes. Has no effect on a commander flying from a real airfield or a carrier.</English>
         </Key>
         <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
     <English>Runway start position:</English>

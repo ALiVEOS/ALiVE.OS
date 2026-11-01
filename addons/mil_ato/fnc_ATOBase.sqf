@@ -117,6 +117,8 @@ Jman
 #define HQ_SEARCH 750
 #define ROAD_SEARCH 750
 #define CARRIER_CLUSTER 700
+// A config airport this close to an indexed runway cluster is that cluster, not a second field.
+#define CONFIG_AIRPORT_DEDUPE 1500
 #define SCENERY_RADIUS 350
 
 // A ship has to be this close for the deck's ship to be looked up. The same
@@ -346,6 +348,7 @@ switch(_operation) do {
             // Blank marker means the fallback is off, which is how an
             // untouched mission behaves exactly as before.
             ["ingressMarker", ""],
+            ["ingressAlways", false],
             ["virtualSlots", 0],
             ["isVirtual", false],
 
@@ -530,6 +533,8 @@ switch(_operation) do {
             if !(_ingress isEqualType "") then { _ingress = "" };
             _ingress = [_ingress, " ", ""] call CBA_fnc_replace;
             [_logic, "ingressMarker", _ingress] call ALIVE_fnc_hashSet;
+            // Always Fly From Ingress Marker: the marker is the base even when an airfield is found
+            [_logic, "ingressAlways", [_module, "ingressAlways", false] call _fnc_boolAttr] call ALIVE_fnc_hashSet;
 
             private _slotsRaw = _module getVariable ["virtualSlots", "6"];
             private _slots = 6;
@@ -688,7 +693,58 @@ switch(_operation) do {
                     (count _c < 2) || {(_black findIf { _c inArea _x }) < 0}
                 }
             };
-            private _found = [_airClusters, _airspaces] call _fnc_usable;
+            // The terrain's own airports (CfgWorlds ilsPosition and SecondaryAirports) count as runways
+            // too. The index only makes a runway cluster where there are military buildings, so a strip
+            // with none (Sumava's Plasy, by Nalzovske Hory) was never a candidate and the commander
+            // flew from an airbase across the map (ren, 1 Nov). Only a strip with no indexed runway
+            // cluster within CONFIG_AIRPORT_DEDUPE m is added, so a field the index has is not doubled.
+            // Only what this world defines itself: a terrain built on Stratis or Altis would otherwise
+            // inherit their runways, and a point off the map (an inherited {0,0}) says nothing.
+            private _cfgStrips = [];
+            private _fnc_own = { params ["_c", "_n"]; (configProperties [_c, format ["configName _x == '%1'", _n], false]) isNotEqualTo [] };
+            private _fnc_put = {
+                params ["_x0", "_y0", "_pts"];
+                if (_x0 isEqualType 0 && {_y0 isEqualType 0} && {_x0 > 0} && {_y0 > 0} && {_x0 < worldSize} && {_y0 < worldSize}) then { _pts pushBack [_x0, _y0] };
+            };
+            private _world = configFile >> "CfgWorlds" >> worldName;
+            {
+                private _a = _x;
+                private _pts = [];
+                private _ils = getArray (_a >> "ilsPosition");
+                if (count _ils >= 2 && {[_a, "ilsPosition"] call _fnc_own}) then { [_ils select 0, _ils select 1, _pts] call _fnc_put };
+                {
+                    if ([_a, _x] call _fnc_own) then {
+                        private _t = getArray (_a >> _x);
+                        for "_i" from 0 to (count _t - 2) step 2 do { [_t select _i, _t select (_i + 1), _pts] call _fnc_put };
+                    };
+                } forEach ["ilsTaxiIn", "ilsTaxiOff"];
+                if (_pts isNotEqualTo []) then {
+                    private _cx = 0; private _cy = 0;
+                    { _cx = _cx + (_x select 0); _cy = _cy + (_x select 1) } forEach _pts;
+                    private _ctr = [_cx / count _pts, _cy / count _pts, 0];
+                    private _near = _airClusters findIf {
+                        private _c = [_x, "center", []] call ALIVE_fnc_hashGet;
+                        _c isEqualType [] && {count _c >= 2} && {(_c distance2D _ctr) < CONFIG_AIRPORT_DEDUPE}
+                    };
+                    if (_near < 0) then {
+                        private _size = 150;
+                        { _size = _size max (_ctr distance2D _x) } forEach _pts;
+                        private _cl = [nil, "create"] call ALIVE_fnc_cluster;
+                        [_cl, "type", "MIL"] call ALIVE_fnc_cluster;
+                        [_cl, "nodes", []] call ALIVE_fnc_cluster;
+                        [_cl, "center", _ctr] call ALIVE_fnc_hashSet;
+                        [_cl, "size", _size min 1500] call ALIVE_fnc_hashSet;
+                        [_cl, "clusterID", "cfg_" + configName _a] call ALIVE_fnc_hashSet;
+                        _cfgStrips pushBack _cl;
+                    };
+                };
+            } forEach ([_world] + (configProperties [_world >> "SecondaryAirports", "isClass _x", false]));
+            if (_cfgStrips isNotEqualTo []) then {
+                ["ALIVE_fnc_ATOBase - %1 config airport(s) with no indexed runway nearby are also candidates: %2", count _cfgStrips,
+                    _cfgStrips apply { [[_x, "clusterID", ""] call ALIVE_fnc_hashGet, [_x, "center", []] call ALIVE_fnc_hashGet] }] call ALiVE_fnc_dump;
+            };
+
+            private _found = [_airClusters + _cfgStrips, _airspaces] call _fnc_usable;
             if (count _found == 0) then { _found = [_heliClusters, _airspaces] call _fnc_usable };
             if (count _found == 0) then { _found = [_milClusters, _airspaces] call _fnc_usable };
             if (count _found > 0) then {
@@ -873,14 +929,19 @@ switch(_operation) do {
         private _isVirtual = false;
         private _ingressPos = [0,0,0];
         private _ingress = [_logic, "ingressMarker", ""] call ALIVE_fnc_hashGet;
-        if (!(_failed isEqualTo "") && {!_isCarrier} && {!(_ingress isEqualTo "")}) then {
+        private _ingressAlways = [_logic, "ingressAlways", false] call ALIVE_fnc_hashGet;
+        if ((!(_failed isEqualTo "") || {_ingressAlways}) && {!_isCarrier} && {!(_ingress isEqualTo "")}) then {
             if ((markerShape _ingress) isEqualTo "") then {
-                ["ALIVE_fnc_ATOBase - %1 has no airfield and its ingress marker %2 does not exist, so there is nowhere to fall back to. Check the spelling in this module's Ingress Marker setting.", _faction, _ingress] call ALiVE_fnc_dumpR;
+                if (_failed isEqualTo "") then {
+                    ["ALIVE_fnc_ATOBase - %1 is set to Always Fly From Ingress Marker but its ingress marker %2 does not exist, so it flies from the airfield it found. Check the spelling in this module's Ingress Marker setting.", _faction, _ingress] call ALiVE_fnc_dumpR;
+                } else {
+                    ["ALIVE_fnc_ATOBase - %1 has no airfield and its ingress marker %2 does not exist, so there is nowhere to fall back to. Check the spelling in this module's Ingress Marker setting.", _faction, _ingress] call ALiVE_fnc_dumpR;
+                };
             } else {
                 _ingressPos = getMarkerPos _ingress;
                 _isVirtual = true;
-                ["ALIVE_fnc_ATOBase - %1 has no airfield (%2) and will fly from %3 at %4 instead",
-                    _faction, _failed, _ingress, _ingressPos] call ALiVE_fnc_dump;
+                ["ALIVE_fnc_ATOBase - %1 will fly from %2 at %3 (%4)",
+                    _faction, _ingress, _ingressPos, if (_failed isEqualTo "") then { "Always Fly From Ingress Marker" } else { "no airfield: " + _failed }] call ALiVE_fnc_dump;
                 _failed = "";
             };
         };

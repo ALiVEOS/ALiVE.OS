@@ -404,6 +404,19 @@ class CfgVehicles
                         tooltip = "$STR_ALIVE_ATO_INGRESSMARKER_COMMENT";
                         defaultValue = """""";
                 };
+                // fly from the Ingress Marker even when an airfield is found (ren, 1 Nov)
+                class ingressAlways : Combo
+                {
+                        property = "ALiVE_mil_ato_ingressAlways";
+                        displayName = "$STR_ALIVE_ATO_INGRESSALWAYS";
+                        tooltip = "$STR_ALIVE_ATO_INGRESSALWAYS_COMMENT";
+                        defaultValue = """false""";
+                        class Values
+                        {
+                            class No { name = "No"; value = false; default = 1; };
+                            class Yes { name = "Yes"; value = true; };
+                        };
+                };
                 class virtualSlots : Edit
                 {
                         property = "ALiVE_mil_ato_virtualSlots";
