@@ -510,6 +510,7 @@ switch (_op) do {
                 private _have = if (isNil "ALiVE_ProfileHandler") then { nil } else { [ALiVE_ProfileHandler, "getProfile", _vid] call ALIVE_fnc_profileHandler };
                 if (!isNil "_have") then {
                     ["pinStatic", [_vid, _eid]] call ALiVE_fnc_fobOps;
+                    [_have, "exactPosition", true] call ALIVE_fnc_hashSet;
                     _live pushBack _x;
                 } else {
                     private _made = ["spawnStatic", [_id, _class, _pos, _dir]] call ALiVE_fnc_fobOps;
@@ -1357,6 +1358,9 @@ switch (_op) do {
         _made params ["_entity", "_vehicle"];
         private _eid = [_entity, "profileID", ""] call ALIVE_fnc_hashGet;
         private _vid = [_vehicle, "profileID", ""] call ALIVE_fnc_hashGet;
+        // spawned on the spot the player marked: the Virtual AI System's spawn check would otherwise
+        // move it up to 100 m, to a road side or open field
+        [_vehicle, "exactPosition", true] call ALIVE_fnc_hashSet;
         ["pinStatic", [_vid, _eid]] call ALiVE_fnc_fobOps;
         _result = [_vid, _eid];
     };

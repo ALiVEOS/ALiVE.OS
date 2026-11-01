@@ -651,7 +651,9 @@ switch (_operation) do {
                         if (_onShip && {_debug}) then {
                             ["SPAWN STATIC WEAPON ON SHIP [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
                         };
-                        if (!_isSPE && {!_onShip}) then {
+                        // a profile marked exactPosition (a static weapon a player built at a FOB) is made
+                        // where it was put, not moved by the validator
+                        if (!_isSPE && {!_onShip} && {!([_logic,"exactPosition",false] call ALIVE_fnc_hashGet)}) then {
                             // Pass the profile's stored direction so Stage 1
                             // (centre accept) preserves the original parking
                             // orientation instead of rotating the vehicle to
@@ -726,7 +728,9 @@ switch (_operation) do {
                     } forEach [0, 2, 3, 4, 6];
                     _spot
                 };
-                private _spot = [_position, objNull, true] call _fnc_gunSpot;
+                // a gun built at a FOB (exactPosition) is made where the player put it; only the watch below,
+                // for one that tips over, may still move it
+                private _spot = [[_position, objNull, true] call _fnc_gunSpot, []] select ([_logic,"exactPosition",false] call ALIVE_fnc_hashGet);
                 if (_spot isNotEqualTo []) then { _position = _spot };
             };
 
