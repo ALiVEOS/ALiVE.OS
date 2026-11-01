@@ -2739,11 +2739,44 @@ switch(_operation) do {
 
     };
 
+    case "intelMayStance": {
+
+        // may this player change a commander's stance from the tablet even without intelMayControl: the C2ISTAR
+        // menu's own rule, Player OPCOM Stance Control on and a C2ISTAR access item or ALiVE tablet carried. [player]
+
+        _args params ["_player"];
+        _result = (missionNamespace getVariable ["ALIVE_OPCOM_StanceControlEnabled", false])
+            && {!isNil QMOD(MIL_C2ISTAR)}
+            && {[
+                [MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR,
+                [MOD(MIL_C2ISTAR),"c2_item_custom"] call ALIVE_fnc_C2ISTAR,
+                ["ALIVE_Tablet"],
+                _player
+            ] call ALIVE_fnc_playerHasAccessItems};
+
+    };
+
+    case "intelWhyReadOnly": {
+
+        // why intelMayControl said no, for the tablet's note: "PICTURE" (Commander's Picture isn't Read and orders),
+        // "OPS" (the Ops limit doesn't cover this commander) or "CONTROLS" (Commander Controls is Admins only).
+        // [uid, commander]
+
+        _args params ["_playerID","_opcom"];
+        _result = switch (true) do {
+            case ((missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "ORDERS"): { "PICTURE" };
+            case (!([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS)): { "OPS" };
+            default { "CONTROLS" };
+        };
+
+    };
+
     case "intelSettings": {
 
         // the commander's settings for the tablet: each of the caller's own side's commanders under the Ops limit.
         // Reply: [uid, stance changes allowed, [[commander ID, faction, stance, paused, holding until Go, changing stance,
-        // finds out first, Intel Wait minutes, sure enough percent, may change], ...]]
+        // finds out first, Intel Wait minutes, sure enough percent, may change, seconds to next wave, may change stance,
+        // why read-only ("" when it may change)], ...]]
 
         if (_args isEqualType []) then {
 
@@ -2753,10 +2786,12 @@ switch(_operation) do {
             private _out = [];
             if ((missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "OFF" && {!isNil "OPCOM_instances"}) then {
                 private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+                private _mayStance = [_logic,"intelMayStance",[_player]] call MAINCLASS;
                 {
                     private _opcom = _x;
                     if (([_opcom,"side",""] call ALiVE_fnc_hashGet) == _side
                         && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS}) then {
+                        private _may = [_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS;
                         _out pushBack [
                             [_opcom,"opcomID",""] call ALiVE_fnc_hashGet,
                             ([_opcom,"factions",[]] call ALiVE_fnc_hashGet) param [0, ""],
@@ -2767,11 +2802,13 @@ switch(_operation) do {
                             [_opcom,"intelCycle",false] call ALiVE_fnc_hashGet,
                             round (([_opcom,"intelTimeout",1200] call ALiVE_fnc_hashGet) / 60),
                             round (([_opcom,"intelConfidence",0.5] call ALiVE_fnc_hashGet) * 100),
-                            [_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS,
+                            _may,
                             // Assault: seconds to its next wave, -1 with no target yet
                             [-1, round ((((([_opcom,"module",objNull] call ALiVE_fnc_hashGet) getVariable ["ALiVE_Assault_nextWaveAt", -1]) - time)) max 0)]
                                 select (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "assault"
-                                    && {((([_opcom,"module",objNull] call ALiVE_fnc_hashGet) getVariable ["ALiVE_Assault_targetID", ""]) != "")})
+                                    && {((([_opcom,"module",objNull] call ALiVE_fnc_hashGet) getVariable ["ALiVE_Assault_targetID", ""]) != "")}),
+                            _may || {_mayStance},
+                            ["", [_logic,"intelWhyReadOnly",[_playerID,_opcom]] call MAINCLASS] select !_may
                         ];
                     };
                 } forEach OPCOM_instances;
@@ -2800,8 +2837,14 @@ switch(_operation) do {
             private _i = OPCOM_instances findIf { ([_x,"opcomID",""] call ALiVE_fnc_hashGet) == _id && {([_x,"side",""] call ALiVE_fnc_hashGet) == _side} };
             if (_i < 0) exitWith { "That commander isn't on your side." call _reply };
             private _opcom = OPCOM_instances select _i;
-            if !([_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS) exitWith {
-                "You can't change the commander from your tablet." call _reply;
+            // a stance change also goes through on the C2ISTAR menu's own rule (intelMayStance)
+            if (!([_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS)
+                && {!(_kind == "STANCE" && {[_logic,"intelMayStance",[_player]] call MAINCLASS})}) exitWith {
+                (switch ([_logic,"intelWhyReadOnly",[_playerID,_opcom]] call MAINCLASS) do {
+                    case "PICTURE": { "Commander's Picture on the C2ISTAR module is Read only, so the tablet can't change the commander." };
+                    case "OPS": { "The Ops limit on the C2ISTAR module doesn't let you change this commander." };
+                    default { "Only admins can change the commander from the tablet (Commander Controls on the C2ISTAR module)." };
+                }) call _reply;
             };
             if (isNil "ALiVE_c2istar_controlTimes") then { ALiVE_c2istar_controlTimes = createHashMap };
             if (time < (ALiVE_c2istar_controlTimes getOrDefault [_playerID, -10]) + 2) exitWith {};

@@ -4618,7 +4618,8 @@ switch (_operation) do {
     case "enableCommanderSettings": {
 
         // the commander's settings reply: [uid, stance changes allowed, [[commander ID, faction, stance, paused,
-        // holding until Go, changing stance, finds out first, Intel Wait minutes, sure enough percent, may change], ...]]
+        // holding until Go, changing stance, finds out first, Intel Wait minutes, sure enough percent, may change,
+        // seconds to next wave, may change stance, why read-only], ...]]
 
         if (_args isEqualType []) then {
 
@@ -4631,15 +4632,19 @@ switch (_operation) do {
                 ["asymmetric",localize "STR_ALIVE_SCOM_SET_ASYMMETRIC"],["dugin",localize "STR_ALIVE_SCOM_SET_DUGIN"],
                 ["assault",localize "STR_ALIVE_SCOM_SET_ASSAULT"]];
 
-            // rows: [key, kind, commander ID, label, [stance, paused, held, changing, may change, stance changes allowed, value]]
+            // rows: [key, kind, commander ID, label, [stance, paused, held, changing, may change, stance changes allowed,
+            // may change stance, why read-only, value]]
             private _rows = [];
             private _any = false;
+            private _whyAll = "";
             {
-                _x params ["_id","_faction","_stance","_paused","_held","_changing","_intel","_waitMin","_surePct","_may",["_waveLeft",-1]];
-                _any = _any || _may;
+                _x params ["_id","_faction","_stance","_paused","_held","_changing","_intel","_waitMin","_surePct","_may",["_waveLeft",-1],["_mayStance",false],["_why",""]];
+                _mayStance = _may || _mayStance;
+                _any = _any || _mayStance;
+                if (_whyAll == "") then { _whyAll = _why };
                 private _fname = getText (configFile >> "CfgFactionClasses" >> _faction >> "displayName");
                 if (_fname == "") then { _fname = _faction };
-                private _info = [_stance, _paused, _held, _changing, _may, _stanceOK];
+                private _info = [_stance, _paused, _held, _changing, _may, _stanceOK, _mayStance, _why];
                 private _state = localize (switch (true) do {
                     case (_changing): { "STR_ALIVE_SCOM_SET_CHANGING" };
                     case (_held): { "STR_ALIVE_SCOM_SET_HELD" };
@@ -4673,7 +4678,13 @@ switch (_operation) do {
             private _status = switch (true) do {
                 case (_rows isEqualTo []): { localize "STR_ALIVE_SCOM_SET_NONE" };
                 case (_ack != "" && {diag_tickTime - _ackAt < 20}): { _ack };
-                case (!_any): { localize "STR_ALIVE_SCOM_SET_READONLY" };
+                // the read-only note names the C2ISTAR setting that stops the change
+                case (!_any): { localize (switch (_whyAll) do {
+                    case "PICTURE": { "STR_ALIVE_SCOM_SET_READONLY_PICTURE" };
+                    case "OPS": { "STR_ALIVE_SCOM_SET_READONLY_OPS" };
+                    case "CONTROLS": { "STR_ALIVE_SCOM_SET_READONLY_CONTROLS" };
+                    default { "STR_ALIVE_SCOM_SET_READONLY" };
+                }) };
                 default { localize "STR_ALIVE_SCOM_SET_PICK" };
             };
             [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _status]] call MAINCLASS;
@@ -4752,13 +4763,20 @@ switch (_operation) do {
         _b3 ctrlEnable true;
         if (_row isEqualTo []) exitWith {};
         _row params ["_key","_kind","_id","_label","_info"];
-        _info params ["_stance","_paused","_held","_changing","_may","_stanceOK","_value"];
+        _info params ["_stance","_paused","_held","_changing","_may","_stanceOK","_mayStance","_why","_value"];
         private _set = { params ["_b","_text","_tip","_kind","_value"];
             _b ctrlSetText _text; _b ctrlSetTooltip _tip; _b ctrlShow true;
             _b ctrlSetEventHandler ["MouseButtonClick", format ["['INTEL_CMD_CONTROL',[%1,%2]] call ALIVE_fnc_SCOMTabletOnAction", str _kind, str _value]] };
         private _note = "";
         switch (true) do {
-            case (!_may): { _note = localize "STR_ALIVE_SCOM_SET_READONLY" };
+            // a stance row may still change on the C2ISTAR menu's rule when the rest are read-only; the note names
+            // the C2ISTAR setting that stops the change
+            case (!_may && {!(_kind == "STANCE" && {_mayStance})}): { _note = localize (switch (_why) do {
+                case "PICTURE": { "STR_ALIVE_SCOM_SET_READONLY_PICTURE" };
+                case "OPS": { "STR_ALIVE_SCOM_SET_READONLY_OPS" };
+                case "CONTROLS": { "STR_ALIVE_SCOM_SET_READONLY_CONTROLS" };
+                default { "STR_ALIVE_SCOM_SET_READONLY" };
+            }) };
             case (_changing): { _note = localize "STR_ALIVE_SCOM_SET_CHANGING_NOTE" };
             case (_kind == "STATE"): {
                 if (_held) then { _note = localize "STR_ALIVE_SCOM_SET_HELD_NOTE" } else {

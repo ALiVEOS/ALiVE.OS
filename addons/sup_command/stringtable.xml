@@ -685,6 +685,15 @@
 <Key ID="STR_ALIVE_SCOM_SET_READONLY">
     <English>You can't change the commander from your tablet.</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_SET_READONLY_PICTURE">
+    <English>Read only: set Commander's Picture on the C2ISTAR module to Read and orders to change it here.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_READONLY_OPS">
+    <English>Read only: the Ops limit on the C2ISTAR module doesn't let you change this commander.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_READONLY_CONTROLS">
+    <English>Read only: only admins can change it here (Commander Controls on the C2ISTAR module).</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_SET_NONE">
     <English>No AI Commander on your side to show.</English>
 </Key>
