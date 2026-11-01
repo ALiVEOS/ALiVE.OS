@@ -358,6 +358,7 @@ switch (_op) do {
             ["SIDE", "STR_ALIVE_FOB_MANAGE_SIDE"],
             ["LEADER", "STR_ALIVE_FOB_MANAGE_LEADER"],
             ["DEPLOYER", "STR_ALIVE_FOB_MANAGE_DEPLOYER"],
+            ["ITEM", "STR_ALIVE_FOB_MANAGE_ITEM"],
             ["LIST", "STR_ALIVE_FOB_MANAGE_LIST"]
         ] apply { [_x select 0, localize (_x select 1), localize ((_x select 1) + "_COMMENT")] };
         ["open", [localize "STR_ALIVE_FOB_MANAGE_WHO", localize "STR_ALIVE_FOB_UI_PERMISSIONS_NOTE",

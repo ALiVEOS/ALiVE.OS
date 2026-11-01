@@ -9,7 +9,7 @@ Eden attributeLoad for Who Can Dismantle (ALiVE_FOBManageChoice, on ALiVE_SideCh
 multi-select list of who on the FOB's side may dismantle it, recycle what was built there and
 rename it. Any ticked row lets a player in; with none ticked only admins can.
 
-Storage: one string, the ticked rows' tokens comma separated: SIDE, LEADER, DEPLOYER, LIST.
+Storage: one string, the ticked rows' tokens comma separated: SIDE, LEADER, DEPLOYER, ITEM, LIST.
 
 Parameters:
     [_display, _value]
@@ -38,6 +38,7 @@ lbClear _list;
     ["SIDE", "STR_ALIVE_FOB_MANAGE_SIDE"],
     ["LEADER", "STR_ALIVE_FOB_MANAGE_LEADER"],
     ["DEPLOYER", "STR_ALIVE_FOB_MANAGE_DEPLOYER"],
+    ["ITEM", "STR_ALIVE_FOB_MANAGE_ITEM"],
     ["LIST", "STR_ALIVE_FOB_MANAGE_LIST"]
 ];
 

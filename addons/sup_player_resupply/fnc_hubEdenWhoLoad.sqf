@@ -10,7 +10,7 @@ Dismantle (ALiVE_HubDismantleChoice, default own side, as on FOBs), both on ALiV
 multi-select list of who on the hub's side may collect a requisition there, or dismantle it. Any
 ticked row lets a player in; with none ticked only admins can.
 
-Storage: one string, the ticked rows' tokens comma separated: SIDE, LEADER, ITEM, LIST.
+Storage: one string, the ticked rows' tokens comma separated: SIDE, LEADER, OWNER, ITEM, LIST.
 
 Parameters:
     [_display, _value, _titleKey, _default]
@@ -38,6 +38,7 @@ lbClear _list;
 } forEach [
     ["SIDE", "STR_ALIVE_HUB_WHO_SIDE"],
     ["LEADER", "STR_ALIVE_HUB_WHO_LEADER"],
+    ["OWNER", "STR_ALIVE_HUB_WHO_OWNER"],
     ["ITEM", "STR_ALIVE_HUB_WHO_ITEM"],
     ["LIST", "STR_ALIVE_HUB_WHO_LIST"]
 ];

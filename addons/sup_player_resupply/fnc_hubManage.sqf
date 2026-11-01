@@ -211,7 +211,7 @@ switch (_op) do {
         private _logic = (_hub getVariable ["ALiVE_hub", []]) param [3, objNull];
         (["rules", [_logic]] call ALIVE_fnc_hub) params ["_cRules", "_cNames"];
         (["rules", [_logic, "DISMANTLE"]] call ALIVE_fnc_hub) params ["_dRules", "_dNames"];
-        private _tokens = ["SIDE", "LEADER", "ITEM", "LIST"] apply { [_x, localize format ["STR_ALIVE_HUB_UI_WHO_%1", _x], localize format ["STR_ALIVE_HUB_WHO_%1_COMMENT", _x]] };
+        private _tokens = ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"] apply { [_x, localize format ["STR_ALIVE_HUB_UI_WHO_%1", _x], localize format ["STR_ALIVE_HUB_WHO_%1_COMMENT", _x]] };
         private _n = { ((_x getVariable ["ALiVE_hub", []]) param [3, objNull]) isEqualTo _logic } count (missionNamespace getVariable ["ALiVE_hub_list", []]);
         // both columns in one request: the server takes one request every 2 s from a player
         private _apply = compile format ["params ['_c', '_d']; ['permissions', [_c select 0, _c select 1, %1, 'BOTH', _d select 0, _d select 1]] remoteExecCall ['ALIVE_fnc_hubRequest', 2]",

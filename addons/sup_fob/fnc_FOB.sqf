@@ -364,12 +364,12 @@ switch (_operation) do {
         _result = [_logic, "mayWho", [_unit, _rules, _names, _deployer]] call MAINCLASS;
     };
 
-    // Whether rules in the Who Can Dismantle form (SIDE, LEADER, DEPLOYER, LIST and a names list)
+    // Whether rules in the Who Can Dismantle form (SIDE, LEADER, DEPLOYER, ITEM, LIST and a names list)
     // let a player in, through the check every site shares (ALiVE_fnc_siteWho). No admin test: the
     // callers make that.
     case "mayWho": {
         _args params [["_unit", objNull, [objNull]], ["_rules", "", [""]], ["_names", "", [""]], ["_deployer", "", [""]]];
-        _rules = ["filter", [_rules, ["SIDE", "LEADER", "DEPLOYER", "LIST"]]] call ALiVE_fnc_siteWho;
+        _rules = ["filter", [_rules, ["SIDE", "LEADER", "DEPLOYER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
         _result = ["mayWho", [_unit, _rules, _names, _deployer]] call ALiVE_fnc_siteWho;
     };
 

@@ -1261,7 +1261,7 @@ switch (_op) do {
         _result = false;
         _args params [["_rules", "", [""]], ["_names", "", [""]]];
         if (isNull _caller || {!([_logic, "isAdmin", [_caller]] call ALiVE_fnc_FOB)}) exitWith { ["STR_ALIVE_FOB_REFUSED_ADMIN"] call _tell };
-        _rules = ["filter", [_rules, ["SIDE", "LEADER", "DEPLOYER", "LIST"]]] call ALiVE_fnc_siteWho;
+        _rules = ["filter", [_rules, ["SIDE", "LEADER", "DEPLOYER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
         _names = ["cleanNames", [_names]] call ALiVE_fnc_siteWho;
         _logic setVariable ["ALiVE_FOB_perm", [_rules, _names], true];
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;

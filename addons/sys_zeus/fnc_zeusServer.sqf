@@ -909,8 +909,9 @@ switch (_action) do {
                 // a moment for players' machines to learn of it before its hold actions are sent
                 sleep 1;
             };
-            // the hub takes its name as it is tagged
+            // the hub takes its name as it is tagged, and the Zeus who placed it is its owner
             if (_name != "") then { _hub setVariable ["ALiVE_hub_name", _name] };
+            if (!isNull _caller) then { _hub setVariable ["ALiVE_hub_owner", getPlayerUID _caller] };
             ["tag", [_hub, _module]] call ALIVE_fnc_hub;
             publicVariable "ALiVE_hub_list";
             ["nodeAdd", [_hub]] call ALIVE_fnc_hub;

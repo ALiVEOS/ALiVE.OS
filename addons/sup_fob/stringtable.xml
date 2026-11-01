@@ -449,6 +449,12 @@
             <Key ID="STR_ALIVE_FOB_MANAGE_DEPLOYER">
                 <English>The player who deployed it</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_ITEM">
+                <English>Players carrying a Player Logistics access item</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MANAGE_ITEM_COMMENT">
+                <English>A player carrying one of the items set on the Player Combat Logistics module (Trigger Item Categories and Custom Trigger Items), or an ALiVE tablet. Carried: standing at a command post does not count here.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_DEPLOYER_COMMENT">
                 <English>The player who deployed that FOB, known by their player ID, so it still counts after they reconnect. A FOB saved before FOBs recorded this, or one taken from another side, lets in group leaders instead.</English>
             </Key>

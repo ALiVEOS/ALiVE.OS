@@ -741,6 +741,9 @@
 <Key ID="STR_ALIVE_HUB_UI_WHO_LEADER">
     <English>Group leaders</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_UI_WHO_OWNER">
+    <English>Whoever placed it</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_UI_WHO_ITEM">
     <English>Access item carriers</English>
 </Key>
@@ -833,6 +836,12 @@
 </Key>
 <Key ID="STR_ALIVE_HUB_WHO_LEADER_COMMENT">
     <English>A player who leads a group with another player in it.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_OWNER">
+    <English>The player who placed it</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_WHO_OWNER_COMMENT">
+    <English>The player who made it a hub as a Zeus. A hub synced in Eden has nobody, so for it this means group leaders: a player who leads a group with another player in it.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_WHO_ITEM">
     <English>Players carrying a Player Logistics access item</English>

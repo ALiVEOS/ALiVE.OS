@@ -45,7 +45,8 @@ Parameters:
     ["unitSide", [unit]] - the unit's side as text, a civilian-side player counted by faction
     ["nearHub", [unit]] - the nearest working hub of the unit's side within its radius, or objNull
     ["isAdmin", [unit]] - a logged-in or voted admin, or anyone in single player
-    ["mayWho", [unit, rules, names]] - whether Who Can Collect style rules let the unit in
+    ["mayWho", [unit, rules, names, owner]] - whether Who Can Collect style rules let the unit in; owner is the
+        hub's ALiVE_hub_owner, the id of the player who placed it ("" when synced in Eden: Owner then means leaders)
     ["mayCollect", [unit, hub]] - an admin, or let in by the hub's module
     ["mayDismantle", [unit, hub]] - the same, for its own side's Dismantle in the Manage Hub window
     ["sideCatalogue", [sideText]] - server: every class the tablet could list for that side, lower case
@@ -179,7 +180,7 @@ switch (_op) do {
         if (_radius <= 0) then { _radius = 30 };
         _radius = (_radius max 2) min 200;
         private _who = toUpper (["hub_collect_who", "SIDE"] call _text);
-        _who = ["filter", [_who, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
+        _who = ["filter", [_who, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
         private _names = ["hub_collect_list", ""] call _text;
         private _dismantle = (toLower (["hub_dismantle", "true"] call _text)) in ["true", "1", "yes"];
         private _dismantleTime = parseNumber (["hub_dismantle_time", "15"] call _text);
@@ -187,7 +188,7 @@ switch (_op) do {
         _dismantleTime = (_dismantleTime max 1) min 120;
         private _repairTime = (parseNumber (["hub_repair_time", "0"] call _text)) max 0;
         private _dWho = toUpper (["hub_dismantle_who", "SIDE"] call _text);
-        _dWho = ["filter", [_dWho, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
+        _dWho = ["filter", [_dWho, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
         // a named list (List, or Custom and its name), read under the three lists
         private _list = toUpper (["hub_list", ""] call _text);
         if (_list == "CUSTOM") then { _list = (["hub_list_name", ""] call _text) trim [" ", 0] };
@@ -300,8 +301,13 @@ switch (_op) do {
         // and its name, set in Eden, by a Zeus or from the Manage Hub window
         private _name = ["cleanName", [_hub getVariable ["ALiVE_hub_name", ""]]] call ALIVE_fnc_hub;
         _hub setVariable ["ALiVE_hub_name", _name, true];
+        // and who put it there (Owner in Who Can Collect and Who Can Dismantle): the player's id when a Zeus
+        // placed it, nothing for a hub synced in Eden, where Owner means group leaders, as on a FOB with no deployer
+        private _owner = _hub getVariable ["ALiVE_hub_owner", ""];
+        if !(_owner isEqualType "") then { _owner = "" };
+        _hub setVariable ["ALiVE_hub_owner", _owner, true];
         ALiVE_hub_registry set [_netId, [_side, true, _logic, _logic getVariable ["ALiVE_hub_collect", false], _logic getVariable ["ALiVE_hub_mlMods", []],
-            typeOf _hub, getPosATL _hub, getDir _hub, vectorUp _hub, _name]];
+            typeOf _hub, getPosATL _hub, getDir _hub, vectorUp _hub, _name, _owner]];
         _hub setVariable ["ALiVE_hub_backAt", -1, true];
         _hub setVariable ["ALiVE_hub", [_side, true, _s select 1, _logic], true];
         ALiVE_hub_list pushBackUnique _hub;
@@ -453,9 +459,9 @@ switch (_op) do {
     // Who Can Collect: any ticked rule lets the unit in, through the check every site shares
     // (ALiVE_fnc_siteWho). No admin test here; mayCollect makes it.
     case "mayWho": {
-        _args params [["_unit", objNull, [objNull]], ["_rules", "", [""]], ["_names", "", [""]]];
-        _rules = ["filter", [_rules, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
-        _result = ["mayWho", [_unit, _rules, _names, ""]] call ALiVE_fnc_siteWho;
+        _args params [["_unit", objNull, [objNull]], ["_rules", "", [""]], ["_names", "", [""]], ["_owner", "", [""]]];
+        _rules = ["filter", [_rules, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
+        _result = ["mayWho", [_unit, _rules, _names, _owner]] call ALiVE_fnc_siteWho;
     };
 
     case "mayCollect": {
@@ -466,7 +472,7 @@ switch (_op) do {
         if !(_info isEqualTypeArray ["", true, 0, objNull]) exitWith {};
         if (["isAdmin", [_unit]] call ALIVE_fnc_hub) exitWith { _result = true };
         (["rules", [_info select 3]] call ALIVE_fnc_hub) params ["_rules", "_names"];
-        _result = ["mayWho", [_unit, _rules, _names]] call ALIVE_fnc_hub;
+        _result = ["mayWho", [_unit, _rules, _names, _hub getVariable ["ALiVE_hub_owner", ""]]] call ALIVE_fnc_hub;
     };
 
     case "mayDismantle": {
@@ -477,7 +483,7 @@ switch (_op) do {
         if !(_info isEqualTypeArray ["", true, 0, objNull]) exitWith {};
         if (["isAdmin", [_unit]] call ALIVE_fnc_hub) exitWith { _result = true };
         (["rules", [_info select 3, "DISMANTLE"]] call ALIVE_fnc_hub) params ["_rules", "_names"];
-        _result = ["mayWho", [_unit, _rules, _names]] call ALIVE_fnc_hub;
+        _result = ["mayWho", [_unit, _rules, _names, _hub getVariable ["ALiVE_hub_owner", ""]]] call ALIVE_fnc_hub;
     };
 
     // What the tablet could list for a side, built once per side with the tablet's own sort (scope 2,
@@ -692,7 +698,7 @@ switch (_op) do {
         };
         private _clean = {
             params ["_r", "_n"];
-            [["filter", [_r, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho, ["cleanNames", [_n]] call ALiVE_fnc_siteWho]
+            [["filter", [_r, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho, ["cleanNames", [_n]] call ALiVE_fnc_siteWho]
         };
         ([_rules, _names] call _clean) params ["_rules", "_names"];
         ([_dRules, _dNames] call _clean) params ["_dRules", "_dNames"];
@@ -791,7 +797,7 @@ switch (_op) do {
         if (!isServer || {isNil "ALiVE_hub_registry"} || {!(_netId in ALiVE_hub_registry)}) exitWith {};
         private _e = ALiVE_hub_registry get _netId;
         if (_e select 1) exitWith {};
-        _e params ["_side", "", "_logic", "", "", "_class", "_pos", "_dir", "_up", ["_name", ""]];
+        _e params ["_side", "", "_logic", "", "", "_class", "_pos", "_dir", "_up", ["_name", ""], ["_owner", ""]];
         private _hub = _netId call BIS_fnc_objectFromNetId;
         // mended where it stands, and its ruins cleared; a dismantled hub has none, so nothing nearby is touched
         if (isNull _hub || {!alive _hub}) then {
@@ -807,8 +813,9 @@ switch (_op) do {
             ALiVE_hub_registry deleteAt _netId;
             ALiVE_hub_list = ALiVE_hub_list select { !isNull _x && {_x != _hub} };
             _hub = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
-            // it keeps its name
+            // it keeps its name and its owner
             _hub setVariable ["ALiVE_hub_name", _name];
+            _hub setVariable ["ALiVE_hub_owner", _owner];
             _hub setDir _dir;
             _hub setVectorUp _up;
             _hub setPosATL _pos;
