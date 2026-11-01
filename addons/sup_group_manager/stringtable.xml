@@ -792,6 +792,48 @@
     <Portuguese>Terreno</Portuguese>
     <Russian>Местность</Russian>
 </Key>
+<Key ID="STR_ALIVE_RALLY_MANAGE_WHO">
+    <English>Who can manage</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_MANAGE_WHO_COMMENT">
+    <English>Who may rename or pick up a squad leader's rally point, and rename a rally point synced to this module, standing at it. Any ticked row lets a player in; with none ticked only admins can. Admins always can. Owner, the default, is the leader of the squad that put the point down, as before; a synced point has no owner, so it can only be renamed by the other rows.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_MANAGE_LIST">
+    <English>Who can manage: names</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_MANAGE_LIST_COMMENT">
+    <English>The players Named on the list (the List row) may manage: player IDs, unit classes or the slots' variable names, separated by commas.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_SIDE">
+    <English>Own side</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_SIDE_COMMENT">
+    <English>Anyone who can use the rally point: its side, and for a point kept to one squad, that squad.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_LEADER">
+    <English>Group leaders</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_LEADER_COMMENT">
+    <English>Anyone leading a group with another player in it.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_OWNER">
+    <English>Owner</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_OWNER_COMMENT">
+    <English>The leader of the squad that put the point down. A synced point has none.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_ITEM">
+    <English>Access item</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_ITEM_COMMENT">
+    <English>Anyone carrying one of Player Combat Logistics' access items, or the ALiVE tablet.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_LIST">
+    <English>Named on the list</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_WHO_LIST_COMMENT">
+    <English>Anyone named in Who can manage: names.</English>
+</Key>
 <Key ID="STR_ALIVE_RALLY_RENAME">
     <English>Rename rally point</English>
 </Key>

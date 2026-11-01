@@ -321,6 +321,9 @@ class CfgVehicles {
                             typeName = "STRING";
                             defaultValue = """""";
                     };
+                    class HDR_MANAGE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_MANAGE"; displayName = "WHO CAN MANAGE"; };
+                    class rallyManageWho { property = "ALiVE_sup_rally_rallyManageWho"; displayName = "$STR_ALIVE_RALLY_MANAGE_WHO"; tooltip = "$STR_ALIVE_RALLY_MANAGE_WHO_COMMENT"; control = "ALiVE_RallyManageChoice"; typeName = "STRING"; defaultValue = """OWNER"""; };
+                    class rallyManageList : Edit { property = "ALiVE_sup_rally_rallyManageList"; displayName = "$STR_ALIVE_RALLY_MANAGE_LIST"; tooltip = "$STR_ALIVE_RALLY_MANAGE_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class HDR_DISPLAY : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_DISPLAY"; displayName = "DISPLAY"; };
                     class rallyMarkers : Combo
                         {

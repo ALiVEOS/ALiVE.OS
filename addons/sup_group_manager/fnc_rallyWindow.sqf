@@ -71,19 +71,21 @@ switch (_op) do {
     case "closed": {
         uiNamespace setVariable ["ALiVE_rallyRows", nil];
     };
-    // Rename Rally Point: the rename window with the squad's rally point's name in it
+    // Rename Rally Point: the rename window with the name of the rally point the player stands at and may
+    // rename (Who Can Manage), the squad's own by default
     case "rename": {
-        private _obj = group player getVariable ["ALiVE_rallyDeployed", objNull];
+        private _row = missionNamespace getVariable ["ALiVE_rallyRenameRow", []];
+        private _obj = _row param [0, objNull];
         if (isNull _obj || {!createDialog "ALiVE_RallyRenameWindow"}) exitWith {};
-        private _row = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { (_x select 0) == _obj };
+        uiNamespace setVariable ["ALiVE_rallyRenameObj", _obj];
         private _r = findDisplay 9282;
-        (_r displayCtrl 92831) ctrlSetText ((_row param [0, []]) param [1, ""]);
+        (_r displayCtrl 92831) ctrlSetText (_row param [1, ""]);
         ctrlSetFocus (_r displayCtrl 92831);
     };
     case "renameSend": {
         private _r = findDisplay 9282;
         if (isNull _r) exitWith {};
-        ["rename", [player, ctrlText (_r displayCtrl 92831)]] call ALiVE_fnc_rallyPoint;
+        ["rename", [player, ctrlText (_r displayCtrl 92831), uiNamespace getVariable ["ALiVE_rallyRenameObj", objNull]]] call ALiVE_fnc_rallyPoint;
         closeDialog 1;
     };
 };

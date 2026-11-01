@@ -134,12 +134,23 @@ if (!hasInterface || {!_main}) exitWith {};
 [_logic] spawn {
     params ["_logic"];
     waitUntil { sleep 1; !isNull player };
-    // the rally point the player stands at, kept up to date for the action's condition
+    // the rally point the player stands at, kept up to date for the action's condition, and the ones
+    // within 5 m the player may rename or pick up (Who Can Manage), for those actions'
     if (isNil "ALiVE_rallyNearLoop") then {
         ALiVE_rallyNear = [];
+        ALiVE_rallyRenameRow = [];
+        ALiVE_rallyPickupRow = [];
         ALiVE_rallyNearLoop = [] spawn {
+            private _n = 0;
             while { true } do {
-                ALiVE_rallyNear = if (alive player && {vehicle player == player}) then { ["near", [player]] call ALiVE_fnc_rallyPoint } else { [] };
+                private _ok = alive player && {vehicle player == player};
+                ALiVE_rallyNear = if (_ok) then { ["near", [player]] call ALiVE_fnc_rallyPoint } else { [] };
+                // once a second: the Item rule looks through the player's gear
+                if (_n % 2 == 0) then {
+                    ALiVE_rallyRenameRow = if (_ok) then { ["manageable", [player, "RENAME"]] call ALiVE_fnc_rallyPoint } else { [] };
+                    ALiVE_rallyPickupRow = if (_ok) then { ["manageable", [player, "PICKUP"]] call ALiVE_fnc_rallyPoint } else { [] };
+                };
+                _n = _n + 1;
                 sleep 0.5;
             };
         };
@@ -207,20 +218,23 @@ if (!hasInterface || {!_main}) exitWith {};
         call _add;
         player addEventHandler ["Respawn", { player addAction [(localize "STR_ALIVE_RALLY_ACTION") call ALiVE_fnc_actionTitle, { ["open"] call ALiVE_fnc_rallyWindow }, nil, 1.48, true, true, "", ALiVE_rallyCond, 5] }];
     };
-    // a squad leader's own rally point: deploy it where they stand, pick it up or rename it at it
+    // a squad leader puts down the squad's own rally point where they stand; whoever Who Can Manage lets in
+    // picks a leader's point up or renames it at it, and renames a synced point (the squad's leader alone, by default)
     private _leaderMode = toUpper (_logic getVariable ["leaderRally", "OFF"]);
-    if (_leaderMode != "OFF") then {
-        ALiVE_rallyDeployCond = "leader group _this == _this && {vehicle _this == _this} && {lifeState _this in ['HEALTHY','INJURED']} && {!captive _this}";
-        ALiVE_rallyPickupCond = "leader group _this == _this && {!isNull (group _this getVariable ['ALiVE_rallyDeployed', objNull])} && {(_this distance (group _this getVariable ['ALiVE_rallyDeployed', objNull])) < 5}";
-        if (_useScroll) then {
-            ALiVE_rallyLeaderActions = {
+    ALiVE_rallyLeaderOn = _leaderMode != "OFF";
+    ALiVE_rallyPickupCond = "ALiVE_rallyPickupRow isNotEqualTo []";
+    ALiVE_rallyRenameCond = "ALiVE_rallyRenameRow isNotEqualTo []";
+    if (_useScroll) then {
+        ALiVE_rallyLeaderActions = {
+            if (ALiVE_rallyLeaderOn) then {
                 player addAction [(localize "STR_ALIVE_RALLY_DEPLOY") call ALiVE_fnc_actionTitle, { ["deploy", [player]] call ALiVE_fnc_rallyPoint }, nil, 1.46, false, true, "", ALiVE_rallyDeployCond, 1];
-                player addAction [(localize "STR_ALIVE_RALLY_PICKUP") call ALiVE_fnc_actionTitle, { ["pickup", [player]] call ALiVE_fnc_rallyPoint }, nil, 1.45, false, true, "", ALiVE_rallyPickupCond, 5];
-                player addAction [(localize "STR_ALIVE_RALLY_RENAME") call ALiVE_fnc_actionTitle, { ["rename"] call ALiVE_fnc_rallyWindow }, nil, 1.44, false, true, "", ALiVE_rallyPickupCond, 5];
             };
-            call ALiVE_rallyLeaderActions;
-            player addEventHandler ["Respawn", { call ALiVE_rallyLeaderActions }];
+            player addAction [(localize "STR_ALIVE_RALLY_PICKUP") call ALiVE_fnc_actionTitle, { ["pickup", [player, ALiVE_rallyPickupRow param [0, objNull]]] call ALiVE_fnc_rallyPoint }, nil, 1.45, false, true, "", ALiVE_rallyPickupCond, 5];
+            player addAction [(localize "STR_ALIVE_RALLY_RENAME") call ALiVE_fnc_actionTitle, { ["rename"] call ALiVE_fnc_rallyWindow }, nil, 1.44, false, true, "", ALiVE_rallyRenameCond, 5];
         };
+        ALiVE_rallyDeployCond = "leader group _this == _this && {vehicle _this == _this} && {lifeState _this in ['HEALTHY','INJURED']} && {!captive _this}";
+        call ALiVE_rallyLeaderActions;
+        player addEventHandler ["Respawn", { call ALiVE_rallyLeaderActions }];
     };
     if (_useAce) then {
         waitUntil { sleep 1; !isNil "ace_interact_menu_fnc_createAction" };
@@ -228,13 +242,13 @@ if (!hasInterface || {!_main}) exitWith {};
             private _d = ["ALiVE_RallyDeploy", localize "STR_ALIVE_RALLY_DEPLOY", "", { ["deploy", [player]] call ALiVE_fnc_rallyPoint },
                 { leader group player == player && {vehicle player == player} && {lifeState player in ["HEALTHY", "INJURED"]} && {!captive player} }] call ace_interact_menu_fnc_createAction;
             ["CAManBase", 1, ["ACE_SelfActions"], _d, true] call ace_interact_menu_fnc_addActionToClass;
-            private _p = ["ALiVE_RallyPickup", localize "STR_ALIVE_RALLY_PICKUP", "", { ["pickup", [player]] call ALiVE_fnc_rallyPoint },
-                { leader group player == player && {!isNull (group player getVariable ["ALiVE_rallyDeployed", objNull])} && {(player distance (group player getVariable ["ALiVE_rallyDeployed", objNull])) < 5} }] call ace_interact_menu_fnc_createAction;
-            ["CAManBase", 1, ["ACE_SelfActions"], _p, true] call ace_interact_menu_fnc_addActionToClass;
-            private _n = ["ALiVE_RallyRename", localize "STR_ALIVE_RALLY_RENAME", "", { ["rename"] call ALiVE_fnc_rallyWindow },
-                { leader group player == player && {!isNull (group player getVariable ["ALiVE_rallyDeployed", objNull])} && {(player distance (group player getVariable ["ALiVE_rallyDeployed", objNull])) < 5} }] call ace_interact_menu_fnc_createAction;
-            ["CAManBase", 1, ["ACE_SelfActions"], _n, true] call ace_interact_menu_fnc_addActionToClass;
         };
+        private _p = ["ALiVE_RallyPickup", localize "STR_ALIVE_RALLY_PICKUP", "", { ["pickup", [player, ALiVE_rallyPickupRow param [0, objNull]]] call ALiVE_fnc_rallyPoint },
+            { ALiVE_rallyPickupRow isNotEqualTo [] }] call ace_interact_menu_fnc_createAction;
+        ["CAManBase", 1, ["ACE_SelfActions"], _p, true] call ace_interact_menu_fnc_addActionToClass;
+        private _n = ["ALiVE_RallyRename", localize "STR_ALIVE_RALLY_RENAME", "", { ["rename"] call ALiVE_fnc_rallyWindow },
+            { ALiVE_rallyRenameRow isNotEqualTo [] }] call ace_interact_menu_fnc_createAction;
+        ["CAManBase", 1, ["ACE_SelfActions"], _n, true] call ace_interact_menu_fnc_addActionToClass;
         private _a = ["ALiVE_Rally", localize "STR_ALIVE_RALLY_ACTION", "", { ["open"] call ALiVE_fnc_rallyWindow },
             { ALiVE_rallyNear isNotEqualTo [] && {vehicle player == player} && {lifeState player in ["HEALTHY", "INJURED"]} && {!captive player} }] call ace_interact_menu_fnc_createAction;
         ["CAManBase", 1, ["ACE_SelfActions"], _a, true] call ace_interact_menu_fnc_addActionToClass;

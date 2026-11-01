@@ -22,7 +22,16 @@ Operations:
                                 variable, else the nearest place's name. Side "ANY" (default),
                                 "WEST", "EAST" or "GUER": who may use it.
 "remove"  [object]
-"rename"  [unit, name]          a squad leader's new name for the squad's own rally point
+"rename"  [unit, name, object]  a new name for a rally point the unit stands at and may manage
+                                (Who Can Manage); without the object, its squad's own
+"pickup"  [unit, object]        a squad leader's rally point taken up, by a unit that may manage
+                                it; without the object, its squad's own
+"mayManage" [unit, row, what]   whether the unit may "RENAME" or "PICKUP" that row of
+                                ALiVE_rallyPoints: admins always; a squad leader's point by Who
+                                Can Manage, where Owner is the leader of the squad that put it
+                                down; a synced point only renamed, and Owner lets no one in there
+"manageable" [unit, what]       the row of the rally point within 5 m the unit may manage that
+                                way, or []
 "list"    [unit]                the rally points the unit may use:
                                 [[name, posASL, object or objNull, FOB id or ""], ...]
 "near"    [unit]                the rally point the unit stands at, or []
@@ -84,12 +93,13 @@ switch (_op) do {
 
     case "add": {
         if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
-        _args params [["_obj", objNull, [objNull]], ["_name", "", [""]], ["_side", "ANY", [""]], ["_kind", "script", [""]], ["_owner", grpNull, [grpNull]]];
+        _args params [["_obj", objNull, [objNull]], ["_name", "", [""]], ["_side", "ANY", [""]], ["_kind", "script", [""]], ["_owner", grpNull, [grpNull]], ["_squad", grpNull, [grpNull]]];
         if (isNull _obj) exitWith { _result = false };
         if (_name == "") then { _name = _obj getVariable ["ALiVE_rallyName", ""] };
         if (_name == "") then { _name = [getPosATL _obj] call _autoName };
         private _list = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) && {(_x select 0) != _obj} };
-        _list pushBack [_obj, _name, toUpper _side, _kind, _owner];
+        // a squad leader's point keeps the squad that put it down, also when the whole side may use it
+        _list pushBack [_obj, _name, toUpper _side, _kind, _owner, objNull, _squad];
         ALiVE_rallyPoints = _list;
         publicVariable "ALiVE_rallyPoints";
     };
@@ -165,7 +175,7 @@ switch (_op) do {
         _obj setVectorUp (surfaceNormal (getPosATL _obj));
         _grp setVariable ["ALiVE_rallyDeployed", _obj, true];
         missionNamespace setVariable [_key, time + (["leaderCooldown", 120] call _set)];
-        ["add", [_obj, format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp], str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE")]] call ALiVE_fnc_rallyPoint;
+        ["add", [_obj, format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp], str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE"), _grp]] call ALiVE_fnc_rallyPoint;
         localize "STR_ALIVE_RALLY_UI_DEPLOYED" call _tell;
         [_obj, _grp, _r, ["leaderOverrun", 30] call _set] spawn {
             params ["_obj", "_grp", "_r", "_overrun"];
@@ -191,22 +201,20 @@ switch (_op) do {
         };
     };
 
-    // a squad leader renames the squad's own rally point, standing at it. The name is cleaned here:
-    // no control characters, no < > & (it is shown as structured text), 32 characters at most
+    // a rally point renamed by someone standing at it who may manage it (Who Can Manage). The name is
+    // cleaned here: no control characters, no < > & (it is shown as structured text), 32 characters at most
     case "rename": {
-        _args params [["_unit", objNull, [objNull]], ["_name", "", [""]]];
+        _args params [["_unit", objNull, [objNull]], ["_name", "", [""]], ["_obj", objNull, [objNull]]];
         if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
         // from a player's machine, only for that player's own unit
         if (isNull _unit || {isRemoteExecuted && {remoteExecutedOwner != owner _unit}}) exitWith { _result = false };
-        private _grp = group _unit;
-        private _obj = _grp getVariable ["ALiVE_rallyDeployed", objNull];
-        if (isNull _obj || {leader _grp != _unit} || {_unit distance _obj >= 5}) exitWith { _result = false };
+        if (isNull _obj) then { _obj = (group _unit) getVariable ["ALiVE_rallyDeployed", objNull] };
+        private _list = missionNamespace getVariable ["ALiVE_rallyPoints", []];
+        private _i = if (isNull _obj) then { -1 } else { _list findIf { (_x select 0) == _obj } };
+        if (_i < 0 || {_unit distance _obj >= 5} || {!(["mayManage", [_unit, _list select _i, "RENAME"]] call ALiVE_fnc_rallyPoint)}) exitWith { _result = false };
         private _tell = { [localize "STR_ALIVE_RALLY", _this] remoteExecCall ["ALIVE_fnc_sendHint", _unit] };
         _name = ["cleanName", [_name, 32]] call ALiVE_fnc_siteWho;
         if (_name == "") exitWith { format [localize "STR_ALIVE_RALLY_UI_RENAME_EMPTY", 32] call _tell; _result = false };
-        private _list = missionNamespace getVariable ["ALiVE_rallyPoints", []];
-        private _i = _list findIf { (_x select 0) == _obj };
-        if (_i < 0) exitWith { _result = false };
         (_list select _i) set [1, _name];
         ALiVE_rallyPoints = _list;
         publicVariable "ALiVE_rallyPoints";
@@ -214,15 +222,54 @@ switch (_op) do {
     };
 
     case "pickup": {
-        _args params [["_unit", objNull, [objNull]]];
+        _args params [["_unit", objNull, [objNull]], ["_obj", objNull, [objNull]]];
         if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
-        private _grp = group _unit;
-        private _obj = _grp getVariable ["ALiVE_rallyDeployed", objNull];
-        if (isNull _obj || {leader _grp != _unit}) exitWith { _result = false };
+        if (isNull _obj) then { _obj = (group _unit) getVariable ["ALiVE_rallyDeployed", objNull] };
+        private _row = if (isNull _obj) then { [] } else { (missionNamespace getVariable ["ALiVE_rallyPoints", []]) param [(missionNamespace getVariable ["ALiVE_rallyPoints", []]) findIf { (_x select 0) == _obj }, []] };
+        if (_row isEqualTo [] || {_unit distance _obj >= 5} || {!(["mayManage", [_unit, _row, "PICKUP"]] call ALiVE_fnc_rallyPoint)}) exitWith { _result = false };
+        // the squad that put it down, which may not be the one picking it up
+        private _grp = _row param [6, grpNull];
+        if (isNull _grp) then { _grp = _row param [4, grpNull] };
         ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
         deleteVehicle _obj;
-        _grp setVariable ["ALiVE_rallyDeployed", nil, true];
+        if (!isNull _grp && {(_grp getVariable ["ALiVE_rallyDeployed", objNull]) isEqualTo _obj}) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
     };
+
+    // Who Can Manage: a squad leader's point renamed or picked up, a synced point renamed. Works on any machine.
+    case "mayManage": {
+        _args params [["_unit", objNull, [objNull]], ["_row", [], [[]]], ["_what", "RENAME", [""]]];
+        _result = false;
+        if (isNull _unit || {_row isEqualTo []}) exitWith {};
+        _row params [["_obj", objNull], "", ["_who", "ANY"], ["_kind", ""], ["_owner", grpNull]];
+        if (isNull _obj || {!alive _obj}) exitWith {};
+        // what can be managed at all: a leader's point both ways, a synced one only renamed
+        if !(_kind == "leader" || {_kind == "synced" && {_what == "RENAME"}}) exitWith {};
+        if (["isAdmin", [_unit]] call ALiVE_fnc_siteWho) exitWith { _result = true };
+        // only a point the unit could use: its side's, and its squad's when the point is kept to one squad
+        if !(_who in ["ANY", str side group _unit]) exitWith {};
+        if (!isNull _owner && {_owner != group _unit}) exitWith {};
+        private _rules = ["filter", [["rallyManageWho", "OWNER"] call _set, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
+        private _names = ["rallyManageList", ""] call _set;
+        private _rest = (_rules splitString ",") select { _x != "OWNER" };
+        // Owner: the leader of the squad that put the point down, as before the setting was added; a synced
+        // point has none, so no one
+        private _squad = _row param [6, grpNull];
+        if (isNull _squad) then { _squad = _owner };
+        _result = ("OWNER" in (_rules splitString ",") && {_kind == "leader"} && {!isNull _squad} && {leader _squad isEqualTo _unit})
+            || {_rest isNotEqualTo [] && {["mayWho", [_unit, _rest joinString ",", _names, ""]] call ALiVE_fnc_siteWho}};
+    };
+
+    // the rally point within 5 m the unit may manage that way, nearest first
+    case "manageable": {
+        _args params [["_unit", objNull, [objNull]], ["_what", "RENAME", [""]]];
+        _result = [];
+        if (isNull _unit) exitWith {};
+        private _rows = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) && {(_unit distance (_x select 0)) < 5} };
+        _rows = [_rows, [], { _unit distance (_x select 0) }, "ASCEND"] call BIS_fnc_sortBy;
+        private _i = _rows findIf { ["mayManage", [_unit, _x, _what]] call ALiVE_fnc_rallyPoint };
+        if (_i > -1) then { _result = _rows select _i };
+    };
+
 
     case "list": {
         _args params [["_unit", objNull, [objNull]]];
