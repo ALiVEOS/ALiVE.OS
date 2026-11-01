@@ -94,6 +94,16 @@ if (count _units < 2) exitwith {};
 
 call ALiVE_fnc_staticDataHandler;
 
+// Areas no garrison may put anyone in, from the placement modules' Garrison Area Blacklist,
+// worked out once for the mission. A building or gun counts as in one when its centre is,
+// and a single position is tested on its own, so a building on the edge keeps the places
+// outside. Nothing is tested when no module names an area.
+private _areas = call ALIVE_fnc_garrisonAreaBlacklist;
+private _fnc_outsideAreas = {
+    params ["_p"];
+    (_areas findIf { _p inArea _x }) < 0
+};
+
 private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
 
 // Add armed vehicles to list of static weapons to garrison
@@ -118,6 +128,7 @@ private _staticWeapons = nearestObjects [_position, ["StaticWeapon"], _radius];
 // sweep had before the pushBack broke it.
 _staticWeapons = [_staticWeapons, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
 _staticWeapons = _staticWeapons select { (_x distance2D _groupPosition) <= _fallbackRadius };
+if !(_areas isEqualTo []) then { _staticWeapons = _staticWeapons select { [_x] call _fnc_outsideAreas } };
 
 // A garrison order runs on the server, and a stop only takes on the machine that owns the man: a
 // headless client's men stopped from here walked straight back to their leader. So each man is
@@ -374,7 +385,12 @@ private _preferredClasses = _preferredHash select 1;
 // the array, because filtering asks for the classname of every object a sweep returned
 // and that is real work to do for a filter that can never reject anything.
 private _blacklist = call ALIVE_fnc_garrisonBuildingBlacklist;
-private _excluding = !(_blacklist isEqualTo []);
+private _excluding = !(_blacklist isEqualTo []) || {!(_areas isEqualTo [])};
+// A building no garrison may use: its class is blacklisted, or it stands in a blacklisted area.
+private _fnc_barred = {
+    params ["_b"];
+    ((toLower typeOf _b) in _blacklist) || {!([_b] call _fnc_outsideAreas)}
+};
 
 // The most men any one building may take, from the placement modules, worked out once
 // for the mission the way the blacklist is. Read here rather than passed, so no caller
@@ -423,6 +439,7 @@ if !((_preferredClasses isEqualTo []) || _preferredIndicesOnly) then {
 
     if !(_sweepClasses isEqualTo []) then {
         _preferredBuildings = (nearestObjects [_position, _sweepClasses, _radius]) select { (toLower typeOf _x) in _preferredClasses };
+        if !(_areas isEqualTo []) then { _preferredBuildings = _preferredBuildings select { [_x] call _fnc_outsideAreas } };
     };
 
 };
@@ -523,7 +540,7 @@ private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,
     };
 } forEach (nearestObjects [_position, ["ALIVE_DemoCharge_Remote_Ammo"], _radius + 60]);
 if (_excluding) then {
-    private _kept = _buildings select { !((toLower typeOf _x) in _blacklist) };
+    private _kept = _buildings select { !([_x] call _fnc_barred) };
     { _excludedSet pushBackUnique _x } forEach (_buildings - _kept);
     _buildings = _kept;
 };
@@ -577,7 +594,7 @@ if (_lookedBeyond) then {
     // here, which is why the count above is a set rather than a running total.
     private _extra = _houses - _buildings - _preferredBuildings;
     if (_excluding) then {
-        private _kept = _extra select { !((toLower typeOf _x) in _blacklist) };
+        private _kept = _extra select { !([_x] call _fnc_barred) };
         { _excludedSet pushBackUnique _x } forEach (_extra - _kept);
         _extra = _kept;
     };
@@ -616,7 +633,7 @@ if (_fieldworkFirst && {!((missionNamespace getVariable ["ALIVE_militaryFieldwor
     _fieldworks = (nearestObjects [_position, ["House","Building"], _radius]) select {
         ((toLower ((getModelInfo _x) select 1)) in ALiVE_fieldworkModels) && {!((_x buildingPos 0) isEqualTo [0,0,0])}
     };
-    if (_excluding) then { _fieldworks = _fieldworks select { !((toLower typeOf _x) in _blacklist) } };
+    if (_excluding) then { _fieldworks = _fieldworks select { !([_x] call _fnc_barred) } };
     _fieldworks = _fieldworks - _preferredBuildings;
     _fieldworks = [_fieldworks, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
 };
@@ -871,6 +888,13 @@ private _fnc_claimRound = {
             if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
                 ["ALIVE_fnc_groupGarrison - ring-scatter %1 positions around %2 (no buildingPos)", _ringCount, typeOf _building] call ALiVE_fnc_dump;
             };
+        };
+
+        // A position inside a blacklisted area is not offered, so a building on the edge of one
+        // seats men only in the part outside it.
+        if !(_areas isEqualTo []) then {
+            _preferred = _preferred select { [_x] call _fnc_outsideAreas };
+            _overflow = _overflow select { [_x] call _fnc_outsideAreas };
         };
 
         // The curated positions keep the order they were written in. Everything else keeps
@@ -1134,7 +1158,7 @@ if (count _units > 0 && {_fillShortfall} && {!_lookedBeyond}) then {
     private _swept = ([_groupPosition, floor(_fallbackRadius/2)] call ALIVE_fnc_getEnterableHouses) select { !(_x isKindOf "CBA_buildingPos") };
     private _evidence = _swept - _buildings;
     if (_excluding) then {
-        _evidence = _evidence select { !((toLower typeOf _x) in _blacklist) };
+        _evidence = _evidence select { !([_x] call _fnc_barred) };
     };
     _evidence = [_evidence, [], { _x distance2D _groupPosition }, "ASCEND"] call BIS_fnc_sortBy;
     _houseFound = _houseFound + _evidence;

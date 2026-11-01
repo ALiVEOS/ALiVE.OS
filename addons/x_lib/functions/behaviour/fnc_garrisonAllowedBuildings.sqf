@@ -4,7 +4,8 @@ SCRIPT(garrisonAllowedBuildings);
 Function: ALIVE_fnc_garrisonAllowedBuildings
 
 Description:
-Drops the buildings no garrison may use from a list of them.
+Drops the buildings no garrison may use from a list of them: a blacklisted class, or a
+building standing in a blacklisted area (ALIVE_fnc_garrisonAreaBlacklist).
 
 The seating pass and the passes that size a garrison before it exists both sweep for
 the same classes, so both have to exclude the same ones. When they disagree the count
@@ -28,6 +29,7 @@ private _props = [nearestObjects [_pos, ALIVE_garrisonPositions select 1, _radiu
 
 See Also:
 - <ALIVE_fnc_garrisonBuildingBlacklist>
+- <ALIVE_fnc_garrisonAreaBlacklist>
 
 Author:
 Jman
@@ -36,6 +38,10 @@ Jman
 params [["_buildings", [], [[]]]];
 
 private _blacklist = call ALIVE_fnc_garrisonBuildingBlacklist;
-if (_blacklist isEqualTo []) exitWith { _buildings };
+private _areas = call ALIVE_fnc_garrisonAreaBlacklist;
+if (_blacklist isEqualTo [] && {_areas isEqualTo []}) exitWith { _buildings };
 
-_buildings select { !((toLower typeOf _x) in _blacklist) }
+_buildings select {
+    private _b = _x;
+    !((toLower typeOf _b) in _blacklist) && {(_areas findIf { _b inArea _x }) < 0}
+}

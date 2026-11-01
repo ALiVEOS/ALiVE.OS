@@ -315,6 +315,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_CP_GARRISON_BUILDING_BLACKLIST_COMMENT";
                                 defaultValue = """""";
                         };
+                        class garrisonAreaBlacklist : Edit { property = "ALiVE_civ_placement_garrisonAreaBlacklist"; displayName = "$STR_ALIVE_CP_GARRISON_AREA_BLACKLIST"; tooltip = "$STR_ALIVE_CP_GARRISON_AREA_BLACKLIST_COMMENT"; defaultValue = """"""; };
                         class garrisonOccupancyLimit : Edit { property = "ALiVE_civ_placement_garrisonOccupancyLimit"; displayName = "$STR_ALIVE_CP_GARRISON_OCCUPANCY_LIMIT"; tooltip = "$STR_ALIVE_CP_GARRISON_OCCUPANCY_LIMIT_COMMENT"; defaultValue = """"""; };
 
                         // ---- Roadblocks -----------------------------------------------------

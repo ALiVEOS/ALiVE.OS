@@ -200,6 +200,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST_COMMENT";
                                 defaultValue = """""";
                         };
+                        class garrisonAreaBlacklist : Edit { property = "ALiVE_mil_placement_garrisonAreaBlacklist"; displayName = "$STR_ALIVE_MP_GARRISON_AREA_BLACKLIST"; tooltip = "$STR_ALIVE_MP_GARRISON_AREA_BLACKLIST_COMMENT"; defaultValue = """"""; };
                         class garrisonOccupancyLimit : Edit { property = "ALiVE_mil_placement_garrisonOccupancyLimit"; displayName = "$STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT"; tooltip = "$STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT_COMMENT"; defaultValue = """"""; };
                         class garrisonCompositions : Combo { property = "ALiVE_mil_placement_garrisonCompositions"; displayName = "$STR_ALIVE_MP_GARRISON_COMPOSITIONS"; tooltip = "$STR_ALIVE_MP_GARRISON_COMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; }; };
 
