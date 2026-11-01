@@ -21,7 +21,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\mil_placement_custom\icon_mil_CMP.paa";
                 class Attributes : AttributesBase
                 {
-                        // ---- General --------------------------------------------------------
+                        // ---- General -----------------------------------------------------
                         class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_GENERAL"; displayName = "GENERAL"; };
                         class debug : Combo { property = "ALiVE_mil_placement_custom_debug"; displayName = "$STR_ALIVE_CMP_DEBUG"; tooltip = "$STR_ALIVE_CMP_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class factions
@@ -50,36 +50,28 @@ class CfgVehicles {
                         class priority : Edit { property = "ALiVE_mil_placement_custom_priority"; displayName = "$STR_ALIVE_CMP_PRIORITY"; tooltip = "$STR_ALIVE_CMP_PRIORITY_COMMENT"; defaultValue = """50"""; };
                         class size : Edit { property = "ALiVE_mil_placement_custom_size"; displayName = "$STR_ALIVE_CMP_SIZE"; tooltip = "$STR_ALIVE_CMP_SIZE_COMMENT"; defaultValue = """300"""; };
                         class allowPlayerTasking : Combo { property = "ALiVE_mil_placement_custom_allowPlayerTasking"; displayName = "$STR_ALIVE_CMP_ALLOW_PLAYER_TASK"; tooltip = "$STR_ALIVE_CMP_ALLOW_PLAYER_TASK_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-                        // Reserve-pool attributes - shared semantics with mil_placement.
-                        // Stringtable keys are canonical in mil_placement (STR_ALIVE_MP_*)
-                        // and cross-referenced here; keeps a single source of truth across
-                        // the four placement modules that have a Readiness attribute.
-                        class HDR_RESERVE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_RESERVE"; displayName = "$STR_ALIVE_MP_HDR_RESERVE"; };
-                        class readinessLevel : Edit { property = "ALiVE_mil_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CMP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CMP_READINESS_LEVEL_COMMENT"; defaultValue = """100"""; };
-                        class activePatrolPercent : Edit { property = "ALiVE_mil_placement_custom_activePatrolPercent"; displayName = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT"; defaultValue = """75"""; };
-                        class reserveActivationThreshold : Edit { property = "ALiVE_mil_placement_custom_reserveActivationThreshold"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT"; defaultValue = """50"""; };
-                        class reserveActivationCooldown : Edit { property = "ALiVE_mil_placement_custom_reserveActivationCooldown"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN_COMMENT"; defaultValue = """30"""; };
-                        class reserveEngagementMultiplier : Combo
+
+                        // ---- Mission-wide garrison rules: read from every placement module ----
+                        class HDR_GARRISON_BLDG : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_GARRISON_BLDG"; displayName = "MISSION-WIDE GARRISON RULES"; };
+                        class guardPatrolPercentage : Edit { property = "ALiVE_mil_placement_custom_guardPatrolPercentage"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT_COMMENT"; defaultValue = """50"""; };
+                        class preferredGarrisonPositions : ALiVE_EditMultilineSQF
                         {
-                                property = "ALiVE_mil_placement_custom_reserveEngagementMultiplier"; displayName = "$STR_ALIVE_MP_RESERVE_ENGAGEMENT_MULTIPLIER"; tooltip = "$STR_ALIVE_MP_RESERVE_ENGAGEMENT_MULTIPLIER_COMMENT"; defaultValue = """3""";
-                                class Values { class CLOSE{name="1.5x cluster";value="1.5";}; class NEAR{name="2x cluster";value="2";}; class STANDARD{name="3x cluster";value="3";default=1;}; class FAR{name="4x cluster";value="4";}; class WIDE{name="6x cluster";value="6";}; };
+                                property = "ALiVE_mil_placement_custom_preferredGarrisonPositions";
+                                displayName = "$STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS";
+                                tooltip = "$STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS_COMMENT";
+                                defaultValue = """""";
                         };
-                        class reserveLockClearedBuildings : Combo
+                        class garrisonBuildingBlacklist : ALiVE_EditMultilineSQF
                         {
-                                property = "ALiVE_mil_placement_custom_reserveLockClearedBuildings"; displayName = "$STR_ALIVE_MP_RESERVE_LOCK_CLEARED_BUILDINGS"; tooltip = "$STR_ALIVE_MP_RESERVE_LOCK_CLEARED_BUILDINGS_COMMENT"; defaultValue = """1""";
-                                class Values { class YES{name="Yes";value="1";default=1;}; class NO{name="No";value="0";}; };
+                                property = "ALiVE_mil_placement_custom_garrisonBuildingBlacklist";
+                                displayName = "$STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST";
+                                tooltip = "$STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST_COMMENT";
+                                defaultValue = """""";
                         };
-                        class reserveEmptyVehicleLocked : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_reserveEmptyVehicleLocked"; displayName = "$STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED"; tooltip = "$STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED_COMMENT"; defaultValue = """1""";
-                                class Values { class YES{name="Yes";value="1";default=1;}; class NO{name="No";value="0";}; };
-                        };
-                        class reserveOrphanCrewBehaviour : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_reserveOrphanCrewBehaviour"; displayName = "$STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR"; tooltip = "$STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR_COMMENT"; defaultValue = """SpawnAsInfantry""";
-                                class Values { class INFANTRY{name="Spawn as infantry";value="SpawnAsInfantry";default=1;}; class DROP{name="Drop silently";value="Drop";}; };
-                        };
-                        // ---- Force Composition ----------------------------------------------
+                        class garrisonAreaBlacklist : Edit { property = "ALiVE_mil_placement_custom_garrisonAreaBlacklist"; displayName = "$STR_ALIVE_MP_GARRISON_AREA_BLACKLIST"; tooltip = "$STR_ALIVE_MP_GARRISON_AREA_BLACKLIST_COMMENT"; defaultValue = """"""; };
+                        class garrisonOccupancyLimit : Edit { property = "ALiVE_mil_placement_custom_garrisonOccupancyLimit"; displayName = "$STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT"; tooltip = "$STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT_COMMENT"; defaultValue = """"""; };
+
+                        // ---- Force composition -------------------------------------------
                         class HDR_FORCE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_FORCE"; displayName = "FORCE COMPOSITION"; };
                         class customInfantryCount : Edit { property = "ALiVE_mil_placement_custom_customInfantryCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customMotorisedCount : Edit { property = "ALiVE_mil_placement_custom_customMotorisedCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT_COMMENT"; defaultValue = """0"""; };
@@ -87,7 +79,87 @@ class CfgVehicles {
                         class customArmourCount : Edit { property = "ALiVE_mil_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customSpecOpsCount : Edit { property = "ALiVE_mil_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """0"""; };
 
-                        // ---- AI Artillery (#887) --------------------------------------------
+                        // ---- Garrison groups ---------------------------------------------
+                        class HDR_GARRISON_GROUPS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_GARRISON_GROUPS"; displayName = "GARRISON GROUPS"; ALiVE_showWhen[] = {{"customInfantryCount", ">", 1}}; };
+                        class guardProbability : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_guardProbability"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT"; tooltip = "$STR_ALIVE_CMP_GUARD_AMOUNT_COMMENT"; defaultValue = """0.2""";
+                                class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_NONE";value="0";}; class LOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_LOW";value="0.2";default=1;}; class MEDIUMLOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMLOW";value="0.4";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUM";value="0.6";}; class MEDIUMHIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMHIGH";value="0.8";}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_HIGH";value="1";}; };
+                                ALiVE_showWhen[] = {{"guardCount", "empty"}};
+                                ALiVE_showStyle = "dim";
+                        };
+                        class guardCount : Edit { property = "ALiVE_mil_placement_custom_guardCount"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_COUNT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_COUNT_COMMENT"; defaultValue = """"""; };
+
+                        // ---- Garrisons ---------------------------------------------------
+                        class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_AMBIENT"; displayName = "GARRISONS"; };
+                        class guardRadius : Edit { property = "ALiVE_mil_placement_custom_guardRadius"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_RADIUS"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_RADIUS_COMMENT"; defaultValue = """200"""; };
+                        class garrisonPatrolBehaviour : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_garrisonPatrolBehaviour";
+                                displayName = "$STR_ALIVE_MP_GARRISON_PATROL_BEHAVIOUR";
+                                tooltip = "$STR_ALIVE_MP_GARRISON_PATROL_BEHAVIOUR_COMMENT";
+                                defaultValue = """SAFE""";
+                                class Values
+                                {
+                                    class Careless { name = "Careless"; value = "CARELESS"; };
+                                    class Safe { name = "Safe"; value = "SAFE"; default = 1; };
+                                    class Aware { name = "Aware"; value = "AWARE"; };
+                                    class Combat { name = "Combat"; value = "COMBAT"; };
+                                    class Stealth { name = "Stealth"; value = "STEALTH"; };
+                                };
+                                ALiVE_showWhen[] = {{"guardPatrolPercentage", ">", 0}};
+                        };
+                        class garrisonPatrolSpeed : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_garrisonPatrolSpeed";
+                                displayName = "$STR_ALIVE_MP_GARRISON_PATROL_SPEED";
+                                tooltip = "$STR_ALIVE_MP_GARRISON_PATROL_SPEED_COMMENT";
+                                defaultValue = """LIMITED""";
+                                class Values
+                                {
+                                    class Limited { name = "Limited (walk)"; value = "LIMITED"; default = 1; };
+                                    class Normal { name = "Normal (jog)"; value = "NORMAL"; };
+                                    class Full { name = "Full (run)"; value = "FULL"; };
+                                };
+                                ALiVE_showWhen[] = {{"guardPatrolPercentage", ">", 0}};
+                        };
+                        class garrisonCompositions : Combo { property = "ALiVE_mil_placement_custom_garrisonCompositions"; displayName = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS"; tooltip = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; }; };
+
+                        // ---- Readiness and reserves --------------------------------------
+                        // Reserve-pool attributes - shared semantics with mil_placement.
+                        // Stringtable keys are canonical in mil_placement (STR_ALIVE_MP_*)
+                        // and cross-referenced here; keeps a single source of truth across
+                        // the four placement modules that have a Readiness attribute.
+                        class HDR_RESERVE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_RESERVE"; displayName = "$STR_ALIVE_MP_HDR_RESERVE"; };
+                        class readinessLevel : Edit { property = "ALiVE_mil_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CMP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CMP_READINESS_LEVEL_COMMENT"; defaultValue = """100"""; };
+                        class activePatrolPercent : Edit { property = "ALiVE_mil_placement_custom_activePatrolPercent"; displayName = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT"; defaultValue = """75"""; };
+                        class reserveEmptyVehicleLocked : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_reserveEmptyVehicleLocked"; displayName = "$STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED"; tooltip = "$STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED_COMMENT"; defaultValue = """1""";
+                                class Values { class YES{name="Yes";value="1";default=1;}; class NO{name="No";value="0";}; };
+                        };
+                        class reserveActivationThreshold : Edit { property = "ALiVE_mil_placement_custom_reserveActivationThreshold"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT"; defaultValue = """50"""; ALiVE_showWhen[] = {{"readinessLevel", "<", 100}, {"readinessLevel", "not", "1"}}; };
+                        class reserveActivationCooldown : Edit { property = "ALiVE_mil_placement_custom_reserveActivationCooldown"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN_COMMENT"; defaultValue = """30"""; ALiVE_showWhen[] = {{"readinessLevel", "<", 100}, {"readinessLevel", "not", "1"}}; };
+                        class reserveEngagementMultiplier : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_reserveEngagementMultiplier"; displayName = "$STR_ALIVE_MP_RESERVE_ENGAGEMENT_MULTIPLIER"; tooltip = "$STR_ALIVE_MP_RESERVE_ENGAGEMENT_MULTIPLIER_COMMENT"; defaultValue = """3""";
+                                class Values { class CLOSE{name="1.5x cluster";value="1.5";}; class NEAR{name="2x cluster";value="2";}; class STANDARD{name="3x cluster";value="3";default=1;}; class FAR{name="4x cluster";value="4";}; class WIDE{name="6x cluster";value="6";}; };
+                                ALiVE_showWhen[] = {{"readinessLevel", "<", 100}, {"readinessLevel", "not", "1"}};
+                        };
+                        class reserveLockClearedBuildings : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_reserveLockClearedBuildings"; displayName = "$STR_ALIVE_MP_RESERVE_LOCK_CLEARED_BUILDINGS"; tooltip = "$STR_ALIVE_MP_RESERVE_LOCK_CLEARED_BUILDINGS_COMMENT"; defaultValue = """1""";
+                                class Values { class YES{name="Yes";value="1";default=1;}; class NO{name="No";value="0";}; };
+                                ALiVE_showWhen[] = {{"readinessLevel", "<", 100}, {"readinessLevel", "not", "1"}};
+                        };
+                        class reserveOrphanCrewBehaviour : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_reserveOrphanCrewBehaviour"; displayName = "$STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR"; tooltip = "$STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR_COMMENT"; defaultValue = """SpawnAsInfantry""";
+                                class Values { class INFANTRY{name="Spawn as infantry";value="SpawnAsInfantry";default=1;}; class DROP{name="Drop silently";value="Drop";}; };
+                                ALiVE_showWhen[] = {{"readinessLevel", "<", 100}, {"readinessLevel", "not", "1"}};
+                        };
+
+                        // ---- AI artillery ------------------------------------------------
                         class HDR_ARTILLERY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ARTILLERY"; displayName = "AI ARTILLERY"; };
                         class customArtilleryCount : Edit { property = "ALiVE_mil_placement_custom_customArtilleryCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT"; defaultValue = """0"""; };
                         // Optional donor-faction dropdown - shared ALiVE_FactionChoice
@@ -101,6 +173,7 @@ class CfgVehicles {
                             typeName     = "STRING";
                             expression   = "_this setVariable ['customArtilleryFaction', _value];";
                             defaultValue = """""";
+                                ALiVE_showWhen[] = {{"customArtilleryCount", ">", 0}};
                         };
                         // #876 - guns per battery when composing artillery from vehicles
                         // (e.g. RHS M252/M119, which ship no CfgGroups Artillery group)
@@ -119,6 +192,7 @@ class CfgVehicles {
                                     class Sz6 { name = "6"; value = "6"; };
                                     class Sz8 { name = "8"; value = "8"; };
                                 };
+                                ALiVE_showWhen[] = {{"customArtilleryCount", ">", 0}};
                         };
                         // Artillery type (A. Ares on Discord, 26 Oct)
                         class customArtilleryType : Combo
@@ -134,9 +208,10 @@ class CfgVehicles {
                                     class Towed  { name = "Towed guns"; value = "TOWED"; };
                                     class SP     { name = "Self-propelled"; value = "SP"; };
                                 };
+                                ALiVE_showWhen[] = {{"customArtilleryCount", ">", 0}};
                         };
 
-                        // ---- Anti-Air -------------------------------------------------------
+                        // ---- Anti-air ----------------------------------------------------
                         class HDR_ANTIAIR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ANTIAIR"; displayName = "$STR_ALIVE_CMP_HDR_ANTIAIR"; };
                         class aaCount : Edit { property = "ALiVE_mil_placement_custom_aaCount"; displayName = "$STR_ALIVE_CMP_AA_COUNT"; tooltip = "$STR_ALIVE_CMP_AA_COUNT_COMMENT"; defaultValue = """0"""; };
                         class aaBehaviour : Combo
@@ -150,6 +225,7 @@ class CfgVehicles {
                                     class STATIC  { name = "$STR_ALIVE_CMP_AA_BEHAVIOUR_STATIC";  value = "static"; default = 1; };
                                     class ROAMING { name = "$STR_ALIVE_CMP_AA_BEHAVIOUR_ROAMING"; value = "roaming"; };
                                 };
+                                ALiVE_showWhen[] = {{"aaCount", ">", 0}};
                         };
                         class aaClasses
                         {
@@ -160,65 +236,10 @@ class CfgVehicles {
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['aaClasses', _value];";
                                 defaultValue = """""";
-                        };
-                        // ---- Ambient Presence -----------------------------------------------
-                        class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_AMBIENT"; displayName = "GARRISONS"; };
-                        class guardProbability : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_guardProbability"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT"; tooltip = "$STR_ALIVE_CMP_GUARD_AMOUNT_COMMENT"; defaultValue = """0.2""";
-                                class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_NONE";value="0";}; class LOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_LOW";value="0.2";default=1;}; class MEDIUMLOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMLOW";value="0.4";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUM";value="0.6";}; class MEDIUMHIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMHIGH";value="0.8";}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_HIGH";value="1";}; };
-                        };
-                        class guardCount : Edit { property = "ALiVE_mil_placement_custom_guardCount"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_COUNT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_COUNT_COMMENT"; defaultValue = """"""; };
-                        class guardRadius : Edit { property = "ALiVE_mil_placement_custom_guardRadius"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_RADIUS"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_RADIUS_COMMENT"; defaultValue = """200"""; };
-                        class guardPatrolPercentage : Edit { property = "ALiVE_mil_placement_custom_guardPatrolPercentage"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT_COMMENT"; defaultValue = """50"""; };
-                        class garrisonPatrolBehaviour : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_garrisonPatrolBehaviour";
-                                displayName = "$STR_ALIVE_MP_GARRISON_PATROL_BEHAVIOUR";
-                                tooltip = "$STR_ALIVE_MP_GARRISON_PATROL_BEHAVIOUR_COMMENT";
-                                defaultValue = """SAFE""";
-                                class Values
-                                {
-                                    class Careless { name = "Careless"; value = "CARELESS"; };
-                                    class Safe { name = "Safe"; value = "SAFE"; default = 1; };
-                                    class Aware { name = "Aware"; value = "AWARE"; };
-                                    class Combat { name = "Combat"; value = "COMBAT"; };
-                                    class Stealth { name = "Stealth"; value = "STEALTH"; };
-                                };
-                        };
-                        class garrisonPatrolSpeed : Combo
-                        {
-                                property = "ALiVE_mil_placement_custom_garrisonPatrolSpeed";
-                                displayName = "$STR_ALIVE_MP_GARRISON_PATROL_SPEED";
-                                tooltip = "$STR_ALIVE_MP_GARRISON_PATROL_SPEED_COMMENT";
-                                defaultValue = """LIMITED""";
-                                class Values
-                                {
-                                    class Limited { name = "Limited (walk)"; value = "LIMITED"; default = 1; };
-                                    class Normal { name = "Normal (jog)"; value = "NORMAL"; };
-                                    class Full { name = "Full (run)"; value = "FULL"; };
-                                };
+                                ALiVE_showWhen[] = {{"aaCount", ">", 0}};
                         };
 
-                        class HDR_GARRISON_BLDG : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_GARRISON_BLDG"; displayName = "GARRISON BUILDINGS"; };
-                        class preferredGarrisonPositions : ALiVE_EditMultilineSQF
-                        {
-                                property = "ALiVE_mil_placement_custom_preferredGarrisonPositions";
-                                displayName = "$STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS";
-                                tooltip = "$STR_ALIVE_MP_PREFERRED_GARRISON_POSITIONS_COMMENT";
-                                defaultValue = """""";
-                        };
-                        class garrisonBuildingBlacklist : ALiVE_EditMultilineSQF
-                        {
-                                property = "ALiVE_mil_placement_custom_garrisonBuildingBlacklist";
-                                displayName = "$STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST";
-                                tooltip = "$STR_ALIVE_MP_GARRISON_BUILDING_BLACKLIST_COMMENT";
-                                defaultValue = """""";
-                        };
-                        class garrisonAreaBlacklist : Edit { property = "ALiVE_mil_placement_custom_garrisonAreaBlacklist"; displayName = "$STR_ALIVE_MP_GARRISON_AREA_BLACKLIST"; tooltip = "$STR_ALIVE_MP_GARRISON_AREA_BLACKLIST_COMMENT"; defaultValue = """"""; };
-                        class garrisonOccupancyLimit : Edit { property = "ALiVE_mil_placement_custom_garrisonOccupancyLimit"; displayName = "$STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT"; tooltip = "$STR_ALIVE_MP_GARRISON_OCCUPANCY_LIMIT_COMMENT"; defaultValue = """"""; };
-                        class garrisonCompositions : Combo { property = "ALiVE_mil_placement_custom_garrisonCompositions"; displayName = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS"; tooltip = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; }; };
-
+                        // ---- HQ and placed assets ----------------------------------------
                         class HDR_ASSETS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ASSETS"; displayName = "HQ & PLACED ASSETS"; };
                         class composition
                         {
@@ -243,7 +264,8 @@ class CfgVehicles {
                         };
                         class placeHelis : Combo { property = "ALiVE_mil_placement_custom_placeHelis"; displayName = "$STR_ALIVE_MP_PLACE_HELI"; tooltip = "$STR_ALIVE_MP_PLACE_HELI_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class placeSupplies : Combo { property = "ALiVE_mil_placement_custom_placeSupplies"; displayName = "$STR_ALIVE_MP_PLACE_SUPPLIES"; tooltip = "$STR_ALIVE_MP_PLACE_SUPPLIES_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-                        // ---- Objective Objects (#875) ---------------------------------------
+
+                        // ---- Objective objects -------------------------------------------
                         class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
                         // AA-style triplet: count Edit + behaviour Combo + picker.
                         class objectiveObjectsCount : Edit
@@ -259,6 +281,7 @@ class CfgVehicles {
                                 displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE";
                                 tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE_COMMENT";
                                 defaultValue = """100""";
+                                ALiVE_showWhen[] = {{"objectiveObjectsCount", ">", 0}};
                         };
                         class objectiveObjectsBehaviour : Combo
                         {
@@ -272,6 +295,7 @@ class CfgVehicles {
                                     class DISPERSED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_DISPERSED"; value = "dispersed"; default = 1; };
                                     class PERIMETER { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_PERIMETER"; value = "perimeter"; };
                                 };
+                                ALiVE_showWhen[] = {{"objectiveObjectsCount", ">", 0}};
                         };
                         class objectiveObjects
                         {
@@ -282,8 +306,10 @@ class CfgVehicles {
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['objectiveObjects', _value];";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"objectiveObjectsCount", ">", 0}};
                         };
-                        // ---- On Spawn Hook --------------------------------------------------
+
+                        // ---- On spawn hook -----------------------------------------------
                         class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
                         class onEachSpawn : ALiVE_EditMultilineSQF
                         {
@@ -303,6 +329,7 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = true; default = 1; };
                                     class No { name = "No"; value = false; };
                                 };
+                                ALiVE_showWhen[] = {{"onEachSpawn", "filled"}};
                         };
                         class ModuleDescription : ModuleDescription {};
                 };
