@@ -3037,6 +3037,7 @@ if (isServer) then {
                 switch (true) do {
                     case ("asymmetric" in _types): { "Support the insurgency: hit the occupying forces where they are weak, recruit, and stay out of sight." };
                     case ("invasion" in _types): { "Support your AI Commander's offensive: take enemy-held objectives and hold them. Your task list and the command tablet say where you're needed." };
+                    case ("assault" in _types): { "Support your AI Commander's assault: it attacks one objective at a time, in waves, until it falls. Your task list and the command tablet say where you're needed." };
                     default { "Hold what your AI Commander holds and push back any enemy attack. Your task list and the command tablet say where you're needed." };
                 };
             };

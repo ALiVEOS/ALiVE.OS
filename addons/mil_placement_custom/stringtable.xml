@@ -39,7 +39,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_PRIORITY_COMMENT">
-    <English>Priority of the custom objective. Only an Occupation commander uses it when choosing targets, together with size, height and distance; Invasion and Asymmetric commanders go by distance. Military Logistics also sends reinforcements toward the highest-priority objectives the commander holds.</English>
+    <English>Priority of the custom objective. Occupation and Dug In commanders use it when choosing targets, together with size, height and distance. An Assault commander attacks the highest priority first, the nearest first among equals, unless Assault Targets names its targets. Invasion and Asymmetric commanders go by distance. Military Logistics also sends reinforcements toward the highest-priority objectives the commander holds.</English>
     <Chinesesimp>自定义目标的优先级。只有占领型指挥官在选择目标时使用它（与大小、高度和距离一起考虑）；入侵型和非对称型指挥官按距离选择。军事后勤也会将增援送往指挥官所控制的最高优先级目标。</Chinesesimp>
     <Spanish>Prioridad del objetivo personalizado. Solo un comandante de Ocupación la usa al elegir objetivos, junto con el tamaño, la altura y la distancia; los comandantes de Invasión y Asimétricos se guían por la distancia. La Logística militar también envía refuerzos hacia los objetivos de mayor prioridad que controla el comandante.</Spanish>
 </Key>

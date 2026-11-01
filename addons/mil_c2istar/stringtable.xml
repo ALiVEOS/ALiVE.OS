@@ -501,7 +501,7 @@
     <English>What your AI Commander has found out about the objectives it is about to attack</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_COMMANDER_PICTURE_COMMENT">
-    <English>The Commander's Picture page on the tablet (C2ISTAR menu, or Intel then Commander). It shows what your side's AI Commander has found out about the objectives it is about to attack, when its Find Out Before Attacking is on: how sure it is, where its recon has got to, the groups seen there (on the map only when its Intel Markers are on) and what happened to them once an objective falls. Read and orders adds Go now and Look again buttons for players allowed to give it orders (C2ISTAR Ops limit). Off hides the page.</English>
+    <English>The Commander's Picture page on the tablet (C2ISTAR menu, or Intel then Commander). It shows what your side's AI Commander has found out about the objectives it is about to attack, when its Find Out Before Attacking is on: how sure it is, where its recon has got to, the groups seen there (on the map only when its Intel Markers are on) and what happened to them once an objective falls. Read and orders adds Go now, Look again and Strike buttons for players allowed to give it orders (C2ISTAR Ops limit). Strike shows once vehicles have been seen at an objective it is finding out about or going into. Off hides the page.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_INTEL_LOG">
     <English>Tablet Intel Log</English>
