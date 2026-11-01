@@ -219,7 +219,7 @@ switch (_op) do {
         ["open", [format [localize "STR_ALIVE_HUB_UI_PERM_TITLE", ["label", [_hub]] call ALIVE_fnc_hub], format [localize "STR_ALIVE_HUB_UI_PERM_NOTE", _n], [
             [localize "STR_ALIVE_HUB_COLLECT_WHO", localize "STR_ALIVE_HUB_COLLECT_LIST", localize "STR_ALIVE_HUB_COLLECT_LIST_COMMENT", _tokens, _cRules, _cNames],
             [localize "STR_ALIVE_HUB_DISMANTLE_WHO", localize "STR_ALIVE_HUB_DISMANTLE_LIST", localize "STR_ALIVE_HUB_DISMANTLE_LIST_COMMENT", _tokens, _dRules, _dNames]
-        ], _apply]] call ALiVE_fnc_siteWhoDialog;
+        ], _apply, compile format ["['permReset', [%1]] remoteExecCall ['ALIVE_fnc_hubRequest', 2]; closeDialog 0", str (_hub call BIS_fnc_netId)]]] call ALiVE_fnc_siteWhoDialog;
     };
 
     case "notify": {

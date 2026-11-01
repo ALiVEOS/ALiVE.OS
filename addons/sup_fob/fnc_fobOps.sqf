@@ -43,6 +43,7 @@ respawn - [fobID] -> whether the FOB now has a respawn point (active, at or abov
 rename - [fobID, name] -> true when the FOB took the new name
 retype - [fobID, type id] -> true when the FOB changed to that FOB type
 permissions - [rules, list] -> true when an admin changed Who Can Dismantle and its list
+permReset - [] -> true when an admin dropped that change, so the module's settings apply again
 fieldHQ - [object, "KIT" or "CRATE"] -> the FOB kit or supply crate handed out, or false
 repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
 repairCost - [fobID] -> the supply a repair costs now
@@ -1256,7 +1257,8 @@ switch (_op) do {
     };
 
     // An admin changes Who Can Dismantle and its list in game, from the Permissions window. It
-    // holds for every FOB until the mission restarts, when the module's settings apply again.
+    // holds for every FOB, and with Persistent on it is saved with them, until an admin picks
+    // Use module settings (permReset).
     case "permissions": {
         _result = false;
         _args params [["_rules", "", [""]], ["_names", "", [""]]];
@@ -1265,8 +1267,23 @@ switch (_op) do {
         _names = ["cleanNames", [_names]] call ALiVE_fnc_siteWho;
         _logic setVariable ["ALiVE_FOB_perm", [_rules, _names], true];
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ALiVE_FOB_dirty = true;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
         ["STR_ALIVE_FOB_PERMISSIONS_SET"] call _tell;
         ["ALiVE Player FOBs - %1 set who can dismantle FOBs to [%2], list [%3]", name _caller, _rules, _names] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    // An admin drops the in-game change: the module's Who Can Dismantle and list apply again
+    case "permReset": {
+        _result = false;
+        if (isNull _caller || {!([_logic, "isAdmin", [_caller]] call ALiVE_fnc_FOB)}) exitWith { ["STR_ALIVE_FOB_REFUSED_ADMIN"] call _tell };
+        _logic setVariable ["ALiVE_FOB_perm", nil, true];
+        [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
+        ALiVE_FOB_dirty = true;
+        ["save", [true]] call ALiVE_fnc_fobPersistence;
+        ["STR_ALIVE_FOB_PERMISSIONS_RESET"] call _tell;
+        ["ALiVE Player FOBs - %1 put who can dismantle FOBs back to the module's settings", name _caller] call ALiVE_fnc_dump;
         _result = true;
     };
 

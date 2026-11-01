@@ -363,7 +363,8 @@ switch (_op) do {
         ] apply { [_x select 0, localize (_x select 1), localize ((_x select 1) + "_COMMENT")] };
         ["open", [localize "STR_ALIVE_FOB_MANAGE_WHO", localize "STR_ALIVE_FOB_UI_PERMISSIONS_NOTE",
             [["", localize "STR_ALIVE_FOB_MANAGE_LIST_EDIT", localize "STR_ALIVE_FOB_MANAGE_LIST_EDIT_COMMENT", _tokens, _rules, _names]],
-            { (_this select 0) params ["_rules", "_names"]; ["permissions", [_rules, _names]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }
+            { (_this select 0) params ["_rules", "_names"]; ["permissions", [_rules, _names]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] },
+            { ["permReset", []] remoteExecCall ["ALiVE_fnc_fobRequest", 2]; closeDialog 0 }
         ]] call ALiVE_fnc_siteWhoDialog;
     };
 

@@ -60,7 +60,16 @@ Parameters:
     ["permissions", [rules, names, hubNetId, kind, dismantleRules, dismantleNames]] - server, through
         ALIVE_fnc_hubRequest: a change to Who Can Collect (kind "COLLECT", the default), Who Can Dismantle
         ("DISMANTLE") or both ("BOTH", from the Manage Hub window, with the last two), for one hub's module
-        or (hubNetId "") for every module. Admins only, as on FOBs
+        or (hubNetId "") for every module. Admins only, as on FOBs. Saved (permSave) when the mission saves
+    ["permReset", [hubNetId]] - server, through ALIVE_fnc_hubRequest: an admin drops that change on the
+        hub's module, so its own settings apply again
+    ["permKey", [module]] - the name a module's change is saved under: where the module stands, to the metre,
+        which stays the same from one start to the next where an object id doesn't
+    ["permCanSave"] - server: whether the change is kept over a restart: with ALiVE Data, or with Player FOBs'
+        Persistent on (then in the server's profile, as the FOBs are)
+    ["permStoreKey"] - server: the name the changes are saved under, beside the FOBs
+    ["permLoad", [module]] - server: the saved change put back on the module, once the save has been read
+    ["permSave"] - server: every module's change written
     ["dismantle", [hubNetId]] - server, through ALIVE_fnc_hubRequest: a player's hold action finished
     ["hubDown", [hubNetId, destroyed, byName, byEnemy]] - server: the hub stops working, and with a
         Repair Time comes back later
@@ -205,6 +214,8 @@ switch (_op) do {
         if (isNil "ALiVE_hub_modules") then { ALiVE_hub_modules = [] };
         if (isNil "ALiVE_hub_list") then { ALiVE_hub_list = [] };
         ALiVE_hub_modules pushBackUnique _logic;
+        // an admin's change from before a restart, when the mission saves
+        ["permLoad", [_logic]] call ALIVE_fnc_hub;
 
         // What the module is synced to. Collect needs Player Combat Logistics; Military Logistics
         // is what pays for it.
@@ -679,8 +690,8 @@ switch (_op) do {
         _result set [0, _why];
     };
 
-    // A change to Who Can Collect or Who Can Dismantle, through ALIVE_fnc_hubRequest only. Holds until
-    // the mission restarts.
+    // A change to Who Can Collect or Who Can Dismantle, through ALIVE_fnc_hubRequest only. Kept over a
+    // restart when the mission saves (permCanSave), until an admin picks Use module settings.
     case "permissions": {
         _result = false;
         _args params [["_rules", "", [""]], ["_names", "", [""]], ["_netId", "", [""]], ["_kind", "COLLECT", [""]], ["_dRules", "", [""]], ["_dNames", "", [""]]];
@@ -708,14 +719,154 @@ switch (_op) do {
         };
         private _modules = if (_netId == "") then { missionNamespace getVariable ["ALiVE_hub_modules", []] } else { [(ALiVE_hub_registry get _netId) select 2] };
         if (_kind == "BOTH") exitWith {
-            { _x setVariable ["ALiVE_hub_perm_collect", [_rules, _names], true]; _x setVariable ["ALiVE_hub_perm_dismantle", [_dRules, _dNames], true] } forEach _modules;
+            { _x setVariable ["ALiVE_hub_perm_collect", [_rules, _names], true]; _x setVariable ["ALiVE_hub_perm_dismantle", [_dRules, _dNames], true]; _x setVariable ["ALiVE_hub_permChanged", true] } forEach _modules;
+            ["permSave"] call ALIVE_fnc_hub;
             ["ALiVE Logistics Hub - %1 set who can collect to [%2] list [%3], who can dismantle to [%4] list [%5], on %6 module(s)", name _caller, _rules, _names, _dRules, _dNames, count _modules] call ALiVE_fnc_dump;
             ["notify", ["STR_ALIVE_HUB_PERMISSIONS_SET_BOTH", [count _modules]]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller];
             _result = true;
         };
-        { _x setVariable [["ALiVE_hub_perm_collect", "ALiVE_hub_perm_dismantle"] select (_kind == "DISMANTLE"), [_rules, _names], true] } forEach _modules;
+        { _x setVariable [["ALiVE_hub_perm_collect", "ALiVE_hub_perm_dismantle"] select (_kind == "DISMANTLE"), [_rules, _names], true]; _x setVariable ["ALiVE_hub_permChanged", true] } forEach _modules;
+        ["permSave"] call ALIVE_fnc_hub;
         ["ALiVE Logistics Hub - %1 set who can %2 to [%3], list [%4], on %5 module(s)", name _caller, _what, _rules, _names, count _modules] call ALiVE_fnc_dump;
         ["ALiVE", format [localize (["STR_ALIVE_HUB_PERMISSIONS_SET", "STR_ALIVE_HUB_PERMISSIONS_SET_DISMANTLE"] select (_kind == "DISMANTLE")), count _modules]] remoteExec ["ALIVE_fnc_sendHint", owner _caller];
+        _result = true;
+    };
+
+    // An admin drops the in-game change on a hub's module, through ALIVE_fnc_hubRequest only
+    case "permReset": {
+        _result = false;
+        _args params [["_netId", "", [""]]];
+        if (isNil "_ALiVE_hubCaller") exitWith {};
+        private _caller = _ALiVE_hubCaller;
+        if (isNull _caller) exitWith {};
+        if !(["isAdmin", [_caller]] call ALIVE_fnc_hub) exitWith {
+            ["notify", ["STR_ALIVE_HUB_REFUSED_ADMIN", []]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller];
+        };
+        if (isNil "ALiVE_hub_registry" || {!(_netId in ALiVE_hub_registry)}) exitWith {};
+        private _m = (ALiVE_hub_registry get _netId) select 2;
+        _m setVariable ["ALiVE_hub_perm_collect", nil, true];
+        _m setVariable ["ALiVE_hub_perm_dismantle", nil, true];
+        _m setVariable ["ALiVE_hub_permChanged", true];
+        ["permSave"] call ALIVE_fnc_hub;
+        ["ALiVE Logistics Hub - %1 put who can collect and dismantle back to the module's settings, on the module at %2", name _caller, mapGridPosition _m] call ALiVE_fnc_dump;
+        ["notify", ["STR_ALIVE_HUB_PERMISSIONS_RESET", []]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller];
+        _result = true;
+    };
+
+    case "permKey": {
+        _args params [["_m", objNull, [objNull]]];
+        private _p = getPosATL _m;
+        _result = format ["%1:%2", round (_p select 0), round (_p select 1)];
+    };
+
+    case "permCanSave": {
+        private _fob = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+        _result = (!isNil "ALIVE_sys_data" && {!(missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true])})
+            || {!isNull _fob && {[_fob, "attribute", ["fob_persistent"]] call ALiVE_fnc_FOB}};
+    };
+
+    case "permStoreKey": {
+        _result = if (isNil "ALIVE_sys_data_GROUP_ID") then {
+            format ["ALiVE_HUB_%1:%2", [missionName, "%20", "-"] call CBA_fnc_replace, worldName]
+        } else {
+            (["_HUB"] call ALiVE_fnc_storeKeys) select 0
+        };
+    };
+
+    // The saved changes are read once, after ALiVE Data has started; a module set up later is given
+    // its change straight away. A module an admin changed before the read keeps that change.
+    case "permLoad": {
+        _args params [["_m", objNull, [objNull]]];
+        if (!isServer) exitWith {};
+        private _apply = {
+            private _m = _this;
+            if (_m getVariable ["ALiVE_hub_permChanged", false]) exitWith {};
+            private _key = ["permKey", [_m]] call ALIVE_fnc_hub;
+            private _row = ALiVE_hub_permStore param [ALiVE_hub_permStore findIf { (_x param [0, ""]) == _key }, []];
+            if (_row isEqualTo []) exitWith {};
+            private _tokens = ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"];
+            {
+                _x params ["_var", "_v"];
+                if (_v isEqualTypeArray ["", ""]) then {
+                    _m setVariable [_var, [["filter", [_v select 0, _tokens]] call ALiVE_fnc_siteWho, ["cleanNames", [_v select 1]] call ALiVE_fnc_siteWho], true];
+                };
+            } forEach [["ALiVE_hub_perm_collect", _row param [1, []]], ["ALiVE_hub_perm_dismantle", _row param [2, []]]];
+            ["ALiVE Logistics Hub - the module at %1 has who can collect %2 and who can dismantle %3, as an admin set them before the restart",
+                mapGridPosition _m, _m getVariable ["ALiVE_hub_perm_collect", "(its own)"], _m getVariable ["ALiVE_hub_perm_dismantle", "(its own)"]] call ALiVE_fnc_dump;
+        };
+        if (!isNil "ALiVE_hub_permStore") exitWith { if (!isNull _m) then { _m call _apply } };
+        if (!isNil "ALiVE_hub_permLoading") exitWith {};
+        ALiVE_hub_permLoading = true;
+        [_apply] spawn {
+            params ["_apply"];
+            private _t0 = diag_tickTime;
+            if (["ALiVE_sys_data"] call ALiVE_fnc_isModuleAvailable) then {
+                waitUntil { sleep 1; (!isNil "ALIVE_sys_data" && {!isNil "ALIVE_sys_data_DISABLED"} && {ALIVE_sys_data getVariable ["startupComplete", false]}) || {diag_tickTime - _t0 > 300} };
+            };
+            private _store = [];
+            if (["permCanSave"] call ALIVE_fnc_hub) then {
+                private _key = ["permStoreKey"] call ALIVE_fnc_hub;
+                private _plain = [];
+                if (!isNil "ALIVE_sys_data" && {!(missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true])}) then {
+                    if (isNil "ALiVE_hub_dataHandler") then {
+                        ALiVE_hub_dataHandler = [nil, "create"] call ALIVE_fnc_Data;
+                        [ALiVE_hub_dataHandler, "storeType", true] call ALIVE_fnc_Data;
+                    };
+                    private _doc = [ALiVE_hub_dataHandler, "read", ["sup_fob", [], _key]] call ALIVE_fnc_Data;
+                    if (_doc isEqualType [] && {count _doc > 0}) then {
+                        private _d = [_doc, "data"] call CBA_fnc_hashGet;
+                        if (!isNil "_d") then { _plain = _d };
+                    };
+                } else {
+                    _plain = profileNamespace getVariable [_key, []];
+                };
+                if (_plain isEqualType [] && {(_plain param [0, ""]) isEqualTo "v1"}) then {
+                    _store = (_plain param [1, []]) select { _x isEqualType [] && {(_x param [0, 0]) isEqualType ""} };
+                };
+                if (_store isNotEqualTo []) then { ["ALiVE Logistics Hub - %1 saved permission change(s) read from %2", count _store, _key] call ALiVE_fnc_dump };
+            };
+            ALiVE_hub_permStore = _store;
+            { _x call _apply } forEach (missionNamespace getVariable ["ALiVE_hub_modules", []]);
+        };
+    };
+
+    // Every module's change, by where it stands, over what was read: a module this mission doesn't
+    // have (a Zeus hub's from an earlier start) keeps its row
+    case "permSave": {
+        if (!isServer || {!(["permCanSave"] call ALIVE_fnc_hub)}) exitWith {};
+        if (isNil "ALiVE_hub_permStore") exitWith {
+            [] spawn { waitUntil { sleep 1; !isNil "ALiVE_hub_permStore" }; ["permSave"] call ALIVE_fnc_hub };
+        };
+        private _store = +ALiVE_hub_permStore;
+        {
+            private _key = ["permKey", [_x]] call ALIVE_fnc_hub;
+            private _c = _x getVariable ["ALiVE_hub_perm_collect", []];
+            private _d = _x getVariable ["ALiVE_hub_perm_dismantle", []];
+            private _i = _store findIf { (_x param [0, ""]) == _key };
+            if (_i > -1) then { _store deleteAt _i };
+            if (_c isEqualTypeArray ["", ""] || {_d isEqualTypeArray ["", ""]}) then { _store pushBack [_key, _c, _d] };
+        } forEach (missionNamespace getVariable ["ALiVE_hub_modules", []]);
+        ALiVE_hub_permStore = _store;
+        private _key = ["permStoreKey"] call ALIVE_fnc_hub;
+        private _plain = ["v1", _store];
+        if (!isNil "ALIVE_sys_data" && {!(missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true])}) then {
+            if (isNil "ALiVE_hub_dataHandler") then {
+                ALiVE_hub_dataHandler = [nil, "create"] call ALIVE_fnc_Data;
+                [ALiVE_hub_dataHandler, "storeType", true] call ALIVE_fnc_Data;
+            };
+            private _doc = [[["data", _plain]]] call CBA_fnc_hashCreate;
+            // the War Room backend updates a document by its revision, as for the FOBs
+            private _prev = [ALiVE_hub_dataHandler, "read", ["sup_fob", [], _key]] call ALIVE_fnc_Data;
+            if (_prev isEqualType [] && {count _prev > 0}) then {
+                private _rev = [_prev, "_rev"] call CBA_fnc_hashGet;
+                if (!isNil "_rev") then { [_doc, "_rev", _rev] call CBA_fnc_hashSet };
+            };
+            [ALiVE_hub_dataHandler, "write", ["sup_fob", _doc, false, _key]] call ALIVE_fnc_Data;
+        } else {
+            profileNamespace setVariable [_key, _plain];
+            saveProfileNamespace;
+        };
+        ["ALiVE Logistics Hub - %1 permission change(s) saved to %2", count _store, _key] call ALiVE_fnc_dump;
         _result = true;
     };
 

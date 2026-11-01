@@ -775,7 +775,7 @@
     <English>Permissions: %1</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_UI_PERM_NOTE">
-    <English>Changes every hub of this module (%1), until the mission restarts. Admins can always collect and dismantle.</English>
+    <English>Changes every hub of this module (%1). Kept over a restart when the mission saves, with ALiVE Data or with Player FOBs set to Persistent, until Use module settings is pressed. Admins can always collect and dismantle.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_RENAMED">
     <English>The hub is now called %1</English>
@@ -793,7 +793,7 @@
     <English>You can't change this hub: only admins, and players Who Can Dismantle lets in, can</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_PERMISSIONS_SET_BOTH">
-    <English>Who can collect and who can dismantle are changed on %1 Logistics Hub module(s) until the mission restarts</English>
+    <English>Who can collect and who can dismantle are changed on %1 Logistics Hub module(s)</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_MARKER">
     <English>Logistics Hub %1</English>
@@ -907,7 +907,7 @@
     <English>That is not a logistics hub, so nothing changed</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_PERMISSIONS_SET">
-    <English>Who can collect is changed on %1 Logistics Hub module(s) until the mission restarts</English>
+    <English>Who can collect is changed on %1 Logistics Hub module(s)</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE">
     <English>Enemy Can Dismantle</English>
@@ -961,7 +961,10 @@
     <English>The logistics hub at grid %1 is working again</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_PERMISSIONS_SET_DISMANTLE">
-    <English>Who can dismantle is changed on %1 Logistics Hub module(s) until the mission restarts</English>
+    <English>Who can dismantle is changed on %1 Logistics Hub module(s)</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_PERMISSIONS_RESET">
+    <English>Who can collect and who can dismantle are back to the module's settings</English>
 </Key>
 <Key ID="STR_ALIVE_PR_LIST">
     <English>List</English>

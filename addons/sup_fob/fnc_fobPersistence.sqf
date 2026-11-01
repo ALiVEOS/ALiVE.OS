@@ -8,10 +8,11 @@ Description:
 Saves the FOBs and loads them back. The document is a CBA hash holding "data", the shape the
 AI Commander saves its extras in (fnc_OPCOM.sqf), so both ALiVE Data backends take it: the
 War Room one reads "_rev" off anything whose first element is text, and a bare array would
-fail there. "data" is ["v2", counter, rows, loose], each row the entry's key/value pairs, and
+fail there. "data" is ["v2", counter, rows, loose, perm], each row the entry's key/value pairs,
 loose the kits and supply crates the module made itself (a dismantled FOB's, a Field HQ's) as
-[kind, value, class, world position, direction, up], so a restart keeps them and what they hold.
-A save without the fourth part, from before it was added, loads with no loose kits.
+[kind, value, class, world position, direction, up], so a restart keeps them and what they hold,
+and perm an admin's in-game change to Who Can Dismantle as [rules, list], or [] for the module's
+settings. A save without the fourth or fifth part, from before they were added, loads without them.
 
 Only what can be rebuilt is saved: the headquarters is recreated from its class and spot,
 built objects from their class, world position and attitude (read off the live object at save,
@@ -85,7 +86,10 @@ switch (_operation) do {
                 _loose pushBack [_y select 0, _y select 1, typeOf _o, getPosWorld _o, vectorDir _o, vectorUp _o];
             };
         } forEach ALiVE_FOB_tagged;
-        _result = ["v2", ALiVE_FOB_counter, _rows, _loose];
+        // an admin's change to Who Can Dismantle, kept until an admin picks Use module settings
+        private _perm = _logic getVariable ["ALiVE_FOB_perm", []];
+        if !(_perm isEqualTypeArray ["", ""]) then { _perm = [] };
+        _result = ["v2", ALiVE_FOB_counter, _rows, _loose, _perm];
     };
 
     case "deserialise": {
@@ -103,6 +107,13 @@ switch (_operation) do {
         } forEach (_data param [2, []]);
         // the loose kits and crates, made again once the module is up ("load" below)
         ALiVE_FOB_looseLoad = _data param [3, []];
+        // read through the same checks as a change made in game
+        private _perm = _data param [4, []];
+        if (_perm isEqualTypeArray ["", ""]) then {
+            _perm = [["filter", [_perm select 0, ["SIDE", "LEADER", "DEPLOYER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho, ["cleanNames", [_perm select 1]] call ALiVE_fnc_siteWho];
+            _logic setVariable ["ALiVE_FOB_perm", _perm, true];
+            ["ALiVE Player FOBs - who can dismantle FOBs is [%1], list [%2], as an admin set it before the restart", _perm select 0, _perm select 1] call ALiVE_fnc_dump;
+        };
         _result = true;
     };
 

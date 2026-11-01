@@ -36,7 +36,7 @@ if (!isServer) exitWith {};
 if !(_this isEqualType [] && {count _this == 2} && {(_this select 0) isEqualType ""} && {(_this select 1) isEqualType []}) exitWith {};
 params ["_op", "_args"];
 
-if !(_op in ["permissions", "dismantle", "rename"]) exitWith {
+if !(_op in ["permissions", "permReset", "dismantle", "rename"]) exitWith {
     ["ALiVE Logistics Hub - refused a request for %1 from machine %2: not something a player can ask for", _op, remoteExecutedOwner] call ALiVE_fnc_dumpR;
 };
 

@@ -426,7 +426,10 @@
                 <English>Only an admin can change who can dismantle FOBs.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_PERMISSIONS_SET">
-                <English>Who can dismantle FOBs has been changed, for every FOB until the mission restarts.</English>
+                <English>Who can dismantle FOBs has been changed, for every FOB. With Persistent on, it's kept over a restart.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PERMISSIONS_RESET">
+                <English>Who can dismantle FOBs is back to the module's settings.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_WHO">
                 <English>Who Can Dismantle</English>
@@ -474,7 +477,7 @@
                 <English>Permissions</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_UI_PERMISSIONS_NOTE">
-                <English>For every FOB, until the mission restarts. Admins always can.</English>
+                <English>For every FOB. With Persistent on, it's kept over a restart until Use module settings is pressed. Admins always can.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_UI_APPLY">
                 <English>Apply</English>
