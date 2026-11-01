@@ -202,8 +202,7 @@ switch (_op) do {
         private _obj = _grp getVariable ["ALiVE_rallyDeployed", objNull];
         if (isNull _obj || {leader _grp != _unit} || {_unit distance _obj >= 5}) exitWith { _result = false };
         private _tell = { [localize "STR_ALIVE_RALLY", _this] remoteExecCall ["ALIVE_fnc_sendHint", _unit] };
-        _name = trim toString ((toArray _name) select { _x >= 32 && {!(_x in [38, 60, 62])} });
-        _name = trim toString ((toArray _name) select [0, 32]);
+        _name = ["cleanName", [_name, 32]] call ALiVE_fnc_siteWho;
         if (_name == "") exitWith { format [localize "STR_ALIVE_RALLY_UI_RENAME_EMPTY", 32] call _tell; _result = false };
         private _list = missionNamespace getVariable ["ALiVE_rallyPoints", []];
         private _i = _list findIf { (_x select 0) == _obj };

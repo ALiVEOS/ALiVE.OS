@@ -133,7 +133,8 @@ switch (_op) do {
 
     case "cleanName": {
         _args params [["_text", "", [""]]];
-        _result = [toString (((toArray _text) select { _x >= 32 && {!(_x in [34, 38, 39, 60, 62])} }) select [0, 32])] call CBA_fnc_trim;
+        // quotes too: a hub's name goes into marker text and hints as well
+        _result = ["cleanName", [_text, 32, [34, 39]]] call ALiVE_fnc_siteWho;
     };
 
     // A name from the Manage Hub window: admins, and players of the hub's side Who Can Dismantle lets in

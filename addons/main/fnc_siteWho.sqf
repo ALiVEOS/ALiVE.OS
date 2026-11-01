@@ -26,6 +26,10 @@ Parameters:
                                              none recorded, or a group (BOOL)
     ["cleanNames", [names]]                - a names list safe to store and show: printable,
                                              no quotes or markup, at most 2000 characters (STRING)
+    ["cleanName", [name, max, extra]]      - a site's name as it is shown (structured text): no
+                                             control characters and no & < >, nor the character
+                                             codes in extra; trimmed, at most max characters
+                                             (default 32) (STRING, "" when nothing is left)
 
 Examples:
 (begin example)
@@ -78,6 +82,13 @@ switch (_operation) do {
                 private _list = (toLower _names) splitString (",; " + toString [9, 10, 13]);
                 (getPlayerUID _unit) in _list || {(toLower typeOf _unit) in _list} || {(toLower vehicleVarName _unit) in _list}
             }};
+    };
+
+    case "cleanName": {
+        _args params [["_name", "", [""]], ["_max", 32, [0]], ["_extra", [], [[]]]];
+        private _drop = [38, 60, 62] + _extra;
+        _result = trim toString ((toArray _name) select { _x >= 32 && {!(_x in _drop)} });
+        _result = trim toString ((toArray _result) select [0, _max]);
     };
 
     case "cleanNames": {

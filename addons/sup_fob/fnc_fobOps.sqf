@@ -1185,8 +1185,7 @@ switch (_op) do {
         if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
         if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
         if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
-        _new = trim toString ((toArray _new) select { _x >= 32 && {!(_x in [38, 60, 62])} });
-        _new = trim toString ((toArray _new) select [0, 32]);
+        _new = ["cleanName", [_new, 32]] call ALiVE_fnc_siteWho;
         if (_new == "") exitWith { ["STR_ALIVE_FOB_REFUSED_NAME", [32]] call _tell };
         private _old = [_entry, "name", ""] call ALIVE_fnc_hashGet;
         if (_new isEqualTo _old) exitWith {};
