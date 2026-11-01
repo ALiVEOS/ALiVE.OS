@@ -1529,7 +1529,8 @@ switch (_operation) do {
             "_pos",
             "_size",
             ["_types", ["infantry"]],
-            ["_objectiveType", ""]
+            ["_objectiveType", ""],
+            ["_freeOnly", false]
         ];
 
         // Town-Only / Base-Only Factions: a civilian objective takes no base-only faction, any other objective
@@ -1550,8 +1551,8 @@ switch (_operation) do {
         _reserved = [_logic,"ProfileIDsReserve", []] call ALiVE_fnc_HashGet;
         _busy = _busy - _reserved;
 
-        // If great amount of troops is requested reroute profiles if needed
-        _troops = if (_size >= 5) then { _troops - _reserved } else { _troops - (_busy + _reserved) };
+        // If great amount of troops is requested reroute profiles if needed (never for _freeOnly, an Assault wave)
+        _troops = if (_size >= 5 && {!_freeOnly}) then { _troops - _reserved } else { _troops - (_busy + _reserved) };
 
         // Read shared search settings once per section request.
         private _searchSide = [_logic,"side","EAST"] call ALiVE_fnc_HashGet;
