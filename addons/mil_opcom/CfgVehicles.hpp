@@ -109,6 +109,27 @@ class CfgVehicles {
                                 defaultValue = """""";
                                 typeName = "STRING";
                         };
+                        class assaultOrder : Combo
+                        {
+                                property = "ALiVE_mil_opcom_assaultOrder";
+                                displayName = "$STR_ALIVE_OPCOM_ASSAULT_ORDER";
+                                tooltip = "$STR_ALIVE_OPCOM_ASSAULT_ORDER_COMMENT";
+                                defaultValue = """inorder""";
+                                typeName = "STRING";
+                                class Values
+                                {
+                                    class inorder { name = "One after another"; value = "inorder"; default = 1; };
+                                    class pocket { name = "Pocket"; value = "pocket"; };
+                                };
+                        };
+                        class assaultPocketRadius : Edit
+                        {
+                                property = "ALiVE_mil_opcom_assaultPocketRadius";
+                                displayName = "$STR_ALIVE_OPCOM_ASSAULT_POCKET_RADIUS";
+                                tooltip = "$STR_ALIVE_OPCOM_ASSAULT_POCKET_RADIUS_COMMENT";
+                                defaultValue = """1500""";
+                                typeName = "NUMBER";
+                        };
                         class holdForGo : Combo
                         {
                                 property = "ALiVE_mil_opcom_holdForGo";

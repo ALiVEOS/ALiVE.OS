@@ -138,6 +138,9 @@ switch (_operation) do {
         private _assaultWaveGroups = (parseNumber format ["%1", _logic getVariable ["assaultWaveGroups", 4]]) max 0;
         // Assault Targets: marker or object variable names, in the order they're attacked
         private _assaultTargets = (((format ["%1", _logic getVariable ["assaultTargets", ""]]) splitString ",") apply { _x trim [" ", 0] }) select { _x != "" };
+        // Assault Order: "inorder", or "pocket" (the objectives within Pocket Radius of a target are taken before it)
+        private _assaultOrder = toLower format ["%1", _logic getVariable ["assaultOrder", "inorder"]];
+        private _assaultPocketRadius = (parseNumber format ["%1", _logic getVariable ["assaultPocketRadius", 1500]]) max 0;
         // Preparation tasks (The Horny Latino on Discord, 19 Oct): an Invasion commander's attacks wait for a player
         // wiretap task at the objective, or for Preparation Timeout minutes; off by default
         private _prepTasks = (toLower format ["%1", _logic getVariable ["prepTasks", "false"]]) in ["true", "1"];
@@ -494,6 +497,8 @@ switch (_operation) do {
             ["assaultWaveMins", _assaultWaveMins],
             ["assaultWaveGroups", _assaultWaveGroups],
             ["assaultTargets", _assaultTargets],
+            ["assaultOrder", _assaultOrder],
+            ["assaultPocketRadius", _assaultPocketRadius],
             // Invasion and Occupation both (A. Ares on Discord, 22 Oct); the type is checked when an attack is picked,
             // so a commander switched from one to the other part way through keeps it
             ["prepTasks", _prepTasks],
@@ -6906,8 +6911,9 @@ switch (_operation) do {
     // Assault (waves). With Assault Targets set, the target is the first place on that list it doesn't hold (the
     // objective nearest the marker or object named, within 500 m), and once it holds them all it carries on as
     // Invasion. Otherwise it's the objective it doesn't hold with the highest Objective priority, the nearest first
-    // among equals (the list is in distance order). Either way it stays the target until it falls (["assaultTarget",
-    // objectives] -> objective or []). A wave on it waits Wave Interval minutes after the last one confirmed there; the
+    // among equals (the list is in distance order). With Assault Order Pocket, the objectives it doesn't hold within
+    // Pocket Radius of that target come first, nearest first, and then the target. Whichever it picks stays the target
+    // until it falls (["assaultTarget", objectives] -> objective or []). A wave on it waits Wave Interval minutes after the last one confirmed there; the
     // first wave on a new target goes at once (["assaultWaveOpen", objective] -> bool). TACOM confirming a wave starts
     // the wait (["assaultWaveSent", objective]). The timer lives on the module: ALiVE_Assault_targetID,
     // ALiVE_Assault_waveNo, ALiVE_Assault_nextWaveAt (mission time)
@@ -6963,13 +6969,22 @@ switch (_operation) do {
                 [_logic] spawn { params ["_logic"]; [_logic, "changeControlType", ["invasion"]] call ALiVE_fnc_OPCOM };
             };
         };
-        if (_result isNotEqualTo []) exitWith {};
-        _result = _open select 0;
-        private _best = parseNumber format ["%1", [_result, "priority", 0] call ALiVE_fnc_HashGet];
-        {
-            private _p = parseNumber format ["%1", [_x, "priority", 0] call ALiVE_fnc_HashGet];
-            if (_p > _best) then { _result = _x; _best = _p };
-        } forEach _open;
+        if (_result isEqualTo []) then {
+            _result = _open select 0;
+            private _best = parseNumber format ["%1", [_result, "priority", 0] call ALiVE_fnc_HashGet];
+            {
+                private _p = parseNumber format ["%1", [_x, "priority", 0] call ALiVE_fnc_HashGet];
+                if (_p > _best) then { _result = _x; _best = _p };
+            } forEach _open;
+        };
+        // Pocket: the places round it first
+        private _radius = [_logic, "assaultPocketRadius", 1500] call ALiVE_fnc_HashGet;
+        if (([_logic, "assaultOrder", "inorder"] call ALiVE_fnc_HashGet) == "pocket" && {_radius > 0}) then {
+            private _c = [_result, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+            private _pocket = _result;
+            private _ring = _open select { !(_x isEqualRef _pocket) && {(([_x, "center", [0,0,0]] call ALiVE_fnc_HashGet) distance2D _c) < _radius} };
+            if (_ring isNotEqualTo []) then { _result = _ring select 0 };
+        };
     };
     case "assaultWaveOpen": {
         private _module = [_logic, "module", objNull] call ALiVE_fnc_HashGet;

@@ -390,6 +390,18 @@
 <Key ID="STR_ALIVE_OPCOM_ASSAULT_TARGETS_COMMENT">
     <English>Assault (waves) only. Marker names or object variable names, separated by commas, attacked in that order: each one means the objective nearest it, within 500 m. Places it already holds are passed over, and once it holds them all the commander carries on as Invasion. Empty takes the most important objective first.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_ORDER">
+    <English>Assault Order</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_ORDER_COMMENT">
+    <English>Assault (waves) only. One after another attacks each target in turn. Pocket cuts a target off first: the commander takes every objective it doesn't hold within Pocket Radius of it, nearest first, and only then the target itself.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_POCKET_RADIUS">
+    <English>Pocket Radius (m)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASSAULT_POCKET_RADIUS_COMMENT">
+    <English>Assault Order Pocket only. How far round a target the objectives taken first reach.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_OCC_PAUSE">
     <English>Pause After Capture (min)</English>
 </Key>
