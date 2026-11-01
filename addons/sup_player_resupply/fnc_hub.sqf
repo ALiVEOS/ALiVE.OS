@@ -201,8 +201,14 @@ switch (_op) do {
         // a named list (List, or Custom and its name), read under the three lists
         private _list = toUpper (["hub_list", ""] call _text);
         if (_list == "CUSTOM") then { _list = (["hub_list_name", ""] call _text) trim [" ", 0] };
+        // Trade In Vehicles: OFF, ENEMY or ANY, and the share a vehicle of the player's own side pays
+        private _trade = toUpper (["hub_trade_in", "OFF"] call _text);
+        if !(_trade in ["OFF", "ENEMY", "ANY"]) then { _trade = "OFF" };
+        private _tradeOwn = parseNumber (["hub_trade_own", "0.75"] call _text);
+        if !(_tradeOwn in [0.5, 0.75, 1]) then { _tradeOwn = 0.75 };
         private _settings = [_side, _radius, _who, _names, ["hub_only", ""] call _text, ["hub_never", ""] call _text, ["hub_also", ""] call _text,
-            _dismantle, _dismantleTime, _repairTime, _dWho, ["hub_dismantle_list", ""] call _text, _list];
+            _dismantle, _dismantleTime, _repairTime, _dWho, ["hub_dismantle_list", ""] call _text, _list, _trade, _tradeOwn];
+        if (_trade != "OFF") then { ALiVE_hub_tradeOn = true; publicVariable "ALiVE_hub_tradeOn" };
         _logic setVariable ["ALiVE_hub_settings", _settings, true];
         // the module's lists in the RPT now, whichever of it and the tablet starts first
         ["catalogueRules", [_logic]] call ALIVE_fnc_hub;
@@ -871,6 +877,64 @@ switch (_op) do {
     };
 
     // A player's dismantle hold action finished; everything it showed on their machine is asked again
+    // Trade In Vehicles (AshTray, 1 Nov): a vehicle driven to one of the side's hubs, given up for a share
+    // of the one point a vehicle takes from the force pool: half for anything not of the player's side, the
+    // module's share for his own, less for damage. What doesn't make a whole point is kept for the
+    // faction toward the next. [vehicle netId] -> true when traded
+    case "tradeIn": {
+        _result = false;
+        _args params [["_vid", "", [""]]];
+        if (isNil "_ALiVE_hubCaller") exitWith {};
+        private _caller = _ALiVE_hubCaller;
+        private _v = _vid call BIS_fnc_objectFromNetId;
+        private _tell = { params ["_key", ["_a", []]]; ["notify", [_key, _a]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller] };
+        if (isNull _caller || {!alive _caller} || {isNull _v}) exitWith {};
+        if (!alive _v || {!(_v isKindOf "LandVehicle" || {_v isKindOf "Air"} || {_v isKindOf "Ship"})} || {_v isKindOf "StaticWeapon"}) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_WHAT"] call _tell };
+        private _hub = ["nearHub", [_caller]] call ALIVE_fnc_hub;
+        if (isNull _hub) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_FAR"] call _tell };
+        private _info = _hub getVariable ["ALiVE_hub", []];
+        private _s = ["settings", [_info param [3, objNull]]] call ALIVE_fnc_hub;
+        private _mode = _s param [13, "OFF"];
+        if (_mode == "OFF") exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_OFF"] call _tell };
+        if (_v distance _hub > (_info param [2, 30])) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_FAR"] call _tell };
+        if (vehicle _caller != _v && {_caller distance _v > 8}) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_FAR"] call _tell };
+        if !(["mayCollect", [_caller, _hub]] call ALIVE_fnc_hub) exitWith { ["STR_ALIVE_HUB_REFUSED_NOT_ALLOWED"] call _tell };
+        if ((crew _v) findIf { alive _x && {_x != _caller} } > -1) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_CREWED"] call _tell };
+        // made at a hub or a FOB, or recruited: those go back with Recycle or Dismiss, at what was paid
+        if (!isNil {_v getVariable "ALiVE_hub_made"} || {!isNil {_v getVariable "ALiVE_FOB_object"}} || {!isNil {_v getVariable "ALiVE_recruitCost"}}) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_MADE"] call _tell };
+        // whose it is: its faction's side, else its class's side
+        private _cfgSide = getNumber (configOf _v >> "side");
+        private _vSide = [(faction _v) call ALiVE_fnc_factionSide] call ALIVE_fnc_sideObjectToNumber;
+        if !(_vSide in [0, 1, 2, 3]) then { _vSide = _cfgSide };
+        private _vSideText = [_vSide] call ALIVE_fnc_sideNumberToText;
+        private _me = ["unitSide", [_caller]] call ALIVE_fnc_hub;
+        private _own = _vSideText == _me || {faction _v == faction _caller};
+        private _enemy = !_own && {_vSideText in ["WEST", "EAST", "GUER"]} && {[[_me] call ALIVE_fnc_sideTextToObject, [_vSideText] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsEnemy};
+        if (_mode == "ENEMY" && {!_enemy}) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_NOTENEMY"] call _tell };
+        private _faction = faction _caller;
+        if (isNil "ALIVE_globalForcePool" || {!(_faction in (ALIVE_globalForcePool select 1))}) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_NOPOOL"] call _tell };
+        private _share = [0.5, _s param [14, 0.75]] select _own;
+        private _worth = (round (_share * (1 - (damage _v max 0 min 1)) * 100)) / 100;
+        if (_worth <= 0) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_WRECK"] call _tell };
+
+        private _class = typeOf _v;
+        private _dmg = (round (damage _v * 100)) / 100;
+        if (vehicle _caller == _v) then { moveOut _caller };
+        { if (!alive _x) then { deleteVehicle _x } } forEach crew _v;
+        deleteVehicle _v;
+        if (isNil "ALiVE_hub_tradeCarry") then { ALiVE_hub_tradeCarry = createHashMap };
+        private _sum = (ALiVE_hub_tradeCarry getOrDefault [_faction, 0]) + _worth;
+        private _whole = floor (_sum + 0.001);
+        ALiVE_hub_tradeCarry set [_faction, (round ((_sum - _whole) * 100)) / 100 max 0];
+        private _pool = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+        if (_pool isEqualType "") then { _pool = parseNumber _pool };
+        if (_whole > 0) then { [ALIVE_globalForcePool, _faction, _pool + _whole] call ALIVE_fnc_hashSet };
+        ["STR_ALIVE_HUB_TRADED", [_worth, _whole, _pool + _whole, ALiVE_hub_tradeCarry get _faction]] call _tell;
+        ["ALiVE Logistics Hub - %1 traded in %2 (%3, damage %4) at %5: worth %6, %7 added to %8's force pool (now %9), %10 kept",
+            name _caller, _class, ["other", "own side"] select _own, _dmg, _hub call BIS_fnc_netId, _worth, _whole, _faction, _pool + _whole, ALiVE_hub_tradeCarry get _faction] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
     case "dismantle": {
         _result = false;
         _args params [["_netId", "", [""]]];

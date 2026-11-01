@@ -243,6 +243,37 @@ class CfgVehicles {
                     class hub_also : Edit { property = "ALiVE_sup_logistics_hub_hub_also"; displayName = "$STR_ALIVE_HUB_ALSO"; tooltip = "$STR_ALIVE_HUB_ALSO_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_listcheck : Default { property = "ALiVE_sup_logistics_hub_hub_listcheck"; displayName = "$STR_ALIVE_LISTS_CHECK"; tooltip = "$STR_ALIVE_LISTS_CHECK_COMMENT"; control = "ALiVE_ListsCheck"; typeName = "STRING"; defaultValue = "''"; };
 
+                    // trading in a vehicle driven to the hub for a share of a vehicle's place in the force pool (AshTray, 1 Nov)
+                    class HDR_TRADEIN : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_TRADEIN"; displayName = "TRADE IN VEHICLES"; };
+                    class hub_trade_in : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_trade_in";
+                            displayName = "$STR_ALIVE_HUB_TRADE_IN";
+                            tooltip = "$STR_ALIVE_HUB_TRADE_IN_COMMENT";
+                            defaultValue = """OFF""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                    class Off { name = "$STR_ALIVE_HUB_TRADE_IN_OFF"; value = "OFF"; };
+                                    class Enemy { name = "$STR_ALIVE_HUB_TRADE_IN_ENEMY"; value = "ENEMY"; };
+                                    class Any { name = "$STR_ALIVE_HUB_TRADE_IN_ANY"; value = "ANY"; };
+                            };
+                    };
+                    class hub_trade_own : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_trade_own";
+                            displayName = "$STR_ALIVE_HUB_TRADE_OWN";
+                            tooltip = "$STR_ALIVE_HUB_TRADE_OWN_COMMENT";
+                            defaultValue = """0.75""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                    class Half { name = "$STR_ALIVE_HUB_TRADE_OWN_HALF"; value = "0.5"; };
+                                    class ThreeQuarters { name = "$STR_ALIVE_HUB_TRADE_OWN_3Q"; value = "0.75"; };
+                                    class Full { name = "$STR_ALIVE_HUB_TRADE_OWN_FULL"; value = "1"; };
+                            };
+                    };
+
                     // losing a hub: destroyed, or dismantled by the enemy or its own side, and the repair
                     class HDR_LOSING : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_LOSING"; displayName = "LOSING A HUB"; };
                     class hub_dismantle : Combo

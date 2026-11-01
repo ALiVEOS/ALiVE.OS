@@ -67,6 +67,32 @@ switch (_op) do {
                 ["CAManBase", 1, ["ACE_SelfActions"], _a, true] call ace_interact_menu_fnc_addActionToClass;
             };
         };
+        // Trade In Vehicles: on the player, for the driver of a stopped vehicle at one of his side's hubs that
+        // takes trade-ins (the server checks it all again), and again on each new body after a respawn
+        if (isNil "ALiVE_hub_tradeAdded") then {
+            ALiVE_hub_tradeAdded = true;
+            [] spawn {
+                waitUntil { sleep 1; !isNull player };
+                player addEventHandler ["Respawn", { ["tradeAction", [_this select 0]] call ALIVE_fnc_hubManage }];
+                ["tradeAction", [player]] call ALIVE_fnc_hubManage;
+            };
+        };
+    };
+
+    case "tradeAction": {
+        _args params [["_unit", objNull, [objNull]]];
+        if (isNull _unit) exitWith {};
+        _unit addAction [localize "STR_ALIVE_HUB_UI_TRADE_IN", {
+            ["tradeIn", [netId vehicle (_this select 1)]] remoteExecCall ["ALIVE_fnc_hubRequest", 2];
+        }, nil, 1.3, false, true, "",
+            "!isNil 'ALiVE_hub_tradeOn' && {vehicle _this != _this} && {driver vehicle _this == _this} && {speed vehicle _this < 3} && {!isNull (['tradeHub', [_this]] call ALIVE_fnc_hubManage)}"];
+    };
+
+    // the hub of the unit's side, near enough, that takes trade-ins, or objNull
+    case "tradeHub": {
+        _args params [["_unit", objNull, [objNull]]];
+        _result = ["nearHub", [_unit]] call ALIVE_fnc_hub;
+        if (!isNull _result && {((["settings", [(_result getVariable ["ALiVE_hub", []]) param [3, objNull]]] call ALIVE_fnc_hub) param [13, "OFF"]) == "OFF"}) then { _result = objNull };
     };
 
     // the hub of the unit's side it stands at (the scroll menu's reach), or objNull

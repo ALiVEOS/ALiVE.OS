@@ -915,6 +915,66 @@
 <Key ID="STR_ALIVE_HUB_DISMANTLE_COMMENT">
     <English>Whether an enemy player can dismantle a hub with a hold action, when none of the hub's side is within 60 metres. While a hub is down nothing is collected there and it supplies nothing.</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_TRADE_IN">
+    <English>Trade In Vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_IN_COMMENT">
+    <English>A player who drives a vehicle to this hub can trade it in from the action menu, for a share of the one point a vehicle takes from his faction's force pool. Enemy vehicles: only vehicles of a side at war with his. Any vehicle: anything with wheels, tracks, rotors, wings or a hull. Anything not of his own side pays half; his own side's pay Own Side Pays. Damage takes its share off, so repair it first. What doesn't make a whole point is kept for his faction toward the next trade-in. Vehicles made at a hub or a FOB, or recruited, go back with Recycle or Dismiss instead. The player must be allowed to collect here (Who Can Collect). Off, the default, offers nothing.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_IN_OFF">
+    <English>Off</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_IN_ENEMY">
+    <English>Enemy vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_IN_ANY">
+    <English>Any vehicle</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_OWN">
+    <English>Own Side Pays</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_OWN_COMMENT">
+    <English>What a vehicle of the player's own side or faction pays when traded in, as a share of a force pool point, before damage. Only with Trade In Vehicles at Any vehicle. Enemy and other vehicles always pay half.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_OWN_HALF">
+    <English>Half</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_OWN_3Q">
+    <English>Three quarters</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_OWN_FULL">
+    <English>Full</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_TRADE_IN">
+    <English>Trade in this vehicle</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_REFUSED_WHAT">
+    <English>Only a vehicle can be traded in.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_REFUSED_FAR">
+    <English>Drive it to one of your side's Logistics Hubs first.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_REFUSED_OFF">
+    <English>This hub doesn't take trade-ins.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_REFUSED_CREWED">
+    <English>Everyone else has to get out first.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_REFUSED_MADE">
+    <English>It was made or recruited for your side: use Recycle or Dismiss instead.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_REFUSED_NOTENEMY">
+    <English>This hub only takes enemy vehicles.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_REFUSED_NOPOOL">
+    <English>Your faction has no force pool to pay into.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADE_REFUSED_WRECK">
+    <English>It's too badly damaged to be worth anything.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_TRADED">
+    <English>Traded in for %1 of a point. %2 added to the force pool, now %3; %4 kept toward the next.</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE_TIME">
     <English>Dismantle Time (s)</English>
 </Key>
