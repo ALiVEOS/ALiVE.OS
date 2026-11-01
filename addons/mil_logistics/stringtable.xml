@@ -587,7 +587,7 @@
     <Russian>Увеличить силу (захват объекта):</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_COMMENT">
-    <English>When an objective is captured OPCOM will increase the force cap used to bring in 'replacements' to get up to strength</English>
+    <English>Yes: each objective the AI Commander captures raises the strength it brings its forces back up to with replacements, by Inc. Force Strength Factor. It doesn't add to the Force Pool, the budget replacements are paid from.</English>
     <Chinese>佔領目標時，OPCOM 會提高用於引入「補充兵」的兵力上限以達到滿編</Chinese>
     <Chinesesimp>占领目标时，OPCOM 会提高用于引入「补充兵」的兵力上限以达到满编</Chinesesimp>
     <Spanish>Al capturar un objetivo, OPCOM aumentará el límite de fuerza usado para traer «reemplazos» y alcanzar la dotación</Spanish>
@@ -605,7 +605,7 @@
     <Russian>Коэф. увеличения силы (%):</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR_COMMENT">
-    <English>Factor amount to increase startForceStrength on objective capture. Will only increase where value > 0 Type a percentage, 0 to 100.</English>
+    <English>How much each capture raises that strength, as a percentage of its total, rounded up: 10 on a commander that started 40 strong adds 4. The extra is spread over the kinds of force it already has, in proportion. Type a percentage, 0 to 100. The Force Pool isn't changed.</English>
     <Chinese>佔領目標時用於增加 startForceStrength 的係數值。僅在值 &gt; 0 時生效</Chinese>
     <Chinesesimp>占领目标时用于增加 startForceStrength 的系数值。仅在值 &gt; 0 时生效</Chinesesimp>
     <Spanish>Factor con el que se aumenta startForceStrength al capturar un objetivo. Solo aumenta cuando el valor es &gt; 0</Spanish>
@@ -623,7 +623,7 @@
     <Russian>Уменьшить силу (потеря объекта):</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_COMMENT">
-    <English>When an objective is lost, OPCOM will decrease the force cap used to bring in 'replacements', shrinking the available force as territory is given up.</English>
+    <English>Yes: each objective the AI Commander loses lowers the strength it brings its forces back up to with replacements, by Dec. Force Strength Factor. It doesn't take from the Force Pool, the budget replacements are paid from.</English>
     <Chinese>失去目標時，OPCOM 會降低用於引入「補充兵」的兵力上限 — 隨著領土被放棄，可用兵力縮減。</Chinese>
     <Chinesesimp>失去目标时，OPCOM 会降低用于引入「补充兵」的兵力上限 — 随着领土被放弃，可用兵力缩减。</Chinesesimp>
     <Spanish>Cuando se pierde un objetivo, OPCOM reducirá el límite de fuerza usado para traer «reemplazos» — encogiendo la fuerza disponible a medida que se cede territorio.</Spanish>
@@ -641,7 +641,7 @@
     <Russian>Коэф. уменьшения силы (%):</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR_COMMENT">
-    <English>Factor amount to decrement startForceStrength on objective loss. Will only decrease where value > 0 Type a percentage, 0 to 100.</English>
+    <English>How much each loss lowers that strength, as a percentage of its total, rounded up: 10 on a commander that started 40 strong takes 4 away. It comes off the kinds of force it has, in proportion. Type a percentage, 0 to 100. The Force Pool isn't changed.</English>
     <Chinese>失去目標時用於減少 startForceStrength 的係數值。僅在值 &gt; 0 時生效</Chinese>
     <Chinesesimp>失去目标时用于减少 startForceStrength 的系数值。仅在值 &gt; 0 时生效</Chinesesimp>
     <Spanish>Factor con el que se reduce startForceStrength al perder un objetivo. Solo reduce cuando el valor es &gt; 0</Spanish>
