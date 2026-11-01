@@ -34,7 +34,7 @@ switch (_op) do {
         if (isRemoteExecuted && {remoteExecutedOwner != 2}) exitWith {};
         if (!isNil "ALiVE_FOB_timer") exitWith {};
         _args params [["_kind", "", [""]], ["_request", [], [[]]], ["_wait", 0, [0]], ["_cancel", "MOVE", [""]]];
-        if (_wait <= 0 || {!alive player} || {!(_kind in ["deploy", "dismantle"])}) exitWith {};
+        if (_wait <= 0 || {!alive player} || {!(_kind in ["deploy", "dismantle", "build"])}) exitWith {};
         _cancel = toUpper _cancel;
         if !(_cancel in ["NEVER", "MOVE", "FIRE"]) then { _cancel = "MOVE" };
 
@@ -49,7 +49,11 @@ switch (_op) do {
         private _head = _d ctrlCreate ["FobUI_RscText", -1];
         _head ctrlSetPosition [_x0, _y0 - 0.028 * safezoneH, _w, 0.028 * safezoneH];
         _head ctrlSetBackgroundColor [0.788, 0.443, 0.157, 0.65];
-        _head ctrlSetText localize (["STR_ALIVE_FOB_TIMER_DISMANTLE", "STR_ALIVE_FOB_TIMER_DEPLOY"] select (_kind == "deploy"));
+        _head ctrlSetText localize (switch (_kind) do {
+            case "deploy": { "STR_ALIVE_FOB_TIMER_DEPLOY" };
+            case "build": { "STR_ALIVE_FOB_TIMER_BUILD" };
+            default { "STR_ALIVE_FOB_TIMER_DISMANTLE" };
+        });
         private _track = _d ctrlCreate ["FobUI_RscText", -1];
         _track ctrlSetPosition [_x0 + 0.01 * safezoneW, _y0 + 0.012 * safezoneH, _w - 0.02 * safezoneW, 0.016 * safezoneH];
         _track ctrlSetBackgroundColor [1, 1, 1, 0.15];

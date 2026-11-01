@@ -163,6 +163,8 @@ switch (_operation) do {
         (BW_DISPLAY displayCtrl 92809) ctrlSetText _pic;
         private _what = switch (_kind) do { case "SUPPLY": {"STR_ALIVE_FOB_UI_SUPPLY_ITEM"}; case "STATIC": {"STR_ALIVE_FOB_UI_STATIC_ITEM"}; case "VEHICLE": {["STR_ALIVE_FOB_UI_VEHICLE_ITEM", "STR_ALIVE_FOB_UI_AIRCRAFT_ITEM"] select (_class isKindOf "Air")}; case "SOLDIER": {"STR_ALIVE_FOB_UI_SOLDIER_ITEM"}; case "GROUP": {"STR_ALIVE_FOB_UI_GROUP_ITEM"}; default {"STR_ALIVE_FOB_UI_FORTIFICATION"} };
         private _lines = [[_name, _class] select (_name == ""), format [localize _what, _row param [8, 1]], format [localize "STR_ALIVE_FOB_UI_COST", _cost]];
+        private _secs = (missionNamespace getVariable ["ALiVE_FOB_buildTimes", createHashMap]) getOrDefault [toLower _class, 0];
+        if (_secs > 0 && {!(_kind in ["SOLDIER", "GROUP"])}) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_BUILD_TIME", _secs] };
         private _locked = _tierMin > ((call _fnc_fob) param [5, 1]);
         if (_locked) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_TIER_NEEDED", _tierMin] };
         // a greyed item can be looked at but not placed

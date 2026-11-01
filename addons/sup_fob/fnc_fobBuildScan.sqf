@@ -101,6 +101,8 @@ private _blacklist = [];
 private _whitelist = [];
 private _only = [];
 private _fixed = createHashMap;
+// buildTime = N; beside cost: seconds the player works before it goes up (NeisAEL, 1 Nov), the mission's first
+private _times = createHashMap;
 {
     private _root = _x >> "CfgALiVEFOBBuildables";
     if (isClass _root) then {
@@ -116,6 +118,14 @@ private _fixed = createHashMap;
                     _fixed set [_k, _c];
                 } else {
                     ["ALiVE Player FOBs - CfgALiVEFOBBuildables: cost %1 for %2 isn't a whole number from 1 to 100000; using the worked-out price", _c, configName _x] call ALiVE_fnc_dumpR;
+                };
+            };
+            if (!(_k in _times) && {isNumber (_x >> "buildTime")}) then {
+                private _s = getNumber (_x >> "buildTime");
+                if (_s >= 0 && {_s <= 600}) then {
+                    _times set [_k, round _s];
+                } else {
+                    ["ALiVE Player FOBs - CfgALiVEFOBBuildables: buildTime %1 for %2 isn't from 0 to 600 seconds; it builds at once", _s, configName _x] call ALiVE_fnc_dumpR;
                 };
             };
         } forEach ("true" configClasses _root);
@@ -855,6 +865,11 @@ if (_measured > 0) then {
 uiNamespace setVariable ["ALiVE_FOB_catalogServer", +_rows];
 ALiVE_FOB_catalog = _rows;
 publicVariable "ALiVE_FOB_catalog";
+// build times by lower-case class, only those above 0; the server reads its own copy
+{ if (_y <= 0) then { _times deleteAt _x } } forEach +_times;
+uiNamespace setVariable ["ALiVE_FOB_buildTimesServer", +_times];
+ALiVE_FOB_buildTimes = _times;
+publicVariable "ALiVE_FOB_buildTimes";
 ALiVE_FOB_typeOnly = _typeOnly;
 publicVariable "ALiVE_FOB_typeOnly";
 // [[preset, [what it leaves out that another preset in use keeps]], ...] and the module's preset

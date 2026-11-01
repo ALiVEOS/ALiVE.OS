@@ -603,6 +603,14 @@ switch (_op) do {
         if (_airRefused == "RANGE") exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _range]] call _tell };
         if (_airRefused != "") exitWith { ["STR_ALIVE_FOB_REFUSED_" + _airRefused] call _tell };
 
+        // Build time (buildTime in CfgALiVEFOBBuildables): the player works it off on the bar first, and
+        // pays when it is done; one who couldn't pay is told before he starts
+        private _buildTime = (uiNamespace getVariable ["ALiVE_FOB_buildTimesServer", createHashMap]) getOrDefault [toLower _class, 0];
+        if (_buildTime > 0 && {!((_args param [count _args - 1, false]) isEqualTo true)} && {!(["canAfford", [_id, _cost]] call ALiVE_fnc_fobSupply)}) exitWith {
+            ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
+        };
+        if !(["build", toLower _class + "|" + _id, _buildTime] call _timed) exitWith {};
+
         if !(["debit", [_id, _cost, "build " + _class]] call ALiVE_fnc_fobSupply) exitWith {
             ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
         };

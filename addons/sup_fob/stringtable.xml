@@ -71,6 +71,9 @@
             <Key ID="STR_ALIVE_FOB_TIMER_DEPLOY">
                 <English>Deploying the FOB</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_BUILD">
+                <English>Building</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_TIMER_DISMANTLE">
                 <English>Taking the FOB down</English>
             </Key>
@@ -607,6 +610,9 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_UI_SUPPLY_ITEM">
                 <English>Supply</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_BUILD_TIME">
+                <English>Takes %1 s to build</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_UI_COST">
                 <English>Costs %1 supply</English>
