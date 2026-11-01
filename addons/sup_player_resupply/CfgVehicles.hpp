@@ -107,6 +107,7 @@ class CfgVehicles {
                                 class Yes { name = "Yes"; value = "true"; default = 1; };
                                 class No  { name = "No";  value = "false"; };
                             };
+                            ALiVE_showWhen[] = {{"pr_restrictionType", "is", "SIDE"}};
                     };
                     // ── DELIVERY METHODS ──────────────────────────────────────
                     class HDR_DELIVERY : ALiVE_ModuleSubTitle { property = "ALiVE_sup_player_resupply_HDR_DELIVERY"; displayName = "DELIVERY METHODS"; };
@@ -170,7 +171,7 @@ class CfgVehicles {
                                 class Custom { name = "$STR_ALIVE_LISTS_CUSTOM"; value = "CUSTOM"; };
                             };
                     };
-                    class pr_list_name : Edit { property = "ALiVE_sup_player_resupply_pr_list_name"; displayName = "$STR_ALIVE_PR_LIST_NAME"; tooltip = "$STR_ALIVE_PR_LIST_NAME_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+                    class pr_list_name : Edit { property = "ALiVE_sup_player_resupply_pr_list_name"; displayName = "$STR_ALIVE_PR_LIST_NAME"; tooltip = "$STR_ALIVE_PR_LIST_NAME_COMMENT"; defaultValue = """"""; typeName = "STRING"; ALiVE_showWhen[] = {{"pr_list", "is", "CUSTOM"}}; };
                     class pr_restrictionWhitelist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionWhitelist"; displayName = "$STR_ALIVE_PR_RESTRICTION_WHITELIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
                     class pr_restrictionBlacklist : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionBlacklist"; displayName = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST"; tooltip = "$STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
                     class pr_restrictionAlso : Edit { property = "ALiVE_sup_player_resupply_pr_restrictionAlso"; displayName = "$STR_ALIVE_PR_RESTRICTION_ALSO"; tooltip = "$STR_ALIVE_PR_RESTRICTION_ALSO_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
@@ -212,7 +213,7 @@ class CfgVehicles {
 
                     class HDR_COLLECT : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_COLLECT"; displayName = "WHO CAN COLLECT"; };
                     class hub_collect_who { property = "ALiVE_sup_logistics_hub_hub_collect_who"; displayName = "$STR_ALIVE_HUB_COLLECT_WHO"; tooltip = "$STR_ALIVE_HUB_COLLECT_WHO_COMMENT"; control = "ALiVE_HubCollectChoice"; typeName = "STRING"; expression = "_this setVariable ['hub_collect_who', _value];"; defaultValue = """SIDE"""; };
-                    class hub_collect_list : Edit { property = "ALiVE_sup_logistics_hub_hub_collect_list"; displayName = "$STR_ALIVE_HUB_COLLECT_LIST"; tooltip = "$STR_ALIVE_HUB_COLLECT_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                    class hub_collect_list : Edit { property = "ALiVE_sup_logistics_hub_hub_collect_list"; displayName = "$STR_ALIVE_HUB_COLLECT_LIST"; tooltip = "$STR_ALIVE_HUB_COLLECT_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; ALiVE_showWhen[] = {{"hub_collect_who", "has", "LIST"}}; ALiVE_showStyle = "dim"; };
 
                     // the same catalogue page and the same three lists as the tablet's own, for what is
                     // collected at these hubs
@@ -237,7 +238,7 @@ class CfgVehicles {
                                 class Custom { name = "$STR_ALIVE_LISTS_CUSTOM"; value = "CUSTOM"; };
                             };
                     };
-                    class hub_list_name : Edit { property = "ALiVE_sup_logistics_hub_hub_list_name"; displayName = "$STR_ALIVE_HUB_NAMEDLIST_NAME"; tooltip = "$STR_ALIVE_HUB_NAMEDLIST_NAME_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                    class hub_list_name : Edit { property = "ALiVE_sup_logistics_hub_hub_list_name"; displayName = "$STR_ALIVE_HUB_NAMEDLIST_NAME"; tooltip = "$STR_ALIVE_HUB_NAMEDLIST_NAME_COMMENT"; typeName = "STRING"; defaultValue = """"""; ALiVE_showWhen[] = {{"hub_list", "is", "CUSTOM"}}; };
                     class hub_only : Edit { property = "ALiVE_sup_logistics_hub_hub_only"; displayName = "$STR_ALIVE_HUB_ONLY"; tooltip = "$STR_ALIVE_HUB_ONLY_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_never : Edit { property = "ALiVE_sup_logistics_hub_hub_never"; displayName = "$STR_ALIVE_HUB_NEVER"; tooltip = "$STR_ALIVE_HUB_NEVER_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
                     class hub_also : Edit { property = "ALiVE_sup_logistics_hub_hub_also"; displayName = "$STR_ALIVE_HUB_ALSO"; tooltip = "$STR_ALIVE_HUB_ALSO_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
@@ -272,6 +273,7 @@ class CfgVehicles {
                                     class ThreeQuarters { name = "$STR_ALIVE_HUB_TRADE_OWN_3Q"; value = "0.75"; };
                                     class Full { name = "$STR_ALIVE_HUB_TRADE_OWN_FULL"; value = "1"; };
                             };
+                            ALiVE_showWhen[] = {{"hub_trade_in", "is", "ANY"}};
                     };
 
                     // losing a hub: destroyed, or dismantled by the enemy or its own side, and the repair
@@ -289,12 +291,12 @@ class CfgVehicles {
                                     class No { name = "No"; value = "false"; };
                             };
                     };
-                    class hub_dismantle_time : Edit { property = "ALiVE_sup_logistics_hub_hub_dismantle_time"; displayName = "$STR_ALIVE_HUB_DISMANTLE_TIME"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_TIME_COMMENT"; typeName = "STRING"; defaultValue = """15"""; };
+                    class hub_dismantle_time : Edit { property = "ALiVE_sup_logistics_hub_hub_dismantle_time"; displayName = "$STR_ALIVE_HUB_DISMANTLE_TIME"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_TIME_COMMENT"; typeName = "STRING"; defaultValue = """15"""; ALiVE_showWhen[] = {{"hub_dismantle", "is", "true"}}; };
                     class hub_repair_time : Edit { property = "ALiVE_sup_logistics_hub_hub_repair_time"; displayName = "$STR_ALIVE_HUB_REPAIR_TIME"; tooltip = "$STR_ALIVE_HUB_REPAIR_TIME_COMMENT"; typeName = "STRING"; defaultValue = """0"""; };
 
                     class HDR_DISMANTLE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_DISMANTLE"; displayName = "WHO CAN DISMANTLE"; };
                     class hub_dismantle_who { property = "ALiVE_sup_logistics_hub_hub_dismantle_who"; displayName = "$STR_ALIVE_HUB_DISMANTLE_WHO"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_WHO_COMMENT"; control = "ALiVE_HubDismantleChoice"; typeName = "STRING"; expression = "_this setVariable ['hub_dismantle_who', _value];"; defaultValue = """SIDE"""; };
-                    class hub_dismantle_list : Edit { property = "ALiVE_sup_logistics_hub_hub_dismantle_list"; displayName = "$STR_ALIVE_HUB_DISMANTLE_LIST"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                    class hub_dismantle_list : Edit { property = "ALiVE_sup_logistics_hub_hub_dismantle_list"; displayName = "$STR_ALIVE_HUB_DISMANTLE_LIST"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; ALiVE_showWhen[] = {{"hub_dismantle_who", "has", "LIST"}}; ALiVE_showStyle = "dim"; };
 
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_GENERAL"; displayName = "GENERAL"; };
                     class hub_debug : Combo
