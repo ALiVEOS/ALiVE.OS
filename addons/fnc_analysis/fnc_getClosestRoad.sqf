@@ -61,6 +61,8 @@ if (count _roads == 0) exitwith {_position};
 
 private _road = ([_roads,[_position],{_x distance _Input0},"ASCEND"] call ALiVE_fnc_SortBy) select 0;
 
-_result = position _road;
+// private: a bare _result overwrote the caller's own, so ML's truckPoolRelease returned a road
+// position instead of true or false and its caller threw (AshTray, 1 Nov)
+private _result = position _road;
 
 _result
