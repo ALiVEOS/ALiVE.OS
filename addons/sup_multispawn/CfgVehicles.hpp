@@ -49,7 +49,7 @@ class CfgVehicles {
                                     class none { name = "None"; value = "none"; };
                                 };
                         };
-                        class timeout : Edit { property = "ALiVE_sup_multispawn_timeout"; displayName = "$STR_ALIVE_MULTISPAWN_TIMEOUT"; tooltip = "$STR_ALIVE_MULTISPAWN_TIMEOUT_COMMENT"; defaultValue = """60"""; };
+                        class timeout : Edit { property = "ALiVE_sup_multispawn_timeout"; displayName = "$STR_ALIVE_MULTISPAWN_TIMEOUT"; tooltip = "$STR_ALIVE_MULTISPAWN_TIMEOUT_COMMENT"; defaultValue = """60"""; ALiVE_showWhen[] = {{"spawntype", "is", "insertion"}}; };
                         class spawningnearenemiesallowed : Combo
                         {
                                 property = "ALiVE_sup_multispawn_spawningnearenemiesallowed";
@@ -61,6 +61,7 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = false; default = 1; };
                                     class No { name = "No"; value = true; };
                                 };
+                                ALiVE_showWhen[] = {{"spawntype", "is", "forwardspawn"}};
                         };
                         class respawnWithGear : Combo
                         {
@@ -73,6 +74,7 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = true; default = 1; };
                                     class No { name = "No"; value = false; };
                                 };
+                                ALiVE_showWhen[] = {{"spawntype", "not", "none"}};
                         };
                         class ModuleDescription : ModuleDescription {};
                 };
