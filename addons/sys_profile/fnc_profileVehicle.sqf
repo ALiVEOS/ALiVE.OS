@@ -1186,6 +1186,37 @@ switch (_operation) do {
             [_logic,"vehicle",_vehicle] call ALIVE_fnc_hashSet;
             [_logic,"active",true] call ALIVE_fnc_hashSet;
 
+            // A drone's crew, made with it above, takes the places its group keeps empty for its AI operators,
+            // which can't be made on their own (ALIVE_fnc_profileEntity, "spawn"): driver, gunner and commander
+            // first, as the group's seats are listed. The group then commands its drone.
+            if (unitIsUAV _vehicle && {(_vehicleAssignments select 1) isNotEqualTo []}) then {
+                private _pool = [];
+                { if (!isNull _x) then { _pool pushBackUnique _x } } forEach ([driver _vehicle, gunner _vehicle, commander _vehicle] + crew _vehicle);
+                _pool = _pool select { (_x getVariable ["profileID", ""]) == "" };
+                {
+                    _x params ["", ["_entityID", ""], ["_indexes", []]];
+                    private _entity = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_entity" && {[_entity, "active", false] call ALIVE_fnc_hashGet}) then {
+                        private _eUnits = [_entity, "units", []] call ALIVE_fnc_hashGet;
+                        private _eGroup = [_entity, "group", grpNull] call ALIVE_fnc_hashGet;
+                        {
+                            {
+                                if (_x < count _eUnits && {isNull (_eUnits select _x)} && {_pool isNotEqualTo []} && {!isNull _eGroup}) then {
+                                    private _u = _pool deleteAt 0;
+                                    [_u] joinSilent _eGroup;
+                                    _u setVariable ["profileID", _entityID];
+                                    _u setVariable ["profileIndex", _x];
+                                    _u addMPEventHandler ["MPKilled", ALIVE_fnc_profileKilledEventHandler];
+                                    _eUnits set [_x, _u];
+                                };
+                            } forEach _x;
+                        } forEach _indexes;
+                        if (isNull ([_entity, "leader", objNull] call ALIVE_fnc_hashGet)) then { [_entity, "leader", leader _eGroup] call ALIVE_fnc_hashSet };
+                        [_entity, "spawnIncomplete", (_eUnits findIf { isNull _x }) > -1] call ALIVE_fnc_hashSet;
+                    };
+                } forEach (_vehicleAssignments select 2);
+            };
+
             // create vehicle assignments from profile vehicle assignments
             [_vehicleAssignments, _logic] call ALIVE_fnc_profileVehicleAssignmentsToVehicleAssignments;
 

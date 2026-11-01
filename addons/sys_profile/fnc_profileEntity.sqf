@@ -1366,6 +1366,15 @@ switch(_operation) do {
             {
                 if !(isnil "_x") then {
 
+                    // A drone's AI operator can't be made on its own (createUnit gives nothing). Its place is kept
+                    // empty, and the crew the drone comes with when it spawns takes it (ALIVE_fnc_profileVehicle,
+                    // "spawn"), so the group commands its drone.
+                    if (getText (configFile >> "CfgVehicles" >> _x >> "simulation") == "UAVPilot") then {
+                        _units pushback objNull;
+                        _unitCount = _unitCount + 1;
+                        continue;
+                    };
+
                     private _unitPosition = _position;
                     if (_unitCount < _positionsCount && {!_spawnOnGround}) then {
                         _unitPosition = _positions select _unitCount;

@@ -97,6 +97,9 @@ ALIVE_edenCompilerSyncValidatorPending = [_trigger, _scope] spawn {
         //     category) are EXPECTED, skip silently.
         //   - CAManBase peers (pilots, drivers, soldiers) are the
         //     valid template entries, skip silently.
+        //   - A drone (UAV or UGV) synced itself is valid too: its crew is
+        //     the game's hidden UAV AI, so there is no one to sync, and the
+        //     compiler takes the drone as a group of its own.
         //   - Anything else (vehicles, statics, decorations) is the
         //     misuse pattern; collect for the warning.
         private _badPeers = _peers select {
@@ -104,6 +107,7 @@ ALIVE_edenCompilerSyncValidatorPending = [_trigger, _scope] spawn {
             && {!isNull _x}
             && {!(_x isKindOf "Logic")}
             && {!(_x isKindOf "CAManBase")}
+            && {!(unitIsUAV _x)}
         };
 
         _checked = _checked + 1;
@@ -118,7 +122,7 @@ ALIVE_edenCompilerSyncValidatorPending = [_trigger, _scope] spawn {
             // Parentheses not angle brackets - BIS_fnc_3DENNotification
             // parses content as XML and truncates at the first `<`.
             private _msg = format [
-                "ALiVE: Faction Compiler Category '%1' has %2 vehicle(s) synced directly: [%3]. Sync the CREW unit (e.g. pilot, driver, gunner) INSIDE each vehicle, not the vehicle itself. Group the crew first, then sync ONE crew member per group to this category module.",
+                "ALiVE: Faction Compiler Category '%1' has %2 vehicle(s) synced directly: [%3]. Sync the CREW unit (e.g. pilot, driver, gunner) INSIDE each vehicle, not the vehicle itself. Group the crew first, then sync ONE crew member per group to this category module. Drones (UAVs and UGVs) are the exception: sync the drone itself, and it becomes a group of its own.",
                 _categoryAttr,
                 count _badPeers,
                 _truncated joinString ", "
