@@ -136,6 +136,7 @@ class CfgVehicles
                     class Player { name = "Player"; value = "player"; default = 1; };
                     class Slot { name = "Slot"; value = "slot"; };
                 };
+                ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}};
             };
             class allowReset: Combo
             {
@@ -156,6 +157,7 @@ class CfgVehicles
                         value = "false";
                     };
                 };
+                ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}};
             };
             class allowManualSave: Combo
             {
@@ -176,6 +178,7 @@ class CfgVehicles
                         value = "false";
                     };
                 };
+                ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}};
             };
             class allowDiffClass: Combo
             {
@@ -196,9 +199,10 @@ class CfgVehicles
                         value = "false";
                     };
                 };
+                ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}, {"persistBy", "is", "player"}};
             };
 
-            class HDR_SAVED : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_SAVED"; displayName = "WHAT IS SAVED"; };
+            class HDR_SAVED : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_SAVED"; displayName = "WHAT IS SAVED"; ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}}; };
             class saveLoadout: Combo
             {
                 property = MVAR(saveLoadout);
@@ -298,9 +302,10 @@ class CfgVehicles
                         value = "false";
                     };
                 };
+                ALiVE_showWhen[] = {{"persistBy", "is", "player"}};
             };
 
-            class HDR_STORAGE : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_STORAGE"; displayName = "STORAGE AND AUTOSAVE"; };
+            class HDR_STORAGE : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_STORAGE"; displayName = "STORAGE AND AUTOSAVE"; ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}}; };
             class storeToDB: Combo
             {
                 property = MVAR(storeToDB);
@@ -327,6 +332,7 @@ class CfgVehicles
                 displayName = "$STR_ALIVE_player_autoSaveTime";
                 tooltip = "$STR_ALIVE_player_autoSaveTime_COMMENT";
                 defaultValue = """0""";
+                ALiVE_showWhen[] = {{"storeToDB", "is", "true"}};
             };
 
             // CREW INFO
@@ -411,6 +417,7 @@ class CfgVehicles
                         value = "true";
                     };
                 };
+                ALiVE_showWhen[] = {{"playertags_style_setting", "not", "none"}};
             };
             class playertags_displayrank_setting: Combo
             {
@@ -431,6 +438,7 @@ class CfgVehicles
                         value = "true";
                     };
                 };
+                ALiVE_showWhen[] = {{"playertags_style_setting", "is", "default"}};
             };
             class playertags_displaygroup_setting: Combo
             {
@@ -451,6 +459,7 @@ class CfgVehicles
                         value = "true";
                     };
                 };
+                ALiVE_showWhen[] = {{"playertags_style_setting", "is", "default"}};
             };
             class playertags_invehicle_setting: Combo
             {
@@ -472,6 +481,7 @@ class CfgVehicles
                         value = "true";
                     };
                 };
+                ALiVE_showWhen[] = {{"playertags_style_setting", "is", "default"}};
             };
             class playertags_restricttofriendly_setting: Combo
             {
@@ -492,6 +502,7 @@ class CfgVehicles
                         value = "false";
                     };
                 };
+                ALiVE_showWhen[] = {{"playertags_style_setting", "not", "none"}};
             };
             class playertags_targets_setting: Edit
             {
@@ -499,9 +510,10 @@ class CfgVehicles
                 displayName = "$STR_ALIVE_PLAYERTAGS_TARGETS";
                 tooltip = "$STR_ALIVE_PLAYERTAGS_TARGETS_COMMENT";
                 defaultValue = """['CAManBase', 'Car', 'Tank', 'StaticWeapon', 'Helicopter', 'Plane']""";
+                ALiVE_showWhen[] = {{"playertags_style_setting", "is", "default"}};
             };
 
-            class HDR_TAG_RANGE : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_TAG_RANGE"; displayName = "TAG RANGE AND SIZE"; };
+            class HDR_TAG_RANGE : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_TAG_RANGE"; displayName = "TAG RANGE AND SIZE"; ALiVE_showWhen[] = {{"playertags_style_setting", "not", "none"}}; };
             class playertags_distance_setting: Edit
             {
                 property = MVAR(playertags_distance_setting);
@@ -517,6 +529,7 @@ class CfgVehicles
                 tooltip = "$STR_ALIVE_PLAYERTAGS_TOLERANCE_COMMENT";
                 defaultValue = "0.75";
                 typeName = "NUMBER";
+                ALiVE_showWhen[] = {{"playertags_style_setting", "is", "default"}};
             };
             class playertags_scale_setting: Edit
             {
@@ -525,6 +538,7 @@ class CfgVehicles
                 tooltip = "$STR_ALIVE_PLAYERTAGS_SCALE_COMMENT";
                 defaultValue = "0.65";
                 typeName = "NUMBER";
+                ALiVE_showWhen[] = {{"playertags_style_setting", "is", "default"}};
             };
             class playertags_height_setting: Edit
             {
@@ -533,9 +547,10 @@ class CfgVehicles
                 tooltip = "$STR_ALIVE_PLAYERTAGS_HEIGHT_COMMENT";
                 defaultValue = "1.1";
                 typeName = "NUMBER";
+                ALiVE_showWhen[] = {{"playertags_style_setting", "is", "default"}};
             };
 
-            class HDR_TAG_COLOURS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_TAG_COLOURS"; displayName = "TAG COLOURS"; };
+            class HDR_TAG_COLOURS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_TAG_COLOURS"; displayName = "TAG COLOURS"; ALiVE_showWhen[] = {{"playertags_style_setting", "is", "default"}}; };
             class playertags_namecolour_setting: Edit
             {
                 property = MVAR(playertags_namecolour_setting);
