@@ -49,6 +49,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_data_AUTOSAVEINTERVAL_COMMENT";
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"source", "is", "pns"}};
                         };
                         class HDR_FEEDS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_data_HDR_FEEDS"; displayName = "KILL FEED AND STATISTICS"; };
                         class killFeed : Combo
@@ -75,6 +76,7 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_data_customPerfMonCode";
                                 tooltip = "$STR_ALIVE_data_customPerfMonCode_COMMENT";
                                 defaultValue = """[['entities',150],['vehicles',300],['agents',450],['allDead',600],['objects',750],['triggers',900],['activeScripts',1050]]""";
+                                ALiVE_showWhen[] = {{"disablePerf", "is", "false"}};
                         };
                         class HDR_ACCESS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_data_HDR_ACCESS"; displayName = "ACCESS"; };
                         class saveAllowlist : Edit
