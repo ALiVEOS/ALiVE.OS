@@ -60,7 +60,7 @@ class CfgVehicles {
                                     class Yes { name = "$STR_ALIVE_GROUND_YES"; value = 1; default = 1; };
                                 };
                         };
-                        class ground_disarm_chance : Edit { property = "ALiVE_sup_ground_ground_disarm_chance"; displayName = "$STR_ALIVE_GROUND_DISARM_CHANCE"; tooltip = "$STR_ALIVE_GROUND_DISARM_CHANCE_DESC"; defaultValue = """70"""; };
+                        class ground_disarm_chance : Edit { property = "ALiVE_sup_ground_ground_disarm_chance"; displayName = "$STR_ALIVE_GROUND_DISARM_CHANCE"; tooltip = "$STR_ALIVE_GROUND_DISARM_CHANCE_DESC"; defaultValue = """70"""; ALiVE_showWhen[] = {{"ground_mine_check", "is", 1}}; };
                         class HDR_LOGISTICS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_ground_HDR_LOGISTICS"; displayName = "LOGISTICS"; };
                         class ground_logistics : Combo
                         {
@@ -85,6 +85,7 @@ class CfgVehicles {
                                     class Static { name = "$STR_ALIVE_GROUND_SOURCE_STATIC"; value = 0; default = 1; };
                                     class Dynamic { name = "$STR_ALIVE_GROUND_SOURCE_DYNAMIC"; value = 1; };
                                 };
+                                ALiVE_showWhen[] = {{"ground_logistics", "is", 1}};
                         };
                         class ModuleDescription : ModuleDescription {};
                 };

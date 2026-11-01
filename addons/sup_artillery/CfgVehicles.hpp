@@ -96,6 +96,7 @@ class CfgVehicles {
                                     class Static { name = "Static (LOGCOM Base)"; value = 0; default = 1; };
                                     class Dynamic { name = "Dynamic (Nearby Objective)"; value = 1; };
                                 };
+                                ALiVE_showWhen[] = {{"artillery_logistics", "is", 1}};
                         };
                         class ModuleDescription : ModuleDescription {};
                 };
