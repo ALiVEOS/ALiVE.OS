@@ -210,6 +210,13 @@ if (!isNull _logicObj) then {
                 private _v = _peer getVariable [_candidate, nil];
                 if (!isNil "_v") then { [_v, _moduleFactions] call _addFromValue; };
             } forEach _candidates;
+            // An AI Commander's factions typed into Additional Factions (by name), as a comma list
+            // or an array literal: a faction not in the list is only there (AshTray, 1 Nov). Read
+            // from the Eden attribute, as fnc_edenFactionSlotChoiceLoad does.
+            if ((toLower typeOf _peer) find "alive_mil_opcom" == 0) then {
+                private _manual = (_peer get3DENAttribute "ALiVE_mil_opcom_factionsManual") param [0, ""];
+                if (_manual isEqualType "" && {_manual != ""}) then { [_manual, _moduleFactions] call _addFromValue; };
+            };
             // sys_factioncompiler - the compiled factionId is what the
             // user-facing override applies to. The picker needs it in
             // the faction list so the listbox feeder's compiler-walk
