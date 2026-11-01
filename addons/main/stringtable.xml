@@ -758,6 +758,15 @@
 <Key ID="STR_ALIVE_LISTS_INFANTRY">
     <English>Infantry (supplies, defences, cars, trucks, light static weapons, troops)</English>
 </Key>
+<Key ID="STR_ALIVE_LISTS_MECHANISED">
+    <English>Mechanised (Infantry plus APCs and IFVs)</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_ARMOURED">
+    <English>Armoured (everything but artillery and aircraft)</English>
+</Key>
+<Key ID="STR_ALIVE_LISTS_AIRFIELD">
+    <English>Airfield (supplies, defences, trucks, aircraft)</English>
+</Key>
 <Key ID="STR_ALIVE_LISTS_CHECK">
     <English>Check The Lists</English>
 </Key>

@@ -14,8 +14,8 @@ A list holds:
   only[]  - offer these and nothing else
   never[] - never offer these, whatever else says so
   also[]  - offer these on top
-  kinds[] - a cut by kind: FORTIFICATION, SUPPLY, STATIC, VEHICLE (or VEHICLE:CAR,TRUCK,ARMOUR,
-            ARTILLERY,AIR,BOAT), TROOPS, GEAR; none means every kind
+  kinds[] - a cut by kind: FORTIFICATION, SUPPLY, STATIC, VEHICLE (or VEHICLE:CAR,TRUCK,APC,TANK,
+            ARTILLERY,AIR,BOAT; ARMOUR names APC and TANK), TROOPS, GEAR; none means every kind
   staticTier     - the heaviest static weapon kept: 2 machine guns and grenade launchers, 3 all
   fieldWorksOnly - fortifications no taller than 3 m (the FOB only, it needs measured sizes)
   fold           - 1 offers one of each vehicle, static weapon and crate model (camo and loadout
@@ -77,7 +77,8 @@ Jman
 params [["_operation", ""], ["_args", []]];
 
 private _kindNames = ["FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE", "TROOPS", "GEAR"];
-private _vehicleKindNames = ["CAR", "TRUCK", "ARMOUR", "ARTILLERY", "AIR", "BOAT"];
+// APC is APCs and IFVs, TANK tanks and other armour; ARMOUR, from before the split (Jman, 1 Nov), names both
+private _vehicleKindNames = ["CAR", "TRUCK", "APC", "TANK", "ARTILLERY", "AIR", "BOAT"];
 
 // Every group class name in the game, lower case, for telling a bare group name from a typing
 // mistake (shared with the tablet's catalogue rules)
@@ -200,8 +201,10 @@ private _fnc_kinds = {
                 if (_kind == "VEHICLE" && {count _parts > 1}) then {
                     {
                         private _v = _x trim [" ", 0];
-                        if (_v in _vehicleKindNames) then { _vehicleKinds pushBackUnique _v } else {
-                            ["ALiVE Lists: '%1' is not a kind of vehicle (CAR, TRUCK, ARMOUR, ARTILLERY, AIR, BOAT)", _v] call ALiVE_fnc_dumpR;
+                        switch (true) do {
+                            case (_v == "ARMOUR"): { _vehicleKinds pushBackUnique "APC"; _vehicleKinds pushBackUnique "TANK" };
+                            case (_v in _vehicleKindNames): { _vehicleKinds pushBackUnique _v };
+                            default { ["ALiVE Lists: '%1' is not a kind of vehicle (CAR, TRUCK, APC, TANK, ARMOUR, ARTILLERY, AIR, BOAT)", _v] call ALiVE_fnc_dumpR };
                         };
                     } forEach ((_parts select 1) splitString ", ");
                 };
@@ -461,7 +464,21 @@ switch (_operation) do {
                         case (_class isKindOf "Air"): {"AIR"};
                         case (_class isKindOf "Ship"): {"BOAT"};
                         case (getNumber (_cfg >> "artilleryScanner") == 1): {"ARTILLERY"};
-                        case (_class isKindOf "Tank" || {_class isKindOf "Wheeled_APC_F"}): {"ARMOUR"};
+                        // APCs and IFVs apart from tanks (tracked APCs are tanks to the engine). Filed under Tanks is
+                        // a tank. Room for 4 troops makes an APC, counting firing-port seats, which the plain troop
+                        // number leaves out (RHS BMPs). Filed under APCs or IFVs with 5 seats or more is one too: some
+                        // mods count every seat as crew (RHS BMD-4). A gun vehicle with no troop space (the Rhino,
+                        // 3 seats) goes with the tanks wherever it's filed
+                        case (_class isKindOf "Tank" || {_class isKindOf "Wheeled_APC_F"}): {
+                            private _esc = toLower getText (_cfg >> "editorSubcategory");
+                            private _seats = [_class, true] call BIS_fnc_crewCount;
+                            switch (true) do {
+                                case ("tank" in _esc): {"TANK"};
+                                case (_seats - ([_class, false] call BIS_fnc_crewCount) >= 4): {"APC"};
+                                case (("apc" in _esc || {"ifv" in _esc}) && {_seats >= 5}): {"APC"};
+                                default {"TANK"};
+                            }
+                        };
                         case (_class isKindOf "Truck_F"): {"TRUCK"};
                         default {"CAR"};
                     };

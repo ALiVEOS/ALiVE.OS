@@ -144,6 +144,9 @@ class CfgVehicles {
                                     class OUTPOST { name = "$STR_ALIVE_FOB_BUILDPRESET_OUTPOST"; value = "OUTPOST"; };
                                     class FORTIFIED { name = "$STR_ALIVE_FOB_BUILDPRESET_FORTIFIED"; value = "FORTIFIED"; };
                                     class INFANTRY { name = "$STR_ALIVE_FOB_BUILDPRESET_INFANTRY"; value = "INFANTRY"; };
+                                    class MECHANISED { name = "$STR_ALIVE_FOB_BUILDPRESET_MECHANISED"; value = "MECHANISED"; };
+                                    class ARMOURED { name = "$STR_ALIVE_FOB_BUILDPRESET_ARMOURED"; value = "ARMOURED"; };
+                                    class AIRFIELD { name = "$STR_ALIVE_FOB_BUILDPRESET_AIRFIELD"; value = "AIRFIELD"; };
                                     class LOGISTICS { name = "$STR_ALIVE_FOB_BUILDPRESET_LOGISTICS"; value = "LOGISTICS"; };
                                     class Custom { name = "$STR_ALIVE_LISTS_CUSTOM"; value = "CUSTOM"; };
                                 };

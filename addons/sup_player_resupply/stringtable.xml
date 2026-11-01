@@ -1030,7 +1030,7 @@
     <English>List</English>
 </Key>
 <Key ID="STR_ALIVE_PR_LIST_COMMENT">
-    <English>A ready-made list that cuts what the tablet offers by kind, so it suits any mod: Supplies only; Light forces (supplies, cars, trucks, boats, machine guns, grenade launchers, troops); Static weapons and supplies (no mortars or howitzers); Troops only; Infantry (as Light forces without boats, plus Defence Stores); or Everything. Every list but Standard, Everything and Infantry leaves Defence Stores empty. Custom uses a list of your own from CfgALiVELists in description.ext, named in List Name. Never, Only These and Also below still apply on top: Never always wins, Also adds past the list, and an Only These list of vehicles or crates replaces its cut. Standard, the default, is Light forces plus Defence Stores, showing one of each vehicle, static weapon and crate model rather than every camo and loadout variant.</English>
+    <English>A ready-made list that cuts what the tablet offers by kind, so it suits any mod: Supplies only; Light forces (supplies, cars, trucks, boats, machine guns, grenade launchers, troops); Static weapons and supplies (no mortars or howitzers); Troops only; Infantry (as Light forces without boats, plus Defence Stores); Mechanised (Infantry plus APCs and IFVs); Armoured (everything but artillery and aircraft); Airfield (supplies, Defence Stores, trucks, aircraft); or Everything. Light forces, Static weapons and supplies, Supplies only and Troops only leave Defence Stores empty. Custom uses a list of your own from CfgALiVELists in description.ext, named in List Name. Never, Only These and Also below still apply on top: Never always wins, Also adds past the list, and an Only These list of vehicles or crates replaces its cut. Standard, the default, is Light forces plus Defence Stores, showing one of each vehicle, static weapon and crate model rather than every camo and loadout variant.</English>
 </Key>
 <Key ID="STR_ALIVE_PR_LIST_NAME">
     <English>List Name</English>
@@ -1042,7 +1042,7 @@
     <English>List</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_NAMEDLIST_COMMENT">
-    <English>A ready-made list that cuts what these hubs offer by kind: Supplies only, Light forces, Static weapons and supplies, Troops only, Infantry or Logistics (supplies, defences, trucks, boats). Custom uses a list of your own from CfgALiVELists in description.ext, named in List Name. The tablet's lists apply here too: its Never always wins, and a hub list keeps only the kinds the tablet's List keeps. Also, the tablet's or this hub's, adds past both lists. Not set leaves these hubs offering what the tablet does, less their own Never.</English>
+    <English>A ready-made list that cuts what these hubs offer by kind: Supplies only, Light forces, Static weapons and supplies, Troops only, Infantry, Mechanised (Infantry plus APCs and IFVs), Armoured (everything but artillery and aircraft), Airfield (supplies, defences, trucks, aircraft) or Logistics (supplies, defences, trucks, boats). Custom uses a list of your own from CfgALiVELists in description.ext, named in List Name. The tablet's lists apply here too: its Never always wins, and a hub list keeps only the kinds the tablet's List keeps. Also, the tablet's or this hub's, adds past both lists. Not set leaves these hubs offering what the tablet does, less their own Never.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_NAMEDLIST_NAME">
     <English>List Name</English>

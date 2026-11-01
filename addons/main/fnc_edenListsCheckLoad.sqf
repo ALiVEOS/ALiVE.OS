@@ -49,7 +49,7 @@ _btn ctrlAddEventHandler ["ButtonClick", {
         _boxes params ["_onlyBox", "_neverBox", "_alsoBox"];
         private _out = [];
         private _kindWords = createHashMapFromArray [["FORTIFICATION", "fortifications"], ["SUPPLY", "supply crates"], ["STATIC", "static weapons"], ["VEHICLE", "vehicles"], ["TROOPS", "troops"], ["GEAR", "gear"]];
-        private _vehWords = createHashMapFromArray [["CAR", "cars"], ["TRUCK", "trucks"], ["ARMOUR", "armour"], ["ARTILLERY", "artillery"], ["AIR", "aircraft"], ["BOAT", "boats"]];
+        private _vehWords = createHashMapFromArray [["CAR", "cars"], ["TRUCK", "trucks"], ["APC", "APCs"], ["TANK", "tanks"], ["ARMOUR", "armour"], ["ARTILLERY", "artillery"], ["AIR", "aircraft"], ["BOAT", "boats"]];
         private _kinds = _rules getOrDefault ["kinds", []];
         _out pushBack (if (_kinds isEqualTo [] || {(keys _kindWords) findIf { !(_x in _kinds) } < 0}) then {
             "It can offer every kind of thing: fortifications, supply crates, static weapons, vehicles, troops and gear."
@@ -60,7 +60,7 @@ _btn ctrlAddEventHandler ["ButtonClick", {
         private _vk = _rules getOrDefault ["vehicleKinds", []];
         if (_vk isNotEqualTo [] && {"VEHICLE" call _has}) then {
             _out pushBack (if (_vk isEqualTo ["NONE"]) then { "Vehicles: none." } else {
-                format ["Vehicles: only %1.", (_vk apply { _vehWords getOrDefault [_x, toLower _x] }) call _fnc_and]
+                format ["Vehicles: only %1.", ((if ("APC" in _vk && {"TANK" in _vk}) then { (_vk - ["APC", "TANK"]) + ["ARMOUR"] } else { _vk }) apply { _vehWords getOrDefault [_x, toLower _x] }) call _fnc_and]
             });
         };
         private _tier = _rules getOrDefault ["staticTier", -1];

@@ -7,9 +7,10 @@
 //   only[], never[], also[] - class, group (BUS_InfSquad) or faction>group
 //                             names; Class=price sets a FOB price
 //   kinds[]        - FORTIFICATION, SUPPLY, STATIC, VEHICLE or
-//                    VEHICLE:CAR,TRUCK,ARMOUR,ARTILLERY,AIR,BOAT, TROOPS,
-//                    GEAR; none means every kind. Any kind cut leaves out
-//                    artillery static weapons.
+//                    VEHICLE:CAR,TRUCK,APC,TANK,ARTILLERY,AIR,BOAT, TROOPS,
+//                    GEAR; none means every kind. APC is APCs and IFVs,
+//                    TANK tanks and other armour; ARMOUR names both. Any
+//                    kind cut leaves out artillery static weapons.
 //   staticTier     - 2 machine guns and grenade launchers, 3 all
 //   fieldWorksOnly - fortifications no taller than 3 m (Player FOBs only)
 //   fold           - 1 shows one of each vehicle, static weapon and crate
@@ -18,7 +19,7 @@
 //   inherit        - another list to start from
 //   class <Class> { cost = N; } - a FOB price
 //
-// The first five carry the Player FOBs Build List Preset names, so a preset
+// OUTPOST to LOGISTICS and MECHANISED to AIRFIELD carry the Player FOBs Build List Preset names, so a preset
 // and its list give the same build list. GEAR is kept in those so the FOB
 // Arsenal's gear stays as it is with a preset today.
 // ----------------------------------------------------------------------------
@@ -41,6 +42,21 @@ class CfgALiVELists {
     };
     class LOGISTICS {
         kinds[] = {"FORTIFICATION", "SUPPLY", "VEHICLE:TRUCK,BOAT", "GEAR"};
+    };
+    // APCs and IFVs on top of Infantry, no tanks
+    class MECHANISED {
+        kinds[] = {"FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE:CAR,TRUCK,APC", "TROOPS", "GEAR"};
+        staticTier = 2;
+        fieldWorksOnly = 1;
+    };
+    // Fortified plus all armour: everything but artillery and aircraft
+    class ARMOURED {
+        kinds[] = {"FORTIFICATION", "SUPPLY", "STATIC", "VEHICLE:CAR,TRUCK,APC,TANK,BOAT", "TROOPS", "GEAR"};
+        staticTier = 3;
+    };
+    class AIRFIELD {
+        kinds[] = {"FORTIFICATION", "SUPPLY", "VEHICLE:TRUCK,AIR", "GEAR"};
+        fieldWorksOnly = 1;
     };
     class SUPPLIES {
         kinds[] = {"SUPPLY"};

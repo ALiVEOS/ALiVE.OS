@@ -310,7 +310,8 @@ switch(_operation) do {
     case "supplyKindOf": {
         (["kindOf", _args] call ALIVE_fnc_lists) params [["_kind", ""], "", ["_sub", ""]];
         _result = switch (_kind) do {
-            case "VEHICLE": { ["CAR", _sub] select (_sub != "") };
+            // APCs and tanks share the Armour folder
+            case "VEHICLE": { switch (_sub) do { case "": {"CAR"}; case "APC"; case "TANK": {"ARMOUR"}; default {_sub} } };
             case "": { "OTHER" };
             default { _kind };
         };

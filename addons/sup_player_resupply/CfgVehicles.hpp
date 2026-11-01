@@ -168,6 +168,9 @@ class CfgVehicles {
                                 class StaticsSupplies { name = "$STR_ALIVE_LISTS_STATICS_SUPPLIES"; value = "STATICS_SUPPLIES"; };
                                 class Troops { name = "$STR_ALIVE_LISTS_TROOPS"; value = "TROOPS"; };
                                 class Infantry { name = "$STR_ALIVE_LISTS_INFANTRY"; value = "INFANTRY"; };
+                                class Mechanised { name = "$STR_ALIVE_LISTS_MECHANISED"; value = "MECHANISED"; };
+                                class Armoured { name = "$STR_ALIVE_LISTS_ARMOURED"; value = "ARMOURED"; };
+                                class Airfield { name = "$STR_ALIVE_LISTS_AIRFIELD"; value = "AIRFIELD"; };
                                 class Custom { name = "$STR_ALIVE_LISTS_CUSTOM"; value = "CUSTOM"; };
                             };
                     };
@@ -234,6 +237,9 @@ class CfgVehicles {
                                 class StaticsSupplies { name = "$STR_ALIVE_LISTS_STATICS_SUPPLIES"; value = "STATICS_SUPPLIES"; };
                                 class Troops { name = "$STR_ALIVE_LISTS_TROOPS"; value = "TROOPS"; };
                                 class Infantry { name = "$STR_ALIVE_LISTS_INFANTRY"; value = "INFANTRY"; };
+                                class Mechanised { name = "$STR_ALIVE_LISTS_MECHANISED"; value = "MECHANISED"; };
+                                class Armoured { name = "$STR_ALIVE_LISTS_ARMOURED"; value = "ARMOURED"; };
+                                class Airfield { name = "$STR_ALIVE_LISTS_AIRFIELD"; value = "AIRFIELD"; };
                                 class Logistics { name = "$STR_ALIVE_LISTS_LOGISTICS"; value = "LOGISTICS"; };
                                 class Custom { name = "$STR_ALIVE_LISTS_CUSTOM"; value = "CUSTOM"; };
                             };

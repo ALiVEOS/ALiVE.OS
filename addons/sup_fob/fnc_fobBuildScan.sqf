@@ -49,7 +49,7 @@ blacklist and whitelist, and its Build Only These field to only[]. A class in Bu
 can carry its price, Class=463, which wins over a cost in CfgALiVEFOBBuildables. With an only list,
 a FOB type's extras are still built, and one the list doesn't have is that type's alone.
 
-The Build List Preset cuts the catalog by kind (Outpost, Fortified Base, Infantry, Logistics Hub).
+The Build List Preset cuts the catalog by kind (Outpost, Fortified Base, Infantry, Mechanised, Armoured Base, Airfield, Logistics Hub).
 A FOB type can name its own (preset= in FOB Types); one that doesn't, and the plain FOB, use the
 module's. Only what every preset in use leaves out is dropped here; what some presets keep and
 others don't stays in the catalog and is published per preset as ALiVE_FOB_presetDrop, for
@@ -569,16 +569,12 @@ if (_cuts && {_only isNotEqualTo []}) then {
 };
 if (_cuts && {_only isEqualTo []}) then {
     _presetTroops = (_inUse findIf { private _r = _rulesOf get _x; _r isEqualTo [] || {_r select 3} }) >= 0;
+    // the kind of vehicle as the lists judge it (CAR, TRUCK, APC, TANK, ARTILLERY, AIR, BOAT), so a preset
+    // and the tablet cut vehicles the same way
     private _vehicleKind = {
         params ["_class"];
-        switch (true) do {
-            case (_class isKindOf "Air"): {"AIR"};
-            case (_class isKindOf "Ship"): {"BOAT"};
-            case (getNumber (configFile >> "CfgVehicles" >> _class >> "artilleryScanner") == 1): {"ARTILLERY"};
-            case (_class isKindOf "Tank" || {_class isKindOf "Wheeled_APC_F"}): {"ARMOUR"};
-            case (_class isKindOf "Truck_F"): {"TRUCK"};
-            default {"CAR"};
-        }
+        private _vk = (["kindOf", _class] call ALIVE_fnc_lists) param [2, ""];
+        ["CAR", _vk] select (_vk != "")
     };
     private _isFieldWork = {
         params ["_class"];
