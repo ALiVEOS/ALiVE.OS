@@ -188,6 +188,9 @@ private _listToken = { if ((_x select 0) == "") then { _x select 1 } else { (_x 
 // what the mission names (Build Only These, Also Build, its Build List, a FOB type's extras below) is
 // offered whatever faction it is from (ALiVE_fnc_FOB factionAllows)
 private _namedAll = (_only + _whitelist) apply { toLower _x };
+// what's left out whatever any list says, a FOB type's extras included (Never Build is the mission's own
+// and a type's extras beat it, below)
+private _neverAll = count _blacklist;
 // never the kit or supply crate themselves: one built here would be a crate of supply for its build price
 _blacklist append ["alive_fob_kit", "alive_fob_supplycrate"];
 // nor a mod's stand-in that only looks like a vehicle to the config: the USS Nimitz mod's spawner (an
@@ -200,6 +203,7 @@ _blacklist append ["jdg_carrier_spawner", "jdg_shuttle"];
 // the FOB Arsenal, only with the Arsenal setting on (scope 1 keeps it out of the main pass below)
 private _arsenal = [_logic, "attribute", ["fob_arsenal"]] call ALiVE_fnc_FOB;
 if !(_arsenal) then { _blacklist pushBack "alive_fob_arsenal" };
+_neverAll = _blacklist select [_neverAll];
 // the same lists set the Arsenal's gear: a weapon, magazine, item, glasses or backpack class is the
 // Arsenal's, anything else the build menu's, and a list naming only one kind leaves the other alone.
 // Gear never reaches the build menu, Arsenal setting on or off: a list made on the Build List page
@@ -668,6 +672,9 @@ private _wl = _whitelist apply { toLower _x };
 
 // Every FOB type's extras (FOB Types). One the catalog already has stays everyone's; one only a
 // type brings is priced as a fortification and kept for the types that list it (ALiVE_FOB_typeOnly).
+// A type's own extra beats Never Build (NeisAEL, 1 Nov): the Build List page writes what the plain FOB
+// leaves out to Never Build, so one on it is kept for the types that name it and still left out of the
+// plain FOB. The kit, the crate and the rest of _neverAll stay out everywhere.
 private _typeOnly = [];
 {
     {
@@ -678,8 +685,17 @@ private _typeOnly = [];
             _presetDropped deleteAt toLower _x;
             _typeOnly pushBackUnique toLower _x;
         };
-        if (isClass _cfg && {!(toLower _x in _seen)} && {!(toLower _x in _blacklist)} && {!([_x] call _isTroop)}) then {
-            [configName _cfg, _cfg, "FORTIFICATION"] call _add;
+        if (isClass _cfg && {!(toLower _x in _seen)} && {!(toLower _x in _neverAll)} && {!([_x] call _isTroop)}) then {
+            // one Never Build took out of the scan above comes back as what it is: a static weapon or a vehicle
+            // is priced and tiered as one, anything else as a fortification
+            private _kind = "FORTIFICATION";
+            if (toLower _x in _blacklist) then {
+                if (_x isKindOf "StaticWeapon") then { _kind = "STATIC" } else {
+                    if ((_x isKindOf "LandVehicle" || {_x isKindOf "Ship"} || {_x isKindOf "Air"}) && {getNumber (_cfg >> "hasDriver") == 1}) then { _kind = "VEHICLE" };
+                };
+            };
+            private _blacklist = _blacklist - [toLower _x];
+            [configName _cfg, _cfg, _kind] call _add;
             _typeOnly pushBackUnique toLower _x;
         };
     } forEach (_x select 5);
@@ -707,7 +723,7 @@ if (_only isNotEqualTo []) then {
     {
         {
             if !(_x in _keep) then { _typeOnly pushBackUnique _x; _keep pushBack _x };
-        } forEach (((_x select 5) - _blacklist) select { !([_x] call _isTroop) });
+        } forEach (((_x select 5) - _neverAll) select { !([_x] call _isTroop) });
     } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
     _rows = _rows select { toLower (_x select 0) in _keep };
 };
@@ -844,13 +860,15 @@ if (_troopCap > 0) then {
         if (_hits isEqualTo []) then { ["ALiVE Player FOBs - %1 is no group in this game, so it isn't offered", _x] call ALiVE_fnc_dumpR };
         { [_x] call _addGroup } forEach _hits;
     } forEach (([[], _groupOnly] select _troopOnly) + _groupAlso);
-    // a FOB type's troops: one the catalogue hasn't got is that type's own
+    // a FOB type's troops: one the catalogue hasn't got is that type's own. A soldier the type names
+    // beats Never Build as its objects do; a group still follows the Never rules
     {
+        private _blacklist = _blacklist - ((_x select 5) - _neverAll);
         {
             if ([_x] call _isSoldier) then { [_x, true] call _addSoldier } else {
                 if ([_x] call _isGroupToken) then { { [_x, true] call _addGroup } forEach ([_x] call _resolveGroup) };
             };
-        } forEach ((_x select 5) - _blacklist);
+        } forEach ((_x select 5) - _neverAll);
     } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
 };
 _rows append _troopRows;
