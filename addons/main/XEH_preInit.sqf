@@ -26,6 +26,14 @@ LOG(MSG_INIT);
     [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_EDEN"],
     [[4, 6, 8], [localize "STR_ALIVE_SETTINGS_ROWS_4", localize "STR_ALIVE_SETTINGS_ROWS_6", localize "STR_ALIVE_SETTINGS_ROWS_8"], 0]
 ] call CBA_fnc_addSetting;
+// settings that only apply to another choice (a module's show/hide rules, fnc_edenSectionCollapse.sqf):
+// hidden, greyed out, or all shown
+[
+    "ALiVE_edenRuleMode", "LIST",
+    [localize "STR_ALIVE_SETTINGS_RULES", localize "STR_ALIVE_SETTINGS_RULES_COMMENT"],
+    [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_EDEN"],
+    [["hide", "dim", "off"], [localize "STR_ALIVE_SETTINGS_RULES_HIDE", localize "STR_ALIVE_SETTINGS_RULES_DIM", localize "STR_ALIVE_SETTINGS_RULES_OFF"], 0]
+] call CBA_fnc_addSetting;
 // the ALiVE logo at the top of a module's settings
 [
     "ALiVE_edenShowLogo", "CHECKBOX",

@@ -41,6 +41,21 @@
 <Key ID="STR_ALIVE_SETTINGS_SECTIONS_KEEP">
     <English>Leaves the other sections open</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_RULES">
+    <English>Settings that don't apply</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_RULES_COMMENT">
+    <English>What Eden's attributes window does with a module setting that only applies to another choice, such as Zombie Side while Game Mode isn't Outbreak. A section whose settings are all hidden hides too.</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_RULES_HIDE">
+    <English>Hides them</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_RULES_DIM">
+    <English>Greys them out</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_RULES_OFF">
+    <English>Shows them all</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_FIRSTOPEN">
     <English>Sections of a module not opened before</English>
 </Key>

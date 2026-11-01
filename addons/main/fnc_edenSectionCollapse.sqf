@@ -19,6 +19,18 @@ closed section are hidden, the rows below move up, and the module's category and
 under it shrink and move to match. When Eden's own category arrow is used the layout is put back
 once Eden has redrawn.
 
+A setting or header can carry show/hide rules in its config, read here on every layout:
+    ALiVE_showWhen[]    = {{"controlType", "is", "invasion"}, ...};   all of them must hold
+    ALiVE_showWhenAny[] = {{"gameMode", "is", {"outbreak", "hunt"}}};  any one is enough
+A condition is {setting, test, value}. The setting is another attribute class of the same module, or
+"@<module class>/<attribute class>" for the first such module in the mission. Tests: "is" and "not"
+(the value or any of a list of values), ">" and "<" (numbers), "filled" and "empty" (brackets, quotes,
+commas and spaces don't count), "has" (contains). Values compare as lower-case text. A condition on a
+setting that is itself hidden by its rules is false, whatever the test. A header whose rows are all
+hidden by rules hides too. Rows are matched to their settings by order (Eden makes them in config
+order, checked against the row titles); if they can't be matched, no rule applies to that module.
+CBA Addon Options > ALiVE > Eden Editor picks Hide (the default), Grey out or Show all.
+
 Modes:
     "init"   [CONTROL arrow]           - the header's arrow onLoad: hooks the header and queues a layout
     "set"    [CONTROL header, BOOL]    - opens or closes one section and remembers it
@@ -62,7 +74,8 @@ private _queue = {
         uiSleep 0.02;
         if (isNull _display) exitWith {};
         _display setVariable ["alive_secQueued", false];
-        ["layout", _display] call compile preprocessFileLineNumbers SELF;
+        // unscheduled, so a change hook firing mid-layout can't run a second layout in between
+        isNil { ["layout", _display] call compile preprocessFileLineNumbers SELF };
     };
 };
 
@@ -94,6 +107,212 @@ private _children = {
     { _order pushBack [_x getVariable "alive_y0", _forEachIndex] } forEach _list;
     _order sort true;
     _order apply { _list select (_x select 1) }
+};
+
+// the show/hide rules for one module's rows (see the header). Marks each row with rules alive_rowOff,
+// and each header whose rows are all hidden by rules alive_hdrEmpty; hooks the settings the rules read
+private _fnc_rules = {
+    params ["_display", "_attrs", "_rows"];
+    private _mode = missionNamespace getVariable ["ALiVE_edenRuleMode", "hide"];
+    private _sel = get3DENSelected "Logic";
+    private _cls = typeOf (_sel param [0, objNull]);
+
+    // rows matched to their settings once per window: attribute class (lower case) -> [row, config]
+    private _byName = _attrs getVariable "alive_ruleRows";
+    if (!isNil "_byName" && {count _byName > 0} && {(values _byName) findIf { isNull (_x select 0) } >= 0}) then { _byName = nil };
+    if (isNil "_byName" && {_cls != ""}) then {
+        _byName = createHashMap;
+        _attrs setVariable ["alive_ruleRows", _byName];
+        if (_sel findIf { typeOf _x != _cls } >= 0) exitWith {};
+        private _cfgs = configProperties [configFile >> "CfgVehicles" >> _cls >> "Attributes", "isClass _x && {getText (_x >> 'property') != '' || {configName _x == 'ModuleDescription'}}", true];
+        if (_cfgs findIf { isArray (_x >> "ALiVE_showWhen") || {isArray (_x >> "ALiVE_showWhenAny")} } < 0) exitWith {};
+        private _made = (allControls _display) select { (ctrlParentControlsGroup _x) isEqualTo _attrs && {ctrlType _x == 15} };
+        if (count _made != count _cfgs) exitWith {
+            diag_log format ["ALiVE Eden rules: %1 has %2 rows for %3 settings, rules off", _cls, count _made, count _cfgs];
+        };
+        // each row's title: the first text in it (a control's str isn't unique, so rows are numbered)
+        private _title = _made apply { "" };
+        { _x setVariable ["alive_ruleIx", _forEachIndex] } forEach _made;
+        {
+            private _i = (ctrlParentControlsGroup _x) getVariable ["alive_ruleIx", -1];
+            if (_i >= 0 && {ctrlType _x in [0, 13]} && {ctrlText _x != ""} && {(_title select _i) == ""}) then { _title set [_i, ctrlText _x] };
+        } forEach (allControls _display);
+        private _miss = 0;
+        private _named = 0;
+        {
+            private _dn = getText ((_cfgs select _forEachIndex) >> "displayName");
+            if ((_dn select [0, 1]) == "$") then { _dn = localize (_dn select [1]) };
+            _dn = _dn trim [": ", 2];
+            if (_dn != "") then {
+                _named = _named + 1;
+                if (((_title select _forEachIndex) trim [": ", 2]) != _dn) then { _miss = _miss + 1 };
+            };
+        } forEach _made;
+        // a picker that writes its own title can differ; more than that and the order can't be trusted
+        if (_miss > (2 max (_named / 10))) exitWith {
+            diag_log format ["ALiVE Eden rules: %1 rows don't match their settings (%2 of %3), rules off", _cls, _miss, _named];
+        };
+        { _byName set [toLower configName (_cfgs select _forEachIndex), [_x, _cfgs select _forEachIndex]] } forEach _made;
+    };
+    if (isNil "_byName" || {count _byName == 0}) exitWith {};
+
+    // a setting's value as lower-case text: what its row would save (a picker may put its own in
+    // alive_ruleValue). -2 when several modules are selected, their saved values differ and the row
+    // still shows no choice of its own
+    private _fnc_value = {
+        params ["_key"];
+        (_byName get _key) params ["_row", "_cfg"];
+        private _v = _row getVariable "alive_ruleValue";
+        if (isNil "_v") then {
+            private _ctrl = getText (_cfg >> "control");
+            private _saves = missionNamespace getVariable ["ALiVE_edenRuleSaves", createHashMap];
+            missionNamespace setVariable ["ALiVE_edenRuleSaves", _saves];
+            private _code = _saves getOrDefault [_ctrl, {}];
+            if (_code isEqualTo {}) then {
+                private _txt = getText (configFile >> "Cfg3DEN" >> "Attributes" >> _ctrl >> "attributeSave");
+                _code = if (_txt == "") then { {""} } else { compile _txt };
+                _saves set [_ctrl, _code];
+            };
+            // the control's own save code reads the attribute's config as _config; it runs in a scope of
+            // its own, so a variable it sets can't change this script's
+            _v = [_row, _cfg, _code] call {
+                params ["_ctrlRow", "_config", "_saveCode"];
+                private ["_mode", "_v", "_cfg", "_row", "_key", "_sel", "_cls", "_byName", "_display", "_attrs", "_rows", "_cursor", "_gap", "_top", "_logo", "_show", "_hdrOff", "_on", "_value", "_ctrl", "_code", "_txt"];
+                _ctrlRow call _saveCode
+            };
+        };
+        if (isNil "_v") then { _v = "" };
+        _v = toLower (if (_v isEqualType "") then { _v } else { str _v });
+        if (_v == "" && {count _sel > 1}) then {
+            private _prop = getText (_cfg >> "property");
+            private _vals = _sel apply { str ((_x get3DENAttribute _prop) param [0, ""]) };
+            if (count (_vals arrayIntersect _vals) > 1) then { _v = -2 };
+        };
+        _v
+    };
+
+    private _vis = createHashMap;
+    private _fnc_visible = {};
+    // one condition: {setting, test, value}
+    private _fnc_cond = {
+        params [["_name", "", [""]], ["_test", "is", [""]], ["_want", ""]];
+        private _v = call {
+            if ((_name select [0, 1]) == "@") exitWith {
+                // another module's setting: the first module of that class in the mission
+                ((_name select [1]) splitString "/") params [["_mc", ""], ["_ac", ""]];
+                private _ent = ((all3DENEntities select 3) select { typeOf _x == _mc }) param [0, objNull];
+                if (isNull _ent) exitWith { "" };
+                private _r = (_ent get3DENAttribute (getText (configFile >> "CfgVehicles" >> _mc >> "Attributes" >> _ac >> "property"))) param [0, ""];
+                toLower (if (_r isEqualType "") then { _r } else { str _r })
+            };
+            private _k = toLower _name;
+            if !(_k in _byName) exitWith { -1 };
+            if !([_k] call _fnc_visible) exitWith { -1 };
+            [_k] call _fnc_value
+        };
+        // not this module's setting, or hidden by its own rules: false. Values differing across the
+        // selected modules: true, so nothing that might apply is hidden
+        if (_v isEqualTo -1) exitWith { false };
+        if (_v isEqualTo -2) exitWith { true };
+        private _wants = (if (_want isEqualType []) then { _want } else { [_want] }) apply { toLower (if (_x isEqualType "") then { _x } else { str _x }) };
+        private _filled = (_v splitString ("[], '" + toString [34])) isNotEqualTo [];
+        switch (toLower _test) do {
+            case "is": { _v in _wants };
+            case "not": { !(_v in _wants) };
+            case ">": { (parseNumber _v) > (parseNumber (_wants param [0, "0"])) };
+            case "<": { (parseNumber _v) < (parseNumber (_wants param [0, "0"])) };
+            case "filled": { _filled };
+            case "empty": { !_filled };
+            case "has": { (_wants findIf { (_v find _x) >= 0 }) >= 0 };
+            default { true };
+        }
+    };
+    _fnc_visible = {
+        params ["_key"];
+        if (_key in _vis) exitWith { _vis get _key };
+        // a loop of rules settles as shown
+        _vis set [_key, true];
+        private _cfg = (_byName get _key) select 1;
+        private _all = getArray (_cfg >> "ALiVE_showWhen");
+        private _any = getArray (_cfg >> "ALiVE_showWhenAny");
+        private _ok = ((_all findIf { !(_x call _fnc_cond) }) < 0) && {_any isEqualTo [] || {(_any findIf { _x call _fnc_cond }) >= 0}};
+        _vis set [_key, _ok];
+        _ok
+    };
+
+    private _controllers = [];
+    {
+        _y params ["_row", "_cfg"];
+        private _rules = (getArray (_cfg >> "ALiVE_showWhen")) + (getArray (_cfg >> "ALiVE_showWhenAny"));
+        if (_rules isNotEqualTo []) then {
+            { _controllers pushBackUnique (toLower (_x param [0, ""])) } forEach _rules;
+            private _on = [_x] call _fnc_visible;
+            // Grey out: the row stays, faded; Show all: the rules are ignored
+            _row setVariable ["alive_rowOff", (_mode == "hide") && {!_on}];
+            _row ctrlSetFade ([0, 0.6] select ((_mode == "dim") && {!_on}));
+            _row ctrlCommit 0;
+        };
+    } forEach _byName;
+
+    // a header with rows, all of them hidden by rules, hides too
+    private _hdr = controlNull;
+    private _seen = 0;
+    private _off = 0;
+    private _fnc_close = {
+        if (!isNull _hdr) then { _hdr setVariable ["alive_hdrEmpty", (_seen > 0) && {_seen == _off}] };
+    };
+    {
+        if (_x getVariable ["alive_secHdr", false]) then {
+            call _fnc_close;
+            _hdr = _x;
+            _seen = 0;
+            _off = 0;
+        } else {
+            // Eden's module description at the foot is no setting of the section above it
+            private _info = _x controlsGroupCtrl 101;
+            if (!(_x getVariable ["alive_secSpacer", false]) && {isNull _info || {ctrlType _info != 15}}) then {
+                _seen = _seen + 1;
+                if (_x getVariable ["alive_rowOff", false]) then { _off = _off + 1 };
+            };
+        };
+    } forEach _rows;
+    call _fnc_close;
+
+    // a change to a setting the rules read lays the window out again
+    {
+        private _pair = _byName getOrDefault [_x, []];
+        if (_pair isNotEqualTo []) then {
+            private _row = _pair select 0;
+            if !(_row getVariable ["alive_ruleHooked", false]) then {
+                _row setVariable ["alive_ruleHooked", true];
+                {
+                    private _c = _x;
+                    private _p = ctrlParentControlsGroup _c;
+                    private _in = false;
+                    for "_i" from 1 to 4 do {
+                        if (isNull _p) exitWith {};
+                        if (_p isEqualTo _row) exitWith { _in = true };
+                        _p = ctrlParentControlsGroup _p;
+                    };
+                    if (_in) then {
+                        private _fn = { ["queue", ctrlParent (_this select 0)] call compile preprocessFileLineNumbers SELF };
+                        switch (ctrlType _c) do {
+                            case 4;
+                            case 5: { _c ctrlAddEventHandler ["LBSelChanged", _fn] };
+                            case 7;
+                            case 77: { _c ctrlAddEventHandler ["CheckedChanged", _fn] };
+                            case 2: { _c ctrlAddEventHandler ["KeyUp", _fn]; _c ctrlAddEventHandler ["KillFocus", _fn] };
+                            case 6: { _c ctrlAddEventHandler ["ToolBoxSelChanged", _fn] };
+                            case 3;
+                            case 43: { _c ctrlAddEventHandler ["SliderPosChanged", _fn] };
+                            case 1;
+                            case 16: { _c ctrlAddEventHandler ["ButtonClick", _fn] };
+                        };
+                    };
+                } forEach (allControls _display);
+            };
+        };
+    } forEach _controllers;
 };
 
 switch (_mode) do {
@@ -273,18 +492,26 @@ switch (_mode) do {
                 _gap = _gap min ((((_rows select (_i + 1)) getVariable "alive_y0") - ((_a getVariable "alive_y0") + (_a getVariable "alive_h0"))) max 0);
             };
             if (_gap > 1) then { _gap = 0 };
+
+            [_display, _attrs, _rows] call _fnc_rules;
+
             private _show = true;
+            private _hdrOff = false;
             {
                 private _y0 = _x getVariable "alive_y0";
                 private _step = (_x getVariable "alive_h0") + _gap;
-                if (_x getVariable ["alive_secHdr", false]) then { _show = _x getVariable ["alive_secOpen", false] };
+                if (_x getVariable ["alive_secHdr", false]) then {
+                    _hdrOff = (_x getVariable ["alive_rowOff", false]) || {_x getVariable ["alive_hdrEmpty", false]};
+                    _show = (_x getVariable ["alive_secOpen", false]) && {!_hdrOff};
+                };
                 // Eden's module description at the foot (ModuleInfo: a scrolling group 101 holding
                 // structured text 100) belongs to no section and always shows
                 private _info = _x controlsGroupCtrl 101;
                 if (!isNull _info && {ctrlType _info == 15} && {ctrlType (_info controlsGroupCtrl 100) == 13}) then { _show = true };
-                // a setting that only applies to another choice (alive_rowOff, e.g. Zombie Side outside
-                // Outbreak: fnc_edenGameModeToggle.sqf) hides even in an open section
-                if ((_show && {!(_x getVariable ["alive_rowOff", false])}) || {_x getVariable ["alive_secHdr", false]}) then {
+                // a setting whose rules say it doesn't apply (alive_rowOff, e.g. Zombie Side outside Outbreak)
+                // hides even in an open section; a header shows unless its rules or an empty section hide it
+                private _on = if (_x getVariable ["alive_secHdr", false]) then { !_hdrOff } else { _show && {!(_x getVariable ["alive_rowOff", false])} };
+                if (_on) then {
                     if (_x getVariable ["alive_secHidden", false]) then {
                         _x setVariable ["alive_secHidden", false];
                         _x ctrlShow true;

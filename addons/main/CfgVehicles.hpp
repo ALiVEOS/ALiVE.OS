@@ -170,16 +170,6 @@ class Cfg3DEN
 
         class Combo; // Forward declaration of BI Combo attribute control
 
-        // Game Mode and Zombie Side on ALiVE (Required): Eden's own combo, then Zombie Side shows only
-        // while Game Mode is Outbreak (fnc_edenGameModeToggle.sqf).
-        class ALiVE_GameModeCombo: Combo
-        {
-            attributeLoad = "call compile getText (configFile >> 'Cfg3DEN' >> 'Attributes' >> 'Combo' >> 'attributeLoad'); ['gamemode', _this] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenGameModeToggle.sqf'";
-        };
-        class ALiVE_ZombieSideCombo: Combo
-        {
-            attributeLoad = "call compile getText (configFile >> 'Cfg3DEN' >> 'Attributes' >> 'Combo' >> 'attributeLoad'); ['zombieside', _this] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenGameModeToggle.sqf'";
-        };
 
         // Check the lists: a button on the resupply tablet, Logistics Hub and Player FOBs modules that says which list
         // the module uses, what its lists keep and which names in them aren't in this game (fnc_edenListsCheckLoad.sqf).
@@ -2584,7 +2574,6 @@ class CfgVehicles {
             class ALiVE_GAMEMODE: Combo
             {
                 property =  MVAR(ALiVE_GAMEMODE);
-                control = "ALiVE_GameModeCombo";
                 displayName = "$STR_ALiVE_GAMEMODE";
                 tooltip = "$STR_ALiVE_GAMEMODE_COMMENT";
                 typeName = "STRING";
@@ -2606,7 +2595,8 @@ class CfgVehicles {
             class ALiVE_ZOMBIESIDE: Combo
             {
                 property =  MVAR(ALiVE_ZOMBIESIDE);
-                control = "ALiVE_ZombieSideCombo";
+                // shown only while Game Mode is Outbreak (fnc_edenSectionCollapse.sqf reads the rule)
+                ALiVE_showWhen[] = {{"ALiVE_GAMEMODE", "is", "outbreak"}};
                 displayName = "$STR_ALiVE_ZOMBIESIDE";
                 tooltip = "$STR_ALiVE_ZOMBIESIDE_COMMENT";
                 typeName = "STRING";
