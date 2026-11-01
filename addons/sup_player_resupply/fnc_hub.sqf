@@ -59,8 +59,7 @@ Parameters:
     ["permissions", [rules, names, hubNetId, kind, dismantleRules, dismantleNames]] - server, through
         ALIVE_fnc_hubRequest: a change to Who Can Collect (kind "COLLECT", the default), Who Can Dismantle
         ("DISMANTLE") or both ("BOTH", from the Manage Hub window, with the last two), for one hub's module
-        or (hubNetId "", admins only) for every module. Admins, and for one hub players of its side Who Can
-        Dismantle lets in
+        or (hubNetId "") for every module. Admins only, as on FOBs
     ["dismantle", [hubNetId]] - server, through ALIVE_fnc_hubRequest: a player's hold action finished
     ["hubDown", [hubNetId, destroyed, byName, byEnemy]] - server: the hub stops working, and with a
         Repair Time comes back later
@@ -187,7 +186,7 @@ switch (_op) do {
         if (_dismantleTime <= 0) then { _dismantleTime = 15 };
         _dismantleTime = (_dismantleTime max 1) min 120;
         private _repairTime = (parseNumber (["hub_repair_time", "0"] call _text)) max 0;
-        private _dWho = toUpper (["hub_dismantle_who", ""] call _text);
+        private _dWho = toUpper (["hub_dismantle_who", "SIDE"] call _text);
         _dWho = ["filter", [_dWho, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
         // a named list (List, or Custom and its name), read under the three lists
         private _list = toUpper (["hub_list", ""] call _text);
@@ -339,7 +338,7 @@ switch (_op) do {
     case "settings": {
         _args params [["_logic", objNull, [objNull]]];
         _result = if (isNull _logic) then { nil } else { _logic getVariable "ALiVE_hub_settings" };
-        if (isNil "_result" || {!(_result isEqualType [])} || {count _result < 12}) then { _result = ["WEST", 10, "SIDE", "", "", "", "", true, 15, 0, "", ""] };
+        if (isNil "_result" || {!(_result isEqualType [])} || {count _result < 12}) then { _result = ["WEST", 10, "SIDE", "", "", "", "", true, 15, 0, "SIDE", ""] };
     };
 
     case "rules": {
@@ -685,12 +684,11 @@ switch (_op) do {
         if !(_kind in ["COLLECT", "DISMANTLE", "BOTH"]) exitWith {};
         private _what = switch (_kind) do { case "DISMANTLE": {"dismantle"}; case "BOTH": {"collect and dismantle"}; default {"collect"} };
         if (isNull _caller) exitWith {};
-        // for one hub, a player of its side Who Can Dismantle lets in may change them too (Jman, 29 Oct)
-        private _admin = ["isAdmin", [_caller]] call ALIVE_fnc_hub;
-        private _hubObj = if (_netId == "") then { objNull } else { _netId call BIS_fnc_objectFromNetId };
-        if (!_admin && {isNull _hubObj || {(["unitSide", [_caller]] call ALIVE_fnc_hub) != ((_hubObj getVariable ["ALiVE_hub", []]) param [0, ""])} || {!(["mayDismantle", [_caller, _hubObj]] call ALIVE_fnc_hub)}}) exitWith {
-            ["ALiVE Logistics Hub - %1 asked to change who can %2, but is no admin and Who Can Dismantle doesn't let them", name _caller, _what] call ALiVE_fnc_dump;
-            if (_kind == "BOTH") then { ["notify", ["STR_ALIVE_HUB_REFUSED_NOT_ALLOWED", []]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller] };
+        // admins only, as on FOBs: Who Can Dismantle defaults to the whole side, and the players it lets in
+        // could otherwise rewrite who may use the hub (Jman, 1 Nov)
+        if !(["isAdmin", [_caller]] call ALIVE_fnc_hub) exitWith {
+            ["ALiVE Logistics Hub - %1 asked to change who can %2, but is no admin", name _caller, _what] call ALiVE_fnc_dump;
+            if (_kind == "BOTH") then { ["notify", ["STR_ALIVE_HUB_REFUSED_ADMIN", []]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller] };
         };
         private _clean = {
             params ["_r", "_n"];

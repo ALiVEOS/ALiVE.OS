@@ -6,7 +6,7 @@ Function: fnc_hubEdenWhoLoad
 
 Description:
 Eden attributeLoad for the Logistics Hub's Who Can Collect (ALiVE_HubCollectChoice) and Who Can
-Dismantle (ALiVE_HubDismantleChoice, default nothing ticked), both on ALiVE_SideChoiceMulti: a
+Dismantle (ALiVE_HubDismantleChoice, default own side, as on FOBs), both on ALiVE_SideChoiceMulti: a
 multi-select list of who on the hub's side may collect a requisition there, or dismantle it. Any
 ticked row lets a player in; with none ticked only admins can.
 

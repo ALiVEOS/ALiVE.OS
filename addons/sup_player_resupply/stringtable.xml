@@ -780,6 +780,12 @@
 <Key ID="STR_ALIVE_HUB_RENAME_CLEARED">
     <English>The hub's name is cleared; it shows its grid again</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_REFUSED_ADMIN">
+    <English>Only an admin can change who can collect at and dismantle Logistics Hubs.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_UI_PERM_ADMIN">
+    <English>Only admins can change who can collect and dismantle</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_REFUSED_NOT_ALLOWED">
     <English>You can't change this hub: only admins, and players Who Can Dismantle lets in, can</English>
 </Key>
@@ -916,7 +922,7 @@
     <English>Who Can Dismantle</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE_WHO_COMMENT">
-    <English>Who on the hub's own side may dismantle it, from the Dismantle button in Manage Hub (pressed twice within 10 seconds). Tick any number of rows: any ticked row lets a player in. Admins always can, so with nothing ticked only admins can. The same players can change the hub's permissions in Manage Hub. The enemy's hold action is Enemy Can Dismantle, above.</English>
+    <English>Who on the hub's own side may dismantle it, from the Dismantle button in Manage Hub (pressed twice within 10 seconds). Tick any number of rows: any ticked row lets a player in. Admins always can, so with nothing ticked only admins can. Left at its default, anyone on the hub's side can, as on FOBs. Only admins can change the hub's permissions, from Manage Hub. The enemy's hold action is Enemy Can Dismantle, above.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE_LIST">
     <English>Allowed Players</English>

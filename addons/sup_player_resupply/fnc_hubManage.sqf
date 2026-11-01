@@ -11,7 +11,7 @@ ACE menu at one of the side's Logistics Hubs, opens it (data\ui\hubManage.hpp):
   whether this player may, what it offers, and whether the AI Commanders supply from it
 - its name, shown on the map marker and in the window: Rename, for admins and players Who Can
   Dismantle lets in; an empty name goes back to the grid
-- Permissions: Who Can Collect and Who Can Dismantle for the hub's module, and every hub of it
+- Permissions: Who Can Collect and Who Can Dismantle for the hub's module, and every hub of it; admins only
 - Collect: opens the Player Logistics tablet with Collect at a Hub picked, while the hub is working,
   offers Collect and lets this player collect
 - Dismantle: pressed twice within 10 s, for the same players; the hub is down until its Repair Time
@@ -143,9 +143,13 @@ switch (_op) do {
         (_d displayCtrl 92911) ctrlSetStructuredText parseText format [localize "STR_ALIVE_HUB_UI_STATUS", _sideName, _state, _collect, _cat, _supplies, mapGridPosition _hub];
 
         private _may = [_hub] call _mayChange;
-        { (_d displayCtrl _x) ctrlEnable _may } forEach [92912, 92913, 92914];
+        { (_d displayCtrl _x) ctrlEnable _may } forEach [92912, 92913];
         (_d displayCtrl 92915) ctrlEnable (_may && _alive);
-        { (_d displayCtrl _x) ctrlSetTooltip (["", localize "STR_ALIVE_HUB_UI_NOT_ALLOWED"] select !_may) } forEach [92913, 92914, 92915];
+        { (_d displayCtrl _x) ctrlSetTooltip (["", localize "STR_ALIVE_HUB_UI_NOT_ALLOWED"] select !_may) } forEach [92913, 92915];
+        // Permissions is for admins only, as on FOBs
+        private _admin = ["isAdmin", [player]] call ALIVE_fnc_hub;
+        (_d displayCtrl 92914) ctrlEnable _admin;
+        (_d displayCtrl 92914) ctrlSetTooltip (["", localize "STR_ALIVE_HUB_UI_PERM_ADMIN"] select !_admin);
 
         // Collect: the tablet offers Collect at a Hub, and this hub would take the player's order
         private _tablet = !isNil "ALIVE_SUP_PLAYER_RESUPPLY" && {"PR_COLLECT" in ([ALIVE_SUP_PLAYER_RESUPPLY, "deliveryListValues"] call ALIVE_fnc_PR)};
@@ -203,7 +207,7 @@ switch (_op) do {
 
     case "permOpen": {
         private _hub = uiNamespace getVariable ["ALiVE_hub_manageHub", objNull];
-        if (isNull _hub || {!([_hub] call _mayChange)}) exitWith {};
+        if (isNull _hub || {!(["isAdmin", [player]] call ALIVE_fnc_hub)}) exitWith {};
         private _logic = (_hub getVariable ["ALiVE_hub", []]) param [3, objNull];
         (["rules", [_logic]] call ALIVE_fnc_hub) params ["_cRules", "_cNames"];
         (["rules", [_logic, "DISMANTLE"]] call ALIVE_fnc_hub) params ["_dRules", "_dNames"];
