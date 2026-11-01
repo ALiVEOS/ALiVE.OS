@@ -71,6 +71,7 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_RECRUIT_VEHICLES";
                                 tooltip = "$STR_ALIVE_RECRUIT_VEHICLES_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"maxVehicles", ">", 0}};
                         };
                         class maxVehicles : Edit
                         {
@@ -95,6 +96,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_RECRUIT_SPAWN_HEIGHT_COMMENT";
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"spawnPoints", "filled"}};
                         };
                         class HDR_FORCEPOOL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_recruit_HDR_FORCEPOOL"; displayName = "FORCE POOL"; };
                         class unitCost : Edit
@@ -304,6 +306,7 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_RALLY_LEADERCD_COMMENT";
                             typeName = "NUMBER";
                             defaultValue = "120";
+                            ALiVE_showWhen[] = {{"leaderRally", "not", "OFF"}};
                     };
                     class leaderOverrun : Edit
                     {
@@ -312,6 +315,7 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_RALLY_LEADEROVERRUN_COMMENT";
                             typeName = "NUMBER";
                             defaultValue = "30";
+                            ALiVE_showWhen[] = {{"leaderRally", "not", "OFF"}};
                     };
                     class leaderRallyClass : Edit
                     {
@@ -320,10 +324,11 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_RALLY_LEADERCLASS_COMMENT";
                             typeName = "STRING";
                             defaultValue = """""";
+                            ALiVE_showWhen[] = {{"leaderRally", "not", "OFF"}};
                     };
                     class HDR_MANAGE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_MANAGE"; displayName = "WHO CAN MANAGE"; };
                     class rallyManageWho { property = "ALiVE_sup_rally_rallyManageWho"; displayName = "$STR_ALIVE_RALLY_MANAGE_WHO"; tooltip = "$STR_ALIVE_RALLY_MANAGE_WHO_COMMENT"; control = "ALiVE_RallyManageChoice"; typeName = "STRING"; defaultValue = """OWNER"""; };
-                    class rallyManageList : Edit { property = "ALiVE_sup_rally_rallyManageList"; displayName = "$STR_ALIVE_RALLY_MANAGE_LIST"; tooltip = "$STR_ALIVE_RALLY_MANAGE_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
+                    class rallyManageList : Edit { property = "ALiVE_sup_rally_rallyManageList"; displayName = "$STR_ALIVE_RALLY_MANAGE_LIST"; tooltip = "$STR_ALIVE_RALLY_MANAGE_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; ALiVE_showWhen[] = {{"rallyManageWho", "has", "LIST"}}; };
                     class HDR_DISPLAY : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_DISPLAY"; displayName = "DISPLAY"; };
                     class rallyMarkers : Combo
                         {
