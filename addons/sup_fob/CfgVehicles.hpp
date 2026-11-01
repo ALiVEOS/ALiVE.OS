@@ -51,6 +51,19 @@ class CfgVehicles {
                                     class BOTH   { name = "$STR_ALIVE_FOB_INTERFACE_BOTH";   value = "BOTH"; };
                                 };
                         };
+                        class fob_place_view : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_place_view";
+                                displayName = "$STR_ALIVE_FOB_PLACE_VIEW";
+                                tooltip = "$STR_ALIVE_FOB_PLACE_VIEW_COMMENT";
+                                defaultValue = """TOGGLE""";
+                                class Values
+                                {
+                                    class OWN    { name = "$STR_ALIVE_FOB_PLACE_VIEW_OWN";    value = "OWN"; };
+                                    class TOGGLE { name = "$STR_ALIVE_FOB_PLACE_VIEW_TOGGLE"; value = "TOGGLE"; default = 1; };
+                                    class THIRD  { name = "$STR_ALIVE_FOB_PLACE_VIEW_THIRD";  value = "THIRD"; };
+                                };
+                        };
                         class fob_build_range : Edit { property = "ALiVE_sup_fob_fob_build_range"; displayName = "$STR_ALIVE_FOB_BUILD_RANGE"; tooltip = "$STR_ALIVE_FOB_BUILD_RANGE_COMMENT"; typeName = "STRING"; defaultValue = """150"""; };
                         class fob_build_time : Edit { property = "ALiVE_sup_fob_fob_build_time"; displayName = "$STR_ALIVE_FOB_BUILD_TIME"; tooltip = "$STR_ALIVE_FOB_BUILD_TIME_COMMENT"; typeName = "STRING"; defaultValue = """0"""; };
                         class fob_dismantle_time : Edit { property = "ALiVE_sup_fob_fob_dismantle_time"; displayName = "$STR_ALIVE_FOB_DISMANTLE_TIME"; tooltip = "$STR_ALIVE_FOB_DISMANTLE_TIME_COMMENT"; typeName = "STRING"; defaultValue = """0"""; };

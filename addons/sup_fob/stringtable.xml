@@ -53,6 +53,21 @@
             <Key ID="STR_ALIVE_FOB_DISMANTLE_TIME_COMMENT">
                 <English>How long it takes to take a FOB down, in seconds. 0 takes it down at once, as before. The player kneels to work and a bar shows the time left, as for the deploy time, and the FOB stays up until the time is up.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_VIEW">
+                <English>Placing View:</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_VIEW_COMMENT">
+                <English>The view while a player places a FOB item. Toggle View puts a Toggle View action on the scroll menu while placing, for a view from behind the player and back. Third Person starts in that view. Where the mission turns third person off, a camera follows behind the player instead, only while placing.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_VIEW_OWN">
+                <English>The player's own view</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_VIEW_TOGGLE">
+                <English>Toggle View on the scroll menu</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_PLACE_VIEW_THIRD">
+                <English>Start in third person</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_TIMER_CANCEL">
                 <English>Stop The Timer If:</English>
             </Key>
@@ -565,6 +580,9 @@
             </Key>
             <Key ID="STR_ALIVE_FOB_ACTION_ROTATE">
                 <English>Rotate 45 degrees</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_VIEW">
+                <English>Toggle View</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_ACTION_CANCEL">
                 <English>Cancel placing</English>
