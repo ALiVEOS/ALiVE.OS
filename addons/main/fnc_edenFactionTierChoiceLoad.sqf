@@ -397,6 +397,28 @@ private _applyTicks = {
 [_display] call _applyTicks;
 [_display, _tierKeys select _filterIdx] call _refillOverride;
 
+// what Eden's show/hide rules read for this picker: the factions on the last tier (Custom on AI
+// Skill), typed ones included. The picker's save code writes to the module, so the rules can't run it
+private _noteRule = {
+    params ["_disp"];
+    private _tk = _disp getVariable ["alive_tierKeys", []];
+    if (_tk isEqualTo []) exitWith {};
+    private _last = _tk select (count _tk - 1);
+    private _names = +((_disp getVariable ["alive_perTier", createHashMap]) getOrDefault [_last, []]);
+    private _editCtrl = _disp controlsGroupCtrl 102;
+    if ((_disp getVariable ["alive_filterIdx", 0]) == (count _tk - 1) && {!isNull _editCtrl}) then {
+        { private _p = _x trim [" ", 0]; if (_p != "") then { _names pushBackUnique _p } } forEach ((ctrlText _editCtrl) splitString ",");
+    };
+    _disp setVariable ["alive_ruleValue", _names joinString ","];
+};
+_display setVariable ["alive_noteRule", _noteRule];
+[_display] call _noteRule;
+private _ruleEdit = _display controlsGroupCtrl 102;
+if (!isNull _ruleEdit) then {
+    _ruleEdit setVariable ["alive_disp", _display];
+    _ruleEdit ctrlAddEventHandler ["KeyUp", { private _d = (_this select 0) getVariable "alive_disp"; [_d] call (_d getVariable "alive_noteRule") }];
+};
+
 // ---- Wire FilterNext button (idc 1210) -----------------------------------
 private _btn = _display controlsGroupCtrl 1210;
 if (!isNull _btn) then {
@@ -436,6 +458,7 @@ if (!isNull _btn) then {
         if (_idx < count _tk) then {
             [_disp, _tk select _idx] call _refill;
         };
+        [_disp] call (_disp getVariable "alive_noteRule");
     }];
 };
 
@@ -470,6 +493,7 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
         };
     } forEach _selIdx;
     _per set [_activeTier, _newBucket];
+    [_disp] call (_disp getVariable "alive_noteRule");
 }];
 
 [

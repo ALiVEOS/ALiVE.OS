@@ -74,7 +74,7 @@ class CfgVehicles {
             class customSkillFactions          { property = "ALiVE_sys_aiskill_customSkillFactions";          control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customSkillFactions', _value];";          typeName = "STRING"; displayName = ""; };
             class customSkillFactionsManual    { property = "ALiVE_sys_aiskill_customSkillFactionsManual";    control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customSkillFactionsManual', _value];";    typeName = "STRING"; displayName = ""; };
             // ── CUSTOM SKILL OVERRIDE ─────────────────────────────────────────
-            class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_CUSTOM"; displayName = "CUSTOM SKILL VALUES"; };
+            class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_CUSTOM"; displayName = "CUSTOM SKILL VALUES"; ALiVE_showWhen[] = {{"skillTierFactions", "filled"}}; };
             // Hidden: Min and Max Ability never did anything. The ability they rolled sets every
             // sub-skill, and the skill values below are set straight after it and replace it. Kept,
             // not removed, so a mission's saved values still load.
@@ -86,13 +86,14 @@ class CfgVehicles {
             class customSkillSpotDistance : Edit { property = "ALiVE_sys_aiskill_customSkillSpotDistance"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE_COMMENT"; defaultValue = """0.9"""; typeName = "NUMBER"; };
             class customSkillSpotTime : Edit { property = "ALiVE_sys_aiskill_customSkillSpotTime"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME_COMMENT"; defaultValue = """0.5"""; typeName = "NUMBER"; };
 
-            class HDR_CUSTOM_OTHER : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_CUSTOM_OTHER"; displayName = "CUSTOM MORALE AND COMMAND"; };
+            class HDR_CUSTOM_OTHER : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_CUSTOM_OTHER"; displayName = "CUSTOM MORALE AND COMMAND"; ALiVE_showWhen[] = {{"skillTierFactions", "filled"}}; };
             class customSkillCourage : Edit { property = "ALiVE_sys_aiskill_customSkillCourage"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_COURAGE"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_COURAGE_COMMENT"; defaultValue = """0.7"""; typeName = "NUMBER"; };
             class customSkillFleeing : Edit { property = "ALiVE_sys_aiskill_customSkillFleeing"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_FLEEING"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_FLEEING_COMMENT"; defaultValue = """0.3"""; typeName = "NUMBER"; };
             class customSkillReload : Edit { property = "ALiVE_sys_aiskill_customSkillReload"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_RELOAD"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_RELOAD_COMMENT"; defaultValue = """0.3"""; typeName = "NUMBER"; };
             class customSkillCommanding : Edit { property = "ALiVE_sys_aiskill_customSkillCommanding"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_COMMANDING"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_COMMANDING_COMMENT"; defaultValue = """1"""; typeName = "NUMBER"; };
             class customSkillGeneral : Edit { property = "ALiVE_sys_aiskill_customSkillGeneral"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_GENERAL"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_GENERAL_COMMENT"; defaultValue = """0.5"""; typeName = "NUMBER"; };
-            class customSkillEndurance : Edit { property = "ALiVE_sys_aiskill_customSkillEndurance"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_ENDURANCE"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_ENDURANCE_COMMENT"; defaultValue = """0.3"""; typeName = "NUMBER"; };
+            // Hidden: Arma 3 ignores the endurance sub-skill. Kept, not removed, so a mission's saved value still loads
+            class customSkillEndurance { property = "ALiVE_sys_aiskill_customSkillEndurance"; control = "ALiVE_HiddenAttribute"; defaultValue = """0.3"""; expression = "_this setVariable ['customSkillEndurance', _value, true];"; typeName = "NUMBER"; displayName = ""; };
             class ModuleDescription : ModuleDescription {};
         };
     };
