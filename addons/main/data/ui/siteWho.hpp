@@ -2,7 +2,8 @@
 // or two sets of rules side by side, each with its names list. ALiVE_fnc_siteWhoDialog fills and
 // drives it; the site that opens it says what the columns are and sends Apply on to its server.
 // Styled as the Manage FOB and Manage Hub windows, with its own copies of their base controls so
-// main needs nothing from them. One column is laid out narrower by the script.
+// main needs nothing from them. One column is laid out narrower by the script. Each column has five
+// tick rows, idc 92955 + 5 * column + row.
 
 class SiteUI_RscText {
     access = 0;
@@ -127,7 +128,7 @@ class ALiVE_SiteWhoWindow {
             x = 0.35 * safezoneW + safezoneX;
             y = 0.31 * safezoneH + safezoneY;
             w = 0.30 * safezoneW;
-            h = 0.395 * safezoneH;
+            h = 0.435 * safezoneH;
             colorBackground[] = {0,0,0,0.65};
         };
         class SiteWho_Header: SiteUI_RscText {
@@ -168,14 +169,16 @@ class ALiVE_SiteWhoWindow {
         class SiteWho_A1: SiteWho_A0 { idc = 92956; action = "['toggle', [0, 1]] call ALiVE_fnc_siteWhoDialog"; y = 0.45 * safezoneH + safezoneY; };
         class SiteWho_A2: SiteWho_A0 { idc = 92957; action = "['toggle', [0, 2]] call ALiVE_fnc_siteWhoDialog"; y = 0.49 * safezoneH + safezoneY; };
         class SiteWho_A3: SiteWho_A0 { idc = 92958; action = "['toggle', [0, 3]] call ALiVE_fnc_siteWhoDialog"; y = 0.53 * safezoneH + safezoneY; };
+        class SiteWho_A4: SiteWho_A0 { idc = 92959; action = "['toggle', [0, 4]] call ALiVE_fnc_siteWhoDialog"; y = 0.57 * safezoneH + safezoneY; };
         class SiteWho_B0: SiteWho_A0 { idc = 92960; action = "['toggle', [1, 0]] call ALiVE_fnc_siteWhoDialog"; x = 0.505 * safezoneW + safezoneX; };
         class SiteWho_B1: SiteWho_B0 { idc = 92961; action = "['toggle', [1, 1]] call ALiVE_fnc_siteWhoDialog"; y = 0.45 * safezoneH + safezoneY; };
         class SiteWho_B2: SiteWho_B0 { idc = 92962; action = "['toggle', [1, 2]] call ALiVE_fnc_siteWhoDialog"; y = 0.49 * safezoneH + safezoneY; };
         class SiteWho_B3: SiteWho_B0 { idc = 92963; action = "['toggle', [1, 3]] call ALiVE_fnc_siteWhoDialog"; y = 0.53 * safezoneH + safezoneY; };
+        class SiteWho_B4: SiteWho_B0 { idc = 92964; action = "['toggle', [1, 4]] call ALiVE_fnc_siteWhoDialog"; y = 0.57 * safezoneH + safezoneY; };
         class SiteWho_NamesLabel0: SiteUI_RscText {
             idc = 92965;
             x = 0.36 * safezoneW + safezoneX;
-            y = 0.57 * safezoneH + safezoneY;
+            y = 0.61 * safezoneH + safezoneY;
             w = 0.135 * safezoneW;
             h = 0.03 * safezoneH;
             sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85)";
@@ -185,7 +188,7 @@ class ALiVE_SiteWhoWindow {
             idc = 92967;
             maxChars = 2000;
             x = 0.36 * safezoneW + safezoneX;
-            y = 0.60 * safezoneH + safezoneY;
+            y = 0.64 * safezoneH + safezoneY;
             w = 0.135 * safezoneW;
             h = 0.035 * safezoneH;
         };
@@ -195,8 +198,20 @@ class ALiVE_SiteWhoWindow {
             text = "$STR_ALIVE_SITE_WHO_APPLY";
             action = "['apply'] call ALiVE_fnc_siteWhoDialog";
             x = 0.505 * safezoneW + safezoneX;
-            y = 0.655 * safezoneH + safezoneY;
+            y = 0.695 * safezoneH + safezoneY;
             w = 0.065 * safezoneW;
+            h = 0.035 * safezoneH;
+        };
+        // shown only when the site gives it something to do: drops the in-game change, so the
+        // module's own settings apply again
+        class SiteWho_Reset: SiteUI_RscButton {
+            idc = 92971;
+            text = "$STR_ALIVE_SITE_WHO_RESET";
+            tooltip = "$STR_ALIVE_SITE_WHO_RESET_COMMENT";
+            action = "['reset'] call ALiVE_fnc_siteWhoDialog";
+            x = 0.36 * safezoneW + safezoneX;
+            y = 0.695 * safezoneH + safezoneY;
+            w = 0.135 * safezoneW;
             h = 0.035 * safezoneH;
         };
         class SiteWho_Close: SiteUI_RscButton {
@@ -204,7 +219,7 @@ class ALiVE_SiteWhoWindow {
             text = "$STR_ALIVE_SITE_WHO_CLOSE";
             action = "closeDialog 0";
             x = 0.575 * safezoneW + safezoneX;
-            y = 0.655 * safezoneH + safezoneY;
+            y = 0.695 * safezoneH + safezoneY;
             w = 0.065 * safezoneW;
             h = 0.035 * safezoneH;
         };
