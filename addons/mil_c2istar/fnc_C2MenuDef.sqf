@@ -214,6 +214,17 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result && {(missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "OFF"}
                 ],
+                // Hold Until Go: Start the war for an admin, the host or the player in singleplayer while the
+                // commanders hold, whatever the Commander's Picture setting (the server checks the same)
+                [localize "STR_ALIVE_SCOM_CMD_WARGO",
+                    {["startWar", [player]] call ALiVE_fnc_playerOrders},
+                    "",
+                    localize "STR_ALIVE_SCOM_CMD_WARGO_COMMENT",
+                     "",
+                     -1,
+                     true,
+                     (missionNamespace getVariable ["ALiVE_OPCOM_held", false]) && {!isMultiplayer || {isServer} || {(call BIS_fnc_admin) > 0}}
+                ],
                 ["Logistics",
                     {["OPEN",[]] call ALIVE_fnc_PRTabletOnAction},
                     "",

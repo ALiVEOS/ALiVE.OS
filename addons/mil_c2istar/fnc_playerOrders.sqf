@@ -1002,6 +1002,28 @@ switch (_operation) do {
             };
         };
     };
+    case "startWar": {
+        // Hold Until Go from the C2ISTAR menu: [player]. An admin, the host or the player in singleplayer, while
+        // a commander is holding. Works whatever the Commander's Picture setting, unlike the tablet's button
+        if !(isServer) exitWith {
+            [_operation, _args] remoteExec ["ALiVE_fnc_playerOrders", 2];
+        };
+
+        _args params [["_player", objNull, [objNull]]];
+        if (isNull _player) exitWith {};
+        if (remoteExecutedOwner > 0 && {owner _player != remoteExecutedOwner}) exitWith {};
+
+        if !(missionNamespace getVariable ["ALiVE_OPCOM_held", false]) exitWith {
+            ["notify", [_player, "The war has already started."]] call MAINCLASS;
+        };
+        if !(!isMultiplayer || {owner _player == 2} || {(admin owner _player) > 0}) exitWith {
+            ["notify", [_player, "Only an admin can start the war."]] call MAINCLASS;
+        };
+
+        private _n = [nil, "go", name _player] call ALiVE_fnc_OPCOM;
+        ["C2ISTAR: %1 gave Go from the menu, %2 commanders start", name _player, _n] call ALiVE_fnc_dump;
+        ["notify", [_player, "Go given. The AI Commanders are starting."]] call MAINCLASS;
+    };
     case "changeStance": {
         if !(isServer) exitWith {
             [_operation, _args] remoteExec ["ALiVE_fnc_playerOrders", 2];

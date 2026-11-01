@@ -463,7 +463,7 @@
     <English>Hold Until Go</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_HOLD_FOR_GO_COMMENT">
-    <English>Yes keeps this commander from ordering anything until an admin gives Go, so players can brief, kit up and get in place first. The Air Tasking Order module is held with it. An admin gives Go from the Commander's Picture page on the tablet (C2ISTAR Commander's Picture not Off), or a script on the server runs [nil, "go", "a name"] call ALiVE_fnc_OPCOM. One Go starts every commander that is holding. In singleplayer, and for the host of a hosted game, the Go button shows too. A campaign loaded from a save doesn't hold again. No (the default) starts the war as soon as the mission does.</English>
+    <English>Yes keeps this commander from ordering anything until an admin gives Go, so players can brief, kit up and get in place first. The Air Tasking Order module is held with it. An admin gives Go with Start the war in the C2ISTAR menu, or on the tablet's Commander's Picture page when that page is on, or a script on the server runs [nil, "go", "a name"] call ALiVE_fnc_OPCOM. One Go starts every commander that is holding. In singleplayer, and for the host of a hosted game, Start the war shows too. A campaign loaded from a save doesn't hold again. No (the default) starts the war as soon as the mission does.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CALL_FOR_HELP">
     <English>Groups Call For Help</English>
