@@ -41,6 +41,54 @@
             <Key ID="STR_ALIVE_FOB_MIN_DISTANCE_COMMENT">
                 <English>A new FOB can't be deployed closer than this to another FOB, of any side.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_BUILD_TIME">
+                <English>FOB Deploy Time (s):</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_BUILD_TIME_COMMENT">
+                <English>How long it takes to put a FOB up from its kit, in seconds. 0 puts it up at once, as before. While it runs the player kneels to work and a bar shows the time left; Stop The Timer If decides what stops it early, and Esc always does. Nothing is spent until the time is up.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DISMANTLE_TIME">
+                <English>FOB Dismantle Time (s):</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_DISMANTLE_TIME_COMMENT">
+                <English>How long it takes to take a FOB down, in seconds. 0 takes it down at once, as before. The player kneels to work and a bar shows the time left, as for the deploy time, and the FOB stays up until the time is up.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_CANCEL">
+                <English>Stop The Timer If:</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_CANCEL_COMMENT">
+                <English>What stops a deploy or dismantle time before it is up. Never keeps the player where he started until it is done. Being killed or knocked down, getting into or out of a vehicle, and Esc always stop it. Has no effect while both times are 0.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_CANCEL_NEVER">
+                <English>Never</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_CANCEL_MOVE">
+                <English>The player moves</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_CANCEL_FIRE">
+                <English>The player moves or comes under fire</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_DEPLOY">
+                <English>Deploying the FOB</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_DISMANTLE">
+                <English>Taking the FOB down</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_LEFT">
+                <English>%1 s left</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_ESC">
+                <English>Esc to stop</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_MOVED">
+                <English>Stopped, because you moved.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_FIRE">
+                <English>Stopped, because you came under fire.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_TIMER_STOPPED">
+                <English>Stopped.</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_CAP_TYPE">
                 <English>FOB Limit</English>
             </Key>

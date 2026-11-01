@@ -52,6 +52,21 @@ class CfgVehicles {
                                 };
                         };
                         class fob_build_range : Edit { property = "ALiVE_sup_fob_fob_build_range"; displayName = "$STR_ALIVE_FOB_BUILD_RANGE"; tooltip = "$STR_ALIVE_FOB_BUILD_RANGE_COMMENT"; typeName = "STRING"; defaultValue = """150"""; };
+                        class fob_build_time : Edit { property = "ALiVE_sup_fob_fob_build_time"; displayName = "$STR_ALIVE_FOB_BUILD_TIME"; tooltip = "$STR_ALIVE_FOB_BUILD_TIME_COMMENT"; typeName = "STRING"; defaultValue = """0"""; };
+                        class fob_dismantle_time : Edit { property = "ALiVE_sup_fob_fob_dismantle_time"; displayName = "$STR_ALIVE_FOB_DISMANTLE_TIME"; tooltip = "$STR_ALIVE_FOB_DISMANTLE_TIME_COMMENT"; typeName = "STRING"; defaultValue = """0"""; };
+                        class fob_timer_cancel : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_timer_cancel";
+                                displayName = "$STR_ALIVE_FOB_TIMER_CANCEL";
+                                tooltip = "$STR_ALIVE_FOB_TIMER_CANCEL_COMMENT";
+                                defaultValue = """MOVE""";
+                                class Values
+                                {
+                                    class NEVER { name = "$STR_ALIVE_FOB_TIMER_CANCEL_NEVER"; value = "NEVER"; };
+                                    class MOVE  { name = "$STR_ALIVE_FOB_TIMER_CANCEL_MOVE";  value = "MOVE"; default = 1; };
+                                    class FIRE  { name = "$STR_ALIVE_FOB_TIMER_CANCEL_FIRE";  value = "FIRE"; };
+                                };
+                        };
                         class fob_min_distance : Edit { property = "ALiVE_sup_fob_fob_min_distance"; displayName = "$STR_ALIVE_FOB_MIN_DISTANCE"; tooltip = "$STR_ALIVE_FOB_MIN_DISTANCE_COMMENT"; typeName = "STRING"; defaultValue = """500"""; };
                         class fob_hubs { property = "ALiVE_sup_fob_fob_hubs"; displayName = "$STR_ALIVE_FOB_HUBS"; tooltip = "$STR_ALIVE_FOB_HUBS_COMMENT"; control = "ALiVE_FOBHubChoice"; typeName = "STRING"; expression = "_this setVariable ['fob_hubs', _value, true];"; defaultValue = """Land_Cargo_HQ_V1_F|Land_Cargo_HQ_V3_F|Land_Cargo_HQ_V2_F"""; };
 

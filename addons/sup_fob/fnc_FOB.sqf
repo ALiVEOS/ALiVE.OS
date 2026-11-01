@@ -78,6 +78,9 @@ private _settings = createHashMapFromArray [
     ["fob_persistent", [true, "bool"]],
     ["fob_build_range", [150, [25, 1000]]],
     ["fob_min_distance", [500, [0, 10000]]],
+    ["fob_build_time", [0, [0, 600]]],
+    ["fob_dismantle_time", [0, [0, 600]]],
+    ["fob_timer_cancel", ["MOVE", "text"]],
     ["fob_hubs", ["Land_Cargo_HQ_V1_F|Land_Cargo_HQ_V3_F|Land_Cargo_HQ_V2_F", "text"]],
     ["fob_cap_type", ["DYNAMIC", "text"]],
     ["fob_cap", [3, "number"]],
@@ -322,7 +325,7 @@ switch (_operation) do {
             };
             case (_kind isEqualTo "text"): {
                 _value = if (_raw isEqualType "") then { _raw } else { str _raw };
-                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting", "fob_buildpreset", "fob_faction_scope"]) then { _value = toUpper _value };
+                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting", "fob_buildpreset", "fob_faction_scope", "fob_timer_cancel"]) then { _value = toUpper _value };
             };
             default {
                 private _n = if (_raw isEqualType "") then { parseNumber _raw } else { _raw };

@@ -56,6 +56,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sup_fob\fnc_fobOps.sqf";
                 ALIVE_RECOMPILE;
                         };
+                        class fobTimer {
+                                description = "Client half: the deploy and dismantle time, with its bar";
+                                file = "\x\alive\addons\sup_fob\fnc_fobTimer.sqf";
+                ALIVE_RECOMPILE;
+                        };
                         class fobClient {
                                 description = "Client half: the read-only copy of the FOB list";
                                 file = "\x\alive\addons\sup_fob\fnc_fobClient.sqf";

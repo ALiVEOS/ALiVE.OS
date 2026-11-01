@@ -56,8 +56,11 @@ private _uid = getPlayerUID _caller;
 private _limit = ["ALiVE_FOB_inflight", "ALiVE_FOB_arsenalInflight"] select (_op in ["arsenalOpen", "arsenalClose"]);
 if (isNil _limit) then { missionNamespace setVariable [_limit, createHashMap] };
 private _seen = missionNamespace getVariable _limit;
-// (a close is never dropped: it does nothing without an open visit of the player's own)
-if (_op != "arsenalClose" && {time - (_seen getOrDefault [_uid, -10]) < ([2, 0.5] select (_limit == "ALiVE_FOB_arsenalInflight"))}) exitWith {};
+// (a close is never dropped: it does nothing without an open visit of the player's own, nor the
+// request a deploy or dismantle bar sends once its time is up, which a short time could bring within 2 s)
+private _timer = (missionNamespace getVariable ["ALiVE_FOB_timers", createHashMap]) getOrDefault [_uid, []];
+private _timeUp = (_timer param [0, ""]) == _op && {time - (_timer param [2, 0]) >= (_timer param [3, 0]) - 1};
+if (_op != "arsenalClose" && {!_timeUp} && {time - (_seen getOrDefault [_uid, -10]) < ([2, 0.5] select (_limit == "ALiVE_FOB_arsenalInflight"))}) exitWith {};
 _seen set [_uid, time];
 
 // The server functions only accept a call that comes through here, which is how they tell it

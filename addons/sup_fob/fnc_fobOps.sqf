@@ -119,6 +119,29 @@ private _tagOf = {
     _t select 1
 };
 
+// The module's Deploy Time and Dismantle Time. Once every check has passed, a request starts the time
+// and the bar on the player's machine (ALiVE_fnc_fobTimer), which sends the same request again when it
+// is full, marked as finished (true on the end of its arguments). That one goes ahead, and is checked
+// again in full, only when the time has really passed for that same kit or FOB and the player is still
+// about where he began. Any other request starts the time again, so one stopped part way doesn't count
+// later. true when the request may go ahead now; with no time set, always.
+private _timed = {
+    params ["_kind", "_key", "_wait"];
+    if (_wait <= 0 || {isNull _caller} || {!isPlayer _caller}) exitWith { true };
+    if (isNil "ALiVE_FOB_timers") then { ALiVE_FOB_timers = createHashMap };
+    private _uid = getPlayerUID _caller;
+    (ALiVE_FOB_timers getOrDefault [_uid, []]) params [["_k", ""], ["_key0", ""], ["_t0", -1e9], ["_w0", 0], ["_at", [0,0,0]]];
+    private _finished = (_args param [count _args - 1, false]) isEqualTo true;
+    if (_finished && {_k == _kind} && {_key0 isEqualTo _key} && {time - _t0 >= _w0 - 1} && {time - _t0 <= _w0 + 60} && {(_caller distance2D _at) <= 3}) exitWith {
+        ALiVE_FOB_timers deleteAt _uid;
+        true
+    };
+    ALiVE_FOB_timers set [_uid, [_kind, _key, time, _wait, getPosATL _caller]];
+    ["start", [_kind, _args, _wait, [_logic, "attribute", ["fob_timer_cancel"]] call ALiVE_fnc_FOB]] remoteExecCall ["ALiVE_fnc_fobTimer", _caller];
+    if (_debug) then { ["ALiVE Player FOBs - %1 started a %2 s %3 of %4", name _caller, _wait, _kind, _key] call ALiVE_fnc_dump };
+    false
+};
+
 // Who Can Dismantle: whether the caller may take this FOB down, recycle at it or rename it
 private _mayManage = {
     params ["_entry"];
@@ -204,6 +227,7 @@ switch (_op) do {
             (([[ALiVE_FOB_registry, _x] call ALIVE_fnc_hashGet, "pos", [0,0,0]] call ALIVE_fnc_hashGet) distance2D _pos) < _minDist
         };
         if (_near > -1) exitWith { ["STR_ALIVE_FOB_REFUSED_DISTANCE", [_minDist]] call _tell };
+        if !(["deploy", netId _kit, [_logic, "attribute", ["fob_build_time"]] call ALiVE_fnc_FOB] call _timed) exitWith {};
 
         private _id = [_logic, "nextID", [_side]] call ALiVE_fnc_FOB;
         private _entry = [_logic, "newEntry", [_id, _side, faction _caller, _pos, _dir, _hubClass, _type]] call ALiVE_fnc_FOB;
@@ -292,6 +316,7 @@ switch (_op) do {
         if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
         if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
+        if !(["dismantle", _id, [_logic, "attribute", ["fob_dismantle_time"]] call ALiVE_fnc_FOB] call _timed) exitWith {};
 
         // anyone in this FOB's arsenal pays first, while it still has its supply
         private _inArsenal = [];
