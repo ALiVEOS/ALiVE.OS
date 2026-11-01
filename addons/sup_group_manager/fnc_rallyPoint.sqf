@@ -9,9 +9,10 @@ Rally points: places a player (and, for a group leader, the AI of their group) c
 between. The Rally Points module uses this, and missions can call it themselves.
 
 The list of rally points is kept by the server and sent to everybody (ALiVE_rallyPoints):
-adding or removing one from a client is passed to the server. Travel runs on the machine
-where the travelling unit is local; the server checks for enemies at both ends first, ALiVE's
-virtual groups included.
+adding or removing one from a client is passed to the server, which takes it from an admin's
+machine only. Travel runs on the machine where the travelling unit is local; the server checks
+for enemies at both ends first, ALiVE's virtual groups included. A request from a player's
+machine acts only for that machine's own units.
 
 Parameters:
 _this select 0: STRING - operation
@@ -88,6 +89,31 @@ private _autoName = {
 };
 
 private _result = true;
+
+// What another machine may ask for. A trip, its move and its refusal only from the server, on any
+// machine. On the server: a request for a unit only for the asking machine's own unit, and adding, removing
+// or the class scan only from an admin's machine. The server's own calls, and the calls this function makes
+// for itself (_ALiVE_rallyInner, seen down the call chain), always pass.
+private _refused = false;
+if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_rallyInner"}) then {
+    private _sender = remoteExecutedOwner;
+    _refused = if (_op in ["travel", "move", "refused"]) then { true } else {
+        switch (true) do {
+            case (isServer && {_op in ["deploy", "pickup", "rename", "check"]}): {
+                private _u = _args param [0, objNull];
+                !(_u isEqualType objNull) || {isNull _u} || {owner _u != _sender}
+            };
+            case (isServer && {_op in ["add", "remove", "sync"]}): {
+                private _i = allPlayers findIf { owner _x == _sender };
+                _i < 0 || {!(["isAdmin", [allPlayers select _i]] call ALiVE_fnc_siteWho)}
+            };
+            default { false };
+        }
+    };
+    if (_refused) then { ["ALiVE Rally Points - refused %1 from machine %2: not that machine's own unit, or not an admin's machine", _op, _sender] call ALiVE_fnc_dump };
+};
+if (_refused) exitWith { false };
+private _ALiVE_rallyInner = true;
 
 switch (_op) do {
 
@@ -179,6 +205,8 @@ switch (_op) do {
         localize "STR_ALIVE_RALLY_UI_DEPLOYED" call _tell;
         [_obj, _grp, _r, ["leaderOverrun", 30] call _set] spawn {
             params ["_obj", "_grp", "_r", "_overrun"];
+            // the server's own: this runs on from a player's deploy request, which it would otherwise count as asking
+            private _ALiVE_rallyInner = true;
             private _held = 0;
             // 0 or less: never overrun (A. Ares on Discord, 26 Oct); it used to go the moment it was put down
             private _never = _overrun <= 0;
