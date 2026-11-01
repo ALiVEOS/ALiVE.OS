@@ -6873,11 +6873,13 @@ switch (_operation) do {
     };
 
     // the operation in hand, for a persistent save: [seconds left on a pause after a capture, its objective, the
-    // objectives whose preparations are done]
+    // objectives whose preparations are done, Assault's [target, wave number, seconds to the next wave]]
     case "opState": {
         private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
         private _left = (((_module getVariable ["ALiVE_Occ_holdUntil", -1]) - time) max 0);
-        _result = [round _left, [_module getVariable ["ALiVE_Occ_objectiveID", ""], ""] select (_left <= 0), +(_module getVariable ["ALiVE_prep_cleared", []])];
+        private _aID = _module getVariable ["ALiVE_Assault_targetID", ""];
+        _result = [round _left, [_module getVariable ["ALiVE_Occ_objectiveID", ""], ""] select (_left <= 0), +(_module getVariable ["ALiVE_prep_cleared", []]),
+            [[], [_aID, _module getVariable ["ALiVE_Assault_waveNo", 0], round (((_module getVariable ["ALiVE_Assault_nextWaveAt", -1]) - time) max 0)]] select (_aID != "")];
     };
 
     // after a load: the preparations already done stay done, and a pause that was running holds attacks again at once
@@ -6885,9 +6887,18 @@ switch (_operation) do {
     case "opResume": {
         private _st = _args;
         if !(_st isEqualType []) exitWith {};
-        _st params [["_left", 0], ["_objID", ""], ["_cleared", []]];
+        _st params [["_left", 0], ["_objID", ""], ["_cleared", []], ["_assault", []]];
         private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
         if (_cleared isEqualType [] && {_cleared isNotEqualTo []}) then { _module setVariable ["ALiVE_prep_cleared", +_cleared] };
+        // Assault: the target and its waves carry on, the next one after the time it had left
+        if (_assault isEqualType [] && {count _assault == 3}) then {
+            _assault params [["_aID", "", [""]], ["_aNo", 0, [0]], ["_aLeft", 0, [0]]];
+            if (_aID == "") exitWith {};
+            _module setVariable ["ALiVE_Assault_targetID", _aID, true];
+            _module setVariable ["ALiVE_Assault_waveNo", _aNo, true];
+            _module setVariable ["ALiVE_Assault_nextWaveAt", time + _aLeft, true];
+            ["OPCOM %1: Assault carries on after the load, wave %2 on %3, the next in %4 s", [_logic,"side",""] call ALiVE_fnc_HashGet, _aNo, _aID, _aLeft] call ALiVE_fnc_dump;
+        };
         if (!(_left isEqualType 0) || {_left <= 0} || {_objID == ""}) exitWith {};
         private _deadline = time + _left;
         _module setVariable ["ALiVE_Occ_holdUntil", _deadline];
@@ -6993,6 +7004,23 @@ switch (_operation) do {
             time >= (_module getVariable ["ALiVE_Assault_retryAt", -1])
             && {(_module getVariable ["ALiVE_Assault_targetID", ""]) != _id || {time >= (_module getVariable ["ALiVE_Assault_nextWaveAt", -1])}}
         };
+    };
+    // the next wave at the current target goes now, not after the rest of Wave Interval (["assaultWaveNow"] -> true
+    // when there is a target to send it at)
+    case "assaultWaveNow": {
+        _result = false;
+        private _module = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
+        if (isNull _module || {([_logic, "controltype", ""] call ALiVE_fnc_HashGet) != "assault"}) exitWith {};
+        if ((_module getVariable ["ALiVE_Assault_targetID", ""]) == "") exitWith {};
+        _module setVariable ["ALiVE_Assault_nextWaveAt", time, true];
+        _module setVariable ["ALiVE_Assault_retryAt", -1];
+        private _fsm = [_logic, "OPCOM_FSM", -1] call ALiVE_fnc_HashGet;
+        if (_fsm isNotEqualTo -1 && {!completedFSM _fsm}) then {
+            private _q = _fsm getFSMVariable ["_OPCOM_QUEUE", []];
+            _q pushBack ["analyze", nil];
+            _fsm setFSMVariable ["_OPCOM_QUEUE", _q];
+        };
+        _result = true;
     };
     // a wave TACOM turned down (no free groups, say) tries again in a minute rather than on the very next pass
     case "assaultWaveRetry": {

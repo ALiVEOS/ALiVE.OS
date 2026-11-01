@@ -760,6 +760,18 @@
 <Key ID="STR_ALIVE_SCOM_CMD_FP_INFINITE">
     <English>Force pool: unlimited.</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_CMD_ASSAULT">
+    <English>Assault: wave %1 is on %2, the next in %3 min.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_WAVE_ROW">
+    <English>    Next Assault wave: in %1 min</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_WAVE_NOW">
+    <English>Send now</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_WAVE_COMMENT">
+    <English>Sends the next wave at the current target now, rather than waiting out the Wave Interval. It still takes only groups that are free.</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_CMD_PREP">
     <English>Preparing to assault %1: %2 tasks asked for, %3 min until it goes ahead.</English>
 </Key>

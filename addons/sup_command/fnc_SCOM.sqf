@@ -4635,7 +4635,7 @@ switch (_operation) do {
             private _rows = [];
             private _any = false;
             {
-                _x params ["_id","_faction","_stance","_paused","_held","_changing","_intel","_waitMin","_surePct","_may"];
+                _x params ["_id","_faction","_stance","_paused","_held","_changing","_intel","_waitMin","_surePct","_may",["_waveLeft",-1]];
                 _any = _any || _may;
                 private _fname = getText (configFile >> "CfgFactionClasses" >> _faction >> "displayName");
                 if (_fname == "") then { _fname = _faction };
@@ -4651,6 +4651,9 @@ switch (_operation) do {
                     _rows pushBack [_id + "|" + _x, "STANCE", _id,
                         format [localize (["STR_ALIVE_SCOM_SET_STANCE_ROW", "STR_ALIVE_SCOM_SET_STANCE_NOW"] select (_x == _stance)), _names getOrDefault [_x, _x]], _info + [_x]];
                 } forEach ["invasion","occupation","asymmetric","dugin","assault"];
+                if (_stance == "assault" && {_waveLeft >= 0}) then {
+                    _rows pushBack [_id + "|WAVE", "WAVE", _id, format [localize "STR_ALIVE_SCOM_SET_WAVE_ROW", ceil (_waveLeft / 60)], _info + [true]];
+                };
                 if (_intel) then {
                     _rows pushBack [_id + "|WAIT", "WAIT", _id, format [localize "STR_ALIVE_SCOM_SET_WAIT_ROW", _waitMin], _info + [_waitMin]];
                     _rows pushBack [_id + "|SURE", "SURE", _id, format [localize "STR_ALIVE_SCOM_SET_SURE_ROW", _surePct, "%"], _info + [_surePct]];
@@ -4776,6 +4779,9 @@ switch (_operation) do {
             case (_kind == "WAIT"): {
                 [_b1, localize "STR_ALIVE_SCOM_SET_WAIT_UP", localize "STR_ALIVE_SCOM_SET_WAIT_COMMENT", "WAIT", 5] call _set;
                 [_b3, localize "STR_ALIVE_SCOM_SET_WAIT_DOWN", localize "STR_ALIVE_SCOM_SET_WAIT_COMMENT", "WAIT", -5] call _set;
+            };
+            case (_kind == "WAVE"): {
+                [_b1, localize "STR_ALIVE_SCOM_SET_WAVE_NOW", localize "STR_ALIVE_SCOM_SET_WAVE_COMMENT", "WAVE", true] call _set;
             };
             case (_kind == "SURE"): {
                 [_b1, localize "STR_ALIVE_SCOM_SET_SURE_UP", localize "STR_ALIVE_SCOM_SET_SURE_COMMENT", "SURE", 10] call _set;
@@ -4932,9 +4938,9 @@ switch (_operation) do {
                 private _many = count _notes > 1;
                 // with no commander finding out first, "nothing to show" would read against what follows
                 if (_cmds isEqualTo [] && {!(missionNamespace getVariable ["ALiVE_OPCOM_held", false])}
-                    && {(_notes findIf { (_x param [1, 0]) > 0 || {(_x param [4, ""]) != ""} }) >= 0}) then { _status = "" };
+                    && {(_notes findIf { (_x param [1, 0]) > 0 || {(_x param [4, ""]) != ""} || {(_x param [7, []]) isNotEqualTo []} }) >= 0}) then { _status = "" };
                 {
-                    _x params [["_nFaction",""], ["_occLeft",0], ["_occPlace",""], ["_prepLeft",0], ["_prepPlace",""], ["_prepTasks",0], ["_rate",[]]];
+                    _x params [["_nFaction",""], ["_occLeft",0], ["_occPlace",""], ["_prepLeft",0], ["_prepPlace",""], ["_prepTasks",0], ["_rate",[]], ["_assault",[]]];
                     private _fName = getText (configFile >> "CfgFactionClasses" >> _nFaction >> "displayName");
                     private _who = ["", ([_fName, _nFaction] select (_fName == "")) + ": "] select _many;
                     if (_occLeft > 0) then {
@@ -4942,6 +4948,11 @@ switch (_operation) do {
                     };
                     if (_prepPlace != "") then {
                         _status = _status + " " + _who + format [localize "STR_ALIVE_SCOM_CMD_PREP", _prepPlace, _prepTasks, ceil (_prepLeft / 60)];
+                    };
+                    // Assault: the target its waves are on, and when the next goes
+                    if (_assault isEqualType [] && {count _assault >= 3}) then {
+                        _assault params ["_aPlace", "_aNo", "_aLeft"];
+                        _status = _status + " " + _who + format [localize "STR_ALIVE_SCOM_CMD_ASSAULT", _aNo, _aPlace, ceil (_aLeft / 60)];
                     };
                     // the force pool its Military Logistics module has left, and what held objectives are paying into it
                     if (_rate isEqualType [] && {count _rate >= 4}) then {

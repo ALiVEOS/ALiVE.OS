@@ -2694,6 +2694,16 @@ switch(_operation) do {
                                     } forEach (_mls select 1);
                                 };
                             };
+                            // Assault: [grid of the target, wave number, seconds to the next wave], [] when it has none
+                            private _assault = [];
+                            private _aID = _module getVariable ["ALiVE_Assault_targetID", ""];
+                            if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "assault" && {_aID != ""}) then {
+                                private _o = ([_opcom,"objectivesByID",createHashMap] call ALiVE_fnc_hashGet) getOrDefault [_aID, []];
+                                if (_o isNotEqualTo []) then {
+                                    _assault = ["grid " + mapGridPosition ([_o,"center",[0,0,0]] call ALiVE_fnc_hashGet), _module getVariable ["ALiVE_Assault_waveNo", 0],
+                                        round (((_module getVariable ["ALiVE_Assault_nextWaveAt", -1]) - time) max 0)];
+                                };
+                            };
                             _notes pushBack [
                                 ([_opcom,"factions",[]] call ALiVE_fnc_hashGet) param [0, ""],
                                 _occLeft,
@@ -2701,7 +2711,8 @@ switch(_operation) do {
                                 [0, round (((_module getVariable ["ALiVE_prep_deadline", -1]) - time) max 0)] select _prep,
                                 ["", _module getVariable ["ALiVE_prep_place", ""]] select _prep,
                                 [0, count (_module getVariable ["ALiVE_prep_taskIDs", []])] select _prep,
-                                _rate
+                                _rate,
+                                _assault
                             ];
                         };
                     };
@@ -2756,7 +2767,11 @@ switch(_operation) do {
                             [_opcom,"intelCycle",false] call ALiVE_fnc_hashGet,
                             round (([_opcom,"intelTimeout",1200] call ALiVE_fnc_hashGet) / 60),
                             round (([_opcom,"intelConfidence",0.5] call ALiVE_fnc_hashGet) * 100),
-                            [_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS
+                            [_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS,
+                            // Assault: seconds to its next wave, -1 with no target yet
+                            [-1, round ((((([_opcom,"module",objNull] call ALiVE_fnc_hashGet) getVariable ["ALiVE_Assault_nextWaveAt", -1]) - time)) max 0)]
+                                select (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "assault"
+                                    && {((([_opcom,"module",objNull] call ALiVE_fnc_hashGet) getVariable ["ALiVE_Assault_targetID", ""]) != "")})
                         ];
                     };
                 } forEach OPCOM_instances;
@@ -2769,7 +2784,7 @@ switch(_operation) do {
 
     case "intelControl": {
 
-        // a change from the tablet's commander settings: [uid, commander ID, "PAUSE"|"STANCE"|"WAIT"|"SURE", value].
+        // a change from the tablet's commander settings: [uid, commander ID, "PAUSE"|"STANCE"|"WAIT"|"SURE"|"WAVE", value].
         // The commander must be on the caller's own side and the caller allowed to change it (intelMayControl);
         // one change every 2 seconds per player. Changes last until the mission is loaded from a save
 
@@ -2831,6 +2846,15 @@ switch(_operation) do {
                     private _pct = (round (([_opcom,"intelConfidence",0.5] call ALiVE_fnc_hashGet) * 100) + _value) max 10 min 100;
                     [_opcom,"intelConfidence",_pct / 100] call ALiVE_fnc_hashSet;
                     (format ["The commander now attacks when %1%2 sure.", _pct, "%"]) call _reply;
+                };
+                // Assault: the next wave goes now
+                case "WAVE": {
+                    if ([_opcom,"assaultWaveNow"] call ALiVE_fnc_OPCOM) then {
+                        ["SCOM commander settings: %1 sent commander %2's next Assault wave now", name _player, _id] call ALiVE_fnc_dump;
+                        "The next wave goes as soon as there are groups free to send." call _reply;
+                    } else {
+                        "The commander has no Assault target to send a wave at." call _reply;
+                    };
                 };
             };
 
