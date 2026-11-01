@@ -12,7 +12,7 @@ that can't be tinted gets a green or red outline instead. The copy collides with
 scroll menu:
 - Place puts it there: the server is asked to build it and charges the FOB's supply.
 - Rotate turns it 45 degrees.
-- Toggle View switches to a view from behind the player and back (Placing View setting).
+- Toggle View switches to third person and back (Placing View setting), where the mission allows it.
 - Cancel stops.
 Placing also stops if the player dies, gets into a vehicle or walks out of the build range.
 
@@ -83,39 +83,25 @@ ALiVE_FOB_placeSpot = {
     [_pos, (getDir player + _turn) % 360, _why isEqualTo [], _up, _why]
 };
 
-// The view while placing (Player FOBs > Placing View): on, a view from behind and above the player.
-// Where the mission allows third person that is the game's own view; where it doesn't, the engine
-// won't switch (measured), so a camera follows behind the player looking ahead at the item while
-// the player walks and turns as usual. Off puts back the view the player had.
+// The view while placing (Player FOBs > Placing View): on, the game's own third person view; off puts
+// back the view the player had. Only where the mission allows third person: a scripted camera in its
+// place hides the scroll menu, so Place, Cancel and Toggle View went with it and the player was stuck
+// (NeisAEL, 1 Nov), and the action isn't offered there at all.
 ALiVE_FOB_placeView = {
     params ["_on"];
-    ALiVE_FOB_placeViewOn = _on;
+    // a follow camera left by the first version of this, gone at once
     private _cam = missionNamespace getVariable ["ALiVE_FOB_placeCam", objNull];
+    if (!isNil "ALiVE_FOB_placeCamEH") then { removeMissionEventHandler ["EachFrame", ALiVE_FOB_placeCamEH]; ALiVE_FOB_placeCamEH = nil };
+    if (!isNull _cam) then { _cam cameraEffect ["terminate", "back"]; camDestroy _cam; ALiVE_FOB_placeCam = objNull };
+    if (_on && {difficultyOption "thirdPersonView" == 0}) exitWith { ALiVE_FOB_placeViewOn = false };
+    ALiVE_FOB_placeViewOn = _on;
     if (!_on) exitWith {
-        if (!isNil "ALiVE_FOB_placeCamEH") then { removeMissionEventHandler ["EachFrame", ALiVE_FOB_placeCamEH]; ALiVE_FOB_placeCamEH = nil };
-        if (!isNull _cam) then { _cam cameraEffect ["terminate", "back"]; camDestroy _cam };
-        ALiVE_FOB_placeCam = objNull;
         private _was = missionNamespace getVariable ["ALiVE_FOB_viewWas", ""];
         if (_was != "" && {cameraView != _was} && {_was in ["INTERNAL", "EXTERNAL"]}) then { player switchCamera _was };
         ALiVE_FOB_viewWas = "";
     };
     if ((missionNamespace getVariable ["ALiVE_FOB_viewWas", ""]) == "") then { ALiVE_FOB_viewWas = cameraView };
-    if (difficultyOption "thirdPersonView" > 0) exitWith { player switchCamera "EXTERNAL" };
-    if (!isNull _cam) exitWith {};
-    _cam = "camera" camCreate (ASLToAGL (eyePos player));
-    _cam cameraEffect ["internal", "back"];
-    showCinemaBorder false;
-    ALiVE_FOB_placeCam = _cam;
-    ALiVE_FOB_placeCamEH = addMissionEventHandler ["EachFrame", {
-        private _cam = missionNamespace getVariable ["ALiVE_FOB_placeCam", objNull];
-        if (isNull _cam) exitWith {};
-        private _d = getDir player;
-        private _eye = eyePos player;
-        // 5 m behind and 2 m above the eyes, looking at the ground a few metres ahead
-        _cam camSetPos (ASLToAGL (_eye vectorAdd [-(sin _d) * 5, -(cos _d) * 5, 2]));
-        _cam camSetTarget (ASLToAGL (_eye vectorAdd [(sin _d) * 4, (cos _d) * 4, -1.2]));
-        _cam camCommit 0;
-    }];
+    player switchCamera "EXTERNAL";
 };
 
 private _fnc_stop = {
@@ -212,7 +198,7 @@ switch (_operation) do {
         private _view = (missionNamespace getVariable ["ALiVE_sup_fob", objNull]) getVariable ["fob_place_view", "TOGGLE"];
         if !(_view isEqualType "") then { _view = str _view };
         _view = toUpper _view;
-        if (_view in ["TOGGLE", "THIRD"]) then {
+        if (_view in ["TOGGLE", "THIRD"] && {difficultyOption "thirdPersonView" > 0}) then {
             ALiVE_FOB_placeActions pushBack (player addAction [(localize "STR_ALIVE_FOB_ACTION_VIEW") call ALiVE_fnc_actionTitle,
                 { [!(missionNamespace getVariable ["ALiVE_FOB_placeViewOn", false])] call ALiVE_FOB_placeView }, nil, 9.7, false, true, "", "ALiVE_FOB_placing"]);
             if (_viewOn || {_view == "THIRD"}) then { [true] call ALiVE_FOB_placeView };

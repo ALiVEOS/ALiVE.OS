@@ -57,7 +57,7 @@
                 <English>Placing View:</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_PLACE_VIEW_COMMENT">
-                <English>The view while a player places a FOB item. Toggle View puts a Toggle View action on the scroll menu while placing, for a view from behind the player and back. Third Person starts in that view. Where the mission turns third person off, a camera follows behind the player instead, only while placing.</English>
+                <English>The view while a player places a FOB item. Toggle View puts a Toggle View action on the scroll menu while placing, for a view from behind the player and back. Third Person starts in that view. Both need third person allowed by the mission's difficulty; where it's off, players place in their own view and there's no Toggle View action.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_PLACE_VIEW_OWN">
                 <English>The player's own view</English>
