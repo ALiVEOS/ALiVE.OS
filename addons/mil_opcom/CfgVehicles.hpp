@@ -21,7 +21,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\mil_opcom\icon_mil_opcom.paa";
                 class Attributes : AttributesBase
                 {
-                        // ---- General --------------------------------------------------------
+                        // ---- General -----------------------------------------------------
                         class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_GENERAL"; displayName = "GENERAL"; };
                         class debug : Combo
                         {
@@ -68,7 +68,7 @@ class CfgVehicles {
                                 };
                         };
 
-                        // ---- Control Type ---------------------------------------------------
+                        // ---- Control Type ------------------------------------------------
                         class HDR_CONTROL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_CONTROL"; displayName = "CONTROL TYPE"; };
                         class controltype : Combo
                         {
@@ -85,6 +85,21 @@ class CfgVehicles {
                                     class assault { name = "Assault (waves)"; value = "assault"; };
                                 };
                         };
+                        class holdForGo : Combo
+                        {
+                                property = "ALiVE_mil_opcom_holdForGo";
+                                displayName = "$STR_ALIVE_OPCOM_HOLD_FOR_GO";
+                                tooltip = "$STR_ALIVE_OPCOM_HOLD_FOR_GO_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+
+                        // ---- Assault: only for an Assault commander ----------------------
+                        class HDR_ASSAULT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_ASSAULT"; displayName = "ASSAULT"; ALiVE_showWhen[] = {{"controltype", "is", "assault"}}; };
                         class assaultWaveMins : Edit
                         {
                                 property = "ALiVE_mil_opcom_assaultWaveMins";
@@ -129,19 +144,11 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_ASSAULT_POCKET_RADIUS_COMMENT";
                                 defaultValue = """1500""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"assaultOrder", "is", "pocket"}};
                         };
-                        class holdForGo : Combo
-                        {
-                                property = "ALiVE_mil_opcom_holdForGo";
-                                displayName = "$STR_ALIVE_OPCOM_HOLD_FOR_GO";
-                                tooltip = "$STR_ALIVE_OPCOM_HOLD_FOR_GO_COMMENT";
-                                defaultValue = """false""";
-                                class Values
-                                {
-                                        class No  { name = "No";  value = "false"; };
-                                        class Yes { name = "Yes"; value = "true"; };
-                                };
-                        };
+
+                        // ---- Reinforcements: any commander but an Asymmetric one ---------
+                        class HDR_REINFORCE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_REINFORCE"; displayName = "REINFORCEMENTS"; ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}}; };
                         class reinforcements : Combo
                         {
                                 property = "ALiVE_mil_opcom_reinforcements";
@@ -154,6 +161,8 @@ class CfgVehicles {
                                     class Moderate     { name = "Moderate (75%)";     value = "0.75"; default = 1; };
                                     class Conservative { name = "Conservative (50%)"; value = "0.5";  };
                                 };
+                                ALiVE_showWhen[] = {{"reinforcementsTyped", "empty"}};
+                                ALiVE_showStyle = "dim";
                         };
                         class reinforcementsTyped : Edit { property = "ALiVE_mil_opcom_reinforcementsTyped"; displayName = "$STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED"; tooltip = "$STR_ALIVE_OPCOM_REINFORCEMENTS_TYPED_COMMENT"; defaultValue = """"""; };
                         // Reinforcements Match the Enemy (TheBigDog90 on Discord, 26 Oct): half of each request follows what was seen
@@ -170,7 +179,7 @@ class CfgVehicles {
                                 };
                         };
 
-                        // ---- Factions -------------------------------------------------------
+                        // ---- Factions ----------------------------------------------------
                         // Phase 4 design:
                         //   - `factions` (multi-select listbox) is the primary
                         //     UI. Inherits ALiVE_FactionChoiceMulti_Military
@@ -280,7 +289,24 @@ class CfgVehicles {
                                 defaultValue = """""";
                         };
 
-                        // ---- Objectivest ----------------------------------------
+                        // ---- Task Overrides: read at the start for any Control Type ------
+                        class TSK_OVR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_TSK_OVR"; displayName = "TASK OVERRIDES"; };
+                        class taskProfileCountOverrides : Edit
+                        {
+                                property = "ALiVE_mil_opcom_taskProfileCountOverrides";
+                                displayName = "$STR_ALIVE_OPCOM_TASK_PROFILE_COUNT_OVERRIDES";
+                                tooltip = "$STR_ALIVE_OPCOM_TASK_PROFILE_COUNT_OVERRIDES_COMMENT";
+                                defaultValue = """""";
+                        };
+                        class taskProfileTypeOverrides : Edit
+                        {
+                                property = "ALiVE_mil_opcom_taskProfileTypeOverrides";
+                                displayName = "$STR_ALIVE_OPCOM_TASK_PROFILE_TYPE_OVERRIDES";
+                                tooltip = "$STR_ALIVE_OPCOM_TASK_PROFILE_TYPE_OVERRIDES_COMMENT";
+                                defaultValue = """""";
+                        };
+
+                        // ---- Objectives --------------------------------------------------
                         class HDR_OBJ : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_OBJ"; displayName = "OBJECTIVES"; };
                         class simultanObjectives : Edit
                         {
@@ -301,6 +327,7 @@ class CfgVehicles {
                                         class No  { name = "No";  value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
+                                ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
                         };
                         class prepFire : Combo
                         {
@@ -313,6 +340,7 @@ class CfgVehicles {
                                         class No  { name = "No";  value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
+                                ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
                         };
                         // A. Ares on Discord, 24 Oct: one group holds the defenders, the others go round the side
                         class flanking : Combo
@@ -326,6 +354,103 @@ class CfgVehicles {
                                         class No  { name = "No";  value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
+                                ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
+                        };
+                        // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
+                        class callForHelp : Combo
+                        {
+                                property = "ALiVE_mil_opcom_callForHelp";
+                                displayName = "$STR_ALIVE_OPCOM_CALL_FOR_HELP";
+                                tooltip = "$STR_ALIVE_OPCOM_CALL_FOR_HELP_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                                ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
+                        };
+
+                        // ---- Holding Ground ----------------------------------------------
+                        class HDR_HOLD : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HOLD"; displayName = "HOLDING GROUND"; };
+                        class preparedDefences : Combo
+                        {
+                                property = "ALiVE_mil_opcom_preparedDefences";
+                                displayName = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES";
+                                tooltip = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                                ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
+                        };
+                        class frontlineMinefields : Combo
+                        {
+                                property = "ALiVE_mil_opcom_frontlineMinefields";
+                                displayName = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS";
+                                tooltip = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                                ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
+                        };
+                        class securityPatrols : Combo
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrols";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROLS";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROLS_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Some { name = "Some"; value = "some"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                                ALiVE_showWhen[] = {{"controltype", "not", "dugin"}};
+                                ALiVE_showStyle = "dim";
+                        };
+                        // Security Patrols mode (#1092): a second mode where patrols walk the coldest ground of the commander's territory
+                        class securityPatrolMode : Combo
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrolMode";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE_COMMENT";
+                                defaultValue = """objectives""";
+                                class Values
+                                {
+                                        class Objectives { name = "Objectives"; value = "objectives"; };
+                                        class Coverage { name = "Coverage"; value = "coverage"; };
+                                };
+                                ALiVE_showWhen[] = {{"securityPatrols", "not", "none"}};
+                        };
+                        // how far a patrol goes from its home objective, in either mode; the territory in Coverage reaches the same distance
+                        class securityPatrolReach : Edit
+                        {
+                                property = "ALiVE_mil_opcom_securityPatrolReach";
+                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH";
+                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH_COMMENT";
+                                defaultValue = """3000""";
+                                typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"securityPatrols", "not", "none"}};
+                        };
+
+                        // ---- Occupation: only for an Occupation commander ----------------
+                        class HDR_OCCUPATION : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_OCCUPATION"; displayName = "OCCUPATION"; ALiVE_showWhen[] = {{"controltype", "is", "occupation"}}; };
+                        class occPauseMins : Edit
+                        {
+                                property = "ALiVE_mil_opcom_occPauseMins";
+                                displayName = "$STR_ALIVE_OPCOM_OCC_PAUSE";
+                                tooltip = "$STR_ALIVE_OPCOM_OCC_PAUSE_COMMENT";
+                                defaultValue = """0""";
+                                typeName = "NUMBER";
                         };
                         // An Occupation commander that leaves the attacking to the players and garrisons
                         // what they clear (kawi0756 on Discord, 25 Oct)
@@ -341,85 +466,9 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
-                        // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
-                        class callForHelp : Combo
-                        {
-                                property = "ALiVE_mil_opcom_callForHelp";
-                                displayName = "$STR_ALIVE_OPCOM_CALL_FOR_HELP";
-                                tooltip = "$STR_ALIVE_OPCOM_CALL_FOR_HELP_COMMENT";
-                                defaultValue = """false""";
-                                class Values
-                                {
-                                        class No  { name = "No";  value = "false"; };
-                                        class Yes { name = "Yes"; value = "true"; };
-                                };
-                        };
 
-                        class HDR_HOLD : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HOLD"; displayName = "HOLDING GROUND"; };
-                        class preparedDefences : Combo
-                        {
-                                property = "ALiVE_mil_opcom_preparedDefences";
-                                displayName = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES";
-                                tooltip = "$STR_ALIVE_OPCOM_PREPARED_DEFENCES_COMMENT";
-                                defaultValue = """none""";
-                                class Values
-                                {
-                                        class None { name = "None"; value = "none"; };
-                                        class Few  { name = "Few";  value = "few"; };
-                                        class Many { name = "Many"; value = "many"; };
-                                };
-                        };
-                        class frontlineMinefields : Combo
-                        {
-                                property = "ALiVE_mil_opcom_frontlineMinefields";
-                                displayName = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS";
-                                tooltip = "$STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS_COMMENT";
-                                defaultValue = """none""";
-                                class Values
-                                {
-                                        class None { name = "None"; value = "none"; };
-                                        class Few  { name = "Few";  value = "few"; };
-                                        class Many { name = "Many"; value = "many"; };
-                                };
-                        };
-                        class securityPatrols : Combo
-                        {
-                                property = "ALiVE_mil_opcom_securityPatrols";
-                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROLS";
-                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROLS_COMMENT";
-                                defaultValue = """none""";
-                                class Values
-                                {
-                                        class None { name = "None"; value = "none"; };
-                                        class Few  { name = "Few";  value = "few"; };
-                                        class Some { name = "Some"; value = "some"; };
-                                        class Many { name = "Many"; value = "many"; };
-                                };
-                        };
-                        // Security Patrols mode (#1092): a second mode where patrols walk the coldest ground of the commander's territory
-                        class securityPatrolMode : Combo
-                        {
-                                property = "ALiVE_mil_opcom_securityPatrolMode";
-                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE";
-                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_MODE_COMMENT";
-                                defaultValue = """objectives""";
-                                class Values
-                                {
-                                        class Objectives { name = "Objectives"; value = "objectives"; };
-                                        class Coverage { name = "Coverage"; value = "coverage"; };
-                                };
-                        };
-                        // how far a patrol goes from its home objective, in either mode; the territory in Coverage reaches the same distance
-                        class securityPatrolReach : Edit
-                        {
-                                property = "ALiVE_mil_opcom_securityPatrolReach";
-                                displayName = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH";
-                                tooltip = "$STR_ALIVE_OPCOM_SECURITY_PATROL_REACH_COMMENT";
-                                defaultValue = """3000""";
-                                typeName = "NUMBER";
-                        };
-
-                        class HDR_PLAYER_TASKS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_PLAYER_TASKS"; displayName = "PLAYER TASKS"; };
+                        // ---- Preparation Tasks -------------------------------------------
+                        class HDR_PLAYER_TASKS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_PLAYER_TASKS"; displayName = "PREPARATION TASKS"; ALiVE_showWhen[] = {{"controltype", "is", {"invasion", "occupation", "assault"}}}; };
                         class prepTasks : Combo
                         {
                                 property = "ALiVE_mil_opcom_prepTasks";
@@ -439,6 +488,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_PREP_TIMEOUT_COMMENT";
                                 defaultValue = """15""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"prepTasks", "is", "true"}};
                         };
                         class prepOften : Combo
                         {
@@ -452,6 +502,7 @@ class CfgVehicles {
                                         class Many { name = "Many attacks (2 in 3)"; value = "many"; };
                                         class Few  { name = "A few attacks (1 in 3)"; value = "few"; };
                                 };
+                                ALiVE_showWhen[] = {{"prepTasks", "is", "true"}};
                         };
                         class prepChoice : Combo
                         {
@@ -464,14 +515,7 @@ class CfgVehicles {
                                         class No  { name = "No";  value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
-                        };
-                        class occPauseMins : Edit
-                        {
-                                property = "ALiVE_mil_opcom_occPauseMins";
-                                displayName = "$STR_ALIVE_OPCOM_OCC_PAUSE";
-                                tooltip = "$STR_ALIVE_OPCOM_OCC_PAUSE_COMMENT";
-                                defaultValue = """0""";
-                                typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"prepTasks", "is", "true"}};
                         };
                         class opTasksMin : Edit
                         {
@@ -480,6 +524,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_OP_TASKS_MIN_COMMENT";
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhenAny[] = {{"prepTasks", "is", "true"}, {"occPauseMins", ">", 0}};
                         };
                         class opTasksMax : Edit
                         {
@@ -488,6 +533,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_OP_TASKS_MAX_COMMENT";
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhenAny[] = {{"prepTasks", "is", "true"}, {"occPauseMins", ">", 0}};
                         };
                         class opTasksKnownOnly : Combo
                         {
@@ -500,7 +546,11 @@ class CfgVehicles {
                                         class No  { name = "No";  value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
+                                ALiVE_showWhenAny[] = {{"prepTasks", "is", "true"}, {"occPauseMins", ">", 0}};
                         };
+
+                        // ---- Find Out Before Attacking -----------------------------------
+                        class HDR_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_INTEL"; displayName = "FIND OUT BEFORE ATTACKING"; ALiVE_showWhen[] = {{"controltype", "is", {"invasion", "occupation", "assault"}}}; };
                         class intelCycle : Combo
                         {
                                 property = "ALiVE_mil_opcom_intelCycle";
@@ -520,6 +570,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_INTEL_CONFIDENCE_COMMENT";
                                 defaultValue = """0.5""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"intelCycle", "is", "true"}};
                         };
                         class intelTimeoutMins : Edit
                         {
@@ -528,6 +579,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_INTEL_TIMEOUT_COMMENT";
                                 defaultValue = """20""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"intelCycle", "is", "true"}};
                         };
                         class intelMarkers : Combo
                         {
@@ -540,8 +592,11 @@ class CfgVehicles {
                                         class No  { name = "No";  value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
+                                ALiVE_showWhen[] = {{"intelCycle", "is", "true"}};
                         };
-                        class HDR_SHIP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_SHIP"; displayName = "START FROM SHIP"; };
+
+                        // ---- Start From Ship: Invasion and Occupation --------------------
+                        class HDR_SHIP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_SHIP"; displayName = "START FROM SHIP"; ALiVE_showWhen[] = {{"controltype", "is", {"invasion", "occupation"}}}; };
                         class shipStart : Combo
                         {
                                 property = "ALiVE_mil_opcom_shipStart";
@@ -561,6 +616,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_SHIP_INF_COMMENT";
                                 defaultValue = """6""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"shipStart", "is", "true"}};
                         };
                         class shipMotorised : Edit
                         {
@@ -569,6 +625,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_SHIP_MOT_COMMENT";
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"shipStart", "is", "true"}};
                         };
                         // wave size and gap (TheLogatron on Discord, 26 Oct)
                         class shipWaveSize : Edit
@@ -578,6 +635,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_SHIP_WAVE_SIZE_COMMENT";
                                 defaultValue = """2""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"shipStart", "is", "true"}};
                         };
                         class shipWaveGap : Edit
                         {
@@ -586,6 +644,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_SHIP_WAVE_GAP_COMMENT";
                                 defaultValue = """200""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"shipStart", "is", "true"}};
                         };
                         class shipLandBy : Combo
                         {
@@ -598,7 +657,10 @@ class CfgVehicles {
                                         class Auto  { name = "Helicopters, boats with none";  value = "auto"; };
                                         class Boats { name = "Boats, helicopters with none"; value = "boats"; };
                                 };
+                                ALiVE_showWhen[] = {{"shipStart", "is", "true"}};
                         };
+
+                        // ---- High Value Target -------------------------------------------
                         class HDR_HVT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HVT"; displayName = "HIGH VALUE TARGET"; };
                         class hvt : Combo
                         {
@@ -623,6 +685,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_HVT_PAUSE_COMMENT";
                                 defaultValue = """15""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"hvt", "is", -2}};
                         };
                         class hvtRespawn : Combo
                         {
@@ -635,6 +698,7 @@ class CfgVehicles {
                                         class No  { name = "No";  value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
+                                ALiVE_showWhen[] = {{"hvt", "is", {600, 1200, 1800, -2}}};
                         };
                         class hvtClass
                         {
@@ -645,6 +709,7 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_HVT_CLASS";
                                 tooltip = "$STR_ALIVE_OPCOM_HVT_CLASS_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"hvt", "not", 0}};
                         };
                         class hvtGuards
                         {
@@ -655,6 +720,7 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_HVT_GUARDS";
                                 tooltip = "$STR_ALIVE_OPCOM_HVT_GUARDS_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"hvt", "not", 0}};
                         };
                         class hvtName : Edit
                         {
@@ -662,6 +728,7 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_HVT_NAME";
                                 tooltip = "$STR_ALIVE_OPCOM_HVT_NAME_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"hvt", "not", 0}};
                         };
                         class hvtKilledText : Edit
                         {
@@ -669,6 +736,7 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_HVT_KILLED_TEXT";
                                 tooltip = "$STR_ALIVE_OPCOM_HVT_KILLED_TEXT_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"hvt", "not", 0}};
                         };
                         class hvtKilledOwnText : Edit
                         {
@@ -676,9 +744,11 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_HVT_KILLED_OWN_TEXT";
                                 tooltip = "$STR_ALIVE_OPCOM_HVT_KILLED_OWN_TEXT_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"hvt", "not", 0}};
                         };
-                        // ----  Recruitment ----------------------------------------
-                        class ASYM_SET : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_ASYM_SET"; displayName = "ASYMMETRIC SETTINGS"; };
+
+                        // ---- Asymmetric: every section below is for an Asymmetric commander only ----
+                        class ASYM_SET : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_ASYM_SET"; displayName = "ASYMMETRIC - SETTINGS"; ALiVE_showWhen[] = {{"controltype", "is", "asymmetric"}}; };
                         class asym_occupation : Combo
                         {
                                 property = "ALiVE_mil_opcom_asym_occupation";
@@ -694,6 +764,16 @@ class CfgVehicles {
                                     class extreme { name = "Extreme"; value = 100; };
                                 };
                         };
+                        class asymInstallations
+                        {
+                                property = "ALiVE_mil_opcom_asymInstallations";
+                                displayName = "$STR_ALIVE_OPCOM_INSTYPES";
+                                tooltip = "$STR_ALIVE_OPCOM_INSTYPES_COMMENT";
+                                control = "ALiVE_InsTypesChoice";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['asymInstallations', _value];";
+                                defaultValue = """factory,depot,recruit,ied,suicide,sabotage,ambush,roadblocks""";
+                        };
                         class roadblocks : Combo
                         {
                                 property = "ALiVE_mil_opcom_roadblocks";
@@ -705,6 +785,7 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = 1; default = 1; };
                                     class No { name = "No"; value = 0; };
                                 };
+                                ALiVE_showWhen[] = {{"asymInstallations", "has", "roadblocks"}};
                         };
                         class drugLabs : Combo
                         {
@@ -719,16 +800,7 @@ class CfgVehicles {
                                         class No { name = "No"; value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
-                        };
-                        class asymInstallations
-                        {
-                                property = "ALiVE_mil_opcom_asymInstallations";
-                                displayName = "$STR_ALIVE_OPCOM_INSTYPES";
-                                tooltip = "$STR_ALIVE_OPCOM_INSTYPES_COMMENT";
-                                control = "ALiVE_InsTypesChoice";
-                                typeName = "STRING";
-                                expression = "_this setVariable ['asymInstallations', _value];";
-                                defaultValue = """factory,depot,recruit,ied,suicide,sabotage,ambush,roadblocks""";
+                                ALiVE_showWhen[] = {{"asymInstallations", "has", "factory"}};
                         };
                         class asym_friendlyDisableInstallations : Combo
                         {
@@ -746,7 +818,8 @@ class CfgVehicles {
                                 };
                         };
 
-                        class HDR_INTERIORS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_INTERIORS"; displayName = "INSTALLATION INTERIORS"; };
+                        // ---- Asymmetric: installation interiors --------------------------
+                        class HDR_INTERIORS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_INTERIORS"; displayName = "ASYMMETRIC - INSTALLATION INTERIORS"; ALiVE_showWhen[] = {{"controltype", "is", "asymmetric"}}; };
                         class insPropTheme : Combo
                         {
                                 property = "ALiVE_mil_opcom_insPropTheme";
@@ -772,6 +845,7 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_INSPROPS_FACTORY";
                                 tooltip = "$STR_ALIVE_OPCOM_INSPROPS_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"drugLabs", "is", "false"}};
                         };
                         class insPropsDepot
                         {
@@ -802,9 +876,11 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_INSPROPS_LAB";
                                 tooltip = "$STR_ALIVE_OPCOM_INSPROPS_LAB_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"drugLabs", "is", "true"}};
                         };
 
-                        class HDR_INSURGENTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_INSURGENTS"; displayName = "INSURGENT FORCES"; };
+                        // ---- Asymmetric: insurgent forces --------------------------------
+                        class HDR_INSURGENTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_INSURGENTS"; displayName = "ASYMMETRIC - INSURGENT FORCES"; ALiVE_showWhen[] = {{"controltype", "is", "asymmetric"}}; };
                         class asym_escalationIntensity : Combo
                         {
                                 property = "ALiVE_mil_opcom_asym_escalationIntensity";
@@ -827,6 +903,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_ASYM_EXCLUDE_KINDS_COMMENT";
                                 defaultValue = """Tank,Plane,Helicopter,Ship""";
                                 typeName = "STRING";
+                                ALiVE_showWhen[] = {{"asym_escalationIntensity", "not", "off"}};
                         };
                         class asymForceLimit : Edit
                         {
@@ -863,9 +940,38 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_ASYM_HARASS_CYCLE_COMMENT";
                                 defaultValue = """20""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"asymHarassFire", "is", "true"}};
                         };
 
-                        class HDR_RECRUIT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_RECRUIT"; displayName = "RECRUITMENT"; };
+                        // ---- Asymmetric: hostility ---------------------------------------
+                        class HDR_HOSTILITY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HOSTILITY"; displayName = "ASYMMETRIC - HOSTILITY"; ALiVE_showWhen[] = {{"controltype", "is", "asymmetric"}}; };
+                        class hostilityPresenceMultiplier : Edit
+                        {
+                                property = "ALiVE_mil_opcom_hostilityPresenceMultiplier";
+                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER";
+                                tooltip = "$STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER_COMMENT";
+                                defaultValue = """1""";
+                                typeName = "NUMBER";
+                        };
+                        class hostilityInstallationMultiplier : Edit
+                        {
+                                property = "ALiVE_mil_opcom_hostilityInstallationMultiplier";
+                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_MULTIPLIER";
+                                tooltip = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_MULTIPLIER_COMMENT";
+                                defaultValue = """1""";
+                                typeName = "NUMBER";
+                        };
+                        class hostilityInstallationInterval : Edit
+                        {
+                                property = "ALiVE_mil_opcom_hostilityInstallationInterval";
+                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_INTERVAL";
+                                tooltip = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_INTERVAL_COMMENT";
+                                defaultValue = """10""";
+                                typeName = "NUMBER";
+                        };
+
+                        // ---- Asymmetric: recruitment, with recruitment installations ticked ----
+                        class HDR_RECRUIT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_RECRUIT"; displayName = "ASYMMETRIC - RECRUITMENT"; ALiVE_showWhen[] = {{"controltype", "is", "asymmetric"}, {"asymInstallations", "has", "recruit"}}; };
                         class minAgents : Edit
                         {
                                 property = "ALiVE_mil_opcom_minAgents";
@@ -907,7 +1013,8 @@ class CfgVehicles {
                                 typeName = "NUMBER";
                         };
 
-                        class HDR_RECRUITERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_RECRUITERS"; displayName = "RECRUITERS"; };
+                        // ---- Asymmetric: recruiters --------------------------------------
+                        class HDR_RECRUITERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_RECRUITERS"; displayName = "ASYMMETRIC - RECRUITERS"; ALiVE_showWhen[] = {{"controltype", "is", "asymmetric"}, {"asymInstallations", "has", "recruit"}}; };
                         class recruiters : Combo
                         {
                                 property = "ALiVE_mil_opcom_recruiters";
@@ -939,6 +1046,7 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_OPCOM_RECRUITER_CLASS";
                                 tooltip = "$STR_ALIVE_OPCOM_RECRUITER_CLASS_COMMENT";
                                 defaultValue = """""";
+                                ALiVE_showWhen[] = {{"recruiters", "is", "true"}};
                         };
                         class recruiterGuards : Edit
                         {
@@ -947,6 +1055,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_RECRUITER_GUARDS_COMMENT";
                                 defaultValue = """2""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"recruiters", "is", "true"}};
                         };
                         class recruiterSkips : Edit
                         {
@@ -955,6 +1064,7 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_OPCOM_RECRUITER_SKIPS_COMMENT";
                                 defaultValue = """1""";
                                 typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"recruiters", "is", "true"}};
                         };
                         class recruiterBoost : Combo
                         {
@@ -971,6 +1081,7 @@ class CfgVehicles {
                                         class More   { name = "More";   value = "1.5"; };
                                         class Double { name = "Double"; value = "2"; };
                                 };
+                                ALiVE_showWhen[] = {{"recruiters", "is", "true"}};
                         };
                         class recruiterWalks : Combo
                         {
@@ -985,6 +1096,7 @@ class CfgVehicles {
                                         class No { name = "No"; value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
+                                ALiVE_showWhen[] = {{"recruiters", "is", "true"}};
                         };
                         class recruiterFlees : Combo
                         {
@@ -999,53 +1111,11 @@ class CfgVehicles {
                                         class No { name = "No"; value = "false"; };
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
-                        };
-                        // ----  Task Overrides ----------------------------------------
-                        class TSK_OVR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_TSK_OVR"; displayName = "TASK OVERRIDES"; };
-                        class taskProfileCountOverrides : Edit
-                        {
-                                property = "ALiVE_mil_opcom_taskProfileCountOverrides";
-                                displayName = "$STR_ALIVE_OPCOM_TASK_PROFILE_COUNT_OVERRIDES";
-                                tooltip = "$STR_ALIVE_OPCOM_TASK_PROFILE_COUNT_OVERRIDES_COMMENT";
-                                defaultValue = """""";
-                        };
-                        class taskProfileTypeOverrides : Edit
-                        {
-                                property = "ALiVE_mil_opcom_taskProfileTypeOverrides";
-                                displayName = "$STR_ALIVE_OPCOM_TASK_PROFILE_TYPE_OVERRIDES";
-                                tooltip = "$STR_ALIVE_OPCOM_TASK_PROFILE_TYPE_OVERRIDES_COMMENT";
-                                defaultValue = """""";
+                                ALiVE_showWhen[] = {{"recruiters", "is", "true"}};
                         };
 
-                        // ---- Hostility ------------------------------------------------------
-                        class HDR_HOSTILITY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HOSTILITY"; displayName = "ASYMMETRIC HOSTILITY"; };
-                        class hostilityPresenceMultiplier : Edit
-                        {
-                                property = "ALiVE_mil_opcom_hostilityPresenceMultiplier";
-                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER";
-                                tooltip = "$STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER_COMMENT";
-                                defaultValue = """1""";
-                                typeName = "NUMBER";
-                        };
-                        class hostilityInstallationMultiplier : Edit
-                        {
-                                property = "ALiVE_mil_opcom_hostilityInstallationMultiplier";
-                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_MULTIPLIER";
-                                tooltip = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_MULTIPLIER_COMMENT";
-                                defaultValue = """1""";
-                                typeName = "NUMBER";
-                        };
-                        class hostilityInstallationInterval : Edit
-                        {
-                                property = "ALiVE_mil_opcom_hostilityInstallationInterval";
-                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_INTERVAL";
-                                tooltip = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_INTERVAL_COMMENT";
-                                defaultValue = """10""";
-                                typeName = "NUMBER";
-                        };
-
-                        // ---- Civic State (Hearts & Minds) -----------------------------------
-                        class HDR_CIVIC : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_CIVIC"; displayName = "CIVIC STATE (HEARTS & MINDS)"; };
+                        // ---- Asymmetric: civic state -------------------------------------
+                        class HDR_CIVIC : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_CIVIC"; displayName = "ASYMMETRIC - CIVIC STATE (HEARTS & MINDS)"; ALiVE_showWhen[] = {{"controltype", "is", "asymmetric"}}; };
                         class civicRecruitmentMultiplier : Edit
                         {
                                 property = "ALiVE_mil_opcom_civicRecruitmentMultiplier";

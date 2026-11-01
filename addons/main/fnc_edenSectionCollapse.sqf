@@ -26,8 +26,10 @@ A condition is {setting, test, value}. The setting is another attribute class of
 "@<module class>/<attribute class>" for the first such module in the mission. Tests: "is" and "not"
 (the value or any of a list of values), ">" and "<" (numbers), "filled" and "empty" (brackets, quotes,
 commas and spaces don't count), "has" (contains). Values compare as lower-case text. A condition on a
-setting that is itself hidden by its rules is false, whatever the test. A header whose rows are all
-hidden by rules hides too. Rows are matched to their settings by order (Eden makes them in config
+setting that is itself hidden by its rules is false, whatever the test. A rule on a section header
+covers every setting under it. A header whose rows are all hidden by rules hides too. A setting with
+ALiVE_showStyle = "dim" greys out instead of hiding (an override, or a value that can still be
+switched on during play). Rows are matched to their settings by order (Eden makes them in config
 order, checked against the row titles); if they can't be matched, no rule applies to that module.
 CBA Addon Options > ALiVE > Eden Editor picks Hide (the default), Grey out or Show all.
 
@@ -152,7 +154,20 @@ private _fnc_rules = {
         if (_miss > (2 max (_named / 10))) exitWith {
             diag_log format ["ALiVE Eden rules: %1 rows don't match their settings (%2 of %3), rules off", _cls, _miss, _named];
         };
-        { _byName set [toLower configName (_cfgs select _forEachIndex), [_x, _cfgs select _forEachIndex]] } forEach _made;
+        // each setting with the section header above it (a header with no text is a spacer, not a section)
+        private _hdrKey = "";
+        {
+            private _c = _cfgs select _forEachIndex;
+            private _k = toLower configName _c;
+            // Eden's module description at the foot belongs to no section
+            if (configName _c == "ModuleDescription") then { _byName set [_k, [_x, _c, ""]]; continue };
+            if (getText (_c >> "control") == "ALiVE_ModuleSubTitle" && {((getText (_c >> "displayName")) trim [" ", 0]) != ""}) then {
+                _hdrKey = _k;
+                _byName set [_k, [_x, _c, ""]];
+            } else {
+                _byName set [_k, [_x, _c, _hdrKey]];
+            };
+        } forEach _made;
     };
     if (isNil "_byName" || {count _byName == 0}) exitWith {};
 
@@ -232,24 +247,29 @@ private _fnc_rules = {
         if (_key in _vis) exitWith { _vis get _key };
         // a loop of rules settles as shown
         _vis set [_key, true];
-        private _cfg = (_byName get _key) select 1;
+        (_byName get _key) params ["", "_cfg", ["_hk", ""]];
         private _all = getArray (_cfg >> "ALiVE_showWhen");
         private _any = getArray (_cfg >> "ALiVE_showWhenAny");
-        private _ok = ((_all findIf { !(_x call _fnc_cond) }) < 0) && {_any isEqualTo [] || {(_any findIf { _x call _fnc_cond }) >= 0}};
+        private _ok = ((_all findIf { !(_x call _fnc_cond) }) < 0) && {_any isEqualTo [] || {(_any findIf { _x call _fnc_cond }) >= 0}}
+            && {_hk == "" || {[_hk] call _fnc_visible}};
         _vis set [_key, _ok];
         _ok
     };
 
+    private _fnc_ruleList = { (getArray (_this >> "ALiVE_showWhen")) + (getArray (_this >> "ALiVE_showWhenAny")) };
     private _controllers = [];
     {
-        _y params ["_row", "_cfg"];
-        private _rules = (getArray (_cfg >> "ALiVE_showWhen")) + (getArray (_cfg >> "ALiVE_showWhenAny"));
-        if (_rules isNotEqualTo []) then {
-            { _controllers pushBackUnique (toLower (_x param [0, ""])) } forEach _rules;
+        _y params ["_row", "_cfg", ["_hk", ""]];
+        private _rules = _cfg call _fnc_ruleList;
+        { _controllers pushBackUnique (toLower (_x param [0, ""])) } forEach _rules;
+        // a row of a section whose header has rules follows them as well
+        if (_rules isNotEqualTo [] || {_hk != "" && {(((_byName get _hk) select 1) call _fnc_ruleList) isNotEqualTo []}}) then {
             private _on = [_x] call _fnc_visible;
-            // Grey out: the row stays, faded; Show all: the rules are ignored
-            _row setVariable ["alive_rowOff", (_mode == "hide") && {!_on}];
-            _row ctrlSetFade ([0, 0.6] select ((_mode == "dim") && {!_on}));
+            // Grey out: the row stays, faded; Show all: the rules are ignored. A row whose own rules
+            // say dim greys out in Hide too; a row hidden by its header's rules goes with the header
+            private _dim = (_mode == "dim") || {(_mode == "hide") && {getText (_cfg >> "ALiVE_showStyle") == "dim"} && {_hk == "" || {[_hk] call _fnc_visible}}};
+            _row setVariable ["alive_rowOff", (_mode == "hide") && {!_on} && {!_dim}];
+            _row ctrlSetFade ([0, 0.6] select (_dim && {!_on}));
             _row ctrlCommit 0;
         };
     } forEach _byName;

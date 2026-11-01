@@ -86,7 +86,7 @@
     <Russian>Тип управления:</Russian>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CONTROLTYPE_COMMENT">
-    <English>Selects the commander's operational doctrine. Invasion: aggressively captures objectives and pushes the front line. Occupation: holds captured objectives with static and patrolling defences; slower to advance. Asymmetric: operates as an insurgent force using recruitment centres, installations (IED factories, HQs), roadblocks and hit-and-run tactics rather than head-on objective capture. Dug In: holds what it has and takes nothing more. Ground vehicles stay parked at their objective and infantry garrisons; when an objective is attacked, groups from the others go to help and then return to where they came from. It won't take on new objectives from players either. Aircraft still fly, and Security Patrols don't go out. Assault (waves): one target at a time, the highest Objective priority first and the nearest first among equals, or the Assault Targets list in its order. Every Wave Interval minutes another Groups Per Wave groups join the attack on it until it falls, then it moves on to the next. Defence and reserve work as on Invasion.</English>
+    <English>Selects the commander's operational doctrine. Invasion: aggressively captures objectives and pushes the front line. Occupation: holds captured objectives with static and patrolling defences; slower to advance. Asymmetric: operates as an insurgent force using recruitment centres, installations (IED factories, HQs), roadblocks and hit-and-run tactics rather than head-on objective capture. Dug In: holds what it has and takes nothing more. Ground vehicles stay parked at their objective and infantry garrisons; when an objective is attacked, groups from the others go to help and then return to where they came from. It won't take on new objectives from players either. Aircraft still fly, and Security Patrols don't go out. Assault (waves): one target at a time, the highest Objective priority first and the nearest first among equals, or the Assault Targets list in its order. Every Wave Interval minutes another Groups Per Wave groups join the attack on it until it falls, then it moves on to the next. Defence and reserve work as on Invasion. In Eden the settings for the other control types are hidden, but they still apply if the type is changed during play (tablet or ALiVE menu); Addon Options &gt; ALiVE &gt; Eden Editor &gt; Show all brings them back.</English>
     <Chinese>選擇指揮官的作戰準則。入侵：積極佔領目標並推進戰線。佔領：以靜態和巡邏防禦守住已佔領目標；推進較慢。非對稱：作為叛亂分子部隊運作，使用招募中心、設施（IED 工廠、總部）、路障和打了就跑戰術，而非正面佔領目標。</Chinese>
     <Chinesesimp>选择指挥官的作战准则。入侵：积极占领目标并推进战线。占领：以静态和巡逻防御守住已占领目标；推进较慢。非对称：作为叛乱分子部队运作，使用招募中心、设施（IED 工厂、总部）、路障和打了就跑战术，而非正面占领目标。</Chinesesimp>
     <Spanish>Selecciona la doctrina operativa del comandante. Invasión: captura agresivamente objetivos y empuja la línea del frente. Ocupación: mantiene los objetivos capturados con defensas estáticas y patrullas; avanza más lento. Asimétrico: opera como fuerza insurgente usando centros de reclutamiento, instalaciones (fábricas de IED, cuarteles generales), controles de carretera y tácticas de ataque y huida en lugar de capturar objetivos frontalmente.</Spanish>
@@ -142,7 +142,7 @@
     <English>Reinforcements Match the Enemy</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_REINFORCE_MATCH_ENEMY_COMMENT">
-    <English>Requires Military Logistics Module. Invasion and Occupation. No (the default) replaces losses type for type: lose three tanks and it asks for three tanks. Yes shapes each request around what this commander's units have seen of the enemy in the last 30 minutes. Half still replaces its own losses and the other half follows the enemy mix, so a commander facing tanks asks for armour even if it only lost infantry. It can ask for a type it didn't start with, as long as its faction has groups of that type and Military Logistics is allowed to send them. It never asks for more groups than it has lost, nor more than it is short of its starting strength. With nothing seen it replaces losses as before. Aircraft are left to the Military Air Component Commander, and landing from a ship is not affected.</English>
+    <English>Requires Military Logistics Module. Any commander that doesn't start the mission as Asymmetric. No (the default) replaces losses type for type: lose three tanks and it asks for three tanks. Yes shapes each request around what this commander's units have seen of the enemy in the last 30 minutes. Half still replaces its own losses and the other half follows the enemy mix, so a commander facing tanks asks for armour even if it only lost infantry. It can ask for a type it didn't start with, as long as its faction has groups of that type and Military Logistics is allowed to send them. It never asks for more groups than it has lost, nor more than it is short of its starting strength. With nothing seen it replaces losses as before. Aircraft are left to the Military Air Component Commander, and landing from a ship is not affected.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTIONS">
     <English>Factions:</English>
@@ -158,7 +158,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OPCOM_USAGE">
-    <English>Place a Military AI Commander module in the editor. Pick one or more factions in the Factions multi-select listbox (auto-populated from loaded mods; Ctrl+click to toggle, Shift+click for range). Use the Additional Factions (by name) field to add factions from mods not currently loaded; they are added to the ones picked above. Pick a Control Type (Invasion, Occupation, or Asymmetric). The commander will take command of all virtual profiles belonging to its selected factions, so at least one synced Placement Module and the Virtual AI module are required.</English>
+    <English>Place a Military AI Commander module in the editor. Pick one or more factions in the Factions multi-select listbox (auto-populated from loaded mods; Ctrl+click to toggle, Shift+click for range). Use the Additional Factions (by name) field to add factions from mods not currently loaded; they are added to the ones picked above. Pick a Control Type (Invasion, Occupation, Asymmetric, Dug In or Assault). The commander will take command of all virtual profiles belonging to its selected factions, so at least one synced Placement Module and the Virtual AI module are required.</English>
     <Chinese>在編輯器中放置軍事 AI 指揮官模組。在「陣營」多選列表中選擇一個或多個陣營（依載入模組自動填充；Ctrl+點擊切換，Shift+點擊範圍）。使用「Additional Factions (by name)」欄位加入目前未載入之模組的陣營；這些陣營會加到上方所選陣營之中。選擇控制類型（入侵、佔領或非對稱）。指揮官將接管屬於其所選陣營的所有虛擬設定檔，因此至少需要一個同步的部署模組和虛擬 AI 模組。</Chinese>
     <Chinesesimp>在编辑器中放置军事 AI 指挥官模块。在「阵营」多选列表中选择一个或多个阵营（依载入模组自动填充；Ctrl+单击切换，Shift+单击范围）。使用「Additional Factions (by name)」字段加入当前未载入之模组的阵营；这些阵营会加到上方所选阵营之中。选择控制类型（入侵、占领或非对称）。指挥官将接管属于其所选阵营的所有虚拟配置文件，因此至少需要一个同步的部署模块和虚拟 AI 模块。</Chinesesimp>
     <Spanish>Coloca un módulo Comandante IA militar en el editor. Elige una o varias facciones en el cuadro de selección múltiple Facciones (autollenado desde los mods cargados; Ctrl+clic para alternar, Mayús+clic para rango). Usa el campo Additional Factions (by name) para añadir facciones de mods no cargados actualmente; se suman a las elegidas arriba. Elige un Tipo de control (Invasión, Ocupación o Asimétrico). El comandante asumirá el control de todos los perfiles virtuales de las facciones seleccionadas, por lo que se requiere al menos un módulo de despliegue sincronizado y el módulo IA virtual.</Spanish>
@@ -322,7 +322,7 @@
     <English>Preparation Tasks Before Attacks</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_COMMENT">
-    <English>Invasion and Occupation. Before each new attack, players on this commander's side are given preparation tasks at the objective: a wiretap of the enemy's communications, and with Fewest and Most Tasks per Operation set, destroying the AA and mortar emplacements or enemy vehicles there or an insurgent installation nearby. The attack waits for the tasks, or for the timeout below, whichever is first. With no players about it doesn't wait.</English>
+    <English>Invasion, Occupation and Assault. Before each new attack, players on this commander's side are given preparation tasks at the objective: a wiretap of the enemy's communications, and with Fewest and Most Tasks per Operation set, destroying the AA and mortar emplacements or enemy vehicles there or an insurgent installation nearby. The attack waits for the tasks, or for the timeout below, whichever is first. With no players about it doesn't wait.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREP_TIMEOUT">
     <English>Preparation Timeout (min)</English>
@@ -412,7 +412,7 @@
     <English>Fewest Tasks per Operation</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OP_TASKS_MIN_COMMENT">
-    <English>The fewest tasks players are given for each operation: preparation tasks before each Invasion or Occupation attack (Preparation Tasks), or clean-up tasks after each Occupation capture (Pause After Capture). Each operation gets a number between this and Most Tasks per Operation. Preparation tasks can be a wiretap, destroying AA and mortar emplacements or enemy vehicles at the objective, or an insurgent installation near it, where there is one to destroy. Leave both at 0 for one wiretap per attack and every clean-up task after a capture.</English>
+    <English>The fewest tasks players are given for each operation: preparation tasks before each Invasion, Occupation or Assault attack (Preparation Tasks), or clean-up tasks after each Occupation capture (Pause After Capture). Each operation gets a number between this and Most Tasks per Operation. Preparation tasks can be a wiretap, destroying AA and mortar emplacements or enemy vehicles at the objective, or an insurgent installation near it, where there is one to destroy. Leave both at 0 for one wiretap per attack and every clean-up task after a capture.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OP_TASKS_MAX">
     <English>Most Tasks per Operation</English>
@@ -430,7 +430,7 @@
     <English>Find Out Before Attacking</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_INTEL_CYCLE_COMMENT">
-    <English>No (the default) attacks as soon as the first groups have looked at the objective. Yes makes an Invasion or Occupation commander find out what is there first: once its recon groups have looked, it also sends players to reconnoitre the objective (when C2ISTAR is placed and players are on its side) and holds the assault, with its groups waiting where they are, until it knows enough (Intel Needed Before Attacking), everyone sent has reported, or the Intel Wait runs out. What it found joins what it knows of the enemy, so Tasks Only Against Known Enemy can use it.</English>
+    <English>No (the default) attacks as soon as the first groups have looked at the objective. Yes makes an Invasion, Occupation or Assault commander find out what is there first: once its recon groups have looked, it also sends players to reconnoitre the objective (when C2ISTAR is placed and players are on its side) and holds the assault, with its groups waiting where they are, until it knows enough (Intel Needed Before Attacking), everyone sent has reported, or the Intel Wait runs out. What it found joins what it knows of the enemy, so Tasks Only Against Known Enemy can use it.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_INTEL_CONFIDENCE">
     <English>Intel Needed Before Attacking</English>
@@ -469,7 +469,7 @@
     <English>Groups Call For Help</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CALL_FOR_HELP_COMMENT">
-    <English>Invasion and Occupation. Yes lets a group that has lost half its men in a fight, and at least 2 in the last 2 minutes, ask the commander for help against an enemy within 500 m. The commander sends 2 free groups that can reach that enemy (the hurt group's own kind first) at full speed, never the hurt group itself, and the Military Artillery module, if placed, is asked for a fire mission on it. Each hurt group asks at most once every 2 minutes, the commander answers at most 2 calls a minute, and an enemy it is already dealing with isn't asked about again. Player groups never ask. No (the default) leaves things as they are: the commander only sends help when it spots a new enemy itself.</English>
+    <English>Any commander that doesn't start the mission as Asymmetric (Dug In sends nobody). Yes lets a group that has lost half its men in a fight, and at least 2 in the last 2 minutes, ask the commander for help against an enemy within 500 m. The commander sends 2 free groups that can reach that enemy (the hurt group's own kind first) at full speed, never the hurt group itself, and the Military Artillery module, if placed, is asked for a fire mission on it. Each hurt group asks at most once every 2 minutes, the commander answers at most 2 calls a minute, and an enemy it is already dealing with isn't asked about again. Player groups never ask. No (the default) leaves things as they are: the commander only sends help when it spots a new enemy itself.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_START">
     <English>Start From Ship</English>
@@ -481,7 +481,7 @@
     <English>Infantry Groups Aboard</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_INF_COMMENT">
-    <English>How many infantry groups start aboard the ship with Start From Ship on. They go ashore a wave at a time (see Groups Per Wave and Seconds Between Waves), by helicopter or by boat. Mechanised and armoured groups start on land as usual.</English>
+    <English>How many infantry groups start aboard the ship with Start From Ship on. They go ashore a wave at a time (see Groups Per Ship Wave and Seconds Between Waves), by helicopter or by boat. Mechanised and armoured groups start on land as usual.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_MOT">
     <English>Motorised Groups Aboard</English>
@@ -490,7 +490,7 @@
     <English>How many motorised groups start aboard the ship with Start From Ship on, 0 by default. They fly ashore after the infantry, in waves of their own the same size, each vehicle carried under a heavy lift helicopter. The faction or its side needs a helicopter that can lift the vehicle. A force that goes ashore by boat sends each motorised group in a landing craft of its own, and the group comes ashore on the beach as the craft lands. If no helicopter can lift them, or the landing stays closed to them for a long while, these groups are left out and the usual reinforcements resume.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_SIZE">
-    <English>Groups Per Wave</English>
+    <English>Groups Per Ship Wave</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_SIZE_COMMENT">
     <English>How many groups leave the ship in each wave with Start From Ship on, 2 by default. The infantry goes first, then the motorised groups in waves of their own. Every wave lands at the same place: the objective nearest the ship that the commander is attacking or holding. A bigger wave needs more helicopters or boats at once, and Military Logistics may take longer to send it.</English>
@@ -969,7 +969,7 @@
     <English>Prepared Defences</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PREPARED_DEFENCES_COMMENT">
-    <English>Invasion and Occupation commanders dig in. Once an objective has been held for 10 minutes, a small fort of sandbags, barriers and sometimes a static weapon of the commander's faction is built at its edge facing the enemy. Few fortifies up to 3 objectives, Many up to 8, at most one every 5 minutes, never within 300 m of a player. With persistence on, forts are saved with the mission.</English>
+    <English>Any commander that doesn't start the mission as Asymmetric digs in. Once an objective has been held for 10 minutes, a small fort of sandbags, barriers and sometimes a static weapon of the commander's faction is built at its edge facing the enemy. Few fortifies up to 3 objectives, Many up to 8, at most one every 5 minutes, never within 300 m of a player. With persistence on, forts are saved with the mission.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SECURITY_PATROLS">
     <English>Security Patrols</English>
@@ -999,7 +999,7 @@
     <English>Flanking Attacks</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FLANKING_COMMENT">
-    <English>Invasion and occupation commanders only. When its scouts have found defenders on an objective and it sends three or more ground groups to take it, one group (the heaviest vehicles, else the infantry nearest the objective) stops about 300 m short and holds the defenders in place, while the others swing round to its side, about 90 degrees off, before all of them close in together. A group already standing off to the side goes straight in. Attacks with fewer groups, or where the scouts found nobody, go straight in as before. Aircraft aren't involved, and a group swinging round isn't sent to help elsewhere until the objective is taken.</English>
+    <English>Any commander but an Asymmetric one (Dug In never attacks). When its scouts have found defenders on an objective and it sends three or more ground groups to take it, one group (the heaviest vehicles, else the infantry nearest the objective) stops about 300 m short and holds the defenders in place, while the others swing round to its side, about 90 degrees off, before all of them close in together. A group already standing off to the side goes straight in. Attacks with fewer groups, or where the scouts found nobody, go straight in as before. Aircraft aren't involved, and a group swinging round isn't sent to help elsewhere until the objective is taken.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_ARRIVE_TOGETHER">
     <English>Attacks Arrive Together</English>
@@ -1011,7 +1011,7 @@
     <English>Frontline Minefields</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FRONTLINE_MINEFIELDS_COMMENT">
-    <English>Invasion and occupation commanders only. The commander lays small minefields in front of the objectives it holds that face the enemy: anti-tank mines on the roads in, anti-personnel mines elsewhere. Few allows 2 fields, Many 6, one per objective, never near a player. Its own side and friendly sides know where they are. Fields stay until cleared, and a saved game lays them again where they were.</English>
+    <English>Any commander that doesn't start the mission as Asymmetric. The commander lays small minefields in front of the objectives it holds that face the enemy: anti-tank mines on the roads in, anti-personnel mines elsewhere. Few allows 2 fields, Many 6, one per objective, never near a player. Its own side and friendly sides know where they are. Fields stay until cleared, and a saved game lays them again where they were.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER">
     <English>Hostility presence multiplier:</English>
