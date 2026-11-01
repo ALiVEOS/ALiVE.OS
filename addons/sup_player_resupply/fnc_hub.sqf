@@ -179,7 +179,7 @@ switch (_op) do {
         if (_radius <= 0) then { _radius = 30 };
         _radius = (_radius max 2) min 200;
         private _who = toUpper (["hub_collect_who", "SIDE"] call _text);
-        _who = (((_who splitString "[]""', ") select { _x in ["SIDE", "LEADER", "ITEM", "LIST"] }) joinString ",");
+        _who = ["filter", [_who, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
         private _names = ["hub_collect_list", ""] call _text;
         private _dismantle = (toLower (["hub_dismantle", "true"] call _text)) in ["true", "1", "yes"];
         private _dismantleTime = parseNumber (["hub_dismantle_time", "15"] call _text);
@@ -187,7 +187,7 @@ switch (_op) do {
         _dismantleTime = (_dismantleTime max 1) min 120;
         private _repairTime = (parseNumber (["hub_repair_time", "0"] call _text)) max 0;
         private _dWho = toUpper (["hub_dismantle_who", ""] call _text);
-        _dWho = (((_dWho splitString "[]""', ") select { _x in ["SIDE", "LEADER", "ITEM", "LIST"] }) joinString ",");
+        _dWho = ["filter", [_dWho, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
         // a named list (List, or Custom and its name), read under the three lists
         private _list = toUpper (["hub_list", ""] call _text);
         if (_list == "CUSTOM") then { _list = (["hub_list_name", ""] call _text) trim [" ", 0] };
@@ -447,34 +447,15 @@ switch (_op) do {
     };
 
     case "isAdmin": {
-        _args params [["_unit", objNull, [objNull]]];
-        _result = !isNull _unit && {if (hasInterface && {_unit isEqualTo player}) then { call ALiVE_fnc_isServerAdmin } else { !isMultiplayer || {isServer && {(admin owner _unit) > 0}} }};
+        _result = ["isAdmin", _args] call ALiVE_fnc_siteWho;
     };
 
-    // Who Can Collect: any ticked rule lets the unit in. No admin test here; mayCollect makes it.
+    // Who Can Collect: any ticked rule lets the unit in, through the check every site shares
+    // (ALiVE_fnc_siteWho). No admin test here; mayCollect makes it.
     case "mayWho": {
         _args params [["_unit", objNull, [objNull]], ["_rules", "", [""]], ["_names", "", [""]]];
-        _result = false;
-        if (isNull _unit) exitWith {};
-        private _who = (toUpper _rules) splitString "[]""', ";
-        // leading a group with another player in it: anyone alone in a group of their own leads it
-        private _leads = { leader group _unit isEqualTo _unit && {(units group _unit) findIf { isPlayer _x && {_x != _unit} } > -1} };
-        _result = "SIDE" in _who
-            || {"LEADER" in _who && _leads}
-            || {"ITEM" in _who && {
-                // carried, as the tablet's own access items are: standing at a command post doesn't count here
-                private _pr = missionNamespace getVariable ["ALIVE_SUP_PLAYER_RESUPPLY", objNull];
-                private _items = if (isNull _pr) then { "" } else { [_pr, "pr_item"] call ALIVE_fnc_PR };
-                private _custom = if (isNull _pr) then { "" } else { [_pr, "pr_item_custom"] call ALIVE_fnc_PR };
-                if !(_items isEqualType "") then { _items = "" };
-                if !(_custom isEqualType "") then { _custom = "" };
-                [_items, _custom, ["ALIVE_Tablet"], _unit, false] call ALIVE_fnc_playerHasAccessItems
-            }}
-            || {"LIST" in _who && {
-                private _list = (toLower _names) splitString (",; " + toString [9, 10, 13]);
-                // a player ID, a unit class, or the slot's variable name from Eden (P1, jtac...)
-                (getPlayerUID _unit) in _list || {(toLower typeOf _unit) in _list} || {(toLower vehicleVarName _unit) in _list}
-            }};
+        _rules = ["filter", [_rules, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
+        _result = ["mayWho", [_unit, _rules, _names, ""]] call ALiVE_fnc_siteWho;
     };
 
     case "mayCollect": {
@@ -712,8 +693,7 @@ switch (_op) do {
         };
         private _clean = {
             params ["_r", "_n"];
-            [(((toUpper _r) splitString "[]""', ") select { _x in ["SIDE", "LEADER", "ITEM", "LIST"] }) joinString ",",
-                toString (((toArray _n) select { _x >= 32 && {!(_x in [34, 38, 39, 60, 62])} }) select [0, 2000])]
+            [["filter", [_r, ["SIDE", "LEADER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho, ["cleanNames", [_n]] call ALiVE_fnc_siteWho]
         };
         ([_rules, _names] call _clean) params ["_rules", "_names"];
         ([_dRules, _dNames] call _clean) params ["_dRules", "_dNames"];

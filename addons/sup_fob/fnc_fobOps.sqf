@@ -1262,8 +1262,8 @@ switch (_op) do {
         _result = false;
         _args params [["_rules", "", [""]], ["_names", "", [""]]];
         if (isNull _caller || {!([_logic, "isAdmin", [_caller]] call ALiVE_fnc_FOB)}) exitWith { ["STR_ALIVE_FOB_REFUSED_ADMIN"] call _tell };
-        _rules = (((toUpper _rules) splitString "[]""', ") select { _x in ["SIDE", "LEADER", "DEPLOYER", "LIST"] }) joinString ",";
-        _names = toString (((toArray _names) select { _x >= 32 && {!(_x in [34, 38, 39, 60, 62])} }) select [0, 2000]);
+        _rules = ["filter", [_rules, ["SIDE", "LEADER", "DEPLOYER", "LIST"]]] call ALiVE_fnc_siteWho;
+        _names = ["cleanNames", [_names]] call ALiVE_fnc_siteWho;
         _logic setVariable ["ALiVE_FOB_perm", [_rules, _names], true];
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["STR_ALIVE_FOB_PERMISSIONS_SET"] call _tell;

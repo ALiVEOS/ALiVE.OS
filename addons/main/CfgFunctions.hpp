@@ -46,6 +46,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_isModuleAvailable.sqf";
                 ALIVE_RECOMPILE;
             };
+            class siteWho {
+                description = "Who may act on a player site (FOB, Logistics hub, rally point): the shared Who Can check";
+                file = "\x\alive\addons\main\fnc_siteWho.sqf";
+                ALIVE_RECOMPILE;
+            };
             class playerHasAccessItems {
                 description = "Shared access-item gate for the player tablet/menu modules";
                 file = "\x\alive\addons\main\fnc_playerHasAccessItems.sqf";

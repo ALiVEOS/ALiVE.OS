@@ -338,8 +338,7 @@ switch (_operation) do {
     // A logged-in or voted admin, or anyone in single player. Works on any machine for the
     // player there, and on the server for anyone.
     case "isAdmin": {
-        _args params [["_unit", objNull, [objNull]]];
-        _result = !isNull _unit && {if (hasInterface && {_unit isEqualTo player}) then { call ALiVE_fnc_isServerAdmin } else { !isMultiplayer || {isServer && {(admin owner _unit) > 0}} }};
+        _result = ["isAdmin", _args] call ALiVE_fnc_siteWho;
     };
 
     // Who Can Dismantle and its list, as [rules, list]: what an admin set in game ("permissions" in
@@ -366,22 +365,12 @@ switch (_operation) do {
     };
 
     // Whether rules in the Who Can Dismantle form (SIDE, LEADER, DEPLOYER, LIST and a names list)
-    // let a player in. No admin test: the callers make that.
+    // let a player in, through the check every site shares (ALiVE_fnc_siteWho). No admin test: the
+    // callers make that.
     case "mayWho": {
         _args params [["_unit", objNull, [objNull]], ["_rules", "", [""]], ["_names", "", [""]], ["_deployer", "", [""]]];
-        _result = false;
-        if (isNull _unit) exitWith {};
-        private _who = (toUpper _rules) splitString "[]""', ";
-        // leading a group with another player in it: anyone alone in a group of their own leads it
-        private _leads = leader group _unit isEqualTo _unit && {(units group _unit) findIf { isPlayer _x && {_x != _unit} } > -1};
-        _result = "SIDE" in _who
-            || {"LEADER" in _who && {_leads}}
-            || {"DEPLOYER" in _who && {if (_deployer == "") then { _leads } else { getPlayerUID _unit == _deployer }}}
-            || {"LIST" in _who && {
-                private _list = (toLower _names) splitString (",; " + toString [9, 10, 13]);
-                // a player ID, a unit class, or the slot's variable name from Eden (P1, jtac...)
-                (getPlayerUID _unit) in _list || {(toLower typeOf _unit) in _list} || {(toLower vehicleVarName _unit) in _list}
-            }};
+        _rules = ["filter", [_rules, ["SIDE", "LEADER", "DEPLOYER", "LIST"]]] call ALiVE_fnc_siteWho;
+        _result = ["mayWho", [_unit, _rules, _names, _deployer]] call ALiVE_fnc_siteWho;
     };
 
     // One side's pick from a per-side setting stored BLUFOR|OPFOR|Independent (Headquarters
@@ -688,8 +677,8 @@ switch (_operation) do {
         if (_type == "" || {[_logic, "isAdmin", [_unit]] call MAINCLASS}) exitWith { _result = true };
         private _spec = [_logic, "typeSpec", [_type]] call MAINCLASS;
         if (_spec isEqualTo []) exitWith {};
-        private _rules = (((_spec select 8) splitString "[]""', ") - ["DEPLOYER"]) joinString ",";
-        _result = [_logic, "mayWho", [_unit, _rules, _spec select 9, "~"]] call MAINCLASS;
+        private _rules = ["filter", [_spec select 8, ["SIDE", "LEADER", "LIST"]]] call ALiVE_fnc_siteWho;
+        _result = [_logic, "mayWho", [_unit, _rules, _spec select 9, ""]] call MAINCLASS;
     };
 
     case "nextID": {
