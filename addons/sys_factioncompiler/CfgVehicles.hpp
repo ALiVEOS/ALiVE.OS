@@ -63,6 +63,7 @@ class CfgVehicles {
                 // instead. Init code reads getVariable ["faction"].
                 expression = "_this setVariable ['faction', _value];";
                 defaultValue = """OPF_F""";
+                ALiVE_showWhen[] = {{"overrideMode", "is", "NewFaction"}};
             };
             class deleteTemplates : Combo {
                 property = "ALiVE_sys_factioncompiler_deleteTemplates";
