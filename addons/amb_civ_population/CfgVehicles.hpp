@@ -21,7 +21,7 @@ class CfgVehicles {
         picture = "x\alive\addons\amb_civ_population\icon_civ_pop.paa";
         class Attributes : AttributesBase
         {
-            // ---- General --------------------------------------------------------
+            // ---- General -----------------------------------------------------
             class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_GENERAL"; displayName = "GENERAL"; };
             class debug : Combo { property = "ALiVE_amb_civ_population_debug"; displayName = "$STR_ALIVE_CIV_POP_DEBUG"; tooltip = "$STR_ALIVE_CIV_POP_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
             class spawnRadius : Edit { property = "ALiVE_amb_civ_population_spawnRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS_COMMENT"; defaultValue = """1500"""; };
@@ -30,7 +30,7 @@ class CfgVehicles {
             class spawnRadiusUAV : Edit { property = "ALiVE_amb_civ_population_spawnRadiusUAV"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS_COMMENT"; defaultValue = """-1"""; };
             class activeLimiter : Edit { property = "ALiVE_amb_civ_population_activeLimiter"; displayName = "$STR_ALIVE_CIV_POP_ACTIVE_LIMITER"; tooltip = "$STR_ALIVE_CIV_POP_ACTIVE_LIMITER_COMMENT"; defaultValue = """30"""; };
 
-            // ---- Hostility ------------------------------------------------------
+            // ---- Hostility ---------------------------------------------------
             class HDR_HOSTILITY : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HOSTILITY"; displayName = "CIVILIAN HOSTILITY"; };
             class hostilityWest : Combo { property = "ALiVE_amb_civ_population_hostilityWest"; displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_WEST"; tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_WEST_COMMENT"; defaultValue = """0"""; class Values { class LOW{name="$STR_ALIVE_CIV_POP_HOSTILITY_WEST_LOW";value="0";default=1;}; class MEDIUM{name="$STR_ALIVE_CIV_POP_HOSTILITY_WEST_MEDIUM";value="30";}; class HIGH{name="$STR_ALIVE_CIV_POP_HOSTILITY_WEST_HIGH";value="60";}; class EXTREME{name="$STR_ALIVE_CIV_POP_HOSTILITY_WEST_EXTREME";value="130";}; }; };
             class hostilityEast : Combo { property = "ALiVE_amb_civ_population_hostilityEast"; displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_EAST"; tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_EAST_COMMENT"; defaultValue = """0"""; class Values { class LOW{name="$STR_ALIVE_CIV_POP_HOSTILITY_EAST_LOW";value="0";default=1;}; class MEDIUM{name="$STR_ALIVE_CIV_POP_HOSTILITY_EAST_MEDIUM";value="30";}; class HIGH{name="$STR_ALIVE_CIV_POP_HOSTILITY_EAST_HIGH";value="60";}; class EXTREME{name="$STR_ALIVE_CIV_POP_HOSTILITY_EAST_EXTREME";value="130";}; }; };
@@ -46,23 +46,7 @@ class CfgVehicles {
                 defaultValue = """1""";
             };
 
-            class HDR_INSURGENTS : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_INSURGENTS"; displayName = "INSURGENTS"; };
-            class insurgentFaction
-            {
-                property     = "ALiVE_amb_civ_population_insurgentFaction";
-                displayName  = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION";
-                tooltip      = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT";
-                // Per-consumer variant of FactionChoiceMulti_Military.
-                // Visible Title "Insurgent Faction(s):" plus tooltip
-                // $STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT set by
-                // the LOAD handler on idc 101.
-                control      = "ALiVE_FactionChoiceMulti_Military_InsurgentFactions";
-                typeName     = "STRING";
-                expression   = "_this setVariable ['insurgentFaction', _value];";
-                defaultValue = """[]""";
-            };
-            class insurgentFactionManual : Edit { property = "ALiVE_amb_civ_population_insurgentFactionManual"; displayName = "$STR_ALIVE_CIV_POP_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_CIV_POP_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-
+            // ---- Interaction: Enable Interaction first, the rows it switches under it ----
             class HDR_INTERACT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_INTERACT"; displayName = "INTERACTION"; };
             class enableInteraction : Combo { property = "ALiVE_amb_civ_population_enableInteraction"; displayName = "$STR_ALIVE_CIV_POP_ENABLE_INTERACTION"; tooltip = "$STR_ALIVE_CIV_POP_ENABLE_INTERACTION_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
             class civilianInteractionUI : Combo
@@ -78,6 +62,7 @@ class CfgVehicles {
                     class CLASSIC { name = "$STR_ALIVE_CIV_POP_UI_MODE_CLASSIC"; value = "CLASSIC"; };
                     class ACE     { name = "$STR_ALIVE_CIV_POP_UI_MODE_ACE";     value = "ACE"; };
                 };
+                ALiVE_showWhenAny[] = {{"enableInteraction", "is", "true"}, {"advciv_enabled", "is", "true"}};
             };
             // Property key intentionally retained as `advciv_orderMenuRange` for
             // SQM backward compatibility; attribute scope is broader than advciv
@@ -90,13 +75,15 @@ class CfgVehicles {
                 displayName = "$STR_ALIVE_CIV_POP_INTERACTION_RANGE";
                 tooltip = "$STR_ALIVE_CIV_POP_INTERACTION_RANGE_COMMENT";
                 defaultValue = """4""";
+                ALiVE_showWhenAny[] = {{"enableInteraction", "is", "true"}, {"advciv_enabled", "is", "true"}};
             };
-            class limitInteraction : Edit { property = "ALiVE_amb_civ_population_limitInteraction"; displayName = "$STR_ALIVE_CIV_POP_LIMIT_INTERACTION"; tooltip = "$STR_ALIVE_CIV_POP_LIMIT_INTERACTION_COMMENT"; defaultValue = """"""; };
+            class limitInteraction : Edit { property = "ALiVE_amb_civ_population_limitInteraction"; displayName = "$STR_ALIVE_CIV_POP_LIMIT_INTERACTION"; tooltip = "$STR_ALIVE_CIV_POP_LIMIT_INTERACTION_COMMENT"; defaultValue = """"""; ALiVE_showWhen[] = {{"enableInteraction", "is", "true"}}; };
             class civIntelGatherChance : Edit {
                 property = "ALiVE_amb_civ_population_civIntelGatherChance";
                 displayName = "$STR_ALIVE_CIV_POP_INTEL_GATHER_CHANCE";
                 tooltip = "$STR_ALIVE_CIV_POP_INTEL_GATHER_CHANCE_COMMENT";
                 defaultValue = """30""";
+                ALiVE_showWhen[] = {{"enableInteraction", "is", "true"}};
             };
             class civHostilityIndicator : Combo
             {
@@ -110,53 +97,30 @@ class CfgVehicles {
                     class DESCRIPTIVE { name = "$STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_DESCRIPTIVE"; value = "DESCRIPTIVE"; };
                     class NUMERIC     { name = "$STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_NUMERIC";     value = "NUMERIC"; };
                 };
+                ALiVE_showWhen[] = {{"enableInteraction", "is", "true"}};
             };
+            class insurgentFaction
+            {
+                property     = "ALiVE_amb_civ_population_insurgentFaction";
+                displayName  = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION";
+                tooltip      = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT";
+                // Per-consumer variant of FactionChoiceMulti_Military.
+                // Visible Title "Insurgent Faction(s):" plus tooltip
+                // $STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT set by
+                // the LOAD handler on idc 101.
+                control      = "ALiVE_FactionChoiceMulti_Military_InsurgentFactions";
+                typeName     = "STRING";
+                expression   = "_this setVariable ['insurgentFaction', _value];";
+                defaultValue = """[]""";
+                ALiVE_showWhen[] = {{"enableInteraction", "is", "true"}};
+            };
+            class insurgentFactionManual : Edit { property = "ALiVE_amb_civ_population_insurgentFactionManual"; displayName = "$STR_ALIVE_CIV_POP_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_CIV_POP_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; ALiVE_showWhen[] = {{"enableInteraction", "is", "true"}}; };
 
-            class HDR_WEAPON_AIM : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_WEAPON_AIM"; displayName = "WEAPON AIM"; };
-            class civWeaponAimRange : Edit
-            {
-                property     = "ALiVE_amb_civ_population_civWeaponAimRange";
-                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE";
-                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE_COMMENT";
-                defaultValue = """15""";
-            };
-            class civWeaponAimHoldTime : Edit
-            {
-                property     = "ALiVE_amb_civ_population_civWeaponAimHoldTime";
-                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME";
-                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_COMMENT";
-                defaultValue = """2""";
-            };
-            class civWeaponAimHoldTimeDynamic : Combo
-            {
-                property     = "ALiVE_amb_civ_population_civWeaponAimHoldTimeDynamic";
-                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_DYNAMIC";
-                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_DYNAMIC_COMMENT";
-                defaultValue = """false""";
-                class Values
-                {
-                    class Yes { name = "Yes"; value = true; };
-                    class No  { name = "No";  value = false; default = 1; };
-                };
-            };
-            class civVehicleStopOnAim : Combo
-            {
-                property     = "ALiVE_amb_civ_population_civVehicleStopOnAim";
-                displayName  = "$STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM";
-                tooltip      = "$STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM_COMMENT";
-                defaultValue = """true""";
-                class Values
-                {
-                    class Yes { name = "Yes"; value = true; default = 1; };
-                    class No  { name = "No";  value = false; };
-                };
-            };
-
-            // ---- Interaction & Crowd --------------------------------------------
+            // ---- Crowds ------------------------------------------------------
             class HDR_CROWD : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_CROWD"; displayName = "CROWDS"; };
             class ambientCrowdSpawn : Edit { property = "ALiVE_amb_civ_population_ambientCrowdSpawn"; displayName = "$STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS_COMMENT"; defaultValue = """0"""; };
-            class ambientCrowdDensity : Edit { property = "ALiVE_amb_civ_population_ambientCrowdDensity"; displayName = "$STR_ALIVE_CIV_POP_CROWD_DENSITY"; tooltip = "$STR_ALIVE_CIV_POP_CROWD_DENSITY_COMMENT"; defaultValue = """4"""; };
-            class ambientCrowdLimit : Edit { property = "ALiVE_amb_civ_population_ambientCrowdLimit"; displayName = "$STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER"; tooltip = "$STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER_COMMENT"; defaultValue = """50"""; };
+            class ambientCrowdDensity : Edit { property = "ALiVE_amb_civ_population_ambientCrowdDensity"; displayName = "$STR_ALIVE_CIV_POP_CROWD_DENSITY"; tooltip = "$STR_ALIVE_CIV_POP_CROWD_DENSITY_COMMENT"; defaultValue = """4"""; ALiVE_showWhen[] = {{"ambientCrowdSpawn", ">", 0}}; };
+            class ambientCrowdLimit : Edit { property = "ALiVE_amb_civ_population_ambientCrowdLimit"; displayName = "$STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER"; tooltip = "$STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER_COMMENT"; defaultValue = """50"""; ALiVE_showWhen[] = {{"ambientCrowdSpawn", ">", 0}}; };
             class ambientCrowdFaction
             {
                 property     = "ALiVE_amb_civ_population_ambientCrowdFaction";
@@ -178,7 +142,8 @@ class CfgVehicles {
                 defaultValue = """CIV_F""";
             };
 
-            class HDR_AMBIENCE : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_AMBIENCE"; displayName = "ROLES AND SOUNDS"; };
+            // ---- Roles and sounds --------------------------------------------
+            class HDR_AMBIENCE : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_AMBIENCE"; displayName = "ROLES, SOUNDS AND PARKED CARS"; };
             class ambientCivilianRoles : Combo
             {
                     property = "ALiVE_amb_civ_population_ambientCivilianRoles";
@@ -193,10 +158,15 @@ class CfgVehicles {
                     };
             };
             class disableAmbientSounds : Combo { property = "ALiVE_amb_civ_population_disableAmbientSounds"; displayName = "$STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS"; tooltip = "$STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS_COMMENT"; defaultValue = """false"""; class Values { class No { name = "No"; value = false; default = 1; }; class Yes { name = "Yes"; value = true; }; }; };
-            class ambientSoundVolume : Combo { property = "ALiVE_amb_civ_population_ambientSoundVolume"; displayName = "$STR_ALIVE_CIV_POP_AMBIENT_VOLUME"; tooltip = "$STR_ALIVE_CIV_POP_AMBIENT_VOLUME_COMMENT"; defaultValue = """1"""; class Values { class V1 { name = "Normal"; value = "1"; default = 1; }; class V15 { name = "1.5x"; value = "1.5"; }; class V2 { name = "2x"; value = "2"; }; class V3 { name = "3x"; value = "3"; }; class V4 { name = "4x"; value = "4"; }; class V5 { name = "5x"; value = "5"; }; }; };
+            class ambientSoundVolume : Combo { property = "ALiVE_amb_civ_population_ambientSoundVolume"; displayName = "$STR_ALIVE_CIV_POP_AMBIENT_VOLUME"; tooltip = "$STR_ALIVE_CIV_POP_AMBIENT_VOLUME_COMMENT"; defaultValue = """1"""; class Values { class V1 { name = "Normal"; value = "1"; default = 1; }; class V15 { name = "1.5x"; value = "1.5"; }; class V2 { name = "2x"; value = "2"; }; class V3 { name = "3x"; value = "3"; }; class V4 { name = "4x"; value = "4"; }; class V5 { name = "5x"; value = "5"; }; }; ALiVE_showWhen[] = {{"disableAmbientSounds", "is", "false"}}; };
+            class ambVehCivDriverChance : Edit { property = "ALiVE_amb_civ_population_ambVehCivDriverChance"; displayName = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE"; tooltip = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE_COMMENT"; defaultValue = """0.15"""; };
 
-            // ---- Humanitarian ---------------------------------------------------
-            class HDR_HUMANITARIAN : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HUMANITARIAN"; displayName = "HUMANITARIAN"; };
+            // ---- Humanitarian aid: aid crates first, then the interaction aid, then the items both use ----
+            class HDR_HUMANITARIAN : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HUMANITARIAN"; displayName = "HUMANITARIAN AID"; };
+            // Aid crates: a box of food and water handed to a town, no C2ISTAR task needed.
+            class aidCrateEnabled : Combo { property = "ALiVE_amb_civ_population_aidCrateEnabled"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_ENABLED"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_ENABLED_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
+            class aidCrateCooldown : Edit { property = "ALiVE_amb_civ_population_aidCrateCooldown"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN_LABEL"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN_COMMENT"; defaultValue = """1800"""; ALiVE_showWhen[] = {{"aidCrateEnabled", "is", "true"}}; };
+            class aidCrateMaxEffect : Edit { property = "ALiVE_amb_civ_population_aidCrateMaxEffect"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_MAXEFFECT"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_MAXEFFECT_COMMENT"; defaultValue = """35"""; ALiVE_showWhen[] = {{"aidCrateEnabled", "is", "true"}}; };
             class humanitarianHostilityChance : Edit
             {
                     property = "ALiVE_amb_civ_population_humanitarianHostilityChance";
@@ -204,8 +174,9 @@ class CfgVehicles {
                     tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT";
                     defaultValue = """20""";
                     typeName = "NUMBER";
+                ALiVE_showWhen[] = {{"enableInteraction", "is", "true"}};
             };
-            class maxAllowAid : Edit { property = "ALiVE_amb_civ_population_maxAllowAid"; displayName = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID"; tooltip = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT"; defaultValue = """3"""; };
+            class maxAllowAid : Edit { property = "ALiVE_amb_civ_population_maxAllowAid"; displayName = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID"; tooltip = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT"; defaultValue = """3"""; ALiVE_showWhen[] = {{"enableInteraction", "is", "true"}}; };
             // Consolidated Humanitarian Items picker (replaces the
             // previous four-attribute layout: per-category listbox +
             // per-category Manual edit + spacer). Stored in structured
@@ -225,6 +196,7 @@ class CfgVehicles {
                 typeName     = "STRING";
                 expression   = "_this setVariable ['customHumanitarianItems', _value];";
                 defaultValue = """""";
+                ALiVE_showWhenAny[] = {{"enableInteraction", "is", "true"}, {"aidCrateEnabled", "is", "true"}};
             };
             // Hidden legacy aliases - SQM-stored values from missions
             // saved before the consolidated picker existed are still
@@ -236,44 +208,83 @@ class CfgVehicles {
             class customHumRatItems       { property = "ALiVE_amb_civ_population_customHumRatItems";       control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customHumRatItems', _value];";       typeName = "STRING"; displayName = ""; };
             class customHumRatItemsManual { property = "ALiVE_amb_civ_population_customHumRatItemsManual"; control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customHumRatItemsManual', _value];"; typeName = "STRING"; displayName = ""; };
 
-            class HDR_AIDCRATE : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_AIDCRATE"; displayName = "AID CRATES"; };
-            // Aid crates: a box of food and water handed to a town, no C2ISTAR task needed.
-            class aidCrateEnabled : Combo { property = "ALiVE_amb_civ_population_aidCrateEnabled"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_ENABLED"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_ENABLED_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-            class aidCrateCooldown : Edit { property = "ALiVE_amb_civ_population_aidCrateCooldown"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN_LABEL"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_COOLDOWN_COMMENT"; defaultValue = """1800"""; };
-            class aidCrateMaxEffect : Edit { property = "ALiVE_amb_civ_population_aidCrateMaxEffect"; displayName = "$STR_ALIVE_CIV_POP_AIDCRATE_MAXEFFECT"; tooltip = "$STR_ALIVE_CIV_POP_AIDCRATE_MAXEFFECT_COMMENT"; defaultValue = """35"""; };
-
-            // ---- Advanced Civilians - General -----------------------------------
+            // ---- Advanced Civilians - General: the switch for every ADVANCED CIVILIANS section ----
             class HDR_ADVCIV : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV"; displayName = "ADVANCED CIVILIANS - GENERAL"; };
             class advciv_enabled : Combo { property = "ALiVE_amb_civ_population_advciv_enabled"; displayName = "$STR_ALIVE_ADVCIV_ENABLED"; tooltip = "$STR_ALIVE_ADVCIV_ENABLED_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-            class advciv_debug : Combo { property = "ALiVE_amb_civ_population_advciv_debug"; displayName = "$STR_ALIVE_ADVCIV_DEBUG"; tooltip = "$STR_ALIVE_ADVCIV_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; }; };
-            class advciv_tickRate : Edit { property = "ALiVE_amb_civ_population_advciv_tickRate"; displayName = "$STR_ALIVE_ADVCIV_TICK_RATE"; tooltip = "$STR_ALIVE_ADVCIV_TICK_RATE_COMMENT"; defaultValue = """3"""; };
-            class advciv_batchSize : Edit { property = "ALiVE_amb_civ_population_advciv_batchSize"; displayName = "$STR_ALIVE_ADVCIV_BATCH_SIZE"; tooltip = "$STR_ALIVE_ADVCIV_BATCH_SIZE_COMMENT"; defaultValue = """0"""; };
+            class advciv_debug : Combo { property = "ALiVE_amb_civ_population_advciv_debug"; displayName = "$STR_ALIVE_ADVCIV_DEBUG"; tooltip = "$STR_ALIVE_ADVCIV_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; }; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
+            class advciv_tickRate : Edit { property = "ALiVE_amb_civ_population_advciv_tickRate"; displayName = "$STR_ALIVE_ADVCIV_TICK_RATE"; tooltip = "$STR_ALIVE_ADVCIV_TICK_RATE_COMMENT"; defaultValue = """3"""; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
+            class advciv_batchSize : Edit { property = "ALiVE_amb_civ_population_advciv_batchSize"; displayName = "$STR_ALIVE_ADVCIV_BATCH_SIZE"; tooltip = "$STR_ALIVE_ADVCIV_BATCH_SIZE_COMMENT"; defaultValue = """0"""; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
 
-            // ---- Advanced Civilians - Trigger Ranges ----------------------------
-            class HDR_ADVCIV_TRIGGERS : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_TRIGGERS"; displayName = "ADVANCED CIVILIANS - TRIGGER RANGES"; };
+            // ---- Advanced Civilians - Weapon aim -----------------------------
+            class HDR_WEAPON_AIM : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_WEAPON_AIM"; displayName = "ADVANCED CIVILIANS - WEAPON AIM"; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
+            class civWeaponAimRange : Edit
+            {
+                property     = "ALiVE_amb_civ_population_civWeaponAimRange";
+                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE";
+                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE_COMMENT";
+                defaultValue = """15""";
+            };
+            class civWeaponAimHoldTime : Edit
+            {
+                property     = "ALiVE_amb_civ_population_civWeaponAimHoldTime";
+                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME";
+                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_COMMENT";
+                defaultValue = """2""";
+                ALiVE_showWhen[] = {{"civWeaponAimRange", ">", 0}};
+            };
+            class civWeaponAimHoldTimeDynamic : Combo
+            {
+                property     = "ALiVE_amb_civ_population_civWeaponAimHoldTimeDynamic";
+                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_DYNAMIC";
+                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_DYNAMIC_COMMENT";
+                defaultValue = """false""";
+                class Values
+                {
+                    class Yes { name = "Yes"; value = true; };
+                    class No  { name = "No";  value = false; default = 1; };
+                };
+                ALiVE_showWhen[] = {{"civWeaponAimRange", ">", 0}};
+            };
+            class civVehicleStopOnAim : Combo
+            {
+                property     = "ALiVE_amb_civ_population_civVehicleStopOnAim";
+                displayName  = "$STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM";
+                tooltip      = "$STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM_COMMENT";
+                defaultValue = """true""";
+                class Values
+                {
+                    class Yes { name = "Yes"; value = true; default = 1; };
+                    class No  { name = "No";  value = false; };
+                };
+            };
+
+            // ---- Advanced Civilians - Trigger ranges -------------------------
+            class HDR_ADVCIV_TRIGGERS : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_TRIGGERS"; displayName = "ADVANCED CIVILIANS - TRIGGER RANGES"; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
             class advciv_unsuppressedRange : Edit { property = "ALiVE_amb_civ_population_advciv_unsuppressedRange"; displayName = "$STR_ALIVE_ADVCIV_UNSUPPRESSED_RANGE"; tooltip = "$STR_ALIVE_ADVCIV_UNSUPPRESSED_RANGE_COMMENT"; defaultValue = """250"""; };
             class advciv_suppressedRange : Edit { property = "ALiVE_amb_civ_population_advciv_suppressedRange"; displayName = "$STR_ALIVE_ADVCIV_SUPPRESSED_RANGE"; tooltip = "$STR_ALIVE_ADVCIV_SUPPRESSED_RANGE_COMMENT"; defaultValue = """50"""; };
             class advciv_explosionRange : Edit { property = "ALiVE_amb_civ_population_advciv_explosionRange"; displayName = "$STR_ALIVE_ADVCIV_EXPLOSION_RANGE"; tooltip = "$STR_ALIVE_ADVCIV_EXPLOSION_RANGE_COMMENT"; defaultValue = """500"""; };
 
-            // ---- Advanced Civilians - Behaviour ---------------------------------
-            class HDR_ADVCIV_BEHAV : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_BEHAV"; displayName = "ADVANCED CIVILIANS - PANIC"; };
+            // ---- Advanced Civilians - Behaviour ------------------------------
+            class HDR_ADVCIV_BEHAV : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_BEHAV"; displayName = "ADVANCED CIVILIANS - PANIC"; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
             class advciv_reactionRadius : Edit { property = "ALiVE_amb_civ_population_advciv_reactionRadius"; displayName = "$STR_ALIVE_ADVCIV_REACTION_RADIUS"; tooltip = "$STR_ALIVE_ADVCIV_REACTION_RADIUS_COMMENT"; defaultValue = """150"""; };
             class advciv_curiosityRange : Edit { property = "ALiVE_amb_civ_population_advciv_curiosityRange"; displayName = "$STR_ALIVE_ADVCIV_CURIOSITY_RANGE"; tooltip = "$STR_ALIVE_ADVCIV_CURIOSITY_RANGE_COMMENT"; defaultValue = """200"""; };
             class advciv_panicChance : Edit { property = "ALiVE_amb_civ_population_advciv_panicChance"; displayName = "$STR_ALIVE_ADVCIV_PANIC_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_PANIC_CHANCE_COMMENT"; defaultValue = """0.7"""; };
             class advciv_alertChance : Edit { property = "ALiVE_amb_civ_population_advciv_alertChance"; displayName = "$STR_ALIVE_ADVCIV_ALERT_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_ALERT_CHANCE_COMMENT"; defaultValue = """0.5"""; };
             class advciv_cascadeRadius : Edit { property = "ALiVE_amb_civ_population_advciv_cascadeRadius"; displayName = "$STR_ALIVE_ADVCIV_CASCADE_RADIUS"; tooltip = "$STR_ALIVE_ADVCIV_CASCADE_RADIUS_COMMENT"; defaultValue = """20"""; };
-            class advciv_cascadeChance : Edit { property = "ALiVE_amb_civ_population_advciv_cascadeChance"; displayName = "$STR_ALIVE_ADVCIV_CASCADE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_CASCADE_CHANCE_COMMENT"; defaultValue = """0.25"""; };
+            class advciv_cascadeChance : Edit { property = "ALiVE_amb_civ_population_advciv_cascadeChance"; displayName = "$STR_ALIVE_ADVCIV_CASCADE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_CASCADE_CHANCE_COMMENT"; defaultValue = """0.25"""; ALiVE_showWhen[] = {{"advciv_cascadeRadius", ">", 0}}; };
             class advciv_shotMemoryTime : Edit { property = "ALiVE_amb_civ_population_advciv_shotMemoryTime"; displayName = "$STR_ALIVE_ADVCIV_SHOT_MEMORY_TIME"; tooltip = "$STR_ALIVE_ADVCIV_SHOT_MEMORY_TIME_COMMENT"; defaultValue = """30"""; };
 
-            class HDR_ADVCIV_HIT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_HIT"; displayName = "ADVANCED CIVILIANS - HIT AND VOICE"; };
+            // ---- Advanced Civilians - Hit and voice --------------------------
+            class HDR_ADVCIV_HIT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_HIT"; displayName = "ADVANCED CIVILIANS - HIT AND VOICE"; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
             class advciv_handsUpChance : Edit { property = "ALiVE_amb_civ_population_advciv_handsUpChance"; displayName = "$STR_ALIVE_ADVCIV_HANDSUP_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_HANDSUP_CHANCE_COMMENT"; defaultValue = """0.30"""; };
             class advciv_dropChance : Edit { property = "ALiVE_amb_civ_population_advciv_dropChance"; displayName = "$STR_ALIVE_ADVCIV_DROP_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_DROP_CHANCE_COMMENT"; defaultValue = """0.25"""; };
             class advciv_freezeChance : Edit { property = "ALiVE_amb_civ_population_advciv_freezeChance"; displayName = "$STR_ALIVE_ADVCIV_FREEZE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_FREEZE_CHANCE_COMMENT"; defaultValue = """0.15"""; };
             class advciv_screamChance : Edit { property = "ALiVE_amb_civ_population_advciv_screamChance"; displayName = "$STR_ALIVE_ADVCIV_SCREAM_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_SCREAM_CHANCE_COMMENT"; defaultValue = """0.15"""; };
             class advciv_voiceEnabled : Combo { property = "ALiVE_amb_civ_population_advciv_voiceEnabled"; displayName = "$STR_ALIVE_ADVCIV_VOICE_ENABLED"; tooltip = "$STR_ALIVE_ADVCIV_VOICE_ENABLED_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-            class advciv_voiceChance : Edit { property = "ALiVE_amb_civ_population_advciv_voiceChance"; displayName = "$STR_ALIVE_ADVCIV_VOICE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_VOICE_CHANCE_COMMENT"; defaultValue = """0.6"""; };
+            class advciv_voiceChance : Edit { property = "ALiVE_amb_civ_population_advciv_voiceChance"; displayName = "$STR_ALIVE_ADVCIV_VOICE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_VOICE_CHANCE_COMMENT"; defaultValue = """0.6"""; ALiVE_showWhen[] = {{"advciv_voiceEnabled", "is", "true"}}; };
 
-            class HDR_ADVCIV_SHELTER : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_SHELTER"; displayName = "ADVANCED CIVILIANS - SHELTER AND HOME"; };
+            // ---- Advanced Civilians - Shelter and home -----------------------
+            class HDR_ADVCIV_SHELTER : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_SHELTER"; displayName = "ADVANCED CIVILIANS - SHELTER AND HOME"; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
             class advciv_fleeRadius : Edit { property = "ALiVE_amb_civ_population_advciv_fleeRadius"; displayName = "$STR_ALIVE_ADVCIV_FLEE_RADIUS"; tooltip = "$STR_ALIVE_ADVCIV_FLEE_RADIUS_COMMENT"; defaultValue = """120"""; };
             class advciv_hideTimeMin : Edit { property = "ALiVE_amb_civ_population_advciv_hideTimeMin"; displayName = "$STR_ALIVE_ADVCIV_HIDE_TIME_MIN"; tooltip = "$STR_ALIVE_ADVCIV_HIDE_TIME_MIN_COMMENT"; defaultValue = """60"""; };
             class advciv_hideTimeMax : Edit { property = "ALiVE_amb_civ_population_advciv_hideTimeMax"; displayName = "$STR_ALIVE_ADVCIV_HIDE_TIME_MAX"; tooltip = "$STR_ALIVE_ADVCIV_HIDE_TIME_MAX_COMMENT"; defaultValue = """180"""; };
@@ -281,24 +292,23 @@ class CfgVehicles {
             class advciv_homeRadius : Edit { property = "ALiVE_amb_civ_population_advciv_homeRadius"; displayName = "$STR_ALIVE_ADVCIV_HOME_RADIUS"; tooltip = "$STR_ALIVE_ADVCIV_HOME_RADIUS_COMMENT"; defaultValue = """150"""; };
             class advciv_nightSleepAnim : Combo { property = "ALiVE_amb_civ_population_advciv_nightSleepAnim"; displayName = "$STR_ALIVE_ADVCIV_NIGHT_SLEEP_ANIM"; tooltip = "$STR_ALIVE_ADVCIV_NIGHT_SLEEP_ANIM_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
 
-            // ---- Advanced Civilians - Vehicle ------------------------------------
-            class HDR_ADVCIV_VEHICLE : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_VEHICLE"; displayName = "ADVANCED CIVILIANS - VEHICLE"; };
-            class ambVehCivDriverChance : Edit { property = "ALiVE_amb_civ_population_ambVehCivDriverChance"; displayName = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE"; tooltip = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE_COMMENT"; defaultValue = """0.15"""; };
+            // ---- Advanced Civilians - Vehicle --------------------------------
+            class HDR_ADVCIV_VEHICLE : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_VEHICLE"; displayName = "ADVANCED CIVILIANS - VEHICLE"; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
             class advciv_vehicleEscape : Combo { property = "ALiVE_amb_civ_population_advciv_vehicleEscape"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-            class advciv_vehicleEscapeChance : Edit { property = "ALiVE_amb_civ_population_advciv_vehicleEscapeChance"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE_COMMENT"; defaultValue = """0.3"""; };
+            class advciv_vehicleEscapeChance : Edit { property = "ALiVE_amb_civ_population_advciv_vehicleEscapeChance"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE_COMMENT"; defaultValue = """0.3"""; ALiVE_showWhen[] = {{"advciv_vehicleEscape", "is", "true"}}; };
             class advciv_noStealMilitary : Combo { property = "ALiVE_amb_civ_population_advciv_noStealMilitary"; displayName = "$STR_ALIVE_ADVCIV_NO_STEAL_MILITARY"; tooltip = "$STR_ALIVE_ADVCIV_NO_STEAL_MILITARY_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
             class advciv_noStealUsed : Combo { property = "ALiVE_amb_civ_population_advciv_noStealUsed"; displayName = "$STR_ALIVE_ADVCIV_NO_STEAL_USED"; tooltip = "$STR_ALIVE_ADVCIV_NO_STEAL_USED_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
             class advciv_noStealLoaded : Combo { property = "ALiVE_amb_civ_population_advciv_noStealLoaded"; displayName = "$STR_ALIVE_ADVCIV_NO_STEAL_LOADED"; tooltip = "$STR_ALIVE_ADVCIV_NO_STEAL_LOADED_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-            class advciv_loadedThreshold : Edit { property = "ALiVE_amb_civ_population_advciv_loadedThreshold"; displayName = "$STR_ALIVE_ADVCIV_LOADED_THRESHOLD"; tooltip = "$STR_ALIVE_ADVCIV_LOADED_THRESHOLD_COMMENT"; defaultValue = """4"""; };
+            class advciv_loadedThreshold : Edit { property = "ALiVE_amb_civ_population_advciv_loadedThreshold"; displayName = "$STR_ALIVE_ADVCIV_LOADED_THRESHOLD"; tooltip = "$STR_ALIVE_ADVCIV_LOADED_THRESHOLD_COMMENT"; defaultValue = """4"""; ALiVE_showWhen[] = {{"advciv_noStealLoaded", "is", "true"}}; };
 
-            // ---- Advanced Civilians - Compatibility ------------------------------
-            class HDR_ADVCIV_COMPAT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_COMPAT"; displayName = "ADVANCED CIVILIANS - COMPATIBILITY"; };
+            // ---- Advanced Civilians - Compatibility --------------------------
+            class HDR_ADVCIV_COMPAT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_COMPAT"; displayName = "ADVANCED CIVILIANS - COMPATIBILITY"; ALiVE_showWhen[] = {{"advciv_enabled", "is", "true"}}; };
             class advciv_missionCriticalCheck : Combo { property = "ALiVE_amb_civ_population_advciv_missionCriticalCheck"; displayName = "$STR_ALIVE_ADVCIV_MISSION_CRITICAL"; tooltip = "$STR_ALIVE_ADVCIV_MISSION_CRITICAL_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
 
+            // ---- On spawn hook -----------------------------------------------
             class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
             // On Each Spawn (Discord wish list, 10 Oct): code run on the server for every civilian spawned.
             class onEachSpawn : ALiVE_EditMultilineSQF { property = "ALiVE_amb_civ_population_onEachSpawn"; displayName = "$STR_ALIVE_CIV_POP_ON_EACH_SPAWN"; tooltip = "$STR_ALIVE_CIV_POP_ON_EACH_SPAWN_COMMENT"; defaultValue = """"""; };
-
             class ModuleDescription : ModuleDescription {};
         };
     };
