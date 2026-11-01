@@ -498,19 +498,19 @@
                 <English>Group leaders</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_LEADER_COMMENT">
-                <English>A player who leads a group with at least one other player in it. Someone alone in a group of their own doesn't count.</English>
+                <English>A player who leads a group with another player in it.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_DEPLOYER">
                 <English>The player who deployed it</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_ITEM">
-                <English>Players carrying a Player Logistics access item</English>
+                <English>Players carrying an access item</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_ITEM_COMMENT">
-                <English>A player carrying one of the items set on the Player Combat Logistics module (Trigger Item Categories and Custom Trigger Items), or an ALiVE tablet. Carried: standing at a command post does not count here.</English>
+                <English>Carrying a Player Combat Logistics access item or an ALiVE tablet.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_DEPLOYER_COMMENT">
-                <English>The player who deployed that FOB, known by their player ID, so it still counts after they reconnect. A FOB saved before FOBs recorded this, or one taken from another side, lets in group leaders instead.</English>
+                <English>The player who deployed it, even after reconnecting. Older or captured FOBs: group leaders.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_MANAGE_LIST">
                 <English>Players on the list</English>

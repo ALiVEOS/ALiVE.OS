@@ -841,13 +841,13 @@
     <English>The player who placed it</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_WHO_OWNER_COMMENT">
-    <English>The player who made it a hub as a Zeus. A hub synced in Eden has nobody, so for it this means group leaders: a player who leads a group with another player in it.</English>
+    <English>The Zeus who made it a hub. For a hub synced in Eden: group leaders.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_WHO_ITEM">
-    <English>Players carrying a Player Logistics access item</English>
+    <English>Players carrying an access item</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_WHO_ITEM_COMMENT">
-    <English>A player carrying one of the items set on the Player Combat Logistics module (Trigger Item Categories and Custom Trigger Items), or an ALiVE tablet. Carried: standing at a command post does not count here.</English>
+    <English>Carrying a Player Combat Logistics access item or an ALiVE tablet.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_WHO_LIST">
     <English>Players on the list</English>
