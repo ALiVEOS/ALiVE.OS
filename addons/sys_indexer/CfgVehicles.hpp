@@ -51,6 +51,7 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = 1; };
                                     class No { name = "No"; value = 0; };
                                 };
+                                ALiVE_showWhen[] = {{"customStatic", "not", {"false", "0"}}};
                         };
                         class mapPath : Edit
                         {
