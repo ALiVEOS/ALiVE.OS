@@ -1574,6 +1574,16 @@ switch(_operation) do {
             // With onEachSpawnOnce = true (the default) it runs on the group's first spawn only:
             // the profile's spawnCodeRun mark stops it again on a respawn or after a load.
             private _spawnCode = [_logic, "onEachSpawn", ""] call ALIVE_fnc_hashGet;
+            // A Faction Compiler group's kit goes on at the front of this code. That part runs on every
+            // spawn, whatever Once says: run once, a group that spawned again (an attack moving up to the
+            // players, say) came out in its class's own kit. Only what follows it keeps to Once.
+            private _kitCall = "call ALiVE_fnc_factionCompilerApplyLoadout;";
+            private _kitAt = _spawnCode find _kitCall;
+            if (_kitAt >= 0 && {(_spawnCode find "[_this select 0, ") == 0}) then {
+                private _kitCode = compile (_spawnCode select [0, _kitAt + count _kitCall]);
+                _spawnCode = trim (_spawnCode select [_kitAt + count _kitCall]);
+                { [_x] spawn _kitCode } forEach _units;
+            };
             if (_spawnCode != "") then {
                 private _spawnCodeCompiled = compile _spawnCode;
                 ([_logic,["onEachSpawnOnce","faction"]] call ALiVE_fnc_hashGetMany) params [
