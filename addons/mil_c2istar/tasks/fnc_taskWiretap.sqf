@@ -196,7 +196,23 @@ switch (_taskState) do {
             // Find a suitable position high up
             _taskLocation = [_taskLocation,"overwatch"] call ALIVE_fnc_taskGetSectorPosition;
 
-            _taskLocation = [_taskLocation,100,15,0.06] call ALiVE_fnc_findFlatArea;
+            // somewhere with no building within 30 m, as far as a Medium composition reaches: flat close to
+            // the spot first, then a little steeper there, then wider, and only then anywhere flat as before (which
+            // after its tries hands back the spot itself, buildings or not)
+            private _start = +_taskLocation;
+            private _clearSpot = [];
+            {
+                _x params ["_radius", "_gradient"];
+                if (_clearSpot isEqualTo []) then {
+                    private _p = [_start, _radius, 15, _gradient, 30, 600] call ALiVE_fnc_findFlatArea;
+                    if (_p isNotEqualTo _start) then { _clearSpot = _p };
+                };
+            } forEach [[100, 0.06], [100, 0.15], [150, 0.25], [300, 0.25], [500, 0.3]];
+            if (_clearSpot isEqualTo []) then {
+                ["C2ISTAR - Task Wiretap - no flat spot clear of buildings within 500 m of %1, so the camp may touch one", _start] call ALiVE_fnc_Dump;
+                _clearSpot = [_start, 100, 15, 0.06] call ALiVE_fnc_findFlatArea;
+            };
+            _taskLocation = _clearSpot;
 
             private ["_category","_compType"];
             _compType = "Military";

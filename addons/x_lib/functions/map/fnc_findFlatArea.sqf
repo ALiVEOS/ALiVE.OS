@@ -10,6 +10,9 @@ Parameters:
 1: radius to search
 2: flat size
 3: gradient (allowed height difference of flatarea in mtrs)
+4: building clearance in metres (optional, default 0 = no check): no building, terrain or placed,
+   within this distance of the spot
+5: tries (optional, default 3000) before it gives up and hands back the position it was given
 
 Returns:
 guess what
@@ -37,6 +40,8 @@ _position = _this select 0;
 if(count _this > 1) then {_radius = _this select 1;} else {_radius = 2;};
 if(count _this > 2) then {_gradientarea = _this select 2} else {_gradientarea = 5};   // in metres
 if(count _this > 3) then {_maxgradient = _this select 3} else {_maxgradient = 0.1};   // in [0,1]
+private _clearance = _this param [4, 0, [0]];
+private _tries = (_this param [5, 3000, [0]]) max 1;
 
 if (isnil "_position" || {!(_position isEqualType [])} || {count _position < 2}) exitWith {
     // Bail on bad input instead of falling through: the 3000-iteration loop below reads
@@ -50,7 +55,7 @@ if (isnil "_position" || {!(_position isEqualType [])} || {count _position < 2})
 _debug = false;
 _pos = [];
 
-for "_i" from 1 to 3000 do {
+for "_i" from 1 to _tries do {
         _pos = [(_position select 0) + _radius - random (2*_radius),(_position select 1) + _radius - random (2*_radius),0];
         _pos = _pos isflatempty [
                 10,            	//--- Minimal distance from another object
@@ -65,6 +70,13 @@ for "_i" from 1 to 3000 do {
                 _pos set [2,0];
                 // Avoid roads and helipads
                 if (count (_pos nearRoads 20) != 0 || {count (_pos nearObjects ["HeliH", 30]) != 0}) then {
+                        _pos = [];
+                };
+                // and buildings, when asked: isFlatEmpty only keeps 10 m from other objects
+                if (_clearance > 0 && {count _pos > 0} && {
+                        (nearestTerrainObjects [_pos, ["HOUSE", "BUILDING", "CHURCH", "CHAPEL", "FUELSTATION", "HOSPITAL", "LIGHTHOUSE", "TRANSMITTER", "WATERTOWER", "BUNKER", "FORTRESS", "RUIN"], _clearance, false, true]) isNotEqualTo []
+                        || {(_pos nearObjects ["House", _clearance]) isNotEqualTo []}
+                }) then {
                         _pos = [];
                 };
 
