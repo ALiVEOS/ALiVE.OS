@@ -20,6 +20,29 @@ private _units = [_groupData, "units", []] call ALIVE_fnc_hashGet;
 private _unitIndex = _unit getVariable ["profileIndex", -1];
 if (_unitIndex < 0 || {_unitIndex >= count _units}) exitWith {false};
 
+// profileIndex is the man's place in the profile now, and a death closes the gap, so after one the
+// survivors no longer line up with the compiled slots. Walk the profile's classes in order against the
+// compiled ones to find which slot this man came from; if they will not line up, keep his index.
+private _profile = [ALIVE_profileHandler, "getProfile", _unit getVariable ["profileID", ""]] call ALIVE_fnc_profileHandler;
+if (!isNil "_profile" && {_profile isEqualType []}) then {
+    private _now = [_profile, "unitClasses", []] call ALIVE_fnc_hashGet;
+    if (count _now < count _units && {_unitIndex < count _now}) then {
+        private _next = 0;
+        private _slot = -1;
+        for "_i" from 0 to _unitIndex do {
+            private _class = _now select _i;
+            private _at = -1;
+            for "_j" from _next to (count _units - 1) do {
+                if (_at < 0 && {([_units select _j, "class", ""] call ALIVE_fnc_hashGet) == _class}) then { _at = _j };
+            };
+            if (_at < 0) exitWith { _slot = -1 };
+            _next = _at + 1;
+            _slot = _at;
+        };
+        if (_slot >= 0) then { _unitIndex = _slot };
+    };
+};
+
 private _unitData = _units select _unitIndex;
 private _loadout = [_unitData, "loadout", []] call ALIVE_fnc_hashGet;
 if (_loadout isEqualTo []) exitWith {false};
