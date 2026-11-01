@@ -138,7 +138,7 @@ switch (_operation) do {
         if (isServer && {isNil "ALiVE_PR_listReported"}) then {
             ALiVE_PR_listReported = true;
             ["report", ["Player Combat Logistics (the resupply tablet)", _listName, _default, _result, format ["Restriction Type %1", _logic getVariable ["pr_restrictionType", "FACTION"]]]] call ALIVE_fnc_PRCatalogueRules;
-            ["ALiVE Lists:   what it offers is counted on each player's machine as they join"] call ALiVE_fnc_dumpR;
+            ["ALiVE Lists:   what it offers is counted on each player's machine as they join"] call ALiVE_fnc_dump;
         };
     };
 
@@ -146,12 +146,12 @@ switch (_operation) do {
     // which list, what it keeps, and the typed names that aren't in this game
     case "report": {
         _args params ["_module", "_listName", "_default", "_rules", ["_more", ""]];
-        ["ALiVE Lists: %1%2", _module, ["", ", " + _more] select (_more != "")] call ALiVE_fnc_dumpR;
-        ["ALiVE Lists:   list %1%2", [_listName, "none of its own"] select (_listName == ""), ["", " (no List set, or its name isn't a list)"] select _default] call ALiVE_fnc_dumpR;
-        ["ALiVE Lists:   %1", ["describe", [_rules, false]] call ALIVE_fnc_lists] call ALiVE_fnc_dumpR;
+        ["ALiVE Lists: %1%2", _module, ["", ", " + _more] select (_more != "")] call ALiVE_fnc_dump;
+        ["ALiVE Lists:   list %1%2", [_listName, "none of its own"] select (_listName == ""), ["", " (no List set, or its name isn't a list)"] select _default] call ALiVE_fnc_dump;
+        ["ALiVE Lists:   %1", ["describe", [_rules, false]] call ALIVE_fnc_lists] call ALiVE_fnc_dump;
         if (_listName != "") then {
             private _bad = (["get", _listName] call ALIVE_fnc_lists) getOrDefault ["listMissing", []];
-            if (_bad isNotEqualTo []) then { ["ALiVE Lists:   list %1 names %2 not in this game; its own line in the list report says which", _listName, count _bad] call ALiVE_fnc_dumpR };
+            if (_bad isNotEqualTo []) then { ["ALiVE Lists:   list %1 names %2 not in this game; its own line in the list report says which", _listName, count _bad] call ALiVE_fnc_dump };
         };
         private _missing = _rules getOrDefault ["missing", []];
         if (_missing isNotEqualTo []) then { ["problem", format ["%1: %2 not in this game", _module, (_missing apply { format ["%1 (%2)", _x select 0, _x select 1] }) joinString ", "]] call ALIVE_fnc_lists };

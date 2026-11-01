@@ -903,17 +903,17 @@ if ([_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB) then {
     { (_x select 2) == "VEHICLE" } count _rows, _measured, round ((diag_tickTime - _t0) * 1000),
     { (_x select 2) == "SOLDIER" } count _rows, { (_x select 2) == "GROUP" } count _rows] call ALiVE_fnc_dump;
 // the module's lists in one place: which Build List, and the names in them that aren't in this game
-["ALiVE Lists: Player FOBs, Build List %1%2", _listName, ["", format [", FOB types also use %1", _inUse - [_listName]]] select ((_inUse - [_listName]) isNotEqualTo [])] call ALiVE_fnc_dumpR;
+["ALiVE Lists: Player FOBs, Build List %1%2", _listName, ["", format [", FOB types also use %1", _inUse - [_listName]]] select ((_inUse - [_listName]) isNotEqualTo [])] call ALiVE_fnc_dump;
 if (_typedMissing isNotEqualTo []) then {
-    ["ALiVE Lists:   %1 not in this game: %2", count _typedMissing, _typedMissing joinString ", "] call ALiVE_fnc_dumpR;
+    ["ALiVE Lists:   %1 not in this game: %2", count _typedMissing, _typedMissing joinString ", "] call ALiVE_fnc_dump;
     ["problem", format ["Player FOBs: %1 not in this game", _typedMissing joinString ", "]] call ALIVE_fnc_lists;
 };
 {
     private _bad = (["get", _x] call ALIVE_fnc_lists) getOrDefault ["listMissing", []];
-    if (_bad isNotEqualTo []) then { ["ALiVE Lists:   list %1 names %2 not in this game; its own line in the list report says which", _x, count _bad] call ALiVE_fnc_dumpR };
+    if (_bad isNotEqualTo []) then { ["ALiVE Lists:   list %1 names %2 not in this game; its own line in the list report says which", _x, count _bad] call ALiVE_fnc_dump };
 } forEach _inUse;
 if (_rows isEqualTo []) then {
-    ["ALiVE Lists:   the build list is empty: check the Build List and the three boxes"] call ALiVE_fnc_dumpR;
+    ["ALiVE Lists:   the build list is empty: check the Build List and the three boxes"] call ALiVE_fnc_dump;
     ["problem", "Player FOBs: the build list is empty"] call ALIVE_fnc_lists;
 };
 ["factions"] call ALiVE_fnc_fobBuildScan;
