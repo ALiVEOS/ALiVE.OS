@@ -27,7 +27,7 @@ class CfgVehicles {
                 picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
                 class Attributes : AttributesBase
                 {
-                    // ---- General --------------------------------------------------------
+                    // ---- General -----------------------------------------------------
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_GENERAL"; displayName = "GENERAL"; };
                     class debug : Combo { property = "ALiVE_sys_profile_debug"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_DEBUG"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                     class debugVirtualisedProfiles : Combo { property = "ALiVE_sys_profile_debugVirtualisedProfiles"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
@@ -47,7 +47,7 @@ class CfgVehicles {
                     class activeLimiter : Edit { property = "ALiVE_sys_profile_activeLimiter"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT"; defaultValue = """144"""; };
                     class zeusSpawn : Combo { property = "ALiVE_sys_profile_zeusSpawn"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
 
-                    // ---- Profile Spawn Modes -------------------------------------------
+                    // ---- Profile Spawn Modes -----------------------------------------
                     class HDR_SPAWN : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_SPAWN"; displayName = "PROFILE SPAWN MODES"; };
                     class proximitySpawning
                     {
@@ -85,8 +85,8 @@ class CfgVehicles {
                             expression = "_this setVariable ['airCombatSpawning', _value, true];";
                             defaultValue = "false";
                     };
-                    class airCombatPlaneVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatPlaneVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatPlaneVehicleRadius', _value, true];"; defaultValue = """7000"""; };
-                    class airCombatHelicopterVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatHelicopterVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatHelicopterVehicleRadius', _value, true];"; defaultValue = """5000"""; };
+                    class airCombatPlaneVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatPlaneVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatPlaneVehicleRadius', _value, true];"; defaultValue = """7000"""; ALiVE_showWhen[] = {{"airCombatSpawning", "is", "true"}}; };
+                    class airCombatHelicopterVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatHelicopterVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatHelicopterVehicleRadius', _value, true];"; defaultValue = """5000"""; ALiVE_showWhen[] = {{"airCombatSpawning", "is", "true"}}; };
                     // AI Commanders' (MACC) aircraft spawn the enemy's anti-air near them (sys_profile/fnc_profileActivatorAirDefence.sqf)
                     class airDefenceSpawning
                     {
@@ -98,7 +98,7 @@ class CfgVehicles {
                             expression = "_this setVariable ['airDefenceSpawning', _value, true];";
                             defaultValue = "true";
                     };
-                    class airDefenceRadius : Edit { property = "ALiVE_sys_profile_airDefenceRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS_COMMENT"; expression = "_this setVariable ['airDefenceRadius', _value, true];"; defaultValue = """4000"""; };
+                    class airDefenceRadius : Edit { property = "ALiVE_sys_profile_airDefenceRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_DEFENCE_RADIUS_COMMENT"; expression = "_this setVariable ['airDefenceRadius', _value, true];"; defaultValue = """4000"""; ALiVE_showWhen[] = {{"airDefenceSpawning", "is", "true"}}; };
                     class SPACER_POST_AIR_COMBAT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_SPACER_POST_AIR_COMBAT"; displayName = " "; };
                     class smoothSpawn : Edit { property = "ALiVE_sys_profile_smoothSpawn"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT"; defaultValue = """0.3"""; };
                     class vehicleSpawnSettleSeconds : Edit
@@ -110,14 +110,14 @@ class CfgVehicles {
                             typeName = "NUMBER";
                     };
 
-                    // ---- Despawn Linger -------------------------------------------------
+                    // ---- Despawn Linger ----------------------------------------------
                     class HDR_LINGER : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_LINGER"; displayName = "DESPAWN LINGER"; };
                     class playerOccupantGrace : Edit { property = "ALiVE_sys_profile_playerOccupantGrace"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_PLAYER_OCCUPANT_GRACE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PLAYER_OCCUPANT_GRACE_COMMENT"; defaultValue = """300"""; };
                     class postDeathGrace : Edit { property = "ALiVE_sys_profile_postDeathGrace"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_POST_DEATH_GRACE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_POST_DEATH_GRACE_COMMENT"; defaultValue = """120"""; };
                     class postDeathRadius : Edit { property = "ALiVE_sys_profile_postDeathRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_POST_DEATH_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_POST_DEATH_RADIUS_COMMENT"; defaultValue = """500"""; };
                     class midCombatExtension : Edit { property = "ALiVE_sys_profile_midCombatExtension"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_MID_COMBAT_EXTENSION"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_MID_COMBAT_EXTENSION_COMMENT"; defaultValue = """60"""; };
 
-                    // ---- Virtual Combat -------------------------------------------------
+                    // ---- Virtual Combat ----------------------------------------------
                     class HDR_VCOMBAT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_VCOMBAT"; displayName = "VIRTUAL COMBAT"; };
                     class speedModifier : Combo
                     {
@@ -157,7 +157,7 @@ class CfgVehicles {
                     };
                     class virtualcombat_rangemodifier : Edit { property = "ALiVE_sys_profile_virtualcombat_rangemodifier"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER_COMMENT"; defaultValue = """255"""; };
 
-                    // ---- Pathfinding ----------------------------------------------------
+                    // ---- Pathfinding -------------------------------------------------
                     class HDR_PATH : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_PATH"; displayName = "PATHFINDING"; };
                     class pathfinding : Combo { property = "ALiVE_sys_profile_pathfinding"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT"; defaultValue = """true"""; class Values { class No{name="No";value=false;}; class Yes{name="Yes";value=true;default=1;}; }; };
                     class pathfindingSize : Combo
@@ -184,6 +184,7 @@ class CfgVehicles {
                                 class AutoMed { name = "Auto - Balanced"; value = "med"; };
                                 class AutoLow { name = "Auto - Performance"; value = "low"; };
                             };
+                            ALiVE_showWhen[] = {{"pathfinding", "is", "true"}};
                     };
                     // Route memory (#1086): ground routes avoid where their side has been hurt and vary
                     // from one request to the next. Off routes exactly as before.
@@ -200,6 +201,7 @@ class CfgVehicles {
                                 class Low  { name = "Low"; value = "low"; };
                                 class High { name = "High"; value = "high"; };
                             };
+                            ALiVE_showWhen[] = {{"pathfinding", "is", "true"}};
                     };
                     // Debug-draw toggles (independent of the module Debug flag).
                     // Both can also be flipped live by a logged-in admin via the
@@ -211,6 +213,7 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_COMMENT";
                             defaultValue = """false""";
                             class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; };
+                            ALiVE_showWhen[] = {{"pathfinding", "is", "true"}};
                     };
                     class pathfindingDrawPaths : Combo
                     {
@@ -219,6 +222,7 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT";
                             defaultValue = """false""";
                             class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; };
+                            ALiVE_showWhen[] = {{"pathfinding", "is", "true"}};
                     };
                     class seaTransport : Combo
                     {
@@ -235,21 +239,20 @@ class CfgVehicles {
                             };
                     };
 
-                    // ---- Outbreak (Game Mode on the Required module) -----------------------
-                    class HDR_OUTBREAK : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_OUTBREAK"; displayName = "OUTBREAK GAME MODE"; };
+                    // ---- Outbreak: shows when the Required module's Game Mode is Outbreak ----
+                    class HDR_OUTBREAK : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_OUTBREAK"; displayName = "OUTBREAK GAME MODE"; ALiVE_showWhen[] = {{"@ALiVE_require/ALiVE_GAMEMODE", "is", "outbreak"}}; };
                     class zombieFactions : Edit { property = "ALiVE_sys_profile_zombieFactions"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_FACTIONS_COMMENT"; defaultValue = """"""; };
                     class zombieMeleeDamage : Edit { property = "ALiVE_sys_profile_zombieMeleeDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_MELEE_COMMENT"; defaultValue = """0.015"""; };
                     class zombieHuntRange : Edit { property = "ALiVE_sys_profile_zombieHuntRange"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_HUNT_RANGE_COMMENT"; defaultValue = """100"""; };
                     class zombieBiteDamage : Edit { property = "ALiVE_sys_profile_zombieBiteDamage"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_BITE_COMMENT"; defaultValue = """0.3"""; };
                     class zombieInfection : Combo { property = "ALiVE_sys_profile_zombieInfection"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
+                    class zombieInfectionCap : Edit { property = "ALiVE_sys_profile_zombieInfectionCap"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP_COMMENT"; defaultValue = """40"""; ALiVE_showWhen[] = {{"zombieInfection", "is", "true"}}; };
                     class outbreakCaches : Combo { property = "ALiVE_sys_profile_outbreakCaches"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHES"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHES_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value="false";default=1;}; class Yes{name="Yes";value="true";}; }; };
-                    class outbreakCacheCount : Edit { property = "ALiVE_sys_profile_outbreakCacheCount"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_COUNT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_COUNT_COMMENT"; defaultValue = """12"""; };
-                    class outbreakCacheWhere : Combo { property = "ALiVE_sys_profile_outbreakCacheWhere"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_COMMENT"; defaultValue = """fallen"""; class Values { class Fallen{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_FALLEN";value="fallen";default=1;}; class Any{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_ANY";value="any";}; }; };
-                    class outbreakCacheRefill : Edit { property = "ALiVE_sys_profile_outbreakCacheRefill"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_REFILL"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_REFILL_COMMENT"; defaultValue = """60"""; };
-                    class outbreakCacheMarkers : Combo { property = "ALiVE_sys_profile_outbreakCacheMarkers"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_COMMENT"; defaultValue = """found"""; class Values { class Found{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_FOUND";value="found";default=1;}; class Hidden{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_HIDDEN";value="hidden";}; class All{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_ALL";value="all";}; }; };
-                    class outbreakCacheLoot : Edit { property = "ALiVE_sys_profile_outbreakCacheLoot"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_LOOT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_LOOT_COMMENT"; defaultValue = """"""; };
-                    class zombieInfectionCap : Edit { property = "ALiVE_sys_profile_zombieInfectionCap"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZOMBIE_INFECTION_CAP_COMMENT"; defaultValue = """40"""; };
-
+                    class outbreakCacheCount : Edit { property = "ALiVE_sys_profile_outbreakCacheCount"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_COUNT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_COUNT_COMMENT"; defaultValue = """12"""; ALiVE_showWhen[] = {{"outbreakCaches", "is", "true"}}; };
+                    class outbreakCacheWhere : Combo { property = "ALiVE_sys_profile_outbreakCacheWhere"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_COMMENT"; defaultValue = """fallen"""; class Values { class Fallen{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_FALLEN";value="fallen";default=1;}; class Any{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_WHERE_ANY";value="any";}; }; ALiVE_showWhen[] = {{"outbreakCaches", "is", "true"}}; };
+                    class outbreakCacheRefill : Edit { property = "ALiVE_sys_profile_outbreakCacheRefill"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_REFILL"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_REFILL_COMMENT"; defaultValue = """60"""; ALiVE_showWhen[] = {{"outbreakCaches", "is", "true"}}; };
+                    class outbreakCacheMarkers : Combo { property = "ALiVE_sys_profile_outbreakCacheMarkers"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_COMMENT"; defaultValue = """found"""; class Values { class Found{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_FOUND";value="found";default=1;}; class Hidden{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_HIDDEN";value="hidden";}; class All{name="$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_MARKERS_ALL";value="all";}; }; ALiVE_showWhen[] = {{"outbreakCaches", "is", "true"}}; };
+                    class outbreakCacheLoot : Edit { property = "ALiVE_sys_profile_outbreakCacheLoot"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_LOOT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_OUTBREAK_CACHE_LOOT_COMMENT"; defaultValue = """"""; ALiVE_showWhen[] = {{"outbreakCaches", "is", "true"}}; };
                     class ModuleDescription : ModuleDescription {};
                 };
         };

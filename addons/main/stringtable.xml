@@ -395,7 +395,7 @@
     <Spanish>Modo de juego</Spanish>
 </Key>
 <Key ID="STR_ALiVE_GAMEMODE_COMMENT">
-    <English>Standard is ALiVE as it has always been. Outbreak is a zombie outbreak, and needs WebKnight's Zombies and Creatures and Improved Melee System (or their DEV versions) loaded: without them the mission does not start, and says which mod is missing.</English>
+    <English>Standard is ALiVE as it has always been. Outbreak is a zombie outbreak, and needs WebKnight's Zombies and Creatures and Improved Melee System (or their DEV versions) loaded: without them the mission does not start, and says which mod is missing. The zombie settings are under OUTBREAK GAME MODE on the Virtual AI System module, which Eden shows once Outbreak is picked here.</English>
     <Chinesesimp>标准：一直以来的ALiVE。爆发：僵尸爆发模式，需要加载WebKnight's Zombies and Creatures和Improved Melee System（或其DEV版本）；缺少它们时任务不会开始，并会说明缺少哪个模组。</Chinesesimp>
     <Spanish>Estándar es ALiVE como siempre ha sido. Brote es un brote zombi y necesita cargados WebKnight's Zombies and Creatures e Improved Melee System (o sus versiones DEV): sin ellos la misión no empieza e indica qué mod falta.</Spanish>
 </Key>
