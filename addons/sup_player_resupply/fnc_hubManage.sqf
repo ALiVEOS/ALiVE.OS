@@ -24,7 +24,7 @@ Parameters:
     ["refresh"] - fills it again; once a second while it is open
     ["do", "RENAME" | "DISMANTLE"] - a button
     ["collect"] - the Collect button
-    ["permOpen"], ["permFill"], ["permToggle", [column, rule]], ["permApply"] - the Permissions window
+    ["permOpen"] - the Permissions window (the one every site shares, ALiVE_fnc_siteWhoDialog)
     ["notify", [key, format args]] - the server's answer: on the window and as the usual message
     ["closed"] - the window closed
 
@@ -204,58 +204,18 @@ switch (_op) do {
     case "permOpen": {
         private _hub = uiNamespace getVariable ["ALiVE_hub_manageHub", objNull];
         if (isNull _hub || {!([_hub] call _mayChange)}) exitWith {};
-        closeDialog 0;
-        [_hub] spawn {
-            params ["_hub"];
-            uiSleep 0.1;
-            if (!createDialog "ALiVE_HubPermWindow") exitWith {};
-            uiNamespace setVariable ["ALiVE_hub_manageHub", _hub];
-            ALiVE_hub_permDraft = nil;
-            ["permFill"] call ALIVE_fnc_hubManage;
-        };
-    };
-
-    case "permFill": {
-        private _d = findDisplay 9292;
-        private _hub = uiNamespace getVariable ["ALiVE_hub_manageHub", objNull];
-        if (isNull _d || {isNull _hub}) exitWith {};
         private _logic = (_hub getVariable ["ALiVE_hub", []]) param [3, objNull];
-        if (isNil "ALiVE_hub_permDraft") then {
-            (["rules", [_logic]] call ALIVE_fnc_hub) params ["_cRules", "_cNames"];
-            (["rules", [_logic, "DISMANTLE"]] call ALIVE_fnc_hub) params ["_dRules", "_dNames"];
-            ALiVE_hub_permDraft = [(toUpper _cRules) splitString "[]""', ", (toUpper _dRules) splitString "[]""', "];
-            (_d displayCtrl 92935) ctrlSetText _cNames;
-            (_d displayCtrl 92936) ctrlSetText _dNames;
-            private _n = { ((_x getVariable ["ALiVE_hub", []]) param [3, objNull]) isEqualTo _logic } count (missionNamespace getVariable ["ALiVE_hub_list", []]);
-            (_d displayCtrl 92921) ctrlSetText format [localize "STR_ALIVE_HUB_UI_PERM_TITLE", ["label", [_hub]] call ALIVE_fnc_hub];
-            (_d displayCtrl 92922) ctrlSetStructuredText parseText format [localize "STR_ALIVE_HUB_UI_PERM_NOTE", _n];
-        };
-        {
-            _x params ["_col", "_base"];
-            private _ticked = ALiVE_hub_permDraft select _col;
-            {
-                private _b = _d displayCtrl (_base + _forEachIndex);
-                _b ctrlSetText format ["%1  %2", ["[  ]", "[+]"] select (_x in _ticked), localize format ["STR_ALIVE_HUB_UI_WHO_%1", _x]];
-                _b ctrlSetTooltip localize format ["STR_ALIVE_HUB_WHO_%1_COMMENT", _x];
-            } forEach ["SIDE", "LEADER", "ITEM", "LIST"];
-        } forEach [[0, 92925], [1, 92929]];
-    };
-
-    case "permToggle": {
-        if (isNil "ALiVE_hub_permDraft") exitWith {};
-        _args params [["_col", 0, [0]], ["_token", "", [""]]];
-        private _ticked = ALiVE_hub_permDraft select _col;
-        if (_token in _ticked) then { _ticked deleteAt (_ticked find _token) } else { _ticked pushBack _token };
-        ["permFill"] call ALIVE_fnc_hubManage;
-    };
-
-    // both columns in one request: the server takes one request every 2 s from a player
-    case "permApply": {
-        private _d = findDisplay 9292;
-        private _hub = uiNamespace getVariable ["ALiVE_hub_manageHub", objNull];
-        if (isNull _d || {isNull _hub} || {isNil "ALiVE_hub_permDraft"}) exitWith {};
-        ["permissions", [(ALiVE_hub_permDraft select 0) joinString ",", ctrlText (_d displayCtrl 92935), _hub call BIS_fnc_netId, "BOTH",
-            (ALiVE_hub_permDraft select 1) joinString ",", ctrlText (_d displayCtrl 92936)]] remoteExecCall ["ALIVE_fnc_hubRequest", 2];
+        (["rules", [_logic]] call ALIVE_fnc_hub) params ["_cRules", "_cNames"];
+        (["rules", [_logic, "DISMANTLE"]] call ALIVE_fnc_hub) params ["_dRules", "_dNames"];
+        private _tokens = ["SIDE", "LEADER", "ITEM", "LIST"] apply { [_x, localize format ["STR_ALIVE_HUB_UI_WHO_%1", _x], localize format ["STR_ALIVE_HUB_WHO_%1_COMMENT", _x]] };
+        private _n = { ((_x getVariable ["ALiVE_hub", []]) param [3, objNull]) isEqualTo _logic } count (missionNamespace getVariable ["ALiVE_hub_list", []]);
+        // both columns in one request: the server takes one request every 2 s from a player
+        private _apply = compile format ["params ['_c', '_d']; ['permissions', [_c select 0, _c select 1, %1, 'BOTH', _d select 0, _d select 1]] remoteExecCall ['ALIVE_fnc_hubRequest', 2]",
+            str (_hub call BIS_fnc_netId)];
+        ["open", [format [localize "STR_ALIVE_HUB_UI_PERM_TITLE", ["label", [_hub]] call ALIVE_fnc_hub], format [localize "STR_ALIVE_HUB_UI_PERM_NOTE", _n], [
+            [localize "STR_ALIVE_HUB_COLLECT_WHO", localize "STR_ALIVE_HUB_COLLECT_LIST", localize "STR_ALIVE_HUB_COLLECT_LIST_COMMENT", _tokens, _cRules, _cNames],
+            [localize "STR_ALIVE_HUB_DISMANTLE_WHO", localize "STR_ALIVE_HUB_DISMANTLE_LIST", localize "STR_ALIVE_HUB_DISMANTLE_LIST_COMMENT", _tokens, _dRules, _dNames]
+        ], _apply]] call ALiVE_fnc_siteWhoDialog;
     };
 
     case "notify": {

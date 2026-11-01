@@ -14,6 +14,7 @@
 #include "CfgALiVEC2ISTARAccessItems.hpp"
 #include "CfgALiVELists.hpp"
 #include "\x\alive\addons\main\data\ui\main.hpp"
+#include "\x\alive\addons\main\data\ui\siteWho.hpp"
 
 // Marker labels on the game's maps. A map control draws marker text in its "font" face,
 // bold TahomaB here, where the COP and ALiVE's tablets use RobotoCondensed. Every game map

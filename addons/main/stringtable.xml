@@ -2,6 +2,12 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+        <Key ID="STR_ALIVE_SITE_WHO_APPLY">
+            <English>Apply</English>
+        </Key>
+        <Key ID="STR_ALIVE_SITE_WHO_CLOSE">
+            <English>Close</English>
+        </Key>
 <Key ID="STR_ALIVE_EDEN_PICK_FIND">
     <English>Find:</English>
 </Key>

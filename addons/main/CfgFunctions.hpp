@@ -51,6 +51,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_siteWho.sqf";
                 ALIVE_RECOMPILE;
             };
+            class siteWhoDialog {
+                description = "The Permissions window every player site shares (FOB, Logistics hub)";
+                file = "\x\alive\addons\main\fnc_siteWhoDialog.sqf";
+                ALIVE_RECOMPILE;
+            };
             class playerHasAccessItems {
                 description = "Shared access-item gate for the player tablet/menu modules";
                 file = "\x\alive\addons\main\fnc_playerHasAccessItems.sqf";

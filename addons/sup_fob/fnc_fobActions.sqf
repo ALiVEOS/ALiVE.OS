@@ -351,51 +351,24 @@ switch (_op) do {
     // for every FOB, sent to the server with Apply. Opened from the FOB window or the ALiVE admin
     // menu, wherever the admin is. The server checks the sender is an admin.
     case "permOpen": {
-        if !([missionNamespace getVariable ["ALiVE_sup_fob", objNull], "isAdmin", [player]] call ALiVE_fnc_FOB) exitWith {};
-        closeDialog 0;
-        [] spawn {
-            uiSleep 0.1;
-            if (!createDialog "ALiVE_FobPermWindow") exitWith {};
-            ALiVE_FOB_permDraft = nil;
-            ["permFill"] call ALiVE_fnc_fobActions;
-        };
+        private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+        if !([_logic, "isAdmin", [player]] call ALiVE_fnc_FOB) exitWith {};
+        ([_logic, "manageRules"] call ALiVE_fnc_FOB) params ["_rules", "_names"];
+        private _tokens = [
+            ["SIDE", "STR_ALIVE_FOB_MANAGE_SIDE"],
+            ["LEADER", "STR_ALIVE_FOB_MANAGE_LEADER"],
+            ["DEPLOYER", "STR_ALIVE_FOB_MANAGE_DEPLOYER"],
+            ["LIST", "STR_ALIVE_FOB_MANAGE_LIST"]
+        ] apply { [_x select 0, localize (_x select 1), localize ((_x select 1) + "_COMMENT")] };
+        ["open", [localize "STR_ALIVE_FOB_MANAGE_WHO", localize "STR_ALIVE_FOB_UI_PERMISSIONS_NOTE",
+            [["", localize "STR_ALIVE_FOB_MANAGE_LIST_EDIT", localize "STR_ALIVE_FOB_MANAGE_LIST_EDIT_COMMENT", _tokens, _rules, _names]],
+            { (_this select 0) params ["_rules", "_names"]; ["permissions", [_rules, _names]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] }
+        ]] call ALiVE_fnc_siteWhoDialog;
     };
 
+    // the open Permissions window redrawn (the FOB list came in again): its draft stays as it is
     case "permFill": {
-        private _d = findDisplay 9285;
-        if (isNull _d) exitWith {};
-        if (isNil "ALiVE_FOB_permDraft") then {
-            ([missionNamespace getVariable ["ALiVE_sup_fob", objNull], "manageRules"] call ALiVE_fnc_FOB) params ["_rules", "_names"];
-            ALiVE_FOB_permDraft = [(toUpper _rules) splitString "[]""', ", _names];
-            (_d displayCtrl 92857) ctrlSetText _names;
-        };
-        private _ticked = ALiVE_FOB_permDraft select 0;
-        {
-            _x params ["_idc", "_token", "_key"];
-            private _b = _d displayCtrl _idc;
-            _b ctrlSetText format ["%1  %2", ["[  ]", "[+]"] select (_token in _ticked), localize _key];
-            _b ctrlSetTooltip localize (_key + "_COMMENT");
-        } forEach [
-            [92853, "SIDE", "STR_ALIVE_FOB_MANAGE_SIDE"],
-            [92854, "LEADER", "STR_ALIVE_FOB_MANAGE_LEADER"],
-            [92855, "DEPLOYER", "STR_ALIVE_FOB_MANAGE_DEPLOYER"],
-            [92856, "LIST", "STR_ALIVE_FOB_MANAGE_LIST"]
-        ];
-    };
-
-    case "permToggle": {
-        if (isNil "ALiVE_FOB_permDraft") exitWith {};
-        private _token = _this param [1, ""];
-        private _ticked = ALiVE_FOB_permDraft select 0;
-        if (_token in _ticked) then { _ticked deleteAt (_ticked find _token) } else { _ticked pushBack _token };
-        ["permFill"] call ALiVE_fnc_fobActions;
-    };
-
-    // the server's answer comes back as the usual message
-    case "permApply": {
-        private _d = findDisplay 9285;
-        if (isNull _d || {isNil "ALiVE_FOB_permDraft"}) exitWith {};
-        ["permissions", [(ALiVE_FOB_permDraft select 0) joinString ",", ctrlText (_d displayCtrl 92857)]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+        ["fill"] call ALiVE_fnc_siteWhoDialog;
     };
 
     // Change Type follows the type picked: off for the FOB's own type, with the new type's cost on it
