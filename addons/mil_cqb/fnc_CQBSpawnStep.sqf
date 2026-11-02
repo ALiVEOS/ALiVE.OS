@@ -20,6 +20,9 @@ Per-call batches:
 Up to 256 profiles or groups within a 0.75 ms local scan budget, 64 config
 classes, 16 class/position operations, 4 rooftop ray checks, and at most one
 created unit or static weapon. Scans always process at least one entry.
+
+Author:
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_logic", "_house", "_context"];
@@ -217,8 +220,13 @@ switch (_phase) do {
         private _faction = _context get "faction";
         private _units = _house getVariable ["unittypes", []];
         private _houseFaction = _house getVariable ["faction", ""];
+        private _isCompiled = !isNil "ALiVE_fnc_factionCompilerIsCompiledFaction" && {[_faction] call ALiVE_fnc_factionCompilerIsCompiledFaction};
 
-        if (!(_units isEqualTo []) && {_houseFaction == _faction}) then {
+        // A house's saved list is used again only when every man on it belongs to the faction (NeisAEL,
+        // 2 Nov: a CQB set to al-Nusra built one group of vanilla CSAT). A Faction Compiler faction may
+        // borrow other factions' men, so its list is taken as it is
+        if (!(_units isEqualTo []) && {_houseFaction == _faction} && {_isCompiled || {(_units findIf { (toLower getText (configFile >> "CfgVehicles" >> _x >> "faction")) != toLower _faction }) == -1}}) then {
+            _context set ["classSource", "the house's saved list"];
             _context set ["unitClasses", +_units];
             _context set ["phase", "positions"];
         } else {
@@ -238,6 +246,7 @@ switch (_phase) do {
                     } else {
                         _house setVariable ["unittypes", _selected, true];
                         _house setVariable ["faction", _faction, true];
+                        _context set ["classSource", "the module's cached list"];
                         _context set ["unitClasses", _selected];
                         _context set ["phase", "positions"];
                     };
@@ -259,6 +268,7 @@ switch (_phase) do {
                 _context set ["classFaction", _sourceFaction];
                 _context set ["classCacheKey", _cacheKey];
                 _context set ["compiledSource", _compiledSource];
+                _context set ["classSource", ["a scan of the config", "the Faction Compiler"] select _compiledSource];
                 _context set ["baseEligibleCount", 0];
                 if (_compiledSource) then {
                     _context set ["classCursor", 0];
@@ -268,6 +278,7 @@ switch (_phase) do {
                     private _indexReady = !isNil "ALiVE_findVehicleTypeCachedFactions" && {ALiVE_findVehicleTypeCachedFactions getOrDefault [_sourceFaction, false]};
                     private _indexed = if (_indexReady && {!isNil "ALiVE_findVehicleTypeFactionIndex"}) then {ALiVE_findVehicleTypeFactionIndex getOrDefault [_sourceFaction, []]} else {[]};
                     if !(_indexed isEqualTo []) then {
+                        _context set ["classSource", "the faction's class index"];
                         _context set ["classCandidates", +_indexed];
                         _context set ["classCursor", 0];
                         _context set ["eligibleClasses", []];
@@ -349,6 +360,7 @@ switch (_phase) do {
         if (_end >= count _candidates) then {
             if ((_context getOrDefault ["compiledSource", false]) && {(_context getOrDefault ["baseEligibleCount", 0]) == 0}) then {
                 _context set ["compiledSource", false];
+                _context set ["classSource", "a scan of the config"];
                 _context set ["classCandidates", []];
                 _context set ["classCursor", 1];
                 _context set ["eligibleClasses", []];
@@ -669,6 +681,12 @@ switch (_phase) do {
             if (isNull _group || {!((_house getVariable ["group", grpNull]) isEqualTo _group)}) then {
                 _result = "failed";
             } else {
+                // Said, so the cause shows in the log: a group on another side than its faction's
+                private _fClass = configFile >> "CfgFactionClasses" >> (_context getOrDefault ["faction", ""]);
+                if (isClass _fClass && {getNumber (_fClass >> "side") in [0, 1, 2, 3]} && {side _group != ([east, west, resistance, civilian] select getNumber (_fClass >> "side"))}) then {
+                    ["CQB [%1] - Warning a group at %2 was built for %3 but is on side %4: %5, picked from %6", _logic getVariable ["id", ""], mapGridPosition _house,
+                        _context get "faction", side _group, (units _group) apply { typeOf _x }, _context getOrDefault ["classSource", "an unknown source"]] call ALiVE_fnc_dumpR;
+                };
                 PROFILE_SCOPE(CQBFINALIZEHOOKS,"CQB finalize: hooks")
                 private _hookSource = _logic getVariable ["onEachSpawn", ""];
                 if (_hookSource != "") then {
