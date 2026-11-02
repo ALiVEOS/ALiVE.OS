@@ -25,6 +25,9 @@ orders - [group] how many waypoints the group has and where the last one is
 ammoClass - [ammo, magazine] how much a round frightens: 0.15 rifle, 0.3 machine gun, 0.6 explosive
 fire - [unit, ammo, magazine, source] a round near or into a soldier raises his threat
 threat - [unit] his threat now, 0 to 1, fading 0.05 a second
+handBack - [unit] put back what this code changed on one soldier and set him idle
+cover - [unit, from] a spot behind something solid on the far side from the fire, or []
+man - [unit] one soldier's step: idle, to cover, in cover, rising to fire, recovering
 setting - [name, default] a module setting, read from the AI Skill module
 
 Returns:
@@ -86,6 +89,7 @@ switch (_operation) do {
         private _now = ["threat", [_unit]] call ALiVE_fnc_AIBehaviour;
         private _w = ["ammoClass", [_ammo, _mag]] call ALiVE_fnc_AIBehaviour;
         _unit setVariable ["ALiVE_AIB_threat", [1 min (_now + _w), time]];
+        if (!isNull _source) then { _unit setVariable ["ALiVE_AIB_from", [getPosATL _source, _source]] };
     };
 
     case "attach": {
@@ -137,22 +141,128 @@ switch (_operation) do {
 
     case "restore": {
         _args params [["_group", grpNull, [grpNull]], ["_reason", ""]];
-        {
-            private _snap = _x getVariable ["ALiVE_AIB_snapshot", []];
-            // only what this code changed goes back; another system's hold (a garrison) is left alone
-            private _changed = _x getVariable ["ALiVE_AIB_changed", []];
-            if (!isNull _x && {_snap isNotEqualTo []}) then {
-                _snap params ["_path", "_pos"];
-                if ("PATH" in _changed && {_path} && {!(_x checkAIFeature "PATH")}) then { _x enableAI "PATH" };
-                if ("POS" in _changed && {unitPos _x != _pos}) then { _x setUnitPos _pos };
-                _x setVariable ["ALiVE_AIB_changed", []];
-            };
-        } forEach (_group getVariable ["ALiVE_AIB_men", []]);
+        { ["handBack", [_x]] call ALiVE_fnc_AIBehaviour } forEach (_group getVariable ["ALiVE_AIB_men", []]);
         _group setVariable ["ALiVE_AIB_orders", (["orders", [_group]] call ALiVE_fnc_AIBehaviour)];
         _group setVariable ["ALiVE_AIB_since", time];
         if ((["setting", ["debug", false]] call ALiVE_fnc_AIBehaviour) in [true, 1, "1", "true"]) then {
             ["ALiVE Military AI - soldier behaviour: %1 handed back (%2)", _group, _reason] call ALiVE_fnc_dump;
         };
+    };
+
+    case "handBack": {
+        _args params ["_unit"];
+        if (isNull _unit) exitWith {};
+        private _snap = _unit getVariable ["ALiVE_AIB_snapshot", []];
+        // only what this code changed goes back; another system's hold (a garrison) is left alone
+        private _changed = _unit getVariable ["ALiVE_AIB_changed", []];
+        if (_snap isNotEqualTo []) then {
+            _snap params ["_path", "_pos"];
+            if ("PATH" in _changed && {_path} && {!(_unit checkAIFeature "PATH")}) then { _unit enableAI "PATH" };
+            if ("POS" in _changed && {unitPos _unit != _pos}) then { _unit setUnitPos _pos };
+            if ("MOVE" in _changed && {alive _unit}) then { _unit doFollow leader _unit };
+        };
+        _unit setVariable ["ALiVE_AIB_changed", []];
+        _unit setVariable ["ALiVE_AIB_state", ["IDLE", time]];
+        _unit setVariable ["ALiVE_AIB_engaged", nil];
+    };
+
+    case "cover": {
+        _args params ["_unit", "_from"];
+        _result = [];
+        private _pos = getPosATL _unit;
+        private _radius = 25;
+        private _eye = (ATLToASL _from) vectorAdd [0, 0, 1.5];
+        private _best = 1e9;
+        {
+            private _o = _x;
+            private _bb = boundingBoxReal _o;
+            private _d = (_bb select 1) vectorDiff (_bb select 0);
+            if ((_d select 2) > 0.35 && {((_d select 0) max (_d select 1)) >= 0.6}) then {
+                // just behind it, on the line from the fire through it
+                private _op = getPosATL _o;
+                private _dir = _from getDir _op;
+                private _back = (((_d select 0) min (_d select 1)) / 2 + 0.8) min 6;
+                private _spot = _op getPos [_back, _dir];
+                // a mate already has that spot: try along the cover, a metre and a half either side
+                private _taken = ((units group _unit) - [_unit]) apply { _x getVariable ["ALiVE_AIB_cover", [-1e5, -1e5, 0]] };
+                {
+                    private _try = _spot getPos [_x, _dir + 90];
+                    if ((_taken findIf { (_x distance2D _try) < 1.4 }) < 0) exitWith { _spot = _try };
+                } forEach [0, 1.5, -1.5, 3, -3];
+                _spot set [2, 0];
+                private _dist = _unit distance2D _spot;
+                if (_dist < _best && {!surfaceIsWater _spot}) then {
+                    // something solid between the fire and a kneeling man there
+                    private _hits = lineIntersectsSurfaces [_eye, (AGLToASL _spot) vectorAdd [0, 0, 1.0], _unit, objNull, true, 1, "FIRE", "GEOM"];
+                    if (_hits isNotEqualTo []) then { _best = _dist; _result = _spot };
+                };
+            };
+        } forEach ((nearestTerrainObjects [_pos, ["WALL", "ROCK", "ROCKS", "BUILDING", "HOUSE", "FENCE", "BUNKER", "FORTRESS", "TREE"], _radius, true, true]) select [0, 16]);
+    };
+
+    case "man": {
+        _args params ["_unit"];
+        (_unit getVariable ["ALiVE_AIB_state", ["IDLE", time]]) params ["_state", "_at"];
+        (_unit getVariable ["ALiVE_AIB_threat", [0, time]]) params ["_score", "_lastFire"];
+        private _threat = 0 max (_score - 0.05 * (time - _lastFire));
+        (_unit getVariable ["ALiVE_AIB_from", [[0, 0, 0], objNull]]) params ["_from", "_src"];
+        private _set = { _unit setVariable ["ALiVE_AIB_state", [_this, time]] };
+        if (isNil { _unit getVariable "ALiVE_AIB_changed" }) then { _unit setVariable ["ALiVE_AIB_changed", []] };
+        private _changed = _unit getVariable "ALiVE_AIB_changed";
+        private _engaged = _unit getVariable ["ALiVE_AIB_engaged", -1];
+        // the longest a soldier keeps reacting on his own, and 90 s in any one step
+        if (_state != "IDLE" && {(time - _engaged > ALiVE_AIB_maxEngaged) || {time - _at > 90}}) exitWith {
+            ["handBack", [_unit]] call ALiVE_fnc_AIBehaviour;
+        };
+        switch (_state) do {
+            case "IDLE": {
+                // two cover searches a tick at most, the rest wait half a second
+                if (_threat > 0.6 && {_from isNotEqualTo [0, 0, 0]} && {ALiVE_AIB_searches < 2}) then {
+                    ALiVE_AIB_searches = ALiVE_AIB_searches + 1;
+                    private _spot = ["cover", [_unit, _from]] call ALiVE_fnc_AIBehaviour;
+                    _unit setVariable ["ALiVE_AIB_engaged", time];
+                    if (_spot isNotEqualTo []) then {
+                        _unit doMove _spot;
+                        _changed pushBackUnique "MOVE";
+                        _unit setVariable ["ALiVE_AIB_cover", _spot];
+                        "SEEK_COVER" call _set;
+                    } else {
+                        // nothing to get behind: get down where he is
+                        _unit setUnitPos "DOWN";
+                        _changed pushBackUnique "POS";
+                        "IN_COVER" call _set;
+                    };
+                };
+            };
+            case "SEEK_COVER": {
+                if ((_unit distance2D (_unit getVariable ["ALiVE_AIB_cover", getPosATL _unit])) < 3 || {unitReady _unit}) then {
+                    _unit setUnitPos "MIDDLE";
+                    _changed pushBackUnique "POS";
+                    "IN_COVER" call _set;
+                };
+            };
+            case "IN_COVER": {
+                // 20 s with no fire: he's done
+                if (_threat < 0.05 && {time - _lastFire > 20}) exitWith { "RECOVER" call _set };
+                // the fire eases and he knows where it came from: up to shoot back, after a few seconds down
+                if (_threat < 0.3 && {time - _at > 3} && {!isNull _src} && {(_unit knowsAbout _src) > 1}) then {
+                    _unit setUnitPos "UP";
+                    _changed pushBackUnique "POS";
+                    "RISE_FIRE" call _set;
+                };
+            };
+            case "RISE_FIRE": {
+                if (_threat > 0.6 || {time - _at > 4}) then {
+                    _unit setUnitPos "MIDDLE";
+                    "IN_COVER" call _set;
+                };
+            };
+            case "RECOVER": {
+                ["handBack", [_unit]] call ALiVE_fnc_AIBehaviour;
+            };
+        };
+        // _changed is the soldier's own list, changed in place: never written back, or a hand-back's
+        // clean list would be undone
     };
 
     case "release": {
@@ -167,6 +277,7 @@ switch (_operation) do {
                     if (_e3 >= 0) then { _x removeEventHandler ["FiredNear", _e3] };
                     _x setVariable ["ALiVE_AIB_snapshot", nil]; _x setVariable ["ALiVE_AIB_changed", nil];
                     _x setVariable ["ALiVE_AIB_ehs", nil]; _x setVariable ["ALiVE_AIB_threat", nil];
+                    _x setVariable ["ALiVE_AIB_state", nil]; _x setVariable ["ALiVE_AIB_from", nil]; _x setVariable ["ALiVE_AIB_cover", nil];
                 };
             } forEach (_group getVariable ["ALiVE_AIB_men", []]);
             _group setVariable ["ALiVE_AIB_attached", nil];
@@ -177,6 +288,9 @@ switch (_operation) do {
 
     case "tick": {
         if (isNil "ALiVE_AIB_groups") exitWith {};
+        private _t0 = diag_tickTime;
+        ALiVE_AIB_maxEngaged = ["setting", ["behaviourMaxEngaged", 180]] call ALiVE_fnc_AIBehaviour;
+        ALiVE_AIB_searches = 0;
         {
             private _group = _x;
             // a soldier another system has taken hold of since (a garrison turns pathing off) is dropped
@@ -198,10 +312,18 @@ switch (_operation) do {
                     private _orders = (["orders", [_group]] call ALiVE_fnc_AIBehaviour);
                     if (_orders isNotEqualTo (_group getVariable ["ALiVE_AIB_orders", []])) then {
                         ["restore", [_group, "new orders"]] call ALiVE_fnc_AIBehaviour;
+                    } else {
+                        { ["man", [_x]] call ALiVE_fnc_AIBehaviour } forEach _men;
                     };
                 };
             };
         } forEach +ALiVE_AIB_groups;
+        // [ticks, total ms, worst ms] for the debug line and tests
+        private _ms = (diag_tickTime - _t0) * 1000;
+        if (isNil "ALiVE_AIB_perf") then { ALiVE_AIB_perf = [0, 0, 0] };
+        ALiVE_AIB_perf set [0, (ALiVE_AIB_perf select 0) + 1];
+        ALiVE_AIB_perf set [1, (ALiVE_AIB_perf select 1) + _ms];
+        ALiVE_AIB_perf set [2, (ALiVE_AIB_perf select 2) max _ms];
     };
 };
 
