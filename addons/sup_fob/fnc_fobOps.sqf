@@ -645,8 +645,11 @@ switch (_op) do {
         // on the first surface at or below the height the player placed at: a roof, a floor or the
         // ground, found here, never taken from the player. No higher than the player's head.
         private _up = surfaceNormal _pos;
+        // In single player the placement preview is on this machine too, and Place deletes it in the same frame
+        // as this build: deleteVehicle only takes it away at the frame's end, so the ray met the preview and the
+        // object took the slope of one of its faces, tipped and half in the ground (Blazingfire, 2 Nov)
         if (_fromASL > -1e5) then {
-            (["surface", [_pos, (_fromASL + 0.25) min (((eyePos _caller) select 2) + 1.5)]] call ALiVE_fnc_fobPlacement) params ["_atl", "_n"];
+            (["surface", [_pos, (_fromASL + 0.25) min (((eyePos _caller) select 2) + 1.5), missionNamespace getVariable ["ALiVE_FOB_ghostGone", objNull]]] call ALiVE_fnc_fobPlacement) params ["_atl", "_n"];
             _pos = _atl; _up = _n;
         };
         private _o = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];

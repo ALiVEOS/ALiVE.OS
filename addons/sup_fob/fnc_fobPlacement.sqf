@@ -251,6 +251,9 @@ switch (_operation) do {
         (call ALiVE_FOB_placeSpot) params ["_pos", "_dir", "_ok", "", "_why"];
         private _deploying = (_row select 2) == "DEPLOY";
         if !(_ok) exitWith { [localize "STR_ALIVE_FOB", format ([localize (_why select 0)] + (_why select 1)), true] call ALIVE_fnc_sendHint };
+        // kept for the server's build in single player, where it runs this frame while the deleted preview is
+        // still standing (ALiVE_fnc_fobOps "build"); only ever set on the player's own machine
+        ALiVE_FOB_ghostGone = _g;
         call _fnc_stop;
         if (_deploying) exitWith { ["deploy", [_kit, _pos, _dir, _row select 0, missionNamespace getVariable ["ALiVE_FOB_deployType", ""]]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
         // the height as ASL: the server looks for a surface there itself rather than taking it on trust
