@@ -818,8 +818,32 @@ switch (_operation) do {
                 // cycle instead of re-walking CfgGroups.
                 private _tieredGroupRoster = [] call ALiVE_fnc_hashCreate;
                 private _excludeKinds = [_handler, "asymExcludeKinds", ["Tank", "Plane", "Helicopter", "Ship"]] call ALiVE_fnc_HashGet;
+                // Recruitment follows the placement modules synced to this commander: when every one of them
+                // places no AA, no group carrying an AA vehicle is recruited, and when every one sets Armour or
+                // Mechanised to 0, no wheeled APC is. Military Placement's blank means "calculated", so only a
+                // typed 0 counts there; Custom Military Objective's 0 already means none.
+                private _placements = (synchronizedObjects _logic) select { typeOf _x in ["ALiVE_mil_placement", "ALiVE_mil_placement_custom"] };
+                private _dropKinds = [];
+                if (_placements isNotEqualTo []) then {
+                    private _zero = {
+                        params ["_module", "_key", "_blankIsZero"];
+                        private _v = _module getVariable [_key, ""];
+                        if (_v isEqualType 0) exitWith { _v == 0 };
+                        _v = _v splitString " " joinString "";
+                        if (_v == "") exitWith { _blankIsZero };
+                        parseNumber _v == 0
+                    };
+                    if ((_placements findIf { !([_x, "aaCount", true] call _zero) }) < 0) then { _dropKinds pushBack "aa" };
+                    if ((_placements findIf {
+                        private _cmp = typeOf _x == "ALiVE_mil_placement_custom";
+                        !([_x, "customArmourCount", _cmp] call _zero) && {!([_x, "customMechanisedCount", _cmp] call _zero)}
+                    }) < 0) then { _dropKinds pushBack "apc" };
+                    if (_dropKinds isNotEqualTo []) then {
+                        ["ALiVE OPCOM asymmetric recruits follow the %1 synced placement modules: no %2", count _placements, _dropKinds apply { toUpper _x }] call ALiVE_fnc_dump;
+                    };
+                };
                 {
-                    private _factionRoster = [_x, _excludeKinds] call ALiVE_fnc_INS_buildTieredGroupRoster;
+                    private _factionRoster = [_x, _excludeKinds, _dropKinds] call ALiVE_fnc_INS_buildTieredGroupRoster;
                     [_tieredGroupRoster, _x, _factionRoster] call ALiVE_fnc_hashSet;
                     ["ALiVE OPCOM asymmetric recruits for %1: %2 infantry, %3 light, %4 medium groups", _x, count (_factionRoster select 0), count (_factionRoster select 1), count (_factionRoster select 2)] call ALiVE_fnc_dump;
                 } foreach _factions;

@@ -256,14 +256,59 @@ ALiVE_fnc_INS_classifyGroupTier = {
 //
 // Called once per faction at asymmetric-OPCOM init; result cached on
 // the handler hashmap under "tieredGroupRoster".
+// A vehicle built to shoot down aircraft: one of its turret weapons fires an air-only lock (airLock 2), as an
+// Igla or Stinger does. Guns that can also hit aircraft (airLock 1, a ZU-23) don't count.
+ALiVE_fnc_INS_vehicleIsAA = {
+                params [["_class", "", [""]]];
+                if (_class == "" || {_class isKindOf "Man"}) exitWith {false};
+                private _weapons = getArray (configFile >> "CfgVehicles" >> _class >> "weapons");
+                private _walk = {
+                    params ["_cfg"];
+                    {
+                        _weapons append getArray (_x >> "weapons");
+                        [_x] call _walk;
+                    } forEach ("isClass _x" configClasses (_cfg >> "Turrets"));
+                };
+                [configFile >> "CfgVehicles" >> _class] call _walk;
+                (_weapons findIf {
+                    private _w = _x;
+                    (getArray (configFile >> "CfgWeapons" >> _w >> "magazines")) findIf {
+                        getNumber (configFile >> "CfgAmmo" >> getText (configFile >> "CfgMagazines" >> _x >> "ammo") >> "airLock") >= 2
+                    } > -1
+                }) > -1
+};
+
+// A wheeled APC (BTR, Marid, Gorgon and modded kin), or any wheeled vehicle with that much armour.
+ALiVE_fnc_INS_vehicleIsAPC = {
+                params [["_class", "", [""]]];
+                if (_class == "" || {_class isKindOf "Man"}) exitWith {false};
+                (_class isKindOf "Wheeled_APC_F") || {
+                    _class isKindOf "Car" && {getNumber (configFile >> "CfgVehicles" >> _class >> "armor") >= 300}
+                    && {!(_class isKindOf "Truck_F")} && {!(_class isKindOf "Truck")}
+                }
+};
+
 ALiVE_fnc_INS_buildTieredGroupRoster = {
                 params [
                     ["_faction", "", [""]],
-                    ["_excludedKinds", ["Tank", "Plane", "Helicopter", "Ship"], [[]]]
+                    ["_excludedKinds", ["Tank", "Plane", "Helicopter", "Ship"], [[]]],
+                    ["_dropKinds", [], [[]]]
                 ];
 
                 private _roster = [[], [], []];
                 if (_faction == "") exitWith {_roster};
+
+                // What the commander's placement modules left out ("aa", "apc"): a group carrying one is
+                // left out of recruitment too.
+                private _dropped = [];
+                private _isDropped = {
+                    params ["_classes", "_name"];
+                    private _why = "";
+                    if ("aa" in _dropKinds && {(_classes findIf { [_x] call ALiVE_fnc_INS_vehicleIsAA }) > -1}) then { _why = "AA" };
+                    if (_why == "" && {"apc" in _dropKinds} && {(_classes findIf { [_x] call ALiVE_fnc_INS_vehicleIsAPC }) > -1}) then { _why = "APC" };
+                    if (_why != "") then { _dropped pushBack format ["%1 (%2)", _name, _why] };
+                    _why != ""
+                };
 
                 // As the infantry-only picker does: blacklisted groups (the mission's own list
                 // included) and groups with no units are left out, and the infantry tier comes
@@ -300,7 +345,7 @@ ALiVE_fnc_INS_buildTieredGroupRoster = {
                             private _classes = (([_groupData, "units", []] call ALIVE_fnc_hashGet) apply { [_x, "class", ""] call ALIVE_fnc_hashGet })
                                 + (([_groupData, "vehicles", []] call ALIVE_fnc_hashGet) apply { [_x, "class", ""] call ALIVE_fnc_hashGet });
                             _classes = _classes - [""];
-                            if (_classes isNotEqualTo []) then {
+                            if (_classes isNotEqualTo [] && {!([_classes, _x] call _isDropped)}) then {
                                 private _tier = [_classes, _excludedKinds] call ALiVE_fnc_INS_classifyClassesTier;
                                 switch (_tier) do {
                                     case "infantry": { if (([_groupData, "category", ""] call ALIVE_fnc_hashGet) == _infantryCategory) then { (_roster select 0) pushBack _x }; };
@@ -310,6 +355,9 @@ ALiVE_fnc_INS_buildTieredGroupRoster = {
                             };
                         };
                     } forEach (_compiledGroups select 1);
+                    if (_dropped isNotEqualTo []) then {
+                        ["ALiVE OPCOM asymmetric recruits for %1: left out as the placement has none: %2", _faction, _dropped] call ALiVE_fnc_dump;
+                    };
                     _roster
                 };
 
@@ -322,7 +370,8 @@ ALiVE_fnc_INS_buildTieredGroupRoster = {
                         private _isInfantryCategory = (configName _categoryConfig) == _infantryCategory;
                         for "_j" from 0 to (count _categoryConfig - 1) do {
                             private _groupConfig = _categoryConfig select _j;
-                            if (isClass _groupConfig && {!((configName _groupConfig) in _blacklist)} && {count ("isClass _x" configClasses _groupConfig) > 0}) then {
+                            if (isClass _groupConfig && {!((configName _groupConfig) in _blacklist)} && {count ("isClass _x" configClasses _groupConfig) > 0}
+                                && {!([("isClass _x" configClasses _groupConfig) apply { getText (_x >> "vehicle") }, configName _groupConfig] call _isDropped)}) then {
                                 private _tier = [_groupConfig, _excludedKinds] call ALiVE_fnc_INS_classifyGroupTier;
                                 switch (_tier) do {
                                     case "infantry": { if (_isInfantryCategory) then { (_roster select 0) pushBack (configName _groupConfig); }; };
@@ -334,6 +383,9 @@ ALiVE_fnc_INS_buildTieredGroupRoster = {
                     };
                 };
 
+                if (_dropped isNotEqualTo []) then {
+                    ["ALiVE OPCOM asymmetric recruits for %1: left out as the placement has none: %2", _faction, _dropped] call ALiVE_fnc_dump;
+                };
                 _roster
 };
 
