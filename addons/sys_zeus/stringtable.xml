@@ -236,6 +236,9 @@
 <Key ID="STR_ALIVE_ZEUS_FOR_SIDE">
     <English>For side</English>
 </Key>
+<Key ID="STR_ALIVE_ZEUS_FOR_SIDE_OR_COMMANDER">
+    <English>For side or AI Commander</English>
+</Key>
 <Key ID="STR_ALIVE_ZEUS_SIDE_NEAREST">
     <English>The nearest player's side</English>
 </Key>

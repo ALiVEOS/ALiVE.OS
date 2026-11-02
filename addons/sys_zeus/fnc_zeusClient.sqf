@@ -422,10 +422,31 @@ switch (_action) do {
     // the groups and how they come
     case "resupply": {
         if (_zen) then {
+            // Each AI Commander with logistics is offered too (NeisAEL, 2 Nov): with two on one side, the
+            // side alone always took the first. The logistics module tells every machine which it serves,
+            // as [side, factions], since a commander's own faction settings are known only to the server
+            private _values = ["", "WEST", "EAST", "GUER"];
+            private _labels = [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"];
+            {
+                _x params [["_cmdSide", "", ["", sideUnknown]], ["_factions", [], [[]]]];
+                if (_factions isNotEqualTo []) then {
+                    private _names = _factions apply {
+                        private _n = getText (configFile >> "CfgFactionClasses" >> _x >> "displayName");
+                        [_n, _x] select (_n == "")
+                    };
+                    private _sideKey = switch ([str _cmdSide, _cmdSide] select (_cmdSide isEqualType "")) do {
+                        case "WEST": {"STR_ALIVE_ZEUS_SIDE_WEST"};
+                        case "EAST": {"STR_ALIVE_ZEUS_SIDE_EAST"};
+                        default {"STR_ALIVE_ZEUS_SIDE_GUER"};
+                    };
+                    _values pushBack ("CMD:" + (_factions joinString ","));
+                    _labels pushBack format ["%1 (%2)", _names joinString ", ", localize _sideKey];
+                };
+            } forEach (MOD(Require) getVariable ["ALIVE_MIL_LOG_COMMANDERS", []]);
             [
                 localize "STR_ALIVE_ZEUS_RESUPPLY",
                 [
-                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
+                    ["COMBO", localize (["STR_ALIVE_ZEUS_FOR_SIDE", "STR_ALIVE_ZEUS_FOR_SIDE_OR_COMMANDER"] select (count _values > 4)), [_values, _labels, 0]],
                     ["SLIDER", localize "STR_ALIVE_ZEUS_RESUPPLY_INF", [0, 5, 2, 0]],
                     ["SLIDER", localize "STR_ALIVE_ZEUS_RESUPPLY_MOT", [0, 5, 0, 0]],
                     ["SLIDER", localize "STR_ALIVE_ZEUS_RESUPPLY_MECH", [0, 5, 0, 0]],

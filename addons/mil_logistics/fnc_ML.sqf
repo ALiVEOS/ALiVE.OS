@@ -5077,6 +5077,11 @@ switch(_operation) do {
             [_logic, "factions", _modulesFactions] call MAINCLASS;
             [_logic, "objectives", _modulesObjectives] call MAINCLASS;
 
+            // Every machine is told which commanders this serves, as [side, factions], so Zeus's
+            // Reinforcements dialog can offer each by name: a commander's own faction settings are
+            // known only to the server. One statement, so two of these starting together keep both
+            MOD(Require) setVariable ["ALIVE_MIL_LOG_COMMANDERS", (MOD(Require) getVariable ["ALIVE_MIL_LOG_COMMANDERS", []]) + (_modulesFactions - (MOD(Require) getVariable ["ALIVE_MIL_LOG_COMMANDERS", []])), true];
+
             // register the module
             [ALIVE_MLGlobalRegistry,"register",_logic] call ALIVE_fnc_MLGlobalRegistry;
 

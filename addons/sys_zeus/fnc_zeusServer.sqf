@@ -578,15 +578,28 @@ switch (_action) do {
         if (_logistics isEqualTo [] || {isNil "ALIVE_eventLog"} || {isNil "ALIVE_globalForcePool"}) exitWith {
             ["STR_ALIVE_ZEUS_NEED_LOGISTICS"] call _reply;
         };
-        if (_side == "") then { _side = [_position] call _playerSideNear };
-        if (_side == "") exitWith {
+        // One AI Commander picked in the dialog ("CMD:" and its factions): only its own logistics
+        // and factions, so a second commander on the same side is never drawn from instead
+        private _cmdFactions = [];
+        if ((_side select [0, 4]) == "CMD:") then {
+            _cmdFactions = ((_side select [4]) splitString ",") apply { toLower _x };
+            _side = "";
+        };
+        if (_side == "" && {_cmdFactions isEqualTo []}) then { _side = [_position] call _playerSideNear };
+        if (_side == "" && {_cmdFactions isEqualTo []}) exitWith {
             ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply;
         };
-        private _ofSide = _logistics select { (([_x, "side"] call ALIVE_fnc_ML) call _sideText) == _side };
-        if (_ofSide isEqualTo []) exitWith {
-            ["STR_ALIVE_ZEUS_RESUPPLY_NOSIDE", [_side call _sideName]] call _reply;
+        private _ofSide = if (_cmdFactions isEqualTo []) then {
+            _logistics select { (([_x, "side"] call ALIVE_fnc_ML) call _sideText) == _side }
+        } else {
+            _logistics select {
+                (([_x, "factions"] call ALIVE_fnc_ML) findIf { (((_x param [1, []]) apply { toLower _x }) arrayIntersect _cmdFactions) isNotEqualTo [] }) > -1
+            }
         };
-        // The first faction these serve with force pool left
+        if (_ofSide isEqualTo []) exitWith {
+            ["STR_ALIVE_ZEUS_RESUPPLY_NOSIDE", [[_side call _sideName, _cmdFactions joinString ", "] select (_cmdFactions isNotEqualTo [])]] call _reply;
+        };
+        // The first faction these serve with force pool left (of the chosen commander's, when one was)
         private _faction = "";
         private _mSide = "";
         {
@@ -594,7 +607,7 @@ switch (_action) do {
             {
                 private _pair = _x;
                 {
-                    if (_faction == "" && {([ALIVE_globalForcePool, _x, 0] call ALIVE_fnc_hashGet) > 0}) then {
+                    if (_faction == "" && {_cmdFactions isEqualTo [] || {(toLower _x) in _cmdFactions}} && {([ALIVE_globalForcePool, _x, 0] call ALIVE_fnc_hashGet) > 0}) then {
                         _faction = _x;
                         _mSide = [_m, "side"] call ALIVE_fnc_ML;
                     };
