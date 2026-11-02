@@ -604,24 +604,31 @@ switch(_operation) do {
             };
 
             private _factions = [_logic getVariable ["factions", ""]] call _fnc_parseFactions;
+            private _factionSource = "Force Factions";
             // A Custom Faction Compiler synced to this module places its compiled faction, ahead of
             // Force Factions, as the faction getter does for the other placement modules. This
             // module never called that getter, so a synced compiler did nothing here.
             private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
             if (_compiledFaction != "") then {
                 _factions = [_compiledFaction];
+                _factionSource = "a synced Custom Faction Compiler";
                 ["%1 - a synced Custom Faction Compiler sets this module's force to %2", "CMP", _compiledFaction] call ALiVE_fnc_dump;
             };
             // Read the raw hidden legacy value so only a non-default legacy
             // faction blocks OPCOM inheritance.
             private _legacyFactions = [_logic getVariable ["faction", ""]] call _fnc_parseFactions;
-            // Old SQMs often carry the former BLU_F default in the now-hidden
-            // field; don't let that stale default block commander inheritance.
-            private _legacyIsDefault = (count _legacyFactions == 1) && {(_legacyFactions select 0) == DEFAULT_FACTION};
+            // Old SQMs often carry a former default in the now-hidden field: the
+            // code's BLU_F, or OPF_F, which Eden itself put there until 1 Jun 2026.
+            // Neither may block commander inheritance, or an old objective synced
+            // to an insurgent commander places vanilla CSAT, at the same spot every
+            // time, from a setting nobody can see in Eden any more (NeisAEL, 2 Nov).
+            private _legacyIsDefault = (count _legacyFactions == 1) && {(_legacyFactions select 0) in [DEFAULT_FACTION, "OPF_F"]};
             if ((count _factions == 0) && {count _legacyFactions > 0} && {!_legacyIsDefault}) then {
                 _factions = +_legacyFactions;
+                _factionSource = "its older hidden faction setting";
             };
             if (count _factions == 0) then {
+                _factionSource = "the synced AI Commander";
                 {
                     if ((typeOf _x) isEqualTo "ALiVE_mil_OPCOM") then {
                         {
@@ -654,8 +661,10 @@ switch(_operation) do {
             };
             if ((count _factions == 0) && {count _legacyFactions > 0}) then {
                 _factions = +_legacyFactions;
+                _factionSource = "its older hidden faction setting, as no synced AI Commander gave one";
             };
-            if (count _factions == 0) then { _factions = [DEFAULT_FACTION] };
+            if (count _factions == 0) then { _factions = [DEFAULT_FACTION]; _factionSource = "the default, as nothing else gave one" };
+            ["%1 - objective at %2 places %3, from %4", "CMP", mapGridPosition _logic, _factions, _factionSource] call ALiVE_fnc_dump;
 
             private _faction = _factions select 0;
             private _size = [_logic, "size"] call MAINCLASS;
