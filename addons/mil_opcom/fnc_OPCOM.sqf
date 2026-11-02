@@ -818,13 +818,15 @@ switch (_operation) do {
                 // cycle instead of re-walking CfgGroups.
                 private _tieredGroupRoster = [] call ALiVE_fnc_hashCreate;
                 private _excludeKinds = [_handler, "asymExcludeKinds", ["Tank", "Plane", "Helicopter", "Ship"]] call ALiVE_fnc_HashGet;
-                // Recruitment follows the placement modules synced to this commander: when every one of them
-                // places no AA, no group carrying an AA vehicle is recruited, and when every one sets Armour or
-                // Mechanised to 0, no wheeled APC is. Military Placement's blank means "calculated", so only a
+                // With Recruit Only What Placements Place on (off by default), recruitment follows the
+                // placement modules synced to this commander: when every one of them places no AA, no group
+                // carrying an AA vehicle is recruited, and when every one sets Armour or Mechanised to 0, no
+                // wheeled APC is. Military Placement's blank means "calculated", so only a
                 // typed 0 counts there; Custom Military Objective's 0 already means none.
                 private _placements = (synchronizedObjects _logic) select { typeOf _x in ["ALiVE_mil_placement", "ALiVE_mil_placement_custom"] };
                 private _dropKinds = [];
-                if (_placements isNotEqualTo []) then {
+                private _follow = (toLower format ["%1", _logic getVariable ["asym_recruitFollowsPlacements", "false"]]) in ["true", "1"];
+                if (_follow && {_placements isNotEqualTo []}) then {
                     private _zero = {
                         params ["_module", "_key", "_blankIsZero"];
                         private _v = _module getVariable [_key, ""];

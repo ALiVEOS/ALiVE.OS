@@ -905,6 +905,22 @@ class CfgVehicles {
                                 typeName = "STRING";
                                 ALiVE_showWhen[] = {{"asym_escalationIntensity", "not", "off"}};
                         };
+                        // Recruit Only What Placements Place (A. Ares on Discord, 2 Nov): off by default, so a mission
+                        // keeps recruiting AA and APC groups unless it asks for the placements to decide
+                        class asym_recruitFollowsPlacements : Combo
+                        {
+                                property = "ALiVE_mil_opcom_asym_recruitFollowsPlacements";
+                                displayName = "$STR_ALIVE_OPCOM_ASYM_RECRUIT_FOLLOWS_PLACEMENTS";
+                                tooltip = "$STR_ALIVE_OPCOM_ASYM_RECRUIT_FOLLOWS_PLACEMENTS_COMMENT";
+                                typeName = "STRING";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; default = 1; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                                ALiVE_showWhen[] = {{"asym_escalationIntensity", "not", "off"}};
+                        };
                         class asymForceLimit : Edit
                         {
                                 property = "ALiVE_mil_opcom_asymForceLimit";
