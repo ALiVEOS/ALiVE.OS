@@ -272,6 +272,11 @@ switch(_operation) do {
                 ["customSkillFactions",   "customSkillFactionsManual",   "custom"]
             ];
 
+            // soldier behaviour on a headless client reads the tiers too
+            {
+                _logic setVariable [_x, _logic getVariable [_x, []], true];
+            } forEach ["skillFactionsRecruit", "skillFactionsVeteran", "skillFactionsExpert"];
+
             [_logic, "start"] call MAINCLASS;
         };
     };

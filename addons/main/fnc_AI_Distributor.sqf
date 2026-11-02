@@ -144,6 +144,12 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
                     _x setVariable ["ALiVE_HC_SavedLoadout", getUnitLoadout _x, true];
                 } forEach (units _x);
 
+                // soldier behaviour puts back what it changed while it can still reach the men;
+                // the headless client takes the group on again once it arrives
+                if (!isNil "ALiVE_fnc_AIBehaviour" && {_x getVariable ["ALiVE_AIB_attached", false]}) then {
+                    ["release", [_x, "moving to a headless client"]] call ALiVE_fnc_AIBehaviour;
+                };
+
                 _x setGroupOwner (owner _HC);
 
                 ["AI Distributor switching group '%1' to HC '%2'.", _x, _HC] call ALiVE_fnc_dump;

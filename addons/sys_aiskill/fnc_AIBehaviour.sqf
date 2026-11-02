@@ -158,7 +158,7 @@ switch (_operation) do {
         private _snap = _unit getVariable ["ALiVE_AIB_snapshot", []];
         // only what this code changed goes back; another system's hold (a garrison) is left alone
         private _changed = _unit getVariable ["ALiVE_AIB_changed", []];
-        if (_snap isNotEqualTo []) then {
+        if (_snap isNotEqualTo [] && {local _unit}) then {
             _snap params ["_path", "_pos"];
             if ("PATH" in _changed && {_path} && {!(_unit checkAIFeature "PATH")}) then { _unit enableAI "PATH" };
             if ("POS" in _changed && {unitPos _unit != _pos}) then { _unit setUnitPos _pos };
@@ -221,7 +221,8 @@ switch (_operation) do {
             private _ready = !isNull _module;
             {
                 _x params ["_list", "_nerve"];
-                private _in = if (isNull _module) then { [] } else { _module getVariable [_list, []] };
+                // on a headless client the lists arrive from the server; missing means not yet
+                private _in = if (isNull _module) then { "" } else { _module getVariable [_list, ""] };
                 if !(_in isEqualType []) then { _ready = false };
                 if (_in isEqualType [] && {_faction in _in}) exitWith { _result = _nerve };
             } forEach _tiers;
@@ -329,7 +330,11 @@ switch (_operation) do {
                 && {(_x checkAIFeature "PATH") || {"PATH" in (_x getVariable ["ALiVE_AIB_changed", []])}}
             };
             switch (true) do {
-                // gone (despawned, all dead) or moved to another machine
+                // moved to another machine: let go here, the new owner takes it on
+                case (!isNull _group && {!local _group}): {
+                    ["release", [_group, "moved to another machine"]] call ALiVE_fnc_AIBehaviour;
+                };
+                // gone (despawned, all dead)
                 case (isNull _group || {_men isEqualTo []}): {
                     ALiVE_AIB_groups deleteAt (ALiVE_AIB_groups find _group);
                 };
