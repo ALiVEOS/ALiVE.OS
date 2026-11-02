@@ -27,6 +27,8 @@ fire - [unit, ammo, magazine, source] a round near or into a soldier raises his 
 threat - [unit] his threat now, 0 to 1, fading 0.05 a second
 handBack - [unit] put back what this code changed on one soldier and set him idle
 cover - [unit, from] a spot behind something solid on the far side from the fire, or []
+nerve - [unit] his tier's timings from the faction lists already picked in the module:
+    [take cover above, rise to fire below, seconds down before rising, quiet seconds before handing back]
 man - [unit] one soldier's step: idle, to cover, in cover, rising to fire, recovering
 setting - [name, default] a module setting, read from the AI Skill module
 
@@ -56,7 +58,8 @@ switch (_operation) do {
     case "orders": {
         _args params ["_group"];
         private _n = count waypoints _group;
-        _result = [_n, if (_n > 0) then { waypointPosition [_group, _n - 1] } else { [] }];
+        // the map position only, rounded: a waypoint on water reports a height that moves with the waves
+        _result = [_n, if (_n > 0) then { ((waypointPosition [_group, _n - 1]) select [0, 2]) apply { round _x } } else { [] }];
     };
 
     case "ammoClass": {
@@ -200,6 +203,32 @@ switch (_operation) do {
         } forEach ((nearestTerrainObjects [_pos, ["WALL", "ROCK", "ROCKS", "BUILDING", "HOUSE", "FENCE", "BUNKER", "FORTRESS", "TREE"], _radius, true, true]) select [0, 16]);
     };
 
+    case "nerve": {
+        _args params ["_unit"];
+        if (isNil "ALiVE_AIB_nerveCache") then { ALiVE_AIB_nerveCache = createHashMap };
+        private _faction = faction _unit;
+        _result = ALiVE_AIB_nerveCache getOrDefault [_faction, []];
+        if (_result isEqualTo []) then {
+            // recruits go to ground sooner, stay down longer and take longer to settle; experts the other way
+            private _tiers = [
+                ["skillFactionsRecruit", [0.45, 0.15, 6, 30]],
+                ["skillFactionsVeteran", [0.65, 0.35, 2.5, 18]],
+                ["skillFactionsExpert", [0.7, 0.4, 2, 15]]
+            ];
+            _result = [0.6, 0.3, 3, 20];
+            // the module turns each tier's text into a list when it starts; until then use the middle
+            // timings and don't remember them, so the right tier is picked up once it's ready
+            private _ready = !isNull _module;
+            {
+                _x params ["_list", "_nerve"];
+                private _in = if (isNull _module) then { [] } else { _module getVariable [_list, []] };
+                if !(_in isEqualType []) then { _ready = false };
+                if (_in isEqualType [] && {_faction in _in}) exitWith { _result = _nerve };
+            } forEach _tiers;
+            if (_ready) then { ALiVE_AIB_nerveCache set [_faction, _result] };
+        };
+    };
+
     case "man": {
         _args params ["_unit"];
         (_unit getVariable ["ALiVE_AIB_state", ["IDLE", time]]) params ["_state", "_at"];
@@ -210,6 +239,7 @@ switch (_operation) do {
         if (isNil { _unit getVariable "ALiVE_AIB_changed" }) then { _unit setVariable ["ALiVE_AIB_changed", []] };
         private _changed = _unit getVariable "ALiVE_AIB_changed";
         private _engaged = _unit getVariable ["ALiVE_AIB_engaged", -1];
+        (["nerve", [_unit]] call ALiVE_fnc_AIBehaviour) params ["_seekAt", "_riseBelow", "_downFor", "_quietFor"];
         // the longest a soldier keeps reacting on his own, and 90 s in any one step
         if (_state != "IDLE" && {(time - _engaged > ALiVE_AIB_maxEngaged) || {time - _at > 90}}) exitWith {
             ["handBack", [_unit]] call ALiVE_fnc_AIBehaviour;
@@ -217,7 +247,7 @@ switch (_operation) do {
         switch (_state) do {
             case "IDLE": {
                 // two cover searches a tick at most, the rest wait half a second
-                if (_threat > 0.6 && {_from isNotEqualTo [0, 0, 0]} && {ALiVE_AIB_searches < 2}) then {
+                if (_threat > _seekAt && {_from isNotEqualTo [0, 0, 0]} && {ALiVE_AIB_searches < 2}) then {
                     ALiVE_AIB_searches = ALiVE_AIB_searches + 1;
                     private _spot = ["cover", [_unit, _from]] call ALiVE_fnc_AIBehaviour;
                     _unit setVariable ["ALiVE_AIB_engaged", time];
@@ -242,17 +272,17 @@ switch (_operation) do {
                 };
             };
             case "IN_COVER": {
-                // 20 s with no fire: he's done
-                if (_threat < 0.05 && {time - _lastFire > 20}) exitWith { "RECOVER" call _set };
+                // quiet long enough: he's done
+                if (_threat < 0.05 && {time - _lastFire > _quietFor}) exitWith { "RECOVER" call _set };
                 // the fire eases and he knows where it came from: up to shoot back, after a few seconds down
-                if (_threat < 0.3 && {time - _at > 3} && {!isNull _src} && {(_unit knowsAbout _src) > 1}) then {
+                if (_threat < _riseBelow && {time - _at > _downFor} && {!isNull _src} && {(_unit knowsAbout _src) > 1}) then {
                     _unit setUnitPos "UP";
                     _changed pushBackUnique "POS";
                     "RISE_FIRE" call _set;
                 };
             };
             case "RISE_FIRE": {
-                if (_threat > 0.6 || {time - _at > 4}) then {
+                if (_threat > _seekAt || {time - _at > 4}) then {
                     _unit setUnitPos "MIDDLE";
                     "IN_COVER" call _set;
                 };
