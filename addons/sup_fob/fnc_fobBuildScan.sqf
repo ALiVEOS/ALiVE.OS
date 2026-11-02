@@ -451,11 +451,17 @@ private _airPrice = {
 
 private _rows = [];
 private _seen = createHashMap;
+// With Debug on, everything the scan finds, whatever Never Build, the Build List Preset or the fold take out
+// afterwards: the website's build list page imports this as the game's whole catalogue and makes its own
+// cuts (NeisAEL, 2 Nov: a list written by the page, put back into the page, came back with about 200 rows)
+private _catalogDump = [_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB;
+private _scanAll = createHashMap;
 private _add = {
-    params ["_class", "_cfg", "_kind"];
+    params ["_class", "_cfg", "_kind", ["_peek", false]];
     private _lc = toLower _class;
-    if (_lc in _seen || {_lc in _blacklist}) exitWith {};
-    _seen set [_lc, true];
+    if (_peek && {_lc in _scanAll}) exitWith {};
+    if (!_peek && {_lc in _seen || {_lc in _blacklist}}) exitWith {};
+    if (!_peek) then { _seen set [_lc, true] };
     private _cost = _fixed getOrDefault [_lc, -1];
     private _side = "";
     private _tier = 1;
@@ -485,7 +491,14 @@ private _add = {
     };
     if (_cost < 0) exitWith {};
     private _pic = getText (_cfg >> "editorPreview");
-    _rows pushBack [_class, getText (_cfg >> "displayName"), _kind, _cost, _pic, _tier, _side, toLower getText (_cfg >> "faction")];
+    private _row = [_class, getText (_cfg >> "displayName"), _kind, _cost, _pic, _tier, _side, toLower getText (_cfg >> "faction")];
+    if (_catalogDump) then { _scanAll set [_lc, _row] };
+    if (!_peek) then { _rows pushBack _row };
+};
+// the main pass: added to the build list, and with Debug on to the catalogue dump even when Never Build has it
+private _scanAdd = {
+    _this call _add;
+    if (_catalogDump) then { (_this + [true]) call _add };
 };
 
 {
@@ -493,21 +506,21 @@ private _add = {
     private _class = configName _cfg;
     // Static weapons with something to fire, crewed by their own side; not drones
     if (_class isKindOf "StaticWeapon" && {getNumber (_cfg >> "isUav") != 1} && {getNumber (_cfg >> "side") in [0, 1, 2]}) then {
-        [_class, _cfg, "STATIC"] call _add;
+        [_class, _cfg, "STATIC"] call _scanAdd;
     };
     // Land vehicles and boats with a driver's seat, crewed by nobody until players get in; not
     // drones (aircraft just below)
     if ((_class isKindOf "LandVehicle" || {_class isKindOf "Ship"}) && {!(_class isKindOf "StaticWeapon")} && {!(_class isKindOf "Man")}
         && {getNumber (_cfg >> "isUav") != 1} && {getNumber (_cfg >> "hasDriver") == 1} && {getNumber (_cfg >> "side") in [0, 1, 2]}
         && {getText (_cfg >> "model") != ""} && {!([_class, _cfg] call _isRuin)}) then {
-        [_class, _cfg, "VEHICLE"] call _add;
+        [_class, _cfg, "VEHICLE"] call _scanAdd;
     };
     // Helicopters and planes, the same way: empty, with a pilot's seat; not drones, and not a
     // parachute (the game counts those as helicopters) or an ejection seat
     if ((_class isKindOf "Helicopter" || {_class isKindOf "Plane"}) && {!(_class isKindOf "ParachuteBase")} && {!("ejection" in toLower _class)}
         && {getNumber (_cfg >> "isUav") != 1} && {getNumber (_cfg >> "hasDriver") == 1} && {getNumber (_cfg >> "side") in [0, 1, 2]}
         && {getText (_cfg >> "model") != ""} && {!([_class, _cfg] call _isRuin)}) then {
-        [_class, _cfg, "VEHICLE"] call _add;
+        [_class, _cfg, "VEHICLE"] call _scanAdd;
     };
     if (getText (_cfg >> "model") != "" && {!(_class isKindOf "AllVehicles")} && {!([_class, _cfg] call _isRuin)}) then {
         private _cat = getText (_cfg >> "editorCategory");
@@ -528,7 +541,7 @@ private _add = {
         if (_kind == "FORTIFICATION" && {"target" in toLower _class || {"target" in toLower getText (_cfg >> "displayName")}}) then { _kind = "" };
         if (_kind != "") then {
             ([_class] call _size) params ["", "_wide"];
-            if (_wide <= 40) then { [_class, _cfg, _kind] call _add };
+            if (_wide <= 40) then { [_class, _cfg, _kind] call _scanAdd };
         };
     };
 } forEach ("getNumber (_x >> 'scope') == 2" configClasses (configFile >> "CfgVehicles"));
@@ -908,9 +921,23 @@ publicVariable "ALiVE_FOB_named";
     } forEach (_x select 5);
 } forEach (missionNamespace getVariable ["ALiVE_FOB_types", []]);
 // With Debug on, every row in the RPT, one per line, for the Player FOBs build list page on the
-// ALiVE website: [class, name, category, cost, tier, side, faction]
-if ([_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB) then {
-    { diag_log text ("ALiVE_FOB_CATALOG " + str [_x select 0, _x select 1, _x select 2, _x select 3, _x select 5, _x select 6, _x select 7]) } forEach _rows;
+// ALiVE website: [class, name, category, cost, tier, side, faction]. The build list's own rows, then
+// whatever else the scan found that Never Build, the Build List Preset or the fold took out
+if (_catalogDump) then {
+    private _dumped = createHashMap;
+    {
+        _dumped set [toLower (_x select 0), true];
+        diag_log text ("ALiVE_FOB_CATALOG " + str [_x select 0, _x select 1, _x select 2, _x select 3, _x select 5, _x select 6, _x select 7]);
+    } forEach _rows;
+    private _extra = 0;
+    {
+        if !(_x in _dumped) then {
+            _extra = _extra + 1;
+            diag_log text ("ALiVE_FOB_CATALOG " + str [_y select 0, _y select 1, _y select 2, _y select 3, _y select 5, _y select 6, _y select 7]);
+        };
+    } forEach _scanAll;
+    // tagged like the rows, so copying every line with ALiVE_FOB_CATALOG in it brings this one too
+    diag_log text format ["ALiVE_FOB_CATALOG_COUNT %1: %2 in the build list, %3 more the scan found that the list leaves out", [count _rows, _extra], count _rows, _extra];
 };
 ["ALiVE Player FOBs - build catalog: %1 fortifications, %2 supply, %3 static weapons, %4 vehicles, %7 soldiers, %8 groups, %5 measured, %6 ms",
     { (_x select 2) == "FORTIFICATION" } count _rows, { (_x select 2) == "SUPPLY" } count _rows, { (_x select 2) == "STATIC" } count _rows,
