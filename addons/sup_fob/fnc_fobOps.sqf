@@ -125,6 +125,9 @@ private _tagOf = {
 // again in full, only when the time has really passed for that same kit or FOB and the player is still
 // about where he began. Any other request starts the time again, so one stopped part way doesn't count
 // later. true when the request may go ahead now; with no time set, always.
+// The server counts in real seconds, not game time: a busy server's game clock falls behind (by a
+// tenth or more with headless clients and a full map), so the bar filled and every finished request
+// was turned away and started over. Real time can only be ahead of the player's bar, never behind it.
 private _timed = {
     params ["_kind", "_key", "_wait"];
     if (_wait <= 0 || {isNull _caller} || {!isPlayer _caller}) exitWith { true };
@@ -132,11 +135,11 @@ private _timed = {
     private _uid = getPlayerUID _caller;
     (ALiVE_FOB_timers getOrDefault [_uid, []]) params [["_k", ""], ["_key0", ""], ["_t0", -1e9], ["_w0", 0], ["_at", [0,0,0]]];
     private _finished = (_args param [count _args - 1, false]) isEqualTo true;
-    if (_finished && {_k == _kind} && {_key0 isEqualTo _key} && {time - _t0 >= _w0 - 1} && {time - _t0 <= _w0 + 60} && {(_caller distance2D _at) <= 3}) exitWith {
+    if (_finished && {_k == _kind} && {_key0 isEqualTo _key} && {diag_tickTime - _t0 >= _w0 - 1} && {diag_tickTime - _t0 <= _w0 + 60} && {(_caller distance2D _at) <= 3}) exitWith {
         ALiVE_FOB_timers deleteAt _uid;
         true
     };
-    ALiVE_FOB_timers set [_uid, [_kind, _key, time, _wait, getPosATL _caller]];
+    ALiVE_FOB_timers set [_uid, [_kind, _key, diag_tickTime, _wait, getPosATL _caller]];
     ["start", [_kind, _args, _wait, [_logic, "attribute", ["fob_timer_cancel"]] call ALiVE_fnc_FOB]] remoteExecCall ["ALiVE_fnc_fobTimer", _caller];
     if (_debug) then { ["ALiVE Player FOBs - %1 started a %2 s %3 of %4", name _caller, _wait, _kind, _key] call ALiVE_fnc_dump };
     false
