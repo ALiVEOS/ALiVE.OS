@@ -71,7 +71,8 @@ switch(_operation) do {
                 //Create basics on server
                 if (isServer) then {
 
-                        waitUntil {!isnil "ALiVE_STATIC_DATA_LOADED"};
+                        // loaded, not just started (the handler sets it false while it loads)
+                        waitUntil {missionNamespace getVariable ["ALiVE_STATIC_DATA_LOADED", false]};
 
                         // if server, initialise module game logic
                         _logic setVariable ["super", SUPERCLASS];

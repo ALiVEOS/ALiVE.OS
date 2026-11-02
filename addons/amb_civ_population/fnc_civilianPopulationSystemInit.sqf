@@ -442,7 +442,9 @@ if(isServer) then {
 
     ["ALiVE Advanced Civilians - Module parameters loaded. Enabled: %1", _advciv_enabled] call ALIVE_fnc_dump;
 
-    waitUntil {!isnil "ALiVE_STATIC_DATA_LOADED"};
+    // loaded, not just started: the handler sets the flag false while it loads, and the item lists
+    // below come from that load (read too soon, they were undefined and the civilian menu never opened)
+    waitUntil {missionNamespace getVariable ["ALiVE_STATIC_DATA_LOADED", false]};
 
     _logic setVariable ["waterItems", ALiVE_CivPop_Interaction_WaterItems + _customWaterItems, true];
     _logic setVariable ["rationItems", ALiVE_CivPop_Interaction_RationItems + _customRationItems, true];

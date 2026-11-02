@@ -247,7 +247,7 @@ switch(_operation) do {
 
     case "start": {
 
-        waitUntil {time > 0 && {!isnull player} && {!isnil "ALiVE_STATIC_DATA_LOADED"}};
+        waitUntil {time > 0 && {!isnull player} && {missionNamespace getVariable ["ALiVE_STATIC_DATA_LOADED", false]}};
 
         [_logic,"openInterface", ["Faction_Editor"]] call MAINCLASS;
         if (([_logic,"arsenalType"] call MAINCLASS) == "BIS") then {
