@@ -1814,7 +1814,7 @@ class FSM
                          "				// Never wait here. FSM state code cannot suspend, so a sleep throws on every pass," \n
                          "				// and a wait that could block would stall the whole of OPCOM. If ATO is not up yet," \n
                          "				// this recce is skipped and the next cycle asks again." \n
-                         "                if (!_exitFSM && {[""ALiVE_mil_ATO""] call ALiVE_fnc_isModuleInitialised}) then {" \n
+                         "                if (!_exitFSM && {[""ALiVE_mil_ato""] call ALiVE_fnc_isModuleInitialised}) then {" \n
                          "				_args = [" \n
                          "					""GREEN"",	// ROE" \n
                          "					1200,		// Height" \n
