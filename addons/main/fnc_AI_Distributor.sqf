@@ -147,7 +147,9 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
                 // soldier behaviour puts back what it changed while it can still reach the men;
                 // the headless client takes the group on again once it arrives
                 if (!isNil "ALiVE_fnc_AIBehaviour" && {_x getVariable ["ALiVE_AIB_attached", false]}) then {
-                    ["release", [_x, "moving to a headless client"]] call ALiVE_fnc_AIBehaviour;
+                    // in one go: the soldier behaviour tick must not act on the group half way through
+                    private _g = _x;
+                    isNil { ["release", [_g, "moving to a headless client"]] call ALiVE_fnc_AIBehaviour };
                 };
 
                 _x setGroupOwner (owner _HC);

@@ -1578,7 +1578,7 @@ switch(_operation) do {
 
             // Military AI soldier behaviour: the group may be taken on by the machine that owns it.
             // The flag is public so a headless client the group moves to can take it on too.
-            if (!isNil "ALiVE_fnc_AIBehaviour") then {
+            if (!isNil "ALiVE_fnc_AIBehaviour" && {["setting", ["behaviourEnabled", false]] call ALiVE_fnc_AIBehaviour}) then {
                 _group setVariable ["ALiVE_AIB_eligible", true, true];
                 ["attach", [_group]] call ALiVE_fnc_AIBehaviour;
             };

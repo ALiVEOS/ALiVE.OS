@@ -276,6 +276,7 @@ switch(_operation) do {
             {
                 _logic setVariable [_x, _logic getVariable [_x, []], true];
             } forEach ["skillFactionsRecruit", "skillFactionsVeteran", "skillFactionsExpert"];
+            _logic setVariable ["debug", _logic getVariable ["debug", false], true];
 
             [_logic, "start"] call MAINCLASS;
         };
