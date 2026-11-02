@@ -1576,6 +1576,13 @@ switch(_operation) do {
             // profile is fully spawned and cannot be corrupted -> allow damage again
             {_x allowDamage true} foreach _units;
 
+            // Military AI soldier behaviour: the group may be taken on by the machine that owns it.
+            // The flag is public so a headless client the group moves to can take it on too.
+            if (!isNil "ALiVE_fnc_AIBehaviour") then {
+                _group setVariable ["ALiVE_AIB_eligible", true, true];
+                ["attach", [_group]] call ALiVE_fnc_AIBehaviour;
+            };
+
             // --- onEachSpawn hook ---
             // Run mission-maker code on each spawned unit.
             // Inside the code block: _this = [unit, profileID, side, faction]

@@ -11,6 +11,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sys_aiskill\fnc_AISkillInit.sqf";
                 ALIVE_RECOMPILE;
             };
+            class AIBehaviour {
+                description = "Soldier behaviour: attach, release and the per-machine tick";
+                file = "\x\alive\addons\sys_aiskill\fnc_AIBehaviour.sqf";
+                ALIVE_RECOMPILE;
+            };
             class AIskillSetter {
                 description = "The init EH function";
                 file = "\x\alive\addons\sys_aiskill\fnc_AISkillSetter.sqf";

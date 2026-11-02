@@ -94,6 +94,57 @@ class CfgVehicles {
             class customSkillGeneral : Edit { property = "ALiVE_sys_aiskill_customSkillGeneral"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_GENERAL"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_GENERAL_COMMENT"; defaultValue = """0.5"""; typeName = "NUMBER"; };
             // Hidden: Arma 3 ignores the endurance sub-skill. Kept, not removed, so a mission's saved value still loads
             class customSkillEndurance { property = "ALiVE_sys_aiskill_customSkillEndurance"; control = "ALiVE_HiddenAttribute"; defaultValue = """0.3"""; expression = "_this setVariable ['customSkillEndurance', _value, true];"; typeName = "NUMBER"; displayName = ""; };
+            class HDR_BEHAVIOUR : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_BEHAVIOUR"; displayName = "SOLDIER BEHAVIOUR"; };
+            // Soldiers of spawned ALiVE groups react to fire on their own; off by default. Set public: the
+            // machine that owns a group (server or headless client) reads them from this module.
+            class behaviourEnabled : Combo
+            {
+                    property = "ALiVE_sys_aiskill_behaviourEnabled";
+                    displayName = "$STR_ALIVE_AISKILL_BEHAVIOUR";
+                    tooltip = "$STR_ALIVE_AISKILL_BEHAVIOUR_COMMENT";
+                    typeName = "STRING";
+                    defaultValue = """false""";
+                    expression = "_this setVariable ['behaviourEnabled', _value, true];";
+                    class Values
+                    {
+                        class No { name = "No"; value = "false"; default = 1; };
+                        class Yes { name = "Yes"; value = "true"; };
+                    };
+            };
+            class behaviourMaxUnits : Combo
+            {
+                    property = "ALiVE_sys_aiskill_behaviourMaxUnits";
+                    displayName = "$STR_ALIVE_AISKILL_BEHAVIOUR_MAX_UNITS";
+                    tooltip = "$STR_ALIVE_AISKILL_BEHAVIOUR_MAX_UNITS_COMMENT";
+                    typeName = "STRING";
+                    defaultValue = """48""";
+                    expression = "_this setVariable ['behaviourMaxUnits', _value, true];";
+                    ALiVE_showWhen[] = {{"behaviourEnabled", "is", "true"}};
+                    class Values
+                    {
+                        class U16 { name = "16"; value = "16"; };
+                        class U32 { name = "32"; value = "32"; };
+                        class U48 { name = "48"; value = "48"; default = 1; };
+                        class U64 { name = "64"; value = "64"; };
+                    };
+            };
+            class behaviourMaxEngaged : Combo
+            {
+                    property = "ALiVE_sys_aiskill_behaviourMaxEngaged";
+                    displayName = "$STR_ALIVE_AISKILL_BEHAVIOUR_MAX_ENGAGED";
+                    tooltip = "$STR_ALIVE_AISKILL_BEHAVIOUR_MAX_ENGAGED_COMMENT";
+                    typeName = "STRING";
+                    defaultValue = """180""";
+                    expression = "_this setVariable ['behaviourMaxEngaged', _value, true];";
+                    ALiVE_showWhen[] = {{"behaviourEnabled", "is", "true"}};
+                    class Values
+                    {
+                        class S60 { name = "1 minute"; value = "60"; };
+                        class S120 { name = "2 minutes"; value = "120"; };
+                        class S180 { name = "3 minutes"; value = "180"; default = 1; };
+                        class S300 { name = "5 minutes"; value = "300"; };
+                    };
+            };
             class ModuleDescription : ModuleDescription {};
         };
     };

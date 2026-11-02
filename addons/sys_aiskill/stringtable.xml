@@ -4,7 +4,7 @@
 <Container name="STR_DN">
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL">
-    <English>Military AI Skill</English>
+    <English>Military AI</English>
 	<Chinesesimp>军事人工智能技能</Chinesesimp>
     <Chinese>軍事 AI 技能</Chinese>
     <Spanish>Habilidad IA militar</Spanish>
@@ -449,5 +449,23 @@
     <French>Multiplicateur global de compétence IA (0.0–1.0). Agit comme modificateur global affectant toutes les autres caractéristiques de compétence. Réglez plus bas pour affaiblir largement une faction sans ajuster les valeurs individuelles.</French>
     <Portuguese>Multiplicador global de habilidade IA (0.0–1.0). Atua como modificador global afetando todos os outros traços de habilidade. Defina mais baixo para enfraquecer amplamente uma facção sem ajustar valores individuais.</Portuguese>
     <Russian>Глобальный множитель мастерства ИИ (0.0–1.0). Действует как глобальный модификатор, влияющий на все остальные параметры мастерства. Установите ниже для широкого ослабления фракции без изменения отдельных значений.</Russian>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_BEHAVIOUR">
+    <English>Soldier Behaviour:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_BEHAVIOUR_COMMENT">
+    <English>Soldiers in spawned ALiVE groups take cover and fire back on their own when shot at, then hand back to their group's orders. Off by default.</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_BEHAVIOUR_MAX_UNITS">
+    <English>Max Soldiers Per Machine:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_BEHAVIOUR_MAX_UNITS_COMMENT">
+    <English>How many soldiers each machine (the server, each headless client) looks after at once. More costs more frame time.</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_BEHAVIOUR_MAX_ENGAGED">
+    <English>Max Time In A Fight:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_BEHAVIOUR_MAX_ENGAGED_COMMENT">
+    <English>The longest a soldier keeps reacting on his own before he hands back to his group's orders.</English>
 </Key>
 </Container></Package></Project>
