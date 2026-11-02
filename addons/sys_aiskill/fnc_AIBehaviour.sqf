@@ -22,6 +22,9 @@ release - [group, reason] hand every soldier back and stop watching the group
 restore - [group, reason] hand every soldier back but keep watching, with the current orders
 tick - the per-machine check, from the per-frame handler
 orders - [group] how many waypoints the group has and where the last one is
+ammoClass - [ammo, magazine] how much a round frightens: 0.15 rifle, 0.3 machine gun, 0.6 explosive
+fire - [unit, ammo, magazine, source] a round near or into a soldier raises his threat
+threat - [unit] his threat now, 0 to 1, fading 0.05 a second
 setting - [name, default] a module setting, read from the AI Skill module
 
 Returns:
@@ -53,6 +56,38 @@ switch (_operation) do {
         _result = [_n, if (_n > 0) then { waypointPosition [_group, _n - 1] } else { [] }];
     };
 
+    case "ammoClass": {
+        _args params [["_ammo", "", [""]], ["_mag", "", [""]]];
+        if (isNil "ALiVE_AIB_ammoCache") then { ALiVE_AIB_ammoCache = createHashMap };
+        private _key = _ammo + "|" + _mag;
+        _result = ALiVE_AIB_ammoCache getOrDefault [_key, -1];
+        if (_result < 0) then {
+            if (_ammo == "" && {_mag != ""}) then { _ammo = getText (configFile >> "CfgMagazines" >> _mag >> "ammo") };
+            private _c = configFile >> "CfgAmmo" >> _ammo;
+            private _sim = toLower getText (_c >> "simulation");
+            private _he = getNumber (_c >> "explosive") > 0.5 || {getNumber (_c >> "indirectHit") > 0} || {_sim in ["shotshell", "shotmissile", "shotrocket", "shotsubmunitions"]};
+            private _mg = getNumber (configFile >> "CfgMagazines" >> _mag >> "count") >= 60 || {getNumber (_c >> "caliber") >= 1.4};
+            _result = [[0.15, 0.3] select _mg, 0.6] select _he;
+            ALiVE_AIB_ammoCache set [_key, _result];
+        };
+    };
+
+    case "threat": {
+        _args params ["_unit"];
+        (_unit getVariable ["ALiVE_AIB_threat", [0, time]]) params ["_score", "_at"];
+        _result = 0 max (_score - 0.05 * (time - _at));
+    };
+
+    case "fire": {
+        _args params ["_unit", ["_ammo", ""], ["_mag", ""], ["_source", objNull]];
+        if (isNull _unit || {!alive _unit}) exitWith {};
+        // fire from his own side doesn't frighten him
+        if (!isNull _source && {((side group _unit) getFriend (side group _source)) >= 0.6}) exitWith {};
+        private _now = ["threat", [_unit]] call ALiVE_fnc_AIBehaviour;
+        private _w = ["ammoClass", [_ammo, _mag]] call ALiVE_fnc_AIBehaviour;
+        _unit setVariable ["ALiVE_AIB_threat", [1 min (_now + _w), time]];
+    };
+
     case "attach": {
         _args params [["_group", grpNull, [grpNull]]];
         _result = false;
@@ -74,6 +109,12 @@ switch (_operation) do {
                 && {!(_x getVariable ["ALiVE_garrisonHeld", false])} && {_x checkAIFeature "PATH"}) then {
                 _x setVariable ["ALiVE_AIB_snapshot", [_x checkAIFeature "PATH", unitPos _x]];
                 _x setVariable ["ALiVE_AIB_changed", []];
+                _x setVariable ["ALiVE_AIB_threat", [0, time]];
+                _x setVariable ["ALiVE_AIB_ehs", [
+                    _x addEventHandler ["Suppressed", { params ["_u", "", "_shooter", "", "", "_ammo"]; ["fire", [_u, _ammo, currentMagazine _shooter, _shooter]] call ALiVE_fnc_AIBehaviour }],
+                    _x addEventHandler ["Hit", { params ["_u", "_src", "", "_inst"]; private _by = [_src, _inst] select (!isNull _inst); ["fire", [_u, "", currentMagazine _by, _by]] call ALiVE_fnc_AIBehaviour }],
+                    _x addEventHandler ["FiredNear", { params ["_u", "_firer", "", "", "", "", "_ammo", "_gunner"]; private _by = [_firer, _gunner] select (!isNull _gunner); ["fire", [_u, _ammo, currentMagazine _by, _by]] call ALiVE_fnc_AIBehaviour }]
+                ]];
                 _men pushBack _x;
             };
         } forEach (units _group);
@@ -118,7 +159,16 @@ switch (_operation) do {
         _args params [["_group", grpNull, [grpNull]], ["_reason", ""]];
         if (!isNull _group) then {
             ["restore", [_group, _reason]] call ALiVE_fnc_AIBehaviour;
-            { if (!isNull _x) then { _x setVariable ["ALiVE_AIB_snapshot", nil]; _x setVariable ["ALiVE_AIB_changed", nil] } } forEach (_group getVariable ["ALiVE_AIB_men", []]);
+            {
+                if (!isNull _x) then {
+                    (_x getVariable ["ALiVE_AIB_ehs", [-1, -1, -1]]) params ["_e1", "_e2", "_e3"];
+                    if (_e1 >= 0) then { _x removeEventHandler ["Suppressed", _e1] };
+                    if (_e2 >= 0) then { _x removeEventHandler ["Hit", _e2] };
+                    if (_e3 >= 0) then { _x removeEventHandler ["FiredNear", _e3] };
+                    _x setVariable ["ALiVE_AIB_snapshot", nil]; _x setVariable ["ALiVE_AIB_changed", nil];
+                    _x setVariable ["ALiVE_AIB_ehs", nil]; _x setVariable ["ALiVE_AIB_threat", nil];
+                };
+            } forEach (_group getVariable ["ALiVE_AIB_men", []]);
             _group setVariable ["ALiVE_AIB_attached", nil];
             _group setVariable ["ALiVE_AIB_men", nil];
         };
