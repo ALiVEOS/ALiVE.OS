@@ -806,16 +806,21 @@ switch (_action) do {
             params ["_crowd", "_position", "_minutes", "_violent"];
             private _end = time + _minutes * 60;
             private _turned = [];
+            private _fled = [];
             private _nextNoise = 0;
             while { time < _end && {_crowd findIf {alive _x} > -1} } do {
-                private _alive = _crowd select { alive _x && {!(_x in _turned)} };
+                private _alive = _crowd select { alive _x && {!(_x in _turned)} && {!(_x in _fled)} };
+                // Everyone left has run: the riot is over
+                if (_alive isEqualTo []) exitWith {};
+                // The more of them lie dead, the likelier the rest break and run
+                private _fear = ({ !alive _x } count _crowd) / (count _crowd);
                 if (time > _nextNoise && {_alive isNotEqualTo []}) then {
                     [selectRandom _alive, (selectRandom ALiVE_CivPop_Crowd_Noises) select 0] remoteExec ["say3D"];
                     _nextNoise = time + 30;
                 };
                 {
                     private _man = _x;
-                    private _targets = allPlayers select { alive _x && {((missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _x)})} && {side group _x != civilian} && {(vehicle _x) distance2D _man < 40} };
+                    private _targets = (allPlayers - entities "HeadlessClient_F") select { alive _x && {((missionNamespace getVariable ["ALiVE_zeusSoloTest", false]) || {isNull (getAssignedCuratorLogic _x)})} && {side group _x != civilian} && {(vehicle _x) distance2D _man < 40} };
                     if (_targets isEqualTo []) then {
                         if (_man distance2D _position > 20) then {
                             [_man, _position] call ALiVE_fnc_doMoveRemote;
@@ -826,31 +831,45 @@ switch (_action) do {
                         };
                     } else {
                         private _target = selectRandom _targets;
-                        if (_violent && {random 1 < 0.1} && {count _turned < ceil (count _crowd / 4)}) then {
-                            // One in four at most pulls a gun and fights for the other side
-                            private _weapons = [ALIVE_civilianWeapons, "CIV", [["hgun_Pistol_heavy_01_F", "11Rnd_45ACP_Mag"]]] call ALIVE_fnc_hashGet;
-                            if (_weapons isEqualTo []) then { _weapons = [["hgun_Pistol_heavy_01_F", "11Rnd_45ACP_Mag"]] };
-                            (selectRandom _weapons) params ["_weapon", "_ammo"];
+                        if (_fear > 0 && {random 1 < _fear * 1.5}) then {
+                            // He runs from the soldiers, 60 to 120 m away from them, and does not come back
+                            private _spot = _man getPos [60 + random 60, ((vehicle _target) getDir _man) - 30 + random 60];
                             [_man, ""] call ALiVE_fnc_switchMove;
-                            _man addMagazine _ammo;
-                            _man addMagazine _ammo;
-                            _man addWeapon _weapon;
-                            [_man, _target] call ALIVE_fnc_addToEnemyGroup;
-                            (group _man) setVariable ["ALIVE_profileIgnore", true, true];
-                            _man setCombatMode "RED";
-                            _man setBehaviour "AWARE";
-                            _man doTarget _target;
-                            _turned pushBack _man;
+                            [_man, _spot] call ALiVE_fnc_doMoveRemote;
+                            _fled pushBack _man;
                         } else {
-                            if (random 1 < 0.4) then {
-                                private _throw = selectRandom ALiVE_CivPop_Crowd_Weapons;
-                                doStop _man;
+                            if (_violent && {random 1 < 0.1} && {count _turned < ceil (count _crowd / 4)}) then {
+                                // One in four at most pulls a gun and fights for the other side
+                                private _weapons = [ALIVE_civilianWeapons, "CIV", [["hgun_Pistol_heavy_01_F", "11Rnd_45ACP_Mag"]]] call ALIVE_fnc_hashGet;
+                                if (_weapons isEqualTo []) then { _weapons = [["hgun_Pistol_heavy_01_F", "11Rnd_45ACP_Mag"]] };
+                                (selectRandom _weapons) params ["_weapon", "_ammo"];
                                 [_man, ""] call ALiVE_fnc_switchMove;
-                                _man setDir (_man getDir (vehicle _target));
-                                _man addWeapon "ALiVE_Throw";
-                                _man addMagazine [_throw select 0, 1];
-                                _man selectWeapon "ALiVE_Throw";
-                                _man forceWeaponFire [_throw select 1, _throw select 1];
+                                _man addMagazine _ammo;
+                                _man addMagazine _ammo;
+                                _man addWeapon _weapon;
+                                [_man, _target] call ALIVE_fnc_addToEnemyGroup;
+                                (group _man) setVariable ["ALIVE_profileIgnore", true, true];
+                                _man setCombatMode "RED";
+                                _man setBehaviour "AWARE";
+                                _man doTarget _target;
+                                _turned pushBack _man;
+                            } else {
+                                if (random 1 < 0.4) then {
+                                    private _throw = selectRandom ALiVE_CivPop_Crowd_Weapons;
+                                    doStop _man;
+                                    [_man, ""] call ALiVE_fnc_switchMove;
+                                    _man setDir (_man getDir (vehicle _target));
+                                    _man addWeapon "ALiVE_Throw";
+                                    _man addMagazine [_throw select 0, 1];
+                                    _man selectWeapon "ALiVE_Throw";
+                                    _man forceWeaponFire [_throw select 1, _throw select 1];
+                                } else {
+                                    // He shouts and waves at the soldiers rather than standing about in the group's formation
+                                    if !((animationState _man) in ALiVE_CivPop_Crowd_Anims_Protest) then {
+                                        _man setDir (_man getDir (vehicle _target));
+                                        [_man, selectRandom ALiVE_CivPop_Crowd_Anims_Protest] call ALiVE_fnc_switchMove;
+                                    };
+                                };
                             };
                         };
                     };
@@ -869,7 +888,7 @@ switch (_action) do {
                 private _range = [300, 100] select (time > _giveUp);
                 {
                     private _man = _x;
-                    if (isNull _man || {allPlayers findIf { (vehicle _x) distance2D _man < _range } == -1}) then {
+                    if (isNull _man || {(allPlayers - entities "HeadlessClient_F") findIf { (vehicle _x) distance2D _man < _range } == -1}) then {
                         if (!isNull _man && {_man in _turned}) then {
                             private _g = group _man;
                             deleteVehicle _man;
