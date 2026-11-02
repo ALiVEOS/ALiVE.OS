@@ -233,7 +233,7 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
     if (_moveInstantly) then {
         private _watchers = (allPlayers - entities "HeadlessClient_F") + (allUnitsUAV select { isUavConnected _x });
         if (!isNil "ALIVE_profileSystem" && {[ALIVE_profileSystem, "zeusSpawn", false] call ALiVE_fnc_hashGet}) then {
-            _watchers append allCurators;
+            _watchers append (allCurators select {isPlayer (getAssignedCuratorUnit _x)});
         };
         if (!isNil "ALiVE_SpawnSources" && {ALiVE_SpawnSources isEqualType []}) then {
             _watchers append (ALiVE_SpawnSources select { _x isEqualType objNull && {!isNull _x} });

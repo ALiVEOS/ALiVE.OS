@@ -61,7 +61,7 @@ private _cleanup = {
         // gone once no player can see it happen
         [_man] spawn {
             params ["_man"];
-            waitUntil { sleep 10; isNull _man || {(allPlayers findIf { (_x distance2D _man) < 500 }) < 0} };
+            waitUntil { sleep 10; isNull _man || {((allPlayers - entities "HeadlessClient_F") findIf { (_x distance2D _man) < 500 }) < 0} };
             if (!isNull _man) then { deleteVehicle _man };
         };
     };

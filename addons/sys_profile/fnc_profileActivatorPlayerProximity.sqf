@@ -55,7 +55,7 @@ switch (_operation) do {
             _logic set ["iteration",_iteration];
 
             private _spawnSourcesUnfiltered =
-                allPlayers +
+                (allPlayers - entities "HeadlessClient_F") +
                 (allUnitsUAV select {isUavConnected _x}) +
                 // A unit a Zeus is remote-controlling keeps itself and its
                 // surroundings live, or it could be put away mid-control.
@@ -65,7 +65,7 @@ switch (_operation) do {
             private _zeusSpawn = [MOD(profileSystem),"zeusSpawn"] call ALiVE_fnc_hashGet;
 
             if (_zeusSpawn) then {
-                _spawnSourcesUnfiltered append allCurators;
+                _spawnSourcesUnfiltered append (allCurators select {isPlayer (getAssignedCuratorUnit _x)});
             };
 
             while {!(_spawnSourcesUnfiltered isEqualTo [])} do {

@@ -32,6 +32,40 @@ Highhead
 Jman
 ---------------------------------------------------------------------------- */
 
+// Each Zeus module follows its player's camera, so the server can spawn ALiVE units
+// around wherever the Zeus is looking. Out of the Zeus interface the module is parked
+// off the map, or follows a unit being remote controlled. This runs on every client
+// even when no Zeus module was placed in the editor, since a Zeus added once the
+// mission is running (by a script or a Zeus mod) needs it just as much; with no Zeus
+// assigned to the player it does nothing. The server only counts a Zeus module that a
+// player is assigned to, so one with nobody in it no longer keeps its area spawned.
+if (hasInterface) then {
+    [] spawn {
+        private _parked = [-5000,-5000,5000];
+        while {true} do {
+            private _curatorLogic = getAssignedCuratorLogic player;
+
+            if !(isNull _curatorLogic) then {
+                if !(isNull curatorCamera) then {
+                    _curatorLogic setPosATL (getPosATL curatorCamera);
+                } else {
+                    if (cameraOn == vehicle player) then {
+                        // Parked already: setPosATL is sent to every machine, so don't repeat it each second
+                        if ((getPosATL _curatorLogic) distance _parked > 1) then {
+                            _curatorLogic setPosATL _parked;
+                        };
+                    } else {
+                        if !(isNull cameraOn) then {
+                            _curatorLogic setPosATL (getPosATL cameraOn);
+                        };
+                    };
+                };
+            };
+            sleep 1;
+        };
+    };
+};
+
 //Exit if Zeus not placed with an empty default function to save perf
 if !(["ModuleCurator_F"] call ALiVE_fnc_isModuleAvailable) exitwith {ALiVE_fnc_ZeusRegister = {}};
 
@@ -64,40 +98,5 @@ ALiVE_fnc_ZeusMarkPlaced = {
             };
         } forEach allCurators;
         sleep 10;
-    };
-};
-
-//BIS give me an EH when Zeus is active so I can start and end that loop
-//Run loop only on clients
-if (hasInterface) then {
-    [] spawn {
-        private ["_curatorLogic","_curatorCamPos"];
-        
-        while {true} do {
-            private _curatorLogic = getAssignedCuratorLogic player;
-
-            if !(isnil "_curatorLogic") then {
-                if !(isnull curatorcamera) then {
-                    //["Zeus is active"] call ALiVE_fnc_DumpR;
-
-                    _curatorCamPos = getposATL curatorcamera;
-                    _curatorLogic setposATL _curatorCamPos;
-                } else {
-                    if (cameraOn == vehicle player) then {
-                        //["Zeus is inactive and no unit is remote controlled"] call ALiVE_fnc_DumpR;
-
-                        _curatorLogic setposATL [-5000,-5000,5000];
-                    } else {
-                        if !(isNull cameraOn) then {
-                            //["Zeus is inactive and unit %1 is remote controlled",_controlledObject] call ALiVE_fnc_DumpR;
-                            
-                            _curatorCamPos = getposATL cameraOn;
-                            _curatorLogic setposATL _curatorCamPos;
-                        };
-                    };
-                };
-            };
-            sleep 1;
-        };
     };
 };

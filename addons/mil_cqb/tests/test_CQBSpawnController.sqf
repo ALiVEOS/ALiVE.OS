@@ -122,7 +122,7 @@ private _makeGroup = {
     [(_logic getVariable "nextClaimCycleAt") >= _acceptedAt + 2, "accepted snapshot schedules next cycle two seconds later"] call _check;
     private _expectedSources = allPlayers - entities "HeadlessClient_F";
     if (!isNil "ALIVE_profileSystem" && {[ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet}) then {
-        {_expectedSources pushBackUnique _x} forEach allCurators;
+        {_expectedSources pushBackUnique _x} forEach (allCurators select {isPlayer (getAssignedCuratorUnit _x)});
     };
     private _snapshotSources = _logic getVariable "spawnSources";
     private _sourceCategory = {

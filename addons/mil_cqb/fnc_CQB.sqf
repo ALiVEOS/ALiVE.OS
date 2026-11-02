@@ -1194,7 +1194,7 @@ switch(_operation) do {
         if (isNil "_sources") then {
             _sources = allPlayers - entities "HeadlessClient_F";
             if (!isNil "ALIVE_profileSystem" && {[ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet}) then {
-                _sources append allCurators;
+                _sources append (allCurators select {isPlayer (getAssignedCuratorUnit _x)});
             };
         };
 
@@ -2102,7 +2102,7 @@ switch(_operation) do {
 
                 private _sources = allPlayers - entities "HeadlessClient_F";
                 if (!isNil "ALIVE_profileSystem" && {[ALIVE_profileSystem, "zeusSpawn"] call ALiVE_fnc_hashGet}) then {
-                    {_sources pushBackUnique _x} forEach allCurators;
+                    {_sources pushBackUnique _x} forEach (allCurators select {isPlayer (getAssignedCuratorUnit _x)});
                 };
 
                 private _deduplicatedSources = [];

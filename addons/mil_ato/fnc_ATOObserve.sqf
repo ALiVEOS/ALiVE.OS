@@ -91,10 +91,8 @@ switch(_operation) do {
     // the mission maker put it, which could be the airfield. Headless clients
     // sit in allPlayers and are dropped, as #918 did for the shared range test.
     //
-    // That loop starts only when a Zeus module is placed in the mission. A
-    // curator made later by a script is counted where its logic stands rather
-    // than where its camera is, so its camera goes unseen, as every Zeus camera
-    // did before this.
+    // That loop runs on every player's machine, so a curator made later by a
+    // script or a Zeus mod follows its camera too.
     //
     // Needs no instance, so the effector asks it with a nil logic.
     case "playersNear": {

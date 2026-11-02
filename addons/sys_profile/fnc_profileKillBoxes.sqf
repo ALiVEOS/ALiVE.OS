@@ -58,7 +58,7 @@ while {true} do {
             private _pos = markerPos _x;
             // Only while a player is within reach of it, so a box left by someone who has gone
             // doesn't hold the AI there for the rest of the mission.
-            if ((allPlayers findIf { (_x distance2D _pos) < KILLBOX_PLAYER_RANGE }) >= 0) then {
+            if (((allPlayers - entities "HeadlessClient_F") findIf { (_x distance2D _pos) < KILLBOX_PLAYER_RANGE }) >= 0) then {
                 _wanted set [_x, [_pos, _radius min KILLBOX_MAX_RADIUS]];
             };
         };

@@ -52,7 +52,7 @@ _players = allPlayers - entities "HeadlessClient_F";
 // despawn checks read the same option. No Profile System module placed
 // -> ALIVE_profileSystem is nil -> curators not counted (lazy-eval safe).
 if (!isnil "ALIVE_profileSystem" && { [ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet }) then {
-    _players append allCurators;
+    _players append (allCurators select {isPlayer (getAssignedCuratorUnit _x)});
 };
 _InRange = [];
 

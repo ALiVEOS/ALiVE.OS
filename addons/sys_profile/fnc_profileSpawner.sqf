@@ -296,14 +296,14 @@ if (
                 // which would make a profile in that corner look nearest to
                 // everything.
                 private _spawnSources = (
-                    allPlayers +
+                    (allPlayers - entities "HeadlessClient_F") +
                     (allUnitsUAV select {isUavConnected _x}) +
                     (allUnits select {!isNull (_x getVariable ["bis_fnc_moduleRemoteControl_owner", objNull])}) +
                     ALiVE_SpawnSources
                 ) select {!isNull _x};
 
                 if ([MOD(profileSystem),"zeusSpawn"] call ALiVE_fnc_hashGet) then {
-                    _spawnSources append allCurators;
+                    _spawnSources append (allCurators select {isPlayer (getAssignedCuratorUnit _x)});
                 };
 
                 // Same 30 m collapse as the proximity activator: a squad
