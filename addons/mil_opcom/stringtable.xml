@@ -777,7 +777,7 @@
     <English>Recruit only what placements place:</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_ASYM_RECRUIT_FOLLOWS_PLACEMENTS_COMMENT">
-    <English>Yes: the Military Placement and Custom Military Placement modules synced to this commander decide what insurgents recruit. If none of them places AA, no group with an AA vehicle is recruited at any escalation level; if every one sets Armour and Mechanised to 0, no wheeled APC group is. No (the default): insurgents recruit AA and APC groups as escalation rises, whatever the placements hold.</English>
+    <English>Yes: the Military Placement and Custom Military Placement modules synced to this commander decide what insurgents recruit. If none of them places AA, no group with an AA vehicle is recruited at any escalation level; if every one sets Armour or Mechanised to 0, no wheeled APC group is. No (the default): insurgents recruit AA and APC groups as escalation rises, whatever the placements hold.</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_ROADBLOCKS">
     <English>Roadblocks:</English>
