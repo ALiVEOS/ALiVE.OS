@@ -47,7 +47,7 @@ ALiVE_FOB_placeSpot = {
     _pos set [2, 0];
     private _up = surfaceNormal _pos;
     if ((_row select 2) in ["FORTIFICATION", "SUPPLY"]) then {
-        (["surface", [_pos, ((eyePos player) select 2) + 1.5, ALiVE_FOB_ghost]] call ALiVE_fnc_fobPlacement) params ["_atl", "_n"];
+        (["surface", [_pos, ((eyePos player) select 2) + 1.5, ALiVE_FOB_ghost, (getDir player + _turn) % 360, ALiVE_FOB_placeState param [5, []]]] call ALiVE_fnc_fobPlacement) params ["_atl", "_n"];
         _pos = _atl; _up = _n;
     };
     private _deploying = (_row select 2) == "DEPLOY";
@@ -308,14 +308,39 @@ switch (_operation) do {
 
     // The first surface straight down from a height (ASL) at a spot: [position ATL, its up]. Used
     // here and by the server's build, which runs it again from the height the player sent.
+    // Given the heading and the object's box, bare ground is met under the whole footprint: the
+    // ground's height at the four corners decides the tilt and the height, so a wide piece on uneven
+    // ground no longer digs one end in (Blazingfire, 2 Nov: a 3 block H-barrier went 0.39 m in at
+    // one corner on a gentle slope, tilted to the one ground triangle under its middle).
     case "surface": {
-        _args params ["_spot", "_fromASL", ["_ignore", objNull]];
+        _args params ["_spot", "_fromASL", ["_ignore", objNull], ["_dir", 0], ["_box", []]];
         private _ground = getTerrainHeightASL _spot;
         private _hits = lineIntersectsSurfaces [[_spot select 0, _spot select 1, _fromASL max (_ground + 0.1)], [_spot select 0, _spot select 1, _ground - 0.1], _ignore, objNull, true, 5, "GEOM", "NONE"];
         // never on top of a soldier standing there
         private _i = _hits findIf { isNull (_x select 2) || {!((_x select 2) isKindOf "CAManBase")} };
         private _hit = if (_i < 0) then { [] } else { _hits select _i };
-        if (_hit isEqualTo [] || {isNull (_hit select 2)}) exitWith { [[_spot select 0, _spot select 1, 0], surfaceNormal _spot] };
+        if (_hit isEqualTo [] || {isNull (_hit select 2)}) exitWith {
+            private _flat = [[_spot select 0, _spot select 1, 0], surfaceNormal _spot];
+            if (count _box < 2) exitWith { _flat };
+            _box params ["_b0", "_b1"];
+            private _s = sin _dir;
+            private _c = cos _dir;
+            // the box's four bottom corners, turned to the heading, on the ground (ASL)
+            private _pts = [[_b0 select 0, _b0 select 1], [_b1 select 0, _b0 select 1], [_b1 select 0, _b1 select 1], [_b0 select 0, _b1 select 1]] apply {
+                _x params ["_mx", "_my"];
+                private _wx = (_spot select 0) + _mx * _c + _my * _s;
+                private _wy = (_spot select 1) - _mx * _s + _my * _c;
+                [_wx, _wy, getTerrainHeightASL [_wx, _wy]]
+            };
+            // the plane through them: its up from the two diagonals, its height where the object stands
+            private _n = vectorNormalized (((_pts select 2) vectorDiff (_pts select 0)) vectorCrossProduct ((_pts select 3) vectorDiff (_pts select 1)));
+            if ((_n select 2) < 0) then { _n = _n vectorMultiply -1 };
+            if ((_n select 2) < 0.5) exitWith { _flat };
+            private _m = ((_pts select 0) vectorAdd (_pts select 1) vectorAdd (_pts select 2) vectorAdd (_pts select 3)) vectorMultiply 0.25;
+            private _z = (_m select 2) - ((_n select 0) * ((_spot select 0) - (_m select 0)) + (_n select 1) * ((_spot select 1) - (_m select 1))) / (_n select 2);
+            // on a crest the plane runs under the middle: kept at the ground there, the ends stand a little proud
+            [[_spot select 0, _spot select 1, (_z - getTerrainHeightASL _spot) max 0], _n]
+        };
         [ASLToATL (_hit select 0), _hit select 1]
     };
 };

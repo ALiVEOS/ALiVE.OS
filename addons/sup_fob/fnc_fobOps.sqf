@@ -645,14 +645,18 @@ switch (_op) do {
         // on the first surface at or below the height the player placed at: a roof, a floor or the
         // ground, found here, never taken from the player. No higher than the player's head.
         private _up = surfaceNormal _pos;
+        private _o = objNull;
         // In single player the placement preview is on this machine too, and Place deletes it in the same frame
         // as this build: deleteVehicle only takes it away at the frame's end, so the ray met the preview and the
         // object took the slope of one of its faces, tipped and half in the ground (Blazingfire, 2 Nov)
         if (_fromASL > -1e5) then {
-            (["surface", [_pos, (_fromASL + 0.25) min (((eyePos _caller) select 2) + 1.5), missionNamespace getVariable ["ALiVE_FOB_ghostGone", objNull]]] call ALiVE_fnc_fobPlacement) params ["_atl", "_n"];
+            // the object's box for fitting it to the ground: made out of the way first, then put in place
+            _o = createVehicle [_class, [0, 0, 1000], [], 0, "CAN_COLLIDE"];
+            private _box = if (isNull _o) then { [] } else { boundingBoxReal _o };
+            (["surface", [_pos, (_fromASL + 0.25) min (((eyePos _caller) select 2) + 1.5), missionNamespace getVariable ["ALiVE_FOB_ghostGone", objNull], _dir, _box]] call ALiVE_fnc_fobPlacement) params ["_atl", "_n"];
             _pos = _atl; _up = _n;
         };
-        private _o = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
+        if (isNull _o) then { _o = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"] };
         if (isNull _o) exitWith {
             ["credit", [_id, _cost, "refund " + _class]] call ALiVE_fnc_fobSupply;
             ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
