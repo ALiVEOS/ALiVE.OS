@@ -423,6 +423,26 @@ _saveServer = {
         };
     };
 
+    if (["ALiVE_SYS_CRATERS"] call ALiVE_fnc_isModuleAvailable) then {
+
+        private ["_result","_messages"];
+
+        if!(isNil "_admin") then {
+            [["updateList","ALiVE Persistent Craters - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
+        };
+
+        ["Exit - Server Save Persistent Craters"] call ALiVE_fnc_dump;
+
+        _result = [] call ALiVE_fnc_cratersSaveData;
+
+        if(!(isNil "_admin") && !(isNil "_result")) then {
+            _messages = _result select 1;
+            {
+                [["updateList",_x],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
+            } forEach _messages;
+        };
+    };
+
     if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
 
         private ["_results","_result","_messages"];

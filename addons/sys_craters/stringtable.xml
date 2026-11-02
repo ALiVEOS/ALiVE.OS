@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_CRATERS">
+    <English>Persistent Craters</English>
+    <Chinesesimp>持久弹坑</Chinesesimp>
+    <Chinese>持久彈坑</Chinese>
+    <Spanish>Cráteres persistentes</Spanish>
+    <French>Cratères persistants</French>
+    <Portuguese>Crateras persistentes</Portuguese>
+    <Russian>Постоянные воронки</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_COMMENT">
+    <English>Shell, rocket and bomb hits leave craters that stay. Artillery and bombs also dig the ground. Roads, runways, buildings, towns, FOBs and AI Commander bases are kept clear.</English>
+    <Chinesesimp>炮弹、火箭弹和炸弹的落点会留下不会消失的弹坑。火炮和炸弹还会在地面上炸出凹坑。道路、跑道、建筑、城镇、前哨基地和 AI 指挥官的基地不受影响。</Chinesesimp>
+    <Chinese>砲彈、火箭彈和炸彈的落點會留下不會消失的彈坑。火砲和炸彈還會在地面上炸出凹坑。道路、跑道、建築、城鎮、前哨基地和 AI 指揮官的基地不受影響。</Chinese>
+    <Spanish>Los impactos de proyectiles, cohetes y bombas dejan cráteres que permanecen. La artillería y las bombas además excavan el terreno. Carreteras, pistas, edificios, pueblos, FOB y bases del Comandante IA quedan libres.</Spanish>
+    <French>Les impacts d'obus, de roquettes et de bombes laissent des cratères qui restent. L'artillerie et les bombes creusent aussi le sol. Routes, pistes, bâtiments, villes, FOB et bases du Commandant IA restent intacts.</French>
+    <Portuguese>Impactos de projéteis, foguetes e bombas deixam crateras que permanecem. Artilharia e bombas também escavam o terreno. Estradas, pistas, edifícios, cidades, FOBs e bases do Comandante IA ficam livres.</Portuguese>
+    <Russian>Попадания снарядов, ракет и бомб оставляют воронки, которые не исчезают. Артиллерия и бомбы также углубляют землю. Дороги, ВПП, здания, города, FOB и базы ИИ-командира не затрагиваются.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_USAGE">
+    <English>Place one. Nothing to sync.</English>
+    <Chinesesimp>放置一个即可，无需同步。</Chinesesimp>
+    <Chinese>放置一個即可，無需同步。</Chinese>
+    <Spanish>Coloca uno. No hace falta sincronizar nada.</Spanish>
+    <French>Placez-en un. Rien à synchroniser.</French>
+    <Portuguese>Coloque um. Nada a sincronizar.</Portuguese>
+    <Russian>Поставьте один. Синхронизировать ничего не нужно.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_YES">
+    <English>Yes</English>
+    <Chinesesimp>是</Chinesesimp>
+    <Chinese>是</Chinese>
+    <Spanish>Sí</Spanish>
+    <French>Oui</French>
+    <Portuguese>Sim</Portuguese>
+    <Russian>Да</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_NO">
+    <English>No</English>
+    <Chinesesimp>否</Chinesesimp>
+    <Chinese>否</Chinese>
+    <Spanish>No</Spanish>
+    <French>Non</French>
+    <Portuguese>Não</Portuguese>
+    <Russian>Нет</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_DEBUG">
+    <English>Debug</English>
+    <Chinesesimp>调试</Chinesesimp>
+    <Chinese>除錯</Chinese>
+    <Spanish>Depuración</Spanish>
+    <French>Débogage</French>
+    <Portuguese>Depuração</Portuguese>
+    <Russian>Отладка</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_DEBUG_COMMENT">
+    <English>Writes what happens to each hit to the server log and marks every crater on the map.</English>
+    <Chinesesimp>将每次命中的处理情况写入服务器日志，并在地图上标出每个弹坑。</Chinesesimp>
+    <Chinese>將每次命中的處理情況寫入伺服器日誌，並在地圖上標出每個彈坑。</Chinese>
+    <Spanish>Escribe en el registro del servidor qué pasa con cada impacto y marca cada cráter en el mapa.</Spanish>
+    <French>Écrit dans le journal du serveur ce qu'il advient de chaque impact et marque chaque cratère sur la carte.</French>
+    <Portuguese>Escreve no log do servidor o que acontece com cada impacto e marca cada cratera no mapa.</Portuguese>
+    <Russian>Пишет в журнал сервера, что происходит с каждым попаданием, и отмечает каждую воронку на карте.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_MIN_SIZE">
+    <English>Smallest hit that leaves a crater</English>
+    <Chinesesimp>留下弹坑的最小命中</Chinesesimp>
+    <Chinese>留下彈坑的最小命中</Chinese>
+    <Spanish>Impacto más pequeño que deja cráter</Spanish>
+    <French>Plus petit impact qui laisse un cratère</French>
+    <Portuguese>Menor impacto que deixa cratera</Portuguese>
+    <Russian>Наименьшее попадание, оставляющее воронку</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_MIN_SIZE_COMMENT">
+    <English>Grenade launchers and up, mortars and rockets and up, or artillery and bombs only. Bullets, smoke and flares never leave one.</English>
+    <Chinesesimp>榴弹发射器及以上、迫击炮和火箭弹及以上，或仅火炮和炸弹。子弹、烟雾弹和照明弹不会留下弹坑。</Chinesesimp>
+    <Chinese>榴彈發射器及以上、迫擊砲和火箭彈及以上，或僅火砲和炸彈。子彈、煙霧彈和照明彈不會留下彈坑。</Chinese>
+    <Spanish>Lanzagranadas y mayores, morteros y cohetes y mayores, o solo artillería y bombas. Las balas, el humo y las bengalas nunca dejan cráter.</Spanish>
+    <French>Lance-grenades et plus, mortiers et roquettes et plus, ou artillerie et bombes seulement. Balles, fumigènes et fusées éclairantes n'en laissent jamais.</French>
+    <Portuguese>Lança-granadas e acima, morteiros e foguetes e acima, ou só artilharia e bombas. Balas, fumaça e sinalizadores nunca deixam cratera.</Portuguese>
+    <Russian>Гранатомёты и крупнее, миномёты и ракеты и крупнее или только артиллерия и бомбы. Пули, дым и осветительные ракеты воронок не оставляют.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_MIN_SIZE_GL">
+    <English>Grenade launchers and up</English>
+    <Chinesesimp>榴弹发射器及以上</Chinesesimp>
+    <Chinese>榴彈發射器及以上</Chinese>
+    <Spanish>Lanzagranadas y mayores</Spanish>
+    <French>Lance-grenades et plus</French>
+    <Portuguese>Lança-granadas e acima</Portuguese>
+    <Russian>Гранатомёты и крупнее</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_MIN_SIZE_MORTAR">
+    <English>Mortars and rockets and up</English>
+    <Chinesesimp>迫击炮和火箭弹及以上</Chinesesimp>
+    <Chinese>迫擊砲和火箭彈及以上</Chinese>
+    <Spanish>Morteros y cohetes y mayores</Spanish>
+    <French>Mortiers et roquettes et plus</French>
+    <Portuguese>Morteiros e foguetes e acima</Portuguese>
+    <Russian>Миномёты и ракеты и крупнее</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_MIN_SIZE_ARTY">
+    <English>Artillery and bombs only</English>
+    <Chinesesimp>仅火炮和炸弹</Chinesesimp>
+    <Chinese>僅火砲和炸彈</Chinese>
+    <Spanish>Solo artillería y bombas</Spanish>
+    <French>Artillerie et bombes seulement</French>
+    <Portuguese>Só artilharia e bombas</Portuguese>
+    <Russian>Только артиллерия и бомбы</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_CAP">
+    <English>Most craters kept</English>
+    <Chinesesimp>最多保留的弹坑数</Chinesesimp>
+    <Chinese>最多保留的彈坑數</Chinese>
+    <Spanish>Máximo de cráteres</Spanish>
+    <French>Nombre maximal de cratères</French>
+    <Portuguese>Máximo de crateras</Portuguese>
+    <Russian>Наибольшее число воронок</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_CAP_COMMENT">
+    <English>When there are more than this, the oldest fill back in.</English>
+    <Chinesesimp>超过此数量时，最早的弹坑会被填平。</Chinesesimp>
+    <Chinese>超過此數量時，最早的彈坑會被填平。</Chinese>
+    <Spanish>Cuando hay más, los más antiguos se rellenan.</Spanish>
+    <French>Au-delà, les plus anciens se rebouchent.</French>
+    <Portuguese>Quando houver mais, as mais antigas são preenchidas.</Portuguese>
+    <Russian>Когда их больше, самые старые засыпаются.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_DIG">
+    <English>Dig the ground</English>
+    <Chinesesimp>挖开地面</Chinesesimp>
+    <Chinese>挖開地面</Chinese>
+    <Spanish>Excavar el terreno</Spanish>
+    <French>Creuser le sol</French>
+    <Portuguese>Escavar o terreno</Portuguese>
+    <Russian>Углублять землю</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_DIG_COMMENT">
+    <English>Artillery and bombs lower the ground under the blast. Smaller hits leave a crater mark only.</English>
+    <Chinesesimp>火炮和炸弹会让爆炸处的地面下陷。较小的命中只留下弹坑痕迹。</Chinesesimp>
+    <Chinese>火砲和炸彈會讓爆炸處的地面下陷。較小的命中只留下彈坑痕跡。</Chinese>
+    <Spanish>La artillería y las bombas hunden el terreno bajo la explosión. Los impactos menores solo dejan la marca del cráter.</Spanish>
+    <French>L'artillerie et les bombes abaissent le sol sous l'explosion. Les impacts plus petits ne laissent que la marque du cratère.</French>
+    <Portuguese>Artilharia e bombas rebaixam o terreno sob a explosão. Impactos menores deixam só a marca da cratera.</Portuguese>
+    <Russian>Артиллерия и бомбы опускают землю под взрывом. Меньшие попадания оставляют только след воронки.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_DEPTH">
+    <English>Crater depth (metres)</English>
+    <Chinesesimp>弹坑深度（米）</Chinesesimp>
+    <Chinese>彈坑深度（公尺）</Chinese>
+    <Spanish>Profundidad del cráter (metros)</Spanish>
+    <French>Profondeur du cratère (mètres)</French>
+    <Portuguese>Profundidade da cratera (metros)</Portuguese>
+    <Russian>Глубина воронки (метры)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_DEPTH_COMMENT">
+    <English>How deep artillery digs. Bombs dig half as much again. 0.2 to 1.2.</English>
+    <Chinesesimp>火炮挖掘的深度。炸弹再深一半。0.2 到 1.2。</Chinesesimp>
+    <Chinese>火砲挖掘的深度。炸彈再深一半。0.2 到 1.2。</Chinese>
+    <Spanish>Cuánto excava la artillería. Las bombas excavan la mitad más. De 0,2 a 1,2.</Spanish>
+    <French>Profondeur creusée par l'artillerie. Les bombes creusent moitié plus. De 0,2 à 1,2.</French>
+    <Portuguese>Quanto a artilharia escava. Bombas escavam metade a mais. De 0,2 a 1,2.</Portuguese>
+    <Russian>Насколько глубоко копает артиллерия. Бомбы копают в полтора раза глубже. От 0,2 до 1,2.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_BUILDING_DISTANCE">
+    <English>Keep clear of buildings (metres)</English>
+    <Chinesesimp>与建筑保持的距离（米）</Chinesesimp>
+    <Chinese>與建築保持的距離（公尺）</Chinese>
+    <Spanish>Distancia a los edificios (metros)</Spanish>
+    <French>Distance aux bâtiments (mètres)</French>
+    <Portuguese>Distância dos edifícios (metros)</Portuguese>
+    <Russian>Отступ от зданий (метры)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_BUILDING_DISTANCE_COMMENT">
+    <English>No digging this close to a building, a crater mark only. No crater at all within 8 metres.</English>
+    <Chinesesimp>在此距离内靠近建筑时不挖地面，只留弹坑痕迹。8 米内完全没有弹坑。</Chinesesimp>
+    <Chinese>在此距離內靠近建築時不挖地面，只留彈坑痕跡。8 公尺內完全沒有彈坑。</Chinese>
+    <Spanish>Sin excavar a esta distancia de un edificio, solo la marca del cráter. Ningún cráter a menos de 8 metros.</Spanish>
+    <French>Pas de creusement aussi près d'un bâtiment, seulement la marque du cratère. Aucun cratère à moins de 8 mètres.</French>
+    <Portuguese>Sem escavar a esta distância de um edifício, só a marca da cratera. Nenhuma cratera a menos de 8 metros.</Portuguese>
+    <Russian>Ближе этого к зданию земля не копается, остаётся только след. Ближе 8 метров воронок нет совсем.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_PERSISTENT">
+    <English>Keep craters over a save</English>
+    <Chinesesimp>存档时保留弹坑</Chinesesimp>
+    <Chinese>存檔時保留彈坑</Chinese>
+    <Spanish>Conservar cráteres al guardar</Spanish>
+    <French>Conserver les cratères à la sauvegarde</French>
+    <Portuguese>Manter crateras ao salvar</Portuguese>
+    <Russian>Сохранять воронки</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_PERSISTENT_COMMENT">
+    <English>Saved with the mission and put back on load. Uses ALiVE Data when the mission has it, otherwise the server's profile.</English>
+    <Chinesesimp>随任务一起保存，加载时恢复。任务有 ALiVE Data 时使用它，否则使用服务器的配置文件。</Chinesesimp>
+    <Chinese>隨任務一起儲存，載入時恢復。任務有 ALiVE Data 時使用它，否則使用伺服器的設定檔。</Chinese>
+    <Spanish>Se guardan con la misión y se restauran al cargar. Usa ALiVE Data si la misión lo tiene; si no, el perfil del servidor.</Spanish>
+    <French>Sauvegardés avec la mission et remis au chargement. Utilise ALiVE Data si la mission l'a, sinon le profil du serveur.</French>
+    <Portuguese>Salvas com a missão e restauradas ao carregar. Usa ALiVE Data se a missão tiver; senão, o perfil do servidor.</Portuguese>
+    <Russian>Сохраняются с миссией и восстанавливаются при загрузке. Используется ALiVE Data, если он есть в миссии, иначе профиль сервера.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_SAVE_INTERVAL">
+    <English>Save interval (seconds)</English>
+    <Chinesesimp>保存间隔（秒）</Chinesesimp>
+    <Chinese>儲存間隔（秒）</Chinese>
+    <Spanish>Intervalo de guardado (segundos)</Spanish>
+    <French>Intervalle de sauvegarde (secondes)</French>
+    <Portuguese>Intervalo de salvamento (segundos)</Portuguese>
+    <Russian>Интервал сохранения (секунды)</Russian>
+</Key>
+<Key ID="STR_ALIVE_CRATERS_SAVE_INTERVAL_COMMENT">
+    <English>Saved this often when something changed. Autosave and Save and Exit always save.</English>
+    <Chinesesimp>有变化时按此间隔保存。自动保存和保存并退出总会保存。</Chinesesimp>
+    <Chinese>有變化時按此間隔儲存。自動儲存和儲存並退出總會儲存。</Chinese>
+    <Spanish>Se guarda con esta frecuencia si algo cambió. El autoguardado y Guardar y salir siempre guardan.</Spanish>
+    <French>Sauvegarde à cette fréquence si quelque chose a changé. La sauvegarde auto et Sauvegarder et quitter sauvegardent toujours.</French>
+    <Portuguese>Salva com esta frequência quando algo mudou. O salvamento automático e Salvar e sair sempre salvam.</Portuguese>
+    <Russian>Сохраняется с этой частотой, если что-то изменилось. Автосохранение и «Сохранить и выйти» сохраняют всегда.</Russian>
+</Key>
+</Container></Package></Project>

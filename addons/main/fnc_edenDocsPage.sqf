@@ -84,6 +84,7 @@ if (_page isEqualTo "") then {
         ["alive_sys_factioncompiler",           "sys_factioncompiler"],
         ["alive_sys_factioncompiler_category",  "sys_factioncompiler"],
         ["alive_sys_classpicker",               "sys_classpicker"],
+        ["alive_sys_craters",                   "sys_craters"],
         ["alive_sys_adminactions",              "sys_adminactions"],
         ["alive_sys_crewinfo",                  "sys_crewinfo"],
         ["alive_sys_gc",                        "sys_gc"],

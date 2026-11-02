@@ -163,6 +163,11 @@ private _handle = [_interval, _once] spawn {
 			    [] call ALiVE_fnc_fobSaveData;
 			};
 
+			if (["ALiVE_SYS_CRATERS"] call ALiVE_fnc_isModuleAvailable) then {
+			    ["SYS DATA PNS Autosave - Server Save Persistent Craters"] call ALiVE_fnc_dump;
+			    [] call ALiVE_fnc_cratersSaveData;
+			};
+
 			if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
 			    ["SYS DATA PNS Autosave - Server Save Task State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_taskHandlerSaveData;
