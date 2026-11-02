@@ -280,7 +280,11 @@ if (_entryType == "VEHICLE") then {
     // destruction and handler unregistration.
     private _vehicleMissing = isNil "_profileVehicle";
     private _vehicleObject = if (_vehicleMissing) then { objNull } else { [_profileVehicle, "vehicle", objNull] call ALiVE_fnc_hashGet };
+    // The crew's empty group profile can be gone while the vehicle is still there (removed by
+    // something else in the meantime); with nothing to add the crew to, every step below failed on
+    // it, so it's handled like a lost vehicle: dropped, or the crew comes on foot
     private _isOrphaned = _vehicleMissing
+        || {isNil "_profileEntity"}
         || {!isNull _vehicleObject && {!alive _vehicleObject}};
 
     if (_isOrphaned) then {
