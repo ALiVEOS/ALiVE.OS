@@ -1154,18 +1154,11 @@ class CfgVehicles {
                             property      = "ALiVE_MIL_C2ISTAR_copDisplaySides";
                             displayName   = "$STR_ALIVE_C2ISTAR_COP_DISPLAY_SIDES";
                             tooltip       = "$STR_ALIVE_C2ISTAR_COP_DISPLAY_SIDES_COMMENT";
-                            control       = "ALiVE_SideChoiceMulti";
+                            control       = "ALiVE_C2ISTARCopSidesChoice";
                             typeName      = "STRING";
                             expression    = "_this setVariable ['copDisplaySides', _value];";
                             defaultValue  = """""";
-                            // attributeLoad / attributeSave overrides re-target the
-                            // SideChoiceMulti substrate (whose own callbacks hardcode
-                            // 'opcomIntelSides') at this attribute's logic variable
-                            // and display label — same pattern as the FactionChoiceMulti
-                            // variants. Without these overrides the picker would read /
-                            // write opcomIntelSides instead of copDisplaySides.
-                            attributeLoad = "[_this, 'copDisplaySides', '$STR_ALIVE_C2ISTAR_COP_DISPLAY_SIDES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiLoad.sqf'";
-                            attributeSave = "[_this, 'copDisplaySides'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
+                            // its own control (Cfg3DEN.hpp): Eden ignores load / save set here
                             ALiVE_showWhen[] = {{"commanderIntelMode", "not", "off"}};
                     };
 

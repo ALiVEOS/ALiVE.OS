@@ -2,6 +2,7 @@
 
 #include "CfgPatches.hpp"
 #include "CfgVehicles.hpp"
+#include "Cfg3DEN.hpp"
 #include "CfgFunctions.hpp"
 #include "CfgHints.hpp"
 #include "CfgTaskTypes.hpp"
