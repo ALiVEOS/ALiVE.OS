@@ -7,7 +7,8 @@ Function: ALIVE_fnc_edenFactionChoiceSave
 Description:
 Eden-attribute `attributeSave` handler for the shared ALiVE_FactionChoice
 control. Returns the currently-selected entry's lbData (the faction
-classname), falling back to the default "OPF_F" if nothing is selected.
+classname). If nothing is selected it keeps the module's earlier value and
+logs a warning; the default "OPF_F" is used only when there is none.
 
 Three storage paths to make the string value survive Eden's numeric-leaning
 Combo serialisation:
@@ -57,20 +58,21 @@ if (typeName _this == "ARRAY") then {
 
 private _ctrl = (_display controlsGroupCtrl 100);
 private _sel = lbCurSel _ctrl;
-private _result = if (_sel < 0) then {
-    if (_allowNone) then { "" } else { "OPF_F" }
-} else {
-    _ctrl lbData _sel
-};
+private _result = if (_sel < 0) then { "" } else { _ctrl lbData _sel };
+if (typeName _result != "STRING") then { _result = "" };
 
-// Defensive: if lbData was somehow empty, don't silently write "" to the
-// logic - UNLESS this is an optional attribute, where "" is the legitimate
-// "(none)" selection
-if (typeName _result != "STRING") then {
-    _result = if (_allowNone) then { "" } else { "OPF_F" };
-};
+// Nothing usable selected on a picker that needs a faction: keep what the
+// module already had rather than quietly writing vanilla CSAT (OPF_F) over
+// it, and say so. OPF_F is only the last resort when there is no earlier
+// value at all.
 if (_result == "" && {!_allowNone}) then {
-    _result = "OPF_F";
+    private _selected = get3DENSelected "logic";
+    private _previous = if (_selected isNotEqualTo []) then { (_selected select 0) getVariable [_varName, ""] } else { "" };
+    if (typeName _previous != "STRING") then { _previous = "" };
+    if (_previous == "") then { _previous = _display getVariable ["value", ""] };
+    if (typeName _previous != "STRING") then { _previous = "" };
+    _result = [_previous, "OPF_F"] select (_previous == "");
+    diag_log format ["ALiVE Faction choice WARNING: no faction was selected for '%1'; kept %2%3", _varName, _result, ["", " (the default, vanilla CSAT) as there was no earlier value"] select (_previous == "")];
 };
 
 // Path 1: Eden "value" slot - for SQM serialisation
