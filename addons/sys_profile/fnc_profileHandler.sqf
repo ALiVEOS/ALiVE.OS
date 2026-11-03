@@ -510,6 +510,13 @@ switch(_operation) do {
             _spacialGrid call ["remove", [_profilePosition,_profile]];
 
             private _profilesCatagorisedSide = [_profilesCatagorised, _profileSide] call ALIVE_fnc_hashGet;
+            // a profile on a side with no tables was never registered (registerProfile refuses it): there is
+            // nothing more to take it out of. A headless client's player profile was one, and its disconnect
+            // ran on into the side tables below with an error at each
+            if (isNil "_profilesCatagorisedSide") exitWith {
+                [_profiles, _profileID] call ALIVE_fnc_hashRem;
+                ([_logic, "profilesById"] call ALIVE_fnc_hashGet) deleteAt _profileID;
+            };
             private _profilesCatagorisedTypes = [_profilesCatagorisedSide, "type"] call ALIVE_fnc_hashGet;
             private _profilesCatagorisedVehicleTypes = [_profilesCatagorisedSide, "vehicleType"] call ALIVE_fnc_hashGet;
 

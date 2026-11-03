@@ -21,6 +21,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_state","_uid","_player","_debug","_players","_entityCount","_playerProfiles","_profileIndex","_registeredProfile","_group","_leader","_units","_unitClasses","_positions","_ranks",
@@ -38,6 +39,12 @@ if (isMultiplayer) then {
 } else {
     _players = [player];
 };
+
+// Only players on a side that has profiles. A headless client (and any other LOGIC-side slot, such as a virtual
+// Zeus) was given a player profile that registering refused, but the player index kept it, so when it left the
+// handler was asked to unregister a profile with no side tables, and the RPT filled with errors
+_players = _players select { (str side group _x) in ["WEST", "EAST", "GUER", "CIV"] };
+if (!isNull _player && {!((str side group _player) in ["WEST", "EAST", "GUER", "CIV"])}) exitWith {};
 
 _playerProfiles = [ALIVE_profileHandler, "getPlayerEntities"] call ALIVE_fnc_profileHandler;
 _profileIndex = [ALIVE_profileHandler,"getPlayerIndex"] call ALIVE_fnc_profileHandler;
