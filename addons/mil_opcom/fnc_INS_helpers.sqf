@@ -71,7 +71,8 @@ ALiVE_fnc_INS_countStandingLabs = {
                 {
                     if !([_x, "deleted", false] call ALiVE_fnc_HashGet) then {
                         private _b = [_opcom, "convertObject", [_x, "factory", []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
-                        if (!isNil "_b" && {_b isEqualType objNull} && {alive _b} && {!(_b getVariable ["ALiVE_MIL_OPCOM_FACTORY_DISABLED", false])}) then { _n = _n + 1 };
+                        // a lab whose smuggler was stopped sits out for a while (ALiVE_fnc_INS_smugglerRunner)
+                        if (!isNil "_b" && {_b isEqualType objNull} && {alive _b} && {!(_b getVariable ["ALiVE_MIL_OPCOM_FACTORY_DISABLED", false])} && {time >= (_b getVariable ["ALiVE_INS_labCutUntil", 0])}) then { _n = _n + 1 };
                     };
                 } forEach ([_opcom, "objectives", []] call ALiVE_fnc_HashGet);
                 _n
@@ -2751,6 +2752,9 @@ ALiVE_fnc_INS_spawnIEDfactory = {
         "%1 disabled the " + _name + " at grid %2!",
         _duration
     ] call ALiVE_fnc_INS_addInstallationHoldActions;
+
+    // War on Drugs smugglers: runners drive from the lab to a nearby town and back
+    if (_lab && {[_opcom, "drugSmugglers", true] call ALiVE_fnc_HashGet}) then { [_building, _opcom] spawn ALiVE_fnc_INS_smugglerRunner };
 };
 
 // A recruiter stands in a Recruitment HQ while a player is within 800 m (the commander's Recruiters
@@ -2999,6 +3003,186 @@ ALiVE_fnc_INS_recruiterPresence = {
     } else {
         call _fnc_clear;
     };
+};
+
+// War on Drugs smugglers (#1080): while a player is within 2 km of a standing drug lab, one runner drives a
+// pickup or open van with sacks and wrapped bundles in its bed from the lab to a nearby town and back, over
+// and over. It goes when no player is within 2.5 km of it. Stopped (the car wrecked, the driver killed, or the
+// driver out of the car with a player beside him), the lab doesn't count towards the commander's faster
+// recruitment for 30 minutes, and the next runner leaves 15 minutes later. Ends with the lab.
+// [lab building, commander's handler]
+ALiVE_fnc_INS_smugglerRunner = {
+    params ["_lab", ["_opcom", []]];
+    if (!isServer || {isNull _lab}) exitWith {};
+    // one runner loop per lab, the newest
+    ALiVE_INS_smugglerLoopCount = (missionNamespace getVariable ["ALiVE_INS_smugglerLoopCount", 0]) + 1;
+    private _token = ALiVE_INS_smugglerLoopCount;
+    _lab setVariable ["ALiVE_INS_smugglerLoop", _token];
+
+    // the cars of the local traffic: the ambient civilians' faction, else the car bombers', else CIV_F
+    private _civFaction = "CIV_F";
+    if (!isNil "ALiVE_Agenthandler") then {
+        private _agents = [ALiVE_Agenthandler, "agents", ["", [], [], nil]] call ALiVE_fnc_HashGet;
+        if (count (_agents select 2) > 0) then { _civFaction = [(_agents select 2) select 0, "faction", "CIV_F"] call ALiVE_fnc_HashGet };
+    } else {
+        if (!isNil "ALiVE_mil_IED") then { _civFaction = ALiVE_mil_IED getVariable ["bomberFaction", "CIV_F"] };
+    };
+    private _fnc_cars = {
+        params ["_faction"];
+        ([1, _faction, "Car"] call ALIVE_fnc_findVehicleType) select {
+            !(_x isKindOf "Quadbike_01_base_F") && {!(_x isKindOf "Motorcycle")} && {!(_x isKindOf "Wheeled_APC_F")}
+            && {getNumber (configFile >> "CfgVehicles" >> _x >> "armor") <= 250}
+            && {!(ALiVE_INS_smugglerNoBed getOrDefault [_x, false])}
+        }
+    };
+    if (isNil "ALiVE_INS_smugglerNoBed") then { ALiVE_INS_smugglerNoBed = createHashMap };
+    private _driverClass = ([[_civFaction], 1, missionNamespace getVariable ["ALiVE_MIL_CQB_UNITBLACKLIST", []], false] call ALiVE_fnc_chooseRandomUnits) param [0, "C_man_1"];
+
+    // an open bed: the floor found from above at 9 points over the rear of the car, all there, level, and
+    // well below the roof (a pickup's or an open van's, not a hatchback's boot or a box van's roof)
+    private _fnc_bed = {
+        params ["_car"];
+        (boundingBoxReal _car) params ["_mn", "_mx"];
+        private _len = (_mx select 1) - (_mn select 1);
+        private _pts = [];
+        {
+            private _py = (_mn select 1) + _len * _x;
+            {
+                private _hits = (lineIntersectsSurfaces [AGLToASL (_car modelToWorld [_x, _py, (_mx select 2) + 1]), AGLToASL (_car modelToWorld [_x, _py, _mn select 2]), objNull, objNull, true, 1, "GEOM", "NONE"]) select { (_x select 2) == _car };
+                if (_hits isNotEqualTo []) then { _pts pushBack ((_car worldToModel (ASLToAGL ((_hits select 0) select 0))) select 2) };
+            } forEach [-0.35, 0, 0.35];
+        } forEach [0.12, 0.22, 0.32];
+        if (count _pts < 9 || {(selectMax _pts) - (selectMin _pts) > 0.2} || {(_mx select 2) - (selectMax _pts) < 1.5}) exitWith { [] };
+        [(_mn select 1) + _len * 0.12, (_mn select 1) + _len * 0.22, (_mn select 1) + _len * 0.32, selectMax _pts]
+    };
+    private _fnc_load = {
+        params ["_car", "_bed"];
+        _bed params ["_y1", "_y2", "_y3", "_z"];
+        private _props = [];
+        {
+            _x params ["_class", "_at", "_dir"];
+            if (isClass (configFile >> "CfgVehicles" >> _class)) then {
+                private _o = createSimpleObject [_class, [0, 0, 0]];
+                // resting on the bed floor, whatever the model's own origin
+                private _base = ((boundingBoxReal _o) select 0) select 2;
+                _o attachTo [_car, [_at select 0, _at select 1, _z - _base + 0.02]];
+                _o setVectorDirAndUp [_dir, [0, 0, 1]];
+                _props pushBack _o;
+            };
+        } forEach [
+            ["Land_FoodSacks_01_small_brown_F", [0, _y2], [0, 1, 0]],
+            ["Land_FoodSack_01_full_brown_F", [-0.4, _y1], [1, 0, 0]],
+            ["Land_FoodSack_01_full_white_idap_F", [0.4, _y1], [1, 0, 0]],
+            ["Land_PaperBox_01_small_closed_brown_F", [0.35, _y3], [0, 1, 0]],
+            ["Land_EmergencyBlanket_02_stack_F", [-0.35, _y3], [0, 1, 0]]
+        ];
+        _car setVariable ["ALiVE_INS_smugglerLoad", _props];
+    };
+    private _fnc_clear = {
+        params ["_car", "_driver"];
+        if (!isNull _car) then { { deleteVehicle _x } forEach (_car getVariable ["ALiVE_INS_smugglerLoad", []]); deleteVehicle _car };
+        if (!isNull _driver) then { private _g = group _driver; deleteVehicle _driver; if (!isNull _g) then { deleteGroup _g } };
+    };
+    private _playersWithin = { params ["_where", "_d"]; ((allPlayers - entities "HeadlessClient_F") findIf { (_x distance2D _where) < _d }) > -1 };
+    private _fnc_road = {
+        params ["_around", "_r"];
+        private _ok = (_around nearRoads _r) select {
+            private _p = getPos _x;
+            !([_p, 250] call _playersWithin) && {(_p nearEntities [["LandVehicle", "Man"], 8]) isEqualTo []} && {!surfaceIsWater _p}
+        };
+        if (_ok isEqualTo []) then { [] } else { getPos (selectRandom _ok) }
+    };
+
+    private _car = objNull;
+    private _driver = objNull;
+    private _nextAt = time + 60;
+    private _leg = "";
+    private _legAt = 0;
+    private _home = [];
+    private _town = [];
+    while {
+        alive _lab && {!(_lab getVariable ["ALiVE_MIL_OPCOM_FACTORY_DISABLED", false])}
+        && {(_lab getVariable ["ALiVE_INS_smugglerLoop", -1]) == _token}
+    } do {
+        sleep 10;
+        if (isNull _car) then {
+            if (time > _nextAt && {[_lab, 2000] call _playersWithin}) then {
+                // a town 400 m to 3 km off to run to
+                private _towns = (nearestLocations [getPos _lab, ["NameVillage", "NameCity", "NameCityCapital"], 3000]) select { ((locationPosition _x) distance2D _lab) > 400 };
+                _home = [getPos _lab, 400] call _fnc_road;
+                _town = if (_towns isEqualTo []) then { [] } else { [locationPosition (_towns select 0), 200] call _fnc_road };
+                if (_home isEqualTo [] || {_town isEqualTo []}) exitWith { _nextAt = time + 120 };
+                private _cars = [_civFaction] call _fnc_cars;
+                if (_cars isEqualTo []) then { _cars = ["CIV_F"] call _fnc_cars };
+                private _bed = [];
+                // up to 3 tries for a car with an open bed; one without is remembered and not tried again
+                for "_i" from 1 to 3 do {
+                    if (_cars isEqualTo []) exitWith {};
+                    private _class = selectRandom _cars;
+                    _car = createVehicle [_class, _home, [], 0, "NONE"];
+                    _bed = [_car] call _fnc_bed;
+                    if (_bed isNotEqualTo []) exitWith {};
+                    ALiVE_INS_smugglerNoBed set [_class, true];
+                    _cars = _cars - [_class];
+                    deleteVehicle _car;
+                    _car = objNull;
+                };
+                if (isNull _car) exitWith {
+                    _nextAt = time + 600;
+                    ["ALiVE OPCOM: no pickup or open van for a smuggler at the drug lab near %1 (%2)", mapGridPosition _lab, _civFaction] call ALiVE_fnc_dump;
+                };
+                _car setDir (_home getDir _town);
+                [_car, _bed] call _fnc_load;
+                private _grp = createGroup [civilian, true];
+                _grp setVariable ["ALIVE_profileIgnore", true];
+                _driver = _grp createUnit [_driverClass, _home, [], 0, "NONE"];
+                _driver moveInDriver _car;
+                if (vehicle _driver != _car) exitWith { [_car, _driver] call _fnc_clear; _car = objNull; _driver = objNull; _nextAt = time + 120 };
+                { _x setVariable ["ALiVE_ignore_HC", true, true]; _x setVariable ["ALiVE_advciv_blacklist", true, true]; _x setVariable ["acex_headless_blacklist", true, true] } forEach [_driver, _car];
+                _grp setVariable ["acex_headless_blacklist", true, true];
+                _car setVariable ["ALiVE_INS_smugglerLab", _lab, true];
+                _grp setBehaviour "CARELESS";
+                _grp setSpeedMode "LIMITED";
+                _driver allowFleeing 0;
+                _driver doMove _town;
+                _leg = "out";
+                _legAt = time;
+                ["ALiVE OPCOM: a smuggler (%1) leaves the drug lab near %2 for %3", typeOf _car, mapGridPosition _lab, mapGridPosition _town] call ALiVE_fnc_dump;
+            };
+        } else {
+            // stopped: wrecked, driver killed, or the driver out of the car with a player beside him
+            private _stopped = !alive _car || {!alive _driver} || {vehicle _driver != _car && {[_driver, 30] call _playersWithin}};
+            if (_stopped) exitWith {
+                _lab setVariable ["ALiVE_INS_labCutUntil", time + 1800];
+                _nextAt = time + 900;
+                ["ALiVE OPCOM: a smuggler from the drug lab near %1 was stopped; the lab doesn't speed recruitment for 30 minutes", mapGridPosition _lab] call ALiVE_fnc_dump;
+                // the wreck and the load stay for players to look at, and go once nobody's near
+                [_car, _driver, _fnc_clear, _playersWithin] spawn {
+                    params ["_car", "_driver", "_fnc_clear", "_playersWithin"];
+                    waitUntil { sleep 15; isNull _car || {!([_car, 1500] call _playersWithin)} };
+                    [_car, _driver] call _fnc_clear;
+                };
+                _car = objNull;
+                _driver = objNull;
+            };
+            if !([_car, 2500] call _playersWithin) exitWith {
+                [_car, _driver] call _fnc_clear;
+                _car = objNull;
+                _driver = objNull;
+                _nextAt = time + 60;
+            };
+            // there: a short stop, then the drive back; a leg not done in 8 minutes is given again
+            private _to = [_town, _home] select (_leg == "back");
+            if (speed _car < 3 && {(_car distance2D _to) < 80 || {unitReady _driver && {(_car distance2D _to) < 250}}}) then {
+                _leg = ["back", "out"] select (_leg == "back");
+                _legAt = time + 20 + random 40;
+                [_driver, [_town, _home] select (_leg == "back")] spawn { params ["_d", "_p"]; sleep 25; if (alive _d) then { _d doMove _p } };
+            } else {
+                if (time - _legAt > 480) then { _driver doMove _to; _legAt = time };
+            };
+        };
+    };
+    if (!isNull _car) then { [_car, _driver] call _fnc_clear };
 };
 
 ALiVE_fnc_INS_spawnHQ = {

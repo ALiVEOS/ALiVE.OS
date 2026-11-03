@@ -246,6 +246,12 @@
 <Key ID="STR_ALIVE_OPCOM_DRUGLABS_COMMENT">
     <English>War on Drugs: an Asymmetric commander's IED factories are drug labs instead, with their own furniture and no booby-trap, named as drug labs on the map, in hints and in tasks. Every standing lab speeds up the commander's recruitment, up to twice as fast with 4 labs.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_DRUGSMUGGLERS">
+    <English>Drug Smugglers</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_DRUGSMUGGLERS_COMMENT">
+    <English>While a player is within 2 km of a drug lab, a smuggler drives a pickup or open van with sacks and wrapped bundles in the back from the lab to a nearby town and back. Wreck the car, kill the driver, or get him out of the car and stand by him, and that lab stops speeding up recruitment for 30 minutes; the next smuggler leaves 15 minutes later.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_INSTYPES">
     <English>Installation Types</English>
 </Key>

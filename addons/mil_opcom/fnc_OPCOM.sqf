@@ -122,6 +122,8 @@ switch (_operation) do {
         private _customNameParam = _logic getvariable ["customName",""];
         // War on Drugs (#1080): this commander's IED factories are drug labs
         private _drugLabs = (toLower format ["%1", _logic getvariable ["drugLabs", "false"]]) in ["true", "1"];
+        // and its smugglers run from each lab to a nearby town and back (ALiVE_fnc_INS_smugglerRunner)
+        private _drugSmugglers = !((toLower format ["%1", _logic getvariable ["drugSmugglers", "true"]]) in ["false", "0"]);
         private _type = _logic getvariable ["controltype","invasion"];
         private _occupation = (parseNumber format ["%1", _logic getvariable ["asym_occupation",-100]])/100;
         private _intelChance = (parseNumber format ["%1", _logic getvariable ["intelchance",-100]])/100;
@@ -539,6 +541,7 @@ switch (_operation) do {
             ["roadblocks", _roadblocks],
             ["insTypes", _insTypes],
             ["drugLabs", _drugLabs],
+            ["drugSmugglers", _drugSmugglers],
             ["friendlyDisableMode", _friendlyDisableMode],
             ["asymEscalationIntensity", _asymEscalationIntensity],
             ["asymExcludeKinds", _asymExcludeKinds],

@@ -802,6 +802,21 @@ class CfgVehicles {
                                 };
                                 ALiVE_showWhen[] = {{"asymInstallations", "has", "factory"}};
                         };
+                        class drugSmugglers : Combo
+                        {
+                                property = "ALiVE_mil_opcom_drugSmugglers";
+                                displayName = "$STR_ALIVE_OPCOM_DRUGSMUGGLERS";
+                                tooltip = "$STR_ALIVE_OPCOM_DRUGSMUGGLERS_COMMENT";
+                                typeName = "STRING";
+                                expression = "_this setVariable ['drugSmugglers', _value];";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                        class Yes { name = "Yes"; value = "true"; };
+                                        class No { name = "No"; value = "false"; };
+                                };
+                                ALiVE_showWhen[] = {{"drugLabs", "is", "true"}};
+                        };
                         class asym_friendlyDisableInstallations : Combo
                         {
                                 property = "ALiVE_mil_opcom_asym_friendlyDisableInstallations";
