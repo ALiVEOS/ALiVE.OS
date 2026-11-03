@@ -56,7 +56,9 @@ switch (_op) do {
             case "IMMOBILE": { ["#FF7070", "STR_ALIVE_CS_UI_GR_IMMOBILE"] call _t };
             default { ["#FFFFFF", "STR_ALIVE_CS_UI_UNIT_ON_MISSION"] call _t };
         });
-        _baseBtn ctrlEnable !(_status in ["RTB", "NONE", "KILLED", "IMMOBILE"]);
+        // one waiting where a Move order left it can still be sent home; one already at home can't
+        private _away = (_veh distance2D (_veh getVariable ["ALIVE_CombatSupport_Base", getPosATL _veh])) > 75;
+        _baseBtn ctrlEnable (!(_status in ["RTB", "NONE", "KILLED", "IMMOBILE"]) || {_status == "NONE" && {_away}});
         [_ptA, _ptB, _heightCb, _escortCb] call _hide;
         lbClear _taskLb;
         { lbClear _x } forEach [_speedCb, _roeCb, _escortCb];
