@@ -271,7 +271,43 @@
     <English>Insurgents Send Bombers</English>
 </Key>
 <Key ID="STR_ALIVE_IED_BOMBER_DISPATCH_COMMENT">
-    <English>With an asymmetric AI Commander and a Bomber Threat above None: an insurgent group that has spotted a player 150 to 800 m away may send a suicide bomber at him, and with a VB-IED Threat above None, half the time a car bomb driven at him. At most one at a time for each player, then none for him for 10 minutes.</English>
+    <English>With an asymmetric AI Commander and a Bomber Threat above None: an insurgent group that has spotted a player 150 to 800 m away may send a suicide bomber at him, and with a VB-IED Threat above None, half the time a car bomb driven at him. At most one at a time for each player, then none for him, or for the players near him, for Bomber Wait minutes.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_BOMBER_DISPATCH_WAIT">
+    <English>Bomber Wait (minutes):</English>
+    <Chinese>自殺炸彈客間隔（分鐘）：</Chinese>
+    <Chinesesimp>自杀炸弹客间隔（分钟）：</Chinesesimp>
+    <Spanish>Espera entre terroristas suicidas (minutos):</Spanish>
+    <French>Délai entre kamikazes (minutes) :</French>
+    <Portuguese>Espera entre homens-bomba (minutos):</Portuguese>
+    <Russian>Пауза между смертниками (минуты):</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_BOMBER_DISPATCH_WAIT_COMMENT">
+    <English>Once Insurgents Send Bombers has sent a bomber at a player, how many minutes before another can be sent at him. Default 10.</English>
+    <Chinese>「叛軍派出自殺炸彈客」向某名玩家派出一名自殺炸彈客後，要等多少分鐘才能再向他派出下一名。預設為 10。</Chinese>
+    <Chinesesimp>“叛军派出自杀炸弹客”向某名玩家派出一名自杀炸弹客后，要等多少分钟才能再向他派出下一名。默认为 10。</Chinesesimp>
+    <Spanish>Cuando Los insurgentes envían terroristas suicidas ha enviado uno contra un jugador, cuántos minutos pasan antes de poder enviarle otro. Por defecto 10.</Spanish>
+    <French>Une fois qu'un kamikaze a été envoyé contre un joueur par Les insurgés envoient des kamikazes, combien de minutes avant qu'un autre puisse l'être. Par défaut 10.</French>
+    <Portuguese>Depois que Insurgentes enviam homens-bomba enviou um contra um jogador, quantos minutos até outro poder ser enviado contra ele. Padrão 10.</Portuguese>
+    <Russian>Сколько минут после отправки смертника к игроку («Повстанцы посылают смертников») должно пройти, прежде чем к нему можно отправить следующего. По умолчанию 10.</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_BOMBER_DISPATCH_SHARE">
+    <English>Bomber Wait Shared Within (m):</English>
+    <Chinese>共用間隔範圍（公尺）：</Chinese>
+    <Chinesesimp>共用间隔范围（米）：</Chinesesimp>
+    <Spanish>Espera compartida en un radio de (m):</Spanish>
+    <French>Délai partagé dans un rayon de (m) :</French>
+    <Portuguese>Espera compartilhada num raio de (m):</Portuguese>
+    <Russian>Общая пауза в радиусе (м):</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_BOMBER_DISPATCH_SHARE_COMMENT">
+    <English>When a bomber is sent at a player, every player within this many metres of him gets the same Bomber Wait, so a group draws one bomber rather than one each. 0 for only the player it was sent at. Default 150.</English>
+    <Chinese>向某名玩家派出自殺炸彈客時，他周圍此距離（公尺）內的所有玩家都會套用相同的間隔，因此一個小隊只會招來一名，而不是每人一名。0 表示只有被針對的玩家。預設為 150。</Chinese>
+    <Chinesesimp>向某名玩家派出自杀炸弹客时，他周围此距离（米）内的所有玩家都会套用相同的间隔，因此一个小队只会招来一名，而不是每人一名。0 表示只有被针对的玩家。默认为 150。</Chinesesimp>
+    <Spanish>Cuando se envía un terrorista suicida contra un jugador, todos los jugadores a esta distancia en metros de él reciben la misma espera, así un grupo atrae a uno solo y no uno cada uno. 0 para solo el jugador objetivo. Por defecto 150.</Spanish>
+    <French>Quand un kamikaze est envoyé contre un joueur, tous les joueurs à moins de cette distance en mètres reçoivent le même délai, ainsi un groupe n'en attire qu'un, pas un chacun. 0 pour seulement le joueur visé. Par défaut 150.</French>
+    <Portuguese>Quando um homem-bomba é enviado contra um jogador, todos os jogadores a esta distância em metros dele recebem a mesma espera, assim um grupo atrai um só e não um para cada. 0 para só o jogador visado. Padrão 150.</Portuguese>
+    <Russian>Когда к игроку отправлен смертник, все игроки в этом радиусе (в метрах) от него получают ту же паузу, так что группа привлекает одного смертника, а не по одному на каждого. 0 — только для самого игрока. По умолчанию 150.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_THREAT">
     <English>Vehicle Borne IED Threat:</English>
@@ -404,6 +440,24 @@
     <French>Pour les voitures piégées que les insurgés lancent sur les joueurs. Oui : le conducteur, seul, arrive à pleine vitesse tout du long et ignore tout autour de lui. Non : il roule comme n'importe qui jusqu'à 80 m de sa cible, puis accélère à fond. Par défaut Oui.</French>
     <Portuguese>Para os carros-bomba que os insurgentes mandam contra os jogadores. Sim: o motorista, sozinho, vem a toda velocidade o caminho todo e ignora tudo ao redor. Não: ele dirige como qualquer outro até ficar a 80 m do alvo e então acelera tudo. Padrão Sim.</Portuguese>
     <Russian>Для заминированных машин, которые повстанцы направляют на игроков. «Да»: водитель-одиночка всю дорогу несётся на полной скорости и ни на что не обращает внимания. «Нет»: он едет как все, пока до цели не останется 80 м, а затем жмёт газ до упора. По умолчанию «Да».</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_VB_MIN_DISTANCE">
+    <English>Car Bomb Start Distance (m):</English>
+    <Chinese>車載炸彈起始距離（公尺）：</Chinese>
+    <Chinesesimp>车载炸弹起始距离（米）：</Chinesesimp>
+    <Spanish>Distancia de salida del coche bomba (m):</Spanish>
+    <French>Distance de départ de la voiture piégée (m) :</French>
+    <Portuguese>Distância de partida do carro-bomba (m):</Portuguese>
+    <Russian>Дистанция появления заминированной машины (м):</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_VB_MIN_DISTANCE_COMMENT">
+    <English>How far from its target, and from every player, a car bomb driven at a player starts. Further gives the players more warning; in a tight town a short distance can mean just round the corner. Default 300.</English>
+    <Chinese>向玩家駛來的車載炸彈起始時與目標及所有玩家的距離。距離越遠，玩家預警時間越多；在狹窄的城鎮裡，距離太短可能就在轉角處。預設為 300。</Chinese>
+    <Chinesesimp>向玩家驶来的车载炸弹起始时与目标及所有玩家的距离。距离越远，玩家预警时间越多；在狭窄的城镇里，距离太短可能就在拐角处。默认为 300。</Chinesesimp>
+    <Spanish>A qué distancia de su objetivo, y de cualquier jugador, sale un coche bomba conducido contra un jugador. Más lejos da más aviso a los jugadores; en un pueblo estrecho una distancia corta puede ser justo a la vuelta de la esquina. Por defecto 300.</Spanish>
+    <French>À quelle distance de sa cible, et de tout joueur, part une voiture piégée conduite vers un joueur. Plus loin laisse plus de temps aux joueurs ; dans une ville serrée, une courte distance peut être juste au coin de la rue. Par défaut 300.</French>
+    <Portuguese>A que distância do alvo, e de qualquer jogador, parte um carro-bomba dirigido contra um jogador. Mais longe dá mais aviso aos jogadores; numa cidade apertada uma distância curta pode ser logo ali na esquina. Padrão 300.</Portuguese>
+    <Russian>На каком расстоянии от цели и от всех игроков появляется заминированная машина, едущая к игроку. Дальше — больше времени на реакцию; в тесном городе малая дистанция может означать прямо за углом. По умолчанию 300.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_LOCS_IED">
     <English>IED/Bomber Locations:</English>

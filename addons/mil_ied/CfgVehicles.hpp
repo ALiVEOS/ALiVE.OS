@@ -93,6 +93,9 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_Bomber_Dispatch"; displayName = "$STR_ALIVE_IED_BOMBER_DISPATCH"; tooltip = "$STR_ALIVE_IED_BOMBER_DISPATCH_COMMENT"; defaultValue = """true""";
                                 class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; };
                         };
+                        // how long before another is sent, and how far that wait reaches (bomberDispatch)
+                        class Bomber_Dispatch_Wait : Edit { property = "ALiVE_mil_ied_Bomber_Dispatch_Wait"; displayName = "$STR_ALIVE_IED_BOMBER_DISPATCH_WAIT"; tooltip = "$STR_ALIVE_IED_BOMBER_DISPATCH_WAIT_COMMENT"; defaultValue = """10"""; };
+                        class Bomber_Dispatch_Share : Edit { property = "ALiVE_mil_ied_Bomber_Dispatch_Share"; displayName = "$STR_ALIVE_IED_BOMBER_DISPATCH_SHARE"; tooltip = "$STR_ALIVE_IED_BOMBER_DISPATCH_SHARE_COMMENT"; defaultValue = """150"""; };
                         // ---- Vehicle-Borne IED ----------------------------------------------
                         class HDR_VBIED : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_VBIED"; displayName = "VEHICLE-BORNE IED"; };
                         class VB_IED_Threat : Combo
@@ -131,6 +134,8 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_VB_Tell_Driver"; displayName = "$STR_ALIVE_IED_VB_TELL_DRIVER"; tooltip = "$STR_ALIVE_IED_VB_TELL_DRIVER_COMMENT"; defaultValue = """1""";
                                 class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; };
                         };
+                        // how far from its target, and from any player, a driven car bomb starts (createDrivenVBIED)
+                        class VB_Min_Distance : Edit { property = "ALiVE_mil_ied_VB_Min_Distance"; displayName = "$STR_ALIVE_IED_VB_MIN_DISTANCE"; tooltip = "$STR_ALIVE_IED_VB_MIN_DISTANCE_COMMENT"; defaultValue = """300"""; };
                         class Locs_IED : Combo
                         {
                                 property = "ALiVE_mil_ied_Locs_IED"; displayName = "$STR_ALIVE_IED_LOCS_IED"; tooltip = "$STR_ALIVE_IED_LOCS_IED_COMMENT"; defaultValue = """0""";

@@ -291,6 +291,15 @@ switch(_operation) do {
                     private _dickerChance = _logic getVariable ["IED_Dicker_Chance", 0];
                     if (_dickerChance isEqualType "") then { _dickerChance = parseNumber _dickerChance };
                     ADDON setVariable ["IED_Dicker_Chance", _dickerChance];
+                    // Bomber Wait (minutes), Bomber Wait Shared Within and Car Bomb Start Distance (metres);
+                    // read by bomberDispatch and createDrivenVBIED. Blank or below zero keeps the default.
+                    {
+                        _x params ["_name", "_default"];
+                        private _v = _logic getVariable [_name, _default];
+                        if (_v isEqualType "") then { _v = if ((trim _v) == "") then { _default } else { parseNumber _v } };
+                        if (!(_v isEqualType 0) || {_v < 0}) then { _v = _default };
+                        ADDON setVariable [_name, _v];
+                    } forEach [["Bomber_Dispatch_Wait", 10], ["Bomber_Dispatch_Share", 150], ["VB_Min_Distance", 300]];
                     [ADDON, "IED_Engineer_Trip_Base",            _logic getVariable ["IED_Engineer_Trip_Base", 0.02]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Trip_ThresholdMin",    _logic getVariable ["IED_Engineer_Trip_ThresholdMin", 0.7]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Trip_ThresholdMax",    _logic getVariable ["IED_Engineer_Trip_ThresholdMax", 1.3]] call MAINCLASS;
@@ -1271,7 +1280,8 @@ switch(_operation) do {
         case "bomberDispatch": {
             // An insurgent group that has spotted a player sends one suicide bomber at him: every 30 s, a
             // player on the ground with an insurgent group 150 to 800 m away that knows about him has an even
-            // chance of drawing one, at most one at a time each and then not for 10 minutes; with car bombs on (a
+            // chance of drawing one, at most one at a time each and then not for Bomber Wait minutes (and nor do
+            // the players within Bomber Wait Shared Within of him); with car bombs on (a
             // VB-IED threat above None) half come as a car bomb driven at him. Insurgents are
             // the sides of the asymmetric AI Commanders. The bomber comes from that group's position,
             // dressed as a civilian like the town bombers, and goes after the player the same way.
@@ -1318,7 +1328,15 @@ switch(_operation) do {
                                 // the wait starts only once one is on his way
                                 if (!isNil "_bomber" && {_bomber isEqualType objNull} && {alive _bomber}) then {
                                     _player setVariable ["ALiVE_IED_dispatchBomber", _bomber];
-                                    _player setVariable ["ALiVE_IED_dispatchNext", time + 600];
+                                    // Bomber Wait, shared with the players around him (Bomber Wait Shared
+                                    // Within), so a group draws one bomber rather than one each
+                                    private _until = time + 60 * (ADDON getVariable ["Bomber_Dispatch_Wait", 10]);
+                                    private _share = ADDON getVariable ["Bomber_Dispatch_Share", 150];
+                                    {
+                                        if (_x == _player || {(_x distance _veh) < _share}) then {
+                                            _x setVariable ["ALiVE_IED_dispatchNext", _until max (_x getVariable ["ALiVE_IED_dispatchNext", 0])];
+                                        };
+                                    } forEach (allPlayers - entities "HeadlessClient_F");
                                     if (_debug) then {
                                         ["ALIVE-%1 Suicide Bomber: insurgents near %2 who spotted %3 sent a bomber", time, mapGridPosition _from, name _player] call ALiVE_fnc_dump;
                                     };

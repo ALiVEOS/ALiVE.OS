@@ -6,8 +6,8 @@ Function: ALIVE_fnc_createDrivenVBIED
 
 Description:
 A car bomb driven at a player: a car of the bomber faction is made on a road
-near the insurgents who sent it, at least 150 m from its target and with no
-player within 150 m of it, and a driver takes it after him. It goes off when it
+near the insurgents who sent it, at least Car Bomb Start Distance (default
+300 m) from its target and from every player, and a driver takes it after him. It goes off when it
 gets within 15 m of him, when the driver is killed, when the car is wrecked, or
 when something explodes under it. Shooting the car body does not set it off;
 killing the driver does.
@@ -53,21 +53,25 @@ if (_driverClass == "") exitWith {
     objNull
 };
 
-// a road it can start on: near the insurgents, at least 150 m from its target, no player within 150 m, nothing on it
+// a road it can start on: near the insurgents, Car Bomb Start Distance (default 300 m) from its target and from
+// every player, nothing on it
+private _minDist = if (isNil QUOTE(ADDON)) then { 300 } else { ADDON getVariable ["VB_Min_Distance", 300] };
+if !(_minDist isEqualType 0) then { _minDist = 300 };
 private _fnc_freeRoad = {
     params ["_around", "_radius"];
     private _ok = (_around nearRoads _radius) select {
         private _p = getPos _x;
-        (_p distance2D (vehicle _victim)) > 150
-        && {([_p, 150] call ALiVE_fnc_anyPlayersInRange) == 0}
+        (_p distance2D (vehicle _victim)) > _minDist
+        && {([_p, _minDist] call ALiVE_fnc_anyPlayersInRange) == 0}
         && {(_p nearEntities [["LandVehicle", "Man"], 8]) isEqualTo []}
         && {!surfaceIsWater _p}
     };
     if (_ok isEqualTo []) then { [] } else { getPos (selectRandom _ok) }
 };
-private _at = [_from, 300] call _fnc_freeRoad;
+// looked for wide enough to find a road that far from him, with a far start distance
+private _at = [_from, 300 max (_minDist + 100)] call _fnc_freeRoad;
 if (_at isEqualTo []) exitWith {
-    if (_debug) then { ["ALIVE-%1 Car bomb: no clear road within 300 m of %2", time, mapGridPosition _from] call ALiVE_fnc_dump };
+    if (_debug) then { ["ALIVE-%1 Car bomb: no clear road within %3 m of %2", time, mapGridPosition _from, 300 max (_minDist + 100)] call ALiVE_fnc_dump };
     objNull
 };
 
@@ -132,8 +136,8 @@ if (_debug) then {
     ["ALIVE-%1 Car bomb: %2 driven by %3 after %4 from %5, %6 m away", time, typeOf _car, typeOf _driver, name _victim, mapGridPosition _at, round (_at distance2D _victim)] call ALiVE_fnc_dump;
 };
 
-[_car, _driver, _victim, _debug, _fnc_freeRoad, _showsItself] spawn {
-    params ["_car", "_driver", "_victim", "_debug", "_fnc_freeRoad", "_showsItself"];
+[_car, _driver, _victim, _debug, _fnc_freeRoad, _showsItself, _minDist] spawn {
+    params ["_car", "_driver", "_victim", "_debug", "_fnc_freeRoad", "_showsItself", "_minDist"];
     private _fnc_blast = {
         params ["_car"];
         // a car taken away by something else (a clean-up, Zeus) has nowhere to go off
@@ -168,7 +172,7 @@ if (_debug) then {
             if (time - _movedAt > 40) then {
                 if (_near) exitWith { _how = "stuck" };
                 if (([getPos _car, 1000] call ALiVE_fnc_anyPlayersInRange) == 0) then {
-                    private _to = [getPos _car, 300] call _fnc_freeRoad;
+                    private _to = [getPos _car, 300 max (_minDist + 100)] call _fnc_freeRoad;
                     if (_to isNotEqualTo []) then { _car setPos _to; _lastPos = getPos _car; };
                 };
                 _movedAt = time;
