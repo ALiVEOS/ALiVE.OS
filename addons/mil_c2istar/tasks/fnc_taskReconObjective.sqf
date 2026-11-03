@@ -10,6 +10,10 @@ final rendezvous point (FRV) short of an objective, then man two observation pos
 minute at each. Only enemy the players' side actually spots while someone is at an OP counts: each such unit's group is
 reported to the side (ALiVE_reconReports), which an AI Commander with Tasks Only Against Known Enemy counts as seen, so
 its next preparation tasks go after them. Watching longer, from either OP, spots more.
+With an Air Commander on the players' side (or an allied one), the report also asks it for a strike straight away
+(milfmadness and spooked on Discord, 29 Oct): up to three of the vehicles spotted, the best seen first, as a Strike; with
+no vehicle seen, up to three groups on foot as CAS. A recon an AI Commander asked for to find out about an objective
+(Find Out Before Attacking) does not: that commander calls its own strike once it knows enough.
 
 Stages: Parent, Travel (reach the FRV), Observe1 (a minute at OP 1), Observe (a minute at OP 2, then report).
 The OPs can be manned in either order: OP 2 done first is ticked off at once and OP 1 then closes the task.
@@ -420,6 +424,56 @@ switch (_taskState) do {
             _reports pushBack [_taskSide, +_target, time, _ids, _pos, _task select 11, _units, +_ops];
             ALiVE_reconReports = _reports select { time - (_x select 2) < 3600 };
             ["C2ISTAR - Task ReconObjective %1: %2 enemy spotted in %3 groups round %4", _taskID, count _units, count _ids, mapGridPosition _target] call ALiVE_fnc_Dump;
+
+            // the Air Commander is asked for a strike on what was seen, unless an AI Commander's intel cycle asked for this
+            // recon (its task id starts INTEL_): that commander strikes once it knows enough, and two strikes would be one
+            // too many. Vehicles first, as the commander's own strike does; groups on foot when none was seen
+            if (_ids isNotEqualTo [] && {((_task select 11) find "INTEL_") != 0} && {!isNil "ALIVE_fnc_ATOKernel"} && {!isNil "ALIVE_eventLog"}) then {
+                private _best = [];
+                { _best pushBack [-(_x select 3), _x select 0, _x select 1] } forEach _units;
+                _best sort true;
+                private _veh = [];
+                private _foot = [];
+                {
+                    _x params ["", "_pid", "_upos"];
+                    private _prof = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_prof" && {!(_pid in (_veh apply { _x select 0 }))} && {!(_pid in (_foot apply { _x select 0 }))}) then {
+                        private _isVeh = ([_prof, "type", ""] call ALIVE_fnc_hashGet) == "vehicle"
+                            || {count (([_prof, "vehicleAssignments", [[],[]]] call ALIVE_fnc_hashGet) select 1) > 0};
+                        private _at = [_prof, "position", _upos] call ALIVE_fnc_hashGet;
+                        if (_isVeh) then { _veh pushBack [_pid, _at] } else { _foot pushBack [_pid, _at] };
+                    };
+                } forEach _best;
+                // the players' own side's Air Commander first, then an allied one, flying the kind wanted or failing that the other
+                private _side = [_taskSide] call ALiVE_fnc_sideTextToObject;
+                private _want = ["CAS", "Strike"] select (_veh isNotEqualTo []);
+                private _chosen = objNull;
+                private _type = "";
+                private _maccs = (entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" };
+                {
+                    private _kind = _x;
+                    {
+                        private _friendly = _x;
+                        {
+                            if (isNull _chosen) then {
+                                private _mSide = [[_x, "side"] call ALIVE_fnc_ATOKernel] call ALiVE_fnc_sideTextToObject;
+                                private _mTypes = [_x, "types"] call ALIVE_fnc_ATOKernel;
+                                private _sideOk = if (_friendly) then { [_side, _mSide] call BIS_fnc_sideIsFriendly } else { _mSide isEqualTo _side };
+                                if (_sideOk && {_mTypes isEqualType []} && {_kind in _mTypes}) then { _chosen = _x; _type = _kind };
+                            };
+                        } forEach _maccs;
+                    } forEach [false, true];
+                } forEach ([_want] + (["CAS", "Strike"] - [_want]));
+                if (!isNull _chosen) then {
+                    private _hit = ((if (_veh isNotEqualTo []) then { _veh } else { _foot }) select [0, 3]);
+                    private _mSide = [[_chosen, "side"] call ALIVE_fnc_ATOKernel] call ALiVE_fnc_sideTextToObject;
+                    private _faction = ([_chosen, "factions"] call ALIVE_fnc_ATOKernel) param [0, [_chosen, "faction"] call ALIVE_fnc_ATOKernel];
+                    private _reqID = format ["RECON_%1_%2", _task select 11, floor time];
+                    private _args = ["RED", 200, "FULL", 0.1, 0.1, 2000, 10, _hit apply { _x select 0 }];
+                    [ALIVE_eventLog, "addEvent", ["ATO_REQUEST", [_type, _mSide, _faction, (_hit select 0) select 1, _args, _reqID], "C2ISTAR"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+                    ["C2ISTAR - Task ReconObjective %1: %2 asked of the %3 Air Commander on %4 of what was spotted (%5)", _taskID, _type, _faction, count _hit, _reqID] call ALiVE_fnc_Dump;
+                };
+            };
 
             [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
             _task set [8, "Succeeded"];
