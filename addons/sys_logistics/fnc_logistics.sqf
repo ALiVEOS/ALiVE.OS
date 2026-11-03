@@ -345,6 +345,14 @@ switch (_operation) do {
                         [_args,QGVAR(NOREMAP)] call ALiVE_fnc_HashRem;
                     };
 
+                    //Placed in Eden (there at mission start), so a load knows not to make it again if
+                    //the mission maker has since moved or deleted it
+                    if ((_x getVariable [QGVAR(EDITOR),false]) isEqualTo true) then {
+                        [_args,QGVAR(EDITOR),true] call ALiVE_fnc_HashSet;
+                    } else {
+                        [_args,QGVAR(EDITOR)] call ALiVE_fnc_HashRem;
+                    };
+
                     //Set dynamic data (to fight errors on loading back existing data from DB)
                     if (!isnil {_x getvariable QGVAR(CONTAINER)} && {!isnull (_x getvariable QGVAR(CONTAINER))}) then {
                         [_args,QGVAR(CONTAINER),(_x getvariable QGVAR(CONTAINER)) getvariable QGVAR(ID)] call ALiVE_fnc_HashSet;
@@ -1097,7 +1105,9 @@ switch (_operation) do {
 
             {
                 [_logic,"id",_x] call ALiVE_fnc_logistics;
-                [_logic,"setEH",[_x]] call ALiVE_fnc_logistics
+                [_logic,"setEH",[_x]] call ALiVE_fnc_logistics;
+                //there when the mission started: saved with a mark, so a later Eden move doesn't double it
+                _x setVariable [QGVAR(EDITOR),true];
             } foreach _startObjects;
 
             //Check if provided data is valid
@@ -1210,6 +1220,21 @@ switch (_operation) do {
                         } foreach _near;
                     };
 
+                    //An object placed in Eden that no Eden object claimed was moved or deleted in Eden
+                    //since the save (its key is where Eden put it). The mission's own copy is already
+                    //there, so making the saved one again would give two; the edit wins instead.
+                    private _fromEden = [_args,QGVAR(EDITOR),false] call ALiVE_fnc_hashGet;
+                    if (isnil "_fromEden") then {_fromEden = false};
+                    if (_fromEden isEqualType "") then {_fromEden = (toLower _fromEden) in ["true","1"]};
+                    if (_fromEden isEqualType 0) then {_fromEden = _fromEden != 0};
+                    if !(_fromEden isEqualType false) then {_fromEden = false};
+
+                    if (count _exists == 0 && {_fromEden}) then {
+                        if ((!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable ["DEBUG",false]}) || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then {["SYS LOGISTICS - dropped saved %1 (%2): its Eden object was moved or deleted since the save",_type,_x] call ALiVE_fnc_dump;};
+                        [_logic,"removeObject",_x] call ALiVE_fnc_logistics;
+                        continue
+                    };
+
                     if (count _exists == 0) then {
                         TRACE_1("ALiVE SYS LOGISTICS Creating non existing object from store!",_x);
 
@@ -1311,6 +1336,8 @@ switch (_operation) do {
                 [QGVAR(POINTDAMAGE),"ASL_HP"],
                 [QGVAR(CONTAINER),"ASL_CO"],
                 [QGVAR(NOREMAP),"ASL_NR"],
+                // placed in Eden, so a load drops it rather than doubling it after an Eden move
+                [QGVAR(EDITOR),"ASL_ED"],
                 // ACE fuel and ammo cargo (#869); a key left off this list is dropped from the save
                 [QGVAR(ACEFUEL),"ASL_AF"],
                 [QGVAR(ACEAMMO),"ASL_AA"],
