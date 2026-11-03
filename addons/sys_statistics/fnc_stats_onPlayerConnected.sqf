@@ -8,6 +8,7 @@
  *
  * Created by Tupolov
  * Creation date: 06/07/2013
+ * Jman
  *
  * */
 
@@ -40,40 +41,44 @@ if (GVAR(ENABLED) && isDedicated) then {
             /// Hmmmm connecting player isn't found...
         } else {
 
-            private _profile = [GVAR(datahandler), "read", [_module, [], _uid], "CouchDB"] call ALIVE_fnc_data;
-            private _call = format["events/_design/playerPage/_view/playerTotals?group_level=1&key=""%1""&stale=ok",_uid];
-            private _cmd = format ["SendJSON ['GET','%1','']", _call];
-            private _stats = [_cmd] call ALIVE_fnc_sendToPlugIn;
-            private _data = ((([nil,"decode", _stats] call ALIVE_fnc_JSON) select 1) select 0) select 3;
+            // The old War Room's player profile, read from its CouchDB. With the new War Room link
+            // (ALiVE_sys_data_warRoom) there is no such store, so it is skipped.
+            if !(missionNamespace getVariable ["ALiVE_sys_data_warRoom", false]) then {
+                private _profile = [GVAR(datahandler), "read", [_module, [], _uid], "CouchDB"] call ALIVE_fnc_data;
+                private _call = format["events/_design/playerPage/_view/playerTotals?group_level=1&key=""%1""&stale=ok",_uid];
+                private _cmd = format ["SendJSON ['GET','%1','']", _call];
+                private _stats = [_cmd] call ALIVE_fnc_sendToPlugIn;
+                private _data = ((([nil,"decode", _stats] call ALIVE_fnc_JSON) select 1) select 0) select 3;
 
-            // diag_log str(_data);
+                // diag_log str(_data);
 
-            if (count _data > 0 && ([_profile] call ALiVE_fnc_isHash)) then {
+                if (count _data > 0 && ([_profile] call ALiVE_fnc_isHash)) then {
 
-                private _tmp = [] call CBA_fnc_hashCreate;
-                for "_i" from 0 to ((count _data) - 1) step 2 do {
-                    private _key = _data select _i;
-                    private _value = _data select (_i + 1);
-                    [_tmp, _key, _value] call CBA_fnc_hashSet;
+                    private _tmp = [] call CBA_fnc_hashCreate;
+                    for "_i" from 0 to ((count _data) - 1) step 2 do {
+                        private _key = _data select _i;
+                        private _value = _data select (_i + 1);
+                        [_tmp, _key, _value] call CBA_fnc_hashSet;
+                    };
+
+                    _data = _tmp;
+
+                    [_data, "Server Group", [_profile, "ServerGroup","Unknown"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    [_data, "Username", [_profile, "username","Unknown"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+
+                    // Send Data
+                    STATS_PLAYER_PROFILE = _data;
+                    _owner publicVariableClient "STATS_PLAYER_PROFILE";
+
+                    TRACE_3("SENDING PROFILE DATA TO CLIENT", _owner, _data, _unit);
+                } else {
+
+                    // Send Data
+                    STATS_PLAYER_PROFILE = _data;
+                    _owner publicVariableClient "STATS_PLAYER_PROFILE";
+
+                    TRACE_3("SENDING PROFILE DATA TO CLIENT", _owner, _data, _unit);
                 };
-
-                _data = _tmp;
-
-                [_data, "Server Group", [_profile, "ServerGroup","Unknown"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                [_data, "Username", [_profile, "username","Unknown"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-
-                // Send Data
-                STATS_PLAYER_PROFILE = _data;
-                _owner publicVariableClient "STATS_PLAYER_PROFILE";
-
-                TRACE_3("SENDING PROFILE DATA TO CLIENT", _owner, _data, _unit);
-            } else {
-
-                // Send Data
-                STATS_PLAYER_PROFILE = _data;
-                _owner publicVariableClient "STATS_PLAYER_PROFILE";
-
-                TRACE_3("SENDING PROFILE DATA TO CLIENT", _owner, _data, _unit);
             };
 
             // Set player startTime

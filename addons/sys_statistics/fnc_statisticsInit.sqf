@@ -48,9 +48,17 @@ if (isDedicated && GVAR(ENABLED)) then {
     [GVAR(datahandler),"storeType",false] call ALIVE_fnc_Data;
 
     // Grab Server IP and data group info
-    GVAR(serverIP) = [] call ALIVE_fnc_getServerIP;
-    GVAR(serverName) = [] call ALIVE_fnc_getServerName;
-    GVAR(groupTag) = [] call ALIVE_fnc_getGroupID;
+    if (missionNamespace getVariable ["ALiVE_sys_data_warRoom", false]) then {
+        // The War Room on alivemod.com knows the server and its group from the key each record is
+        // signed with, and the old plugin these came from is gone, so take the name from the game.
+        GVAR(serverIP) = serverName;
+        GVAR(serverName) = serverName;
+        GVAR(groupTag) = "";
+    } else {
+        GVAR(serverIP) = [] call ALIVE_fnc_getServerIP;
+        GVAR(serverName) = [] call ALIVE_fnc_getServerName;
+        GVAR(groupTag) = [] call ALIVE_fnc_getGroupID;
+    };
     publicVariable QGVAR(groupTag);
 
     // If the host IP web service is down, just use the serverName
@@ -88,7 +96,14 @@ if (isDedicated && GVAR(ENABLED)) then {
             };
 
             _gametime = format["%1%2", _hours, _minutes];
-            _realtime = [] call ALIVE_fnc_getServerTime;
+            _realtime = if (missionNamespace getVariable ["ALiVE_sys_data_warRoom", false]) then {
+                // UTC, in the format the plugin gave: dd/mm/yyyy hh:mm:ss
+                private _two = { if (_this < 10) then {"0" + str _this} else {str _this} };
+                systemTimeUTC params ["_y", "_mo", "_d", "_h", "_mi", "_s"];
+                format ["%1/%2/%3 %4:%5:%6", _d call _two, _mo call _two, _y, _h call _two, _mi call _two, _s call _two]
+            } else {
+                [] call ALIVE_fnc_getServerTime
+            };
             _missionTime = round time;
 
             // _data should be an array of key/value
@@ -101,7 +116,9 @@ if (isDedicated && GVAR(ENABLED)) then {
                 _async = true;
             };
 
-            _result = [GVAR(datahandler), "write", [_module, _data, _async], "CouchDB" ] call ALIVE_fnc_Data;
+            // To the War Room on alivemod.com when the Data module found its link (@alive_wr), else the old CouchDB path.
+            private _source = ["CouchDB", "WarRoom"] select (missionNamespace getVariable ["ALiVE_sys_data_warRoom", false]);
+            _result = [GVAR(datahandler), "write", [_module, _data, _async], _source] call ALIVE_fnc_Data;
             if (_result == "ERROR") then {
                 ERROR("SYS STATISTICS FAILED TO WRITE TO DATABASE");
             };
@@ -148,6 +165,14 @@ if (isDedicated && GVAR(ENABLED)) then {
 };
 
 waitUntil {!isNil QGVAR(ENABLED)};
+
+// A player's machine starts with statistics off (XEH_preInit) and learns the server's decision by
+// publicVariable, which the Data module sends before it marks startupComplete. So wait for that
+// first, up to two minutes, or a player in from the start never records anything.
+if (!isServer && hasInterface) then {
+    private _until = diag_tickTime + 120;
+    waitUntil {(!isNil QMOD(sys_data) && {MOD(sys_data) getVariable ["startupComplete", false]}) || {diag_tickTime > _until}};
+};
 
 // Run only in MP on clients where player object-variable exists (and not on HC)
 if (isMultiplayer && hasInterface && GVAR(ENABLED)) then {

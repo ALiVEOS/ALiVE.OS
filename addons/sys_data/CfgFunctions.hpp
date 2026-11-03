@@ -11,6 +11,11 @@ class cfgFunctions {
                     file = "\x\alive\addons\sys_data\fnc_dataInit.sqf";
                     ALIVE_RECOMPILE;
                 };
+                class writeData_WarRoom {
+                    description = "Sends a record to the War Room on alivemod.com through the alive_wr extension";
+                    file = "\x\alive\addons\sys_data\fnc_writeData_WarRoom.sqf";
+                    ALIVE_RECOMPILE;
+                };
                 class sendToPlugIn {
                     description = "Sends data to an external plugin via arma2net";
                     file = "\x\alive\addons\sys_data\fnc_sendToPlugIn.sqf";

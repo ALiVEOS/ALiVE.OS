@@ -148,11 +148,19 @@ if (isDedicated || (isServer && _pns)) then {
         ] call ALIVE_fnc_sendHint;
     };
 
+    // The War Room link: with @alive_wr on a dedicated server, ALiVE Statistics sends its events
+    // to the War Room on alivemod.com through the alive_wr extension (ALIVE_fnc_writeData_WarRoom).
+    // The old cloud check below can't pass any more, so it is skipped and the module's own
+    // Statistics setting decides. AAR and PerfMon stay off: the War Room doesn't take them yet.
+    // The setting is read now, because the cloud check below overwrites it when it fails.
+    private _statsSetting = _logic getVariable ["disableStats", "false"];
+    GVAR(warRoom) = isDedicated && {((("alive_wr" callExtension ["status", []]) select 0) select [0, 1]) == "["};
+
     // Attempt to connect to web services
     ["SYS_DATA - Attempting to load web services config."] call ALiVE_fnc_dump;
 
     // Get global config information
-    _config = [GVAR(datahandler), "read", ["sys_data", [], "config"], "CouchDB"] call ALIVE_fnc_Data;
+    _config = if (GVAR(warRoom)) then { "WARROOM" } else { [GVAR(datahandler), "read", ["sys_data", [], "config"], "CouchDB"] call ALIVE_fnc_Data };
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
         ["SYS DATA - CONFIG: %1",_config] call ALiVE_fnc_dump;
@@ -165,7 +173,7 @@ if (isDedicated || (isServer && _pns)) then {
     // and PerfMon go off whatever the Source setting, as they're War Room features, and a Cloud
     // source stops the module below. The chat kill feed doesn't depend on any of them.
     if (typeName _config == "STRING" || (typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"})) then {
-        ["CANNOT CONNECT TO CLOUD SERVICE, DISABLING WEB SERVICES"] call ALIVE_fnc_dump;
+        if (!GVAR(warRoom)) then { ["CANNOT CONNECT TO CLOUD SERVICE, DISABLING WEB SERVICES"] call ALIVE_fnc_dump };
 
         MOD(sys_data) setvariable ["disableStats", "true"];
         ALIVE_sys_statistics_ENABLED = false;
@@ -256,6 +264,13 @@ if (isDedicated || (isServer && _pns)) then {
          ALIVE_sys_statistics_EventLevel = 5;
         // Set stats level
         MOD(sys_data) setVariable ["EventLevel", ALIVE_sys_statistics_EventLevel, true];
+    };
+
+    if (GVAR(warRoom)) then {
+        ALIVE_sys_statistics_ENABLED = _statsSetting == "false";
+        publicVariable "ALIVE_sys_statistics_ENABLED";
+        MOD(sys_data) setVariable ["disableStats", _statsSetting];
+        ["SYS DATA - War Room link found (alive_wr): Statistics %1", ["off (switched off on the Data module)", "send their events to the War Room"] select ALIVE_sys_statistics_ENABLED] call ALiVE_fnc_dump;
     };
 
     // Set dictionary name
