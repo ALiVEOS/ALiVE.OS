@@ -34,9 +34,11 @@ _removeIED = {
     // town hashes and wiped from the world prematurely.
     _IEDObjArr = _IEDpos nearObjects [_IEDskin, 1];
 
-    // If no object found at exact position, remove from store and skip
+    // If no object found at exact position, remove from store and skip. A charge left lying there by an IED
+    // removed some other way (defused with ACE before the IED's own clean-up was in) goes too
     if (count _IEDObjArr == 0) then {
         _forget pushBack _key;
+        { if (isNull attachedTo _x) then { deleteVehicle _x } } forEach (_IEDpos nearObjects ["ALIVE_DemoCharge_Remote_Ammo", 2]);
     } else {
 
     _IEDObj = _IEDObjArr select 0;

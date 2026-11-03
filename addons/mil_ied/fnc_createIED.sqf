@@ -38,6 +38,17 @@ private _isEngineMine     = (_integrationMode == "engineMine");
 private _additionalIED = ADDON getVariable ["resolvedAdditionalIEDClasses", []];
 private _fnc_aliveArms = { _isAlive || {!_isPassive && {(_this in _additionalIED) && {!(_this isKindOf "MineBase")}}} };
 
+// An IED stood at the integration's height above the ground (placementZ, -0.1 = half buried). The game sinks
+// some classes further on its own: the vanilla IED mines the ACE integration places, the land ones by 0.11 m,
+// so they ended up all but under the ground, and every return of the town (put back at the height they had
+// sunk to) took them lower until nothing showed (NeisAEL on Discord, 3 Nov). Set back to the height asked for.
+private _fnc_seat = {
+    params ["_IED", "_z"];
+    if (isNull _IED) exitWith {};
+    private _p = getPosATL _IED;
+    if ((_p select 2) < _z - 0.03) then { _IED setPosATL [_p select 0, _p select 1, _z] };
+};
+
 if (_thirdParty && _debug) then {
     ["MIL IED: Using non-alive integration mode: %1", _integrationMode] call ALiVE_fnc_dump;
 };
@@ -244,6 +255,7 @@ for "_j" from 1 to _numIEDs do {
         } else {
             createVehicle [_IEDskin, _IEDpos, [], 0, "NONE"]
         };
+        [_IED, _IEDpos select 2] call _fnc_seat;
 
         _ID = format ["%1-%2", _town, _j];
         if (random 1 < 0.95) then {_dud = false} else {_dud = true};
@@ -278,9 +290,13 @@ for "_j" from 1 to _numIEDs do {
         } else {
             private _storedSkin = [_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet;
             _aliveArms = _storedSkin call _fnc_aliveArms;
-            _IED = createVehicle [_storedSkin, _storedPos, [], 0, "NONE"];
+            // at the integration's height, not the saved one: that is where it had sunk to
+            private _z = ADDON getVariable ["resolvedPlacementZ", -0.1];
+            _IED = createVehicle [_storedSkin, [_storedPos select 0, _storedPos select 1, _z], [], 0, "NONE"];
             if (_thirdParty && {!_aliveArms}) then {
                 _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
+            } else {
+                [_IED, _z] call _fnc_seat;
             };
         };
     };
@@ -309,6 +325,12 @@ for "_j" from 1 to _numIEDs do {
         //                  isn't covered up by the c4 model on top)
         _IEDCharge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo",getposATL _IED, [], 0, "CAN_COLLIDE"];
         _IEDCharge attachTo [_IED, [0, 0, ADDON getVariable ["resolvedChargeOffsetZ", 0]]];
+        // The IED taken away by anything else (an ACE defuse removes the mine): its charge and triggers go with
+        // it, rather than the charge being left lying where the IED was (NeisAEL on Discord, 3 Nov)
+        _IED addEventHandler ["Deleted", {
+            params ["_ied"];
+            { deleteVehicle (_ied getVariable [_x, objNull]) } forEach ["charge", "Trigger", "Detect_Trigger", "Det_Trigger"];
+        }];
 
         // Damage-handler logic shared by both EHs (charge AND mine). Either
         // can fire when a bullet/explosive hits its target; the
