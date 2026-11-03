@@ -26,6 +26,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ied\fnc_createBomber.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class bomberVest {
+                                description = "Dress a suicide bomber in his vest and visible charges";
+                                file = "\x\alive\addons\mil_ied\fnc_bomberVest.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class RemoveBomber {
                                 description = "Remove a suicide bomber";
                                 file = "\x\alive\addons\mil_ied\fnc_removeBomber.sqf";

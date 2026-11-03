@@ -66,6 +66,12 @@ if (isNil "_bomber") then {
     // the group goes too, or each failed call leaves an empty one behind
     if (isNil "_class") exitWith {deleteGroup _grp; ["No bomber class defined."] call ALiVE_fnc_dump};
     _bomber = _grp createUnit [_class, _pos, [], _size, "NONE"];
+    // kept on the server from the start: a headless client given him would run neither the handlers
+    // nor the chase below, and a move can reset his loadout and lose the vest. ACE's own transfer reads
+    // its blacklist, which ALiVE otherwise only copies across every 15 s.
+    _bomber setVariable ["ALiVE_ignore_HC", true, true];
+    _bomber setVariable ["acex_headless_blacklist", true, true];
+    _grp setVariable ["acex_headless_blacklist", true, true];
 
     // ["SURFACE %1, %2", surfaceIsWater (position _bomber), (position _bomber)] call ALiVE_fnc_dump;
     if (surfaceIsWater (position _bomber)) exitWith { deleteVehicle _bomber; ["Bomber pos was in water, aborting"] call ALiVE_fnc_dump;};
@@ -117,20 +123,13 @@ if (!isNil "ALiVE_advciv_activeUnits") then {
     ALiVE_advciv_activeUnits = ALiVE_advciv_activeUnits - [_bomber];
 };
 
-// Add radio, suicide vest and charge
-// Vest class is configurable via Bomber_Vest module parameter; falls back to default.
-// Accepts either a single classname or a comma-separated list e.g.
-// "V_ALiVE_Suicide_Vest,V_Chestrig_khk,V_BandollierBag_cbr"
-// When multiple classes are provided one is chosen at random per bomber.
-private _vestRaw = ADDON getVariable ["Bomber_Vest", "V_ALiVE_Suicide_Vest"];
-if (isNil "_vestRaw" || _vestRaw == "") then { _vestRaw = "V_ALiVE_Suicide_Vest"; };
-private _vestList = [_vestRaw, " ", ""] call CBA_fnc_replace;   // strip spaces
-_vestList = [_vestList, ","] call CBA_fnc_split;               // split on comma
-private _vestClass = selectRandom _vestList;
-_bomber addweapon (selectRandom ["ItemRadio","ItemALiVEPhoneOld"]);
-removeVest _bomber;
-_bomber addVest _vestClass;
-_bomber addItemToVest "DemoCharge_Remote_Mag";
+// Add radio, suicide vest and charge. The vest comes from the Bomber_Vest setting (one class or a
+// comma separated list, one picked per bomber); left at the default, a loaded mod's own suicide vest
+// is used if there is one. Charges strapped to his chest show what he is.
+private _vestRaw = ADDON getVariable ["Bomber_Vest", ""];
+if (isNil "_vestRaw") then { _vestRaw = "" };
+if (local _bomber) then { _bomber addweapon (selectRandom ["ItemRadio","ItemALiVEPhoneOld"]) } else { [_bomber, selectRandom ["ItemRadio","ItemALiVEPhoneOld"]] remoteExecCall ["addWeapon", _bomber] };
+[_bomber, _vestRaw, ["DemoCharge_Remote_Mag"]] call ALiVE_fnc_bomberVest;
 
 // Select victim - resolve to an actual infantry unit from the triggering group
 // _victim at this point is the first unit from thisList (may be a vehicle)
@@ -151,10 +150,15 @@ _bomber setVariable ["ALiVE_ignore_HC", true, true];
 
 // Killed with the vest still on, it goes off three times in ten. Not once he has stripped it to detonate
 // (that blast is his own), and not when the blast that killed him was that one.
-_bomber addEventHandler ["Killed", {
+// Heard on the server even if something else has moved him to another machine
+_bomber addMPEventHandler ["MPKilled", {
     params ["_unit"];
+    if (!isServer) exitWith {};
     if (_unit getVariable ["ALiVE_bomberArmed", false] || {vest _unit == ""} || {random 1 >= 0.3}) exitWith {};
     _unit setVariable ["ALiVE_bomberArmed", true];
+    // the vest is spent, and the charges on it go with it
+    { deleteVehicle _x } forEach (_unit getVariable ["ALiVE_bomberCharges", []]);
+    if (local _unit) then { removeVest _unit } else { [_unit] remoteExecCall ["removeVest", _unit] };
     private _at = getPosATL _unit;
     private _shell = [["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted;
     _shell createVehicle [_at select 0, _at select 1, 0];
