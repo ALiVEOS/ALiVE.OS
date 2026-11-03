@@ -1412,12 +1412,14 @@ ALiVE_fnc_INS_sabotage = {
                 if (alive _target) then {[_objective,"sabotage",[[],"convertObject",_target] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet};
 
                 // Add TACOM Sabotage command on all selected agents
+                private _saboteur = "";
                 {
                     private ["_agent"];
                      _agent = [ALiVE_AgentHandler,"getAgent",_x] call ALiVE_fnc_AgentHandler;
 
                     if (!isnil "_agent" && {([_agent,"type",""] call ALiVE_fnc_HashGet) == "agent"}) exitwith {
                         [_agent, "setActiveCommand", ["ALIVE_fnc_cc_sabotage", "managed", [getposATL _target]]] call ALIVE_fnc_civilianAgent;
+                        _saboteur = _x;
                     };
                 } foreach _agents;
 
@@ -1426,8 +1428,25 @@ ALiVE_fnc_INS_sabotage = {
 
                 [_timeTaken,_pos,[_side],20,_allSides,_objective] call ALiVE_fnc_INS_updateHostilityByPresence;
 
-                // Wait 15 minutes for Sabotage to happen
-                _timeTaken = time; waituntil {time - _timeTaken > 900};
+                // Wait 15 minutes for Sabotage to happen, or until the saboteur is killed (a killed agent leaves
+                // the agent handler)
+                _timeTaken = time;
+                waituntil {
+                    sleep 10;
+                    time - _timeTaken > 900 || {!alive _target}
+                    || {_saboteur == "" || {isNil {[ALiVE_AgentHandler,"getAgent",_saboteur] call ALiVE_fnc_AgentHandler}}}
+                };
+
+                // The attempt is over and the building still stands: the target and its Sabotage markers go, so
+                // intel shows only what is under way (F581). Left alone if a newer attempt has taken the key over.
+                if (alive _target && {!isNil "_objective"} && {!([_objective,"deleted",false] call ALiVE_fnc_HashGet)}) then {
+                    private _now = [[],"convertObject",[_objective,"sabotage",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                    if (!isNil "_now" && {_now isEqualType objNull} && {_now == _target}) then {
+                        [_objective,"sabotage",[]] call ALiVE_fnc_HashSet;
+                        deleteMarker format ["sabotage_%1", _id];
+                        ["ALiVE OPCOM: the sabotage attempt near %1 is over and the building stands; its Sabotage marker is cleared", mapGridPosition _target] call ALiVE_fnc_dump;
+                    };
+                };
 };
 
 ALiVE_fnc_INS_getRoadblockPosition = {
