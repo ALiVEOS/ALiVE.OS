@@ -38,13 +38,13 @@ class Cfg3DEN {
         // Who Can Collect at a hub, on ALiVE's compact multi-select
         class ALiVE_SideChoiceMulti;
         class ALiVE_HubCollectChoice: ALiVE_SideChoiceMulti {
-            attributeLoad = "[_this, _value, 'STR_ALIVE_HUB_COLLECT_WHO', 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoLoad.sqf'";
-            attributeSave = "[_this, 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoSave.sqf'";
+            attributeLoad = "[_this, _value, 'STR_ALIVE_HUB_COLLECT_WHO', 'SIDE', 'STR_ALIVE_HUB_WHO_', 'OWNER'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenLoad.sqf'";
+            attributeSave = "[_this, 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenSave.sqf'";
         };
         // Who Can Dismantle a hub of its own side: the same rows, own side ticked, as on FOBs
         class ALiVE_HubDismantleChoice: ALiVE_SideChoiceMulti {
-            attributeLoad = "[_this, _value, 'STR_ALIVE_HUB_DISMANTLE_WHO', 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoLoad.sqf'";
-            attributeSave = "[_this, 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_player_resupply\fnc_hubEdenWhoSave.sqf'";
+            attributeLoad = "[_this, _value, 'STR_ALIVE_HUB_DISMANTLE_WHO', 'SIDE', 'STR_ALIVE_HUB_WHO_', 'OWNER'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenLoad.sqf'";
+            attributeSave = "[_this, 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenSave.sqf'";
         };
     };
 };

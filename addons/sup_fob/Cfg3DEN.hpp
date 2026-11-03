@@ -39,8 +39,8 @@ class Cfg3DEN {
         class ALiVE_FactionSlotChoice;
         class ALiVE_SideChoiceMulti;
         class ALiVE_FOBManageChoice: ALiVE_SideChoiceMulti {
-            attributeLoad = "[_this, _value] call compile preprocessFileLineNumbers '\x\alive\addons\sup_fob\fnc_fobEdenManageLoad.sqf'";
-            attributeSave = "[_this] call compile preprocessFileLineNumbers '\x\alive\addons\sup_fob\fnc_fobEdenManageSave.sqf'";
+            attributeLoad = "[_this, _value, 'STR_ALIVE_FOB_MANAGE_WHO', 'SIDE', 'STR_ALIVE_FOB_MANAGE_', 'DEPLOYER'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenLoad.sqf'";
+            attributeSave = "[_this, 'SIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenSave.sqf'";
         };
         class ALiVE_FOBHubChoice: ALiVE_FactionSlotChoice {
             attributeLoad = "[_this, 'HUB', _value, '$STR_ALIVE_FOB_HUBS'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_fob\fnc_fobEdenChoiceLoad.sqf'";

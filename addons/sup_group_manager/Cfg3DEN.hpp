@@ -4,8 +4,8 @@ class Cfg3DEN {
     class Attributes {
         class ALiVE_SideChoiceMulti;
         class ALiVE_RallyManageChoice: ALiVE_SideChoiceMulti {
-            attributeLoad = "[_this, _value, 'STR_ALIVE_RALLY_MANAGE_WHO', 'OWNER'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_group_manager\fnc_rallyEdenWhoLoad.sqf'";
-            attributeSave = "[_this, 'OWNER'] call compile preprocessFileLineNumbers '\x\alive\addons\sup_group_manager\fnc_rallyEdenWhoSave.sqf'";
+            attributeLoad = "[_this, _value, 'STR_ALIVE_RALLY_MANAGE_WHO', 'OWNER', 'STR_ALIVE_RALLY_WHO_', 'OWNER'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenLoad.sqf'";
+            attributeSave = "[_this, 'OWNER'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenSave.sqf'";
         };
     };
 };
