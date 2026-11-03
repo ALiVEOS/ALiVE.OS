@@ -1255,7 +1255,7 @@ class FSM
                          "" \n
                          "_section = [_objective, ""section"",[]] call ALiVE_fnc_HashGet;" \n
                          "if (!_manualOrder && {count _section < _size}) then {" \n
-                         "    _hdl = [_OPCOM_HANDLER,[_objective,_size,_taskTypes],_controltype == ""assault""] spawn {" \n
+                         "    _hdl = [_OPCOM_HANDLER,[_objective,_size,_taskTypes],_controltype == ""assault"",_operation == ""recon""] spawn {" \n
                          "        private [""_objective"",""_pos"",""_taskTypes""];" \n
                          "" \n
                          "        _objective = _this select 1 select 0;" \n
@@ -1269,7 +1269,7 @@ class FSM
                          "        // otherwise take groups off the objectives the commander holds" \n
                          "        private _freeOnly = _this select 2;" \n
                          "        if (_freeOnly) then {_size = (_size - count ([_objective,""section"",[]] call ALiVE_fnc_HashGet)) max 0};" \n
-                         "        _sectionAssist = if (_size > 0) then {[_this select 0,""NearestAvailableSection"",[_pos,_size,_taskTypes,[_objective,""objectiveType"",""MIL""] call ALiVE_fnc_HashGet,_freeOnly]] call ALiVE_fnc_OPCOM} else {[]};" \n
+                         "        _sectionAssist = if (_size > 0) then {[_this select 0,""NearestAvailableSection"",[_pos,_size,_taskTypes,[_objective,""objectiveType"",""MIL""] call ALiVE_fnc_HashGet,_freeOnly,_this select 3]] call ALiVE_fnc_OPCOM} else {[]};" \n
                          "        if !([_objective,""deleted"",false] call ALiVE_fnc_HashGet) then {" \n
                          "            [_objective, ""sectionAssist"",_sectionAssist] call ALiVE_fnc_HashSet;" \n
                          "        };" \n

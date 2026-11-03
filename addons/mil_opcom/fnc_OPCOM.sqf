@@ -1561,7 +1561,8 @@ switch (_operation) do {
             "_size",
             ["_types", ["infantry"]],
             ["_objectiveType", ""],
-            ["_freeOnly", false]
+            ["_freeOnly", false],
+            ["_preferSpecOps", false]
         ];
 
         // Town-Only / Base-Only Factions: a civilian objective takes no base-only faction, any other objective
@@ -1641,6 +1642,57 @@ switch (_operation) do {
                         ,"ASCEND",
                     {!isnil "_x" && {count _x > 2}}
                     ] call ALiVE_fnc_SortBy;
+
+        // A recon order goes to the faction's SpecOps groups first, nearest first, then to the nearest of
+        // the rest. A profile keeps only its group's class name, so the category is read back from the
+        // faction's group config, through its custom mapping when it has one.
+        if (_preferSpecOps) then {
+            if (isNil "ALIVE_groupConfig" || {isNil "ALiVE_GROUP_CONFIG_DATA_GENERATED"}) then { [] call ALIVE_fnc_groupGenerateConfigData };
+            if (isNil "ALiVE_OPCOM_specOpsGroups") then { ALiVE_OPCOM_specOpsGroups = createHashMap };
+            private _specOps = [];
+            private _others = [];
+            {
+                if (isNil "_x") then { continue };
+                private _faction = [_x,"faction",""] call ALiVE_fnc_HashGet;
+                private _name = [_x,"objectType",""] call ALiVE_fnc_HashGet;
+                private _key = format ["%1|%2", _faction, _name];
+                private _is = ALiVE_OPCOM_specOpsGroups get _key;
+                if (isNil "_is") then {
+                    _is = false;
+                    if (_faction isEqualType "" && {_name isEqualType ""} && {_name != ""}) then {
+                        private _groupFaction = _faction;
+                        private _type = "SpecOps";
+                        if (!isNil "ALIVE_factionCustomMappings" && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
+                            private _mappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
+                            _groupFaction = [_mappings, "GroupFactionName", _faction] call ALIVE_fnc_hashGet;
+                            private _mapped = [[_mappings, "GroupFactionTypes", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet, "SpecOps"] call ALIVE_fnc_hashGet;
+                            if (!isNil "_mapped" && {_mapped isEqualType ""}) then { _type = _mapped };
+                            private _groups = [_mappings, "Groups", []] call ALIVE_fnc_hashGet;
+                            if ([_groups] call ALiVE_fnc_isHash && {_type in (_groups select 1)}) then {
+                                private _listed = [_groups, _type, []] call ALIVE_fnc_hashGet;
+                                if (_listed isEqualType [] && {_name in _listed}) then { _is = true };
+                            };
+                        };
+                        if (!_is) then {
+                            // a name the faction also uses in another category is kept as category>name too
+                            private _cfg = [ALIVE_groupConfig, format ["%1_%2>%3", _groupFaction, _type, _name], configNull] call ALIVE_fnc_hashGet;
+                            if (isNull _cfg) then {
+                                _cfg = [ALIVE_groupConfig, format ["%1_%2", _groupFaction, _name], configNull] call ALIVE_fnc_hashGet;
+                                if (!isNull _cfg) then {
+                                    private _path = configHierarchy _cfg;
+                                    _is = count _path > 1 && {(configName (_path select (count _path - 2))) == _type};
+                                };
+                            } else {
+                                _is = true;
+                            };
+                        };
+                    };
+                    ALiVE_OPCOM_specOpsGroups set [_key, _is];
+                };
+                if (_is) then { _specOps pushBack _x } else { _others pushBack _x };
+            } forEach _troops;
+            _troops = _specOps + _others;
+        };
 
         //Collect to section
         _section = [];
