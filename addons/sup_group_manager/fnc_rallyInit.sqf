@@ -62,6 +62,8 @@ if (isServer && {_main}) then {
         params ["_logic"];
         private _base = parseNumber format ["%1", _logic getVariable ["pointOverrun", 0]];
         private _r = (parseNumber format ["%1", _logic getVariable ["enemyRadius", 100]]) max 50;
+        // Overrun Repair Time: back on the list this long after, if the object still stands; 0 is never
+        private _repair = parseNumber format ["%1", _logic getVariable ["repairTime", 0]];
         while { true } do {
             sleep 5;
             private _lost = [];
@@ -73,15 +75,27 @@ if (isServer && {_main}) then {
                         // kept on the object: netId is "0:0" for every object in single player
                         private _h = if ([getPosATL _o, _who, _r, !isNil "ALIVE_profileHandler"] call ALIVE_fnc_isEnemyNear) then { (_o getVariable ["ALiVE_rallyHeld", 0]) + 5 } else { 0 };
                         _o setVariable ["ALiVE_rallyHeld", _h];
-                        if (_h >= _t) then { _lost pushBack [_o, _name, _who] };
+                        if (_h >= _t) then { _lost pushBack +_x };
                     };
                 };
             } forEach (missionNamespace getVariable ["ALiVE_rallyPoints", []]);
             {
-                _x params ["_o", "_name", "_who"];
+                private _row = _x;
+                _row params ["_o", "_name", "_who"];
                 ["remove", [_o]] call ALiVE_fnc_rallyPoint;
-                ["ALiVE Rally Points: %1 (%2) was overrun", _name, _who] call ALiVE_fnc_dump;
-                [localize "STR_ALIVE_RALLY", format [localize "STR_ALIVE_RALLY_UI_POINT_OVERRUN", _name]] remoteExecCall ["ALIVE_fnc_sendHint", allPlayers select { str side group _x == _who }];
+                ["ALiVE Rally Points: %1 (%2) was overrun%3", _name, _who, ["", format ["; back in %1 s", _repair]] select (_repair > 0)] call ALiVE_fnc_dump;
+                [localize "STR_ALIVE_RALLY", if (_repair > 0) then { format [localize "STR_ALIVE_RALLY_UI_POINT_OVERRUN_BACK", _name, ceil (_repair / 60)] } else { format [localize "STR_ALIVE_RALLY_UI_POINT_OVERRUN", _name] }]
+                    remoteExecCall ["ALIVE_fnc_sendHint", allPlayers select { str side group _x == _who }];
+                // set after the remove, which calls off any earlier wait
+                if (_repair > 0) then {
+                    private _token = [time, _name];
+                    _o setVariable ["ALiVE_rallyBack", _token];
+                    [_row, _token, _repair] spawn {
+                        params ["_row", "_token", "_repair"];
+                        sleep _repair;
+                        ["restore", [_row, _token]] call ALiVE_fnc_rallyPoint;
+                    };
+                };
             } forEach _lost;
         };
     };

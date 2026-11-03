@@ -246,6 +246,15 @@ class CfgVehicles {
                                 typeName = "NUMBER";
                                 defaultValue = "0";
                         };
+                        // an overrun rally point comes back after this long, as a Logistics Hub does
+                        class repairTime : Edit
+                        {
+                                property = "ALiVE_sup_rally_repairTime";
+                                displayName = "$STR_ALIVE_RALLY_REPAIRTIME";
+                                tooltip = "$STR_ALIVE_RALLY_REPAIRTIME_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = "0";
+                        };
                         class HDR_TRAVEL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_TRAVEL"; displayName = "TRAVEL RULES"; };
                         class squadRadius : Edit
                         {

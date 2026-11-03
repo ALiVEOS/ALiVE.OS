@@ -38,6 +38,10 @@ Operations:
                                 Permissions window (ALiVE_fnc_siteWhoDialog); kept over a restart
                                 when the mission saves
 "permReset" [unit]              an admin puts Who Can Manage back to the module's settings
+"plant"   [group, leader or posATL, dir, name]
+                                server: a squad leader's rally point made and watched (deploy, and
+                                its return after Overrun Repair Time)
+"restore" [row, token]          server: a placed rally point back after Overrun Repair Time
 "list"    [unit]                the rally points the unit may use:
                                 [[name, posASL, object or objNull, FOB id or ""], ...]
 "near"    [unit]                the rally point the unit stands at, or []
@@ -102,7 +106,7 @@ private _result = true;
 private _refused = false;
 if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_rallyInner"}) then {
     private _sender = remoteExecutedOwner;
-    _refused = if (_op in ["travel", "move", "refused"]) then { true } else {
+    _refused = if (_op in ["travel", "move", "refused", "plant", "restore", "permLoad", "permSave"]) then { true } else {
         switch (true) do {
             case (isServer && {_op in ["deploy", "pickup", "rename", "check", "permissions", "permReset"]}): {
                 private _u = _args param [0, objNull];
@@ -138,6 +142,8 @@ switch (_op) do {
     case "remove": {
         if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
         _args params [["_obj", objNull, [objNull]]];
+        // removed: a wait to bring it back after Overrun Repair Time is called off (an overrun sets its own after this)
+        if (!isNull _obj) then { _obj setVariable ["ALiVE_rallyBack", nil] };
         ALiVE_rallyPoints = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) && {(_x select 0) != _obj} };
         publicVariable "ALiVE_rallyPoints";
         // so the module's class scan doesn't bring it back
@@ -184,32 +190,49 @@ switch (_op) do {
         // the squad's earlier one goes
         private _old = _grp getVariable ["ALiVE_rallyDeployed", objNull];
         if (!isNull _old) then { ["remove", [_old]] call ALiVE_fnc_rallyPoint; deleteVehicle _old };
+        missionNamespace setVariable [_key, time + (["leaderCooldown", 120] call _set)];
+        ["plant", [_grp, _unit, getDir _unit, format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp]]] call ALiVE_fnc_rallyPoint;
+        localize "STR_ALIVE_RALLY_UI_DEPLOYED" call _tell;
+    };
+
+    // server: a squad leader's rally point made and watched, put down by "deploy" (in front of the leader) or brought
+    // back after Overrun Repair Time (where it stood). Gone once enemies hold it for Leader Rally Point Overrun Time or
+    // the squad is gone; overrun, it comes back after Overrun Repair Time unless the squad has put another one down.
+    // [group, leader or posATL, dir, name] -> the object, or false
+    case "plant": {
+        if (!isServer) exitWith { _result = false };
+        _args params [["_grp", grpNull, [grpNull]], ["_where", objNull, [objNull, []]], ["_dir", 0, [0]], ["_name", "", [""]]];
+        private _mode = toUpper (["leaderRally", "OFF"] call _set);
+        if (isNull _grp || {_mode == "OFF"}) exitWith { _result = false };
+        private _r = (["enemyRadius", 300] call _set) max 50;
         // a ground holder carrying the backpack is the rally point: a backpack made with createVehicle
         // sits inside a holder of its own and reports a position kilometres away, so the marker went
         // there and deleting it left the holder behind (The Horny Latino on Discord, 14 Oct)
         // the mission's own object if it sets one (A. Ares, 20 Oct): a backpack goes in a holder as the usual one does,
         // anything else stands there itself
         private _rc = [["leaderRallyClass", ""] call _set, str side _grp, ""] call _pickClass;
+        private _bag = _rc == "" || {_rc isKindOf "Bag_Base"};
+        private _posATL = if (_where isEqualType objNull) then { _where modelToWorld [0, [1.5, 1.2] select _bag, 0] } else { _where };
         private _obj = objNull;
         // the backpack is a simple object, a picture of the bag with no inventory: a real one in a ground holder
         // came with Arma's own "Take" action, which no script can take off (Jman, 24 Oct). The rally point's
         // own actions are on the player, so nothing needs the object to carry one.
-        if (_rc == "" || {_rc isKindOf "Bag_Base"}) then {
-            _obj = createSimpleObject [[_rc, "B_Carryall_oli"] select (_rc == ""), AGLToASL (_unit modelToWorld [0, 1.2, 0])];
-            _obj setDir getDir _unit;
+        if (_bag) then {
+            _obj = createSimpleObject [[_rc, "B_Carryall_oli"] select (_rc == ""), AGLToASL _posATL];
         } else {
-            _obj = createVehicle [_rc, _unit modelToWorld [0, 1.5, 0], [], 0, "CAN_COLLIDE"];
-            _obj setDir getDir _unit;
+            _obj = createVehicle [_rc, _posATL, [], 0, "CAN_COLLIDE"];
             clearItemCargoGlobal _obj; clearWeaponCargoGlobal _obj; clearMagazineCargoGlobal _obj; clearBackpackCargoGlobal _obj;
         };
+        _obj setDir _dir;
         // stood flush with the slope it is on rather than upright (A. Ares on Discord, 23 Oct)
         _obj setVectorUp (surfaceNormal (getPosATL _obj));
         _grp setVariable ["ALiVE_rallyDeployed", _obj, true];
-        missionNamespace setVariable [_key, time + (["leaderCooldown", 120] call _set)];
-        ["add", [_obj, format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp], str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE"), _grp]] call ALiVE_fnc_rallyPoint;
-        localize "STR_ALIVE_RALLY_UI_DEPLOYED" call _tell;
-        [_obj, _grp, _r, ["leaderOverrun", 30] call _set] spawn {
-            params ["_obj", "_grp", "_r", "_overrun"];
+        // a new one: an earlier one waiting to come back stays gone
+        _grp setVariable ["ALiVE_rallyBack", nil];
+        ["add", [_obj, _name, str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE"), _grp]] call ALiVE_fnc_rallyPoint;
+        _result = _obj;
+        [_obj, _grp, _r, ["leaderOverrun", 30] call _set, ["repairTime", 0] call _set] spawn {
+            params ["_obj", "_grp", "_r", "_overrun", "_repair"];
             // the server's own: this runs on from a player's deploy request, which it would otherwise count as asking
             private _ALiVE_rallyInner = true;
             private _held = 0;
@@ -221,17 +244,64 @@ switch (_op) do {
                     _held = if ([getPosATL _obj, str side _grp, _r, !isNil "ALIVE_profileHandler"] call ALIVE_fnc_isEnemyNear) then { _held + 5 } else { 0 };
                 };
             };
-            if (!_never && {_held >= _overrun} && {!isNull _grp}) then {
-                [localize "STR_ALIVE_RALLY", localize "STR_ALIVE_RALLY_UI_OVERRUN"] remoteExecCall ["ALIVE_fnc_sendHint", units _grp select { isPlayer _x }];
-            };
+            private _lost = !_never && {_held >= _overrun} && {!isNull _grp};
             // only forget the squad's rally point if it is still this one: when the leader puts a new one down the old one
             // is deleted, and clearing here then wiped the new one, so it lost Rename and Pick Up and the next one put down
             // left it standing (A. Ares on Discord, 24 Oct)
             private _mine = !isNull _grp && {(_grp getVariable ["ALiVE_rallyDeployed", objNull]) isEqualTo _obj};
+            // where it stood and what it is called now, to bring it back
+            private _list = missionNamespace getVariable ["ALiVE_rallyPoints", []];
+            private _name = (_list param [_list findIf { (_x select 0) isEqualTo _obj }, []]) param [1, ""];
+            private _posATL = if (isNull _obj) then { [] } else { getPosATL _obj };
+            private _dir = if (isNull _obj) then { 0 } else { getDir _obj };
+            private _back = _lost && {_mine} && {_repair > 0} && {_posATL isNotEqualTo []} && {_name != ""};
+            if (_lost) then {
+                [localize "STR_ALIVE_RALLY", if (_back) then { format [localize "STR_ALIVE_RALLY_UI_OVERRUN_BACK", ceil (_repair / 60)] } else { localize "STR_ALIVE_RALLY_UI_OVERRUN" }]
+                    remoteExecCall ["ALIVE_fnc_sendHint", units _grp select { isPlayer _x }];
+            };
             ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
             if (!isNull _obj) then { deleteVehicle _obj };
             if (_mine) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
+            // Overrun Repair Time: back where it stood, unless the squad has put another one down or is gone by then
+            if (_back) then {
+                private _token = [time, _posATL];
+                _grp setVariable ["ALiVE_rallyBack", _token];
+                ["ALiVE Rally Points: %1 was overrun; back in %2 s", _name, _repair] call ALiVE_fnc_dump;
+                [_grp, _token, _posATL, _dir, _name, _repair] spawn {
+                    params ["_grp", "_token", "_posATL", "_dir", "_name", "_repair"];
+                    private _ALiVE_rallyInner = true;
+                    sleep _repair;
+                    if (isNull _grp || {({ alive _x } count units _grp) == 0} || {!isNull (_grp getVariable ["ALiVE_rallyDeployed", objNull])}
+                        || {!((_grp getVariable ["ALiVE_rallyBack", []]) isEqualTo _token)}) exitWith {};
+                    private _o = ["plant", [_grp, _posATL, _dir, _name]] call ALiVE_fnc_rallyPoint;
+                    if (_o isEqualType objNull && {!isNull _o}) then {
+                        ["ALiVE Rally Points: %1 is back", _name] call ALiVE_fnc_dump;
+                        [localize "STR_ALIVE_RALLY", format [localize "STR_ALIVE_RALLY_UI_BACK", _name]] remoteExecCall ["ALIVE_fnc_sendHint", units _grp select { isPlayer _x }];
+                    };
+                };
+            };
         };
+    };
+
+    // server: a placed rally point overrun earlier back on the list after Overrun Repair Time (the module's watch,
+    // ALiVE_fnc_rallyInit), if its object still stands and nothing removed it meanwhile. [row, token] -> true when back
+    case "restore": {
+        if (!isServer) exitWith { _result = false };
+        _args params [["_row", [], [[]]], ["_token", []]];
+        private _o = _row param [0, objNull];
+        _result = false;
+        if (isNull _o || {!alive _o} || {!((_o getVariable ["ALiVE_rallyBack", []]) isEqualTo _token)}) exitWith {};
+        _o setVariable ["ALiVE_rallyBack", nil];
+        _o setVariable ["ALiVE_rallyHeld", 0];
+        ALiVE_rallyRemoved = (missionNamespace getVariable ["ALiVE_rallyRemoved", []]) select { !isNull _x && {_x != _o} };
+        private _list = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) && {(_x select 0) != _o} };
+        _list pushBack _row;
+        ALiVE_rallyPoints = _list;
+        publicVariable "ALiVE_rallyPoints";
+        _row params ["", "_name", "_who"];
+        ["ALiVE Rally Points: %1 (%2) is back", _name, _who] call ALiVE_fnc_dump;
+        [localize "STR_ALIVE_RALLY", format [localize "STR_ALIVE_RALLY_UI_BACK", _name]] remoteExecCall ["ALIVE_fnc_sendHint", allPlayers select { _who == "ANY" || {str side group _x == _who} }];
+        _result = true;
     };
 
     // a rally point renamed by someone standing at it who may manage it (Who Can Manage). The name is

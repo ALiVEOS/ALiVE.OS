@@ -867,4 +867,19 @@
 <Key ID="STR_ALIVE_RALLY_PERM_RESET">
     <English>Who can manage rally points is back to the module's settings.</English>
 </Key>
+<Key ID="STR_ALIVE_RALLY_REPAIRTIME">
+    <English>Overrun repair time</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_REPAIRTIME_COMMENT">
+    <English>Seconds after a rally point is overrun before it comes back, as a Logistics Hub does. A squad leader's comes back where it stood, unless the squad has put another one down or is gone by then; a placed one comes back if its object still stands. 0, the default, is never.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_OVERRUN_BACK">
+    <English>Your squad's rally point has been overrun. It comes back in about %1 min, unless you put another one down.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_POINT_OVERRUN_BACK">
+    <English>Rally point %1 has been overrun. It comes back in about %2 min.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_BACK">
+    <English>Rally point %1 is back.</English>
+</Key>
 </Container></Package></Project>
