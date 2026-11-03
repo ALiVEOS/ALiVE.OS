@@ -383,21 +383,43 @@ switch(_operation) do {
     };
     // [side text, a side's Enemy setting]: AUTO (or nothing) is the factions of the mission's AI
     // Commanders hostile to that side, comma-separated like a picked list; with no such commander,
-    // the enemy these slots always defaulted to. Any other setting comes back as it is. Server side,
+    // the enemy these slots always defaulted to. A picked list keeps the factions some AI Commander
+    // fields; when it names none of them and the side has hostile commanders, it becomes theirs,
+    // so a slot left on vanilla CSAT no longer sends CSAT waves into a mission with no CSAT in it
+    // (NeisAEL on Discord, 30 Oct). A mission with no AI Commander keeps its pick. Server side,
     // read when a task is made, so commanders that start late still count
     case "resolveEnemyFaction": {
         _args params [["_sideText", "WEST", [""]], ["_value", "", [""]]];
         _result = _value;
-        if !((toUpper trim _value) in ["", "AUTO"]) exitWith {};
         private _sideOf = { switch (toUpper _this) do { case "EAST": { east }; case "WEST": { west }; case "GUER": { resistance }; default { sideUnknown } } };
         private _own = _sideText call _sideOf;
         private _found = [];
+        private _fielded = [];
         {
             private _opSide = ([_x, "side", ""] call ALiVE_fnc_HashGet) call _sideOf;
-            if (_opSide != sideUnknown && {_opSide != _own} && {(_own getFriend _opSide) < 0.6}) then {
-                { if (_x isEqualType "" && {_x != ""}) then { _found pushBackUnique _x } } forEach ([_x, "factions", []] call ALiVE_fnc_HashGet);
-            };
+            private _hostile = _opSide != sideUnknown && {_opSide != _own} && {(_own getFriend _opSide) < 0.6};
+            {
+                if (_x isEqualType "" && {_x != ""}) then {
+                    _fielded pushBackUnique (toLower _x);
+                    if (_hostile) then { _found pushBackUnique _x };
+                };
+            } forEach ([_x, "factions", []] call ALiVE_fnc_HashGet);
         } forEach ((missionNamespace getVariable ["OPCOM_instances", []]) select { _x isEqualType [] });
+        if !((toUpper trim _value) in ["", "AUTO"]) exitWith {
+            if (_found isEqualTo []) exitWith {};
+            private _picked = (_value splitString ", ") select { _x != "" };
+            private _kept = _picked select { (toLower _x) in _fielded };
+            if (_kept isEqualTo []) then {
+                _result = _found joinString ",";
+                if (isNil QGVAR(enemySwapSaid)) then { GVAR(enemySwapSaid) = [] };
+                if !((_sideText + _value) in GVAR(enemySwapSaid)) then {
+                    GVAR(enemySwapSaid) pushBack (_sideText + _value);
+                    ["C2ISTAR: the %1 task enemy %2 is in no AI Commander, so tasks use the hostile commanders' factions %3", _sideText, _value, _result] call ALiVE_fnc_DumpR;
+                };
+            } else {
+                _result = _kept joinString ",";
+            };
+        };
         _result = if (_found isEqualTo []) then { ["OPF_F", "BLU_F"] select (_own == east) } else { _found joinString "," };
     };
     case "gmLimit": {
