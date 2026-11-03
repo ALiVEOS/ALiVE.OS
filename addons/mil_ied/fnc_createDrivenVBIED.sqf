@@ -101,23 +101,32 @@ if (_showsItself) then {
 
 // the charge, under the car as a parked car bomb's is; anything exploding under it sets the car off. Rigged here
 // rather than by createVBIED, which leaves a car alone outside the module's area or not on its car bomb side.
-private _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", getPosATL _car, [], 0, "CAN_COLLIDE"];
-_charge attachTo [_car, [0, -1, -1.08]];
-_charge setVectorUp [0, 0, -1];
-_charge addEventHandler ["HandleDamage", {
-    params ["_charge", "", "_damage"];
-    // a stray fragment from another blast doesn't set it off (see createVBIED)
-    if (_damage < 0.3) exitWith { 0 };
-    private _car = attachedTo _charge;
-    if (!isNull _car && {!(_car getVariable ["ALiVE_carBombGone", false])}) then {
-        _car setVariable ["ALiVE_carBombGone", true];
-        private _shell = [["Bomb_04_F","Bomb_03_F","R_60mm_HE"],[3,3,1]] call BIS_fnc_selectRandomWeighted;
-        _shell createVehicle [(getPos _car) select 0, (getPos _car) select 1, 0];
-    };
-    deleteVehicle _charge;
-    0
-}];
-[_car, _charge] call ALiVE_fnc_vbiedTells;
+// It and the load go on once the car has pulled away: with anything attached under it from the start, the
+// driver often never finishes planning his route and the car sits on its start road for good.
+[_car] spawn {
+    params ["_car"];
+    private _start = getPosATL _car;
+    private _t0 = time;
+    waitUntil { sleep 0.5; isNull _car || {!alive _car} || {(_car distance2D _start) > 5} || {time - _t0 > 30} };
+    if (isNull _car || {!alive _car} || {_car getVariable ["ALiVE_carBombGone", false]}) exitWith {};
+    private _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", getPosATL _car, [], 0, "CAN_COLLIDE"];
+    _charge attachTo [_car, [0, -1, -1.08]];
+    _charge setVectorUp [0, 0, -1];
+    _charge addEventHandler ["HandleDamage", {
+        params ["_charge", "", "_damage"];
+        // a stray fragment from another blast doesn't set it off (see createVBIED)
+        if (_damage < 0.3) exitWith { 0 };
+        private _car = attachedTo _charge;
+        if (!isNull _car && {!(_car getVariable ["ALiVE_carBombGone", false])}) then {
+            _car setVariable ["ALiVE_carBombGone", true];
+            private _shell = [["Bomb_04_F","Bomb_03_F","R_60mm_HE"],[3,3,1]] call BIS_fnc_selectRandomWeighted;
+            _shell createVehicle [(getPos _car) select 0, (getPos _car) select 1, 0];
+        };
+        deleteVehicle _charge;
+        0
+    }];
+    [_car, _charge] call ALiVE_fnc_vbiedTells;
+};
 
 if (_debug) then {
     ["ALIVE-%1 Car bomb: %2 driven by %3 after %4 from %5, %6 m away", time, typeOf _car, typeOf _driver, name _victim, mapGridPosition _at, round (_at distance2D _victim)] call ALiVE_fnc_dump;
