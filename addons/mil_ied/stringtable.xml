@@ -310,6 +310,101 @@
     <Portuguese>Os veículos de qual lado carregarão VB-IEDs. CIV (padrão) retira dos veículos de facção civil; EAST / WEST / IND retiram dos veículos militares do lado correspondente.</Portuguese>
     <Russian>Транспорт какой стороны будет нести VB-IED. CIV (по умолчанию) берёт из транспорта гражданской фракции; EAST / WEST / IND — из военного транспорта соответствующей стороны.</Russian>
 </Key>
+<Key ID="STR_ALIVE_IED_VB_TELL_LOAD">
+    <English>Car Bombs Show Their Load:</English>
+    <Chinese>車載炸彈露出裝載物：</Chinese>
+    <Chinesesimp>车载炸弹露出装载物：</Chinesesimp>
+    <Spanish>Los coches bomba muestran su carga:</Spanish>
+    <French>Les voitures piégées montrent leur chargement :</French>
+    <Portuguese>Carros-bomba mostram a carga:</Portuguese>
+    <Russian>Заминированные машины видны по грузу:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_IED_VB_TELL_LOAD_COMMENT">
+    <English>Yes straps the bomb under the car, between the axles: three shells bundled with a charge, and a satchel beside them. A player who looks underneath sees it, and every player sees the same load. Not on bikes. Default Yes.</English>
+    <Chinese>「是」會把炸彈綁在車底兩軸之間：三枚砲彈和一個炸藥捆在一起，旁邊還有一個炸藥包。查看車底的玩家會看到它，所有玩家看到的裝載物都一樣。機車和自行車不適用。預設為「是」。</Chinese>
+    <Chinesesimp>“是”会把炸弹绑在车底两轴之间：三枚炮弹和一个炸药捆在一起，旁边还有一个炸药包。查看车底的玩家会看到它，所有玩家看到的装载物都一样。摩托车和自行车不适用。默认为“是”。</Chinesesimp>
+    <Spanish>Sí sujeta la bomba bajo el coche, entre los ejes: tres proyectiles atados con una carga y una mochila explosiva al lado. Un jugador que mire por debajo la ve, y todos los jugadores ven la misma carga. No en motos ni bicicletas. Por defecto Sí.</Spanish>
+    <French>Oui fixe la bombe sous la voiture, entre les essieux : trois obus liés avec une charge, et une sacoche d'explosifs à côté. Un joueur qui regarde dessous la voit, et tous les joueurs voient le même chargement. Pas sur les motos ni les vélos. Par défaut Oui.</French>
+    <Portuguese>Sim prende a bomba debaixo do carro, entre os eixos: três projéteis amarrados com uma carga e uma mochila explosiva ao lado. Um jogador que olhe por baixo a vê, e todos os jogadores veem a mesma carga. Não em motos nem bicicletas. Padrão Sim.</Portuguese>
+    <Russian>«Да» крепит бомбу под днищем машины, между осями: три снаряда, связанные с зарядом, и рядом подрывной ранец. Игрок, заглянувший под машину, её увидит, и все игроки видят один и тот же груз. Не на мотоциклах и велосипедах. По умолчанию «Да».</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_VB_TELL_LOW">
+    <English>Car Bombs Sit Low at the Back:</English>
+    <Chinese>車載炸彈車尾下沉：</Chinese>
+    <Chinesesimp>车载炸弹车尾下沉：</Chinesesimp>
+    <Spanish>Los coches bomba van hundidos atrás:</Spanish>
+    <French>Les voitures piégées sont basses à l'arrière :</French>
+    <Portuguese>Carros-bomba ficam baixos atrás:</Portuguese>
+    <Russian>Заминированные машины проседают сзади:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_IED_VB_TELL_LOW_COMMENT">
+    <English>Yes makes a car bomb a third heavier with the weight further back, so its rear sits a few centimetres lower and its nose higher than the same car unloaded. It handles a little heavier when driven. Default No.</English>
+    <Chinese>「是」會讓車載炸彈重三分之一，重心往後移，所以車尾比空車低幾公分、車頭較高。駕駛時操控會稍重。預設為「否」。</Chinese>
+    <Chinesesimp>“是”会让车载炸弹重三分之一，重心后移，所以车尾比空车低几厘米、车头更高。驾驶时操控会稍重。默认为“否”。</Chinesesimp>
+    <Spanish>Sí hace un coche bomba un tercio más pesado, con el peso más atrás, así que la parte trasera queda unos centímetros más baja y el morro más alto que el mismo coche vacío. Al conducirlo se nota algo más pesado. Por defecto No.</Spanish>
+    <French>Oui rend une voiture piégée plus lourde d'un tiers, avec le poids plus en arrière : l'arrière est quelques centimètres plus bas et l'avant plus haut que la même voiture vide. Elle se conduit un peu plus lourdement. Par défaut Non.</French>
+    <Portuguese>Sim deixa o carro-bomba um terço mais pesado, com o peso mais atrás, então a traseira fica alguns centímetros mais baixa e a frente mais alta que o mesmo carro vazio. Fica um pouco mais pesado de dirigir. Padrão Não.</Portuguese>
+    <Russian>«Да» делает заминированную машину на треть тяжелее со смещением веса назад: корма сидит на несколько сантиметров ниже, а нос выше, чем у той же пустой машины. Управляется она чуть тяжелее. По умолчанию «Нет».</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_VB_TELL_BEEP">
+    <English>Car Bombs Beep Up Close:</English>
+    <Chinese>車載炸彈近距離發出嗶聲：</Chinese>
+    <Chinesesimp>车载炸弹近距离发出哔声：</Chinesesimp>
+    <Spanish>Los coches bomba pitan de cerca:</Spanish>
+    <French>Les voitures piégées bipent de près :</French>
+    <Portuguese>Carros-bomba apitam de perto:</Portuguese>
+    <Russian>Заминированные машины пищат вблизи:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_IED_VB_TELL_BEEP_COMMENT">
+    <English>Yes has a timer beep from a car bomb while a player is within 25 m of it. Default Yes.</English>
+    <Chinese>「是」會在玩家距車載炸彈 25 公尺內時，讓它發出計時器嗶聲。預設為「是」。</Chinese>
+    <Chinesesimp>“是”会在玩家距车载炸弹 25 米内时，让它发出计时器哔声。默认为“是”。</Chinesesimp>
+    <Spanish>Sí hace que un temporizador pite en el coche bomba mientras haya un jugador a menos de 25 m. Por defecto Sí.</Spanish>
+    <French>Oui fait biper un minuteur dans la voiture piégée tant qu'un joueur est à moins de 25 m. Par défaut Oui.</French>
+    <Portuguese>Sim faz um temporizador apitar no carro-bomba enquanto um jogador estiver a menos de 25 m. Padrão Sim.</Portuguese>
+    <Russian>«Да» включает писк таймера в заминированной машине, пока игрок ближе 25 м. По умолчанию «Да».</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_VB_TELL_DETECTOR">
+    <English>Detector Finds Car Bombs:</English>
+    <Chinese>探測器可發現車載炸彈：</Chinese>
+    <Chinesesimp>探测器可发现车载炸弹：</Chinesesimp>
+    <Spanish>El detector encuentra coches bomba:</Spanish>
+    <French>Le détecteur trouve les voitures piégées :</French>
+    <Portuguese>Detector encontra carros-bomba:</Portuguese>
+    <Russian>Детектор находит заминированные машины:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_IED_VB_TELL_DETECTOR_COMMENT">
+    <English>Yes warns a player carrying the IED Detector Class item who comes within 10 m of a car bomb, the way IED Detection Alert is set (as text when that is None). ACE's mine detectors find the charge under the car whatever this says. Default Yes.</English>
+    <Chinese>「是」會在攜帶 IED 探測器的玩家接近車載炸彈 10 公尺內時發出警告，方式依 IED 探測警報設定（設為無時以文字提示）。不論此設定為何，ACE 的探雷器都能找到車底的炸藥。預設為「是」。</Chinese>
+    <Chinesesimp>“是”会在携带 IED 探测器的玩家接近车载炸弹 10 米内时发出警告，方式按 IED 探测警报设置（设为无时以文字提示）。无论此设置如何，ACE 的探雷器都能找到车底的炸药。默认为“是”。</Chinesesimp>
+    <Spanish>Sí avisa al jugador que lleve el detector de IED y se acerque a menos de 10 m de un coche bomba, del modo que indique la alerta de detección de IED (con texto si está en Ninguno). Los detectores de minas de ACE encuentran la carga bajo el coche sea cual sea este ajuste. Por defecto Sí.</Spanish>
+    <French>Oui avertit le joueur portant le détecteur d'IED qui s'approche à moins de 10 m d'une voiture piégée, selon le réglage de l'alerte de détection d'IED (en texte s'il est sur Aucun). Les détecteurs de mines d'ACE trouvent la charge sous la voiture quel que soit ce réglage. Par défaut Oui.</French>
+    <Portuguese>Sim avisa o jogador que leva o detector de IED e chega a menos de 10 m de um carro-bomba, do jeito definido no alerta de detecção de IED (em texto quando estiver em Nenhum). Os detectores de minas do ACE encontram a carga sob o carro independentemente desta opção. Padrão Sim.</Portuguese>
+    <Russian>«Да» предупреждает игрока с детектором СВУ, подошедшего к заминированной машине ближе 10 м, так, как задано в оповещении об обнаружении СВУ (текстом, если там «Нет»). Миноискатели ACE находят заряд под машиной при любом значении. По умолчанию «Да».</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_VB_TELL_DRIVER">
+    <English>Driven Car Bombs Give Themselves Away:</English>
+    <Chinese>駕駛中的車載炸彈露出破綻：</Chinese>
+    <Chinesesimp>驾驶中的车载炸弹露出破绽：</Chinesesimp>
+    <Spanish>Los coches bomba conducidos se delatan:</Spanish>
+    <French>Les voitures piégées conduites se trahissent :</French>
+    <Portuguese>Carros-bomba dirigidos se denunciam:</Portuguese>
+    <Russian>Едущие заминированные машины выдают себя:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_IED_VB_TELL_DRIVER_COMMENT">
+    <English>For the car bombs insurgents drive at players (Insurgents Send Bombers). Yes: the lone driver comes flat out the whole way and ignores everything around him. No: he drives like anyone else until he is 80 m from his target, then puts his foot down. Default Yes.</English>
+    <Chinese>適用於叛軍開向玩家的車載炸彈。「是」：單獨的駕駛全程全速衝來，不理會周遭一切。「否」：他像一般人一樣開車，直到距目標 80 公尺時才猛踩油門。預設為「是」。</Chinese>
+    <Chinesesimp>适用于叛军开向玩家的车载炸弹。“是”：单独的司机全程全速冲来，不理会周围一切。“否”：他像普通人一样开车，直到距目标 80 米时才猛踩油门。默认为“是”。</Chinesesimp>
+    <Spanish>Para los coches bomba que los insurgentes lanzan contra los jugadores. Sí: el conductor, solo, viene a toda velocidad todo el camino e ignora todo lo que le rodea. No: conduce como cualquier otro hasta estar a 80 m de su objetivo y entonces acelera a fondo. Por defecto Sí.</Spanish>
+    <French>Pour les voitures piégées que les insurgés lancent sur les joueurs. Oui : le conducteur, seul, arrive à pleine vitesse tout du long et ignore tout autour de lui. Non : il roule comme n'importe qui jusqu'à 80 m de sa cible, puis accélère à fond. Par défaut Oui.</French>
+    <Portuguese>Para os carros-bomba que os insurgentes mandam contra os jogadores. Sim: o motorista, sozinho, vem a toda velocidade o caminho todo e ignora tudo ao redor. Não: ele dirige como qualquer outro até ficar a 80 m do alvo e então acelera tudo. Padrão Sim.</Portuguese>
+    <Russian>Для заминированных машин, которые повстанцы направляют на игроков. «Да»: водитель-одиночка всю дорогу несётся на полной скорости и ни на что не обращает внимания. «Нет»: он едет как все, пока до цели не останется 80 м, а затем жмёт газ до упора. По умолчанию «Да».</Russian>
+</Key>
 <Key ID="STR_ALIVE_IED_LOCS_IED">
     <English>IED/Bomber Locations:</English>
     <Chinese>IED／炸彈客位置：</Chinese>

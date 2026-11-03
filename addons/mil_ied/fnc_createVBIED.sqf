@@ -147,6 +147,9 @@ _ehID = _IED addeventhandler ["HandleDamage",{
 _IED setVariable ["ehID",_ehID, true];
 _IED setvariable ["charge", _vehicle, true]; // store the host vehicle for cleanup
 
+// what gives it away: the load, sitting low, the beeping, a detector (each set in the module)
+[_vehicle, _IED] call ALiVE_fnc_vbiedTells;
+
 if (_debug) then {
     ["ALIVE-%1 IED: Creating VB-IED for %2 at %3", time, typeof _vehicle, getposATL _vehicle] call ALiVE_fnc_dump;
 };

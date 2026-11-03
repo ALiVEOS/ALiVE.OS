@@ -277,6 +277,15 @@ switch(_operation) do {
                     [ADDON, "Bomber_Threat",                     _logic getVariable ["Bomber_Threat", 0]] call MAINCLASS;
                     [ADDON, "VB_IED_Threat",                     _logic getVariable ["VB_IED_Threat", 0]] call MAINCLASS;
                     [ADDON, "Locs_IED",                          _logic getVariable ["Locs_IED", 0]] call MAINCLASS;
+                    // Car bomb tells, each Yes (1) or No (0); read by ALiVE_fnc_vbiedTells and createDrivenVBIED
+                    {
+                        _x params ["_name", "_default"];
+                        private _v = _logic getVariable [_name, _default];
+                        if (_v isEqualType "") then { _v = parseNumber _v };
+                        if (_v isEqualType true) then { _v = [0, 1] select _v };
+                        if !(_v isEqualType 0) then { _v = _default };
+                        ADDON setVariable [_name, _v];
+                    } forEach [["VB_Tell_Load", 1], ["VB_Tell_Low", 0], ["VB_Tell_Beep", 1], ["VB_Tell_Detector", 1], ["VB_Tell_Driver", 1]];
                     [ADDON, "IED_Engineer_Challenge",            _logic getVariable ["IED_Engineer_Challenge", 1]] call MAINCLASS;
                     // Trigger Man Chance (#578), percent; read by armIED.
                     private _dickerChance = _logic getVariable ["IED_Dicker_Chance", 0];

@@ -83,11 +83,21 @@ if (isNull _driver || {vehicle _driver != _car}) exitWith {
     deleteVehicle _car;
     objNull
 };
-// kept on the server, as a headless client given the group would run none of the chase below
-{ _x setVariable ["ALiVE_ignore_HC", true, true]; _x setVariable ["ALiVE_advciv_blacklist", true, true] } forEach [_driver, _car];
+// kept on the server, as a headless client given the group would run none of the chase below. With ACE's
+// headless clients running, ALiVE's own distributor stands down and ACE goes by its own blacklist.
+{ _x setVariable ["ALiVE_ignore_HC", true, true]; _x setVariable ["ALiVE_advciv_blacklist", true, true]; _x setVariable ["acex_headless_blacklist", true, true] } forEach [_driver, _car];
+_grp setVariable ["acex_headless_blacklist", true, true];
+// Driven Car Bombs Give Themselves Away: Yes, he comes flat out the whole way; No, he drives like
+// anyone else until he is 80 m from his target, then puts his foot down
+private _showsItself = (if (isNil QUOTE(ADDON)) then { 1 } else { ADDON getVariable ["VB_Tell_Driver", 1] }) isNotEqualTo 0;
 _grp setBehaviour "CARELESS";
-_grp setSpeedMode "FULL";
 _driver allowFleeing 0;
+if (_showsItself) then {
+    _grp setSpeedMode "FULL";
+} else {
+    _grp setSpeedMode "LIMITED";
+    _car limitSpeed 45;
+};
 
 // the charge, under the car as a parked car bomb's is; anything exploding under it sets the car off. Rigged here
 // rather than by createVBIED, which leaves a car alone outside the module's area or not on its car bomb side.
@@ -107,13 +117,14 @@ _charge addEventHandler ["HandleDamage", {
     deleteVehicle _charge;
     0
 }];
+[_car, _charge] call ALiVE_fnc_vbiedTells;
 
 if (_debug) then {
     ["ALIVE-%1 Car bomb: %2 driven by %3 after %4 from %5, %6 m away", time, typeOf _car, typeOf _driver, name _victim, mapGridPosition _at, round (_at distance2D _victim)] call ALiVE_fnc_dump;
 };
 
-[_car, _driver, _victim, _debug, _fnc_freeRoad] spawn {
-    params ["_car", "_driver", "_victim", "_debug", "_fnc_freeRoad"];
+[_car, _driver, _victim, _debug, _fnc_freeRoad, _showsItself] spawn {
+    params ["_car", "_driver", "_victim", "_debug", "_fnc_freeRoad", "_showsItself"];
     private _fnc_blast = {
         params ["_car"];
         // a car taken away by something else (a clean-up, Zeus) has nowhere to go off
@@ -132,6 +143,12 @@ if (_debug) then {
     waitUntil {
         sleep 1;
         private _near = (_car distance (vehicle _victim)) < 100;
+        // one that has been blending in goes flat out for the last stretch
+        if (!_showsItself && {(_car distance (vehicle _victim)) < 80} && {alive _driver}) then {
+            _showsItself = true;
+            (group _driver) setSpeedMode "FULL";
+            [_car, 999] remoteExecCall ["limitSpeed", _car];
+        };
         if (time - _orderAt > 5 && {alive _driver} && {alive _victim}) then {
             [_driver, getPos _victim] remoteExecCall ["doMove", _driver];
             _orderAt = time;

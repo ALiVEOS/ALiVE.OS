@@ -105,6 +105,32 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_VB_IED_Side"; displayName = "$STR_ALIVE_IED_VB_IED_SIDE"; tooltip = "$STR_ALIVE_IED_VB_IED_SIDE_COMMENT"; defaultValue = """CIV""";
                                 class Values { class Civ{name="CIV";value="CIV";default=1;}; class East{name="EAST";value="EAST";}; class West{name="WEST";value="WEST";}; class Ind{name="IND";value="GUER";}; };
                         };
+                        // What gives a car bomb away (ALiVE_fnc_vbiedTells)
+                        class VB_Tell_Load : Combo
+                        {
+                                property = "ALiVE_mil_ied_VB_Tell_Load"; displayName = "$STR_ALIVE_IED_VB_TELL_LOAD"; tooltip = "$STR_ALIVE_IED_VB_TELL_LOAD_COMMENT"; defaultValue = """1""";
+                                class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; };
+                        };
+                        class VB_Tell_Low : Combo
+                        {
+                                property = "ALiVE_mil_ied_VB_Tell_Low"; displayName = "$STR_ALIVE_IED_VB_TELL_LOW"; tooltip = "$STR_ALIVE_IED_VB_TELL_LOW_COMMENT"; defaultValue = """0""";
+                                class Values { class Yes{name="Yes";value=1;}; class No{name="No";value=0;default=1;}; };
+                        };
+                        class VB_Tell_Beep : Combo
+                        {
+                                property = "ALiVE_mil_ied_VB_Tell_Beep"; displayName = "$STR_ALIVE_IED_VB_TELL_BEEP"; tooltip = "$STR_ALIVE_IED_VB_TELL_BEEP_COMMENT"; defaultValue = """1""";
+                                class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; };
+                        };
+                        class VB_Tell_Detector : Combo
+                        {
+                                property = "ALiVE_mil_ied_VB_Tell_Detector"; displayName = "$STR_ALIVE_IED_VB_TELL_DETECTOR"; tooltip = "$STR_ALIVE_IED_VB_TELL_DETECTOR_COMMENT"; defaultValue = """1""";
+                                class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; };
+                        };
+                        class VB_Tell_Driver : Combo
+                        {
+                                property = "ALiVE_mil_ied_VB_Tell_Driver"; displayName = "$STR_ALIVE_IED_VB_TELL_DRIVER"; tooltip = "$STR_ALIVE_IED_VB_TELL_DRIVER_COMMENT"; defaultValue = """1""";
+                                class Values { class Yes{name="Yes";value=1;default=1;}; class No{name="No";value=0;}; };
+                        };
                         class Locs_IED : Combo
                         {
                                 property = "ALiVE_mil_ied_Locs_IED"; displayName = "$STR_ALIVE_IED_LOCS_IED"; tooltip = "$STR_ALIVE_IED_LOCS_IED_COMMENT"; defaultValue = """0""";
