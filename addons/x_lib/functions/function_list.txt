@@ -131,6 +131,7 @@ data
 	ALiVE_fnc_JSON
 	ALiVE_fnc_parseJSON
 	ALiVE_fnc_ProfileNameSpaceClear
+	ALiVE_fnc_ProfileNameSpaceClearLogistics
 	ALiVE_fnc_ProfileNameSpaceLoad
 	ALiVE_fnc_ProfileNameSpaceSave
 	ALiVE_fnc_ProfileNameSpaceWipe

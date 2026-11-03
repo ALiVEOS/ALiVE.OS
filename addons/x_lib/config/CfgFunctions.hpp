@@ -942,6 +942,13 @@ class parseJSON
 	ALIVE_RECOMPILE;
 };
 
+class ProfileNameSpaceClearLogistics
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceClearLogistics.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class ProfileNameSpaceClear
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceClear.sqf";

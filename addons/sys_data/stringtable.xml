@@ -206,6 +206,56 @@
                 <Russian>Удаляет только сохранённые данные ALiVE текущей миссии. Отменить невозможно.</Russian>
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_LOGI">
+                <English>Clear Saved Vehicles and Buildings Only</English>
+                <Chinese>只清除已儲存的載具和建築</Chinese>
+                <Chinesesimp>只清除已保存的载具和建筑</Chinesesimp>
+                <French>Effacer seulement les véhicules et bâtiments sauvegardés</French>
+                <Spanish>Borrar solo vehículos y edificios guardados</Spanish>
+                <Portuguese>Apagar só veículos e construções salvos</Portuguese>
+                <Russian>Очистить только сохранённую технику и постройки</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_LOGI_COMMENT">
+                <English>Removes this mission's saved Player Logistics vehicles and buildings, and keeps the AI Commanders' objectives, installations and roadblocks. Nothing more is saved for them until the mission restarts. Cannot be undone.</English>
+                <Chinese>移除本任務已儲存的玩家後勤載具和建築，保留 AI 指揮官的目標、設施和路障。在任務重新開始前不會再儲存它們。無法復原。</Chinese>
+                <Chinesesimp>移除本任务已保存的玩家后勤载具和建筑，保留 AI 指挥官的目标、设施和路障。在任务重新开始前不会再保存它们。无法撤销。</Chinesesimp>
+                <French>Supprime les véhicules et bâtiments de la Logistique joueur sauvegardés pour cette mission et garde les objectifs, installations et barrages des commandants IA. Plus rien n'est sauvegardé pour eux jusqu'au redémarrage de la mission. Irréversible.</French>
+                <Spanish>Elimina los vehículos y edificios guardados de la Logística de jugadores de esta misión y conserva los objetivos, instalaciones y controles de los comandantes IA. No se guarda nada más de ellos hasta reiniciar la misión. No se puede deshacer.</Spanish>
+                <Portuguese>Remove os veículos e construções salvos da Logística de jogadores desta missão e mantém os objetivos, instalações e bloqueios dos comandantes IA. Nada mais é salvo deles até a missão reiniciar. Não pode ser desfeito.</Portuguese>
+                <Russian>Удаляет сохранённую технику и постройки логистики игроков этой миссии, сохраняя цели, объекты и блокпосты ИИ-командиров. До перезапуска миссии они больше не сохраняются. Отменить нельзя.</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_LOGI_CONFIRM_TITLE">
+                <English>Confirm: Clear Vehicles and Buildings</English>
+                <Chinese>確認：清除載具和建築</Chinese>
+                <Chinesesimp>确认：清除载具和建筑</Chinesesimp>
+                <French>Confirmer : effacer véhicules et bâtiments</French>
+                <Spanish>Confirmar: borrar vehículos y edificios</Spanish>
+                <Portuguese>Confirmar: apagar veículos e construções</Portuguese>
+                <Russian>Подтвердите: очистить технику и постройки</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_LOGI_CONFIRM_YES">
+                <English>Yes, Clear Saved Vehicles and Buildings</English>
+                <Chinese>是，清除已儲存的載具和建築</Chinese>
+                <Chinesesimp>是，清除已保存的载具和建筑</Chinesesimp>
+                <French>Oui, effacer véhicules et bâtiments sauvegardés</French>
+                <Spanish>Sí, borrar vehículos y edificios guardados</Spanish>
+                <Portuguese>Sim, apagar veículos e construções salvos</Portuguese>
+                <Russian>Да, очистить сохранённую технику и постройки</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_LOGI_DONE">
+                <English>ALiVE: Cleared %1 saved vehicles and buildings. They stay in game and are not saved again; restart the mission to start without them.</English>
+                <Chinese>ALiVE：已清除 %1 個已儲存的載具和建築。它們仍留在遊戲中且不會再被儲存；重新開始任務即可不帶它們開始。</Chinese>
+                <Chinesesimp>ALiVE：已清除 %1 个已保存的载具和建筑。它们仍留在游戏中且不会再被保存；重新开始任务即可不带它们开始。</Chinesesimp>
+                <French>ALiVE : %1 véhicules et bâtiments sauvegardés effacés. Ils restent en jeu et ne sont plus sauvegardés ; redémarrez la mission pour repartir sans eux.</French>
+                <Spanish>ALiVE: %1 vehículos y edificios guardados borrados. Siguen en el juego y no se vuelven a guardar; reinicia la misión para empezar sin ellos.</Spanish>
+                <Portuguese>ALiVE: %1 veículos e construções salvos apagados. Continuam no jogo e não são salvos de novo; reinicie a missão para começar sem eles.</Portuguese>
+                <Russian>ALiVE: очищено сохранённых единиц техники и построек: %1. Они остаются в игре и больше не сохраняются; перезапустите миссию, чтобы начать без них.</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_WIPE_ALL">
                 <English>Wipe ALL ALiVE Data</English>
                 <Chinese>清除所有ALiVE資料</Chinese>

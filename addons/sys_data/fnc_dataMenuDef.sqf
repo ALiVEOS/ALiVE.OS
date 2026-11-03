@@ -12,13 +12,15 @@ existing ALiVE_fnc_ProfileNameSpaceClear and ALiVE_fnc_ProfileNameSpaceWipe
 helpers (#853) so a server admin can wipe persistence without dropping
 to the debug console.
 
-Two actions, each gated behind a confirmation submenu so a single
+Three actions, each gated behind a confirmation submenu so a single
 mis-click can't trigger a destructive wipe:
 
   - Clear current mission's data -> dataConfirmClear -> ProfileNameSpaceClear
+  - Clear saved vehicles and buildings only (Player Logistics), keeping the
+    AI Commanders' setup -> dataConfirmClearLogi -> ProfileNameSpaceClearLogistics
   - Wipe ALL ALiVE data -> dataConfirmWipe -> ProfileNameSpaceWipe
 
-Both wipe helpers are server-only (`if !(isServer) exitwith {};` guard
+All three helpers are server-only (`if !(isServer) exitwith {};` guard
 in their bodies). The menu actions remoteExec to the server (target id
 2) so an admin running on a client triggers the wipe correctly.
 
@@ -75,6 +77,15 @@ if (_menuName == "data") then {
                     1,
                     true
                 ],
+                [localize "STR_ALIVE_DATA_CLEAR_LOGI",
+                    "",
+                    "",
+                    localize "STR_ALIVE_DATA_CLEAR_LOGI_COMMENT",
+                    ["call ALiVE_fnc_dataMenuDef", ["dataConfirmClearLogi"], 1],
+                    -1,
+                    1,
+                    true
+                ],
                 [localize "STR_ALIVE_DATA_WIPE_ALL",
                     "",
                     "",
@@ -101,6 +112,37 @@ if (_menuName == "dataConfirmClear") then {
                     },
                     "",
                     localize "STR_ALIVE_DATA_CLEAR_CONFIRM_YES_COMMENT",
+                    "",
+                    -1,
+                    1,
+                    true
+                ],
+                [localize "STR_ALIVE_DATA_CONFIRM_CANCEL",
+                    "",
+                    "",
+                    localize "STR_ALIVE_DATA_CONFIRM_CANCEL_COMMENT",
+                    ["call ALiVE_fnc_dataMenuDef", ["data"], 1],
+                    -1,
+                    1,
+                    true
+                ]
+            ]
+        ]
+    ];
+};
+
+if (_menuName == "dataConfirmClearLogi") then {
+    _menus set [count _menus,
+        [
+            ["dataConfirmClearLogi", localize "STR_ALIVE_DATA_CLEAR_LOGI_CONFIRM_TITLE", "popup"],
+            [
+                [localize "STR_ALIVE_DATA_CLEAR_LOGI_CONFIRM_YES",
+                    {
+                        // The server says how many it removed once it has done it.
+                        [name player, getPlayerUID player] remoteExec ["ALiVE_fnc_ProfileNameSpaceClearLogistics", 2];
+                    },
+                    "",
+                    localize "STR_ALIVE_DATA_CLEAR_LOGI_COMMENT",
                     "",
                     -1,
                     1,
