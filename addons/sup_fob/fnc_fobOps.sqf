@@ -48,6 +48,7 @@ fieldHQ - [object, "KIT" or "CRATE"] -> the FOB kit or supply crate handed out, 
 repair - [fobID] -> true when a destroyed headquarters was rebuilt and paid for
 repairCost - [fobID] -> the supply a repair costs now
 salvage - [fobID] -> the FOB lost for good: everything it had removed
+repairOver - [fobID] -> from the sites' shared clock: a damaged FOB's repair count ran out, so it is lost
 flip - [fobID, side] -> true when the FOB became that side's
 garrison - [fobID, free] -> true when a garrison was put in (paid unless free)
 releaseGarrison - [fobID] -> its garrison let go to its side's commander
@@ -355,6 +356,8 @@ switch (_op) do {
         _args params [["_id", "", [""]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { _result = false };
+        // a repair count still running stops, and its marker goes
+        ["cancel", ["fob:" + _id]] call ALiVE_fnc_siteClock;
         // anyone in this FOB's arsenal pays first, while it still has its supply
         private _inArsenal = [];
         { if ((_y select 1) == _id) then { _inArsenal pushBack _x } } forEach (missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap]);
@@ -410,18 +413,25 @@ switch (_op) do {
         _hub setVectorDirAndUp [vectorNormalized [sin _d, cos _d, _tip], _up];
         _hub setPosATL _pos;
         _hub setVariable ["ALiVE_FOB_id", _id, true];
-        // A destroyed headquarters marks the FOB damaged and starts the repair count: repaired
-        // in time it's back, otherwise the watchdog salvages the FOB
+        // A destroyed headquarters marks the FOB damaged and starts the repair count on the sites'
+        // shared clock (ALiVE_fnc_siteClock), which puts it on its side's maps: repaired in time
+        // it's back, otherwise it is salvaged (repairOver)
         _hub addEventHandler ["Killed", {
             params ["_hub"];
-            private _e = [ALiVE_FOB_registry, _hub getVariable ["ALiVE_FOB_id", ""]] call ALIVE_fnc_hashGet;
+            private _id = _hub getVariable ["ALiVE_FOB_id", ""];
+            private _e = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
             if (!isNil "_e" && {([_e, "status", ""] call ALIVE_fnc_hashGet) != "damaged"}) then {
+                private _wait = [ALiVE_sup_fob, "attribute", ["fob_repair_time"]] call ALiVE_fnc_FOB;
                 [_e, "status", "damaged"] call ALIVE_fnc_hashSet;
-                [_e, "repairRemaining", [ALiVE_sup_fob, "attribute", ["fob_repair_time"]] call ALiVE_fnc_FOB] call ALIVE_fnc_hashSet;
-                ["respawn", [_hub getVariable ["ALiVE_FOB_id", ""]]] call ALiVE_fnc_fobOps;
+                [_e, "repairRemaining", _wait] call ALIVE_fnc_hashSet;
+                ["respawn", [_id]] call ALiVE_fnc_fobOps;
                 ALiVE_FOB_dirty = true;
-                [ALiVE_sup_fob, "radio", [[_e, "side", "WEST"] call ALIVE_fnc_hashGet, "STR_ALIVE_FOB_RADIO_HQ_DOWN",
-                    [[_e, "name", ""] call ALIVE_fnc_hashGet, round (([_e, "repairRemaining", 0] call ALIVE_fnc_hashGet) / 60)]]] call ALiVE_fnc_FOB;
+                if (_wait > 0) then {
+                    private _side = [_e, "side", "WEST"] call ALIVE_fnc_hashGet;
+                    private _name = [_e, "name", _id] call ALIVE_fnc_hashGet;
+                    ["start", ["fob:" + _id, _wait, "ALiVE_fnc_fobOps", ["repairOver", [_id]], [_side, [_e, "pos", [0,0,0]] call ALIVE_fnc_hashGet, _name, "repair"]]] call ALiVE_fnc_siteClock;
+                    ["notify", ["repair", _side, _name, _wait / 60]] call ALiVE_fnc_siteClock;
+                };
             };
         }];
         // Shot at by a side: that side has found the FOB (Contact targeting)
@@ -1056,6 +1066,7 @@ switch (_op) do {
             ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
         };
         ["respawn", [_id]] call ALiVE_fnc_fobOps;
+        ["cancel", ["fob:" + _id]] call ALiVE_fnc_siteClock;
         ALiVE_FOB_dirty = true;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
@@ -1072,6 +1083,16 @@ switch (_op) do {
         private _c = ([_logic, "attribute", ["fob_repair_cost"]] call ALiVE_fnc_FOB) * ([1, 1.5, 2] param [(([_entry, "tier", 1] call ALIVE_fnc_hashGet) - 1) max 0, 2]);
         if ([_entry, "engineerNear", false] call ALIVE_fnc_hashGet) then { _c = _c * 0.75 };
         _result = round _c;
+    };
+
+    // The sites' shared clock ran out on a damaged FOB's repair count: it is lost
+    case "repairOver": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {([_entry, "status", ""] call ALIVE_fnc_hashGet) != "damaged"}) exitWith { _result = false };
+        [_entry, "repairRemaining", 0] call ALIVE_fnc_hashSet;
+        ["notify", ["lost", [_entry, "side", "WEST"] call ALIVE_fnc_hashGet, [_entry, "name", _id] call ALIVE_fnc_hashGet]] call ALiVE_fnc_siteClock;
+        isNil { _result = ["salvage", [_id]] call ALiVE_fnc_fobOps };
     };
 
     // A FOB lost for good: the wreck, everything built there and its objectives go

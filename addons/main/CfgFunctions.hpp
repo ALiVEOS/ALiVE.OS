@@ -51,6 +51,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_siteWho.sqf";
                 ALIVE_RECOMPILE;
             };
+            class siteClock {
+                description = "The clock every player site that goes down shares (FOB, Logistics hub, rally point), its map markers and notifications";
+                file = "\x\alive\addons\main\fnc_siteClock.sqf";
+                ALIVE_RECOMPILE;
+            };
             class siteWhoDialog {
                 description = "The Permissions window every player site shares (FOB, Logistics hub)";
                 file = "\x\alive\addons\main\fnc_siteWhoDialog.sqf";

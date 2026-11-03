@@ -785,4 +785,34 @@
 <Key ID="STR_ALIVE_LISTS_FOB_STANDARD_DEFAULT">
     <English>Standard FOB: infantry, one of each model (default)</English>
 </Key>
+<Key ID="STR_ALIVE_SITE_DOWN_BACK">
+    <English>%1 is down. It comes back in about %2 min.</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_DOWN_REPAIR">
+    <English>%1 is down. Repair it within %2 min or it is lost.</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_LOST">
+    <English>%1 is lost.</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_BACK">
+    <English>%1 is back.</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_MARK_BACK">
+    <English>%1: down, back in %2 min</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_MARK_REPAIR">
+    <English>%1: down, repair within %2 min</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_MARK_PAUSED">
+    <English>%1: down, repair under way (%2 min left)</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_HUB">
+    <English>The logistics hub at grid %1</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_HUB_NAMED">
+    <English>Logistics hub %1</English>
+</Key>
+<Key ID="STR_ALIVE_SITE_RALLY">
+    <English>Rally point %1</English>
+</Key>
 </Container></Package></Project>

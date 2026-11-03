@@ -25,6 +25,12 @@ if (hasInterface && {!isServer}) then {
     [] spawn { sleep 10; ["show"] call ALIVE_fnc_lists };
 };
 
+// Down player sites (FOBs, hubs, rally points) on this player's map, from the list the server keeps
+if (hasInterface) then {
+    "ALiVE_siteDown" addPublicVariableEventHandler { ["draw"] call ALiVE_fnc_siteClock };
+    if !(isNil "ALiVE_siteDown") then { ["draw"] call ALiVE_fnc_siteClock };
+};
+
 //To be enabled when ZEUS is stable
 PREPMAIN(ZEUSinit);
 [] call ALIVE_fnc_ZEUSinit;

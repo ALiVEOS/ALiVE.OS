@@ -43,7 +43,8 @@ Jman
 if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_fobCaller"}) exitWith {};
 if (!isServer) exitWith {};
 
-private _timers = ["repairRemaining", "captureRemaining", "alertCooldown", "resupplyCooldown"];
+// the repair count runs on the sites' shared clock (ALiVE_fnc_siteClock), not here
+private _timers = ["captureRemaining", "alertCooldown", "resupplyCooldown"];
 private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
 private _set = { [_logic, "attribute", [_this]] call ALiVE_fnc_FOB };
 
@@ -104,7 +105,7 @@ private _say = {
 };
 
 private _tick = {
-    params ["_dt"];
+    params ["_dt", ["_live", false]];
     // the factions each side's commanders field, for static weapons and vehicles; sent on change
     ["factions"] call ALiVE_fnc_fobBuildScan;
     {
@@ -132,14 +133,40 @@ private _tick = {
         };
         [_entry, "engineerNear", _engineer] call ALIVE_fnc_hashSet;
 
-        // Timers; a repair count stops while an engineer is at the FOB
+        // Timers
         {
             private _left = [_entry, _x, 0] call ALIVE_fnc_hashGet;
-            if (_left > 0 && {!(_x == "repairRemaining" && _engineer)}) then {
+            if (_left > 0) then {
                 [_entry, _x, (_left - _dt) max 0] call ALIVE_fnc_hashSet;
                 ALiVE_FOB_dirty = true;
             };
         } forEach _timers;
+        // The repair count, on the sites' shared clock: it stands still while an engineer is at
+        // the FOB, follows the FOB to a side that takes it, and is copied here for the save and
+        // the FOB window. One loaded from a save starts here
+        private _ck = "fob:" + _id;
+        if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") then {
+            private _left = ["sync", [_ck, _engineer, _side, _name]] call ALiVE_fnc_siteClock;
+            if (_left < 0) then {
+                _left = [_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet;
+                if (_left > 0) then {
+                    ["start", [_ck, _left, "ALiVE_fnc_fobOps", ["repairOver", [_id]], [_side, [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet, _name, "repair"]]] call ALiVE_fnc_siteClock;
+                    if (_engineer) then { ["sync", [_ck, true]] call ALiVE_fnc_siteClock };
+                };
+            } else {
+                // a test's pass stands for that much time on the clock too
+                if (!_live && {!_engineer}) then {
+                    ["advance", [_ck, _dt]] call ALiVE_fnc_siteClock;
+                    _left = ["left", [_ck]] call ALiVE_fnc_siteClock;
+                };
+            };
+            if (_left >= 0 && {_left != ([_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet)}) then {
+                [_entry, "repairRemaining", _left] call ALIVE_fnc_hashSet;
+                ALiVE_FOB_dirty = true;
+            };
+        } else {
+            ["cancel", [_ck]] call ALiVE_fnc_siteClock;
+        };
 
         // Capture: enemy soldiers and none of its own in the capture radius
         private _capTime = "fob_capture_time" call _set;
@@ -233,7 +260,7 @@ private _tick = {
 
         // A destroyed headquarters: repaired in time, or the FOB is lost
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged" && {([_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet) <= 0}) then {
-            [_side, "STR_ALIVE_FOB_RADIO_LOST_REPAIR", [_name]] call _say;
+            ["notify", ["lost", _side, _name]] call ALiVE_fnc_siteClock;
             ["salvage", [_id]] call ALiVE_fnc_fobOps;
             continue;
         };
@@ -293,7 +320,7 @@ if ((_this param [0, objNull]) isEqualType "") exitWith {
     private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
     if (_logic getVariable ["pause", false]) exitWith {0};
     private _n = 0;
-    isNil { _n = [_this param [1, 30]] call _tick };
+    isNil { _n = [_this param [1, 30], _this param [2, false]] call _tick };
     _n
 };
 
@@ -312,13 +339,16 @@ ALiVE_FOB_watchdog = [_logic] spawn {
         _last = time;
         if !(_logic getVariable ["pause", false]) then {
             // one pass, unscheduled inside, so it is never cut in half by the scheduler
-            ["tick", _dt] call ALiVE_fnc_fobWatchdog;
+            ["tick", _dt, true] call ALiVE_fnc_fobWatchdog;
             // the FOB limit moves with the ground a side holds
             [_logic, "broadcastRoom"] call ALiVE_fnc_FOB;
             if (ALiVE_FOB_dirty) then {
                 [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
                 ["save", [false]] call ALiVE_fnc_fobPersistence;
             };
+        } else {
+            // paused: the repair counts on the shared clock stand still too, as they did when they were counted here
+            { ["sync", ["fob:" + _x, true]] call ALiVE_fnc_siteClock } forEach (ALiVE_FOB_registry select 1);
         };
     };
 };

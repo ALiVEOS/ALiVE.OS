@@ -75,6 +75,7 @@ Parameters:
     ["hubDown", [hubNetId, destroyed, byName, byEnemy]] - server: the hub stops working, and with a
         Repair Time comes back later
     ["hubRestore", [hubNetId]] - server: the hub works again, rebuilt if it can't be mended
+    ["siteLabel", [hubNetId]] - how the down, back and lost notifications and the down marker name it
 
 Returns:
 See above
@@ -1063,33 +1064,43 @@ switch (_op) do {
         if (!isNull _hub) then { _hub setVariable ["ALiVE_hub", [_e select 0, false, _s select 1, _logic], true] };
         ["nodeRemove", [_netId]] call ALIVE_fnc_hub;
         private _grid = mapGridPosition (_e select 6);
-        private _msg = if (_destroyed) then { format [localize "STR_ALIVE_HUB_LOST", _grid] } else {
-            if (_enemy) then { format [localize "STR_ALIVE_HUB_DISMANTLED", _grid] } else { format [localize "STR_ALIVE_HUB_DISMANTLED_OWN", _grid, _by] }
+        private _repair = _s select 9;
+        private _label = ["siteLabel", [_netId]] call ALIVE_fnc_hub;
+        // destroyed: down or lost, worded as every site's is (ALiVE_fnc_siteClock); dismantled says by whom
+        if (_destroyed) then {
+            ["notify", [["lost", "down"] select (_repair > 0), _e select 0, _label, _repair / 60]] call ALiVE_fnc_siteClock;
+        } else {
+            private _msg = if (_enemy) then { format [localize "STR_ALIVE_HUB_DISMANTLED", _grid] } else { format [localize "STR_ALIVE_HUB_DISMANTLED_OWN", _grid, _by] };
+            ["ALiVE", _msg] remoteExec ["ALIVE_fnc_sendHint", [_e select 0] call ALIVE_fnc_sideTextToObject];
+            ["HQ", _msg] remoteExec ["ALIVE_fnc_radioLog", [_e select 0] call ALIVE_fnc_sideTextToObject];
         };
-        ["ALiVE", _msg] remoteExec ["ALIVE_fnc_sendHint", [_e select 0] call ALIVE_fnc_sideTextToObject];
-        ["HQ", _msg] remoteExec ["ALIVE_fnc_radioLog", [_e select 0] call ALIVE_fnc_sideTextToObject];
         ["ALiVE Logistics Hub: %1 at %2 is down (%3)", _e select 5, _grid, ["dismantled", "destroyed"] select _destroyed] call _debug;
 
-        // a repair later, unless it is down and back up again before then
-        if (isNil "ALiVE_hub_downs") then { ALiVE_hub_downs = createHashMap };
-        private _n = (ALiVE_hub_downs getOrDefault [_netId, 0]) + 1;
-        ALiVE_hub_downs set [_netId, _n];
-        if ((_s select 9) > 0) then {
+        // a repair later on the sites' shared clock, which also puts it on its side's maps; going down
+        // again before then starts the wait again
+        if (_repair > 0) then {
             // when it comes back, for the Manage Hub window
-            if (!isNull _hub) then { _hub setVariable ["ALiVE_hub_backAt", ([time, serverTime] select isMultiplayer) + (_s select 9), true] };
-            [_netId, _s select 9, _n] spawn {
-                params ["_netId", "_wait", "_n"];
-                sleep _wait;
-                if ((ALiVE_hub_downs getOrDefault [_netId, 0]) == _n) then { ["hubRestore", [_netId]] call ALIVE_fnc_hub };
-            };
+            if (!isNull _hub) then { _hub setVariable ["ALiVE_hub_backAt", ([time, serverTime] select isMultiplayer) + _repair, true] };
+            ["start", ["hub:" + _netId, _repair, "ALIVE_fnc_hub", ["hubRestore", [_netId]], [_e select 0, _e select 6, _label, "back"]]] call ALiVE_fnc_siteClock;
         };
+    };
+
+    // how every site's notifications and map name it: by its name, else by its grid
+    case "siteLabel": {
+        _args params [["_netId", "", [""]]];
+        private _e = (missionNamespace getVariable ["ALiVE_hub_registry", createHashMap]) getOrDefault [_netId, []];
+        private _name = _e param [9, ""];
+        _result = if (_name != "") then { format [localize "STR_ALIVE_SITE_HUB_NAMED", _name] } else { format [localize "STR_ALIVE_SITE_HUB", mapGridPosition (_e param [6, [0, 0, 0]])] };
     };
 
     case "hubRestore": {
         _args params [["_netId", "", [""]]];
         if (!isServer || {isNil "ALiVE_hub_registry"} || {!(_netId in ALiVE_hub_registry)}) exitWith {};
         private _e = ALiVE_hub_registry get _netId;
+        // back by its repair time or by other means: either way no wait is left
+        ["cancel", ["hub:" + _netId]] call ALiVE_fnc_siteClock;
         if (_e select 1) exitWith {};
+        private _label = ["siteLabel", [_netId]] call ALIVE_fnc_hub;
         _e params ["_side", "", "_logic", "", "", "_class", "_pos", "_dir", "_up", ["_name", ""], ["_owner", ""]];
         private _hub = _netId call BIS_fnc_objectFromNetId;
         // mended where it stands, and its ruins cleared; a dismantled hub has none, so nothing nearby is touched
@@ -1124,8 +1135,7 @@ switch (_op) do {
             _hub setVariable ["ALiVE_hub_backAt", -1, true];
         };
         ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
-        ["ALiVE", format [localize "STR_ALIVE_HUB_BACK", mapGridPosition _pos]] remoteExec ["ALIVE_fnc_sendHint", [_side] call ALIVE_fnc_sideTextToObject];
-        ["HQ", format [localize "STR_ALIVE_HUB_BACK", mapGridPosition _pos]] remoteExec ["ALIVE_fnc_radioLog", [_side] call ALIVE_fnc_sideTextToObject];
+        ["notify", ["back", _side, _label]] call ALiVE_fnc_siteClock;
     };
 };
 

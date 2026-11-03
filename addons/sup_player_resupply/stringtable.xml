@@ -1002,9 +1002,6 @@
 <Key ID="STR_ALIVE_HUB_ACTION_DISMANTLE">
     <English>Dismantle the logistics hub</English>
 </Key>
-<Key ID="STR_ALIVE_HUB_LOST">
-    <English>The logistics hub at grid %1 has been destroyed</English>
-</Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLED">
     <English>The logistics hub at grid %1 has been dismantled by the enemy</English>
 </Key>
@@ -1016,9 +1013,6 @@
 </Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE_DEFENDED">
     <English>The hub's side is still close by, so it can't be dismantled yet</English>
-</Key>
-<Key ID="STR_ALIVE_HUB_BACK">
-    <English>The logistics hub at grid %1 is working again</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_PERMISSIONS_SET_DISMANTLE">
     <English>Who can dismantle is changed on %1 Logistics Hub module(s)</English>

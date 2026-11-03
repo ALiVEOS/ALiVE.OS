@@ -84,17 +84,13 @@ if (isServer && {_main}) then {
                 _row params ["_o", "_name", "_who"];
                 ["remove", [_o]] call ALiVE_fnc_rallyPoint;
                 ["ALiVE Rally Points: %1 (%2) was overrun%3", _name, _who, ["", format ["; back in %1 s", _repair]] select (_repair > 0)] call ALiVE_fnc_dump;
-                [localize "STR_ALIVE_RALLY", if (_repair > 0) then { format [localize "STR_ALIVE_RALLY_UI_POINT_OVERRUN_BACK", _name, ceil (_repair / 60)] } else { format [localize "STR_ALIVE_RALLY_UI_POINT_OVERRUN", _name] }]
-                    remoteExecCall ["ALIVE_fnc_sendHint", allPlayers select { str side group _x == _who }];
-                // set after the remove, which calls off any earlier wait
+                private _label = format [localize "STR_ALIVE_SITE_RALLY", _name];
+                ["notify", [["lost", "down"] select (_repair > 0), _who, _label, _repair / 60]] call ALiVE_fnc_siteClock;
+                // on the sites' shared clock, set after the remove, which calls off any earlier wait; the key is the token
                 if (_repair > 0) then {
-                    private _token = [time, _name];
+                    private _token = ["newKey", ["rally"]] call ALiVE_fnc_siteClock;
                     _o setVariable ["ALiVE_rallyBack", _token];
-                    [_row, _token, _repair] spawn {
-                        params ["_row", "_token", "_repair"];
-                        sleep _repair;
-                        ["restore", [_row, _token]] call ALiVE_fnc_rallyPoint;
-                    };
+                    ["start", [_token, _repair, "ALiVE_fnc_rallyPoint", ["restore", [_row, _token]], [_who, getPosATL _o, _label, "back"]]] call ALiVE_fnc_siteClock;
                 };
             } forEach _lost;
         };

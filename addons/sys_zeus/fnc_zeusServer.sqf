@@ -974,7 +974,8 @@ switch (_action) do {
         remoteExec ["", "ALiVE_hub_manage_" + _netId];
         private _wasZeus = ((ALiVE_hub_registry getOrDefault [_netId, []]) param [11, 0]) > 0;
         ALiVE_hub_registry deleteAt _netId;
-        if (!isNil "ALiVE_hub_downs") then { ALiVE_hub_downs deleteAt _netId };
+        // a hub that was down no longer comes back
+        ["cancel", ["hub:" + _netId]] call ALiVE_fnc_siteClock;
         ALiVE_hub_list = ALiVE_hub_list select { !isNull _x && {_x != _hub} };
         publicVariable "ALiVE_hub_list";
         // a Zeus's hub no longer comes back after a restart

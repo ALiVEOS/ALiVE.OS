@@ -42,6 +42,8 @@ Operations:
                                 server: a squad leader's rally point made and watched (deploy, and
                                 its return after Overrun Repair Time)
 "restore" [row, token]          server: a placed rally point back after Overrun Repair Time
+"leaderBack" [group, token, posATL, dir, name]  server, from the sites' shared clock: a squad's overrun point back
+"siteLabel" [name, group]      how the sites' shared notifications and down marker name a point
 "permLoad", "permSave", "storeQueue", "pendingWatch"
                                 server: Who Can Manage and the squad leaders' and Zeus' rally points
                                 kept over a restart when the mission saves (ALiVE Data, or Player
@@ -110,7 +112,7 @@ private _result = true;
 private _refused = false;
 if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_rallyInner"}) then {
     private _sender = remoteExecutedOwner;
-    _refused = if (_op in ["travel", "move", "refused", "plant", "restore", "permLoad", "permSave", "pendingWatch", "storeQueue"]) then { true } else {
+    _refused = if (_op in ["travel", "move", "refused", "plant", "restore", "leaderBack", "permLoad", "permSave", "pendingWatch", "storeQueue"]) then { true } else {
         switch (true) do {
             case (isServer && {_op in ["deploy", "pickup", "rename", "check", "permissions", "permReset"]}): {
                 private _u = _args param [0, objNull];
@@ -149,7 +151,10 @@ switch (_op) do {
         if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
         _args params [["_obj", objNull, [objNull]]];
         // removed: a wait to bring it back after Overrun Repair Time is called off (an overrun sets its own after this)
-        if (!isNull _obj) then { _obj setVariable ["ALiVE_rallyBack", nil] };
+        if (!isNull _obj) then {
+            ["cancel", [_obj getVariable ["ALiVE_rallyBack", ""]]] call ALiVE_fnc_siteClock;
+            _obj setVariable ["ALiVE_rallyBack", nil];
+        };
         ALiVE_rallyPoints = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) && {(_x select 0) != _obj} };
         publicVariable "ALiVE_rallyPoints";
         // so the module's class scan doesn't bring it back
@@ -235,6 +240,7 @@ switch (_op) do {
         _obj setVectorUp (surfaceNormal (getPosATL _obj));
         _grp setVariable ["ALiVE_rallyDeployed", _obj, true];
         // a new one: an earlier one waiting to come back stays gone, and so does one from before a restart
+        ["cancel", [_grp getVariable ["ALiVE_rallyBack", ""]]] call ALiVE_fnc_siteClock;
         _grp setVariable ["ALiVE_rallyBack", nil];
         if (!isNil "ALiVE_rallyPending") then { ALiVE_rallyPending = ALiVE_rallyPending select { !((_x select 0) == str side _grp && {(_x select 1) == groupId _grp}) } };
         ["add", [_obj, _name, str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE"), _grp]] call ALiVE_fnc_rallyPoint;
@@ -263,31 +269,43 @@ switch (_op) do {
             private _posATL = if (isNull _obj) then { [] } else { getPosATL _obj };
             private _dir = if (isNull _obj) then { 0 } else { getDir _obj };
             private _back = _lost && {_mine} && {_repair > 0} && {_posATL isNotEqualTo []} && {_name != ""};
-            if (_lost) then {
-                [localize "STR_ALIVE_RALLY", if (_back) then { format [localize "STR_ALIVE_RALLY_UI_OVERRUN_BACK", ceil (_repair / 60)] } else { localize "STR_ALIVE_RALLY_UI_OVERRUN" }]
-                    remoteExecCall ["ALIVE_fnc_sendHint", units _grp select { isPlayer _x }];
-            };
+            private _label = ["siteLabel", [_name, _grp]] call ALiVE_fnc_rallyPoint;
+            // the squad is told, worded as every site's is (ALiVE_fnc_siteClock)
+            if (_lost) then { ["notify", [["lost", "down"] select _back, units _grp, _label, _repair / 60]] call ALiVE_fnc_siteClock };
             ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
             if (!isNull _obj) then { deleteVehicle _obj };
             if (_mine) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
-            // Overrun Repair Time: back where it stood, unless the squad has put another one down or is gone by then
+            // Overrun Repair Time, on the sites' shared clock: back where it stood, unless the squad has put another
+            // one down or is gone by then. The clock's key is the token: a new one put down calls it off
             if (_back) then {
-                private _token = [time, _posATL];
+                private _token = ["newKey", ["rally"]] call ALiVE_fnc_siteClock;
                 _grp setVariable ["ALiVE_rallyBack", _token];
                 ["ALiVE Rally Points: %1 was overrun; back in %2 s", _name, _repair] call ALiVE_fnc_dump;
-                [_grp, _token, _posATL, _dir, _name, _repair] spawn {
-                    params ["_grp", "_token", "_posATL", "_dir", "_name", "_repair"];
-                    private _ALiVE_rallyInner = true;
-                    sleep _repair;
-                    if (isNull _grp || {({ alive _x } count units _grp) == 0} || {!isNull (_grp getVariable ["ALiVE_rallyDeployed", objNull])}
-                        || {!((_grp getVariable ["ALiVE_rallyBack", []]) isEqualTo _token)}) exitWith {};
-                    private _o = ["plant", [_grp, _posATL, _dir, _name]] call ALiVE_fnc_rallyPoint;
-                    if (_o isEqualType objNull && {!isNull _o}) then {
-                        ["ALiVE Rally Points: %1 is back", _name] call ALiVE_fnc_dump;
-                        [localize "STR_ALIVE_RALLY", format [localize "STR_ALIVE_RALLY_UI_BACK", _name]] remoteExecCall ["ALIVE_fnc_sendHint", units _grp select { isPlayer _x }];
-                    };
-                };
+                ["start", [_token, _repair, "ALiVE_fnc_rallyPoint", ["leaderBack", [_grp, _token, _posATL, _dir, _name]],
+                    [str side _grp, _posATL, _label, "back"]]] call ALiVE_fnc_siteClock;
             };
+        };
+    };
+
+    // how the sites' shared notifications and down marker name a squad's point: "Rally point Zulu", or its
+    // own name when it is still the squad's "Alpha 1-3 rally point". [name, group] -> text
+    case "siteLabel": {
+        _args params [["_name", "", [""]], ["_grp", grpNull, [grpNull]]];
+        if (_name == "" && {!isNull _grp}) then { _name = format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp] };
+        _result = if (!isNull _grp && {_name == format [localize "STR_ALIVE_RALLY_LEADER_NAME", groupId _grp]}) then { _name } else { format [localize "STR_ALIVE_SITE_RALLY", _name] };
+    };
+
+    // server, from the sites' shared clock: a squad's overrun rally point back where it stood after Overrun Repair
+    // Time, unless the squad has put another one down or is gone. [group, token, posATL, dir, name]
+    case "leaderBack": {
+        if (!isServer) exitWith {};
+        _args params [["_grp", grpNull, [grpNull]], ["_token", ""], ["_posATL", [], [[]]], ["_dir", 0, [0]], ["_name", "", [""]]];
+        if (isNull _grp || {({ alive _x } count units _grp) == 0} || {!isNull (_grp getVariable ["ALiVE_rallyDeployed", objNull])}
+            || {!((_grp getVariable ["ALiVE_rallyBack", []]) isEqualTo _token)}) exitWith {};
+        private _o = ["plant", [_grp, _posATL, _dir, _name]] call ALiVE_fnc_rallyPoint;
+        if (_o isEqualType objNull && {!isNull _o}) then {
+            ["ALiVE Rally Points: %1 is back", _name] call ALiVE_fnc_dump;
+            ["notify", ["back", units _grp, ["siteLabel", [_name, _grp]] call ALiVE_fnc_rallyPoint]] call ALiVE_fnc_siteClock;
         };
     };
 
@@ -308,7 +326,7 @@ switch (_op) do {
         publicVariable "ALiVE_rallyPoints";
         _row params ["", "_name", "_who"];
         ["ALiVE Rally Points: %1 (%2) is back", _name, _who] call ALiVE_fnc_dump;
-        [localize "STR_ALIVE_RALLY", format [localize "STR_ALIVE_RALLY_UI_BACK", _name]] remoteExecCall ["ALIVE_fnc_sendHint", allPlayers select { _who == "ANY" || {str side group _x == _who} }];
+        ["notify", ["back", _who, format [localize "STR_ALIVE_SITE_RALLY", _name]]] call ALiVE_fnc_siteClock;
         _result = true;
     };
 
