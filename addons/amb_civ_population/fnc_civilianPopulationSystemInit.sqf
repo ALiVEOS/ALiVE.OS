@@ -411,31 +411,16 @@ if(isServer) then {
     // ----------------------------------------------------------------
     //  Voice line arrays
     // ----------------------------------------------------------------
-    ALiVE_advciv_voiceLines_panic  = [
-        "ALiVE_advciv_dont_shoot_1",
-        "ALiVE_advciv_dont_shoot_2",
-        "ALiVE_advciv_no_no",
-        "ALiVE_advciv_please_no",
-        "ALiVE_advciv_help",
-        "ALiVE_advciv_scream_1",
-        "ALiVE_advciv_scream_2"
-    ];
+    // only sounds whose files ship: the shouted lines' files were never committed (see fnc_advciv_init.sqf)
+    ALiVE_advciv_voiceLines_panic  = [];
     publicVariable "ALiVE_advciv_voiceLines_panic";
 
     ALiVE_advciv_voiceLines_hit    = [
-        "ALiVE_advciv_dont_shoot_1",
-        "ALiVE_advciv_dont_shoot_2",
-        "ALiVE_advciv_no_no",
-        "ALiVE_advciv_please_no",
-        "ALiVE_advciv_scream_1",
-        "ALiVE_advciv_scream_2",
         "ALiVE_advciv_crying"
     ];
     publicVariable "ALiVE_advciv_voiceLines_hit";
 
     ALiVE_advciv_voiceLines_hiding = [
-        "ALiVE_advciv_please_no",
-        "ALiVE_advciv_go_away",
         "ALiVE_advciv_crying"
     ];
     publicVariable "ALiVE_advciv_voiceLines_hiding";

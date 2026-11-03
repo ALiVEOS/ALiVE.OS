@@ -159,7 +159,7 @@ if (!isNull _firer) then {
                 };
 
                 // Higher voice chance for close shots — the civilian definitely heard it
-                if (ALiVE_advciv_voiceEnabled && {random 1 < 0.85}) then {
+                if (ALiVE_advciv_voiceEnabled && {ALiVE_advciv_voiceLines_panic isNotEqualTo []} && {random 1 < 0.85}) then {
                     private _lastVoice = _civ getVariable ["ALiVE_advciv_lastVoice", 0];
                     if (time - _lastVoice > 2) then {
                         [_civ, selectRandom ALiVE_advciv_voiceLines_panic] remoteExec ["say3D", 0];
@@ -191,7 +191,7 @@ if (!isNull _firer) then {
                     _civ doMove ((getPos _civ) getPos [30 + random 30, _fleeDir]);
                 };
 
-                if (ALiVE_advciv_voiceEnabled && {random 1 < 0.6}) then {
+                if (ALiVE_advciv_voiceEnabled && {ALiVE_advciv_voiceLines_panic isNotEqualTo []} && {random 1 < 0.6}) then {
                     private _lastVoice = _civ getVariable ["ALiVE_advciv_lastVoice", 0];
                     if (time - _lastVoice > 3) then {
                         [_civ, selectRandom ALiVE_advciv_voiceLines_panic] remoteExec ["say3D", 0];

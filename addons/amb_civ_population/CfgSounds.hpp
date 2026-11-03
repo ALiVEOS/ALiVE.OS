@@ -245,66 +245,13 @@ class CfgSounds
     };
     
     // Advanced Cilvilians
-		class ALiVE_advciv_dont_shoot_1 
-		{
-			name = "ALiVE_advciv_dont_shoot_1";
-			sound[] = {"\x\alive\addons\amb_civ_population\audio\dont_shoot_1.ogg", 1, 1, 50};
-			titles[] = {0, "Don't shoot!"};
-		};
-		
-    class ALiVE_advciv_dont_shoot_2 
-    { 
-    	name = "ALiVE_advciv_dont_shoot_2"; 
-    	sound[] = {"\x\alive\addons\amb_civ_population\audio\dont_shoot_2.ogg", 1, 1, 50};
-    	titles[] = {0, "Don't shoot, don't shoot!"};
-    };
-    
-    class ALiVE_advciv_no_no 
-    { 
-    	name = "ALiVE_advciv_no_no"; 
-    	sound[] = {"\x\alive\addons\amb_civ_population\audio\no_no.ogg", 1, 1, 50};
-    	titles[] = {0, "No, no, no!"};
-    };
-    
-    class ALiVE_advciv_please_no 
-    { 
-    	name = "ALiVE_advciv_please_no";
-    	sound[] = {"\x\alive\addons\amb_civ_population\audio\please_no.ogg", 1, 1, 50};
-    	titles[] = {0, "Please, no!"};
-    
-    };
-    class ALiVE_advciv_help 
-    
-    {
-    	name = "ALiVE_advciv_help";
-    	sound[] = {"\x\alive\addons\amb_civ_population\audio\help.ogg", 1, 1, 50};
-    	titles[] = {0, "Help!"};
-    };
-    
-    class ALiVE_advciv_go_away 
-    {
-    	name = "ALiVE_advciv_go_away";
-    	sound[] = {"\x\alive\addons\amb_civ_population\audio\go_away.ogg", 1, 1, 50};
-    	titles[] = {0, "Go away!"};
-    };
-    
-    class ALiVE_advciv_scream_1 { 
-    	name = "ALiVE_advciv_scream_1";
-    	sound[] = {"\x\alive\addons\amb_civ_population\audio\scream_1.ogg", 1, 1, 60};
-    	titles[] = {0, ""};
-    };
-    
-    class ALiVE_advciv_scream_2 
-    {
-    	name = "ALiVE_advciv_scream_2";
-    	sound[] = {"\x\alive\addons\amb_civ_population\audio\scream_2.ogg", 1, 1, 60};
-    	titles[] = {0, ""};
-    };
-    
+    // The Advanced Civilians voice lines (dont_shoot_1 and 2, no_no, please_no, help, go_away, scream_1 and 2) are
+    // gone: their sound files were never committed, so each played nothing and wrote an error to the RPT. Crying
+    // pointed at crying_2.ogg, also never committed, and now uses crying.ogg, which is here.
     class ALiVE_advciv_crying 
     { 
     	name = "ALiVE_advciv_crying";
-    	sound[] = {"\x\alive\addons\amb_civ_population\audio\crying_2.ogg", 1, 1, 40};
+    	sound[] = {"\x\alive\addons\amb_civ_population\audio\crying.ogg", 1, 1, 40};
     	titles[] = {0, ""};
     };
     

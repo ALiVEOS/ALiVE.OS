@@ -32,29 +32,16 @@ if (isNil "ALiVE_advciv_enabled" || {!ALiVE_advciv_enabled}) exitWith {
 
 ["ALiVE Advanced Civilians - Initializing Realistic Civilians..."] call ALIVE_fnc_dump;
 
-ALiVE_advciv_voiceLines_panic = [
-    "ALiVE_advciv_dont_shoot_1",
-    "ALiVE_advciv_dont_shoot_2",
-    "ALiVE_advciv_no_no",
-    "ALiVE_advciv_please_no",
-    "ALiVE_advciv_help",
-    "ALiVE_advciv_scream_1",
-    "ALiVE_advciv_scream_2"
-];
+// Only sounds whose files ship. The shouted lines (don't shoot, please no, help, go away, screams) were listed but
+// their files never committed, so they played nothing and each wrote an error to the RPT; panic stays silent until
+// recorded lines are added, and the places that play these skip an empty list
+ALiVE_advciv_voiceLines_panic = [];
 
 ALiVE_advciv_voiceLines_hit = [
-    "ALiVE_advciv_dont_shoot_1",
-    "ALiVE_advciv_dont_shoot_2",
-    "ALiVE_advciv_no_no",
-    "ALiVE_advciv_please_no",
-    "ALiVE_advciv_scream_1",
-    "ALiVE_advciv_scream_2",
     "ALiVE_advciv_crying"
 ];
 
 ALiVE_advciv_voiceLines_hiding = [
-    "ALiVE_advciv_please_no",
-    "ALiVE_advciv_go_away",
     "ALiVE_advciv_crying"
 ];
 

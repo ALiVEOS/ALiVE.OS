@@ -94,7 +94,7 @@ private _fnc_switchMove = {
 // and chance-gated. Defined locally so all cases can call it cleanly.
 private _fnc_shout = {
     params ["_unit", "_lines"];
-    if (!ALiVE_advciv_voiceEnabled) exitWith {};
+    if (!ALiVE_advciv_voiceEnabled || {_lines isEqualTo []}) exitWith {};
     if (random 1 > ALiVE_advciv_voiceChance) exitWith {};
     private _lastVoice = _unit getVariable ["ALiVE_advciv_lastVoice", 0];
     if (time - _lastVoice < 5) exitWith {};
@@ -264,7 +264,7 @@ switch (_type) do {
             // Scream and immediately sprint away from the danger source
             case "SCREAM": {
                 // Enable Voice Lines covers the scream too; the other voice lines already check it.
-                if (ALiVE_advciv_voiceEnabled) then {
+                if (ALiVE_advciv_voiceEnabled && {ALiVE_advciv_voiceLines_panic isNotEqualTo []}) then {
                     [_unit, selectRandom ALiVE_advciv_voiceLines_panic] remoteExec ["say3D", 0];
                 };
                 _unit setSpeedMode "FULL";

@@ -708,7 +708,7 @@ switch (_state) do {
 
         // Occasional ambient hiding voice — low chance, long cooldown
         private _lastVoice = _unit getVariable ["ALiVE_advciv_lastVoice", 0];
-        if (ALiVE_advciv_voiceEnabled && {ALiVE_simulationTime - _lastVoice > 20} && {random 1 < 0.15}) then {
+        if (ALiVE_advciv_voiceEnabled && {ALiVE_advciv_voiceLines_hiding isNotEqualTo []} && {ALiVE_simulationTime - _lastVoice > 20} && {random 1 < 0.15}) then {
             [_unit, selectRandom ALiVE_advciv_voiceLines_hiding] remoteExec ["say3D", 0];
             _unit setVariable ["ALiVE_advciv_lastVoice", ALiVE_simulationTime];
         };
