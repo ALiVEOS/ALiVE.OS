@@ -862,7 +862,8 @@ class FSM
                          "" \n
                          "// Force a covert foothold first when civilians still oppose the insurgents" \n
                          "_factory = [[],""convertObject"",[_objective,""factory"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
-                         "if (_objectiveHostility > 0 && {!alive _factory}) then {_type = ""factory""};" \n
+                         "// unless the mission has left factories out of Installation Types" \n
+                         "if (_objectiveHostility > 0 && {!alive _factory} && {[_OPCOM_HANDLER, ""factory""] call ALiVE_fnc_INS_typeAllowed}) then {_type = ""factory""};" \n
                          "" \n
                          "" \n
                          "" \n
