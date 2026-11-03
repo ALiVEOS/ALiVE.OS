@@ -42,6 +42,10 @@ Operations:
                                 server: a squad leader's rally point made and watched (deploy, and
                                 its return after Overrun Repair Time)
 "restore" [row, token]          server: a placed rally point back after Overrun Repair Time
+"permLoad", "permSave", "storeQueue", "pendingWatch"
+                                server: Who Can Manage and the squad leaders' and Zeus' rally points
+                                kept over a restart when the mission saves (ALiVE Data, or Player
+                                FOBs set to Persistent)
 "list"    [unit]                the rally points the unit may use:
                                 [[name, posASL, object or objNull, FOB id or ""], ...]
 "near"    [unit]                the rally point the unit stands at, or []
@@ -106,7 +110,7 @@ private _result = true;
 private _refused = false;
 if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_rallyInner"}) then {
     private _sender = remoteExecutedOwner;
-    _refused = if (_op in ["travel", "move", "refused", "plant", "restore", "permLoad", "permSave"]) then { true } else {
+    _refused = if (_op in ["travel", "move", "refused", "plant", "restore", "permLoad", "permSave", "pendingWatch", "storeQueue"]) then { true } else {
         switch (true) do {
             case (isServer && {_op in ["deploy", "pickup", "rename", "check", "permissions", "permReset"]}): {
                 private _u = _args param [0, objNull];
@@ -137,6 +141,8 @@ switch (_op) do {
         _list pushBack [_obj, _name, toUpper _side, _kind, _owner, objNull, _squad];
         ALiVE_rallyPoints = _list;
         publicVariable "ALiVE_rallyPoints";
+        // the squad leaders' and Zeus' are kept over a restart
+        if (_kind in ["leader", "zeus", "zeusObj"]) then { ["storeQueue"] call ALiVE_fnc_rallyPoint };
     };
 
     case "remove": {
@@ -148,6 +154,7 @@ switch (_op) do {
         publicVariable "ALiVE_rallyPoints";
         // so the module's class scan doesn't bring it back
         ALiVE_rallyRemoved = ((missionNamespace getVariable ["ALiVE_rallyRemoved", []]) select { !isNull _x }) + [_obj];
+        ["storeQueue"] call ALiVE_fnc_rallyPoint;
     };
 
     // server, from the module's class scan: the objects of the listed classes now on the map. Objects
@@ -227,8 +234,9 @@ switch (_op) do {
         // stood flush with the slope it is on rather than upright (A. Ares on Discord, 23 Oct)
         _obj setVectorUp (surfaceNormal (getPosATL _obj));
         _grp setVariable ["ALiVE_rallyDeployed", _obj, true];
-        // a new one: an earlier one waiting to come back stays gone
+        // a new one: an earlier one waiting to come back stays gone, and so does one from before a restart
         _grp setVariable ["ALiVE_rallyBack", nil];
+        if (!isNil "ALiVE_rallyPending") then { ALiVE_rallyPending = ALiVE_rallyPending select { !((_x select 0) == str side _grp && {(_x select 1) == groupId _grp}) } };
         ["add", [_obj, _name, str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE"), _grp]] call ALiVE_fnc_rallyPoint;
         _result = _obj;
         [_obj, _grp, _r, ["leaderOverrun", 30] call _set, ["repairTime", 0] call _set] spawn {
@@ -322,6 +330,7 @@ switch (_op) do {
         ALiVE_rallyPoints = _list;
         publicVariable "ALiVE_rallyPoints";
         format [localize "STR_ALIVE_RALLY_UI_RENAMED", _name] call _tell;
+        ["storeQueue"] call ALiVE_fnc_rallyPoint;
     };
 
     case "pickup": {
@@ -427,8 +436,12 @@ switch (_op) do {
         };
     };
 
-    // server, once from the module: the saved change read after ALiVE Data has started. Stored as
-    // ["v1", [rules, names]], or ["v1", []] when there is none.
+    // server, once from the module, after ALiVE Data has started: the saved change to Who Can Manage, and the squad
+    // leaders' and Zeus' rally points. Stored as ["v1", [rules, names] or [], points], a point being
+    // [kind, who, name, posATL, dir, extra]: extra is [side, callsign] of a leader's squad, a Zeus point's object class.
+    // A Zeus backpack is put back down; a Zeus point on an object is put back on that object when the mission has it
+    // again. Groups are new after a restart, so a leader's point waits until a squad with its callsign is on its side
+    // ("pending"), and goes down for that squad then.
     case "permLoad": {
         if (!isServer || {!isNil "ALiVE_rallyPermLoading"}) exitWith {};
         ALiVE_rallyPermLoading = true;
@@ -455,20 +468,111 @@ switch (_op) do {
             } else {
                 _plain = profileNamespace getVariable [_key, []];
             };
+            // the read is done: saving may write from here on, without losing what was there
+            ALiVE_rallyStoreRead = true;
             if !(_plain isEqualType [] && {(_plain param [0, ""]) isEqualTo "v1"}) exitWith {};
             private _perm = _plain param [1, []];
-            if (!(_perm isEqualTypeArray ["", ""]) || {_logic getVariable ["ALiVE_rally_permChanged", false]}) exitWith {};
-            _logic setVariable ["ALiVE_rally_perm", [["filter", [_perm select 0, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho, ["cleanNames", [_perm select 1]] call ALiVE_fnc_siteWho], true];
-            ["ALiVE Rally Points - who can manage is [%1], list [%2], as an admin set it before the restart (%3)", (_logic getVariable "ALiVE_rally_perm") select 0, (_logic getVariable "ALiVE_rally_perm") select 1, _key] call ALiVE_fnc_dump;
+            if ((_perm isEqualTypeArray ["", ""]) && {!(_logic getVariable ["ALiVE_rally_permChanged", false])}) then {
+                _logic setVariable ["ALiVE_rally_perm", [["filter", [_perm select 0, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho, ["cleanNames", [_perm select 1]] call ALiVE_fnc_siteWho], true];
+                ["ALiVE Rally Points - who can manage is [%1], list [%2], as an admin set it before the restart (%3)", (_logic getVariable "ALiVE_rally_perm") select 0, (_logic getVariable "ALiVE_rally_perm") select 1, _key] call ALiVE_fnc_dump;
+            };
+            private _points = _plain param [2, []];
+            if !(_points isEqualType []) then { _points = [] };
+            private _n = [0, 0, 0];
+            {
+                if (_x isEqualTypeParams ["", "", "", [], 0]) then {
+                    _x params ["_kind", "_who", "_name", "_pos", "_dir", ["_extra", ""]];
+                    switch (_kind) do {
+                        case "zeus": {
+                            private _o = createSimpleObject ["B_Carryall_oli", AGLToASL _pos];
+                            _o setDir _dir;
+                            _o setVectorUp (surfaceNormal _pos);
+                            ["add", [_o, _name, _who, "zeus", grpNull]] call ALiVE_fnc_rallyPoint;
+                            _n set [0, (_n select 0) + 1];
+                        };
+                        case "zeusObj": {
+                            private _near = if (_extra isEqualType "" && {_extra != ""}) then { (nearestObjects [_pos, [_extra], 3]) select { alive _x } } else { [] };
+                            if (_near isEqualTo []) then {
+                                ["ALiVE Rally Points - %1 was on a %2 at %3, which the mission doesn't have now, so it is left out", _name, _extra, mapGridPosition _pos] call ALiVE_fnc_dump;
+                            } else {
+                                ["add", [_near select 0, _name, _who, "zeusObj", grpNull]] call ALiVE_fnc_rallyPoint;
+                                _n set [1, (_n select 1) + 1];
+                            };
+                        };
+                        case "leader": {
+                            if (_extra isEqualTypeArray ["", ""]) then {
+                                if (isNil "ALiVE_rallyPending") then { ALiVE_rallyPending = [] };
+                                ALiVE_rallyPending pushBack [_extra select 0, _extra select 1, _pos, _dir, _name];
+                                _n set [2, (_n select 2) + 1];
+                            };
+                        };
+                    };
+                };
+            } forEach _points;
+            if (_n isNotEqualTo [0, 0, 0]) then {
+                ["ALiVE Rally Points - from before the restart: %1 Zeus backpack(s) and %2 Zeus point(s) on objects back, %3 squad leader point(s) waiting for their squads", _n select 0, _n select 1, _n select 2] call ALiVE_fnc_dump;
+            };
+            if ((_n select 2) > 0) then { ["pendingWatch"] call ALiVE_fnc_rallyPoint };
+        };
+    };
+
+    // server: a squad leader's point from before the restart goes down once a squad with its callsign is on its side,
+    // alive and with no point of its own. Looked for every 10 s while any wait.
+    case "pendingWatch": {
+        if (!isServer || {!isNil "ALiVE_rallyPendingWatch"}) exitWith {};
+        ALiVE_rallyPendingWatch = true;
+        [] spawn {
+            private _ALiVE_rallyInner = true;
+            while { (missionNamespace getVariable ["ALiVE_rallyPending", []]) isNotEqualTo [] } do {
+                {
+                    _x params ["_side", "_callsign", "_pos", "_dir", "_name"];
+                    private _i = allGroups findIf { str side _x == _side && {groupId _x == _callsign} && {({ alive _x } count units _x) > 0} && {isNull (_x getVariable ["ALiVE_rallyDeployed", objNull])} };
+                    if (_i > -1) then {
+                        private _o = ["plant", [allGroups select _i, _pos, _dir, _name]] call ALiVE_fnc_rallyPoint;
+                        if (_o isEqualType objNull && {!isNull _o}) then { ["ALiVE Rally Points - %1 is back down for %2 (%3)", _name, _callsign, _side] call ALiVE_fnc_dump };
+                    };
+                } forEach +(missionNamespace getVariable ["ALiVE_rallyPending", []]);
+                sleep 10;
+            };
+            ALiVE_rallyPendingWatch = nil;
+        };
+    };
+
+    // server: a save a few seconds after a rally point is added, removed or renamed, one for several at once
+    case "storeQueue": {
+        if (!isServer || {!isNil "ALiVE_rallySaveQueued"}) exitWith {};
+        ALiVE_rallySaveQueued = true;
+        [] spawn {
+            private _ALiVE_rallyInner = true;
+            sleep 5;
+            ALiVE_rallySaveQueued = nil;
+            ["permSave"] call ALiVE_fnc_rallyPoint;
         };
     };
 
     case "permSave": {
         if (!isServer || {!(["permCanSave"] call ALiVE_fnc_rallyPoint)}) exitWith {};
+        // not before the saved one is read, or the points not yet back would be written over
+        if (isNil "ALiVE_rallyStoreRead") exitWith {
+            [] spawn { private _ALiVE_rallyInner = true; waitUntil { sleep 1; !isNil "ALiVE_rallyStoreRead" }; ["permSave"] call ALiVE_fnc_rallyPoint };
+        };
         private _perm = (missionNamespace getVariable ["ALiVE_rallyLogic", objNull]) getVariable ["ALiVE_rally_perm", []];
         if !(_perm isEqualTypeArray ["", ""]) then { _perm = [] };
+        private _points = [];
+        {
+            _x params ["_o", "_name", "_who", "_kind", "", "", ["_squad", grpNull]];
+            if (!isNull _o && {alive _o}) then {
+                switch (_kind) do {
+                    case "zeus": { _points pushBack ["zeus", _who, _name, getPosATL _o, getDir _o, ""] };
+                    case "zeusObj": { _points pushBack ["zeusObj", _who, _name, getPosATL _o, getDir _o, typeOf _o] };
+                    case "leader": { if (!isNull _squad) then { _points pushBack ["leader", _who, _name, getPosATL _o, getDir _o, [str side _squad, groupId _squad]] } };
+                };
+            };
+        } forEach (missionNamespace getVariable ["ALiVE_rallyPoints", []]);
+        // those still waiting for their squads
+        { _x params ["_side", "_callsign", "_pos", "_dir", "_name"]; _points pushBack ["leader", _side, _name, _pos, _dir, [_side, _callsign]] } forEach (missionNamespace getVariable ["ALiVE_rallyPending", []]);
         private _key = ["permStoreKey"] call ALiVE_fnc_rallyPoint;
-        private _plain = ["v1", _perm];
+        private _plain = ["v1", _perm, _points];
         if (!isNil "ALIVE_sys_data" && {!(missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true])}) then {
             if (isNil "ALiVE_rally_dataHandler") then {
                 ALiVE_rally_dataHandler = [nil, "create"] call ALIVE_fnc_Data;
@@ -486,7 +590,7 @@ switch (_op) do {
             profileNamespace setVariable [_key, _plain];
             saveProfileNamespace;
         };
-        ["ALiVE Rally Points - who can manage saved to %1 (%2)", _key, ["the module's settings", "an admin's change"] select (_perm isNotEqualTo [])] call ALiVE_fnc_dump;
+        ["ALiVE Rally Points - saved to %1: who can manage %2, %3 rally point(s)", _key, ["the module's settings", "an admin's change"] select (_perm isNotEqualTo []), count _points] call ALiVE_fnc_dump;
     };
 
 
