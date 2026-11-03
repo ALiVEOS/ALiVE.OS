@@ -944,9 +944,12 @@ switch (_action) do {
             // the hub takes its name as it is tagged, and the Zeus who placed it is its owner
             if (_name != "") then { _hub setVariable ["ALiVE_hub_name", _name] };
             if (!isNull _caller) then { _hub setVariable ["ALiVE_hub_owner", getPlayerUID _caller] };
+            // a Zeus's hub, kept over a restart when the mission saves: 1 on an object, 2 the container put down
+            _hub setVariable ["ALiVE_hub_zeus", [2, 1] select (_hub isEqualTo _on)];
             ["tag", [_hub, _module]] call ALIVE_fnc_hub;
             publicVariable "ALiVE_hub_list";
             ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
+            ["permSave"] call ALIVE_fnc_hub;
             ["STR_ALIVE_ZEUS_HUB_DONE", [_sideShown, mapGridPosition _hub]] remoteExecCall ["ALiVE_fnc_zeusFeedback", _caller];
             ["ALiVE Zeus - %1 made %2 at %3 a %4 Logistics Hub", name _caller, typeOf _hub, mapGridPosition _hub, _side] call ALiVE_fnc_dump;
         };
@@ -969,10 +972,13 @@ switch (_action) do {
         remoteExec ["", "ALiVE_hub_enemy_" + _netId];
         remoteExec ["", "ALiVE_hub_own_" + _netId];
         remoteExec ["", "ALiVE_hub_manage_" + _netId];
+        private _wasZeus = ((ALiVE_hub_registry getOrDefault [_netId, []]) param [11, 0]) > 0;
         ALiVE_hub_registry deleteAt _netId;
         if (!isNil "ALiVE_hub_downs") then { ALiVE_hub_downs deleteAt _netId };
         ALiVE_hub_list = ALiVE_hub_list select { !isNull _x && {_x != _hub} };
         publicVariable "ALiVE_hub_list";
+        // a Zeus's hub no longer comes back after a restart
+        if (_wasZeus) then { ["permSave"] call ALIVE_fnc_hub };
         private _grid = mapGridPosition _hub;
         ["ALiVE Zeus - %1 removed the Logistics Hub %2 at %3", name _caller, typeOf _hub, _grid] call ALiVE_fnc_dump;
         deleteVehicle _hub;
