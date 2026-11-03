@@ -33,11 +33,22 @@ class ALiVE_RallyWindow {
             x = 0.33 * safezoneW + safezoneX;
             y = 0.315 * safezoneH + safezoneY;
             w = 0.19 * safezoneW;
-            h = 0.33 * safezoneH;
+            // room under it for Permissions; ALiVE_fnc_rallyWindow gives a non-admin the full 0.33 back
+            h = 0.285 * safezoneH;
             colorBackground[] = {0,0,0,0.3};
             sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9)";
             onLBSelChanged = "['select'] call ALiVE_fnc_rallyWindow";
             onLBDblClick = "['travel'] call ALiVE_fnc_rallyWindow";
+        };
+        // admins only: Who Can Manage for every rally point (the Permissions window every site shares)
+        class RallyUI_Perm: RecruitUI_RscButton {
+            idc = 92808;
+            text = "$STR_ALIVE_RALLY_UI_BUTTON_PERM";
+            action = "['permOpen'] call ALiVE_fnc_rallyWindow";
+            x = 0.33 * safezoneW + safezoneX;
+            y = 0.61 * safezoneH + safezoneY;
+            w = 0.19 * safezoneW;
+            h = 0.035 * safezoneH;
         };
         class RallyUI_Details: RecruitUI_RscStructuredText {
             idc = 92803;

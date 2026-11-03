@@ -25,7 +25,9 @@ switch (_op) do {
         private _here = missionNamespace getVariable ["ALiVE_rallyNear", []];
         if (_here isEqualTo []) exitWith {};
         private _rows = (["list", [player]] call ALiVE_fnc_rallyPoint) select { ((_x select 1) distance (_here select 1)) > 20 };
-        if (_rows isEqualTo []) exitWith { [localize "STR_ALIVE_RALLY", localize "STR_ALIVE_RALLY_UI_NONE"] call ALIVE_fnc_sendHint };
+        // an admin still gets the window, for its Permissions button
+        private _admin = ["isAdmin", [player]] call ALiVE_fnc_siteWho;
+        if (_rows isEqualTo [] && {!_admin}) exitWith { [localize "STR_ALIVE_RALLY", localize "STR_ALIVE_RALLY_UI_NONE"] call ALIVE_fnc_sendHint };
         _rows = [_rows, [], { (_x select 1) distance (_here select 1) }, "ASCEND"] call BIS_fnc_sortBy;
         uiNamespace setVariable ["ALiVE_rallyRows", _rows];
         uiNamespace setVariable ["ALiVE_rallyMapShown", nil];
@@ -33,6 +35,15 @@ switch (_op) do {
         _d = findDisplay 9284;
         (_d displayCtrl 92801) ctrlSetText format [localize "STR_ALIVE_RALLY_UI_TITLE", _here select 0];
         private _list = _d displayCtrl 92802;
+        // Permissions, under the list, for admins only; anyone else has the list down to the buttons
+        (_d displayCtrl 92808) ctrlShow _admin;
+        if (!_admin) then {
+            private _p = ctrlPosition _list;
+            _p set [3, 0.33 * safezoneH];
+            _list ctrlSetPosition _p;
+            _list ctrlCommit 0;
+        };
+        if (_rows isEqualTo []) then { (_d displayCtrl 92803) ctrlSetStructuredText parseText localize "STR_ALIVE_RALLY_UI_NONE" };
         {
             private _dist = (getPosASL player) distance2D (_x select 1);
             private _dir = (getPosASL player) getDir (_x select 1);
@@ -70,6 +81,30 @@ switch (_op) do {
     };
     case "closed": {
         uiNamespace setVariable ["ALiVE_rallyRows", nil];
+    };
+    // the Permissions window every site shares: Who Can Manage for every rally point, an admin's change
+    // over the module's own. The server checks the admin again.
+    case "permOpen": {
+        if !(["isAdmin", [player]] call ALiVE_fnc_siteWho) exitWith {};
+        private _logic = missionNamespace getVariable ["ALiVE_rallyLogic", objNull];
+        if (isNull _logic) exitWith {};
+        private _perm = _logic getVariable ["ALiVE_rally_perm", []];
+        if !(_perm isEqualTypeArray ["", ""]) then {
+            _perm = [_logic getVariable ["rallyManageWho", "OWNER"], _logic getVariable ["rallyManageList", ""]];
+            if !((_perm select 0) isEqualType "") then { _perm set [0, "OWNER"] };
+            if !((_perm select 1) isEqualType "") then { _perm set [1, ""] };
+        };
+        private _tokens = ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"] apply { [_x, localize ("STR_ALIVE_RALLY_WHO_" + _x), localize ("STR_ALIVE_RALLY_WHO_" + _x + "_COMMENT")] };
+        ["open", [localize "STR_ALIVE_RALLY_UI_PERM_TITLE", localize "STR_ALIVE_RALLY_UI_PERM_NOTE", [
+            [localize "STR_ALIVE_RALLY_MANAGE_WHO", localize "STR_ALIVE_RALLY_MANAGE_LIST", localize "STR_ALIVE_RALLY_MANAGE_LIST_COMMENT", _tokens, _perm select 0, _perm select 1]
+        ], {
+            (_this param [0, ["", ""]]) params [["_rules", ""], ["_names", ""]];
+            ["permissions", [player, _rules, _names]] call ALiVE_fnc_rallyPoint;
+            closeDialog 0;
+        }, {
+            ["permReset", [player]] call ALiVE_fnc_rallyPoint;
+            closeDialog 0;
+        }]] call ALiVE_fnc_siteWhoDialog;
     };
     // Rename Rally Point: the rename window with the name of the rally point the player stands at and may
     // rename (Who Can Manage), the squad's own by default

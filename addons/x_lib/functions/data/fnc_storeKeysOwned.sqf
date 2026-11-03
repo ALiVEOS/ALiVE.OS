@@ -91,8 +91,8 @@ private _fnc_addDictionary = {
 // _FOB, Player FOBs' own save, was on neither list, so clearing a mission's data left its FOBs to come back
 // on the next load (AshTray, Discord 21 Oct)
 // _INTEL is the tablet's Intel Log, _HUB the Logistics Hubs' in-game permission changes,
-// _CRATERS the Persistent Craters
-} forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_TASK_OPTOUT", "_FORCE_POOL", "_ATO", "_FOB", "_INTEL", "_HUB", "_CRATERS"] + _suffixes);
+// _CRATERS the Persistent Craters, _RALLY the Rally Points' in-game permission change
+} forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_TASK_OPTOUT", "_FORCE_POOL", "_ATO", "_FOB", "_INTEL", "_HUB", "_CRATERS", "_RALLY"] + _suffixes);
 ["dictionary_" + _base, "self"] call _fnc_addDictionary;
 
 // Then the old names.

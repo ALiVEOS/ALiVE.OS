@@ -30,9 +30,14 @@ Operations:
 "mayManage" [unit, row, what]   whether the unit may "RENAME" or "PICKUP" that row of
                                 ALiVE_rallyPoints: admins always; a squad leader's point by Who
                                 Can Manage, where Owner is the leader of the squad that put it
-                                down; a synced point only renamed, and Owner lets no one in there
+                                down; a synced point only renamed, and Owner lets no one in there.
+                                An admin's change in game (ALiVE_rally_perm) wins over the module
 "manageable" [unit, what]       the row of the rally point within 5 m the unit may manage that
                                 way, or []
+"permissions" [unit, rules, names] an admin's Who Can Manage for every rally point, from the
+                                Permissions window (ALiVE_fnc_siteWhoDialog); kept over a restart
+                                when the mission saves
+"permReset" [unit]              an admin puts Who Can Manage back to the module's settings
 "list"    [unit]                the rally points the unit may use:
                                 [[name, posASL, object or objNull, FOB id or ""], ...]
 "near"    [unit]                the rally point the unit stands at, or []
@@ -99,7 +104,7 @@ if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_rallyInner"
     private _sender = remoteExecutedOwner;
     _refused = if (_op in ["travel", "move", "refused"]) then { true } else {
         switch (true) do {
-            case (isServer && {_op in ["deploy", "pickup", "rename", "check"]}): {
+            case (isServer && {_op in ["deploy", "pickup", "rename", "check", "permissions", "permReset"]}): {
                 private _u = _args param [0, objNull];
                 !(_u isEqualType objNull) || {isNull _u} || {owner _u != _sender}
             };
@@ -276,8 +281,11 @@ switch (_op) do {
         // only a point the unit could use: its side's, and its squad's when the point is kept to one squad
         if !(_who in ["ANY", str side group _unit]) exitWith {};
         if (!isNull _owner && {_owner != group _unit}) exitWith {};
-        private _rules = ["filter", [["rallyManageWho", "OWNER"] call _set, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
-        private _names = ["rallyManageList", ""] call _set;
+        // an admin's change from the Permissions window, else the module's own
+        private _perm = (missionNamespace getVariable ["ALiVE_rallyLogic", objNull]) getVariable ["ALiVE_rally_perm", []];
+        if !(_perm isEqualTypeArray ["", ""]) then { _perm = [["rallyManageWho", "OWNER"] call _set, ["rallyManageList", ""] call _set] };
+        private _rules = ["filter", [_perm select 0, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
+        private _names = _perm select 1;
         private _rest = (_rules splitString ",") select { _x != "OWNER" };
         // Owner: the leader of the squad that put the point down, as before the setting was added; a synced
         // point has none, so no one
@@ -296,6 +304,119 @@ switch (_op) do {
         _rows = [_rows, [], { _unit distance (_x select 0) }, "ASCEND"] call BIS_fnc_sortBy;
         private _i = _rows findIf { ["mayManage", [_unit, _x, _what]] call ALiVE_fnc_rallyPoint };
         if (_i > -1) then { _result = _rows select _i };
+    };
+
+    // An admin's Who Can Manage from the Permissions window, for every rally point; "permReset" drops it.
+    // A player's machine asks only for its own unit (the check at the top), and the unit must be an admin.
+    // Kept over a restart when the mission saves (permCanSave), as the Logistics Hub's are.
+    case "permReset";
+    case "permissions": {
+        _args params [["_unit", objNull, [objNull]], ["_rules", "", [""]], ["_names", "", [""]]];
+        if (!isServer) exitWith { [_op, _args] remoteExecCall ["ALiVE_fnc_rallyPoint", 2] };
+        _result = false;
+        private _logic = missionNamespace getVariable ["ALiVE_rallyLogic", objNull];
+        if (isNull _unit || {isNull _logic}) exitWith {};
+        private _tell = { [localize "STR_ALIVE_RALLY", localize _this] remoteExecCall ["ALIVE_fnc_sendHint", _unit] };
+        // no faster than one every 2 s per player
+        private _key = "ALiVE_rallyPermAt_" + ([str _unit, getPlayerUID _unit] select (isPlayer _unit));
+        if (time - (missionNamespace getVariable [_key, -10]) < 2) exitWith {};
+        missionNamespace setVariable [_key, time];
+        if !(["isAdmin", [_unit]] call ALiVE_fnc_siteWho) exitWith {
+            ["ALiVE Rally Points - %1 asked to change who can manage rally points, but is no admin", name _unit] call ALiVE_fnc_dump;
+            "STR_ALIVE_RALLY_PERM_REFUSED" call _tell;
+        };
+        if (_op == "permReset") then {
+            _logic setVariable ["ALiVE_rally_perm", nil, true];
+            ["ALiVE Rally Points - %1 put who can manage rally points back to the module's settings", name _unit] call ALiVE_fnc_dump;
+            "STR_ALIVE_RALLY_PERM_RESET" call _tell;
+        } else {
+            _rules = ["filter", [_rules, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho;
+            _names = ["cleanNames", [_names]] call ALiVE_fnc_siteWho;
+            _logic setVariable ["ALiVE_rally_perm", [_rules, _names], true];
+            ["ALiVE Rally Points - %1 set who can manage rally points to [%2], list [%3]", name _unit, _rules, _names] call ALiVE_fnc_dump;
+            "STR_ALIVE_RALLY_PERM_SET" call _tell;
+        };
+        // a change made before the saved one is read keeps winning over it
+        _logic setVariable ["ALiVE_rally_permChanged", true];
+        ["permSave"] call ALiVE_fnc_rallyPoint;
+        _result = true;
+    };
+
+    // the mission saves: with ALiVE Data, or with Player FOBs set to Persistent
+    case "permCanSave": {
+        private _fob = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
+        _result = (!isNil "ALIVE_sys_data" && {!(missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true])})
+            || {!isNull _fob && {[_fob, "attribute", ["fob_persistent"]] call ALiVE_fnc_FOB}};
+    };
+
+    case "permStoreKey": {
+        _result = if (isNil "ALIVE_sys_data_GROUP_ID") then {
+            format ["ALiVE_RALLY_%1:%2", [missionName, "%20", "-"] call CBA_fnc_replace, worldName]
+        } else {
+            (["_RALLY"] call ALiVE_fnc_storeKeys) select 0
+        };
+    };
+
+    // server, once from the module: the saved change read after ALiVE Data has started. Stored as
+    // ["v1", [rules, names]], or ["v1", []] when there is none.
+    case "permLoad": {
+        if (!isServer || {!isNil "ALiVE_rallyPermLoading"}) exitWith {};
+        ALiVE_rallyPermLoading = true;
+        [] spawn {
+            private _ALiVE_rallyInner = true;
+            private _t0 = diag_tickTime;
+            if (["ALiVE_sys_data"] call ALiVE_fnc_isModuleAvailable) then {
+                waitUntil { sleep 1; (!isNil "ALIVE_sys_data" && {!isNil "ALIVE_sys_data_DISABLED"} && {ALIVE_sys_data getVariable ["startupComplete", false]}) || {diag_tickTime - _t0 > 300} };
+            };
+            private _logic = missionNamespace getVariable ["ALiVE_rallyLogic", objNull];
+            if (isNull _logic || {!(["permCanSave"] call ALiVE_fnc_rallyPoint)}) exitWith {};
+            private _key = ["permStoreKey"] call ALiVE_fnc_rallyPoint;
+            private _plain = [];
+            if (!isNil "ALIVE_sys_data" && {!(missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true])}) then {
+                if (isNil "ALiVE_rally_dataHandler") then {
+                    ALiVE_rally_dataHandler = [nil, "create"] call ALIVE_fnc_Data;
+                    [ALiVE_rally_dataHandler, "storeType", true] call ALIVE_fnc_Data;
+                };
+                private _doc = [ALiVE_rally_dataHandler, "read", ["sup_fob", [], _key]] call ALIVE_fnc_Data;
+                if (_doc isEqualType [] && {count _doc > 0}) then {
+                    private _d = [_doc, "data"] call CBA_fnc_hashGet;
+                    if (!isNil "_d") then { _plain = _d };
+                };
+            } else {
+                _plain = profileNamespace getVariable [_key, []];
+            };
+            if !(_plain isEqualType [] && {(_plain param [0, ""]) isEqualTo "v1"}) exitWith {};
+            private _perm = _plain param [1, []];
+            if (!(_perm isEqualTypeArray ["", ""]) || {_logic getVariable ["ALiVE_rally_permChanged", false]}) exitWith {};
+            _logic setVariable ["ALiVE_rally_perm", [["filter", [_perm select 0, ["SIDE", "LEADER", "OWNER", "ITEM", "LIST"]]] call ALiVE_fnc_siteWho, ["cleanNames", [_perm select 1]] call ALiVE_fnc_siteWho], true];
+            ["ALiVE Rally Points - who can manage is [%1], list [%2], as an admin set it before the restart (%3)", (_logic getVariable "ALiVE_rally_perm") select 0, (_logic getVariable "ALiVE_rally_perm") select 1, _key] call ALiVE_fnc_dump;
+        };
+    };
+
+    case "permSave": {
+        if (!isServer || {!(["permCanSave"] call ALiVE_fnc_rallyPoint)}) exitWith {};
+        private _perm = (missionNamespace getVariable ["ALiVE_rallyLogic", objNull]) getVariable ["ALiVE_rally_perm", []];
+        if !(_perm isEqualTypeArray ["", ""]) then { _perm = [] };
+        private _key = ["permStoreKey"] call ALiVE_fnc_rallyPoint;
+        private _plain = ["v1", _perm];
+        if (!isNil "ALIVE_sys_data" && {!(missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true])}) then {
+            if (isNil "ALiVE_rally_dataHandler") then {
+                ALiVE_rally_dataHandler = [nil, "create"] call ALIVE_fnc_Data;
+                [ALiVE_rally_dataHandler, "storeType", true] call ALIVE_fnc_Data;
+            };
+            private _doc = [[["data", _plain]]] call CBA_fnc_hashCreate;
+            // the War Room backend updates a document by its revision, as for the FOBs and hubs
+            private _prev = [ALiVE_rally_dataHandler, "read", ["sup_fob", [], _key]] call ALIVE_fnc_Data;
+            if (_prev isEqualType [] && {count _prev > 0}) then {
+                private _rev = [_prev, "_rev"] call CBA_fnc_hashGet;
+                if (!isNil "_rev") then { [_doc, "_rev", _rev] call CBA_fnc_hashSet };
+            };
+            [ALiVE_rally_dataHandler, "write", ["sup_fob", _doc, false, _key]] call ALIVE_fnc_Data;
+        } else {
+            profileNamespace setVariable [_key, _plain];
+            saveProfileNamespace;
+        };
+        ["ALiVE Rally Points - who can manage saved to %1 (%2)", _key, ["the module's settings", "an admin's change"] select (_perm isNotEqualTo [])] call ALiVE_fnc_dump;
     };
 
 

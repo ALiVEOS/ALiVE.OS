@@ -50,6 +50,9 @@ if (isServer) then {
     };
 };
 
+// an admin's Who Can Manage from before a restart (the Permissions window, ALiVE_fnc_rallyPoint "permissions")
+if (isServer && {_main}) then { ["permLoad"] call ALiVE_fnc_rallyPoint };
+
 // Placed Rally Point Overrun Time (A. Ares on Discord, 27 Oct): a synced or class-listed rally point of one side is lost
 // once enemies have held it this long, as a squad's own is. An object's ALiVE_rallyOverrun overrides the module, and gives
 // any other kind of point (a side HQ, a script's) a time of its own. 0, the default, is never; an "ANY" point has no enemy.

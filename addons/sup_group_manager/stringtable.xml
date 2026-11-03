@@ -849,4 +849,22 @@
 <Key ID="STR_ALIVE_RALLY_UI_RENAME_EMPTY">
     <English>Give the rally point a name of up to %1 characters.</English>
 </Key>
+<Key ID="STR_ALIVE_RALLY_UI_BUTTON_PERM">
+    <English>Permissions</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_PERM_TITLE">
+    <English>Rally points: permissions</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_UI_PERM_NOTE">
+    <English>Changes who can pick up and rename rally points, on every rally point in this mission. Kept over a restart when the mission saves, with ALiVE Data or with Player FOBs set to Persistent, until Use module settings is pressed. Admins always can.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_PERM_REFUSED">
+    <English>Only an admin can change who can manage rally points.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_PERM_SET">
+    <English>Who can manage rally points is changed.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_PERM_RESET">
+    <English>Who can manage rally points is back to the module's settings.</English>
+</Key>
 </Container></Package></Project>
