@@ -99,14 +99,18 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-            // create the cluster handler
-            ALIVE_clusterHandler = [nil, "create"] call ALIVE_fnc_clusterHandler;
-            [ALIVE_clusterHandler, "init"] call ALIVE_fnc_clusterHandler;
-            [ALIVE_clusterHandler, "debug", _debug] call ALIVE_fnc_clusterHandler;
-
-            // create the agent handler
+            // create the agent handler, ready before the cluster handler is: Ambient Civilian Placement
+            // starts as soon as ALIVE_clusterHandler exists and numbers its civilians and vehicles from the
+            // agent handler. Made the other way round, a slow start paused between the two and the first
+            // civilian vehicle hit "Undefined variable: alive_agenthandler" (NeisAEL on Discord, 4 Nov)
             ALIVE_agentHandler = [nil, "create"] call ALIVE_fnc_agentHandler;
             [ALIVE_agentHandler, "init"] call ALIVE_fnc_agentHandler;
+
+            // create the cluster handler, set up before it is published for the same reason
+            private _clusterHandler = [nil, "create"] call ALIVE_fnc_clusterHandler;
+            [_clusterHandler, "init"] call ALIVE_fnc_clusterHandler;
+            [_clusterHandler, "debug", _debug] call ALIVE_fnc_clusterHandler;
+            ALIVE_clusterHandler = _clusterHandler;
 
             // create command router
             ALIVE_civCommandRouter = [nil, "create"] call ALIVE_fnc_civCommandRouter;
