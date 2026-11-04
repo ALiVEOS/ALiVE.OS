@@ -2713,6 +2713,12 @@
 <Key ID="STR_ALIVE_CS_SHAREFRIENDLY_COMMENT">
     <English>Yes (the default) lets players call on the transport, CAS, artillery and ground support of any side friendly to theirs, as well as their own. No keeps each side's supports to that side's own players, so allied sides each have their own.</English>
 </Key>
+<Key ID="STR_ALIVE_CS_GROUNDAVOID">
+    <English>Ground Transport Avoids Known Enemy</English>
+</Key>
+<Key ID="STR_ALIVE_CS_GROUNDAVOID_COMMENT">
+    <English>Yes: a ground transport sent somewhere plans its way on the roads around the places its side's AI Commander has seen the enemy in the last 30 minutes, and drives it in stages. Where there is no other way it still goes through. Needs an AI Commander for the side, and Pathfinding switched on in the Virtual AI System module. No, the default: the game's driver picks the way.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_ORDERMARKERS">
     <English>Keep Order Markers</English>
     <Chinesesimp>保留命令标记</Chinesesimp>

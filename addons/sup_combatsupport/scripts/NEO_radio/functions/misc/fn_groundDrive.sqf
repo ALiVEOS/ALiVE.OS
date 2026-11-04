@@ -8,6 +8,10 @@
     Given an off-road distance, a point off the road (Eric on Discord, 18 Oct 2026) is reached
     after the road: the last leg leaves it for the point itself, up to that far, when the
     ground on the way has no water or steep slope; otherwise the vehicle stops at the road.
+    With Ground Transport Avoids Known Enemy on (Jman, 4 Nov, from AshTray on Discord), the way there
+    is planned first by ALiVE's pathfinder, on the roads, around the places the side's AI Commander
+    has seen the enemy in the last 30 minutes, and driven in stages; with no such place near, no
+    pathfinder or no route back within 30 s, the game's driver picks the way as before.
     Scheduled callers only.
     Params: [vehicle, target position, run number, move the target onto a road (default true),
              metres it may leave the road for the point itself (default 0, never)]
@@ -67,6 +71,67 @@ private _leg = {
         _last = getPosATL _veh;
     };
     [_there, _stuck]
+};
+// Around known enemy: stops along a road route that keeps clear of them, each driven to in turn
+if (NEO_radioLogic getVariable ["combatsupport_groundavoid", false] && {!isNil "ALiVE_Pathfinder"} && {call _mine}) then {
+    private _side = str side group driver _veh;
+    private _from = getPosATL _veh;
+    private _far = (_from distance2D _target) / 2 + 1000;
+    private _mid = [((_from select 0) + (_target select 0)) / 2, ((_from select 1) + (_target select 1)) / 2, 0];
+    // [[place, radius], ...]: one for each place within 200 m of none already taken
+    private _avoid = [];
+    {
+        if (([_x, "side", ""] call ALiVE_fnc_hashGet) == _side) then {
+            ([_x, "knownEnemy"] call ALiVE_fnc_OPCOM) params [["_ids", []], ["_poss", []]];
+            {
+                private _p = _poss param [_forEachIndex, []];
+                // a report with no position comes through as 0,0
+                if (_p isEqualType [] && {count _p > 1} && {(_p select 0) != 0 || {(_p select 1) != 0}} && {(_p distance2D _mid) < _far} && {(_avoid findIf { ((_x select 0) distance2D _p) < 200 }) < 0}) then {
+                    _avoid pushBack [[_p select 0, _p select 1, 0], 400];
+                };
+            } forEach _ids;
+        };
+    } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+    if (_avoid isEqualTo []) exitWith {};
+    private _proc = [ALiVE_Pathfinder, "getPathfindingProcedure", ["LandRoad", "default"]] call ALiVE_fnc_pathfinder;
+    if (isNil "_proc") exitWith {};
+    private _wp = [] call ALiVE_fnc_hashCreate;
+    [_wp, "position", _target] call ALiVE_fnc_hashSet;
+    // asked in the crew's name, so the pathfinder knows a vehicle's size and an earlier ask still waiting is called off;
+    // each ask has its own token, so a patrol's next leg can't take the answer to the last one; the side
+    // goes third, where the pathfinder looks for it to colour a drawn route
+    private _grp = group driver _veh;
+    private _token = diag_tickTime;
+    [ALiVE_Pathfinder, "cancelProfilePaths", _grp] call ALiVE_fnc_pathfinder;
+    _veh setVariable ["NEO_groundRoute", nil];
+    [ALiVE_Pathfinder, "findPath", [_from, _proc, _wp, nil, [_grp, _veh, _side, _token], {
+        params ["_cbArgs", "_path"];
+        _cbArgs params ["", "_v", "", "_tk"];
+        if (!isNull _v) then { _v setVariable ["NEO_groundRoute", [_tk, _path]] };
+    }, _side, _avoid]] call ALiVE_fnc_pathfinder;
+    private _until = time + 30;
+    waitUntil { sleep 1; !(call _mine) || {time > _until} || {((_veh getVariable ["NEO_groundRoute", []]) param [0, -1]) isEqualTo _token} };
+    private _path = (_veh getVariable ["NEO_groundRoute", []]) param [1, []];
+    _veh setVariable ["NEO_groundRoute", nil];
+    if !(_path isEqualType [] && {count _path > 1} && {call _mine}) exitWith {
+        if (call _mine) then {
+            ["ALiVE Combat Support - %1 found no way round known enemy to %2 in time: drives the usual way", _veh getVariable ["NEO_groundCallsign", typeOf _veh], mapGridPosition _target] call ALiVE_fnc_dump;
+        };
+    };
+    // a stop every 500 m or so along it, on a road, none in the last 300 m
+    private _stops = [];
+    private _last = _from;
+    {
+        if (_x isEqualType [] && {count _x > 1} && {(_x distance2D _last) >= 500} && {(_x distance2D _target) > 300}) then {
+            private _r = [[_x select 0, _x select 1, 0], 100] call ALIVE_fnc_getClosestRoad;
+            if (isOnRoad _r) then { _stops pushBack [_r select 0, _r select 1, 0]; _last = _x };
+        };
+    } forEach _path;
+    ["ALiVE Combat Support - %1 drives round %2 known enemy place(s) to %3, by %4 stop(s)", _veh getVariable ["NEO_groundCallsign", typeOf _veh], count _avoid, mapGridPosition _target, count _stops] call ALiVE_fnc_dump;
+    {
+        if !(call _mine) exitWith {};
+        [_x, 40, false, 60 + (_veh distance2D _x) / 3] call _leg;
+    } forEach _stops;
 };
 ([_target, 120, true] call _leg) params ["_arrived", "_stuckOnRoad"];
 // off the road, not after being stuck on it: a vehicle that can't get across, or takes longer than the

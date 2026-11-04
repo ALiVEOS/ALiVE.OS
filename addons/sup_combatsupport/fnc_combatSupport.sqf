@@ -124,6 +124,10 @@ switch(_operation) do {
                         private _shareFriendly = NEO_radioLogic getVariable ["combatsupport_sharefriendly", true];
                         if !(_shareFriendly isEqualType true) then { _shareFriendly = parseNumber format ["%1", _shareFriendly] > 0; };
                         NEO_radioLogic setVariable ["combatsupport_sharefriendly", _shareFriendly, true];
+                        // Ground Transport Avoids Known Enemy (Jman, 4 Nov): bool when binarised, "0"/"1" on a packed build
+                        private _groundAvoid = NEO_radioLogic getVariable ["combatsupport_groundavoid", false];
+                        if !(_groundAvoid isEqualType true) then { _groundAvoid = parseNumber format ["%1", _groundAvoid] > 0; };
+                        NEO_radioLogic setVariable ["combatsupport_groundavoid", _groundAvoid, true];
 
                         // #940 follow-up: "Support Access" attribute. Default "First player only"
                         // restricts support-calling to one operator per side; "All players" is the

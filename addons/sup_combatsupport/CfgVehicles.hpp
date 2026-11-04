@@ -122,6 +122,20 @@ class CfgVehicles {
                                     class false { name="No"; value = 0; };
                                 };
                         };
+                        // Ground Transport Avoids Known Enemy (Jman, 4 Nov, from AshTray on Discord): the way is planned round
+                        // the places the side's AI Commander has seen the enemy
+                        class combatsupport_groundavoid : Combo
+                        {
+                                property = "ALiVE_sup_combatsupport_combatsupport_groundavoid";
+                                displayName = "$STR_ALIVE_CS_GROUNDAVOID";
+                                tooltip = "$STR_ALIVE_CS_GROUNDAVOID_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class false { name="No"; value = 0; default = 1; };
+                                    class true { name="Yes"; value = 1; };
+                                };
+                        };
                         // the tablet may call the AI Commander's own batteries (mil_artillery) at a grid
                         class combatsupport_artycommander : Combo
                         {

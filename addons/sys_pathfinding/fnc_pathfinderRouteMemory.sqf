@@ -53,6 +53,8 @@ Jman
 #define RM_REPATH_MAX 3
 #define RM_REPATH_PER_PASS 2
 #define RM_QUEUE_BUSY 20
+// ground a request asks to keep clear of: each sector under it costs this many times as much to cross
+#define RM_AVOID_FACTOR 10
 
 params ["_logic", ["_operation", ""], ["_args", []]];
 
@@ -357,19 +359,46 @@ switch (_operation) do {
 
     // [procedure capabilities, side]: the per-request state, or [] when route memory doesn't apply to this
     // request. Ground routes only: men on foot and land vehicles, never anything that flies.
+    // A request's own ground to keep clear of ([[position, radius], ...], the fourth argument) makes it dearer
+    // to cross however route memory is set: with it off, that ground alone counts, with no variation.
     case "jobContext": {
-        _args params [["_capabilities", []], ["_side", ""], ["_callbackArgs", []]];
+        _args params [["_capabilities", []], ["_side", ""], ["_callbackArgs", []], ["_avoid", [], [[]]]];
         private _mode = missionNamespace getVariable ["ALiVE_pathfinding_routeMemory", "off"];
         _result = [];
-        if (_mode == "off" || {!(_capabilities param [0, false])} || {_capabilities param [4, true]}) exitWith {};
-        (ALiVE_pathfinding_routeMemoryLevels getOrDefault [_mode, [0, 1]]) params ["_amp", "_ceiling"];
-        private _danger = if (_side isEqualType "" && {!isNil "ALiVE_routeMemory_danger"}) then {
+        if (!(_capabilities param [0, false]) || {_capabilities param [4, true]}) exitWith {};
+        private _on = _mode != "off";
+        if (!_on && {_avoid isEqualTo []}) exitWith {};
+        private _levels = if (_on) then { ALiVE_pathfinding_routeMemoryLevels getOrDefault [_mode, [0, 1]] } else { [0, 1] };
+        private _amp = _levels select 0;
+        private _ceiling = _levels select 1;
+        private _danger = if (_on && {_side isEqualType ""} && {!isNil "ALiVE_routeMemory_danger"}) then {
             ALiVE_routeMemory_danger getOrDefault [_side, createHashMap]
         } else { createHashMap };
         private _grid = ALiVE_pathfinder get "terrainGrid";
+        // the sectors under it, kept apart from the side's danger so that is weighed as route memory weighs it
+        private _keepClear = createHashMap;
+        if (_avoid isNotEqualTo []) then {
+            private _size = _grid get "sectorSize";
+            {
+                _x params [["_p", [], [[]]], ["_r", 0, [0]]];
+                if (count _p > 1 && {_r > 0}) then {
+                    private _ix = floor ((_p select 0) / _size);
+                    private _iy = floor ((_p select 1) / _size);
+                    private _n = ceil (_r / _size);
+                    for "_dx" from -_n to _n do {
+                        for "_dy" from -_n to _n do {
+                            private _key = [_ix + _dx, _iy + _dy];
+                            if ([((_key select 0) + 0.5) * _size, ((_key select 1) + 0.5) * _size] distance2D _p <= _r + _size / 2) then {
+                                _keepClear set [_key, true];
+                            };
+                        };
+                    };
+                };
+            } forEach _avoid;
+        };
         // the blocked table for the size of whoever asked: a profile's ID, or a group (logistics trucks)
         private _blocked = createHashMap;
-        if (!isNil "ALiVE_routeMemory_blocked" && {count ALiVE_routeMemory_blocked > 0}) then {
+        if (_on && {!isNil "ALiVE_routeMemory_blocked"} && {count ALiVE_routeMemory_blocked > 0}) then {
             private _who = if (_callbackArgs isEqualType []) then { _callbackArgs param [0, ""] } else { "" };
             if (_who isEqualType "" && {_who != ""}) then {
                 private _profile = [ALiVE_profileHandler, "getProfile", _who] call ALiVE_fnc_profileHandler;
@@ -379,9 +408,9 @@ switch (_operation) do {
             _blocked = ALiVE_routeMemory_blocked getOrDefault [_class, createHashMap];
         };
         // [amplitude, ceiling, danger table, time now, lattice corners, factor per sector, sector size,
-        //  blocked table, factor per sub-sector, sub-sector size]
+        //  blocked table, factor per sub-sector, sub-sector size, sectors to keep clear of]
         _result = [_amp, _ceiling, _danger, missionNamespace getVariable ["ALiVE_simulationTime", time], createHashMap, createHashMap,
-            _grid get "sectorSize", _blocked, createHashMap, _grid get "subSectorSize"];
+            _grid get "sectorSize", _blocked, createHashMap, _grid get "subSectorSize", _keepClear];
     };
 
     // [context, sub-sector index]: the fine search's factor, its coarse sector's times any blockage there
@@ -433,6 +462,7 @@ switch (_operation) do {
                 private _d = _v * (0.5 ^ ((_now - _stamp) / ALiVE_pathfinding_routeMemoryHalfLife));
                 _result = _result * (1 + (_ceiling - 1) * (1 - exp (-_d)));
             };
+            if (_key in (_ctx param [10, createHashMap])) then { _result = _result * RM_AVOID_FACTOR };
             _cache set [_key, _result];
         };
     };

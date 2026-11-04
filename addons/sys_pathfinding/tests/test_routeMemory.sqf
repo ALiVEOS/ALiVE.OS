@@ -92,14 +92,14 @@ if (!isNil "ALiVE_eventLog") then {
 
 // --- jobContext -------------------------------------------------------------
 private _ctx = [nil, "jobContext", [_land, "WEST", []]] call ALiVE_fnc_pathfinderRouteMemory;
-["jobContext for a land route has ten slots", count _ctx == 10] call _fnc_check;
+["jobContext for a land route has eleven slots", count _ctx == 11] call _fnc_check;
 ["jobContext carries the level's amplitude", (_ctx select 0) == 0.28] call _fnc_check;
 ["jobContext carries the level's ceiling", (_ctx select 1) == 5] call _fnc_check;
 ["jobContext carries the sector sizes", (_ctx select 6) == _sectorSize && {(_ctx select 9) == _subSize}] call _fnc_check;
 ["jobContext is empty for an air route", ([nil, "jobContext", [_air, "WEST", []]] call ALiVE_fnc_pathfinderRouteMemory) isEqualTo []] call _fnc_check;
 ["jobContext is empty for a route that can't use land", ([nil, "jobContext", [[false, false, false, true, false], "WEST", []]] call ALiVE_fnc_pathfinderRouteMemory) isEqualTo []] call _fnc_check;
 private _noSide = [nil, "jobContext", [_land, "", []]] call ALiVE_fnc_pathfinderRouteMemory;
-["jobContext with no side still applies (variation only)", count _noSide == 10 && {count (_noSide select 2) == 0}] call _fnc_check;
+["jobContext with no side still applies (variation only)", count _noSide == 11 && {count (_noSide select 2) == 0}] call _fnc_check;
 
 // --- factor: variation only ---------------------------------------------------
 private _keyA = [40, 40];

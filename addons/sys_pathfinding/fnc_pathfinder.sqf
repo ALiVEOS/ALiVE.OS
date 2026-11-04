@@ -490,7 +490,9 @@ switch (_operation) do {
 
         // _side (optional, side text) is who the route is for, read by route memory (#1086).
         // Profiles already pass it third in their callback arguments, so that is the fallback.
-        _args params ["_startPos","_procedure","_waypoint","_previousWaypoint","_callbackArgs","_callback",["_side",""]];
+        // _avoid (optional): [[position, radius], ...], ground the route keeps clear of where it can, as
+        // a Combat Support ground transport does with the enemy its side knows of
+        _args params ["_startPos","_procedure","_waypoint","_previousWaypoint","_callbackArgs","_callback",["_side",""],["_avoid",[],[[]]]];
 
         private _pathJobs = _logic get "pathJobs";
         // Copy only the outer array. Waypoints and callback
@@ -503,6 +505,7 @@ switch (_operation) do {
         if (_side isEqualTo "" && {_callbackArgs isEqualType []}) then { _side = _callbackArgs param [2, ""] };
         if (_side isEqualType west) then { _side = str _side };
         _newJob pushBack _side;
+        _newJob pushBack _avoid;
 
         // Queue and load in one unscheduled step. From a scheduled caller the
         // per-frame worker could otherwise run between the two and step a job
@@ -630,7 +633,7 @@ switch (_operation) do {
 
             _currentJobData = [false, [false,false,false], _layer1Data, _layer2Data, _startSector, _goalSector, _startSubSector, _goalSubSector, []];
             // Slot 10: route memory for this request (#1086), [] when it is off or not a ground route.
-            _currentJobData set [10, [nil, "jobContext", [_procedure select 1, _nextJob param [7, ""], _callbackArgs]] call ALiVE_fnc_pathfinderRouteMemory];
+            _currentJobData set [10, [nil, "jobContext", [_procedure select 1, _nextJob param [7, ""], _callbackArgs, _nextJob param [8, []]]] call ALiVE_fnc_pathfinderRouteMemory];
 
             _logic set ["currentJobData", _currentJobData];
         } else {
