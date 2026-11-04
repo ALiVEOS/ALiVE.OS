@@ -327,21 +327,24 @@ if (isNil "ALiVE_profileSpacialGridClass") then {
                 // caller can be paused between collecting the sectors and reading them while the profile is
                 // unregistered and destroyed. Reading it threw "0 elements provided" here and in
                 // getNearProfiles (#1071), so the check sits in the same expression that reads the profile.
+                // A profile caught partway through "destroy" is just as bad: its keys are removed one at a
+                // time, so slot 2 can hold some other value (an empty list, a string). Only a 3-number
+                // position is measured; anything else is skipped.
                 private _stale = false;
 
                 if (_preciseDistance) then {
                     if (!_filter2D) then {
                         _result = _result select {
-                            if ((_x select 2) isEqualTo []) then {_stale = true; false} else {(((_x select 2) select 2) distance _center) <= _radius}
+                            private _v = _x select 2; if (_v isEqualTo []) then {_stale = true; false} else {private _p = _v param [2, 0]; _p isEqualTypeParams [0,0,0] && {(_p distance _center) <= _radius}}
                         };
                     } else {
                         _result = _result select {
-                            if ((_x select 2) isEqualTo []) then {_stale = true; false} else {(((_x select 2) select 2) distance2D _center) <= _radius}
+                            private _v = _x select 2; if (_v isEqualTo []) then {_stale = true; false} else {private _p = _v param [2, 0]; _p isEqualTypeParams [0,0,0] && {(_p distance2D _center) <= _radius}}
                         };
                     };
                 } else {
                     _result = _result select {
-                        if ((_x select 2) isEqualTo []) then {_stale = true; false} else {true}
+                        private _v = _x select 2; if (_v isEqualTo []) then {_stale = true; false} else {(_v param [2, 0]) isEqualTypeParams [0,0,0]}
                     };
                 };
 

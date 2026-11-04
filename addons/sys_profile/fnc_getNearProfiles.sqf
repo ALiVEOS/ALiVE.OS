@@ -68,9 +68,10 @@ if (_categorySelector isEqualTo []) then {
     private _filtered = _near;
 
     if (_hasSideFilter || {_hasTypeFilter} || {_hasObjectTypeFilter}) then {
-        // (_x select 2) is [] for a profile destroyed since findInRange returned it (#1071)
+        // (_x select 2) is [] for a profile destroyed since findInRange returned it (#1071), and slot 2 no
+        // longer holds a position for one caught partway through "destroy" (its keys go one at a time)
         _filtered = _near select {
-            if ((_x select 2) isEqualTo []) then {false} else {
+            if !(((_x select 2) param [2, 0]) isEqualTypeParams [0,0,0]) then {false} else {
                 private _sideMatches = if (!_hasSideFilter) then {
                     true
                 } else {
