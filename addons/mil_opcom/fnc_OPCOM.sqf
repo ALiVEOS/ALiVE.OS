@@ -2054,13 +2054,18 @@ switch (_operation) do {
                 [_logic,"attackedentities", _attackedE] call ALiVE_fnc_HashSet;
             };
 
+            // with none of the asked-for kind, the first kind it has goes, and only as far as that kind
+            // would go for its own call: an aircraft's 30 km reach sent trucks and foot groups 8 to 13 km
+            // after a helicopter
             if (count _profiles == 0) then {
                 {
-                    if (_x isnotequalto []) exitwith {
-                        _profiles = _x;
+                    _x params ["_kind", "_reach"];
+                    if (_kind isnotequalto []) exitwith {
+                        _profiles = _kind;
+                        _dist = _reach;
                         _rtb = nil;
                     };
-                } foreach [_armored,_mechanized,_motorized,_infantry];
+                } foreach [[_armored,3000],[_mechanized,1000],[_motorized,3000],[_infantry,1000]];
             };
 
             if (count _profiles > 0) then {
