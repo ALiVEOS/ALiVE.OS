@@ -42,7 +42,11 @@ Jman
 ---------------------------------------------------------------------------- */
 
 params [["_op", "", [""]], ["_args", []]];
-if (isRemoteExecuted) exitWith { nil };
+// Never straight from another machine. A player's request the hub, rally point, FOB or Zeus code has
+// already checked carries that code's own name down the call chain, and passes: without that, a hub
+// dismantled by a player never came back, as its clock was refused inside the request
+if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_hubCaller"} && {isNil "_ALiVE_rallyInner"}
+    && {isNil "_ALiVE_fobCaller"} && {isNil "_ALiVE_zeusCaller"}) exitWith { nil };
 private _result = nil;
 private _now = { [time, serverTime] select isMultiplayer };
 
