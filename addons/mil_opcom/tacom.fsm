@@ -886,9 +886,10 @@ class FSM
                          "                        private _nearestObjective = [];" \n
                          "                        private _nearestDistance = 1e10;" \n
                          "" \n
+                         "                        //one the group can't reach without crossing the sea is passed over" \n
                          "                        {" \n
                          "                            private _distance = _posP distance (_x select 2 select 1);" \n
-                         "                            if (_distance < _nearestDistance) then {" \n
+                         "                            if (_distance < _nearestDistance && {!([_OPCOM_HANDLER,""seaBlocked"",[_profile,[_x,""center""] call ALiVE_fnc_HashGet]] call ALiVE_fnc_OPCOM)}) then {" \n
                          "                                _nearestObjective = _x;" \n
                          "                                _nearestDistance = _distance;" \n
                          "                            };" \n

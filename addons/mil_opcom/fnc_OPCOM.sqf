@@ -1749,6 +1749,55 @@ switch (_operation) do {
     // Returns array of all found profiles
     ///////////////////////////////////////////////////
 
+    // Whether a group can't go to a place because the straight line there crosses the sea, the way a virtual
+    // group moves. Boats and aircraft can always go. A land vehicle can't. A group on foot can when a boat can
+    // carry it at sea: the Sea Transport setting, and a boat in its faction that seats it (Jman 4 Nov: the
+    // quick reaction response, and an order for a group already on an objective, sent groups across the bay)
+    case "seaBlocked": {
+        _args params ["_profile","_to"];
+        _result = false;
+        if (isNil "_profile" || {isNil "_to"} || {count _to < 2}) exitWith {};
+        private _profileID = [_profile,"profileID",""] call ALiVE_fnc_HashGet;
+        if (_profileID in ([_logic,"sea",[]] call ALiVE_fnc_HashGet) || {_profileID in ([_logic,"air",[]] call ALiVE_fnc_HashGet)}) exitWith {};
+        private _vehicles = [_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet;
+        private _floats = false;
+        {
+            private _vp = [ALIVE_profileHandler,"getProfile",_x] call ALIVE_fnc_profileHandler;
+            if (!isNil "_vp" && {([_vp,"objectType",""] call ALiVE_fnc_HashGet) in ["Ship","Helicopter","Plane"]}) exitWith { _floats = true };
+        } forEach (_vehicles + ([_profile,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashGet));
+        if (_floats) exitWith {};
+        private _from = [_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet;
+        // one on the water (a shoreline group, or one stranded out at sea) is judged from the nearest land, so it can
+        // still be sent home but can't wade off the beach and across the bay
+        if (surfaceIsWater _from) then { _from = [_from] call ALiVE_fnc_getClosestLand };
+        if (surfaceIsWater _from) exitWith {};
+        // the straight line is walked every 50 m, and 150 m of water in a row is sea. crossesSea looks every 250 m
+        // for two wet points running, so a line that clips a bay came and went as the group moved 150 m
+        private _len = _from distance2D _to;
+        private _dir = _from getDir _to;
+        private _run = 0;
+        private _wet = false;
+        for "_d" from 50 to (_len - 50) step 50 do {
+            if (surfaceIsWater (_from getPos [_d, _dir])) then { _run = _run + 1 } else { _run = 0 };
+            if (_run >= 4) exitWith { _wet = true };
+        };
+        if (!_wet) exitWith {};
+        if (_vehicles isNotEqualTo []) exitWith { _result = true };
+        private _seaMode = toLower ([Alive_profileSystem,"seaTransport","auto"] call ALiVE_fnc_hashGet);
+        if (_seaMode == "never") exitWith { _result = true };
+        if (_seaMode == "always" || {toUpper ([_profile,"side",""] call ALiVE_fnc_HashGet) == "CIV"}) exitWith {};
+        if (isNil "ALiVE_OPCOM_boatFits") then { ALiVE_OPCOM_boatFits = createHashMap };
+        private _faction = [_profile,"faction",""] call ALiVE_fnc_HashGet;
+        private _seats = (count ([_profile,"positions",[]] call ALiVE_fnc_HashGet)) - 1;
+        private _key = format ["%1|%2", _faction, _seats];
+        private _has = ALiVE_OPCOM_boatFits get _key;
+        if (isNil "_has") then {
+            _has = count ([_seats, [_faction], "SHIP"] call ALiVE_fnc_findVehicleType) > 0;
+            ALiVE_OPCOM_boatFits set [_key, _has];
+        };
+        _result = !_has;
+    };
+
     case "findProfilesNearPosition": {
         _args params ["_pos","_sides","_requireVisibility"];
         _pos = [_pos select 0, _pos select 1, 0];
@@ -2035,7 +2084,8 @@ switch (_operation) do {
                         private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
 
                         private _candidateDistance = _pos distance _candidatePos;
-                        if (_candidateDistance < _dist && {!(_profileID in _exclude)} && {!(_profileID in _reserved)} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})}) then {
+                        if (_candidateDistance < _dist && {!(_profileID in _exclude)} && {!(_profileID in _reserved)} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})}
+                            && {!([_logic,"seaBlocked",[_candidateProfile,_pos]] call MAINCLASS)}) then {
                             private _candidateWaypoints = [_candidateProfile,"waypoints"] call ALIVE_fnc_hashGet;
 
                             if (({!(isnil "_x") && {_profileID in (_x select 2)}} count _attackedE) < 1 && {count _candidateWaypoints <= 2}) then {
@@ -2294,6 +2344,23 @@ switch (_operation) do {
                 [_logic,"setObjectiveSection", [_targetObjective,_section]] call MAINCLASS;
             };
         };
+
+        // A group picked for an objective may since be on the far side of the sea from its point (it moved, or the
+        // point is set off the objective), and a virtual group walks or drives straight there. It gets no order
+        // and leaves the objective's section, so another group can be picked
+        private _profilesByIDSea = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+        private _wet = (_orderBatch select {
+            private _p = _profilesByIDSea get (_x select 1);
+            !isNil "_p" && {[_logic,"seaBlocked",[_p, _x select 0]] call MAINCLASS}
+        }) apply { _x select 1 };
+        if (_wet isNotEqualTo []) then {
+            _orderBatch = _orderBatch select { !((_x select 1) in _wet) };
+            if (!isNil "_targetObjective" && {_targetObjective isNotEqualTo []}) then {
+                [_logic,"setObjectiveSection", [_targetObjective, ([_targetObjective,"section",[]] call ALiVE_fnc_HashGet) - _wet]] call MAINCLASS;
+            };
+            ["OPCOM %1 - %2 not sent to objective %3: the way there crosses the sea", [_logic,"side",""] call ALiVE_fnc_HashGet, _wet, _objectiveID] call ALiVE_fnc_dump;
+        };
+        if (_orderBatch isEqualTo []) exitWith { _result = [] };
 
         private _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
         {
