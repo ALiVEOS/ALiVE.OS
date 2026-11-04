@@ -1594,6 +1594,40 @@ switch (_operation) do {
         private _pathfindingEnabled = [Alive_profileSystem,"pathfinding"] call ALiVE_fnc_hashGet;
         private _seaProfileIDs = [_logic,"sea",[]] call ALiVE_fnc_HashGet;
 
+        // Foot groups and water: a group on foot walks straight to its objective and only gets a boat at sea
+        // when one can carry it (the Sea Transport setting). One that can't would end up swimming, so it is
+        // not picked for an objective across water. A faction's boats are looked up once per group size.
+        private _seaMode = toLower ([Alive_profileSystem,"seaTransport","auto"] call ALiVE_fnc_hashGet);
+        if (isNil "ALiVE_OPCOM_boatFits") then { ALiVE_OPCOM_boatFits = createHashMap };
+        private _fnc_hasBoat = {
+            params ["_p"];
+            if (_seaMode == "never") exitWith {false};
+            if (_seaMode == "always" || {toUpper ([_p,"side",""] call ALiVE_fnc_HashGet) == "CIV"}) exitWith {true};
+            private _faction = [_p,"faction",""] call ALiVE_fnc_HashGet;
+            private _seats = (count ([_p,"positions",[]] call ALiVE_fnc_HashGet)) - 1;
+            private _key = format ["%1|%2", _faction, _seats];
+            private _has = ALiVE_OPCOM_boatFits get _key;
+            if (isNil "_has") then {
+                _has = count ([_seats, [_faction], "SHIP"] call ALiVE_fnc_findVehicleType) > 0;
+                ALiVE_OPCOM_boatFits set [_key, _has];
+            };
+            _has
+        };
+        // Whether the straight line to the objective crosses the sea: the way a virtual group moves, on foot or in a land
+        // vehicle. With pathfinding on, _isSeaTravel below only asks whether a way round by land exists, and groups sent
+        // round the Pyrgos bay walked and drove across it instead. Kept per profile for this request, as the search below
+        // widens and sees the same groups again
+        private _straightSea = createHashMap;
+        private _crossesStraight = {
+            private _c = _straightSea get _profileID;
+            if (isNil "_c") then {
+                _c = [[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet, _pos] call ALiVE_fnc_crossesSea;
+                _straightSea set [_profileID, _c];
+            };
+            _c
+        };
+        private _footCanGo = { ([_profile] call _fnc_hasBoat) || {!(call _crossesStraight)} };
+
         // Filter troops
         _radius = 2000;
         while
@@ -1627,7 +1661,7 @@ switch (_operation) do {
                         [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
                     } else { nil };
                     private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
-                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {if (_profileID in _seaProfileIDs) then {call _isSeaTravel} else {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})} && {_barredFactions isEqualTo [] || {!(toLower format ["%1", [_profile,"faction",""] call ALiVE_fnc_HashGet] in _barredFactions)}};
+                    private _valid = !_busy && {_profileID in _troops} && {if (_commander) then {if (_profileID in _seaProfileIDs) then {call _isSeaTravel} else {!(call _crossesStraight) && {!(call _isSeaTravel)}}} else {call _footCanGo}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})} && {_barredFactions isEqualTo [] || {!(toLower format ["%1", [_profile,"faction",""] call ALiVE_fnc_HashGet] in _barredFactions)}};
 
                     if (_valid) then {_troopsUnsorted pushBack _profile};
                 };
