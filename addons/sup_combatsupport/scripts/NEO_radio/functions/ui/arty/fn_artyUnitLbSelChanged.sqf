@@ -51,7 +51,7 @@ _artyMarkers = NEO_radioLogic getVariable "NEO_supportArtyMarkers";
 if (["selected"] call NEO_fnc_artyCmdrBoard) exitWith { [] call NEO_fnc_artyCmdrUnitSelected };
 _battery = _artyArray select (lbCurSel _artyUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _battery = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 0 };
 _status = _battery getVariable "NEO_radioArtyUnitStatus";
-[_battery] call NEO_fnc_supportFocusMap; // show the player where the battery is
+[_battery, _battery getVariable ["NEO_radioArtyLastTarget", []]] call NEO_fnc_supportFocusMap; // where the battery last fired, or where it is
 _class = typeOf (((_artyArray select (lbCurSel _artyUnitLb)) select 3) select 0); if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _class = typeOf (NEO_radioLogic getVariable "NEO_radioTalkWithArty") };
 _ord = _battery getVariable "NEO_radioArtyBatteryRounds";
 

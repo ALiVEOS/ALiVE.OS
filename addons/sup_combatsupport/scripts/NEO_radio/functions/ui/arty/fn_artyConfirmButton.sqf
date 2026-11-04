@@ -87,6 +87,10 @@ _battery setVariable ["NEO_radioArtyNewTask", [_type, _ordnanceType, _rate, _cou
 // to RESPONSE a moment later if the target is out of range.
 _battery setVariable ["NEO_radioArtyUnitStatus", "MISSION", true];
 
+// where this battery last fired, for every player: picking it on the tablet again pans the map
+// there, the spot a follow-up mission is usually called on (AshTray on Discord, 4 Nov)
+_battery setVariable ["NEO_radioArtyLastTarget", +_pos, true];
+
 // remember where this fire mission was called. A marker at the target grid that
 // stays on the map after the tablet closes, so a ranging round can be followed
 // by a fire-for-effect on the same spot without hunting the map for it again
