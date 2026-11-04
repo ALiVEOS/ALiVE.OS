@@ -12906,6 +12906,23 @@ switch(_operation) do {
                             // If a profile still has vehiclesInCargoOf populated it has not yet
                             // been through unloadTransportHelicopter and should count as loaded.
                             private _cargoOf = _infantryProfile select 2 select 9;
+                            // A helicopter that came out of the world before it set down takes its men back aboard
+                            // (a despawn reads who is in it), and a virtual one never lands to put them out, so the
+                            // drop sat out its timeout with them still aboard (Jman 4 Nov, UAT: 10 to 17 minutes at
+                            // Agia Triada). It has already been delivered, so they get off here, where it is
+                            if (_eventState == "heliTransportUnloadWait" && {!isNil "_cargoOf"} && {count _cargoOf > 0}) then {
+                                {
+                                    private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                    if (!isNil "_vp" && {!(_vp select 2 select 1)} && {([_vp, "objectType", ""] call ALIVE_fnc_hashGet) == "Helicopter"}) then {
+                                        private _at = _vp select 2 select 2;
+                                        _at = if ((_at distance2D _eventPosition) < 600 && {!surfaceIsWater _at}) then { [_at select 0, _at select 1, 0] } else { _eventPosition getPos [random DESTINATION_VARIANCE, random 360] };
+                                        [_infantryProfile, _vp] call ALIVE_fnc_removeProfileVehicleAssignment;
+                                        [_infantryProfile, "position", _at] call ALIVE_fnc_profileEntity;
+                                        if (_debug) then { ["ML - heliTransportUnloadWait: %1 put out of virtual %2 at %3. Event: %4", _infantryProfile select 2 select 4, _x, _at, _eventID] call ALiVE_fnc_dump; };
+                                    };
+                                } forEach +_cargoOf;
+                                _cargoOf = _infantryProfile select 2 select 9;
+                            };
                             if (!isNil "_cargoOf" && { count _cargoOf > 0 }) then {
                                 _loadedUnits = _loadedUnits + 1;
                             };
