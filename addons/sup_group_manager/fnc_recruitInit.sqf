@@ -45,6 +45,12 @@ params [["_logic", objNull, [objNull]]];
 
 if (isNull _logic) exitWith {};
 
+// Once per machine. On a dedicated server the module framework reaches this module after the
+// mission has started, so it also sends the function to every client that has already run it,
+// and those players got the Recruitment action twice (AshTray on Discord, 4 Nov).
+if !(isNil {_logic getVariable "initGlobal"}) exitWith { ["ALiVE Recruitment: already set up on this machine, second start ignored"] call ALiVE_fnc_dump };
+_logic setVariable ["initGlobal", false];
+
 // Force pool spending. The pool lives on the server, so a player's machine asks here and is
 // told yes or no: [caller, faction, cost, ticket]. A cost of 0 only asks how much is left, a
 // negative cost is a refund. A faction with no pool (no Military Logistics, or a faction it
