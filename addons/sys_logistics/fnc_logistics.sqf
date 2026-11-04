@@ -1091,6 +1091,17 @@ switch (_operation) do {
         };
 
         case "state" : {
+            //read by a save: a Combat Support ground vehicle is driven by its AI crew, and a vehicle's spot is
+            //only taken when a player gets out of a crew seat, so every save kept its old one and a load put it
+            //back there (AshTray on Discord, 4 Nov). Take the spot of each one already in the store now.
+            //Aircraft are left as they are, so none is saved in the air.
+            if (isnil "_args" && {isServer} && {!isnil QGVAR(STORE)}) then {
+                private _ids = GVAR(STORE) select 1;
+                private _support = vehicles select {
+                    alive _x && {_x isKindOf "LandVehicle"} && {_x getVariable ["ALIVE_CombatSupport", false]} && {(_x getVariable [QGVAR(ID), ""]) in _ids}
+                };
+                if (_support isNotEqualTo []) then { [_logic, "updateObject", _support] call ALiVE_fnc_logistics };
+            };
             if ((isnil "_args") || {!isServer}) exitwith {_result = GVAR(STORE)};
 
             private ["_startObjects"];
