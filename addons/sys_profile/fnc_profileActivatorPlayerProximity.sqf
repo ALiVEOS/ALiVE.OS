@@ -79,8 +79,12 @@ switch (_operation) do {
                     };
             };
 
+            // With no source at all (an empty server) nothing holds anything spawned, so the round
+            // still has to let the coordinator collect despawns. Without this, whatever was spawned
+            // when the last player left stayed spawned until someone joined again.
             if (_spawnSources isEqualTo []) then {
                 _complete = true;
+                _collectDespawns = true;
             };
         } else {
             private _spawnSource = _spawnSources deleteAt 0;
