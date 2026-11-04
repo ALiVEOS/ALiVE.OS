@@ -1108,6 +1108,11 @@ switch (_operation) do {
                 [_logic,"setEH",[_x]] call ALiVE_fnc_logistics;
                 //there when the mission started: saved with a mark, so a later Eden move doesn't double it
                 _x setVariable [QGVAR(EDITOR),true];
+                //where Eden put it, before the load below moves it to its saved spot: a Combat Support
+                //vehicle synced in Eden keeps this as its base (AshTray on Discord, 4 Nov)
+                if (_x isKindOf "AllVehicles" && {isNil {_x getVariable QGVAR(PLACED)}}) then {
+                    _x setVariable [QGVAR(PLACED), [getPosATL _x, getDir _x]];
+                };
             } foreach _startObjects;
 
             //Check if provided data is valid

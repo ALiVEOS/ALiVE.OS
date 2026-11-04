@@ -20,9 +20,11 @@ if ((_pos select 2) >= 1.5 && {(lineIntersectsSurfaces [(ATLToASL _pos) vectorAd
 // (two parked side by side) or a lost one left where it stopped.
 // _pos is above the ground, kept for one on a deck or pier; a search reads above the surface there
 private _near = ASLToAGL ATLToASL _pos;
-private _veh = ((nearestObjects [_near, [_type], 5]) select {
-    alive _x && {isNil {_x getVariable "NEO_groundBrain"}} && {(_x getVariable ["NEO_radioGroundRun", 0]) != -1}
-}) param [0, objNull];
+private _unclaimed = { alive _x && {isNil {_x getVariable "NEO_groundBrain"}} && {(_x getVariable ["NEO_radioGroundRun", 0]) != -1} };
+// the vehicle synced to the module first, wherever it stands: after a load it is at its saved spot,
+// away from _pos, which is where Eden put it and stays its base
+private _veh = (vehicles select { (_x getVariable ["ALiVE_CS_syncedFor", ""]) == "GROUND|" + toUpper _callsign && _unclaimed }) param [0, objNull];
+if (isNull _veh) then { _veh = ((nearestObjects [_near, [_type], 5]) select _unclaimed) param [0, objNull] };
 private _grp = grpNull;
 if (isNull _veh) then {
     // anything already standing on the spot (a kept wreck, another vehicle): set it down beside it

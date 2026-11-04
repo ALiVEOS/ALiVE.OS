@@ -464,6 +464,13 @@ switch(_operation) do {
                                     ["", format ["; %1 other synced vehicle(s) are not used", count _left]] select (_left isNotEqualTo [])] call ALiVE_fnc_dump;
                                 _asset
                             };
+                            // where Eden put a synced vehicle, its base: after a load Player Logistics has already
+                            // moved it to its saved spot, and RTB would take it there (AshTray on Discord, 4 Nov).
+                            // The build below finds the vehicle by its tag wherever it stands now.
+                            private _fnc_placed = {
+                                params ["_o"];
+                                _o getVariable ["ALiVE_sys_logistics_PLACED", [getPosATL _o, getDir _o]]
+                            };
                             switch (typeOf ((synchronizedObjects _logic) select _i)) do {
                                 case ("ALiVE_sup_cas") : {
                                     private ["_position","_callsign","_type"];
@@ -477,7 +484,7 @@ switch(_operation) do {
                                     _heightset = ((synchronizedObjects _logic) select _i) getvariable ["cas_height","0"];
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
                                     private _synced = [(synchronizedObjects _logic) select _i, _callsign, "air", "CAS"] call _fnc_syncedAsset;
-                                    if (!isNull _synced) then { _position = getPosATL _synced; _type = typeOf _synced; _direction = getDir _synced };
+                                    if (!isNull _synced) then { ([_synced] call _fnc_placed) params ["_pp", "_pd"]; _position = +_pp; _type = typeOf _synced; _direction = _pd };
                                     // one placed flying comes back on the ground below, as before: its height is kept only on a deck or roof
                                     if (!isNull _synced && {!isTouchingGround _synced}) then { _position set [2, 0] };
                                     _id = [_position] call ALiVE_fnc_getNearestAirportID;
@@ -520,7 +527,7 @@ switch(_operation) do {
                                     _height = parsenumber(_heightset);
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
                                     private _synced = [(synchronizedObjects _logic) select _i, _callsign, "air", "TRANS"] call _fnc_syncedAsset;
-                                    if (!isNull _synced) then { _position = getPosATL _synced; _type = typeOf _synced; _direction = getDir _synced };
+                                    if (!isNull _synced) then { ([_synced] call _fnc_placed) params ["_pp", "_pd"]; _position = +_pp; _type = typeOf _synced; _direction = _pd };
                                     // one placed flying comes back on the ground below, as before: its height is kept only on a deck or roof
                                     if (!isNull _synced && {!isTouchingGround _synced}) then { _position set [2, 0] };
                                     _code = ((synchronizedObjects _logic) select _i) getvariable ["transport_code",""];
@@ -589,7 +596,7 @@ switch(_operation) do {
                                     private _gPos = getPosATL _m;
                                     private _gDir = getDir _m;
                                     private _synced = [_m, _gCallsign, "ground", "GROUND"] call _fnc_syncedAsset;
-                                    if (!isNull _synced) then { _gPos = getPosATL _synced; _gType = typeOf _synced; _gDir = getDir _synced };
+                                    if (!isNull _synced) then { ([_synced] call _fnc_placed) params ["_pp", "_pd"]; _gPos = +_pp; _gType = typeOf _synced; _gDir = _pd };
                                     if (isClass (configFile >> "CfgVehicles" >> _gType)) then {
                                         _groundArrays pushBack [_gPos, _gDir, _gType, _gCallsign, _gCode, _gLogistics, _gSource, _gChance, _gCheck];
                                     } else {
