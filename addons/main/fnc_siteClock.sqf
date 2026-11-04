@@ -7,7 +7,8 @@ what players see of it. The server keeps a list of down sites, each with when it
 a FOB, when it is lost), and calls the site's own code when that time is reached. Starting a site's
 clock again calls off the earlier wait; a FOB's repair count can stand still (an engineer at work).
 The list goes to every machine, and each player's map shows his own side's down sites with the time
-left. The down, back and lost notifications are worded here too, the same for every kind of site.
+left. The down, back and lost notifications are worded here too, the same for every kind of site,
+and the one test of who holds a site's ground that a site taken by the enemy uses.
 
 Times are serverTime in multiplayer and time in single player, as every machine can read them.
 
@@ -23,9 +24,13 @@ Parameters:
     ["left", [key]]                              - server: seconds left, -1 for no clock (NUMBER)
     ["advance", [key, seconds]]                  - server: as if that much time had passed (for tests)
     ["notify", [what, to, label, minutes]]       - server: tell players. what: "down" (back in minutes),
-                                                   "repair" (repair within minutes), "lost" or "back".
+                                                   "repair" (repair within minutes), "lost", "back" or
+                                                   "taken" (by the side told).
                                                    to: a side ("WEST".., "ANY" for everyone) or units
     ["draw", []]                                 - a player's machine: the map markers for down sites
+    ["holder", [position, side, radius]]         - server: the enemy side holding the ground there: the one
+                                                   with most men within radius, soldiers or ALiVE groups not
+                                                   spawned, while none of the side's own are. "" for none (STRING)
 
 Examples:
 (begin example)
@@ -161,6 +166,7 @@ switch (_op) do {
             case "repair": { "STR_ALIVE_SITE_DOWN_REPAIR" };
             case "lost": { "STR_ALIVE_SITE_LOST" };
             case "back": { "STR_ALIVE_SITE_BACK" };
+            case "taken": { "STR_ALIVE_SITE_TAKEN" };
             default { "" };
         };
         if (_key == "") exitWith {};
@@ -177,6 +183,45 @@ switch (_op) do {
         if (_heard == "side") then {
             { ["record", [_x, "HQ", _msg]] call ALIVE_fnc_radioLogStore } forEach ([[_to], ["WEST", "EAST", "GUER"]] select (_to == "ANY"));
         };
+    };
+
+    case "holder": {
+        _result = "";
+        if (!isServer) exitWith {};
+        _args params [["_pos", [0, 0, 0], [[]]], ["_side", "", [""]], ["_r", 60, [0]]];
+        if !(_side in ["WEST", "EAST", "GUER"]) exitWith {};
+        private _own = [_side] call ALIVE_fnc_sideTextToObject;
+        private _men = createHashMap;
+        private _held = false;
+        {
+            private _crew = if (_x isKindOf "CAManBase") then { [_x] } else { crew _x };
+            {
+                if (alive _x) then {
+                    private _s = side group _x;
+                    // a player on the civilian side counts for his faction's side, as the hubs count him
+                    if (_s == civilian) then { _s = (faction _x) call ALiVE_fnc_factionSide };
+                    if (_s == _own) then { _held = true };
+                    if (_s in [west, east, independent] && {[_own, _s] call BIS_fnc_sideIsEnemy}) then { _men set [str _s, (_men getOrDefault [str _s, 0]) + 1] };
+                };
+            } forEach _crew;
+            if (_held) exitWith {};
+        } forEach (_pos nearEntities [["CAManBase", "LandVehicle", "StaticWeapon", "Air", "Ship"], _r]);
+        if (_held) exitWith {};
+        // ALiVE's groups not spawned: a spawned one's men were counted above
+        if (!isNil "ALiVE_profileSystem") then {
+            {
+                private _s = _x;
+                private _n = { !([_x, "active", false] call ALIVE_fnc_hashGet) } count ([_pos, _r, [_s, "entity"], true] call ALIVE_fnc_getNearProfiles);
+                if (_n > 0) then {
+                    if (_s == _side) then { _held = true } else {
+                        if ([_own, [_s] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsEnemy) then { _men set [_s, (_men getOrDefault [_s, 0]) + _n] };
+                    };
+                };
+            } forEach ["WEST", "EAST", "GUER"];
+        };
+        if (_held) exitWith {};
+        private _most = 0;
+        { if (_y > _most) then { _most = _y; _result = _x } } forEach _men;
     };
 
     case "draw": {

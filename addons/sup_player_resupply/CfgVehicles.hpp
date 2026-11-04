@@ -299,6 +299,19 @@ class CfgVehicles {
                     };
                     class hub_dismantle_time : Edit { property = "ALiVE_sup_logistics_hub_hub_dismantle_time"; displayName = "$STR_ALIVE_HUB_DISMANTLE_TIME"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_TIME_COMMENT"; typeName = "STRING"; defaultValue = """15"""; ALiVE_showWhen[] = {{"hub_dismantle", "is", "true"}}; };
                     class hub_repair_time : Edit { property = "ALiVE_sup_logistics_hub_hub_repair_time"; displayName = "$STR_ALIVE_HUB_REPAIR_TIME"; tooltip = "$STR_ALIVE_HUB_REPAIR_TIME_COMMENT"; typeName = "STRING"; defaultValue = """0"""; };
+                    class hub_capture : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_capture";
+                            displayName = "$STR_ALIVE_HUB_CAPTURE";
+                            tooltip = "$STR_ALIVE_HUB_CAPTURE_COMMENT";
+                            defaultValue = """false""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No { name = "No"; value = "false"; };
+                            };
+                    };
 
                     class HDR_DISMANTLE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_DISMANTLE"; displayName = "WHO CAN DISMANTLE"; };
                     class hub_dismantle_who { property = "ALiVE_sup_logistics_hub_hub_dismantle_who"; displayName = "$STR_ALIVE_HUB_DISMANTLE_WHO"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_WHO_COMMENT"; control = "ALiVE_HubDismantleChoice"; typeName = "STRING"; expression = "_this setVariable ['hub_dismantle_who', _value];"; defaultValue = """SIDE"""; };

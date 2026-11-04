@@ -987,6 +987,12 @@
 <Key ID="STR_ALIVE_HUB_REPAIR_TIME_COMMENT">
     <English>Seconds after a hub is destroyed or dismantled before it works again. 0: it stays down for the rest of the mission. A destroyed hub that can't be mended is replaced by a new object of the same kind, without anything set on the old one in Eden. A hub placed with damage off can't be destroyed, only dismantled.</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_CAPTURE">
+    <English>Taken When Held</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_CAPTURE_COMMENT">
+    <English>Yes: when a down hub's Repair Time is up and the enemy holds the ground within 60 m, with none of its own side there, it comes back as the enemy's hub. Needs a Repair Time. Anyone of the side that took it may use it, under the hub's own lists, so a hub listing only its side's kit has little for them. A hub placed in Eden is its own side's again after a restart; one a Zeus made keeps the new side. No, the default: it always comes back for its own side.</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_DISMANTLE_WHO">
     <English>Who Can Dismantle</English>
 </Key>

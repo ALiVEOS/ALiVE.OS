@@ -321,13 +321,31 @@ switch (_op) do {
         _o setVariable ["ALiVE_rallyHeld", 0];
         ALiVE_rallyRemoved = (missionNamespace getVariable ["ALiVE_rallyRemoved", []]) select { !isNull _x && {_x != _o} };
         private _list = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) && {(_x select 0) != _o} };
+        _row params ["", "_name", "_who"];
+        private _label = format [localize "STR_ALIVE_SITE_RALLY", _name];
+        // Taken When Held (Jman, 4 Nov): the enemy holding its ground now, with none of its side there, has it back as theirs,
+        // for anyone of that side
+        private _taker = "";
+        if (["pointCapture", false] call _set) then {
+            _taker = ["holder", [getPosATL _o, _who, (["enemyRadius", 100] call _set) max 50]] call ALiVE_fnc_siteClock;
+        };
+        if (_taker != "") then {
+            _row = +_row;
+            _row set [2, _taker];
+            _row set [4, grpNull];
+        };
         _list pushBack _row;
         ALiVE_rallyPoints = _list;
         publicVariable "ALiVE_rallyPoints";
-        _row params ["", "_name", "_who"];
-        ["ALiVE Rally Points: %1 (%2) is back", _name, _who] call ALiVE_fnc_dump;
-        ["notify", ["back", _who, format [localize "STR_ALIVE_SITE_RALLY", _name]]] call ALiVE_fnc_siteClock;
         _result = true;
+        if (_taker != "") exitWith {
+            ["ALiVE Rally Points: %1 was taken by %2 from %3", _name, _taker, _who] call ALiVE_fnc_dump;
+            ["notify", ["lost", _who, _label]] call ALiVE_fnc_siteClock;
+            ["notify", ["taken", _taker, _label]] call ALiVE_fnc_siteClock;
+            if ((_row select 3) in ["zeus", "zeusObj"]) then { ["storeQueue"] call ALiVE_fnc_rallyPoint };
+        };
+        ["ALiVE Rally Points: %1 (%2) is back", _name, _who] call ALiVE_fnc_dump;
+        ["notify", ["back", _who, _label]] call ALiVE_fnc_siteClock;
     };
 
     // a rally point renamed by someone standing at it who may manage it (Who Can Manage). The name is

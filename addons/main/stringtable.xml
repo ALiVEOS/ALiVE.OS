@@ -797,6 +797,9 @@
 <Key ID="STR_ALIVE_SITE_BACK">
     <English>%1 is back.</English>
 </Key>
+<Key ID="STR_ALIVE_SITE_TAKEN">
+    <English>%1 is ours now.</English>
+</Key>
 <Key ID="STR_ALIVE_SITE_MARK_BACK">
     <English>%1: down, back in %2 min</English>
 </Key>

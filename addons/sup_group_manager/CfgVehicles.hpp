@@ -255,6 +255,19 @@ class CfgVehicles {
                                 typeName = "NUMBER";
                                 defaultValue = "0";
                         };
+                        // a placed one comes back for the enemy holding its ground then (Jman, 4 Nov)
+                        class pointCapture : Combo
+                        {
+                                property = "ALiVE_sup_rally_pointCapture";
+                                displayName = "$STR_ALIVE_RALLY_POINTCAPTURE";
+                                tooltip = "$STR_ALIVE_RALLY_POINTCAPTURE_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class HDR_TRAVEL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_TRAVEL"; displayName = "TRAVEL RULES"; };
                         class squadRadius : Edit
                         {

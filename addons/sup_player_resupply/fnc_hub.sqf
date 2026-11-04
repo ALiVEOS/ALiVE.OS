@@ -210,8 +210,10 @@ switch (_op) do {
         if !(_trade in ["OFF", "ENEMY", "ANY"]) then { _trade = "OFF" };
         private _tradeOwn = parseNumber (["hub_trade_own", "0.75"] call _text);
         if !(_tradeOwn in [0.5, 0.75, 1]) then { _tradeOwn = 0.75 };
+        // Taken When Held (Jman, 4 Nov): a down hub comes back for the enemy holding its ground when its Repair Time is up
+        private _capture = (toLower (["hub_capture", "false"] call _text)) in ["true", "1", "yes"];
         private _settings = [_side, _radius, _who, _names, ["hub_only", ""] call _text, ["hub_never", ""] call _text, ["hub_also", ""] call _text,
-            _dismantle, _dismantleTime, _repairTime, _dWho, ["hub_dismantle_list", ""] call _text, _list, _trade, _tradeOwn];
+            _dismantle, _dismantleTime, _repairTime, _dWho, ["hub_dismantle_list", ""] call _text, _list, _trade, _tradeOwn, _capture];
         if (_trade != "OFF") then { ALiVE_hub_tradeOn = true; publicVariable "ALiVE_hub_tradeOn" };
         _logic setVariable ["ALiVE_hub_settings", _settings, true];
         // the module's lists in the RPT now, whichever of it and the tablet starts first
@@ -310,11 +312,12 @@ switch (_op) do {
     // One object becomes a hub: in the registry, its state broadcast, on the public list, a handler for
     // its destruction and the enemy's dismantle hold action. The actions are added once and never removed:
     // their conditions read the hub's state, so they hide while it is down and show again after a repair.
+    // A hub taken by the enemy keeps its new side through a rebuild, and a Zeus's through a restart: [object, module, side]
     case "tag": {
-        _args params [["_hub", objNull, [objNull]], ["_logic", objNull, [objNull]]];
+        _args params [["_hub", objNull, [objNull]], ["_logic", objNull, [objNull]], ["_sideNow", "", [""]]];
         if (!isServer || {isNull _hub} || {isNull _logic}) exitWith {};
         private _s = ["settings", [_logic]] call ALIVE_fnc_hub;
-        private _side = _s select 0;
+        private _side = [_s select 0, _sideNow] select (_sideNow in ["WEST", "EAST", "GUER"]);
         // BIS_fnc_netId, not netId: in single player every object has the same netId
         private _netId = _hub call BIS_fnc_netId;
         // side, alive, owning module, offers Collect, source Military Logistics modules, and what a
@@ -493,6 +496,8 @@ switch (_op) do {
         private _info = _hub getVariable ["ALiVE_hub", []];
         if !(_info isEqualTypeArray ["", true, 0, objNull]) exitWith {};
         if (["isAdmin", [_unit]] call ALIVE_fnc_hub) exitWith { _result = true };
+        // one the enemy took: the module's rules were written for the other side, so anyone of its side
+        if ((_info select 0) != ((["settings", [_info select 3]] call ALIVE_fnc_hub) select 0)) exitWith { _result = (["unitSide", [_unit]] call ALIVE_fnc_hub) == (_info select 0) };
         (["rules", [_info select 3]] call ALIVE_fnc_hub) params ["_rules", "_names"];
         _result = ["mayWho", [_unit, _rules, _names, _hub getVariable ["ALiVE_hub_owner", ""]]] call ALIVE_fnc_hub;
     };
@@ -504,6 +509,8 @@ switch (_op) do {
         private _info = _hub getVariable ["ALiVE_hub", []];
         if !(_info isEqualTypeArray ["", true, 0, objNull]) exitWith {};
         if (["isAdmin", [_unit]] call ALIVE_fnc_hub) exitWith { _result = true };
+        // one the enemy took: the module's rules were written for the other side, so anyone of its side
+        if ((_info select 0) != ((["settings", [_info select 3]] call ALIVE_fnc_hub) select 0)) exitWith { _result = (["unitSide", [_unit]] call ALIVE_fnc_hub) == (_info select 0) };
         (["rules", [_info select 3, "DISMANTLE"]] call ALIVE_fnc_hub) params ["_rules", "_names"];
         _result = ["mayWho", [_unit, _rules, _names, _hub getVariable ["ALiVE_hub_owner", ""]]] call ALIVE_fnc_hub;
     };
@@ -937,7 +944,9 @@ switch (_op) do {
                         _hub setVariable ["ALiVE_hub_name", _name];
                         _hub setVariable ["ALiVE_hub_owner", _owner];
                         _hub setVariable ["ALiVE_hub_zeus", _z];
-                        _made pushBack [_hub, _mods select _i];
+                        // a side other than its module's only when that module lets the enemy take hubs
+                        private _ms = ["settings", [_mods select _i]] call ALIVE_fnc_hub;
+                        _made pushBack [_hub, _mods select _i, ["", _side] select (_side != (_ms select 0) && {_ms param [15, false]})];
                     };
                 };
             } forEach _rows;
@@ -1106,6 +1115,12 @@ switch (_op) do {
         private _label = ["siteLabel", [_netId]] call ALIVE_fnc_hub;
         _e params ["_side", "", "_logic", "", "", "_class", "_pos", "_dir", "_up", ["_name", ""], ["_owner", ""]];
         private _hub = _netId call BIS_fnc_objectFromNetId;
+        // Taken When Held: the enemy holding its ground now, with none of its side there, has it back as theirs
+        private _was = _side;
+        if ((["settings", [_logic]] call ALIVE_fnc_hub) param [15, false]) then {
+            private _taker = ["holder", [_pos, _side, 60]] call ALiVE_fnc_siteClock;
+            if (_taker != "") then { _side = _taker; _e set [0, _taker] };
+        };
         // mended where it stands, and its ruins cleared; a dismantled hub has none, so nothing nearby is touched
         if (isNull _hub || {!alive _hub}) then {
             if (!isNull _hub) then { _hub setDamage 0 };
@@ -1129,7 +1144,7 @@ switch (_op) do {
             _hub setPosATL _pos;
             // a moment for players' machines to learn of the new object before its hold actions are sent
             if (canSuspend) then { sleep 1 };
-            ["tag", [_hub, _logic]] call ALIVE_fnc_hub;
+            ["tag", [_hub, _logic, _side]] call ALIVE_fnc_hub;
             publicVariable "ALiVE_hub_list";
             ["ALiVE Logistics Hub: %1 at %2 could not be mended, so a new one stands in its place", _class, mapGridPosition _pos] call _debug;
         } else {
@@ -1138,7 +1153,12 @@ switch (_op) do {
             _hub setVariable ["ALiVE_hub_backAt", -1, true];
         };
         ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
-        ["notify", ["back", _side, _label]] call ALiVE_fnc_siteClock;
+        if (_side == _was) exitWith { ["notify", ["back", _side, _label]] call ALiVE_fnc_siteClock };
+        ["notify", ["lost", _was, _label]] call ALiVE_fnc_siteClock;
+        ["notify", ["taken", _side, _label]] call ALiVE_fnc_siteClock;
+        ["ALiVE Logistics Hub - %1 at %2 was taken by %3 from %4", _class, mapGridPosition _pos, _side, _was] call ALiVE_fnc_dump;
+        // a Zeus's hub is saved with its new side
+        if ((_hub getVariable ["ALiVE_hub_zeus", 0]) in [1, 2]) then { ["permSave"] call ALIVE_fnc_hub };
     };
 };
 

@@ -867,4 +867,10 @@
 <Key ID="STR_ALIVE_RALLY_REPAIRTIME_COMMENT">
     <English>Seconds after a rally point is overrun before it comes back, as a Logistics Hub does. A squad leader's comes back where it stood, unless the squad has put another one down or is gone by then; a placed one comes back if its object still stands. 0, the default, is never.</English>
 </Key>
+<Key ID="STR_ALIVE_RALLY_POINTCAPTURE">
+    <English>Overrun Points Taken When Held</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_POINTCAPTURE_COMMENT">
+    <English>Yes: when an overrun placed rally point's Overrun Repair Time is up and the enemy holds the ground within Enemy Radius, with none of its own side there, it comes back as the enemy's rally point, for anyone of that side. Needs an Overrun Repair Time. A squad leader's own point always comes back to the squad. A point synced or listed in Eden is its own side's again after a restart. No, the default: it always comes back for its own side.</English>
+</Key>
 </Container></Package></Project>
