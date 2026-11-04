@@ -111,6 +111,7 @@ private _settings = createHashMapFromArray [
     ["fob_capture_radius", [100, [20, 1000]]],
     ["fob_capture_time", [180, [10, 3600]]],
     ["fob_repair_time", [900, [30, 7200]]],
+    ["fob_repair_free", [false, "bool"]],
     ["fob_repair_cost", [1000, [0, 1000000]]],
     ["fob_crate_amount", [1000, [1, 1000000]]],
     ["fob_resupply_threshold", [25, [0, 100]]],

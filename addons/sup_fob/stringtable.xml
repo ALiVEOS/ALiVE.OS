@@ -738,7 +738,13 @@
                 <English>Repair Time (s)</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REPAIR_TIME_COMMENT">
-                <English>Seconds a FOB with a destroyed headquarters has before it's lost for good, unless repaired. The count stops while an engineer of its side is within 25 m.</English>
+                <English>Seconds a FOB with a destroyed headquarters has before it's lost for good, unless repaired. The count stops while an engineer of its side is within 25 m. With Comes Back Free on, it is the time the FOB takes to come back by itself.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REPAIR_FREE">
+                <English>Comes Back Free</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_REPAIR_FREE_COMMENT">
+                <English>Yes: a FOB whose headquarters is destroyed is put up again for nothing once the Repair Time has passed, instead of being lost. Its side can still pay to repair it sooner. No: it is lost unless repaired in time.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_REPAIR_COST">
                 <English>Repair Cost</English>

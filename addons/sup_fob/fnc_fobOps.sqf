@@ -415,7 +415,7 @@ switch (_op) do {
         _hub setVariable ["ALiVE_FOB_id", _id, true];
         // A destroyed headquarters marks the FOB damaged and starts the repair count on the sites'
         // shared clock (ALiVE_fnc_siteClock), which puts it on its side's maps: repaired in time
-        // it's back, otherwise it is salvaged (repairOver)
+        // it's back, otherwise it is salvaged (repairOver), or with Comes Back Free put up again for nothing
         _hub addEventHandler ["Killed", {
             params ["_hub"];
             private _id = _hub getVariable ["ALiVE_FOB_id", ""];
@@ -429,8 +429,10 @@ switch (_op) do {
                 if (_wait > 0) then {
                     private _side = [_e, "side", "WEST"] call ALIVE_fnc_hashGet;
                     private _name = [_e, "name", _id] call ALIVE_fnc_hashGet;
-                    ["start", ["fob:" + _id, _wait, "ALiVE_fnc_fobOps", ["repairOver", [_id]], [_side, [_e, "pos", [0,0,0]] call ALIVE_fnc_hashGet, _name, "repair"]]] call ALiVE_fnc_siteClock;
-                    ["notify", ["repair", _side, _name, _wait / 60]] call ALiVE_fnc_siteClock;
+                    // Comes Back Free: the same count brings it back for nothing, rather than losing it
+                    private _free = [ALiVE_sup_fob, "attribute", ["fob_repair_free"]] call ALiVE_fnc_FOB;
+                    ["start", ["fob:" + _id, _wait, "ALiVE_fnc_fobOps", ["repairOver", [_id]], [_side, [_e, "pos", [0,0,0]] call ALIVE_fnc_hashGet, _name, ["repair", "back"] select _free]]] call ALiVE_fnc_siteClock;
+                    ["notify", [["repair", "down"] select _free, _side, _name, _wait / 60]] call ALiVE_fnc_siteClock;
                 };
             };
         }];
@@ -1051,6 +1053,22 @@ switch (_op) do {
         if !(["debit", [_id, _cost, "repair"]] call ALiVE_fnc_fobSupply) exitWith {
             ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
         };
+        if !(["rebuild", [_id]] call ALiVE_fnc_fobOps) exitWith {
+            ["credit", [_id, _cost, "refund repair"]] call ALiVE_fnc_fobSupply;
+            ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
+        };
+        ["STR_ALIVE_FOB_REPAIRED", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _cost]] call _tell;
+        _result = true;
+    };
+
+    // A damaged FOB's headquarters put up again: the wreck and its ruins are cleared, the count
+    // on the shared clock stops. False, with the FOB left damaged as it was, if the game has no such building
+    case "rebuild": {
+        _result = false;
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry" || {([_entry, "status", ""] call ALIVE_fnc_hashGet) != "damaged"}) exitWith {};
+        private _pos = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
         private _clock = [_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet;
         private _wreck = [_entry, "hub", objNull] call ALIVE_fnc_hashGet;
         if (!isNull _wreck) then { deleteVehicle _wreck };
@@ -1060,17 +1078,14 @@ switch (_op) do {
         [_entry, "repairRemaining", 0] call ALIVE_fnc_hashSet;
         private _hub = ["spawnHub", [_id]] call ALiVE_fnc_fobOps;
         if (isNull _hub) exitWith {
-            ["credit", [_id, _cost, "refund repair"]] call ALiVE_fnc_fobSupply;
             [_entry, "status", "damaged"] call ALIVE_fnc_hashSet;
             [_entry, "repairRemaining", _clock] call ALIVE_fnc_hashSet;
-            ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
         };
         ["respawn", [_id]] call ALiVE_fnc_fobOps;
         ["cancel", ["fob:" + _id]] call ALiVE_fnc_siteClock;
         ALiVE_FOB_dirty = true;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
-        ["STR_ALIVE_FOB_REPAIRED", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _cost]] call _tell;
         _result = true;
     };
 
@@ -1085,11 +1100,28 @@ switch (_op) do {
         _result = round _c;
     };
 
-    // The sites' shared clock ran out on a damaged FOB's repair count: it is lost
+    // The sites' shared clock ran out on a damaged FOB's repair count: it is lost, or with Comes
+    // Back Free (Jman, 4 Nov) it is put up again for nothing. In one piece, as the clock calls this from a script of its
+    // own, so a repair or a watchdog pass coming in the same moment can't put up a second headquarters. A FOB whose
+    // building the game doesn't have can never be put up, so it is lost as without the option
     case "repairOver": {
         _args params [["_id", "", [""]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry" || {([_entry, "status", ""] call ALIVE_fnc_hashGet) != "damaged"}) exitWith { _result = false };
+        private _back = false;
+        private _already = false;
+        if ([_logic, "attribute", ["fob_repair_free"]] call ALiVE_fnc_FOB) then {
+            isNil {
+                // something else brought it back in that moment: nothing more to do
+                if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") then { _back = ["rebuild", [_id]] call ALiVE_fnc_fobOps } else { _already = true };
+            };
+        };
+        if (_already) exitWith { _result = false };
+        if (_back) exitWith {
+            ["notify", ["back", [_entry, "side", "WEST"] call ALIVE_fnc_hashGet, [_entry, "name", _id] call ALIVE_fnc_hashGet]] call ALiVE_fnc_siteClock;
+            ["ALiVE Player FOBs - %1 came back free", _id] call ALiVE_fnc_dump;
+            _result = true;
+        };
         [_entry, "repairRemaining", 0] call ALIVE_fnc_hashSet;
         ["notify", ["lost", [_entry, "side", "WEST"] call ALIVE_fnc_hashGet, [_entry, "name", _id] call ALIVE_fnc_hashGet]] call ALiVE_fnc_siteClock;
         isNil { _result = ["salvage", [_id]] call ALiVE_fnc_fobOps };

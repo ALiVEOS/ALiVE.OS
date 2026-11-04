@@ -143,19 +143,22 @@ private _tick = {
         } forEach _timers;
         // The repair count, on the sites' shared clock: it stands still while an engineer is at
         // the FOB, follows the FOB to a side that takes it, and is copied here for the save and
-        // the FOB window. One loaded from a save starts here
+        // the FOB window. One loaded from a save starts here. With Comes Back Free the count brings
+        // it back, so an engineer there doesn't hold it up
         private _ck = "fob:" + _id;
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") then {
-            private _left = ["sync", [_ck, _engineer, _side, _name]] call ALiVE_fnc_siteClock;
+            private _free = "fob_repair_free" call _set;
+            private _hold = _engineer && {!_free};
+            private _left = ["sync", [_ck, _hold, _side, _name]] call ALiVE_fnc_siteClock;
             if (_left < 0) then {
                 _left = [_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet;
                 if (_left > 0) then {
-                    ["start", [_ck, _left, "ALiVE_fnc_fobOps", ["repairOver", [_id]], [_side, [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet, _name, "repair"]]] call ALiVE_fnc_siteClock;
-                    if (_engineer) then { ["sync", [_ck, true]] call ALiVE_fnc_siteClock };
+                    ["start", [_ck, _left, "ALiVE_fnc_fobOps", ["repairOver", [_id]], [_side, [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet, _name, ["repair", "back"] select _free]]] call ALiVE_fnc_siteClock;
+                    if (_hold) then { ["sync", [_ck, true]] call ALiVE_fnc_siteClock };
                 };
             } else {
                 // a test's pass stands for that much time on the clock too
-                if (!_live && {!_engineer}) then {
+                if (!_live && {!_hold}) then {
                     ["advance", [_ck, _dt]] call ALiVE_fnc_siteClock;
                     _left = ["left", [_ck]] call ALiVE_fnc_siteClock;
                 };
@@ -258,8 +261,9 @@ private _tick = {
             };
         };
 
-        // A destroyed headquarters: repaired in time, or the FOB is lost
+        // A destroyed headquarters: repaired in time, or the FOB is lost (with Comes Back Free, put up again)
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged" && {([_entry, "repairRemaining", 0] call ALIVE_fnc_hashGet) <= 0}) then {
+            if ("fob_repair_free" call _set) exitWith { ["repairOver", [_id]] call ALiVE_fnc_fobOps };
             ["notify", ["lost", _side, _name]] call ALiVE_fnc_siteClock;
             ["salvage", [_id]] call ALiVE_fnc_fobOps;
             continue;
