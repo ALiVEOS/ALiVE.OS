@@ -1979,6 +1979,13 @@ class radioLog
 	ALIVE_RECOMPILE;
 };
 
+class radioLogStore
+{
+	file = "\x\alive\addons\x_lib\functions\ui\fnc_radioLogStore.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class sendHint
 {
 	file = "\x\alive\addons\x_lib\functions\ui\fnc_sendHint.sqf";

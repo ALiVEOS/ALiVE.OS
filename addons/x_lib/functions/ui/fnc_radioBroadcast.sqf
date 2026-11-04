@@ -19,6 +19,8 @@ String - HQ Class the CfgHQIdentities class (AirBase,Base,BLU,HQ,IND,IND_G,OPF,P
 Boolean - from group (optional)
 Boolean - to group (optional)
 Boolean - leave it off the Radio Log page (optional, default false; the kill feed sets it)
+String - who heard it, for the Radio Log (optional): "side" or "" (only the players it was sent to, so the server
+    doesn't keep it for the whole side). Left out, a group or vehicle line is "" and any other is "side".
 
 Returns:
 
@@ -72,6 +74,7 @@ _hqClass = if(count _this > 8) then {_this select 8} else {"PAPA_BEAR"};
 _fromGroup = if(count _this > 9) then {_this select 9} else {false};
 _toGroup = if(count _this > 10) then {_this select 10} else {false};
 private _noLog = if(count _this > 11) then {_this select 11} else {false};
+private _heard = if(count _this > 12) then {_this select 12} else {["side", ""] select (_channel in ["group", "vehicle"])};
 
 if(isNil "_message") exitWith {};
 
@@ -171,5 +174,5 @@ if (hasInterface && {!isNull player} && {!_noLog}) then {
         case "side": { side group player == ([side group _unit, _side] select (_fromHQ && {_side isEqualType west})) };
         default { side group player == side group _unit };
     };
-    if (_hears) then { [["", "HQ"] select _fromHQ, _message] call ALIVE_fnc_radioLog };
+    if (_hears) then { [["", "HQ"] select _fromHQ, _message, _heard] call ALIVE_fnc_radioLog };
 };

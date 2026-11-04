@@ -345,6 +345,13 @@ if (isDedicated || (isServer && _pns)) then {
                 setdate ([GVAR(mission_data), "date", date] call CBA_fnc_hashGet);
             };
 
+            // Each side's Radio Log as saved, behind anything said since the mission started; the players
+            // already here get it, and a player who joins later asks for it (ALIVE_fnc_radioLogStore).
+            private _radioLog = [GVAR(mission_data), "ALiVE_radioLog", []] call CBA_fnc_hashGet;
+            if (_radioLog isEqualType [] && {count _radioLog > 0}) then {
+                ["restore", _radioLog] call ALIVE_fnc_radioLogStore;
+            };
+
             // Respawn tickets as saved (#396). Put back a few seconds in, once the mission's own
             // start-up has handed out its starting tickets, and set to the saved count rather than
             // added to whatever the mission gave.

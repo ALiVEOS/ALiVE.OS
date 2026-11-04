@@ -10,23 +10,28 @@ message first, each line with the in-game time and who sent it. Called on the ma
 ALIVE_fnc_radioBroadcast, by Combat Support's message broadcast and by ALIVE_fnc_taskSubtitle.
 The entry holds the last 100 messages. The same line twice within 3 seconds is kept once.
 
+A message the whole side hears is also kept by the server (ALIVE_fnc_radioLogStore), so a player who
+joins later, or comes back after a restart of a persistent mission, gets the side's log back.
+
 Parameters:
     _this select 0: STRING - who it is from ("HQ", a callsign, a task title)
     _this select 1: STRING - the message
+    _this select 2: STRING - who heard it: "side" for the whole side, kept by the server; anything else
+        (the default, for a group, a vehicle or this player alone) stays on this machine
 
 Returns:
 Nothing
 
 Examples:
 (begin example)
-["HQ", "RODEO TWO on station."] call ALIVE_fnc_radioLog;
+["HQ", "RODEO TWO on station.", "side"] call ALIVE_fnc_radioLog;
 (end)
 
 Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params [["_from", ""], ["_text", ""]];
+params [["_from", ""], ["_text", ""], ["_heard", "", [""]]];
 if (!hasInterface || {isNull player} || {!(_text isEqualType "")} || {_text == ""}) exitWith {};
 if !(_from isEqualType "") then { _from = str _from };
 
@@ -35,27 +40,14 @@ private _last = missionNamespace getVariable ["ALiVE_radioLog_last", ["", -10]];
 if ((_last select 0) == _text && {time - (_last select 1) < 3}) exitWith {};
 ALiVE_radioLog_last = [_text, time];
 
-if !(player diarySubjectExists "ALiVE_RadioLog") then {
-    player createDiarySubject ["ALiVE_RadioLog", localize "STR_ALIVE_RADIO_LOG"];
-};
-
-private _time = [daytime, "HH:MM"] call BIS_fnc_timeToString;
-// the page text is structured text, so a < or & in a name is escaped
-private _esc = { ((_this regexReplace ["&", "&amp;"]) regexReplace ["<", "&lt;"]) regexReplace [">", "&gt;"] };
-private _line = if (_from == "") then { format ["<font color='#B4B4B4'>%1</font> %2", _time, _text call _esc] } else { format ["<font color='#B4B4B4'>%1</font> <font color='#E0C060'>%2:</font> %3", _time, _from call _esc, _text call _esc] };
-
-// One entry holding the whole log, newest first, rather than an entry per message: the diary's list of entries is a
-// narrow column that cut every message short and ran off the bottom of the map screen, while an entry's own text has
-// a scroll bar. The last 100 messages are kept.
+// The last 100 messages are kept, newest first, and written to the page as one entry (see "draw").
+private _line = ["line", [[daytime, "HH:MM"] call BIS_fnc_timeToString, _from, _text]] call ALIVE_fnc_radioLogStore;
 if (isNil "ALiVE_radioLog_lines") then { ALiVE_radioLog_lines = [] };
 ALiVE_radioLog_lines = ([_line] + ALiVE_radioLog_lines) select [0, 100];
-private _title = localize "STR_ALIVE_RADIO_LOG";
-private _body = ALiVE_radioLog_lines joinString "<br/>";
-// the entry belongs to the body that made it, so a respawned player gets a new one with the same lines
-private _record = missionNamespace getVariable ["ALiVE_radioLog_record", diaryRecordNull];
-if (isNull _record || {!(missionNamespace getVariable ["ALiVE_radioLog_owner", objNull] isEqualTo player)}) then {
-    ALiVE_radioLog_record = player createDiaryRecord ["ALiVE_RadioLog", [_title, _body]];
-    ALiVE_radioLog_owner = player;
-} else {
-    player setDiaryRecordText [["ALiVE_RadioLog", _record], [_title, _body]];
+["draw"] call ALIVE_fnc_radioLogStore;
+
+// the server keeps what the whole side heard, once however many of its players tell it
+if (_heard == "side") then {
+    private _args = ["report", [str side group player, _from, _text]];
+    if (isServer) then { _args call ALIVE_fnc_radioLogStore } else { _args remoteExecCall ["ALIVE_fnc_radioLogStore", 2] };
 };

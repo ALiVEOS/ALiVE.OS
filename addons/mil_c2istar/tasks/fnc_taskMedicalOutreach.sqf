@@ -122,7 +122,7 @@ switch (_taskState) do {
 
                 _target setVariable [_completionVar, true, true];
 
-                ["Task Accomplished", format ["%1 established a temporary clinic in %2.", name _caller, _target getVariable ["ALIVE_Task_ClinicTown", "the area"]]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
+                ["Task Accomplished", format ["%1 established a temporary clinic in %2.", name _caller, _target getVariable ["ALIVE_Task_ClinicTown", "the area"]], false, "side"] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
             },
             {},
             [_completionVar],

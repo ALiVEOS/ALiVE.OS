@@ -49,7 +49,7 @@ if (_operation == "notify") exitWith {
     [["TaskSucceeded", "TaskFailed"] select _own, ["", format [localize _shortKey, _name]]] call BIS_fnc_showNotification;
     private _text = [_custom, format [localize _key, _name]] select (_custom == "");
     if (isNil "ALIVE_fnc_taskSubtitle") then { systemChat _text } else {
-        [["Task Accomplished", "Task Failed"] select _own, _text] call ALIVE_fnc_taskSubtitle;
+        [["Task Accomplished", "Task Failed"] select _own, _text, false, "side"] call ALIVE_fnc_taskSubtitle;
     };
 };
 

@@ -15,16 +15,18 @@ Parameters:
     _this select 0: STRING - the title ("COIN Update", "Task Accomplished")
     _this select 1: STRING - the message
     _this select 2: BOOL - leave it off the Radio Log page (optional, default false; the hold countdown sets it)
+    _this select 3: STRING - "side" when the whole side hears it, so the server keeps it in the side's Radio Log
+        (optional; see ALIVE_fnc_radioLog)
 
 Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params [["_title", ""], ["_text", ""], ["_noLog", false]];
+params [["_title", ""], ["_text", ""], ["_noLog", false], ["_heard", "", [""]]];
 if (!hasInterface) exitWith {};
 
 // the Radio Log page in the map diary keeps it too
-if (!_noLog) then { [_title, _text] call ALIVE_fnc_radioLog };
+if (!_noLog) then { [_title, _text, _heard] call ALIVE_fnc_radioLog };
 
 switch (missionNamespace getVariable ["ALiVE_prefTaskMessages", "subtitle"]) do {
     // ALiVE's own hint, with the logo and the title; the message is structured text, so a < or & in a

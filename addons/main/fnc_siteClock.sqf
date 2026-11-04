@@ -170,7 +170,13 @@ switch (_op) do {
         };
         if (_target isEqualTo []) exitWith {};
         ["ALiVE", _msg] remoteExec ["ALIVE_fnc_sendHint", _target];
-        ["HQ", _msg] remoteExec ["ALIVE_fnc_radioLog", _target];
+        // a notice to a side is kept in that side's Radio Log by the server itself, so it is there for a player who
+        // joins later even if nobody on the side was on; one to a group's units stays with them
+        private _heard = ["side", ""] select (_to isEqualType []);
+        ["HQ", _msg, _heard] remoteExec ["ALIVE_fnc_radioLog", _target];
+        if (_heard == "side") then {
+            { ["record", [_x, "HQ", _msg]] call ALIVE_fnc_radioLogStore } forEach ([[_to], ["WEST", "EAST", "GUER"]] select (_to == "ANY"));
+        };
     };
 
     case "draw": {

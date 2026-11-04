@@ -87,6 +87,22 @@ if (!isDedicated) then
 };
 
 /*
+    Section: Radio Log
+    A player who joins asks the server for their side's Radio Log (ALiVE_fnc_radioLogStore), so the page
+    has the messages the side heard before they came in, or before a restart of a persistent mission.
+*/
+if (hasInterface) then
+{
+    0 spawn
+    {
+        waitUntil {!isNull player};
+        private _until = time + 60;
+        waitUntil {sleep 1; (side group player) in [west, east, resistance, civilian] || {time > _until}};
+        if (isServer) then { ["sync"] call ALiVE_fnc_radioLogStore } else { ["sync"] remoteExecCall ["ALiVE_fnc_radioLogStore", 2] };
+    };
+};
+
+/*
     Section: Logging Library Initialization
 */
 

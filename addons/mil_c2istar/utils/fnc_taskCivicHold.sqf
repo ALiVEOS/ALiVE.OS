@@ -37,7 +37,7 @@ private _now = serverTime;
 private _left = [_params, "holdLeft", -1] call ALIVE_fnc_hashGet;
 private _last = [_params, "holdLast", _now] call ALIVE_fnc_hashGet;
 private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
-private _say = { params ["_text", ["_noLog", false]]; ["COIN Update", _text, _noLog] remoteExec ["ALIVE_fnc_taskSubtitle", _sideObj] };
+private _say = { params ["_text", ["_noLog", false]]; ["COIN Update", _text, _noLog, "side"] remoteExec ["ALIVE_fnc_taskSubtitle", _sideObj] };
 
 if (_left < 0) exitWith {
     [_params, "holdLeft", _duration] call ALIVE_fnc_hashSet;

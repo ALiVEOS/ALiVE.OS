@@ -49,5 +49,5 @@ if (_installations isEqualTo []) exitWith {};
 [_building, _caller] call ALIVE_fnc_INS_buildingKilledEH;
 
 if (_subtitleTitle != "" && {_subtitleText != ""} && {!isNull _caller}) then {
-    [_subtitleTitle, format [_subtitleText, name _caller, mapGridPosition _building]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
+    [_subtitleTitle, format [_subtitleText, name _caller, mapGridPosition _building], false, "side"] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
 };

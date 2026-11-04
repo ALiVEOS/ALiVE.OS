@@ -158,7 +158,7 @@ switch (_taskState) do {
                 params ["_target", "_caller"];
                 _target setVariable ["detained", true, true];
                 [_target, "AmovPercMstpSsurWnonDnon"] remoteExec ["switchMove", 0];
-                ["Task Update", format ["%1 detained the saboteur.", name _caller]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
+                ["Task Update", format ["%1 detained the saboteur.", name _caller], false, "side"] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
             },
             {},
             [],

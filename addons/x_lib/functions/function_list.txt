@@ -304,6 +304,8 @@ ui
 	ALiVE_fnc_listSelectData
 	ALiVE_fnc_radioBroadcast
 	ALiVE_fnc_radioBroadcastToSide
+	ALiVE_fnc_radioLog
+	ALiVE_fnc_radioLogStore
 	ALiVE_fnc_sendHint
 	ALiVE_fnc_sideC
 

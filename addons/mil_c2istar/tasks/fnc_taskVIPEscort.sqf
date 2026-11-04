@@ -329,7 +329,7 @@ switch (_taskState) do {
                 };
                 _target setVariable ["ALIVE_Task_VIPEscortPlayers", _escortPlayers, true];
 
-                ["Task Update", format ["%1 secured the VIP in %2.", name _caller, _target getVariable ["ALIVE_Task_VIPSourceTown", "the area"]]] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
+                ["Task Update", format ["%1 secured the VIP in %2.", name _caller, _target getVariable ["ALIVE_Task_VIPSourceTown", "the area"]], false, "side"] remoteExec ["ALIVE_fnc_taskSubtitle", side (group _caller)];
             },
             {},
             [],
@@ -569,7 +569,7 @@ switch (_taskState) do {
                             if (vehicle _vip != _vip) then { unassignVehicle _vip; moveOut _vip };
                             [_vip] joinSilent (createGroup [civilian, true]);
                             [_vip, _spot] call ALiVE_fnc_doMoveRemote;
-                            ["Task Update", format ["The VIP is getting to work in %1. Hold the area until they're done.", _vip getVariable ["ALIVE_Task_VIPDestinationTown", "the town"]]] remoteExec ["ALIVE_fnc_taskSubtitle", [_taskSide] call ALIVE_fnc_sideTextToObject];
+                            ["Task Update", format ["The VIP is getting to work in %1. Hold the area until they're done.", _vip getVariable ["ALIVE_Task_VIPDestinationTown", "the town"]], false, "side"] remoteExec ["ALIVE_fnc_taskSubtitle", [_taskSide] call ALIVE_fnc_sideTextToObject];
                         };
                         // a VIP that ran off from gunfire goes back to the work
                         if (_spot isNotEqualTo [] && {vehicle _vip == _vip} && {_vip distance2D _spot > 5}) then { [_vip, _spot] call ALiVE_fnc_doMoveRemote };

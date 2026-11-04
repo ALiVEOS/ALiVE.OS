@@ -30,7 +30,7 @@
 
     switch (_radio) do
     {
-        case "global" : { _unit globalChat _text; if (!isNull _unit) then { ["", _text] call ALIVE_fnc_radioLog } };
+        case "global" : { _unit globalChat _text; if (!isNull _unit) then { ["", _text, "side"] call ALIVE_fnc_radioLog } };
         case "side" : {
             // A player on a friendly side gets it the way they chose for task updates (Addon Options, ALiVE,
             // Game, Task and radio updates): a subtitle or a hint from HQ, or side chat as it always was. (Jman)
@@ -39,6 +39,9 @@
                 // one at a time: a SITREP or a CAS run sends several lines seconds apart, and each subtitle or
                 // hint would replace the one before it was read
                 // (the queue and its reader's flag change only inside isNil, which nothing interrupts)
+                // told to the server's Radio Log as it arrives, the moment every other player's machine tells it too: the
+                // queue below shows it seconds later on this screen only
+                ["report", [str side group player, "HQ", _text]] remoteExecCall ["ALIVE_fnc_radioLogStore", 2];
                 isNil {
                     if (isNil "ALiVE_NEO_radioQueue") then { ALiVE_NEO_radioQueue = []; ALiVE_NEO_radioBusy = false };
                     ALiVE_NEO_radioQueue pushBack _text;
@@ -57,12 +60,12 @@
                 };
             } else {
                 {[_x,"HQ"] sideChat _text} foreach _friendlySides;
-                if (hasInterface && {!isNull player} && {(side group player) in _friendlySides}) then { ["HQ", _text] call ALIVE_fnc_radioLog };
+                if (hasInterface && {!isNull player} && {(side group player) in _friendlySides}) then { ["HQ", _text, "side"] call ALIVE_fnc_radioLog };
             };
         };
         case "group" : { _unit groupChat _text; if (hasInterface && {group player == group _unit}) then { ["", _text] call ALIVE_fnc_radioLog } };
         case "vehicle" : { _unit vehicleChat _text; if (hasInterface && {vehicle player == vehicle _unit}) then { ["", _text] call ALIVE_fnc_radioLog } };
-        case "sideRadio" : { _unit sideRadio _text; if (hasInterface && {side group player == side group _unit}) then { ["", _text] call ALIVE_fnc_radioLog } };
+        case "sideRadio" : { _unit sideRadio _text; if (hasInterface && {side group player == side group _unit}) then { ["", _text, "side"] call ALIVE_fnc_radioLog } };
     };
 
     //sleep 1;

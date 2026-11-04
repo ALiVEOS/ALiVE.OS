@@ -57,10 +57,10 @@ if(_messageCode in (_taskDialog select 1)) then {
 
                     switch(_messageSource) do {
                         case "HQ":{
-                            _radioBroadcast = [_player,_message,"side",_sideObject,false,false,false,true,"HQ",false,true];
+                            _radioBroadcast = [_player,_message,"side",_sideObject,false,false,false,true,"HQ",false,true,false,""];
                         };
                         case "PLAYERS":{
-                            _radioBroadcast = [_player,_message,"side",_sideObject,false,false,false,false,"HQ",true,false];
+                            _radioBroadcast = [_player,_message,"side",_sideObject,false,false,false,false,"HQ",true,false,false,""];
                         };
                     };
 

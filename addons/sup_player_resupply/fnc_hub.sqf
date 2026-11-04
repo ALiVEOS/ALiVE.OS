@@ -1047,7 +1047,8 @@ switch (_op) do {
         ["hubDown", [_netId, false, name _caller, _enemy]] call ALIVE_fnc_hub;
         if (_enemy) then {
             ["ALiVE", format [localize "STR_ALIVE_HUB_DISMANTLED_BY_US", mapGridPosition _hub]] remoteExec ["ALIVE_fnc_sendHint", side group _caller];
-            ["HQ", format [localize "STR_ALIVE_HUB_DISMANTLED_BY_US", mapGridPosition _hub]] remoteExec ["ALIVE_fnc_radioLog", side group _caller];
+            ["HQ", format [localize "STR_ALIVE_HUB_DISMANTLED_BY_US", mapGridPosition _hub], "side"] remoteExec ["ALIVE_fnc_radioLog", side group _caller];
+            ["record", [str side group _caller, "HQ", format [localize "STR_ALIVE_HUB_DISMANTLED_BY_US", mapGridPosition _hub]]] call ALIVE_fnc_radioLogStore;
         };
         _result = true;
     };
@@ -1072,7 +1073,9 @@ switch (_op) do {
         } else {
             private _msg = if (_enemy) then { format [localize "STR_ALIVE_HUB_DISMANTLED", _grid] } else { format [localize "STR_ALIVE_HUB_DISMANTLED_OWN", _grid, _by] };
             ["ALiVE", _msg] remoteExec ["ALIVE_fnc_sendHint", [_e select 0] call ALIVE_fnc_sideTextToObject];
-            ["HQ", _msg] remoteExec ["ALIVE_fnc_radioLog", [_e select 0] call ALIVE_fnc_sideTextToObject];
+            ["HQ", _msg, "side"] remoteExec ["ALIVE_fnc_radioLog", [_e select 0] call ALIVE_fnc_sideTextToObject];
+            // kept by the server too, so the side's log has it even with none of its players on
+            ["record", [_e select 0, "HQ", _msg]] call ALIVE_fnc_radioLogStore;
         };
         ["ALiVE Logistics Hub: %1 at %2 is down (%3)", _e select 5, _grid, ["dismantled", "destroyed"] select _destroyed] call _debug;
 

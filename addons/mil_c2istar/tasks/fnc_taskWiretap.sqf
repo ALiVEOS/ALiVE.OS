@@ -316,7 +316,7 @@ switch (_taskState) do {
 
                 private _targetDisplayType = getText (configfile >> "CfgVehicles" >> typeOf _target >> "displayName");
 
-                ["Task Accomplished", format ["%1 has set up a wiretap on %3 at grid %2!",name _caller, mapGridPosition _target, _targetDisplayType]] remoteExec ["ALIVE_fnc_taskSubtitle",side (group _caller)];
+                ["Task Accomplished", format ["%1 has set up a wiretap on %3 at grid %2!",name _caller, mapGridPosition _target, _targetDisplayType], false, "side"] remoteExec ["ALIVE_fnc_taskSubtitle",side (group _caller)];
             },
             {},
             [],

@@ -44,11 +44,13 @@ if (_name == "__SERVER__") then {
             [GVAR(mission_data), "date", date] call ALIVE_fnc_hashSet;
         };
         [GVAR(mission_data), "Group", GVAR(GROUP_ID)] call ALIVE_fnc_hashSet;
-        // The placement modules' reserves not yet woken. They're built only at a fresh start, so
-        // without this a reload lost every one of them (ALIVE_fnc_reservePersist).
         // Each side's cleared T.R.A.C.E. squares, so they come back green after a reload (F405).
         if (!isNil "ALiVE_x_lib_TRACEGRID_STORE") then {
             [GVAR(mission_data), "ALiVE_traceCleared", ALiVE_x_lib_TRACEGRID_STORE] call ALIVE_fnc_hashSet;
+        };
+        // Each side's Radio Log, so a player has the side's messages back after a reload (ALIVE_fnc_radioLogStore).
+        if (!isNil "ALiVE_radioLog_store") then {
+            [GVAR(mission_data), "ALiVE_radioLog", ["save"] call ALIVE_fnc_radioLogStore] call ALIVE_fnc_hashSet;
         };
         // Respawn tickets (#396): each side's, and the mission-wide count, for a mission that uses
         // the game's ticket respawn. A side with none set reads -1 and isn't saved.
@@ -59,6 +61,8 @@ if (_name == "__SERVER__") then {
             if (_n isEqualType 0 && {_n >= 0}) then { _tickets pushBack [_key, _n] };
         } forEach [["WEST", west], ["EAST", east], ["GUER", resistance], ["CIV", civilian], ["MISSION", missionNamespace]];
         [GVAR(mission_data), "ALiVE_respawnTickets", _tickets] call ALIVE_fnc_hashSet;
+        // The placement modules' reserves not yet woken. They're built only at a fresh start, so
+        // without this a reload lost every one of them (ALIVE_fnc_reservePersist).
         if (!isNil "ALIVE_fnc_reservePersist") then {
             [GVAR(mission_data), "ALiVE_reservePools", ["save"] call ALIVE_fnc_reservePersist] call ALIVE_fnc_hashSet;
         };
