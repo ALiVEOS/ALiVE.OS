@@ -212,7 +212,16 @@ if (count _waypoints == 0 && {!_parkedAir} && {([_profile,"pendingWaypointPaths"
                 };
             };
 
-            if (count _candidate >= 2 && {[_candidate] call _inAreas}) then {
+            // A virtual group moves in a straight line, so a patrol point across a bay sent tanks and foot groups
+            // over the open sea (Jman 4 Nov, Pyrgos bay). Neither the leg to the point nor the leg from it back to
+            // the start may cross the sea; boats and aircraft are left alone
+            private _wetLeg = {
+                // a group already out on the water still needs a way back to land
+                if (_vehicleObjectType in ["Ship", "Helicopter", "Plane"] || {surfaceIsWater _startPos}) exitWith {false};
+                private _from = if (_routePositions isEqualTo []) then {_startPos} else {_routePositions select (count _routePositions - 1)};
+                ([_from, _candidate] call ALiVE_fnc_crossesSea) || {[_candidate, _startPos] call ALiVE_fnc_crossesSea}
+            };
+            if (count _candidate >= 2 && {[_candidate] call _inAreas} && {!(call _wetLeg)}) then {
                 private _tooClose = (_candidate distance2D _startPos) < _minimumWaypointSeparation;
                 if (!_tooClose) then {
                     _tooClose = (_routePositions findIf {(_candidate distance2D _x) < _minimumWaypointSeparation}) >= 0;
