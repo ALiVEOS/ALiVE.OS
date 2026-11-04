@@ -102,8 +102,10 @@ if (getNumber (configFile >> "CfgVehicles" >> typeOf _chopper >> "transportSoldi
 
 //Re-initialize Controls
         private _transportEscortCombo = _display displayCtrl 655638;
-        { _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_slider, _sliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _transportEscortCombo];
+        private _transportRouteCombo = _display displayCtrl 655639;
+        { _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_slider, _sliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _transportEscortCombo, _transportRouteCombo];
 lbClear _transportEscortCombo; _transportEscortCombo ctrlEnable false;
+lbClear _transportRouteCombo; _transportRouteCombo ctrlEnable false;
 { _x ctrlSetText "" } forEach [_sliderText, _transportTaskText, _transportHelpTaskText, _transportComboText];
 { lbClear _x } forEach [_transportTaskLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
 
@@ -165,6 +167,14 @@ if (_status != "KILLED") then
     // an escort for it, from the side's attack and armed helicopters standing by (Eric on Discord, 22 Oct)
     _transportEscortCombo ctrlSetPosition [0.278525 * _uiW + _uiX, 0.752 * _uiH + _uiY, (0.215 * _uiW), (0.028 * _uiH)]; _transportEscortCombo ctrlCommit 0;
     [_transportEscortCombo, "AIR", _chopper] call NEO_fnc_transportEscortList;
+    // the way it flies there: straight, or round known enemy (A. Ares on Discord, 4 Nov); starts on this
+    // helicopter's last choice, else the module's Air Transport Avoids Known Enemy
+    _transportRouteCombo ctrlSetPosition [0.519796 * _uiW + _uiX, 0.752 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportRouteCombo ctrlCommit 0;
+    { _transportRouteCombo lbSetData [_transportRouteCombo lbAdd localize (_x select 0), _x select 1] } forEach [["STR_ALIVE_CS_UI_ROUTE_DIRECT", "0"], ["STR_ALIVE_CS_UI_ROUTE_AVOID", "1"]];
+    private _routeStart = _chopper getVariable ["NEO_transportRoute", NEO_radioLogic getVariable ["combatsupport_airavoid", false]];
+    if !(_routeStart isEqualType true) then { _routeStart = parseNumber format ["%1", _routeStart] > 0 };
+    _transportRouteCombo lbSetCurSel ([0, 1] select _routeStart);
+    _transportRouteCombo ctrlEnable true;
 
     //ComboBoxes EventHandlers
     {

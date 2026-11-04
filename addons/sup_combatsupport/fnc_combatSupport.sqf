@@ -128,6 +128,10 @@ switch(_operation) do {
                         private _groundAvoid = NEO_radioLogic getVariable ["combatsupport_groundavoid", false];
                         if !(_groundAvoid isEqualType true) then { _groundAvoid = parseNumber format ["%1", _groundAvoid] > 0; };
                         NEO_radioLogic setVariable ["combatsupport_groundavoid", _groundAvoid, true];
+                        // Air Transport Avoids Known Enemy (A. Ares on Discord, 4 Nov): same, for helicopters
+                        private _airAvoid = NEO_radioLogic getVariable ["combatsupport_airavoid", false];
+                        if !(_airAvoid isEqualType true) then { _airAvoid = parseNumber format ["%1", _airAvoid] > 0; };
+                        NEO_radioLogic setVariable ["combatsupport_airavoid", _airAvoid, true];
 
                         // #940 follow-up: "Support Access" attribute. Default "First player only"
                         // restricts support-calling to one operator per side; "All players" is the

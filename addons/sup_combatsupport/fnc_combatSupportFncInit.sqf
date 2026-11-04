@@ -66,6 +66,9 @@ fnc_getSitrep = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupp
 ALIVE_fnc_RespawnArtyAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnArtyAsset.sqf";
 ALIVE_fnc_RespawnTransportAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnTransportAsset.sqf";
 NEO_fnc_supportOrderMarkers = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportOrderMarkers.sqf";
+// Route round known enemy for helicopters (A. Ares on Discord, 4 Nov)
+NEO_fnc_transportAvoidLegs = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_transportAvoidLegs.sqf";
+NEO_fnc_transportAvoidFly = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_transportAvoidFly.sqf";
 // Escorts for transport (Eric on Discord, 22 Oct)
 NEO_fnc_transportEscortList = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\transport\fn_transportEscortList.sqf";
 NEO_fnc_transportEscort = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_transportEscort.sqf";

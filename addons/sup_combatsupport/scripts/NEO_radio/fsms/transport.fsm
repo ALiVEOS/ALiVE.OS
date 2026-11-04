@@ -197,6 +197,7 @@ class FSM
                          "_h = createVehicle [""Land_HelipadEmpty_F"", _base, [], 0, ""CAN_COLLIDE""];" \n
                          "_task = ""NONE"";" \n
                          "_pos = [];" \n
+                         "{ _chopper setVariable [_x, nil] } forEach [""NEO_radioRouteFor"", ""NEO_radioRouteDone"", ""NEO_radioRouted""];" \n
                          "_posLand = [];" \n
                          "_timeOut = 0;" \n
                          "_delay = 0;" \n
@@ -312,6 +313,36 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"[_chopper,""NONE""] call ALiVE_fnc_landRemote;" \n
                          "_speechSaid = false;" \n
                          "_speechSaidSmoke = false;" \n
+                         "// Route round known enemy (A. Ares on Discord, 4 Nov): with turns to fly, the task waits as LEGS while" \n
+                         "// NEO_fnc_transportAvoidFly flies them, then posts this same order again to be dispatched as usual." \n
+                         "// An order can arrive here twice in a row (the same order seen again): one already flown round is" \n
+                         "// dispatched, one being flown round keeps its flight. A different order moves the run number on," \n
+                         "// which stops a flight for an older one." \n
+                         "private _cur = _chopper getVariable [""NEO_radioCurrentTask"", []];" \n
+                         "call {" \n
+                         "    if ((_chopper getVariable [""NEO_radioRouted"", []]) isEqualTo _cur) exitWith {" \n
+                         "        _chopper setVariable [""NEO_radioRouted"", nil];" \n
+                         "        _chopper setVariable [""NEO_radioRouteDone"", [_cur, time]];" \n
+                         "    };" \n
+                         "    // the echo comes within a frame or two; the same order sent again later is worked out afresh" \n
+                         "    private _done = _chopper getVariable [""NEO_radioRouteDone"", []];" \n
+                         "    if ((_done param [0, []]) isEqualTo _cur && {time - (_done param [1, -1e9]) < 5}) exitWith {};" \n
+                         "    if ((_chopper getVariable [""NEO_radioRouteFor"", []]) isEqualTo _cur) exitWith { _task = ""LEGS"" };" \n
+                         "    _chopper setVariable [""NEO_radioRouteDone"", nil];" \n
+                         "    _chopper setVariable [""NEO_radioRouteFor"", nil];" \n
+                         "    _chopper setVariable [""NEO_radioRouted"", nil];" \n
+                         "    private _routeRun = (_chopper getVariable [""NEO_radioRouteRun"", 0]) + 1;" \n
+                         "    _chopper setVariable [""NEO_radioRouteRun"", _routeRun];" \n
+                         "    private _legs = [_chopper, _cur, _pos, _base] call NEO_fnc_transportAvoidLegs;" \n
+                         "    if (_legs isNotEqualTo []) then {" \n
+                         "        _task = ""LEGS"";" \n
+                         "        _chopper setVariable [""NEO_radioRouteFor"", _cur];" \n
+                         "        _chopper setVariable [""NEO_radioTrasportUnitStatus"", [""MISSION"", ""RTB""] select (toUpper (_cur param [0, """"]) == ""RTB""), true];" \n
+                         "        [_chopper, _legs, _routeRun, +_cur] spawn NEO_fnc_transportAvoidFly;" \n
+                         "    } else {" \n
+                         "        _chopper setVariable [""NEO_radioRouteDone"", [_cur, time]];" \n
+                         "    };" \n
+                         "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links

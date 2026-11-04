@@ -3,7 +3,7 @@
     #690: the order loop of a Combat Support ground transport (truck, armoured car, APC),
     the ground twin of transport.fsm. Server-side, one per vehicle.
 
-    Orders arrive from the tablet as NEO_radioGroundNewTask = [task, posA, amount, player, posB]:
+    Orders arrive from the tablet as NEO_radioGroundNewTask = [task, posA, amount, player, posB, round known enemy]:
       PICKUP  drive to A, wait there for players to board (status CARGO) until the next order
       MOVE    drive to A, wait for orders
       PATROL  drive between A and B along the roads until the next order
@@ -69,17 +69,18 @@ while { alive _veh && {(call _fnc_crewAboard) isNotEqualTo []} } do {
         _run = _run + 1;
         _veh setVariable ["NEO_radioGroundRun", _run, true];
         _veh setVariable ["NEO_radioCurrentTask", _new, true];
-        _new params ["_task", ["_posA", []], ["_amount", 0], ["_caller", objNull], ["_posB", []]];
+        // the Route box choice rides in the order; an order without one (an escort let go) takes the module setting
+        _new params ["_task", ["_posA", []], ["_amount", 0], ["_caller", objNull], ["_posB", []], ["_avoid", _veh getVariable ["NEO_transportRoute", NEO_radioLogic getVariable ["combatsupport_groundavoid", false]]]];
         _task = toUpper _task;
         [_veh] call NEO_fnc_groundStop;
         switch (_task) do {
             case "MOVE";
             case "PICKUP": {
                 _veh setVariable ["NEO_radioGroundUnitStatus", "MISSION", true];
-                [_veh, _task, _posA, _run, _fnc_say] spawn {
-                    params ["_veh", "_task", "_posA", "_run", "_fnc_say"];
+                [_veh, _task, _posA, _run, _fnc_say, _avoid] spawn {
+                    params ["_veh", "_task", "_posA", "_run", "_fnc_say", "_avoid"];
                     // by road, then off it for the last stretch to the point itself, up to 150 m
-                    private _arrived = [_veh, _posA, _run, true, 150] call NEO_fnc_groundDrive;
+                    private _arrived = [_veh, _posA, _run, true, 150, _avoid] call NEO_fnc_groundDrive;
                     if (!_arrived || {(_veh getVariable ["NEO_radioGroundRun", -1]) != _run}) exitWith {};
                     if (_task == "PICKUP") then {
                         _veh setVariable ["NEO_radioGroundUnitStatus", "CARGO", true];
@@ -92,10 +93,10 @@ while { alive _veh && {(call _fnc_crewAboard) isNotEqualTo []} } do {
             };
             case "RTB": {
                 _veh setVariable ["NEO_radioGroundUnitStatus", "RTB", true];
-                [_veh, _run, _fnc_say] spawn {
-                    params ["_veh", "_run", "_fnc_say"];
+                [_veh, _run, _fnc_say, _avoid] spawn {
+                    params ["_veh", "_run", "_fnc_say", "_avoid"];
                     // home is where it was placed, not the nearest road
-                    private _arrived = [_veh, _veh getVariable ["ALIVE_CombatSupport_Base", getPosATL _veh], _run, false] call NEO_fnc_groundDrive;
+                    private _arrived = [_veh, _veh getVariable ["ALIVE_CombatSupport_Base", getPosATL _veh], _run, false, 0, _avoid] call NEO_fnc_groundDrive;
                     if (!_arrived || {(_veh getVariable ["NEO_radioGroundRun", -1]) != _run}) exitWith {};
                     _veh setVariable ["NEO_radioGroundUnitStatus", "NONE", true];
                     ["STR_ALIVE_CS_MSG_GR_HOME"] call _fnc_say;
@@ -104,7 +105,7 @@ while { alive _veh && {(call _fnc_crewAboard) isNotEqualTo []} } do {
             case "PATROL": {
                 _veh setVariable ["NEO_radioGroundUnitStatus", "PATROL", true];
                 ["STR_ALIVE_CS_MSG_GR_PATROL_START", [mapGridPosition _posA, mapGridPosition _posB]] call _fnc_say;
-                [_veh, _posA, _posB, _run] spawn NEO_fnc_groundRoadPatrol;
+                [_veh, _posA, _posB, _run, _avoid] spawn NEO_fnc_groundRoadPatrol;
             };
             default {
                 _veh setVariable ["NEO_radioGroundUnitStatus", "NONE", true];

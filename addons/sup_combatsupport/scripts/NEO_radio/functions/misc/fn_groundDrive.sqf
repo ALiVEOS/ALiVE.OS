@@ -8,16 +8,18 @@
     Given an off-road distance, a point off the road (Eric on Discord, 18 Oct 2026) is reached
     after the road: the last leg leaves it for the point itself, up to that far, when the
     ground on the way has no water or steep slope; otherwise the vehicle stops at the road.
-    With Ground Transport Avoids Known Enemy on (Jman, 4 Nov, from AshTray on Discord), the way there
+    With the order's Route set to avoid known enemy (the Route box on each request, A. Ares on Discord,
+    4 Nov; it starts on the module's Ground Transport Avoids Known Enemy, Jman, from AshTray), the way there
     is planned first by ALiVE's pathfinder, on the roads, around the places the side's AI Commander
     has seen the enemy in the last 30 minutes, and driven in stages; with no such place near, no
     pathfinder or no route back within 30 s, the game's driver picks the way as before.
     Scheduled callers only.
     Params: [vehicle, target position, run number, move the target onto a road (default true),
-             metres it may leave the road for the point itself (default 0, never)]
+             metres it may leave the road for the point itself (default 0, never),
+             round known enemy (default: the module setting)]
     Author: Jman
 */
-params ["_veh", "_target", "_run", ["_toRoad", true], ["_offRoad", 0]];
+params ["_veh", "_target", "_run", ["_toRoad", true], ["_offRoad", 0], ["_roundEnemy", NEO_radioLogic getVariable ["combatsupport_groundavoid", false]]];
 private _mine = { alive _veh && {canMove _veh} && {fuel _veh >= 0.02} && {(_veh getVariable ["NEO_radioGroundRun", -1]) == _run} };
 private _road = if (_toRoad) then { [_target, 150] call ALIVE_fnc_getClosestRoad } else { [] };
 private _final = [];
@@ -73,7 +75,7 @@ private _leg = {
     [_there, _stuck]
 };
 // Around known enemy: stops along a road route that keeps clear of them, each driven to in turn
-if (NEO_radioLogic getVariable ["combatsupport_groundavoid", false] && {!isNil "ALiVE_Pathfinder"} && {call _mine}) then {
+if (_roundEnemy isEqualTo true && {!isNil "ALiVE_Pathfinder"} && {call _mine}) then {
     private _side = str side group driver _veh;
     private _from = getPosATL _veh;
     private _far = (_from distance2D _target) / 2 + 1000;

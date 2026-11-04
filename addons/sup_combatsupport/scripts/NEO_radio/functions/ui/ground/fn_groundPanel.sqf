@@ -33,6 +33,7 @@ private _heightCb = _d displayCtrl 655630;
 private _speedCb = _d displayCtrl 655631;
 private _roeCb = _d displayCtrl 655632;
 private _escortCb = _d displayCtrl 655638;
+private _routeCb = _d displayCtrl 655639;
 private _comboText = _d displayCtrl 655633;
 private _list = NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []];
 private _entry = _list param [lbCurSel _unitLb, []];
@@ -59,9 +60,9 @@ switch (_op) do {
         // one waiting where a Move order left it can still be sent home; one already at home can't
         private _away = (_veh distance2D (_veh getVariable ["ALIVE_CombatSupport_Base", getPosATL _veh])) > 75;
         _baseBtn ctrlEnable (!(_status in ["RTB", "NONE", "KILLED", "IMMOBILE"]) || {_status == "NONE" && {_away}});
-        [_ptA, _ptB, _heightCb, _escortCb] call _hide;
+        [_ptA, _ptB, _heightCb, _escortCb, _routeCb] call _hide;
         lbClear _taskLb;
-        { lbClear _x } forEach [_speedCb, _roeCb, _escortCb];
+        { lbClear _x } forEach [_speedCb, _roeCb, _escortCb, _routeCb];
         _taskText ctrlSetText ""; _helpTask ctrlSetText ""; _comboText ctrlSetText "";
         if (_status == "KILLED") exitWith { ["enable"] call NEO_fnc_groundPanel };
         _taskText ctrlSetStructuredText (["#B4B4B4", "STR_ALIVE_CS_UI_TASK", "0.8"] call _t);
@@ -95,6 +96,14 @@ switch (_op) do {
         // an escort for it, from the side's armed ground transports standing by (Eric on Discord, 22 Oct)
         _escortCb ctrlSetPosition [0.278525 * _uiW + _uiX, 0.696 * _uiH + _uiY, 0.215 * _uiW, 0.028 * _uiH]; _escortCb ctrlCommit 0;
         [_escortCb, "GROUND", _veh] call NEO_fnc_transportEscortList;
+        // the way it drives there: the usual way, or round known enemy (A. Ares on Discord, 4 Nov); starts on
+        // this vehicle's last choice, else the module's Ground Transport Avoids Known Enemy
+        _routeCb ctrlSetPosition [0.519796 * _uiW + _uiX, 0.752 * _uiH + _uiY, 0.216525 * _uiW, 0.028 * _uiH]; _routeCb ctrlCommit 0;
+        { _routeCb lbSetData [_routeCb lbAdd localize (_x select 0), _x select 1] } forEach [["STR_ALIVE_CS_UI_ROUTE_DIRECT", "0"], ["STR_ALIVE_CS_UI_ROUTE_AVOID", "1"]];
+        private _routeStart = _veh getVariable ["NEO_transportRoute", NEO_radioLogic getVariable ["combatsupport_groundavoid", false]];
+        if !(_routeStart isEqualType true) then { _routeStart = parseNumber format ["%1", _routeStart] > 0 };
+        _routeCb lbSetCurSel ([0, 1] select _routeStart);
+        _routeCb ctrlEnable true;
         ["enable"] call NEO_fnc_groundPanel;
     };
 
@@ -173,7 +182,10 @@ switch (_op) do {
         private _args = ["STR_ALIVE_CS_MSG_GR_ORDER_" + _task, _entry select 2, _me, mapGridPosition _pos];
         if (_task == "PATROL") then { _args pushBack (mapGridPosition _posB) };
         [[player, _args, "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
-        private _order = [_task, _pos, 0, player, _posB];
+        // the Route box: round known enemy or the usual way, carried in the order itself
+        private _avoid = lbCurSel _routeCb > -1 && {(_routeCb lbData (lbCurSel _routeCb)) == "1"};
+        _veh setVariable ["NEO_transportRoute", _avoid, true];
+        private _order = [_task, _pos, 0, player, _posB, _avoid];
         _veh setVariable ["NEO_radioGroundNewTask", _order, true];
         // its escort, from the Escort box (a new order with none lets the old one go)
         private _escortId = if (lbCurSel _escortCb > -1) then { _escortCb lbData (lbCurSel _escortCb) } else { "" };
@@ -189,7 +201,9 @@ switch (_op) do {
         if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { [localize "STR_ALIVE_COMBATSUPPORT", localize "STR_ALIVE_CS_NOTOPERATOR"] call ALIVE_fnc_sendHint };
         if (isNull _veh) exitWith {};
         private _me = (format ["%1", group player]) call NEO_fnc_callsignFix;
-        _veh setVariable ["NEO_radioGroundNewTask", ["RTB", _veh getVariable ["ALIVE_CombatSupport_Base", []], 0, player], true];
+        private _avoid = lbCurSel _routeCb > -1 && {(_routeCb lbData (lbCurSel _routeCb)) == "1"};
+        _veh setVariable ["NEO_transportRoute", _avoid, true];
+        _veh setVariable ["NEO_radioGroundNewTask", ["RTB", _veh getVariable ["ALIVE_CombatSupport_Base", []], 0, player, [], _avoid], true];
         [player, ["STR_ALIVE_CS_MSG_51", _entry select 2, _me], "side"] call NEO_fnc_messageBroadcast;
         [lbCurSel 655565] call NEO_fnc_radioRefreshUi;
     };

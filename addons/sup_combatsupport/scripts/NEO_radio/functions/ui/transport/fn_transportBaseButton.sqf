@@ -20,7 +20,11 @@ _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 _pos = _chopper getVariable ["ALIVE_CombatSupport_Base", []];
 
 //New Task Assigned - RTB
-_chopper setVariable ["NEO_radioTransportNewTask", ["RTB", _pos, 0, player], true];
+// the Route box counts for the way home too (A. Ares on Discord, 4 Nov)
+private _routeCb = _display displayCtrl 655639;
+private _avoid = lbCurSel _routeCb > -1 && {(_routeCb lbData (lbCurSel _routeCb)) == "1"};
+_chopper setVariable ["NEO_transportRoute", _avoid, true];
+_chopper setVariable ["NEO_radioTransportNewTask", ["RTB", _pos, 0, player, _avoid], true];
 [player, ["STR_ALIVE_CS_MSG_51", _callSign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
 
 //Interface

@@ -1648,6 +1648,12 @@
 <Key ID="STR_ALIVE_CS_UI_ESCORT_NONE">
     <English>Escort: none</English>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_ROUTE_DIRECT">
+    <English>Route: direct</English>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_ROUTE_AVOID">
+    <English>Route: avoid known enemy</English>
+</Key>
 <Key ID="STR_ALIVE_CS_UI_ESCORT">
     <English>Escort: %1</English>
 </Key>
@@ -2717,7 +2723,13 @@
     <English>Ground Transport Avoids Known Enemy</English>
 </Key>
 <Key ID="STR_ALIVE_CS_GROUNDAVOID_COMMENT">
-    <English>Yes: a ground transport sent somewhere plans its way on the roads around the places its side's AI Commander has seen the enemy in the last 30 minutes, and drives it in stages. Where there is no other way it still goes through. Needs an AI Commander for the side, and Pathfinding switched on in the Virtual AI System module. No, the default: the game's driver picks the way.</English>
+    <English>Yes: a ground transport sent somewhere plans its way on the roads around the places its side's AI Commander has seen the enemy in the last 30 minutes, and drives it in stages. Where there is no other way it still goes through. Needs an AI Commander for the side, and Pathfinding switched on in the Virtual AI System module. No, the default: the game's driver picks the way. This is where the Route box on each ground transport request in the tablet starts.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_AIRAVOID">
+    <English>Air Transport Avoids Known Enemy</English>
+</Key>
+<Key ID="STR_ALIVE_CS_AIRAVOID_COMMENT">
+    <English>Yes: a helicopter sent somewhere flies a dogleg round the places its side's AI Commander has seen the enemy in the last 30 minutes, then carries on with its task. Where there is no way round it still goes through. Needs an AI Commander for the side. No, the default: it flies straight there. This is where the Route box on each helicopter request in the tablet starts.</English>
 </Key>
 <Key ID="STR_ALIVE_CS_ORDERMARKERS">
     <English>Keep Order Markers</English>

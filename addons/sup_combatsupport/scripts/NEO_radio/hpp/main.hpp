@@ -351,6 +351,16 @@ class NEO_resourceRadio
                         h = GUI_GRID_HAbs / 1000;
                 };
 
+                //Route (A. Ares on Discord, 4 Nov): direct or round known enemy, placed by the transport and ground panels
+                class NEO_radioTransportRouteCb : NEO_radioTransportHeightCb
+                {
+                        idc = 655639;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.752 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
+                };
+
                 //=======================
                 //Cas Unit ListBox
                 class NEO_radioCasUnitList : NEO_RscGUIListBox

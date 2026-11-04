@@ -136,6 +136,20 @@ class CfgVehicles {
                                     class true { name="Yes"; value = 1; };
                                 };
                         };
+                        // Air Transport Avoids Known Enemy (A. Ares on Discord, 4 Nov): where the Route box on each
+                        // helicopter request starts; the ground setting above does the same for ground transport
+                        class combatsupport_airavoid : Combo
+                        {
+                                property = "ALiVE_sup_combatsupport_combatsupport_airavoid";
+                                displayName = "$STR_ALIVE_CS_AIRAVOID";
+                                tooltip = "$STR_ALIVE_CS_AIRAVOID_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class false { name="No"; value = 0; default = 1; };
+                                    class true { name="Yes"; value = 1; };
+                                };
+                        };
                         // the tablet may call the AI Commander's own batteries (mil_artillery) at a grid
                         class combatsupport_artycommander : Combo
                         {

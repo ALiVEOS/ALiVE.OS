@@ -84,6 +84,12 @@ if (_task == "SLINGLOAD" && !isNull getSlingLoad _chopper || _task == "UNHOOK" &
     [[player,_text,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 };
 
+// the Route box: round known enemy or straight (A. Ares on Discord, 4 Nov), carried in the order itself
+private _routeCb = _display displayCtrl 655639;
+private _avoid = lbCurSel _routeCb > -1 && {(_routeCb lbData (lbCurSel _routeCb)) == "1"};
+_arguments pushBack _avoid;
+_chopper setVariable ["NEO_transportRoute", _avoid, true];
+
 //New Task
 _chopper setVariable ["NEO_radioTransportNewTask", _arguments, true];
 // its escort, from the Escort box (Eric on Discord, 22 Oct); heading home takes the escort home too

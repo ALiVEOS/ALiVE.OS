@@ -3,15 +3,15 @@
     #690: drive a Combat Support ground vehicle back and forth between two points along the
     roads, pausing 10 s at each end, until it is given another order (its run number moves
     on) or is lost.
-    Params: [vehicle, point A, point B, run number]
+    Params: [vehicle, point A, point B, run number, round known enemy (default: the module setting)]
     Author: Jman
 */
-params ["_veh", "_posA", "_posB", "_run"];
+params ["_veh", "_posA", "_posB", "_run", ["_avoid", NEO_radioLogic getVariable ["combatsupport_groundavoid", false]]];
 private _mine = { alive _veh && {(_veh getVariable ["NEO_radioGroundRun", -1]) == _run} };
 private _legs = 0;
 while { call _mine } do {
     private _to = [_posA, _posB] select (_legs mod 2 == 0);
-    private _ok = [_veh, _to, _run] call NEO_fnc_groundDrive;
+    private _ok = [_veh, _to, _run, true, 0, _avoid] call NEO_fnc_groundDrive;
     if !(call _mine) exitWith {};
     // an immobile vehicle waits (the order loop holds it); try the leg again once it can move
     if (_ok) then {
