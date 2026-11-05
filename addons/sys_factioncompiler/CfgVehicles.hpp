@@ -97,7 +97,7 @@ class CfgVehicles {
                 "ALiVE_sys_factioncompiler_category",
                 "ALiVE_mil_placement",
                 "ALiVE_mil_placement_custom",
-                "ALiVE_mil_placement_spe",
+                "ALiVE_mil_placement_garrison",
                 "ALiVE_civ_placement",
                 "ALiVE_civ_placement_custom",
                 "ALiVE_mil_ato"
@@ -123,7 +123,7 @@ class CfgVehicles {
                 optional = 1;
                 duplicate = 1;
             };
-            class ALiVE_mil_placement_spe {
+            class ALiVE_mil_placement_garrison {
                 description[] = {"Garrison-Objective Military Placement module."};
                 position = 0;
                 direction = 0;

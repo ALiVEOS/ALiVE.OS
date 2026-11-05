@@ -117,7 +117,7 @@ private _have = [];
 // is kept to one, as before.
 private _manyAllowed = [
     "alive_mil_opcom", "alive_mil_logistics", "alive_mil_cqb", "alive_mil_artillery", "alive_mil_ato",
-    "alive_mil_convoy", "alive_mil_placement", "alive_mil_placement_custom", "alive_mil_placement_spe",
+    "alive_mil_convoy", "alive_mil_placement", "alive_mil_placement_custom", "alive_mil_placement_spe", "alive_mil_placement_garrison",
     "alive_civ_placement", "alive_civ_placement_custom", "alive_amb_civ_placement", "alive_sup_multispawn"
 ];
 // A scenario can hold more than one compiled faction, so a Faction Compiler and
@@ -235,6 +235,16 @@ collect3DENHistory {
     {
         _x params ["_class", "_settings"];
         private _index = _forEachIndex;
+        // The Garrison Obj. module's old class is hidden from the editor now, so a preset saved
+        // with it places the new class, with the same settings under the new property names.
+        if ((toLower _class) isEqualTo "alive_mil_placement_spe") then {
+            _class = "ALiVE_mil_placement_garrison";
+            _settings = _settings apply {
+                private _row = +_x;
+                _row set [0, [_row select 0, "ALiVE_mil_placement_spe_", "ALiVE_mil_placement_garrison_"] call CBA_fnc_replace];
+                _row
+            };
+        };
         private _skip = switch (toLower _class) do {
             case "alive_sys_factioncompiler": { _index in _compilersSkipped };
             // A category goes with its compiler: one whose compiler was left out,

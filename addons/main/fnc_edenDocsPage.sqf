@@ -42,6 +42,7 @@ if (_page isEqualTo "") then {
         ["alive_mil_placement_custom",          "mil_placement_custom"],
         ["alive_civ_placement_custom",          "civ_placement_custom"],
         ["alive_mil_placement_spe",             "mil_placement_spe"],
+        ["alive_mil_placement_garrison",        "mil_placement_spe"],
         // commanders and what serves them
         ["alive_mil_opcom",                     "mil_opcom"],
         ["alive_mil_logistics",                 "mil_logistics"],

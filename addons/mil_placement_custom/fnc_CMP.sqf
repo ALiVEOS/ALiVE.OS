@@ -996,7 +996,7 @@ switch(_operation) do {
             // apart by where they stand, west to east and then south to north, so each gets the same
             // key every session whatever order they start in: the first keeps the key as it always
             // was and the next gets _2, and so on. The counter below still catches anything left over.
-            private _keyModules = (allMissionObjects "ALiVE_mil_placement_custom") + (allMissionObjects "ALiVE_mil_placement_spe");
+            private _keyModules = (allMissionObjects "ALiVE_mil_placement_custom") + (allMissionObjects "ALiVE_mil_placement_spe") + (allMissionObjects "ALiVE_mil_placement_garrison"); _keyModules = _keyModules arrayIntersect _keyModules;
             private _keySum = floor ((_position select 0) + (_position select 1));
             private _sameKey = [];
             {

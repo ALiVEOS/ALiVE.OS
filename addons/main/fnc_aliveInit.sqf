@@ -178,7 +178,7 @@ TRACE_1("Launching Base ALiVE Systems",true);
 // down, so the screen can only ever report on things that are genuinely keeping you here.
 ALiVE_initGateModules = [
     QMOD(amb_civ_placement), QMOD(mil_placement), QMOD(civ_placement),
-    QMOD(civ_placement_custom), QMOD(mil_placement_custom), QMOD(mil_placement_spe),
+    QMOD(civ_placement_custom), QMOD(mil_placement_custom), QMOD(mil_placement_spe), QMOD(mil_placement_garrison),
     QMOD(mil_cqb), QMOD(mil_OPCOM), QMOD(SYS_playeroptions)
 ];
 
@@ -795,6 +795,7 @@ if (isServer) then {
             QMOD(civ_placement_custom),
             QMOD(mil_placement_custom),
             QMOD(mil_placement_spe),
+            QMOD(mil_placement_garrison),
             QMOD(mil_cqb),
             QMOD(mil_OPCOM),
             QMOD(SYS_playeroptions)

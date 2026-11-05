@@ -1515,7 +1515,7 @@ switch(_operation) do {
                                 } forEach [
                                     "ALiVE_mil_placement",
                                     "ALiVE_mil_placement_custom",
-                                    "ALiVE_mil_placement_spe",
+                                    "ALiVE_mil_placement_spe", "ALiVE_mil_placement_garrison",
                                     "ALiVE_civ_placement",
                                     "ALiVE_civ_placement_custom",
                                     "ALiVE_mil_ato"

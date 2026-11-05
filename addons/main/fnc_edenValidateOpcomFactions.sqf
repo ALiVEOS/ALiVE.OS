@@ -96,7 +96,8 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
         "ALiVE_civ_placement",
         "ALiVE_civ_placement_custom",
         "ALiVE_mil_placement_custom",
-        "ALiVE_mil_placement_spe"
+        "ALiVE_mil_placement_spe",
+        "ALiVE_mil_placement_garrison"
     ];
     private _CUSTOM_PLACEMENT_CLASSES = ["ALiVE_civ_placement_custom", "ALiVE_mil_placement_custom"];
     // Placement classes that expose a withPlacement toggle (Yes/No:

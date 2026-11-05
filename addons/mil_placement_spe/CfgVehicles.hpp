@@ -9,7 +9,9 @@ class CfgVehicles {
         class AttributesBase : AttributesBase { class ALiVE_ModuleSubTitle; class ALiVE_EditMultilineSQF; };
         class ModuleDescription;
     };
-        class ADDON : ModuleAliveBase
+        // Military Placement (Garrison Obj.). This addon keeps its folder, CfgPatches name and function
+        // names from when the module was built for Spearhead; only the module class was renamed.
+        class ALiVE_mil_placement_garrison : ModuleAliveBase
         {
                 scope = 2;
                 displayName = "$STR_ALIVE_SPEMP";
@@ -21,99 +23,9 @@ class CfgVehicles {
                 picture = "x\alive\addons\mil_placement_spe\icon_mil_SPEMP.paa";
                 class Attributes : AttributesBase
                 {
-                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_spe_HDR_GENERAL"; displayName = "GENERAL"; };
-
-                        class debug : Combo
-                        {
-                                property = "ALiVE_mil_placement_spe_debug";
-                                displayName = "$STR_ALIVE_SPEMP_DEBUG";
-                                tooltip = "$STR_ALIVE_SPEMP_DEBUG_COMMENT";
-                                defaultValue = """false""";
-                                class Values
-                                {
-                                    class Yes { name = "Yes"; value = true; };
-                                    class No { name = "No"; value = false; default = 1; };
-                                };
-                        };
-                        // Shared ALiVE_FactionChoice dropdown - see addons/main/CfgVehicles.hpp.
-                        // SPE module defaults to BLU_F (Allied side, matching SPE's US-forces focus).
-                        class faction
-                        {
-                                property     = "ALiVE_mil_placement_spe_faction";
-                                displayName  = "$STR_ALIVE_SPEMP_FACTION";
-                                tooltip      = "$STR_ALIVE_SPEMP_FACTION_COMMENT";
-                                control      = "ALiVE_FactionChoice_Military";
-                                typeName     = "STRING";
-                                expression   = "_this setVariable ['faction', _value];";
-                                defaultValue = """BLU_F""";
-                        };
-                        class priority : Edit { property = "ALiVE_mil_placement_spe_priority"; displayName = "$STR_ALIVE_SPEMP_PRIORITY"; tooltip = "$STR_ALIVE_SPEMP_PRIORITY_COMMENT"; defaultValue = """50"""; };
-                        class size : Edit { property = "ALiVE_mil_placement_spe_size"; displayName = "$STR_ALIVE_SPEMP_SIZE"; tooltip = "$STR_ALIVE_SPEMP_SIZE_COMMENT"; defaultValue = """50"""; };
-
-                        class HDR_UNITS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_spe_HDR_UNITS"; displayName = "SPAWNED UNITS"; };
-                        class speInfantryClass : Edit { property = "ALiVE_mil_placement_spe_speInfantryClass"; displayName = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS"; tooltip = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS_COMMENT"; defaultValue = """"""; };
-                        class speInfantryBehaviour : Combo
-                        {
-                                property = "ALiVE_mil_placement_spe_speInfantryBehaviour";
-                                displayName = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR";
-                                tooltip = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR_COMMENT";
-                                defaultValue = """AWARE""";
-                                class Values
-                                {
-                                    class AWARE { name = "Aware"; value = "AWARE"; default = 1; };
-                                    class COMBAT { name = "Combat"; value = "COMBAT"; };
-                                    class STEALTH { name = "Stealth"; value = "STEALTH"; };
-                                    class SAFE { name = "Safe"; value = "SAFE"; };
-                                    class CARELESS { name = "Careless"; value = "CARELESS"; };
-                                };
-                        };
-                        class speVehicleClass : Edit { property = "ALiVE_mil_placement_spe_speVehicleClass"; displayName = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS"; tooltip = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS_COMMENT"; defaultValue = """"""; };
-                        class speVehicleEmpty : Combo
-                        {
-                                property = "ALiVE_mil_placement_spe_speVehicleEmpty";
-                                displayName = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY";
-                                tooltip = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY_COMMENT";
-                                defaultValue = """false""";
-                                class Values
-                                {
-                                    class Yes { name = "Yes"; value = true; };
-                                    class No { name = "No"; value = false; default = 1; };
-                                };
-                        };
-                        // Hidden: the AI commander leaves a Garrison Obj. alone, so its objective never
-                        // gets an owner and player tasks never reach it, whatever this says. Kept, not
-                        // removed, so a mission's saved choice still loads.
-                        class allowPlayerTasking
-                        {
-                                property = "ALiVE_mil_placement_spe_allowPlayerTasking";
-                                displayName = "";
-                                control = "ALiVE_HiddenAttribute";
-                                typeName = "STRING";
-                                expression = "_this setVariable ['allowPlayerTasking', _value];";
-                                defaultValue = """true""";
-                        };
-                        // ---- On Spawn Hook --------------------------------------------------
-                        class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_spe_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
-                        class onEachSpawn : ALiVE_EditMultilineSQF
-                        {
-                                property = "ALiVE_mil_placement_spe_onEachSpawn";
-                                displayName = "$STR_ALIVE_MP_ON_EACH_SPAWN";
-                                tooltip = "$STR_ALIVE_MP_ON_EACH_SPAWN_COMMENT";
-                                defaultValue = """""";
-                        };
-                        class onEachSpawnOnce : Combo
-                        {
-                                property = "ALiVE_mil_placement_spe_onEachSpawnOnce";
-                                displayName = "$STR_ALIVE_MP_ON_EACH_SPAWN_ONCE";
-                                tooltip = "$STR_ALIVE_MP_ON_EACH_SPAWN_ONCE_COMMENT";
-                                defaultValue = """true""";
-                                class Values
-                                {
-                                    class Yes { name = "Yes"; value = true; default = 1; };
-                                    class No { name = "No"; value = false; };
-                                };
-                        };
-                        class ModuleDescription : ModuleDescription {};
+#define ATTR_PREFIX ALiVE_mil_placement_garrison
+#include "CfgVehicles_attributes.hpp"
+#undef ATTR_PREFIX
                 };
                 class ModuleDescription
                 {
@@ -129,6 +41,19 @@ class CfgVehicles {
                     // runtime via the case "faction": accessor.
                     sync[] = {"ALiVE_sys_factioncompiler"};
                     class ALiVE_sys_factioncompiler { description[] = {"Custom Faction Compiler module."}; position=0; direction=0; optional=1; duplicate=0; };
+                };
+        };
+        // The module's old class. Hidden from the editor, but missions saved with it still load and
+        // run: it has the same settings under their old property names, which is what those missions
+        // stored. Code that looks for the module checks both classes.
+        class ALiVE_mil_placement_spe : ALiVE_mil_placement_garrison
+        {
+                scope = 1;
+                class Attributes : AttributesBase
+                {
+#define ATTR_PREFIX ALiVE_mil_placement_spe
+#include "CfgVehicles_attributes.hpp"
+#undef ATTR_PREFIX
                 };
         };
 };

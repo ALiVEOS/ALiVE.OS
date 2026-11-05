@@ -99,7 +99,7 @@ private _countProfiles = 0;
             {
                 _aaNeighbours = _aaNeighbours + (allMissionObjects _x);
             } forEach ["ALiVE_mil_placement", "ALiVE_mil_placement_custom",
-                       "ALiVE_mil_placement_spe", "ALiVE_civ_placement",
+                       "ALiVE_mil_placement_spe", "ALiVE_mil_placement_garrison", "ALiVE_civ_placement",
                        "ALiVE_civ_placement_custom", "ALiVE_mil_ato"];
             _aaNeighbours = _aaNeighbours - [_logic];
             {
