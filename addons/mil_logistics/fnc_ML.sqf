@@ -8396,10 +8396,21 @@ switch(_operation) do {
                         // vehicle groups of a boat landing: each gets a craft of its own and is made where it lands
                         private _seaVehGroups = [];
                         if (_shipLaunch && {_eventType == "SEA_INSERT"}) then {
-                            _seaShore = [_shipFrom, _shipDest] call ALIVE_fnc_findNearestShore;
-                            if (_seaShore isEqualTo [0,0,0] || {(_seaShore distance2D _shipDest) > 1500}) then {
-                                private _wet = [_logic, "findNavigableWater", [_shipDest, 1500]] call MAINCLASS;
-                                _seaShore = if (_wet isEqualTo []) then { [0,0,0] } else { [_wet, _shipDest] call ALIVE_fnc_findNearestShore };
+                            // a landing whose centre is in the shallows (a tidal beach such as Utah) aims for the nearest dry ground
+                            // within 500 m, as the shore search finds nothing when its destination is water (TheLogatron on Discord, 5 Nov)
+                            private _landAt = _shipDest;
+                            if (surfaceIsWater _landAt) then {
+                                _landAt = [];
+                                for "_r" from 25 to 500 step 25 do {
+                                    { private _p = _shipDest getPos [_r, _x]; if !(surfaceIsWater _p) exitWith { _landAt = _p } } forEach [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+                                    if (_landAt isNotEqualTo []) exitWith {};
+                                };
+                                if (_landAt isEqualTo []) then { _landAt = _shipDest };
+                            };
+                            _seaShore = [_shipFrom, _landAt] call ALIVE_fnc_findNearestShore;
+                            if (_seaShore isEqualTo [0,0,0] || {(_seaShore distance2D _landAt) > 1500}) then {
+                                private _wet = [_logic, "findNavigableWater", [_landAt, 1500]] call MAINCLASS;
+                                _seaShore = if (_wet isEqualTo []) then { [0,0,0] } else { [_wet, _landAt] call ALIVE_fnc_findNearestShore };
                             };
                             // clear of the hull: the ship is up to about 250 m long and stands on water too
                             _seaFrom = [_logic, "findNavigableWater", [_shipFrom getPos [250, _shipFrom getDir _shipDest], 600, [], 30, 20]] call MAINCLASS;

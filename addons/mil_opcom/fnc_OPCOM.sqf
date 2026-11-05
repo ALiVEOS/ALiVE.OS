@@ -7860,13 +7860,24 @@ switch (_operation) do {
         // boats need a beach: the shore between the ship and the landing, else the shore nearest it (within
         // 1.5 km). None, or three waves Logistics couldn't land, and nothing can leave the ship.
         if (_boats isNotEqualTo []) then {
-            private _shore = [_shipPos, _position] call ALIVE_fnc_findNearestShore;
-            if (_shore isEqualTo [0,0,0] || {(_shore distance2D _position) > 1500}) then {
+            // a landing whose centre is in the shallows (a tidal beach such as Utah) aims for the nearest dry ground
+            // within 500 m, as the shore search finds nothing when its destination is water (TheLogatron on Discord, 5 Nov)
+            private _landAt = _position;
+            if (surfaceIsWater _landAt) then {
+                _landAt = [];
+                for "_r" from 25 to 500 step 25 do {
+                    { private _p = _position getPos [_r, _x]; if !(surfaceIsWater _p) exitWith { _landAt = _p } } forEach [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+                    if (_landAt isNotEqualTo []) exitWith {};
+                };
+                if (_landAt isEqualTo []) then { _landAt = _position };
+            };
+            private _shore = [_shipPos, _landAt] call ALIVE_fnc_findNearestShore;
+            if (_shore isEqualTo [0,0,0] || {(_shore distance2D _landAt) > 1500}) then {
                 _shore = [0,0,0];
                 for "_r" from 250 to 1500 step 250 do {
                     {
-                        private _w = _position getPos [_r, _x];
-                        if (surfaceIsWater _w && {(getTerrainHeightASL _w) < -2}) exitWith { _shore = [_w, _position] call ALIVE_fnc_findNearestShore };
+                        private _w = _landAt getPos [_r, _x];
+                        if (surfaceIsWater _w && {(getTerrainHeightASL _w) < -2}) exitWith { _shore = [_w, _landAt] call ALIVE_fnc_findNearestShore };
                     } forEach [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
                     if (_shore isNotEqualTo [0,0,0]) exitWith {};
                 };
