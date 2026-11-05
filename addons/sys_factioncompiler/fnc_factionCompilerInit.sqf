@@ -148,15 +148,22 @@ if (_collisionReason isEqualTo "" && {!_isOverride}) then {
     };
 };
 
-// What a synced object gives as a template: a soldier as he is, or for a drone (a UAV or UGV), its crew. A drone's
-// crew is the game's hidden UAV AI in a group of its own, so there's no one to sync in Eden: the drone itself is
-// synced, and becomes a group of its own, the crew with the drone as its vehicle. A drone placed empty is crewed here.
+// What a synced object gives as a template: a soldier as he is, or for a vehicle, its crew. A vehicle placed with its
+// crew in it can be synced itself instead of one of the crew: its commander's group is taken, vehicle and all. A
+// drone's crew is the game's hidden UAV AI in a group of its own, so there's no one to sync in Eden: the drone itself
+// is synced, and a drone placed empty is crewed here. Any other empty vehicle has nobody to take and is left out.
 private _fnc_templateMan = {
     params ["_o"];
     if (_o isKindOf "CAManBase") exitWith { [objNull, _o] select (side _o != sideLogic) };
-    if (_o isKindOf "Logic" || {!(_o isKindOf "AllVehicles")} || {!unitIsUAV _o}) exitWith { objNull };
-    if ((crew _o) isEqualTo []) then { createVehicleCrew _o };
-    (crew _o) param [0, objNull]
+    if (_o isKindOf "Logic" || {!(_o isKindOf "AllVehicles")}) exitWith { objNull };
+    if (unitIsUAV _o && {(crew _o) isEqualTo []}) then { createVehicleCrew _o };
+    private _crew = (crew _o) select { alive _x };
+    if (_crew isEqualTo []) exitWith {
+        ["Faction compiler [%1] left out %2: it has no crew. Place it with its crew in it, or sync one of its crew instead", _factionId, typeOf _o] call ALIVE_fnc_dump;
+        objNull
+    };
+    private _commander = effectiveCommander _o;
+    [_crew select 0, _commander] select (_commander in _crew)
 };
 
 if !(_collisionReason isEqualTo "") exitWith {

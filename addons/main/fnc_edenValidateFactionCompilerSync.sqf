@@ -100,14 +100,17 @@ ALIVE_edenCompilerSyncValidatorPending = [_trigger, _scope] spawn {
         //   - A drone (UAV or UGV) synced itself is valid too: its crew is
         //     the game's hidden UAV AI, so there is no one to sync, and the
         //     compiler takes the drone as a group of its own.
-        //   - Anything else (vehicles, statics, decorations) is the
-        //     misuse pattern; collect for the warning.
+        //   - So is a vehicle placed with its crew in it: the compiler takes
+        //     its commander's group, vehicle and all.
+        //   - Anything else (empty vehicles, statics, decorations) has no
+        //     one to take; collect for the warning.
         private _badPeers = _peers select {
             _x isEqualType objNull
             && {!isNull _x}
             && {!(_x isKindOf "Logic")}
             && {!(_x isKindOf "CAManBase")}
             && {!(unitIsUAV _x)}
+            && {!(_x isKindOf "AllVehicles") || {(crew _x) isEqualTo []}}
         };
 
         _checked = _checked + 1;
@@ -122,7 +125,7 @@ ALIVE_edenCompilerSyncValidatorPending = [_trigger, _scope] spawn {
             // Parentheses not angle brackets - BIS_fnc_3DENNotification
             // parses content as XML and truncates at the first `<`.
             private _msg = format [
-                "ALiVE: Faction Compiler Category '%1' has %2 vehicle(s) synced directly: [%3]. Sync the CREW unit (e.g. pilot, driver, gunner) INSIDE each vehicle, not the vehicle itself. Group the crew first, then sync ONE crew member per group to this category module. Drones (UAVs and UGVs) are the exception: sync the drone itself, and it becomes a group of its own.",
+                "ALiVE: Faction Compiler Category '%1' has %2 empty vehicle(s) or object(s) synced: [%3]. The compiler takes groups of soldiers, so a vehicle synced here needs its crew in it. Place it with its crew, or sync ONE crew member of the group instead. Drones (UAVs and UGVs) can be synced empty: they are crewed when the mission starts.",
                 _categoryAttr,
                 count _badPeers,
                 _truncated joinString ", "

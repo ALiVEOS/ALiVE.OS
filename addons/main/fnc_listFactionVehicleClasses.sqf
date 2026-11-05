@@ -201,6 +201,15 @@ if (count _kindCategories > 0) then {
                         private _catSyncs = (get3DENConnections _catModule) select {(_x select 0) == "Sync"} apply {_x select 1};
                         {
                             private _unit = _x;
+                            // a vehicle synced itself stands for its crew's group; a drone synced empty
+                            // has no crew in Eden, so its own class is listed
+                            if (typeName _unit == "OBJECT" && {!isNull _unit} && {!(_unit isKindOf "CAManBase")} && {_unit isKindOf "AllVehicles"} && {!(_unit isKindOf "Logic")}) then {
+                                if ((crew _unit) isEqualTo []) then {
+                                    if (unitIsUAV _unit && {!((typeOf _unit) in _bucket)}) then { _bucket pushBack (typeOf _unit) };
+                                } else {
+                                    _unit = (crew _unit) select 0;
+                                };
+                            };
                             if (typeName _unit == "OBJECT" && {!isNull _unit} && {_unit isKindOf "CAManBase"}) then {
                                 private _grp = group _unit;
                                 if (!isNull _grp && {!(_grp in _seenGroups)}) then {

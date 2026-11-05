@@ -587,16 +587,20 @@ if (is3DEN) then {
                 // endpoints should be CAManBase (template unit) or
                 // Logic (the compiler module). Anything else is the
                 // misuse pattern - vehicle / static / decoration.
+                // A drone, or a vehicle placed with its crew in it, is taken as
+                // its crew's group, so it is a valid endpoint too.
                 private _bads = _endpoints select {
                     !(_x in _categories)
                     && {!(_x isKindOf "Logic")}
                     && {!(_x isKindOf "CAManBase")}
+                    && {!(unitIsUAV _x)}
+                    && {!(_x isKindOf "AllVehicles") || {(crew _x) isEqualTo []}}
                 };
                 if (count _bads > 0) then {
                     private _types = _bads apply { typeOf _x };
                     private _categoryAttr = (_categories select 0) getVariable ["category", "Infantry"];
                     private _msg = format [
-                        "ALiVE: Faction Compiler Category '%1' was synced to vehicle/object [%2]. The compiler captures groups via the CREW unit (e.g. pilot, driver, gunner). Sync ONE crew member from inside the vehicle to this category module instead - not the vehicle itself.",
+                        "ALiVE: Faction Compiler Category '%1' was synced to an empty vehicle or object [%2]. The compiler takes groups of soldiers, so a vehicle synced here needs its crew in it. Place it with its crew, or sync ONE crew member instead.",
                         _categoryAttr,
                         _types joinString ", "
                     ];
@@ -611,7 +615,7 @@ if (is3DEN) then {
                     // are valid (CAManBase or compiler Logic). Quick
                     // green confirmation.
                     private _categoryAttr = (_categories select 0) getVariable ["category", "Infantry"];
-                    private _hasUnit = (_endpoints findIf { _x isKindOf "CAManBase" }) >= 0;
+                    private _hasUnit = (_endpoints findIf { _x isKindOf "CAManBase" || {_x isKindOf "AllVehicles" && {!(_x isKindOf "Logic")}} }) >= 0;
                     if (_hasUnit) then {
                         private _msg = format [
                             "ALiVE: Faction Compiler Category '%1' template unit synced.",

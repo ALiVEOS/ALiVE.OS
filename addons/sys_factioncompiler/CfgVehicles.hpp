@@ -91,7 +91,7 @@ class CfgVehicles {
             description[] = {
                 "Compile synced Eden template groups into a mission-local ALiVE faction.",
                 "",
-                "Sync one or more category helper modules to this compiler, then sync one unit from each template group to a category helper. Sync placement modules to this compiler to use the compiled faction at runtime."
+                "Sync one or more category helper modules to this compiler, then sync one unit, or a vehicle with its crew in it, from each template group to a category helper. Sync placement modules to this compiler to use the compiled faction at runtime."
             };
             sync[] = {
                 "ALiVE_sys_factioncompiler_category",
@@ -189,7 +189,7 @@ class CfgVehicles {
             description[] = {
                 "Assign synced template groups to an ALiVE force category.",
                 "",
-                "Sync this module to a compiler module, then sync one unit from each template group to this helper."
+                "Sync this module to a compiler module, then sync one unit, or a vehicle with its crew in it, from each template group to this helper."
             };
             sync[] = {"ALiVE_sys_factioncompiler"};
             class ALiVE_sys_factioncompiler {
