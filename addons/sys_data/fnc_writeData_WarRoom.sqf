@@ -49,11 +49,29 @@ private _pairs = if (_data isEqualType [] && {count _data == 4} && {(_data selec
     _data
 };
 
+// A value can hold CBA hashes too (PlayerFinish lists each weapon's shots as one). Those go out as JSON
+// objects; encodeJSON alone sent the hash's internals, and its empty default value broke the whole record.
+private _encodeKey = { (if (_this isEqualType "") then {_this} else {str _this}) call ALiVE_fnc_encodeJSON };
+private _encode = {
+    if (_this isEqualType [] && {count _this == 4} && {(_this select 0) isEqualTo "#CBA_HASH#"}) exitWith {
+        private _hash = _this;
+        private _out = "{";
+        {
+            if (_forEachIndex > 0) then { _out = _out + "," };
+            private _v = (_hash select 2) select _forEachIndex;
+            _out = _out + (_x call _encodeKey) + ":" + (if (isNil "_v") then {"null"} else {_v call _encode});
+        } forEach (_hash select 1);
+        _out + "}"
+    };
+    if (_this isEqualType []) exitWith { "[" + ((_this apply { if (isNil "_x") then {"null"} else {_x call _encode} }) joinString ",") + "]" };
+    _this call ALiVE_fnc_encodeJSON
+};
+
 private _json = "{";
 {
     _x params ["_key", "_value"];
     if (_forEachIndex > 0) then { _json = _json + "," };
-    _json = _json + ((if (_key isEqualType "") then {_key} else {str _key}) call ALiVE_fnc_encodeJSON) + ":" + (_value call ALiVE_fnc_encodeJSON);
+    _json = _json + (_key call _encodeKey) + ":" + (if (isNil "_value") then {"null"} else {_value call _encode});
 } forEach _pairs;
 _json = _json + "}";
 
