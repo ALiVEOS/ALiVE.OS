@@ -81,13 +81,67 @@ private _fnc_label = {
 private _fnc_locked = { (toLower _this) in ["alive_require", "alive_sys_profile"] };
 
 if (_placing) then {
+    // Each module's side, so a preset of fifty rows with several AI Commanders
+    // and placements reads as two sides rather than a list of lookalikes
+    // (AshTray on Discord, 5 Nov). Taken from any faction its settings name;
+    // a module that names none (Logistics, CQB on its defaults, a faction
+    // category) takes the side of a module it is synced to.
+    private _presetModules = _preset param [3, []];
+    private _fnc_sidesOf = {
+        params ["_settings"];
+        private _found = [];
+        {
+            _x params [["_prop", ""], ["_value", ""]];
+            private _p = toLower _prop;
+            if ((_p find "faction") >= 0 && {({(_p find _x) >= 0} count ["seapatrol", "artillery", "limittransport", "usedominant", "_hdr_"]) == 0}) then {
+                // Every run of letters, digits and underscores is a candidate
+                // class name, so a list, a quoted array or a comma list all work.
+                private _text = if (_value isEqualType "") then { _value } else { str _value };
+                {
+                    if (isClass (configFile >> "CfgFactionClasses" >> _x)) then {
+                        private _s = getNumber (configFile >> "CfgFactionClasses" >> _x >> "side");
+                        if (_s in [0, 1, 2, 3]) then { _found pushBackUnique _s };
+                    };
+                } forEach (_text splitString " ,;[]""'`()");
+            };
+        } forEach _settings;
+        _found
+    };
+    private _sides = _presetModules apply { [_x param [1, []]] call _fnc_sidesOf };
+    // Two passes over the sync lines, so a category picks up its compiler's side
+    // after the compiler has had its own.
+    for "_pass" from 1 to 2 do {
+        {
+            _x params ["_a", "_b"];
+            if ((_sides param [_a, []]) isEqualTo [] && {(_sides param [_b, []]) isNotEqualTo []}) then { _sides set [_a, +(_sides select _b)] };
+            if ((_sides param [_b, []]) isEqualTo [] && {(_sides param [_a, []]) isNotEqualTo []}) then { _sides set [_b, +(_sides select _a)] };
+        } forEach (_preset param [4, []]);
+    };
+    // Sorted in this order; 4 is no side, 5 is more than one.
+    private _sideNames = ["OPFOR", "BLUFOR", "Independent", "Civilian"];
+    private _sideOrder = [1, 0, 2, 3];
+
+    // The sort switch, shown as the top row the same way sharing shows its
+    // layout row, so it is one more double click rather than a new control.
+    _rows pushBack ["sort", "", "Sort the modules by side", false, false, -1, -1];
     {
         private _class = _x select 0;
         private _settings = _x select 1;
-        _rows pushBack ["module", _forEachIndex, format ["%1  (%2 setting%3)",
+        private _mine = _sides param [_forEachIndex, []];
+        private _key = switch (count _mine) do {
+            case 0: { 4 };
+            case 1: { _sideOrder select (_mine select 0) };
+            default { 5 };
+        };
+        private _tag = switch (count _mine) do {
+            case 0: { "" };
+            case 1: { (_sideNames select (_mine select 0)) + ":  " };
+            default { "Mixed:  " };
+        };
+        _rows pushBack ["module", _forEachIndex, format ["%1%2  (%3 setting%4)", _tag,
             [_class] call _fnc_label, count _settings, ["s", ""] select (count _settings == 1)],
-            true, _class call _fnc_locked];
-    } forEach (_preset param [3, []]);
+            true, _class call _fnc_locked, _key, _forEachIndex];
+    } forEach _presetModules;
 
     {
         private _size = _x param [4, [0, 0]];
@@ -234,16 +288,16 @@ private _fnc_draw = {
         private _tick = if (_ticked) then { "[x] " } else { "[  ] " };
         private _tail = if (_locked) then { "   (always included)" } else { "" };
         private _at = _lb lbAdd (_tick + _label + _tail);
-        if (_ticked && {!(_kind isEqualTo "layout")}) then { _on = _on + 1 };
+        if (_ticked && {!(_kind in ["layout", "sort"])}) then { _on = _on + 1 };
         if (_ticked && {_kind isEqualTo "area"}) then { _areas = _areas + 1 };
         // Areas in their own colour, so the two kinds read apart at a glance in
         // what can be a long list.
         if (_kind isEqualTo "area") then { _lb lbSetColor [_at, [0.72, 0.82, 0.55, 1]] };
-        if (_kind isEqualTo "layout") then { _lb lbSetColor [_at, [0.6, 0.78, 0.9, 1]] };
+        if (_kind in ["layout", "sort"]) then { _lb lbSetColor [_at, [0.6, 0.78, 0.9, 1]] };
         if (_locked) then { _lb lbSetColor [_at, [0.6, 0.6, 0.6, 1]] };
     } forEach _rows;
     if (_was >= 0 && {_was < count _rows}) then { _lb lbSetCurSel _was };
-    private _things = count (_rows select { !((_x select 0) isEqualTo "layout") });
+    private _things = count (_rows select { !((_x select 0) in ["layout", "sort"]) });
     (_d displayCtrl IDC_SAYS) ctrlSetText format [
         "%1 of %2 included, %3 of them areas. Leave an area out and the settings naming it go too.",
         _on, _things, _areas];
@@ -251,7 +305,8 @@ private _fnc_draw = {
 
 uiNamespace setVariable ["ALiVE_presetChooseDraw", _fnc_draw];
 
-(_display displayCtrl IDC_ROWS) ctrlAddEventHandler ["LBDblClick", {
+// Kept where the event handler and a script can both reach it.
+uiNamespace setVariable ["ALiVE_presetChooseToggle", {
     params ["_ctrl", "_index"];
     private _d = ctrlParent _ctrl;
     private _rows = _d getVariable ["rows", []];
@@ -262,9 +317,20 @@ uiNamespace setVariable ["ALiVE_presetChooseDraw", _fnc_draw];
     };
     _row set [3, !(_row select 3)];
     _rows set [_index, _row];
+    // The sort switch reorders the modules: by side and then as saved, or back
+    // to as saved. The switch stays on top and the areas stay at the bottom.
+    if ((_row select 0) isEqualTo "sort") then {
+        private _bySide = _row select 3;
+        private _mods = _rows select { (_x select 0) isEqualTo "module" };
+        _mods = [_mods, [], { if (_bySide) then { (_x param [5, 4]) * 10000 + (_x param [6, 0]) } else { _x param [6, 0] } }, "ASCEND"] call BIS_fnc_sortBy;
+        _rows = (_rows select { (_x select 0) isEqualTo "sort" }) + _mods + (_rows select { (_x select 0) isEqualTo "area" });
+        _d setVariable ["rows", _rows];
+        (_d displayCtrl 88111) lbSetCurSel 0;
+    };
     _d setVariable ["rows", _rows];
     [_d] call (uiNamespace getVariable ["ALiVE_presetChooseDraw", {}]);
 }];
+(_display displayCtrl IDC_ROWS) ctrlAddEventHandler ["LBDblClick", { _this call (uiNamespace getVariable ["ALiVE_presetChooseToggle", {}]) }];
 
 private _fnc_button = {
     params ["_text", "_bx", "_bw", "_code"];
@@ -285,8 +351,9 @@ private _fnc_setAll = {
     private _d = ctrlParent _ctrl;
     private _rows = _d getVariable ["rows", []];
     {
-        // A locked row stays on whatever "none" is asked for.
-        if !(_x select 4) then { _x set [3, _state] };
+        // A locked row stays on whatever "none" is asked for, and All and None
+        // pick modules and areas, not the sort switch.
+        if (!(_x select 4) && {!((_x select 0) isEqualTo "sort")}) then { _x set [3, _state] };
     } forEach _rows;
     _d setVariable ["rows", _rows];
     [_d] call (uiNamespace getVariable ["ALiVE_presetChooseDraw", {}]);
@@ -311,6 +378,9 @@ uiNamespace setVariable ["ALiVE_presetChooseSetAll", _fnc_setAll];
             case "area": { if (_ticked) then { _pickMarkers pushBack _value } };
         };
     } forEach _rows;
+    // In the preset's own order whatever order the rows are shown in, so the
+    // modules, their sync lines and their squads line up as saved.
+    _pickModules sort true;
 
     if (count _pickModules == 0) exitWith {
         // A preset with no modules is refused when it is read back, so there is
