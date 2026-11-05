@@ -2020,6 +2020,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_HVT_MANHUNT_COMMENT">
     <English>The chance that an HVT task is a manhunt rather than a tip-off. A manhunt shows a search area instead of a target. Civilians telling you of enemies near it, intel read from his men, and prisoners' or informants' answers each narrow it. After three, a Wiretap task comes up near him; done, it tells you where he will be and when, for about ten minutes. Miss him and he moves, and half of what was known goes with him. Clues come from the Civilian Population and AI Commander modules; without them, players can still search the area. 0 (the default) keeps every HVT task as it is.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASK_REWARD_MULT">
+    <English>Task Reward Multiplier:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASK_REWARD_MULT_COMMENT">
+    <English>Scales the force pool points a task gives its faction when it succeeds (Military Logistics). Each task type has its own amount, mostly 10 or 20 and up to 50; this multiplies every one of them, rounded to a whole number. 0 to 5: 0 gives no points, 0.5 halves them, 2 doubles them. 1 (the default) keeps every amount as it is.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_RECON_OPS">
     <English>Recon Task OPs:</English>
 </Key>

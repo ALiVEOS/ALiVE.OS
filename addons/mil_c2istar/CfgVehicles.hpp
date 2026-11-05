@@ -307,6 +307,15 @@ class CfgVehicles {
                                     class Five  { name = "5 minutes"; value = "300"; };
                             };
                     };
+                    // Scales the force pool points a finished task gives (AshTray on Discord, 5 Nov)
+                    class taskRewardMultiplier : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskRewardMultiplier";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASK_REWARD_MULT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_REWARD_MULT_COMMENT";
+                            defaultValue = """1""";
+                            typeName = "NUMBER";
+                    };
 
                     // ---- Task area ---------------------------------------------------
                     class HDR_TASK_AREA : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TASK_AREA"; displayName = "TASK AREA"; };

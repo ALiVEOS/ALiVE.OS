@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskDialog","_taskSide","_taskFaction","_rewardData","_rewardType","_reward","_event"];
@@ -31,12 +32,18 @@ _rewardData = [_taskDialog,"reward"] call ALIVE_fnc_hashGet;
 _rewardType = _rewardData select 0;
 _reward = _rewardData select 1;
 
+// the C2ISTAR module's Task Reward Multiplier (AshTray on Discord, 5 Nov), 0 to 5, rounded to whole points
+if (_reward isEqualType 0) then {
+    _reward = round (_reward * (missionNamespace getVariable ["ALiVE_c2istar_taskRewardMult", 1]));
+};
+
 switch(_rewardType) do {
     case "forcePool":{
 
         private ["_sideObject","_factionName","_forcePool","_message","_radioBroadcast"];
 
-        if!(isNil "ALIVE_globalForcePool") then {
+        // nothing to add (a Task Reward Multiplier of 0): no change and no announcement
+        if (_reward > 0 && {!(isNil "ALIVE_globalForcePool")}) then {
 
             // send radio broadcast
             _sideObject = [_taskSide] call ALIVE_fnc_sideTextToObject;

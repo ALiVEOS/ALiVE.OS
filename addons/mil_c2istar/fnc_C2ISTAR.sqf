@@ -1511,6 +1511,10 @@ switch(_operation) do {
             private _hold = _logic getVariable ["reconHold", "60"];
             if (_hold isEqualType "") then { _hold = parseNumber _hold };
             missionNamespace setVariable ["ALiVE_c2istar_reconHold", (_hold max 60) min 300];
+            // Task Reward Multiplier (AshTray on Discord, 5 Nov), read by ALIVE_fnc_taskCreateReward: 0 to 5
+            private _rewardMult = _logic getVariable ["taskRewardMultiplier", 1];
+            if (_rewardMult isEqualType "") then { _rewardMult = if (_rewardMult == "") then { 1 } else { parseNumber _rewardMult } };
+            missionNamespace setVariable ["ALiVE_c2istar_taskRewardMult", (_rewardMult max 0) min 5];
             missionNamespace setVariable ["ALiVE_c2istar_tasksKnownOnly", _knownOnly in ["true", true]];
             missionNamespace setVariable ["ALiVE_c2istar_assetTaskCap", floor (_assetCap max 0)];
             // Tablet Intel Log (Eric on Discord, 25 Oct): read by ALIVE_fnc_intelLog and by the tablet on each machine
