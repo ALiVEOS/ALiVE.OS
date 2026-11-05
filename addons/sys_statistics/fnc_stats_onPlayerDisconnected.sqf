@@ -121,7 +121,7 @@ if (GVAR(ENABLED)) then {
     };
 
     // Format Data
-    _data = [ ["Event","PlayerFinish"] , ["PlayerSide",_PlayerSide] , ["PlayerFaction",_PlayerFaction] , ["PlayerName",_name] , ["PlayerType",_PlayerType] , ["PlayerClass",_class] , ["Player", _uid] , ["shotsFired", _shotsFiredData] , ["timePlayed",_minutesPlayed], ["score",_score], ["rating",_rating], ["PlayerRank",_rank], ["playerGroup", _group] ];
+    _data = [ ["Event","PlayerFinish"] , ["PlayerSide",_PlayerSide] , ["PlayerFaction",_PlayerFaction] , ["PlayerName",_name] , ["PlayerType",_PlayerType] , ["PlayerClass",_class] , ["RoleKind", _PlayerType call GVAR(fnc_roleKind)] , ["Player", _uid] , ["shotsFired", _shotsFiredData] , ["timePlayed",_minutesPlayed], ["score",_score], ["rating",_rating], ["PlayerRank",_rank], ["playerGroup", _group] ];
 
     // Send Data
     GVAR(UPDATE_EVENTS) = _data;

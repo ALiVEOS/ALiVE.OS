@@ -72,6 +72,8 @@ if (GVAR(ENABLED)) then {
             ["sourceType", getText (configFile >> "cfgVehicles" >> (typeOf (vehicle _by)) >> "displayName")],
             ["Weapon", _weapon],
             ["WeaponType", currentWeapon (vehicle _by)],
+            ["WeaponKind", (currentWeapon (vehicle _by)) call GVAR(fnc_weaponKind)],
+            ["KillerKind", (vehicle _by) call GVAR(fnc_vehicleKind)],
             ["Distance", ceil (_hit distance _by)],
             ["damage", _damage],
             ["selfInflicted", ["false","true"] select (_by == _hit)],

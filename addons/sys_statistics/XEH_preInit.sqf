@@ -42,3 +42,8 @@ PREP(getOutEH);
 
 // Handling Combat Dives
 PREP(divingEH);
+
+// What kind of weapon, vehicle and soldier, for the War Room's pictures
+PREP(weaponKind);
+PREP(vehicleKind);
+PREP(roleKind);

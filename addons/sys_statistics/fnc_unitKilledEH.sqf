@@ -150,6 +150,11 @@ if (_stats || {_killFeed != "None"}) then {
             };
         };
 
+        // the kinds the War Room draws: what did it, what the killer was in (or "man"), and what died
+        private _weaponKind = if ((_killerweapon find "Run over (") == 0) then {"runover"} else {_killerweaponType call GVAR(fnc_weaponKind)};
+        private _killerKind = (vehicle _killer) call GVAR(fnc_vehicleKind);
+        private _killedKind = _killed call GVAR(fnc_vehicleKind);
+
         if (_killerweapon == "") then {
             _killerweapon = "UNKNOWN";
             _killerweaponType = "UNKNOWN";
@@ -165,7 +170,7 @@ if (_stats || {_killFeed != "None"}) then {
         _killedGeoPos = position _killed;
 
         // Log data
-        _data = [ ["Event","Kill"] , ["KilledSide",_sideKilled] , ["Killedfaction",_factionKilled] , ["KilledType", _killedType] , ["KilledClass",_killedVehicleClass] , ["KilledPos",_killedPos] , ["KilledGeoPos",_killedGeoPos] ,  ["KillerSide",_sideKiller] , ["Killerfaction",_factionKiller] , ["KillerType",_killerType] , ["KillerClass",_killerVehicleClass] , ["KillerPos",_killerPos] , ["KillerGeoPos",_killerGeoPos] , ["Weapon",_killerweapon] , ["WeaponType",_killerweaponType] , ["Distance",_distance] , ["Killed",_killed] , ["Killer",_killer], ["KillerConfig",_killerCfg], ["KilledConfig",_killedCfg]  ];
+        _data = [ ["Event","Kill"] , ["KilledSide",_sideKilled] , ["Killedfaction",_factionKilled] , ["KilledType", _killedType] , ["KilledClass",_killedVehicleClass] , ["KilledPos",_killedPos] , ["KilledGeoPos",_killedGeoPos] ,  ["KillerSide",_sideKiller] , ["Killerfaction",_factionKiller] , ["KillerType",_killerType] , ["KillerClass",_killerVehicleClass] , ["KillerPos",_killerPos] , ["KillerGeoPos",_killerGeoPos] , ["Weapon",_killerweapon] , ["WeaponType",_killerweaponType] , ["WeaponKind",_weaponKind] , ["KillerKind",_killerKind] , ["KilledKind",_killedKind] , ["Distance",_distance] , ["Killed",_killed] , ["Killer",_killer], ["KillerConfig",_killerCfg], ["KilledConfig",_killedCfg]  ];
 
         if (player == _killed) exitWith { // Player was killed
 
