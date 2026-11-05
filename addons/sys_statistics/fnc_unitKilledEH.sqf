@@ -155,6 +155,22 @@ if (_stats || {_killFeed != "None"}) then {
         private _killerKind = (vehicle _killer) call GVAR(fnc_vehicleKind);
         private _killedKind = _killed call GVAR(fnc_vehicleKind);
 
+        // Whether a man was shot in the head (the War Room's death panel shows it). Read from his head as he
+        // dies, and only for a firearm, since a blast hurts the head as well: the game's head hit points, or
+        // with ACE medical, which keeps its own, the head being his worst-hurt part.
+        private _headshot = false;
+        if (_killed isKindOf "Man" && {_weaponKind in ["rifle", "sniper", "pistol", "smg", "shotgun", "mg"]}) then {
+            private _parts = _killed getVariable ["ace_medical_bodyPartDamage", []];
+            _headshot = if (_parts isNotEqualTo []) then {
+                (_parts select 0) > 0 && {(_parts select 0) >= selectMax _parts}
+            } else {
+                (getAllHitPointsDamage _killed) params [["_names", []], "", ["_damage", []]];
+                private _head = 0;
+                { if ((toLower _x) in ["hithead", "hitface", "hitneck"]) then { _head = _head max (_damage param [_forEachIndex, 0]) } } forEach _names;
+                _head >= 0.9
+            };
+        };
+
         if (_killerweapon == "") then {
             _killerweapon = "UNKNOWN";
             _killerweaponType = "UNKNOWN";
@@ -170,7 +186,7 @@ if (_stats || {_killFeed != "None"}) then {
         _killedGeoPos = position _killed;
 
         // Log data
-        _data = [ ["Event","Kill"] , ["KilledSide",_sideKilled] , ["Killedfaction",_factionKilled] , ["KilledType", _killedType] , ["KilledClass",_killedVehicleClass] , ["KilledPos",_killedPos] , ["KilledGeoPos",_killedGeoPos] ,  ["KillerSide",_sideKiller] , ["Killerfaction",_factionKiller] , ["KillerType",_killerType] , ["KillerClass",_killerVehicleClass] , ["KillerPos",_killerPos] , ["KillerGeoPos",_killerGeoPos] , ["Weapon",_killerweapon] , ["WeaponType",_killerweaponType] , ["WeaponKind",_weaponKind] , ["KillerKind",_killerKind] , ["KilledKind",_killedKind] , ["Distance",_distance] , ["Killed",_killed] , ["Killer",_killer], ["KillerConfig",_killerCfg], ["KilledConfig",_killedCfg]  ];
+        _data = [ ["Event","Kill"] , ["KilledSide",_sideKilled] , ["Killedfaction",_factionKilled] , ["KilledType", _killedType] , ["KilledClass",_killedVehicleClass] , ["KilledPos",_killedPos] , ["KilledGeoPos",_killedGeoPos] ,  ["KillerSide",_sideKiller] , ["Killerfaction",_factionKiller] , ["KillerType",_killerType] , ["KillerClass",_killerVehicleClass] , ["KillerPos",_killerPos] , ["KillerGeoPos",_killerGeoPos] , ["Weapon",_killerweapon] , ["WeaponType",_killerweaponType] , ["WeaponKind",_weaponKind] , ["KillerKind",_killerKind] , ["KilledKind",_killedKind] , ["Distance",_distance] , ["Killed",_killed] , ["Killer",_killer], ["KillerConfig",_killerCfg], ["KilledConfig",_killedCfg], ["headshot",_headshot]  ];
 
         if (player == _killed) exitWith { // Player was killed
 
