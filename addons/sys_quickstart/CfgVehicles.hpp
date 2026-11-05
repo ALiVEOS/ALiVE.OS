@@ -76,8 +76,8 @@ class CfgVehicles {
                 class faction
                 {
                         property     = "ALiVE_sys_quickstart_faction";
-                        displayName  = "$STR_ALIVE_AMBCP_FACTION";
-                        tooltip      = "$STR_ALIVE_AMBCP_FACTION_COMMENT";
+                        displayName  = "$STR_ALIVE_QUICKSTART_CIV_FACTION";
+                        tooltip      = "$STR_ALIVE_QUICKSTART_CIV_FACTION_COMMENT";
                         control      = "ALiVE_FactionChoice_Civilian";
                         typeName     = "STRING";
                         expression   = "_this setVariable ['faction', _value];";
@@ -93,7 +93,7 @@ class CfgVehicles {
                         property = "ALiVE_sys_quickstart_ambientVehicleAmount"; displayName = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT"; tooltip = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_COMMENT"; defaultValue = """0.2""";
                         class Values { class NONE{name="$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_NONE";value="0";}; class LOW{name="$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_LOW";value="0.2";default=1;}; class MEDIUM{name="$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_MEDIUM";value="0.6";}; class HIGH{name="$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_HIGH";value="1";}; };
                 };
-                class ambientVehicleFaction : Edit { property = "ALiVE_sys_quickstart_ambientVehicleFaction"; displayName = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION"; tooltip = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION_COMMENT"; defaultValue = """CIV_F"""; };
+                class ambientVehicleFaction : Edit { property = "ALiVE_sys_quickstart_ambientVehicleFaction"; displayName = "$STR_ALIVE_QUICKSTART_AMBIENT_VEHICLE_FACTION"; tooltip = "$STR_ALIVE_QUICKSTART_AMBIENT_VEHICLE_FACTION_COMMENT"; defaultValue = """CIV_F"""; };
                 class ModuleDescription : ModuleDescription {};
             };
         };

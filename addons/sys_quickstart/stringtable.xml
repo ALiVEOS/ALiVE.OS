@@ -37,4 +37,40 @@
     <Chinesesimp>启用调试</Chinesesimp>
     <Spanish>Activar depuración</Spanish>
 </Key>
+<Key ID="STR_ALIVE_QUICKSTART_CIV_FACTION">
+    <English>Civilian Faction:</English>
+    <Chinese>平民派系:</Chinese>
+    <Chinesesimp>平民派系:</Chinesesimp>
+    <Spanish>Facción civil:</Spanish>
+    <French>Faction civile:</French>
+    <Portuguese>Facção civil:</Portuguese>
+    <Russian>Гражданская фракция:</Russian>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_CIV_FACTION_COMMENT">
+    <English>Faction of the civilians to be placed (e.g. CIV_F, mod_faction_name)</English>
+    <Chinese>要放置的平民所屬派系 (例如 CIV_F、mod_faction_name)</Chinese>
+    <Chinesesimp>要放置的平民所属派系 (例如 CIV_F、mod_faction_name)</Chinesesimp>
+    <Spanish>Facción de los civiles que se colocarán (p. ej. CIV_F, mod_faction_name)</Spanish>
+    <French>Faction des civils à placer (p. ex. CIV_F, mod_faction_name)</French>
+    <Portuguese>Facção dos civis a serem posicionados (ex.: CIV_F, mod_faction_name)</Portuguese>
+    <Russian>Фракция размещаемых гражданских (например, CIV_F, mod_faction_name)</Russian>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_AMBIENT_VEHICLE_FACTION">
+    <English>Ambient Vehicle Faction:</English>
+    <Chinesesimp>周围的环境车辆势力</Chinesesimp>
+    <Chinese>環境車輛派系:</Chinese>
+    <Spanish>Facción de vehículos ambientales:</Spanish>
+    <French>Faction des véhicules d'ambiance:</French>
+    <Portuguese>Facção dos veículos ambientais:</Portuguese>
+    <Russian>Фракция фоновых транспортных средств:</Russian>
+</Key>
+<Key ID="STR_ALIVE_QUICKSTART_AMBIENT_VEHICLE_FACTION_COMMENT">
+    <English>Ambient vehicles pulled from this faction (e.g. CIV_F, mod_faction_name)</English>
+    <Chinese>環境車輛將從此派系取用 (例如 CIV_F、mod_faction_name)</Chinese>
+    <Chinesesimp>环境车辆将从此派系取用 (例如 CIV_F、mod_faction_name)</Chinesesimp>
+    <Spanish>Los vehículos ambientales se tomarán de esta facción (p. ej. CIV_F, mod_faction_name)</Spanish>
+    <French>Les véhicules d'ambiance sont tirés de cette faction (p. ex. CIV_F, mod_faction_name)</French>
+    <Portuguese>Veículos ambientais retirados desta facção (ex.: CIV_F, mod_faction_name)</Portuguese>
+    <Russian>Фоновые транспортные средства берутся из этой фракции (например, CIV_F, mod_faction_name)</Russian>
+</Key>
 </Container></Package></Project>
