@@ -64,6 +64,13 @@ private _encode = {
         _out + "}"
     };
     if (_this isEqualType []) exitWith { "[" + ((_this apply { if (isNil "_x") then {"null"} else {_x call _encode} }) joinString ",") + "]" };
+    // A unit, vehicle or group (Kill, GetIn, GetOut, Heal and dive records carry them): encodeJSON
+    // left the net id unquoted (2:345), which isn't JSON, so the War Room couldn't read the record
+    if (_this isEqualTypeAny [objNull, grpNull]) exitWith {
+        if (isNull _this) then {"null"} else {
+            format ['{"type":%1,"netId":%2}', (["object", "group"] select (_this isEqualType grpNull)) call ALiVE_fnc_encodeJSON, (netId _this) call ALiVE_fnc_encodeJSON]
+        }
+    };
     _this call ALiVE_fnc_encodeJSON
 };
 
