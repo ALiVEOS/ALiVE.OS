@@ -60,6 +60,8 @@ fn_vdist_setViewDistance = {
     TEXT_VIEWDISTANCE ctrlSetText str (round viewDistance);
     // a shorter view distance takes the object view distance down with it
     call fn_vdist_refreshObjectVD;
+    // kept for after a respawn (fnc_vDist.sqf)
+    ALiVE_vdistChoice = [viewDistance, getObjectViewDistance select 0];
 };
 fn_vdist_setObjectVD = {
     params ["_value", ["_fromSlider", false]];
@@ -68,6 +70,7 @@ fn_vdist_setObjectVD = {
     setObjectViewDistance _o;
     if (!_fromSlider) then { SLIDER_OBJECTVD sliderSetPosition _o };
     TEXT_OBJECTVD ctrlSetText str (round _o);
+    ALiVE_vdistChoice = [viewDistance, _o];
 };
 fn_vdist_setTerrainGrid = {
     params ["_value", ["_fromSlider", false]];

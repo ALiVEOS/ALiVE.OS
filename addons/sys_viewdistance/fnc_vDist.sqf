@@ -194,6 +194,25 @@ switch(_operation) do {
                         if (_minsetovd == 0) then { _minsetovd = 500 };
                         setObjectViewDistance ((_prefOVD max (_minsetovd min _ovdCap)) min _ovdCap);
                     };
+                    // A respawn puts the view distance back to the player's own video setting (A. Ares on Discord,
+                    // 5 Nov; the object view distance and terrain detail are kept). The choice made here or in the
+                    // View Settings window (fn_vdist_setViewDistance, fn_vdist_setObjectVD) is put back after each one
+                    ALiVE_vdistChoice = [viewDistance, getObjectViewDistance select 0];
+                    [] spawn {
+                        waitUntil { sleep 1; !isNull player };
+                        if (!isNil "ALiVE_vdistRespawnEH") exitWith {};
+                        ALiVE_vdistRespawnEH = player addEventHandler ["Respawn", {
+                            [] spawn {
+                                // the reset can land a moment after the respawn itself, so it is checked a few times
+                                {
+                                    uiSleep _x;
+                                    ALiVE_vdistChoice params ["_vd", "_ovd"];
+                                    if (abs (viewDistance - _vd) > 1) then { setViewDistance _vd };
+                                    if (abs ((getObjectViewDistance select 0) - (_ovd min _vd)) > 1) then { setObjectViewDistance (_ovd min _vd) };
+                                } forEach [0.5, 1.5, 3];
+                            };
+                        }];
+                    };
 /*
                         // Initialise interaction key if undefined
                         if(isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};
