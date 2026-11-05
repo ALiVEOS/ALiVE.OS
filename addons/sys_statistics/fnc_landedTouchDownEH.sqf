@@ -30,6 +30,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 // MAIN
 #define DEBUG_MODE_FULL
@@ -67,7 +68,7 @@ if (GVAR(ENABLED)) then {
             // Log data
             _data = [ ["Event","Landed"] , ["vehicleSide",_sidevehicle] , ["vehiclefaction",_factionvehicle] , ["vehicleType",_vehicleType] , ["vehiclePos",_vehiclePos] , ["vehicleGeoPos",_vehicleGeoPos] , ["vehicle",_vehicle] , ["Airport",_airport], ["vehicleConfig",_vehicleConfig] ];
 
-            _data = _data + [ ["Player",getplayeruid _vehicle] , ["PlayerName",name _vehicle], ["playerGroup", [(driver _vehicle)] call ALiVE_fnc_getPlayerGroup] ];
+            _data = _data + [ ["Player",getplayeruid (driver _vehicle)] , ["PlayerName",name (driver _vehicle)], ["playerGroup", [(driver _vehicle)] call ALiVE_fnc_getPlayerGroup] ];
 
             // Send data to server to be written to DB
             GVAR(UPDATE_EVENTS) = _data;
