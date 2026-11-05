@@ -7164,7 +7164,7 @@ switch (_operation) do {
             if !([_logic, "assaultListDone", false] call ALiVE_fnc_HashGet) then {
                 [_logic, "assaultListDone", true] call ALiVE_fnc_HashSet;
                 ["OPCOM %1: every Assault target is held, so it carries on as Invasion", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
-                [_logic] spawn { params ["_logic"]; [_logic, "changeControlType", ["invasion"]] call ALiVE_fnc_OPCOM };
+                [_logic] spawn { params ["_logic"]; private _ALiVE_stanceCaller = true; [_logic, "changeControlType", ["invasion"]] call ALiVE_fnc_OPCOM };
             };
         };
         if (_result isEqualTo []) then {
@@ -7503,6 +7503,13 @@ switch (_operation) do {
     };
 
     case "changeControlType": {
+        // Only the server's own stance paths may switch a commander: the C2ISTAR
+        // menu and the Command tablet check who is asking first, then call this
+        // with _ALiVE_stanceCaller set. A client remote-calling it directly
+        // would skip those checks, so that is refused.
+        if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_stanceCaller"}) exitWith {
+            ["ALiVE_fnc_OPCOM | refused changeControlType from a direct remote call by client %1", remoteExecutedOwner] call ALiVE_fnc_dump;
+        };
         // Execute on Server only — OPCOM state (FSM handles, objectives,
         // controltype) lives in a server-local hash, so a client-side call
         // would tear down nothing and misreport "startup not complete".

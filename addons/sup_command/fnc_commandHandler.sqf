@@ -2872,6 +2872,7 @@ switch(_operation) do {
                     [_opcom,"stanceChangeInProgress",true] call ALiVE_fnc_hashSet;
                     [_opcom, _value] spawn {
                         params ["_o","_v"];
+                        private _ALiVE_stanceCaller = true;
                         [_o,"changeControlType",[_v]] call ALiVE_fnc_OPCOM;
                         [_o,"stanceChangeInProgress",false] call ALiVE_fnc_hashSet;
                     };

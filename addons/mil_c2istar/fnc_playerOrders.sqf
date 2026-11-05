@@ -1108,6 +1108,8 @@ switch (_operation) do {
         [_opcom, _newControlType, _player] spawn {
             params ["_opcom", "_newControlType", "_player"];
 
+            // the checks above were made; changeControlType lets this caller through
+            private _ALiVE_stanceCaller = true;
             [_opcom, "changeControlType", [_newControlType]] call ALiVE_fnc_OPCOM;
 
             [_opcom, "stanceChangeInProgress", false] call ALiVE_fnc_hashSet;
