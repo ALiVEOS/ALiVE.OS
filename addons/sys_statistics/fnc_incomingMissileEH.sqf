@@ -6,6 +6,7 @@
  * Extended handleDamage Eventhandler
  *
  * Created by Tupolov
+ * Jman
  * Creation date: 21/03/2013
  *
  * */
@@ -97,8 +98,8 @@ if (GVAR(ENABLED)) then {
                     _data = _data + [ ["FiredAt","true"] , ["Player", getplayeruid _target] , ["PlayerName", name _target], ["playerGroup", [_target] call ALiVE_fnc_getPlayerGroup] ];
 
                     // Send data to server to be written to DB
-                    ALIVE_SYS_STAT_UPDATE_EVENTS = _data;
-                    publicVariableServer "ALIVE_SYS_STAT_UPDATE_EVENTS";
+                    GVAR(UPDATE_EVENTS) = _data;
+                    publicVariableServer QGVAR(UPDATE_EVENTS);
 
             };
 
@@ -107,8 +108,8 @@ if (GVAR(ENABLED)) then {
                     _data = _data + [ ["Player",getplayeruid _source] , ["PlayerName",name _source], ["playerGroup", [_source] call ALiVE_fnc_getPlayerGroup] ];
 
                     // Send data to server to be written to DB
-                    ALIVE_SYS_STAT_UPDATE_EVENTS = _data;
-                    publicVariableServer "ALIVE_SYS_STAT_UPDATE_EVENTS";
+                    GVAR(UPDATE_EVENTS) = _data;
+                    publicVariableServer QGVAR(UPDATE_EVENTS);
 
             };
 

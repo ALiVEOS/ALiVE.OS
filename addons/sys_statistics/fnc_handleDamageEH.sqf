@@ -6,6 +6,7 @@
  * Extended handleDamage Eventhandler
  *
  * Created by Tupolov
+ * Jman
  * Creation date: 21/03/2013
  *
  * */
@@ -78,7 +79,7 @@ if (GVAR(ENABLED)) then {
         if (_hitSelection == "") then { _hitSelection = "body"; };
 
         // Log data
-        _data = [ ["Event","Wounded"] , ["woundedSide",_sidewounded,] , ["woundedfaction",_factionwounded] , ["woundedType", _woundedType] , ["woundedClass",_woundedVehicleClass] , ["woundedPos",_woundedPos] , ["sourceSide",_sidesource] , ["sourcefaction",_factionsource] , ["sourceType",_sourceType] , ["sourceClass",_sourceVehicleClass] , ["sourcePos",_sourcePos] , ["Weapon",_sourceweapon] , ["WeaponType",_sourceweaponType] ,["Distance",_distance],["wounded",_wounded] , ["source",_source] , ["projectile",_projectile], ["wound",_hitSelection], ["damage",_damage] ];
+        _data = [ ["Event","Wounded"] , ["woundedSide",_sidewounded] , ["woundedfaction",_factionwounded] , ["woundedType", _woundedType] , ["woundedClass",_woundedVehicleClass] , ["woundedPos",_woundedPos] , ["sourceSide",_sidesource] , ["sourcefaction",_factionsource] , ["sourceType",_sourceType] , ["sourceClass",_sourceVehicleClass] , ["sourcePos",_sourcePos] , ["Weapon",_sourceweapon] , ["WeaponType",_sourceweaponType] ,["Distance",_distance],["wounded",_wounded] , ["source",_source] , ["projectile",_projectile], ["wound",_hitSelection], ["damage",_damage] ];
 
 
         if (isPlayer _wounded) then { // Player was wounded
@@ -86,8 +87,8 @@ if (GVAR(ENABLED)) then {
                 _data = _data + [["PlayerWounded","true"] , ["Player",getplayeruid _wounded] , ["PlayerName", name _wounded ], ["playerGroup", _wounded getvariable [QGVAR(playerGroup), "Unknown"]]];
 
                 // Send data to server to be written to DB
-                ALIVE_SYS_STAT_UPDATE_EVENTS = _data;
-                publicVariableServer "ALIVE_SYS_STAT_UPDATE_EVENTS";
+                GVAR(UPDATE_EVENTS) = _data;
+                publicVariableServer QGVAR(UPDATE_EVENTS);
 
         };
 
@@ -96,8 +97,8 @@ if (GVAR(ENABLED)) then {
                 _data = _data + [["Player",getplayeruid _source] , ["PlayerName",name _source], ["playerGroup", _source getvariable [QGVAR(playerGroup), "Unknown"]]];
 
                 // Send data to server to be written to DB
-                ALIVE_SYS_STAT_UPDATE_EVENTS = _data;
-                publicVariableServer "ALIVE_SYS_STAT_UPDATE_EVENTS";
+                GVAR(UPDATE_EVENTS) = _data;
+                publicVariableServer QGVAR(UPDATE_EVENTS);
 
         };
 
