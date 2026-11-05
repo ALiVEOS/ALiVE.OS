@@ -109,6 +109,24 @@ if (hasInterface) then {
         ((_from select _i) getVariable "ALiVE_targetIdentity") params ["_name", "_role", ["_arg", ""]];
         [localize "STR_ALIVE_TARGETID_TITLE", format [localize "STR_ALIVE_TARGETID_TEXT", _name, format [localize _role, _arg]]] call ALIVE_fnc_sendHint;
     }, true, [], true] call CBA_fnc_addClassEventHandler;
+
+    // Check ID: read his wallet where it is, on his body or on him as a prisoner, without taking it
+    // (A. Ares on Discord, 5 Nov). A scroll action, and an ACE interaction when ACE is loaded.
+    [] spawn {
+        waitUntil { sleep 1; !isNull player };
+        ALiVE_checkIdAdd = {
+            _this addAction [(localize "STR_ALIVE_TARGETID_CHECK") call ALiVE_fnc_actionTitle, { [cursorObject] call ALiVE_fnc_readTargetPapers }, nil, 1.3, false, true, "",
+                "[cursorObject, true] call ALiVE_fnc_readTargetPapers", 4];
+        };
+        player call ALiVE_checkIdAdd;
+        player addEventHandler ["Respawn", { params ["_unit"]; _unit call ALiVE_checkIdAdd }];
+        if (isClass (configFile >> "CfgPatches" >> "ace_interact_menu")) then {
+            waitUntil { sleep 1; !isNil "ace_interact_menu_fnc_createAction" && {!isNull ace_player} };
+            private _action = ["ALiVE_CheckID", localize "STR_ALIVE_TARGETID_CHECK", "", { [_target] call ALiVE_fnc_readTargetPapers },
+                { [_target, true] call ALiVE_fnc_readTargetPapers }] call ace_interact_menu_fnc_createAction;
+            ["CAManBase", 0, ["ACE_MainActions"], _action, true] call ace_interact_menu_fnc_addActionToClass;
+        };
+    };
 };
 
 // Wider task list (Jman, 30 Oct): the map screen's list of tasks and diary pages is 10 grid units wide, so a task name

@@ -659,6 +659,15 @@
     <Portuguese>%1: %2.</Portuguese>
     <Russian>%1: %2.</Russian>
 </Key>
+<Key ID="STR_ALIVE_TARGETID_CHECK">
+    <English>Check ID</English>
+    <Chinese>檢查身分證件</Chinese>
+    <Chinesesimp>检查身份证件</Chinesesimp>
+    <Spanish>Comprobar identificación</Spanish>
+    <French>Vérifier l'identité</French>
+    <Portuguese>Verificar identidade</Portuguese>
+    <Russian>Проверить документы</Russian>
+</Key>
 <Key ID="STR_ALIVE_TARGETID_RECRUITER">
     <English>the insurgent recruiter for %1</English>
     <Chinese>%1 的叛亂分子招募者</Chinese>

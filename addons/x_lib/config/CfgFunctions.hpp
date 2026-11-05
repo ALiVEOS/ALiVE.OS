@@ -2133,6 +2133,13 @@ class giveTargetPapers
 	ALIVE_RECOMPILE;
 };
 
+class readTargetPapers
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_readTargetPapers.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class isArmed
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_isArmed.sqf";

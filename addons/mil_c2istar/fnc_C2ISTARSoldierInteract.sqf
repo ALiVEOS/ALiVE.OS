@@ -160,6 +160,8 @@ switch (_operation) do {
                     { private _n = _x; if (_counted findIf { (_x select 0) == _n } < 0) then { _counted pushBack [_n, { _x == _n } count _names] } } forEach _names;
                     [["STR_ALIVE_C2ISTAR_SI_SEARCH_CARRIES", (_counted apply { if ((_x select 1) > 1) then { format ["%1 x%2", _x select 0, _x select 1] } else { _x select 0 } }) joinString ", "]] call _fnc_say;
                 };
+                // his ID wallet says who he is, as taking it would (A. Ares on Discord, 5 Nov)
+                if (!isNil "ALiVE_fnc_readTargetPapers") then { [_target] call ALiVE_fnc_readTargetPapers };
             };
             case "release": { "release" call _fnc_order; closeDialog 0; [localize "STR_ALIVE_C2ISTAR", format [localize "STR_ALIVE_C2ISTAR_SI_RELEASE", name _target]] call ALIVE_fnc_sendHint };
             case "friendlies": {
