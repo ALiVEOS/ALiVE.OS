@@ -7579,9 +7579,39 @@ switch (_operation) do {
             case "assault": {"distance"};
             default {"asymmetric"};
         };
+        // What an Asymmetric commander built on each objective (its HQ, depot, factory, IEDs, roadblocks and the
+        // rest) and how far it has got. The new objectives are made from scratch, so without this a switch away
+        // and back would forget installations still standing on the map. Matched to the new objective by centre.
+        private _carryKeys = ["HQ","depot","factory","ambush","sabotage","ied","suicide","roadblocks","actions","actionsFulfilled"];
+        private _carried = _objectives apply {
+            private _old = _x;
+            [[_old,"center",[]] call ALiVE_fnc_hashGet, _carryKeys apply { [_old, _x] call ALiVE_fnc_hashGet }]
+        };
+
         _objectives = [_logic,"objectives",
             [_logic,"createObjectives", [_objectives,_sortType]] call MAINCLASS
         ] call MAINCLASS;
+
+        private _carriedCount = 0;
+        {
+            private _new = _x;
+            private _center = [_new,"center",[]] call ALiVE_fnc_hashGet;
+            private _i = _carried findIf { (_x select 0) isEqualTo _center };
+            if (_i >= 0) then {
+                private _values = (_carried select _i) select 1;
+                {
+                    private _value = _values select _forEachIndex;
+                    if (!isNil "_value" && {!(_value isEqualTo [])}) then {
+                        [_new, _x, _value] call ALiVE_fnc_hashSet;
+                        if (_forEachIndex < 8) then { _carriedCount = _carriedCount + 1 };
+                    };
+                } forEach _carryKeys;
+                _carried deleteAt _i;
+            };
+        } forEach _objectives;
+        if (_carriedCount > 0) then {
+            ["AI Commander %1 switched to %2: %3 installation record(s) kept on the objectives", [_logic, "name", ""] call ALiVE_fnc_hashGet, _newControlType, _carriedCount] call ALiVE_fnc_dump;
+        };
         [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
 
         [_logic,"controltype", _newControlType] call ALiVE_fnc_hashSet;
