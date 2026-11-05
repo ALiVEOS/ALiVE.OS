@@ -1,7 +1,7 @@
 /* ----------------------------------------------------------------------------
 Function: ALIVE_sys_stat_fnc_hitEH
 Description:
-Handles a unit hit event for all players. Is defined using XEH_postClientInit.sqf in the sys_stat module. Sends the information to the ALIVE website as a "Hit" record
+Handles a unit hit event for all players. Is defined using XEH_postClientInit.sqf in the sys_stat module. Sends the information to the ALIVE website as a "Hit" record, and a "Wounded" record when the player is the one hurt
 
 Parameters:
 Object - the unit that was hit
@@ -32,6 +32,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 // MAIN
 #define DEBUG_MODE_FULL
@@ -47,6 +48,40 @@ if (GVAR(ENABLED)) then {
 
     if (isNull _source) then {
         _source = _hit;
+    };
+
+    // Wounded: one record when a player is hurt, at most one every 5 seconds so a burst of fire or a
+    // blast counts once. Sent at every event level (the Hit records below are the detailed ones).
+    // Player and PlayerName are the wounded player's.
+    if (isPlayer _hit && {local _hit} && {_damage > 0} && {time >= (_hit getVariable [QGVAR(lastWounded), -10]) + 5}) then {
+        _hit setVariable [QGVAR(lastWounded), time];
+        private _by = _this param [3, objNull];
+        if (isNull _by) then { _by = _source };
+        private _weapon = getText (configFile >> "cfgWeapons" >> (currentWeapon _by) >> "displayName");
+        if (vehicle _by != _by) then {
+            _weapon = _weapon + format [" (%1)", getText (configFile >> "cfgVehicles" >> (typeOf (vehicle _by)) >> "displayName")];
+        };
+        private _wounded = [
+            ["Event","Wounded"],
+            ["woundedSide", side (group _hit)],
+            ["woundedfaction", getText (((faction _hit) call ALiVE_fnc_configGetFactionClass) >> "displayName")],
+            ["woundedType", getText (configFile >> "cfgVehicles" >> (typeOf _hit) >> "displayName")],
+            ["woundedPos", mapGridPosition _hit],
+            ["sourceSide", side (group _by)],
+            ["sourcefaction", getText (((faction _by) call ALiVE_fnc_configGetFactionClass) >> "displayName")],
+            ["sourceType", getText (configFile >> "cfgVehicles" >> (typeOf (vehicle _by)) >> "displayName")],
+            ["Weapon", _weapon],
+            ["WeaponType", currentWeapon (vehicle _by)],
+            ["Distance", ceil (_hit distance _by)],
+            ["damage", _damage],
+            ["selfInflicted", ["false","true"] select (_by == _hit)],
+            ["PlayerWounded","true"],
+            ["Player", getPlayerUID _hit],
+            ["PlayerName", name _hit],
+            ["playerGroup", [_hit] call ALiVE_fnc_getPlayerGroup]
+        ];
+        GVAR(UPDATE_EVENTS) = _wounded;
+        publicVariableServer QGVAR(UPDATE_EVENTS);
     };
 
     if ( ((isPlayer _hit) || (isPlayer _source)) && MOD(sys_data) getVariable ["EventLevel",5] > 5) then {
