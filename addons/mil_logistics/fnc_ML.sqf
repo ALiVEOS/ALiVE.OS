@@ -8200,6 +8200,26 @@ switch(_operation) do {
                             if (surfaceIsWater _newPos) exitWith {_water = true;};
                         };
 
+                        // a road delivery here would cross water in a straight line (pathfinding off)
+                        private _wetRoad = _water && {!isNil "ALIVE_profileSystem"} && {!([ALIVE_profileSystem, "pathfinding", true] call ALIVE_fnc_hashGet)};
+
+                        // A helicopter delivery that gives up waiting for held objectives goes by road, unless that road
+                        // crosses water: then the infantry are parachuted in and the vehicles stay behind. Sets the
+                        // vehicle counts of this scope; returns the new delivery type.
+                        private _fnc_heliTimeoutType = {
+                            params ["_cycles", "_what"];
+                            if (_wetRoad && {_eventForceInfantry > 0}) exitWith {
+                                ["ML - HELI_INSERT: Timeout waiting for %1 (%2 cycles). The road crosses water with pathfinding off, so event %3 is a parachute drop and its vehicles stay behind.",
+                                    _what, _cycles, _eventID] call ALiVE_fnc_dump;
+                                _eventForceMotorised  = 0;
+                                _eventForceMechanised = 0;
+                                _eventForceArmour     = 0;
+                                "HELI_PARADROP"
+                            };
+                            ["ML - HELI_INSERT: Timeout waiting for %1 (%2 cycles). Falling back to ground convoy for event %3.", _what, _cycles, _eventID] call ALiVE_fnc_dump;
+                            "STANDARD"
+                        };
+
                         _slingAvailable = false; // slingloading is available as a service
                         _airTrans = [];
 
@@ -8323,6 +8343,18 @@ switch(_operation) do {
                             };
                         }; // end Rules 1-8
                         }; // end Rule 0 else
+
+                        // With profile pathfinding off a road convoy in the background drives the straight line, so one
+                        // whose route crosses water would cross the sea. The infantry fly in instead and the vehicles stay
+                        // behind, as the slingload throttle below already does with vehicle groups.
+                        if (_eventType == "STANDARD" && {_wetRoad} && {_eventForceInfantry > 0} && {count _airTrans > 0}) then {
+                            ["ML - Delivery type: HELI_INSERT (road route crosses water with pathfinding off: %1 infantry squads fly, %2 vehicle groups stay behind, event %3)",
+                                _eventForceInfantry, _eventForceMotorised + _eventForceMechanised + _eventForceArmour, _eventID] call ALiVE_fnc_dump;
+                            _eventForceMotorised  = 0;
+                            _eventForceMechanised = 0;
+                            _eventForceArmour     = 0;
+                            _eventType = "HELI_INSERT";
+                        };
                         }; // end if (!ALIVE_ML_TEST_REQUEST) delivery type decision
 
                         // TEST BYPASS: pin departure and destination to the positions stored
@@ -8533,9 +8565,7 @@ switch(_operation) do {
                                 private _heliWaitMax = 200;
 
                                 if (_heliWaitIterations >= _heliWaitMax) then {
-                                    ["ML - HELI_INSERT: Timeout waiting for valid held objectives (%1 cycles). Falling back to ground convoy for event %2.",
-                                        _heliWaitIterations, _eventID] call ALiVE_fnc_dump;
-                                    _eventType = "STANDARD";
+                                    _eventType = [_heliWaitIterations, "valid held objectives"] call _fnc_heliTimeoutType;
                                     // Reset stateData so ground convoy path starts clean
                                     _eventStateData set [1, 0];
                                     [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
@@ -8822,9 +8852,7 @@ switch(_operation) do {
                                     private _heliBaseWaitMax = 100;
 
                                     if (_heliBaseWaitIterations >= _heliBaseWaitMax) then {
-                                        ["ML - HELI_INSERT: Timeout waiting for 2 distinct held objectives (%1 cycles). Falling back to ground convoy for event %2.",
-                                            _heliBaseWaitIterations, _eventID] call ALiVE_fnc_dump;
-                                        _eventType = "STANDARD";
+                                        _eventType = [_heliBaseWaitIterations, "2 distinct held objectives"] call _fnc_heliTimeoutType;
                                         _eventStateData set [3, 0];
                                         [_event, "stateData", _eventStateData] call ALIVE_fnc_hashSet;
                                     } else {
