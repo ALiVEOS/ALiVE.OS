@@ -51,6 +51,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMAsymmetricState.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class OPCOMExportInstallations {
+                                description = "Writes an Asymmetric commander's installations and roadblocks out as SQF that marks each one, for Eden or a mission";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMExportInstallations.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class updateSectorHostility {
                                 description = "Updates the current sector of position with given value";
                                 file = "\x\alive\addons\mil_opcom\fnc_updateSectorHostility.sqf";
