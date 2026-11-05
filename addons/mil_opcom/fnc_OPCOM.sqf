@@ -4251,6 +4251,9 @@ switch (_operation) do {
 
             _exportObjectives = [] call ALIVE_fnc_hashCreate;
 
+            // each commander's type goes with its objectives, so a load can tell the type was changed in Eden since
+            private _typeByID = OPCOM_INSTANCES apply { [[_x,"opcomID",""] call ALiVE_fnc_HashGet, [_x,"controltype",""] call ALiVE_fnc_HashGet] };
+
             {
                 _objective = _x;
                 _objectiveID = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
@@ -4262,6 +4265,10 @@ switch (_operation) do {
                 };
 
                 {[_exportObjective, _x] call ALIVE_fnc_hashRem} foreach _blacklist;
+
+                private _ownerID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
+                private _owner = _typeByID findIf { (_x select 0) == _ownerID };
+                if (_owner >= 0) then { [_exportObjective, "savedType", (_typeByID select _owner) select 1] call ALIVE_fnc_hashSet };
 
                 [_exportObjectives, _objectiveID, _exportObjective] call ALIVE_fnc_hashSet;
 
@@ -4520,10 +4527,12 @@ switch (_operation) do {
                 ];
 
                 // Rebuild objectives in correct index-order
+                private _savedTypes = [];
                 {
                     //["LOAD OPCOM DATA CLEANING HASH %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_dump;
 
                     private _entry = _x;
+                    _savedTypes pushBackUnique ([_entry,"savedType",""] call ALiVE_fnc_HashGet);
 
                     private _target = [nil,"createhashobject"] call ALIVE_fnc_OPCOM;
 
@@ -4582,6 +4591,27 @@ switch (_operation) do {
 
                 [_logic,"objectives", _objectives] call ALiVE_fnc_HashSet;
                 [_logic,"rebuildObjectiveIndexes"] call MAINCLASS;
+
+                // The commander's type was changed in Eden since the save (say Asymmetric to Invasion): put the
+                // objectives in the new type's order, as switching type mid-mission does. Saves from before the
+                // type was saved say nothing, and keep their order. Like a mid-mission switch, it builds no new
+                // insurgent installations on the way.
+                private _loadType = [_logic,"controltype","invasion"] call ALiVE_fnc_HashGet;
+                _savedTypes = _savedTypes - [""];
+                if (_savedTypes isNotEqualTo [] && {!(_loadType in _savedTypes)}) then {
+                    private _sortType = switch (_loadType) do {
+                        case "occupation": {"strategic"};
+                        case "dugin": {"strategic"};
+                        case "invasion": {"distance"};
+                        case "assault": {"distance"};
+                        default {"asymmetric"};
+                    };
+                    private _occupation = [_logic,"asym_occupation",-1] call ALiVE_fnc_HashGet;
+                    [_logic,"asym_occupation",-1] call ALiVE_fnc_HashSet;
+                    [_logic,"sortObjectives",_sortType] call MAINCLASS;
+                    [_logic,"asym_occupation",_occupation] call ALiVE_fnc_HashSet;
+                    ["AI Commander %1 was saved as %2 and starts as %3: its %4 saved objectives are put in the new order", [_logic,"name",""] call ALiVE_fnc_HashGet, _savedTypes joinString "/", _loadType, count _objectives] call ALiVE_fnc_dump;
+                };
                 _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
 
                 if (ALiVE_SYS_DATA_DEBUG_ON) then {
