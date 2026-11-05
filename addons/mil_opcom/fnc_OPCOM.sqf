@@ -6396,6 +6396,33 @@ switch (_operation) do {
         ["[OPCOM INTEL] %1 %2: the assault goes ahead, %3 (%4 contacts, sure %5 after %6 s)", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet,
             _why, count (_assess select 1), (round ((_assess select 0) * 100)) / 100, round (time - (_intel select 0))] call ALiVE_fnc_dump;
         [_logic, "intelMarkers", [_objective, _assess]] call MAINCLASS;
+        [_logic, "intelCancelRecon", _objective] call MAINCLASS;
+    };
+
+    // objective: the players' recon task this commander gave for it (intelCollect), once it no longer waits on it (the
+    // assault has gone ahead, or the objective was let go). AshTray on Discord, 5 Nov: a Reconnoitre task stayed
+    // assigned after the objective had been cleared. Taken off as prepCancelTasks takes off a preparation task, with
+    // one "Task cancelled" popup. Returns true when one was cancelled
+    case "intelCancelRecon": {
+        private _objective = _args;
+        _result = false;
+        private _intel = [_objective, "intel"] call ALiVE_fnc_HashGet;
+        if (isNil "_intel" || {isNil "ALiVE_TaskHandler"}) exitWith {};
+        private _id = _intel select 8;
+        if (_id == "") exitWith {};
+        _intel set [3, "closed"];
+        private _all = ([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2;
+        private _root = _all select { (_x select 0) == _id };
+        if (_root isEqualTo [] || {((_root select 0) select 8) in ["Succeeded", "Failed", "Canceled"]}) exitWith {};
+        private _row = +(_root select 0);
+        {
+            private _p = [_x] call ALIVE_fnc_getPlayerByUID;
+            if (!isNull _p) then { ["TaskCanceled", ["", _row select 5]] remoteExecCall ["BIS_fnc_showNotification", _p] };
+        } forEach ((_row select 7) param [0, []]);
+        [ALIVE_eventLog, "addEvent", ["TASK_DELETE", [_id, _row select 1, _row select 2], "OPCOM"] call ALiVE_fnc_event] call ALiVE_fnc_eventLog;
+        ["[OPCOM INTEL] %1 %2: the players' recon task %3 cancelled, no longer needed", [_logic, "side", ""] call ALiVE_fnc_HashGet,
+            [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _id] call ALiVE_fnc_dump;
+        _result = true;
     };
 
     // [objective, assessment if already made]: with Intel Markers on, what the commander knows of it goes to the maps of the
@@ -6733,7 +6760,9 @@ switch (_operation) do {
                 || {([_objective, "opcom_state", ""] call ALiVE_fnc_HashGet) != "attacking"}
                 || {[_logic, "intelReady", _objective] call ALiVE_fnc_OPCOM}
             };
-            if ([_objective, "deleted", false] call ALiVE_fnc_HashGet || {([_objective, "opcom_state", ""] call ALiVE_fnc_HashGet) != "attacking"}) exitWith {};
+            if ([_objective, "deleted", false] call ALiVE_fnc_HashGet || {([_objective, "opcom_state", ""] call ALiVE_fnc_HashGet) != "attacking"}) exitWith {
+                [_logic, "intelCancelRecon", _objective] call ALiVE_fnc_OPCOM;
+            };
             private _fsm = [_logic, "OPCOM_FSM", -1] call ALiVE_fnc_HashGet;
             private _queue = _fsm getFSMVariable ["_OPCOM_QUEUE", []];
             _queue pushBack ["completed", ["recon", _objective]];
