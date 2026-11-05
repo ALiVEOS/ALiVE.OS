@@ -143,6 +143,10 @@ if (isServer && {_main} && {_hqs}) then {
 };
 
 if (!hasInterface || {!_main}) exitWith {};
+// the player's side of it once per machine: a module started a second time here gave every action twice
+// (A. Ares on Discord, 5 Nov, with Deploy rally point)
+if (!isNil "ALiVE_rallyClientStarted") exitWith {};
+ALiVE_rallyClientStarted = true;
 
 [_logic] spawn {
     params ["_logic"];
@@ -223,14 +227,6 @@ if (!hasInterface || {!_main}) exitWith {};
     private _useAce = _hasAce && {_ui in ["AUTO", "ACE", "BOTH"]};
     private _useScroll = !_useAce || {_ui == "BOTH"};
     private _cond = "ALiVE_rallyNear isNotEqualTo [] && {vehicle _this == _this} && {lifeState _this in ['HEALTHY','INJURED']} && {!captive _this}";
-    if (_useScroll) then {
-        private _add = {
-            player addAction [(localize "STR_ALIVE_RALLY_ACTION") call ALiVE_fnc_actionTitle, { ["open"] call ALiVE_fnc_rallyWindow }, nil, 1.48, true, true, "", ALiVE_rallyCond, 5];
-        };
-        ALiVE_rallyCond = _cond;
-        call _add;
-        player addEventHandler ["Respawn", { player addAction [(localize "STR_ALIVE_RALLY_ACTION") call ALiVE_fnc_actionTitle, { ["open"] call ALiVE_fnc_rallyWindow }, nil, 1.48, true, true, "", ALiVE_rallyCond, 5] }];
-    };
     // a squad leader puts down the squad's own rally point where they stand; whoever Who Can Manage lets in
     // picks a leader's point up or renames it at it, and renames a synced point (the squad's leader alone, by default)
     private _leaderMode = toUpper (_logic getVariable ["leaderRally", "OFF"]);
@@ -238,7 +234,13 @@ if (!hasInterface || {!_main}) exitWith {};
     ALiVE_rallyPickupCond = "ALiVE_rallyPickupRow isNotEqualTo []";
     ALiVE_rallyRenameCond = "ALiVE_rallyRenameRow isNotEqualTo []";
     if (_useScroll) then {
+        ALiVE_rallyCond = _cond;
+        // Once per body: the respawn at mission start can fire after this has already put them on the new
+        // body, which gave two of each.
         ALiVE_rallyLeaderActions = {
+            if ((missionNamespace getVariable ["ALiVE_rallyActionsOn", objNull]) isEqualTo player) exitWith {};
+            ALiVE_rallyActionsOn = player;
+            player addAction [(localize "STR_ALIVE_RALLY_ACTION") call ALiVE_fnc_actionTitle, { ["open"] call ALiVE_fnc_rallyWindow }, nil, 1.48, true, true, "", ALiVE_rallyCond, 5];
             if (ALiVE_rallyLeaderOn) then {
                 player addAction [(localize "STR_ALIVE_RALLY_DEPLOY") call ALiVE_fnc_actionTitle, { ["deploy", [player]] call ALiVE_fnc_rallyPoint }, nil, 1.46, false, true, "", ALiVE_rallyDeployCond, 1];
             };
