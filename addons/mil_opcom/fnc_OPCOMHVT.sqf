@@ -211,6 +211,56 @@ switch (_operation) do {
         private _module = [_h, "module", objNull] call ALiVE_fnc_HashGet;
         private _setClass = ((_module getVariable ["hvtClass", ""]) splitString ", ") select { isClass (configFile >> "CfgVehicles" >> _x) && {_x isKindOf "CAManBase"} };
         if (_setClass isNotEqualTo []) then { _classes = [selectRandom _setClass] };
+
+        // A Faction Compiler faction dresses its soldiers as they spawn, from the compiled group each came
+        // from. Made from a bare class, the officer came out in that class's own kit (the source faction's,
+        // often the enemy's), so he's taken from a compiled group and given its kit: an officer by name,
+        // else a group leader who isn't crew or a pilot, else any such soldier. A module class one of the
+        // groups uses gets that group's kit too. The first of the commander's factions that is compiled
+        // counts, whichever one the officer above came from; a faction with no such soldier is left as is.
+        private _kitHook = "";
+        if (!isNil "ALiVE_fnc_factionCompilerIsCompiledFaction") then {
+            {
+                private _fac = _x;
+                if ([_fac] call ALiVE_fnc_factionCompilerIsCompiledFaction) then {
+                    private _fd = [_fac] call ALIVE_fnc_factionCompilerGetFactionData;
+                    private _groups = if (isNil "_fd") then { [] } else { [_fd, "compiledGroups", []] call ALIVE_fnc_hashGet };
+                    if (_groups isEqualType [] && {count _groups == 4}) then {
+                        private _named = [];
+                        private _leaders = [];
+                        private _setIn = [];
+                        private _others = [];
+                        {
+                            private _gid = _x;
+                            private _classesIn = ([(_groups select 2) select _forEachIndex, "units", []] call ALIVE_fnc_hashGet) apply { [_x, "class", ""] call ALIVE_fnc_hashGet };
+                            if (_classesIn isNotEqualTo []) then {
+                                private _lead = toLower (_classesIn select 0);
+                                if ((["crew", "pilot", "diver", "survivor", "unarmed"] findIf { _lead find _x >= 0 }) < 0) then { _leaders pushBack [_gid, _classesIn select 0] };
+                                {
+                                    private _c = toLower _x;
+                                    if ((["officer", "commander", "leader", "captain"] findIf { _c find _x >= 0 }) >= 0) then { _named pushBack [_gid, _x] };
+                                    if ((["crew", "pilot", "diver", "survivor", "unarmed"] findIf { _c find _x >= 0 }) < 0) then { _others pushBack [_gid, _x] };
+                                } forEach _classesIn;
+                                if (_setClass isNotEqualTo [] && {(_classes select 0) in _classesIn}) then { _setIn pushBack [_gid, _classes select 0] };
+                            };
+                        } forEach (_groups select 1);
+                        private _pick = switch (true) do {
+                            case (_setClass isNotEqualTo []): { _setIn param [0, []] };
+                            case (_named isNotEqualTo []): { selectRandom _named };
+                            case (_leaders isNotEqualTo []): { selectRandom _leaders };
+                            case (_others isNotEqualTo []): { selectRandom _others };
+                            default { [] };
+                        };
+                        if (_pick isNotEqualTo []) then {
+                            _faction = _fac;
+                            _classes = [_pick select 1];
+                            _kitHook = format ["[_this select 0, %1, %2] call ALiVE_fnc_factionCompilerApplyLoadout;", str _fac, str (_pick select 0)];
+                        };
+                    };
+                };
+                if (_kitHook != "") exitWith {};
+            } forEach ([_h, "factions", []] call ALiVE_fnc_HashGet);
+        };
         if (_classes isEqualTo []) exitWith { ["OPCOM %1: no officer class for %2, no high value target", _sideText, _faction] call ALiVE_fnc_dump };
 
         // A name from the officer's own name list (text, or an array on some mod units), as
@@ -236,6 +286,7 @@ switch (_operation) do {
         private _hvt = [_classes, _sideText, _faction, _pos, random 360, _faction, true] call ALIVE_fnc_createProfileEntity;
         private _hvtID = [_hvt, "profileID", ""] call ALiVE_fnc_HashGet;
         [ALIVE_profileStationary, _hvtID, true] call ALIVE_fnc_hashSet;
+        if (_kitHook != "") then { [_hvt, "onEachSpawn", _kitHook] call ALIVE_fnc_profileEntity };
         [_hvt, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 0, "SAFE", "LIMITED", "", true]]] call ALIVE_fnc_profileEntity;
 
         // His guard, held as he is: the module's High Value Target Guards (unit classes make one
