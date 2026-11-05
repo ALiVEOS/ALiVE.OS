@@ -67,8 +67,9 @@ if (isDedicated && GVAR(ENABLED)) then {
     };
 
     // Setup Module Data Listener
-    // Server side handler to write data to DB
-    QGVAR(UPDATE_EVENTS) addPublicVariableEventHandler {
+    // Server side handler to write data to DB. Takes [name, data] like a public variable handler, so the
+    // mission-end handler below can call it straight away instead of waiting for a broadcast.
+    GVAR(fnc_writeEvent) = {
 
         private ["_data", "_post", "_gameTime", "_realTime","_hours","_minutes","_currenttime","_async","_missionTime"];
         if (GVAR(ENABLED)) then {
@@ -131,6 +132,21 @@ if (isDedicated && GVAR(ENABLED)) then {
 
         };
     };
+    QGVAR(UPDATE_EVENTS) addPublicVariableEventHandler { _this call GVAR(fnc_writeEvent) };
+
+    // One OperationFinish per mission. A dedicated server never shows up as a disconnecting player when its
+    // mission ends or restarts, so the War Room listed those operations as never finished. MPEnded fires on
+    // the server when it stops playing for any reason (mission end, #restart, #missions, shutdown); the old
+    // "__SERVER__" disconnect call goes through here too, and whichever comes first sends it.
+    GVAR(fnc_operationFinish) = {
+        params [["_reason", ""]];
+        if (!isNil QGVAR(operationFinished)) exitWith {};
+        GVAR(operationFinished) = true;
+        private _minutesPlayed = round ((diag_tickTime - GVAR(timeStarted)) / 60);
+        ["Operation finished (%1) after %2 minutes", _reason, _minutesPlayed] call ALiVE_fnc_dump;
+        [QGVAR(UPDATE_EVENTS), [["Event","OperationFinish"], ["timePlayed", _minutesPlayed]]] call GVAR(fnc_writeEvent);
+    };
+    addMissionEventHandler ["MPEnded", { ["mission ended"] call GVAR(fnc_operationFinish) }];
 
     // Set Operation name
     GVAR(operation) = getText (missionConfigFile >> "OnLoadName");

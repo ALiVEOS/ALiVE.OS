@@ -29,19 +29,9 @@ if (GVAR(ENABLED)) then {
 
     // diag_log [str(_id), _name, _uid];
 
+    // Sent once per mission, shared with the server's mission-end handler (fnc_statisticsInit)
     if (_name == "__SERVER__") exitWith {
-
-        // _minutesPlayed = floor(( (dateToNumber date) - ( dateToNumber GVAR(timeStarted)) ) * 525600);
-        _minutesPlayed = round(( diag_tickTime - GVAR(timeStarted))/60);
-
-
-            // Format Data
-            _data = [ ["Event","OperationFinish"] , ["timePlayed", _minutesPlayed] ];
-
-            // Send Data
-            GVAR(UPDATE_EVENTS) = _data;
-            publicVariableServer QGVAR(UPDATE_EVENTS);
-
+        if (!isNil QGVAR(fnc_operationFinish)) then { ["server left"] call GVAR(fnc_operationFinish) };
     };
 
     // Cater for non player situations
