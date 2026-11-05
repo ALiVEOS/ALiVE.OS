@@ -79,7 +79,7 @@ if (_squads > 0) then {
     _msg = _msg + format [" %1 template squad%2 for the Faction Compiler came with it.", _squads, ["s", ""] select (_squads == 1)];
 };
 if (_squadsLeftOut > 0) then {
-    _msg = _msg + format [" %1 template squad%2 with a vehicle left out: a preset cannot carry vehicle crews yet.", _squadsLeftOut, ["s", ""] select (_squadsLeftOut == 1)];
+    _msg = _msg + format [" %1 template squad%2 with a drone left out: a preset cannot carry drones yet.", _squadsLeftOut, ["s", ""] select (_squadsLeftOut == 1)];
 };
 if (count _dropped > 0) then {
     _msg = _msg + format [" Left out: %1.", _dropped joinString ", "];

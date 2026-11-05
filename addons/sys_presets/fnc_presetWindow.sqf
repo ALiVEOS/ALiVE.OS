@@ -591,7 +591,7 @@ uiNamespace setVariable ["ALiVE_presetWindowGoPlace", _fnc_goPlace];
             _missing joinString ", "];
     };
     if (_ok && {_squadsLeftOut > 0}) then {
-        _said = _said + format [" %1 template squad%2 with a vehicle left out: a preset cannot carry vehicle crews yet.", _squadsLeftOut, ["s", ""] select (_squadsLeftOut == 1)];
+        _said = _said + format [" %1 template squad%2 with a drone left out: a preset cannot carry drones yet.", _squadsLeftOut, ["s", ""] select (_squadsLeftOut == 1)];
     };
     // Said now, because nothing else would tell anybody: placed on this map
     // again, the preset goes back exactly where it is, with no click.

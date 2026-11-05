@@ -283,11 +283,49 @@ private _objectRows = [];
 // numbers, so a placed squad wears its classes' own kit, and kit changed in the
 // Arsenal has to be changed again.
 //
-// A squad with a vehicle is left out for now and counted in the report, because
-// Eden will not put a crew into a vehicle by script.
+// A squad with vehicles carries them too (AshTray on Discord, 5 Nov): each vehicle's
+// class, where it stands and which way it faces, and each man in one his seat, as
+// [vehicle, role, cargo index, turret path] in place of the -1 a man on foot has.
+// Eden only keeps a crew it seated itself, so a placed squad's men are seated by
+// their init line when the mission starts (ALIVE_fnc_presetPlace), and such a man
+// is on foot in the editor after a reload: his seat is read back from that line.
+// A squad with a drone is still left out and counted: its crew is the game's
+// hidden drone AI, which the Faction Compiler makes for itself.
 private _squadRows = [];
 private _squadsLeftOut = 0;
 private _squadSides = [];
+// The seat a placed man's init line gives him (ALIVE_fnc_presetPlace writes it):
+// [vehicle, role, cargo index, turret path], or [] when the line is not one of ours
+private _fnc_seatFromInit = {
+    params ["_man"];
+    private _init = (_man get3DENAttribute "init") param [0, ""];
+    if (!(_init isEqualType "") || {(_init find "if (local this) then {this moveIn") != 0}) exitWith { [] };
+    // what follows "this moveIn", without the closing brace
+    private _rest = _init select [33, (count _init) - 34];
+    private _kind = "";
+    { if ((_rest find _x) == 0) exitWith { _kind = _x } } forEach ["Driver ", "Cargo [", "Turret ["];
+    if (_kind isEqualTo "") exitWith { [] };
+    private _args = _rest select [count _kind];
+    private _name = _args;
+    private _arg = "";
+    if !(_kind isEqualTo "Driver ") then {
+        private _comma = _args find ", ";
+        _name = if (_comma < 0) then { "" } else { _args select [0, _comma] };
+        _arg = if (_comma < 0) then { "" } else { _args select [_comma + 2, (count _args) - _comma - 3] };
+    };
+    if (_name isEqualTo "") exitWith { [] };
+    private _objs = all3DENEntities param [0, []];
+    private _veh = _objs param [_objs findIf { ((_x get3DENAttribute "name") param [0, ""]) isEqualTo _name }, objNull];
+    if (isNull _veh) exitWith { [] };
+    switch (_kind) do {
+        case "Driver ": { [_veh, "driver", -1, []] };
+        case "Cargo [": { [_veh, "cargo", parseNumber _arg, []] };
+        default {
+            private _path = parseSimpleArray _arg;
+            if (_path isEqualType [] && {(_path findIf { !(_x isEqualType 0) }) < 0}) then { [_veh, "turret", -1, _path] } else { [] }
+        };
+    }
+};
 // Across every category, as the compiler takes a group once however many
 // categories it is synced to.
 private _seenGroups = [];
@@ -301,14 +339,45 @@ private _seenGroups = [];
                 if !(_group in _seenGroups) then {
                     _seenGroups pushBack _group;
                     private _men = [leader _group] + ((units _group) - [leader _group]);
-                    if ((_men findIf { vehicle _x != _x }) >= 0) then {
+                    // each man's vehicle and seat, from the editor or, after a reload, from his init line
+                    private _seatsNow = _men apply {
+                        private _man = _x;
+                        private _veh = vehicle _man;
+                        if (_veh isEqualTo _man) then {
+                            [_man] call _fnc_seatFromInit
+                        } else {
+                            private _crew = fullCrew [_veh, "", false];
+                            private _row = _crew param [_crew findIf { (_x select 0) isEqualTo _man }, []];
+                            if (_row isEqualTo []) then { [] } else {
+                                _row params ["", "_role", ["_cargo", -1], ["_path", []]];
+                                _role = toLower _role;
+                                switch (true) do {
+                                    case (_role isEqualTo "driver"): { [_veh, "driver", -1, []] };
+                                    case (_role isEqualTo "cargo"): { [_veh, "cargo", _cargo, []] };
+                                    default { [_veh, "turret", -1, _path] };
+                                }
+                            }
+                        }
+                    };
+                    private _vehicles = [];
+                    { if (_x isNotEqualTo []) then { _vehicles pushBackUnique (_x select 0) } } forEach _seatsNow;
+                    if ((_vehicles findIf { unitIsUAV _x }) >= 0) then {
                         _squadsLeftOut = _squadsLeftOut + 1;
-                        ["ALiVE presets: a template squad with a vehicle is left out (%1)", groupId _group] call ALIVE_fnc_dump;
+                        ["ALiVE presets: a template squad with a drone is left out (%1)", groupId _group] call ALIVE_fnc_dump;
                     } else {
                         _squadSides pushBackUnique (side _group);
-                        _squadRows pushBack [_owner, _men apply {
+                        private _menRows = [];
+                        {
+                            private _seat = _seatsNow select _forEachIndex;
                             private _rot = (_x get3DENAttribute "rotation") param [0, [0, 0, 0]];
-                            [typeOf _x, getPosATL _x, round (_rot param [2, 0]), toUpper ((_x get3DENAttribute "rank") param [0, "PRIVATE"]), -1]
+                            private _seatRow = if (_seat isEqualTo []) then { -1 } else { [_vehicles find (_seat select 0), _seat select 1, _seat select 2, _seat select 3] };
+                            // a seated man is carried where his vehicle stands
+                            private _at = if (_seat isEqualTo []) then { getPosATL _x } else { getPosATL (_seat select 0) };
+                            _menRows pushBack [typeOf _x, _at, round (_rot param [2, 0]), toUpper ((_x get3DENAttribute "rank") param [0, "PRIVATE"]), _seatRow];
+                        } forEach _men;
+                        _squadRows pushBack [_owner, _menRows, _vehicles apply {
+                            private _vrot = (_x get3DENAttribute "rotation") param [0, [0, 0, 0]];
+                            [typeOf _x, getPosATL _x, round (_vrot param [2, 0])]
                         }];
                     };
                 };
@@ -350,7 +419,7 @@ if (_keepLayout) then {
 };
 { _places pushBack (_x select 3) } forEach _rows;
 { _places pushBack (_x select 1) } forEach _objectRows;
-{ { _places pushBack (_x select 1) } forEach (_x select 1) } forEach _squadRows;
+{ { _places pushBack (_x select 1) } forEach (_x select 1); { _places pushBack (_x select 1) } forEach (_x select 2) } forEach _squadRows;
 
 private _midX = 0;
 private _midY = 0;
@@ -396,11 +465,12 @@ private _fnc_offsetTenths = {
     [round (((_at param [0, 0]) - _midX) * 10) / 10, round (((_at param [1, 0]) - _midY) * 10) / 10]
 };
 private _squads = _squadRows apply {
-    _x params ["_owner", "_men"];
-    [_owner, _men apply { [_x select 0, [_x select 1] call _fnc_offsetTenths, _x select 2, _x select 3, _x select 4] }, []]
+    _x params ["_owner", "_men", "_vehicles"];
+    [_owner, _men apply { [_x select 0, [_x select 1] call _fnc_offsetTenths, _x select 2, _x select 3, _x select 4] },
+        _vehicles apply { [_x select 0, [_x select 1] call _fnc_offsetTenths, _x select 2] }]
 };
 private _squadClasses = [];
-{ { _squadClasses pushBack [_x select 0, []] } forEach (_x select 1) } forEach _squads;
+{ { _squadClasses pushBack [_x select 0, []] } forEach ((_x select 1) + (_x select 2)) } forEach _squads;
 // The object classes count towards what the preset needs loaded, as the module
 // classes do: a Field HQ from a mod needs that mod.
 

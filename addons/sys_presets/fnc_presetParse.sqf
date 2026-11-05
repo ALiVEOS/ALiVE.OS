@@ -340,8 +340,8 @@ if !(_objects isEqualType []) then {
 
 // The template squads. Each is the category it is synced to, by its place in the
 // list, then the men, leader first: a class this game has that is a man, where he
-// stands from the middle, which way he faces, his rank, and -1 (on foot; the slot
-// for a vehicle seat). Then the vehicles, none yet.
+// stands from the middle, which way he faces, his rank, and -1 on foot or his seat,
+// [vehicle, role, cargo index, turret path]. Then the vehicles the seats point at.
 private _ranks = ["PRIVATE", "CORPORAL", "SERGEANT", "LIEUTENANT", "CAPTAIN", "MAJOR", "COLONEL"];
 if !(_squads isEqualType []) then {
     _problems pushBack "The template squads in this preset are damaged.";
@@ -362,8 +362,21 @@ if !(_squads isEqualType []) then {
                 case ((toLower _ownerCls) isEqualTo "alive_sys_factioncompiler_category"): {
                     _problems pushBack format ["Template squad %1 is synced to %2, which is not a Faction Compiler category.", _at, _ownerCls];
                 };
-                case (count _vehicles == 0): {
-                    _problems pushBack format ["Template squad %1 has vehicles, which this build cannot place.", _at];
+                // each vehicle: a class this game has that is not a man, where it stands
+                // from the middle, which way it faces (AshTray on Discord, 5 Nov)
+                case ((_vehicles findIf {
+                    !(_x isEqualType []) || {count _x != 3} || {!((_x select 0) isEqualType "")} || {!((_x select 2) isEqualType 0)}
+                        || {!((_x select 1) isEqualType [])} || {count (_x select 1) != 2}
+                        || {((_x select 1) findIf { !(_x isEqualType 0) }) >= 0}
+                }) < 0): {
+                    _problems pushBack format ["Template squad %1 in this preset is damaged.", _at];
+                };
+                case ((_vehicles findIf { !isClass (configFile >> "CfgVehicles" >> (_x select 0)) }) < 0): {
+                    private _missingV = _vehicles param [_vehicles findIf { !isClass (configFile >> "CfgVehicles" >> (_x select 0)) }, [""]];
+                    _problems pushBack format ["This game does not have the vehicle %1. It may come from a mod you are not running.", _missingV select 0];
+                };
+                case ((_vehicles findIf { (_x select 0) isKindOf "CAManBase" }) < 0): {
+                    _problems pushBack format ["Template squad %1 in this preset is damaged.", _at];
                 };
                 default {
                     {
@@ -375,7 +388,12 @@ if !(_squads isEqualType []) then {
                                 && {(_offset select 0) isEqualType 0} && {(_offset select 1) isEqualType 0};
                             switch (false) do {
                                 case (_class isEqualType "" && {!(_class isEqualTo "")} && {_pairOk} && {_dir isEqualType 0}
-                                    && {_rank isEqualType ""} && {(toUpper _rank) in _ranks} && {_veh isEqualTo -1}): {
+                                    && {_rank isEqualType ""} && {(toUpper _rank) in _ranks}
+                                    // on foot (-1), or a seat: [vehicle in this squad, role, cargo index, turret path]
+                                    && {_veh isEqualTo -1 || {_veh isEqualType [] && {count _veh == 4}
+                                        && {(_veh select 0) isEqualType 0} && {(_veh select 0) == floor (_veh select 0)} && {(_veh select 0) >= 0} && {(_veh select 0) < count _vehicles}
+                                        && {(_veh select 1) in ["driver", "cargo", "turret"]} && {(_veh select 2) isEqualType 0}
+                                        && {(_veh select 3) isEqualType []} && {((_veh select 3) findIf { !(_x isEqualType 0) }) < 0}}}): {
                                     _problems pushBack format ["Template squad %1 in this preset is damaged.", _at];
                                 };
                                 case (isClass (configFile >> "CfgVehicles" >> _class)): {

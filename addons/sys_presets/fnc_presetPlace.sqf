@@ -405,7 +405,7 @@ collect3DENHistory {
     // leader is placed first, the rest join his group, and the leader is synced
     // to the category, which is all the compiler needs to take the whole group.
     {
-        _x params ["_owner", "_men"];
+        _x params ["_owner", "_men", ["_vehicles", []]];
         private _category = _created param [_owner, objNull];
         private _compilerPlaced = (_links findIf {
             _x params ["_a", "_b"];
@@ -416,18 +416,60 @@ collect3DENHistory {
             _squadsSkipped = _squadsSkipped + 1;
             continue;
         };
-        private _placed = [];
-        {
-            _x params ["_class", "_offset", "_dir", "_rank"];
-            private _pos = [
+        private _fnc_at = {
+            params ["_offset"];
+            [
                 (((_anchor param [0, 0]) + (_offset param [0, 0])) max 1) min (worldSize - 1),
                 (((_anchor param [1, 0]) + (_offset param [1, 0])) max 1) min (worldSize - 1),
                 0
-            ];
-            private _man = create3DENEntity ["Object", _class, _pos];
+            ]
+        };
+        // The squad's vehicles (AshTray on Discord, 5 Nov). Eden puts the vehicle's own
+        // crew in it and keeps only a crew it seated itself (measured in Eden, 5 Nov), so
+        // that crew is taken off, the vehicle gets a name, and each man is seated by his
+        // init line when the mission starts, before the Faction Compiler reads the squad.
+        // He is seated in the editor as well, so the squad looks as it will play.
+        private _vehNames = [];
+        {
+            _x params ["_vClass", "_vOffset", "_vDir"];
+            private _veh = create3DENEntity ["Object", _vClass, [_vOffset] call _fnc_at];
+            private _name = "";
+            if (!isNull _veh) then {
+                _veh set3DENAttribute ["rotation", [0, 0, _vDir]];
+                if ((crew _veh) isNotEqualTo []) then { delete3DENEntities (crew _veh) };
+                private _taken = (all3DENEntities param [0, []]) apply { (_x get3DENAttribute "name") param [0, ""] };
+                private _n = 1;
+                _name = format ["alive_preset_veh_%1", _n];
+                while { _name in _taken || {!isNil _name} } do { _n = _n + 1; _name = format ["alive_preset_veh_%1", _n] };
+                _veh set3DENAttribute ["name", _name];
+                _madeUnits pushBack _veh;
+            };
+            _vehNames pushBack [_veh, _name];
+        } forEach _vehicles;
+        private _placed = [];
+        {
+            _x params ["_class", "_offset", "_dir", "_rank", ["_seat", -1]];
+            private _man = create3DENEntity ["Object", _class, [_offset] call _fnc_at];
             if (!isNull _man) then {
                 _man set3DENAttribute ["rotation", [0, 0, _dir]];
                 _man set3DENAttribute ["rank", toUpper _rank];
+                if (_seat isEqualType []) then {
+                    _seat params ["_vi", "_role", "_cargo", "_path"];
+                    (_vehNames param [_vi, [objNull, ""]]) params ["_veh", "_name"];
+                    if (!isNull _veh) then {
+                        private _how = switch (_role) do {
+                            case "driver": { format ["moveInDriver %1", _name] };
+                            case "cargo": { format ["moveInCargo [%1, %2]", _name, _cargo] };
+                            default { format ["moveInTurret [%1, %2]", _name, _path] };
+                        };
+                        _man set3DENAttribute ["init", format ["if (local this) then {this %1}", _how]];
+                        switch (_role) do {
+                            case "driver": { _man moveInDriver _veh };
+                            case "cargo": { _man moveInCargo [_veh, _cargo] };
+                            default { _man moveInTurret [_veh, _path] };
+                        };
+                    };
+                };
                 _placed pushBack _man;
             };
         } forEach _men;
