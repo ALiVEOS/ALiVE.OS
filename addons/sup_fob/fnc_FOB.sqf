@@ -647,7 +647,9 @@ switch (_operation) do {
                     if (_g isEqualType "" && {_g != ""}) then { _own pushBackUnique toLower _g };
                 };
             };
-            if (((missionNamespace getVariable ["ALiVE_FOB_catalog", []]) findIf { (_x select 2) in _kinds && {(_x param [6, ""]) == _fobSide} && {(_x param [7, ""]) in _own} }) >= 0) then {
+            // the server checks its own copy, which no client's publicVariable can reach
+            private _catalog = if (isServer) then { uiNamespace getVariable ["ALiVE_FOB_catalogServer", []] } else { missionNamespace getVariable ["ALiVE_FOB_catalog", []] };
+            if ((_catalog findIf { (_x select 2) in _kinds && {(_x param [6, ""]) == _fobSide} && {(_x param [7, ""]) in _own} }) >= 0) then {
                 _result = [_own, true];
             };
         };

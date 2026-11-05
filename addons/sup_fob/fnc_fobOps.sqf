@@ -584,7 +584,9 @@ switch (_op) do {
         if ((!_isAir && {_pos distance2D _centre > _range}) || {_caller distance2D _centre > _range}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [round _range]] call _tell };
         if (!_isAir && {surfaceIsWater _pos}) exitWith { ["STR_ALIVE_FOB_REFUSED_WATER"] call _tell };
 
-        private _row = (missionNamespace getVariable ["ALiVE_FOB_catalog", []]) select { (_x select 0) == _class };
+        // priced and checked from the server's own copy: ALiVE_FOB_catalog is public, so any client
+        // could publicVariable a version of it with its own costs, tiers and sides
+        private _row = (uiNamespace getVariable ["ALiVE_FOB_catalogServer", []]) select { (_x select 0) == _class };
         if (_row isEqualTo []) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTBUILDABLE"] call _tell };
         // a FOB type's build list: its removals never, another type's extras only there
         if !([_logic, "typeAllows", [[_entry, "type", ""] call ALIVE_fnc_hashGet, _class]] call ALiVE_fnc_FOB) exitWith {
