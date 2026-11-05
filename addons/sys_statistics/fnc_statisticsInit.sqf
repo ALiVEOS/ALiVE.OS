@@ -162,6 +162,26 @@ if (isDedicated && GVAR(ENABLED)) then {
     // Create shotsFired hash on both server
     GVAR(shotsFired) = [] call ALIVE_fnc_hashCreate;
 
+    // A player who leaves without the Abort button (crash, time-out, kick) still gets a PlayerFinish record,
+    // sent from the server's disconnect handler (main\XEH_postServerInit.sqf). By then their unit can be gone,
+    // so keep what the server last saw of each player, refreshed every minute, and who has had their record.
+    GVAR(playerSeen) = [] call ALIVE_fnc_hashCreate;
+    GVAR(playerFinished) = [] call ALIVE_fnc_hashCreate;
+    [] spawn {
+        while {true} do {
+            if (GVAR(ENABLED)) then {
+                {
+                    private _uid = getPlayerUID _x;
+                    if (_uid != "") then {
+                        [GVAR(playerSeen), _uid, [getText (configFile >> "cfgVehicles" >> typeOf _x >> "displayName"), side group _x, faction _x, typeOf _x,
+                            score _x, rating _x, rank _x, [_x] call ALiVE_fnc_getPlayerGroup]] call ALIVE_fnc_hashSet;
+                    };
+                } forEach (allPlayers - entities "HeadlessClient_F");
+            };
+            sleep 60;
+        };
+    };
+
 };
 
 waitUntil {!isNil QGVAR(ENABLED)};
@@ -191,6 +211,20 @@ if (isMultiplayer && hasInterface && GVAR(ENABLED)) then {
 
     // Set player shotsFired
     GVAR(playerShotsFired) = [[primaryweapon player, 0, primaryweapon player, getText (configFile >> "cfgWeapons" >> primaryweapon player >> "displayName")]];
+
+    // Send the counts to the server once a minute while they change, so they still count if this machine
+    // crashes or drops out; the Abort button sends the last ones as before
+    [_puid] spawn {
+        params ["_uid"];
+        private _sent = +GVAR(playerShotsFired);
+        while {true} do {
+            sleep 60;
+            if !(GVAR(playerShotsFired) isEqualTo _sent) then {
+                _sent = +GVAR(playerShotsFired);
+                [_uid, _sent] remoteExec ["ALiVE_fnc_updateShotsFired", 2];
+            };
+        };
+    };
 
     // Player eventhandlers
 

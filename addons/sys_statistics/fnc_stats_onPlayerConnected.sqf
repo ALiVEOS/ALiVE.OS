@@ -84,6 +84,9 @@ if (GVAR(ENABLED) && isDedicated) then {
             // Set player startTime
             [GVAR(PlayerStartTime), getPlayerUID _unit, diag_tickTime] call ALIVE_fnc_hashSet;
 
+            // A player joining again gets a fresh PlayerFinish record when they next leave
+            if (!isNil QGVAR(playerFinished)) then { [GVAR(playerFinished), getPlayerUID _unit, false] call ALIVE_fnc_hashSet };
+
             // Add an EH for your player object on everyone's locality - (Thanks BIS!)
             // Call is persistent so that all players are synced to any JIPs
             [[_unit], "ALIVE_fnc_addHandleHeal", true, true, true] spawn BIS_fnc_MP;

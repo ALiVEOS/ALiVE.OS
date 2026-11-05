@@ -43,6 +43,12 @@ ALiVE_fnc_onPlayerDisconnected = {
 
     if (_name != "__SERVER__") then {
         MOD(player_count) = MOD(player_count) - 1;
+
+        // Statistics: the player's PlayerFinish record (time played, shots, score) for a player who left
+        // without the Abort button, by crashing, timing out or being kicked. Sent once either way.
+        if (!isNil QMOD(sys_statistics) && {missionNamespace getVariable ["ALIVE_sys_statistics_ENABLED", false]}) then {
+            [_id, _name, _uid] spawn ALIVE_fnc_stats_onPlayerDisconnected;
+        };
     };
 };
 
