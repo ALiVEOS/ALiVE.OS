@@ -105,7 +105,7 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
     // placement registers objectives only - no profiles spawn, so the
     // placement is not a profile source for its configured faction.
     // The other two placement classes (mil_placement_custom,
-    // mil_placement_spe) have no such toggle and always spawn forces.
+    // mil_placement_garrison) have no such toggle and always spawn forces.
     private _GATED_PLACEMENT_CLASSES = [
         "ALiVE_mil_placement",
         "ALiVE_civ_placement",
@@ -301,7 +301,7 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
 
     // Determine whether a placement module will actually spawn forces
     // at runtime. Returns true if the module has no withPlacement gate
-    // (mil_placement_custom / mil_placement_spe always spawn) or if
+    // (mil_placement_custom / mil_placement_garrison always spawn) or if
     // the gate is true / "true".
     private _placementSpawns = {
         params ["_mod"];

@@ -9,8 +9,8 @@ class CfgVehicles {
         class AttributesBase : AttributesBase { class ALiVE_ModuleSubTitle; class ALiVE_EditMultilineSQF; };
         class ModuleDescription;
     };
-        // Military Placement (Garrison Obj.). This addon keeps its folder, CfgPatches name and function
-        // names from when the module was built for Spearhead; only the module class was renamed.
+        // Military Placement (Garrison Obj.). The function names (SPEMP) still date from when the
+        // module was built for Spearhead.
         class ALiVE_mil_placement_garrison : ModuleAliveBase
         {
                 scope = 2;
@@ -19,8 +19,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 100;
                 isGlobal = 1;
-                icon = "x\alive\addons\mil_placement_spe\icon_mil_SPEMP.paa";
-                picture = "x\alive\addons\mil_placement_spe\icon_mil_SPEMP.paa";
+                icon = "x\alive\addons\mil_placement_garrison\icon_mil_SPEMP.paa";
+                picture = "x\alive\addons\mil_placement_garrison\icon_mil_SPEMP.paa";
                 class Attributes : AttributesBase
                 {
 #define ATTR_PREFIX ALiVE_mil_placement_garrison

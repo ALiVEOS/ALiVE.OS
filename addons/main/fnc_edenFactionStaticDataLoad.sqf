@@ -188,7 +188,7 @@ private _moduleFactions = [];
 if (!isNull _logicObj) then {
     // 1. Self
     // 'faction' (singular) covers single-faction modules like
-    // mil_placement / mil_placement_custom / mil_placement_spe /
+    // mil_placement / mil_placement_custom / mil_placement_garrison /
     // civ_placement which let the mission-maker pick ONE faction
     // via ALiVE_FactionChoice_Military.
     private _candidates = ["factions", "faction", "CQB_FACTIONS", "insurgentFaction", "skillFactionsBLUFOR", "skillFactionsOPFOR", "skillFactionsINDFOR", "skillFactionsCIVILIAN", "pr_factionWhitelist"];

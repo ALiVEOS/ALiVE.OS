@@ -1,6 +1,6 @@
-x\alive\addons\mil_placement_spe
+x\alive\addons\mil_placement_garrison
 =======HEADER=======
-prefix=x\alive\addons\mil_placement_spe
+prefix=x\alive\addons\mil_placement_garrison
 Mikero=DePbo.dll
 product=Arma 3
 version=1

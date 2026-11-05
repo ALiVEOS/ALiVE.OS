@@ -19,7 +19,7 @@ carried as a row for each, and placed once with both sync lines.
 A module goes back where it sat, if the preset remembered. That used to be
 discarded, on the grounds that where an ALiVE module sits means nothing, and that
 turned out to be wrong for a good number of them: mil_placement_custom,
-civ_placement_custom and mil_placement_spe place their objective AT their own
+civ_placement_custom and mil_placement_garrison place their objective AT their own
 position, mil_ato writes its position into its own hash, mil_logistics uses it as
 the default static source, and both placement modules centre objective scenery on
 it. For those, the position IS a setting.

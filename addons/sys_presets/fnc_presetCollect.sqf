@@ -217,7 +217,7 @@ private _settingCount = 0;
 
     // Where the module sits, kept as an offset from the middle of the group, the
     // same way an area is kept. It is not decoration: mil_placement_custom,
-    // civ_placement_custom and mil_placement_spe place their objective AT it,
+    // civ_placement_custom and mil_placement_garrison place their objective AT it,
     // mil_ato writes it into its own hash, mil_logistics uses it as the default
     // static source, and both placement modules centre their objective scenery
     // on it. Dropping it, which is what a preset did until now, leaves those

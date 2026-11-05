@@ -1418,7 +1418,7 @@ switch (_operation) do {
 
         private _controlType = [_logic,"controltype"] call ALiVE_fnc_HashGet;
 
-        // mil_placement_spe deliberately NOT in the list - the module is
+        // mil_placement_garrison deliberately NOT in the list - the module is
         // designed to place profile groups / vehicles at a fixed position
         // (with module direction driving placement orientation). Syncing
         // it to an OPCOM causes OPCOM to sweep its units into the
@@ -8011,7 +8011,7 @@ switch (_operation) do {
         private _availableFactions = [];
         private _customPlacementClasses = ["ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"];
         {
-            // mil_placement_spe omitted - see rationale at the placement-class
+            // mil_placement_garrison omitted - see rationale at the placement-class
             // iteration above.
             private _placementType = typeOf _x;
             if (_placementType in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {

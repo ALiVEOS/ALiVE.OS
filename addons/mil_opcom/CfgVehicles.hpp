@@ -1190,7 +1190,7 @@ class CfgVehicles {
                     // own synchronizedObjects iteration in fnc_OPCOM.sqf, or a
                     // peer module's iteration that walks this OPCOM's synced list
                     // looking for itself). mil_intelligence dropped - no code
-                    // path reads it. mil_placement_spe deliberately omitted - the
+                    // path reads it. mil_placement_garrison deliberately omitted - the
                     // module is designed as a fixed-position placement that
                     // should NOT be synced to OPCOM (runtime filter at
                     // fnc_OPCOM.sqf:437 / :545 is a known-bug leftover pending

@@ -3,12 +3,12 @@ class cfgFunctions {
                 class COMPONENT {
                         class SPEMP {
                                 description = "The main class";
-                                file = "\x\alive\addons\mil_placement_spe\fnc_SPEMP.sqf";
+                                file = "\x\alive\addons\mil_placement_garrison\fnc_SPEMP.sqf";
                                 ALIVE_RECOMPILE;
                         };
                         class SPEMPInit {
                                 description = "The module initialisation function";
-                                file = "\x\alive\addons\mil_placement_spe\fnc_SPEMPInit.sqf";
+                                file = "\x\alive\addons\mil_placement_garrison\fnc_SPEMPInit.sqf";
                                 ALIVE_RECOMPILE;
                         };
                 };

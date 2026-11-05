@@ -51,7 +51,7 @@ params [
 ];
 
 // Phase 3c.2b: vehicle/static substitution for inferred-faction redirects.
-// Callers (mil_placement, mil_placement_spe, mil_logistics, mil_c2istar,
+// Callers (mil_placement, mil_placement_garrison, mil_logistics, mil_c2istar,
 // mil_ato) pass the mod faction directly as _faction. When mil_placement's
 // findVehicleType returned a vanilla A3 vehicle (because the mod faction
 // has no entry in that category), substitute with a same-kindOf vehicle
