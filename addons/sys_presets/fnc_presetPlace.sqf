@@ -31,7 +31,11 @@ six to a row, so nothing lands on top of anything else.
 A module class the scenario already has is left alone rather than added a second
 time, and is named in the answer. ALiVE Required and the Virtual AI System are
 one-per-scenario things, and quietly giving somebody two is worse than telling
-them the preset had its own.
+them the preset had its own. The exception is the modules a mission normally
+holds several of, one per side or per area: AI Commanders, Logistics, CQB,
+artillery, ATO, convoys, the placement modules and multispawn. Those always go
+in, so a preset with both sides' AI Commanders places both into a mission that
+already has one (AshTray on Discord, 5 Nov).
 
 Areas the preset carries go down first, because the settings naming them have to
 be pointed at whatever they ended up called. A marker IS its name in the editor,
@@ -109,6 +113,13 @@ private _have = [];
         } forEach _x;
     };
 } forEach all3DENEntities;
+// The modules a mission routinely has more than one of. Every other ALiVE module
+// is kept to one, as before.
+private _manyAllowed = [
+    "alive_mil_opcom", "alive_mil_logistics", "alive_mil_cqb", "alive_mil_artillery", "alive_mil_ato",
+    "alive_mil_convoy", "alive_mil_placement", "alive_mil_placement_custom", "alive_mil_placement_spe",
+    "alive_civ_placement", "alive_civ_placement_custom", "alive_amb_civ_placement", "alive_sup_multispawn"
+];
 // A scenario can hold more than one compiled faction, so a Faction Compiler and
 // its categories are not kept to one each like the other modules. A compiler is
 // left out only when the scenario already has one building the same faction id,
@@ -237,7 +248,10 @@ collect3DENHistory {
                 } forEach _links;
                 _mine isEqualTo [] || {(_mine findIf { !(_x in _compilersSkipped) }) < 0}
             };
-            default { (toLower _class) in _have };
+            // Modules a mission normally holds several of, one per side or per
+            // area, go in even when the scenario has one already: a second AI
+            // Commander for the other side is the usual case, not a double.
+            default { !((toLower _class) in _manyAllowed) && {(toLower _class) in _have} };
         };
         if (_skip) then {
             _skipped pushBackUnique _class;
