@@ -117,14 +117,33 @@ if (_stats || {_killFeed != "None"}) then {
         _killerweapon = getText (configFile >> "cfgWeapons" >> (currentweapon _killer) >> "displayName");
         _killerweaponType = currentweapon _killer;
 
+        // A car's only "weapon" is its horn, so a kill by a vehicle with no gun (a driver running someone
+        // down, or a kill the game credits to the driver) read "Horn (GAZ-233011)". Those are recorded as
+        // "Run over (vehicle)" instead, and still count as kills.
+        private _isHorn = { _this != "" && {_this isKindOf ["CarHorn", configFile >> "CfgWeapons"] || {"horn" in toLower _this}} };
+        private _runOver = {
+            _killerweapon = format ["Run over (%1)", getText (configFile >> "cfgVehicles" >> (typeOf _this) >> "displayName")];
+            _killerweaponType = typeOf _this;
+        };
         if !(_killer isKindof "Man") then {
                 _killerweapon = _killerweapon + format[" (%1)", getText (configFile >> "cfgVehicles" >> (typeof (vehicle _killer)) >> "displayName")];
+                if ((currentWeapon _killer) isEqualTo "" || {(currentWeapon _killer) call _isHorn}) then { (vehicle _killer) call _runOver };
         };
         // a man firing from a vehicle used the vehicle's weapon, not the one he carries
         if ((_killer isKindof "Man") && {vehicle _killer != _killer}) then {
             private _veh = vehicle _killer;
-            private _turret = (assignedVehicleRole _killer) param [1, []];
-            private _w = if (_turret isEqualTo []) then { currentWeapon _veh } else { _veh currentWeaponTurret _turret };
+            // His seat from the crew list (a unit moved in by script has no assigned role): the driver uses the
+            // vehicle's own weapon, a turret its gun, and a passenger, or one firing from a seat (FFV), his own.
+            private _seat = (fullCrew _veh) select { (_x select 0) == _killer } param [0, []];
+            private _isDriver = (_seat param [1, ""]) == "driver";
+            private _turret = if (_seat param [4, false]) then { [] } else { _seat param [3, []] };
+            private _w = switch (true) do {
+                case _isDriver: { currentWeapon _veh };
+                case (_turret isNotEqualTo []): { _veh currentWeaponTurret _turret };
+                default { "" };
+            };
+            // the driver of a vehicle with no gun, or anyone whose weapon is its horn
+            if ((_w call _isHorn) || {_w == "" && {_isDriver}}) exitWith { _veh call _runOver };
             if (_w != "") then {
                 _killerweapon = getText (configFile >> "cfgWeapons" >> _w >> "displayName") + format [" (%1)", getText (configFile >> "cfgVehicles" >> (typeOf _veh) >> "displayName")];
                 _killerweaponType = _w;
