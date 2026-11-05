@@ -8265,7 +8265,7 @@ switch(_operation) do {
                         // "No reinforcements have been created!".
                         private _atoRequest = (([_event, "from", ""] call ALIVE_fnc_hashGet) == "ATO");
 
-                        if ((!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) || _atoRequest || _shipLaunch) then {
+                        if ((!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST isEqualTo _eventID }) || _atoRequest || _shipLaunch) then {
                             ["ML - Preserving requested eventType=%1 (%2), skipping delivery type decision.",
                                 _eventType, if (_atoRequest) then {"ATO airframe replacement"} else { if (_shipLaunch) then {"ship launch"} else {"TEST BYPASS"} }] call ALiVE_fnc_dump;
                         } else {
@@ -8362,7 +8362,7 @@ switch(_operation) do {
                         // and destination scoring entirely so helis always fly the fixed route.
                         private _testFromPos = [];
                         private _testDestPos = [];
-                        if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
+                        if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST isEqualTo _eventID }) then {
                             _testFromPos = [_event, "testFromPos", []] call ALIVE_fnc_hashGet;
                             _testDestPos = [_event, "testDestPos", []] call ALIVE_fnc_hashGet;
                             if (count _testFromPos > 0 && count _testDestPos > 0) then {
@@ -8752,7 +8752,7 @@ switch(_operation) do {
 
                                     // Apply PARADROP vs INSERT decision
                                     // TEST BYPASS: skip enemy scoring -- preserve requested type.
-                                    if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
+                                    if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST isEqualTo _eventID }) then {
                                         ["ML - TEST BYPASS: Preserving eventType=%1, skipping PARADROP/INSERT enemy score check.", _eventType] call ALiVE_fnc_dump;
                                     } else {
                                         // Virtual-aware enemy count at the FINAL destination.
@@ -8946,7 +8946,7 @@ switch(_operation) do {
                                     };
                                 };
                             } forEach (_eventQueue select 2);
-                        if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
+                        if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST isEqualTo _eventID }) then {
                             ["ML - TEST BYPASS: Skipping heli throttle check for test request."] call ALiVE_fnc_dump;
                         } else {
                             if (_activeHeliEvents >= 2) then {
@@ -9261,7 +9261,7 @@ switch(_operation) do {
                                         [_eventCargoProfiles, "motorised", []] call ALIVE_fnc_hashSet;
                                         [format ["no helicopter of %1 can lift the vehicle", _eventFaction]] call _fnc_shipMotDropped;
                                     };
-                                    if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
+                                    if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST isEqualTo _eventID }) then {
                                         ["ML - TEST BYPASS: Slingload weight check FAILED -- no heli class in _transportGroups can lift the vehicle. _transportGroups=%1 faction=%2. Verify slingLoadMaxCargoMass config and faction air transport registration. Falling back to STANDARD for event %3.",
                                             _transportGroups, _eventFaction, _eventID] call ALiVE_fnc_dump;
                                     } else {
@@ -10149,7 +10149,7 @@ switch(_operation) do {
                                 // mechanised slingload path only -- do NOT downgrade _eventType
                                 // since motorised slingload helis may already have been created.
                                 if (_requiresStandardDelivery) exitWith {
-                                    if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
+                                    if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST isEqualTo _eventID }) then {
                                         ["ML - TEST BYPASS: Mechanised slingload weight check FAILED -- no heli class can lift vehicle. _transportGroups=%1 faction=%2. Mechanised groups will travel by ground. Event: %3.",
                                             _transportGroups, _eventFaction, _eventID] call ALiVE_fnc_dump;
                                     } else {
@@ -10528,7 +10528,7 @@ switch(_operation) do {
                             } forEach [[_eventType, _reinforcementPosition, _eventPosition]];
 
                             // TEST BYPASS: clear only if this event owns the flag.
-                            if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
+                            if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST isEqualTo _eventID }) then {
                                 ALIVE_ML_TEST_REQUEST = "";
                                 ["ML - TEST BYPASS: ALIVE_ML_TEST_REQUEST cleared after dispatch of event %1.", _eventID] call ALiVE_fnc_dump;
                             };
