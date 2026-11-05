@@ -832,7 +832,8 @@ switch(_operation) do {
     case "onDecayMAP": {
         _args params ["_logic","_report"];
 
-        private _reportMarkers = _report get "markers";
+        // a report can reach here before or without any markers being made
+        private _reportMarkers = _report getOrDefault ["markers", []];
         private _reportConfidence = _report get "confidence";
 
         {
@@ -847,7 +848,10 @@ switch(_operation) do {
         private _playersToSendMarkerTo = allPlayers select { side (group _X) == _sideObject };
         if (_playersToSendMarkerTo isEqualTo []) exitWith {};
 
-        private _reportMarkers = _report get "markers";
+        // A report whose markers were never made (no positions, or the
+        // Commander's Picture drawing them instead) has none to remove.
+        private _reportMarkers = _report getOrDefault ["markers", []];
+        if (_reportMarkers isEqualTo []) exitWith {};
         [nil,"deleteMarkersLocally", _reportMarkers] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
     };
 
