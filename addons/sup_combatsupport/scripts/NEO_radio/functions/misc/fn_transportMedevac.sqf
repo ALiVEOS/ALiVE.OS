@@ -59,12 +59,35 @@ private _passengers = { (fullCrew [_chopper, "cargo"]) apply { _x select 0 } };
 // land once the move is done, waiting for the skids rather than for "ready" (which counts
 // within 100 m for aircraft).
 private _fnc_setDown = {
-    params ["_at", "_mode"];
+    params ["_at", "_mode", ["_avoid", true]];
     private _spot = _at findEmptyPosition [0, 150, typeOf _chopper];
     if (_spot isEqualTo []) then { _spot = +_at };
     _spot set [2, 0];
     private _pad = createVehicle ["Land_HelipadEmpty_F", _spot, [], 0, "CAN_COLLIDE"];
     _pads pushBack _pad;
+    // With Route set to avoid known enemy, the hops between the landing zone and base go round
+    // it too, through the same turns the first leg flies (the order carries no Route of its own,
+    // so the helicopter's last choice is used). Turns are let go the way NEO_fnc_transportAvoidFly
+    // does: 400 m short, or when the pilot isn't closing on one 30 s after setting off for it.
+    if (_avoid) then {
+        private _legs = [_chopper, ["MEDEVAC", _spot, 0, _player], _spot, _base] call NEO_fnc_transportAvoidLegs;
+        if (_legs isEqualTo []) exitWith {};
+        _chopper flyInHeight 100;
+        {
+            if !(call _mine) exitWith {};
+            private _leg = _x;
+            [_chopper, _leg] call ALiVE_fnc_doMoveRemote;
+            private _d0 = _chopper distance2D _leg;
+            private _t0 = time;
+            private _until = time + 120 + _d0 / 15;
+            waitUntil {
+                sleep 0.5;
+                !(call _mine) || {(_chopper distance2D _leg) < 400} || {time > _until}
+                || {time - _t0 > 90 && {(_d0 - (_chopper distance2D _leg)) < 100}}
+            };
+        } forEach _legs;
+    };
+    if !(call _mine) exitWith { false };
     _chopper flyInHeight 60;
     [_chopper, _spot] call ALiVE_fnc_doMoveRemote;
     private _t = time;
@@ -110,7 +133,8 @@ if (_audio && {!isNull _player}) then {
 ["STR_ALIVE_CS_MEDEVAC_03"] call _say;
 // A plain LAND, engine off: landed with GET IN the pilot lifted off by himself as soon as men
 // boarded, before anyone had cleared him. The move to base starts the engine again.
-if !([_pos, "LAND"] call _fnc_setDown) exitWith { call _bail };
+// (transport.fsm has already flown this leg round known enemy before starting this script)
+if !([_pos, "LAND", false] call _fnc_setDown) exitWith { call _bail };
 private _lz = getPosATL _chopper;
 _chopper setVariable ["NEO_radioMedevacState", "LZ", true];
 _chopper setVariable ["NEO_radioMedevacClear", false, true];
