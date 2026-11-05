@@ -600,12 +600,17 @@ class FSM
                          "private _taorMarkers = [];" \n
                          "private _blacklistMarkers = [];" \n
                          "" \n
+                         "// Several civilian factions can be ticked: keep the list, and the first one for the checks below." \n
+                         "// An empty list, given on purpose, still has the crowd pick a faction per building." \n
+                         "private _factions = if (_faction isEqualType []) then { +_faction } else { [_faction] - [""""] };" \n
+                         "_faction = if (_factions isEqualTo []) then { """" } else { _factions select 0 };" \n
+                         "" \n
                          "// Get default faction civ" \n
                          "if (_faction != """") then {" \n
                          "" \n
                          "  private _minScope = 1;" \n
-                         "  if (_faction == ""CIV_F"" || _faction == ""C_VIET"" || _faction == ""SPE_CIV"") then {_minScope = 2};" \n
-                         "  _civClasses = [0,_faction,""Man"",false,_minScope] call ALiVE_fnc_findVehicleType;" \n
+                         "  if (_factions findIf {_x in [""CIV_F"",""C_VIET"",""SPE_CIV""]} > -1) then {_minScope = 2};" \n
+                         "  _civClasses = [0,_factions,""Man"",false,_minScope] call ALiVE_fnc_findVehicleType;" \n
                          "  _civCLasses = _civCLasses - ALIVE_PLACEMENT_UNITBLACKLIST;" \n
                          "" \n
                          "} else {" \n
@@ -881,8 +886,8 @@ class FSM
                          "       // Add Sound" \n
                          "      private _soundFaction = _faction;" \n
                          "	private _soundSource = objNull;" \n
-                         "       if (_soundFaction == """") then {" \n
-                         "            _soundFaction = _building getVariable [""ALiVE_CivPop_Faction"",""CIV_F""];" \n
+                         "       if (_soundFaction == """" || {count _factions > 1}) then {" \n
+                         "            _soundFaction = _building getVariable [""ALiVE_CivPop_Faction"",_factions param [0,""CIV_F""]];" \n
                          "       };" \n
                          "  	if (_isSpecialCivBuilding select 0) then {" \n
                          "		_soundSource = [_isSpecialCivBuilding select 1, _building] call ALIVE_fnc_addCustomBuildingSound;" \n

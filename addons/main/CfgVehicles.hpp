@@ -588,6 +588,24 @@ class Cfg3DEN
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
+        // Per-consumer variants for the civilian faction settings of civilian placement
+        // (faction, ambientVehicleFaction) and civilian population (ambientCrowdFaction).
+        // Each writes under its own variable name. An older mission's single name, such as
+        // CIV_F, loads as that one faction ticked. A new module starts with CIV_F ticked; the
+        // crowd list may be left empty, which has the crowd pick a faction per building.
+        class ALiVE_FactionChoiceMulti_Civilian_Faction: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, [3], 'faction', ['CIV_F'], _value, '$STR_ALIVE_AMBCP_FACTION', '$STR_ALIVE_AMBCP_FACTION_COMMENT'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'faction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
+        };
+        class ALiVE_FactionChoiceMulti_Civilian_AmbientVehicleFaction: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, [3], 'ambientVehicleFaction', ['CIV_F'], _value, '$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION', '$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION_COMMENT'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'ambientVehicleFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
+        };
+        class ALiVE_FactionChoiceMulti_Civilian_AmbientCrowdFaction: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, [3], 'ambientCrowdFaction', ['CIV_F'], _value, '$STR_ALIVE_CIV_POP_CROWD_FACTION', '$STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'ambientCrowdFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
+        };
+
         // Variant of _Military that pre-ticks BLU_F when the listbox
         // resolves empty. Used by mil_opcom's `factions` attribute,
         // which has a runtime fallback to BLU_F (warns + defaults in

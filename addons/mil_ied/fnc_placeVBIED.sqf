@@ -64,8 +64,9 @@ if (count _veh > 0) then {
     // checked rather than waited for, as this can run from a town's trigger in one frame.
     private _tryFactions = [];
     if (_vbSide == "CIV" && {!isNil QMOD(amb_civ_placement)}) then {
-        _tryFactions pushBack [ALiVE_amb_civ_placement getvariable ["ambientVehicleFaction", ""]];
-        _tryFactions pushBack [ALiVE_amb_civ_placement getvariable ["faction", "CIV_F"]];
+        // each is a list of factions, since several can be ticked
+        _tryFactions pushBack ([ALiVE_amb_civ_placement, "ambientVehicleFaction"] call ALiVE_fnc_AMBCP);
+        _tryFactions pushBack ([ALiVE_amb_civ_placement, "faction"] call ALiVE_fnc_AMBCP);
     };
     _tryFactions pushBack (_vbSide call ALiVE_fnc_getSideFactions);
     _carClasses = [];

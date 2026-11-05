@@ -455,7 +455,8 @@ switch(_operation) do {
     };
 
     case "ambientCrowdFaction" : {
-        if(_args isEqualType "") then {
+        // a list of factions; a single name from an older caller is kept as it is
+        if(_args isEqualType "" || {_args isEqualType []}) then {
             [_logic,_operation,_args] call ALIVE_fnc_hashSet;
         };
 

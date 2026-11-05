@@ -75,9 +75,14 @@ if(isServer) then {
     private _ambientCrowdSpawn = parseNumber (_logic getVariable ["ambientCrowdSpawn","0"]);
     private _ambientCrowdDensity = parseNumber (_logic getVariable ["ambientCrowdDensity","4"]);
     private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
-    // CIV_F, as the editor sets it. An empty value, given on purpose, still has the crowd
-    // pick a faction per building.
-    private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction","CIV_F"]);
+    // A list of civilian factions: several can be ticked, saved as '["CIV_F","C_IDAP"]', and
+    // older missions saved a single name. An empty list still has the crowd pick a faction
+    // per building.
+    private _ambientCrowdFaction = _logic getVariable ["ambientCrowdFaction","CIV_F"];
+    if !(_ambientCrowdFaction isEqualType []) then {
+        _ambientCrowdFaction = (_ambientCrowdFaction call ALiVE_fnc_stringListToArray) apply { [_x, "'", ""] call CBA_fnc_replace };
+    };
+    _ambientCrowdFaction = _ambientCrowdFaction select { _x isEqualType "" && {_x != ""} && {_x != "NONE"} };
 
     // Custom water / ration item classnames. Resolution priority:
     //   1. Consolidated `customHumanitarianItems` (preferred, written

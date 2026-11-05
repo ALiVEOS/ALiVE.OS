@@ -150,11 +150,21 @@ switch(_operation) do {
 
     };
 
-    // Determine force faction
-    case "faction": {
-
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
-
+    // Civilian factions, and the factions the parked vehicles come from. Several can be ticked:
+    // the setting is saved as '["CIV_F","C_IDAP"]', and older missions saved a single name.
+    // Returns an ARRAY of factions this game has, or [CIV_F] when none of them are left.
+    case "faction";
+    case "ambientVehicleFaction": {
+        if !(_args isEqualType objNull) then { _logic setVariable [_operation, _args] };
+        private _raw = _logic getVariable [_operation, DEFAULT_FACTION];
+        private _list = if (_raw isEqualType []) then { +_raw } else {
+            (_raw call ALiVE_fnc_stringListToArray) apply { [_x, "'", ""] call CBA_fnc_replace }
+        };
+        private _known = [] call ALiVE_fnc_configGetFactions;
+        _result = _list select { _x isEqualType "" && {_x in _known} };
+        _result = _result arrayIntersect _result;
+        if (_result isEqualTo []) then { _result = [DEFAULT_FACTION] };
+        _logic setVariable [_operation, _result];
     };
 
     // Return TAOR marker
@@ -230,11 +240,6 @@ switch(_operation) do {
     // Return the Ambient Vehicle Amount
     case "ambientVehicleAmount": {
         _result = [_logic,_operation,_args,DEFAULT_AMBIENT_VEHICLE_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Ambient vehicle faction
-    case "ambientVehicleFaction": {
-        _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
     };
 
     // Return the Ambient Animal Amount
@@ -576,10 +581,13 @@ switch(_operation) do {
 
             private _clusters = [_logic, "objectives"] call MAINCLASS;
 
-            private _faction = [_logic, "faction"] call MAINCLASS;
+            // Lists of factions. The first civilian faction sets the side and labels the parked vehicles;
+            // each civilian takes the faction of the class it was picked from.
+            private _factions = [_logic, "faction"] call MAINCLASS;
+            private _faction = _factions select 0;
             private _placementMultiplier = parseNumber([_logic, "placementMultiplier"] call MAINCLASS);
             private _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
-            private _ambientVehicleFaction = [_logic, "ambientVehicleFaction"] call MAINCLASS;
+            private _ambientVehicleFactions = [_logic, "ambientVehicleFaction"] call MAINCLASS;
             private _ambientAnimalAmount = parseNumber([_logic, "ambientAnimalAmount"] call MAINCLASS);
             private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             private _factionSideNumber = getNumber(_factionConfig >> "side");
@@ -593,7 +601,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["AMBCP [%1] SideNum: %2 Side: %3 Faction: %4",_faction,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
+                ["AMBCP [%1] SideNum: %2 Side: %3 Factions: %4 Vehicle factions: %5",_faction,_factionSideNumber,_side,_factions,_ambientVehicleFactions] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -647,10 +655,11 @@ switch(_operation) do {
 
             if(_ambientVehicleAmount > 0) then {
 
-                private _carClasses = [0,_ambientVehicleFaction,"Car"] call ALiVE_fnc_findVehicleType;
+                private _carClasses = [0,_ambientVehicleFactions,"Car"] call ALiVE_fnc_findVehicleType;
                 private _landClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
-                private _supportClasses = [ALIVE_factionDefaultSupports,_ambientVehicleFaction,[]] call ALIVE_fnc_hashGet;
+                private _supportClasses = [];
+                { _supportClasses append ([ALIVE_factionDefaultSupports,_x,[]] call ALIVE_fnc_hashGet) } forEach _ambientVehicleFactions;
 
                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
 
@@ -980,9 +989,9 @@ switch(_operation) do {
             // errors (issue #522, the BI population module's CIV_F side 7 units).
             // Kept as a defensive guard.
             private _minScope = 1;
-            if (_faction == "CIV_F" || _faction == "C_VIET" || _faction == "SPE_CIV") then {_minScope = 2};
+            if (_factions findIf {_x in ["CIV_F","C_VIET","SPE_CIV"]} > -1) then {_minScope = 2};
 
-            private _civClasses = [0,_faction,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
+            private _civClasses = [0,_factions,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
 
             private _countCivilianUnits = 0;
 
@@ -1041,7 +1050,9 @@ switch(_operation) do {
                             [_agent, "agentID", _agentID] call ALIVE_fnc_civilianAgent;
                             [_agent, "agentClass", _unitClass] call ALIVE_fnc_civilianAgent;
                             [_agent, "side", _side] call ALIVE_fnc_civilianAgent;
-                            [_agent, "faction", _faction] call ALIVE_fnc_civilianAgent;
+                            private _unitFaction = getText (configFile >> "CfgVehicles" >> _unitClass >> "faction");
+                            if !(_unitFaction in _factions) then { _unitFaction = _faction };
+                            [_agent, "faction", _unitFaction] call ALIVE_fnc_civilianAgent;
                             [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
                             // Preserve position normalization and the position setter's debug refresh.
                             [_agent, "position", _buildingPosition] call ALIVE_fnc_civilianAgent;
@@ -1113,8 +1124,8 @@ switch(_operation) do {
                 } forEach _clusters;
             };
 
-            ["AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
-            ["AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALiVE_fnc_dump;
+            ["AMBCP %1 - Ambient land vehicles placed: %2",_ambientVehicleFactions,_countLandUnits] call ALiVE_fnc_dump;
+            ["AMBCP %1 - Ambient civilian units placed: %2",_factions,_countCivilianUnits] call ALiVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -1123,7 +1134,7 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-            [[_faction, _ambientVehicleFaction]] call ALiVE_fnc_initFindVehicleTypeCache;
+            [_factions + _ambientVehicleFactions] call ALiVE_fnc_initFindVehicleTypeCache;
 
             // set module as started
             _logic setVariable ["startupComplete", true];

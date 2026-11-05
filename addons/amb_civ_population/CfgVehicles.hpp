@@ -136,10 +136,11 @@ class CfgVehicles {
                 // Per-attribute attributeLoad / attributeSave
                 // overrides on the `class X { control = "Y"; }` shape
                 // are silently ignored by Eden.
-                control      = "ALiVE_FactionChoice_Civilian_AmbientCrowdFaction";
+                // Several factions can be ticked; saved as '["CIV_F","C_IDAP"]'
+                control      = "ALiVE_FactionChoiceMulti_Civilian_AmbientCrowdFaction";
                 typeName     = "STRING";
                 expression   = "_this setVariable ['ambientCrowdFaction', _value];";
-                defaultValue = """CIV_F""";
+                defaultValue = "'[""CIV_F""]'";
             };
 
             // ---- Roles and sounds --------------------------------------------

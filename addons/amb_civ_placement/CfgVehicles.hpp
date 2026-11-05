@@ -82,10 +82,11 @@ class CfgVehicles {
                                 property     = "ALiVE_amb_civ_placement_faction";
                                 displayName  = "$STR_ALIVE_AMBCP_FACTION";
                                 tooltip      = "$STR_ALIVE_AMBCP_FACTION_COMMENT";
-                                control      = "ALiVE_FactionChoice_Civilian";
+                                // Several factions can be ticked; saved as '["CIV_F","C_IDAP"]'
+                                control      = "ALiVE_FactionChoiceMulti_Civilian_Faction";
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['faction', _value];";
-                                defaultValue = """CIV_F""";
+                                defaultValue = "'[""CIV_F""]'";
                         };
                         class placementMultiplier : Combo
                         {
@@ -131,10 +132,11 @@ class CfgVehicles {
                                 // on the `class X { control = "Y"; }` shape are
                                 // silently ignored by Eden - the variant control
                                 // class is the only honoured hook.
-                                control      = "ALiVE_FactionChoice_Civilian_AmbientVehicleFaction";
+                                // Several factions can be ticked; saved as '["CIV_F","C_IDAP"]'
+                                control      = "ALiVE_FactionChoiceMulti_Civilian_AmbientVehicleFaction";
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['ambientVehicleFaction', _value];";
-                                defaultValue = """CIV_F""";
+                                defaultValue = "'[""CIV_F""]'";
                         };
                         class initialdamage : Combo { property = "ALiVE_amb_civ_placement_initialdamage"; displayName = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM"; tooltip = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; }; };
                         class HDR_ANIMALS : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_placement_HDR_ANIMALS"; displayName = "AMBIENT ANIMALS"; };

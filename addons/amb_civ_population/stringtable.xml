@@ -737,7 +737,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION">
-    <English>Crowd Faction:</English>
+    <English>Crowd Faction(s):</English>
 
     <Chinese>人群派系:</Chinese>
     <Chinesesimp>人群派系:</Chinesesimp>
@@ -747,7 +747,7 @@
     <Russian>Фракция толпы:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT">
-    <English>Optional. Select a single civilian faction to use for ambient crowd spawns. Specifying a faction improves performance; leave unset to have the crowd activator pick a faction per building from nearby civilians. Factions from mods not currently loaded appear as "(unrecognised)", but the stored value is preserved regardless.</English>
+    <English>Optional. Tick the civilian factions to use for ambient crowd spawns. Ticking factions improves performance; leave them all unticked to have the crowd activator pick a faction per building from nearby civilians. Factions from mods not currently loaded appear as "(unrecognised)", but the stored value is preserved regardless.</English>
 
     <Chinese>選填。選擇一個單一平民派系用於環境人群生成。指定派系可提升效能；留空則由人群啟動器依附近平民為每棟建築選擇派系。目前未載入的模組派系會顯示為「(unrecognised)」——無論如何會保留儲存值。</Chinese>
     <Chinesesimp>可选。选择一个单一平民阵营用于环境人群生成。指定阵营可提升性能；留空则由人群启动器按附近平民为每栋建筑选择阵营。当前未加载的模组阵营会显示为「(unrecognised)」——无论如何都会保留存储值。</Chinesesimp>

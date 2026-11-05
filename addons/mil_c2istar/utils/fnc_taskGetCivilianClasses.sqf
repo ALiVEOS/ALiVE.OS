@@ -50,19 +50,21 @@ params [
     ], [[]]]
 ];
 
-private _faction = "CIV_F";
+// The crowd's factions: a list, since several can be ticked (an older save holds one name)
+private _factions = ["CIV_F"];
 
 if (!isNil "ALIVE_civilianPopulationSystem") then {
     private _configured = [ALIVE_civilianPopulationSystem, "ambientCrowdFaction", ""] call ALiVE_fnc_hashGet;
-    if (_configured isEqualType "" && {_configured != ""}) then {
-        _faction = _configured;
+    if (_configured isEqualType "" && {_configured != ""}) then { _configured = [_configured] };
+    if (_configured isEqualType [] && {_configured isNotEqualTo []}) then {
+        _factions = _configured;
     };
 };
 
 private _minScope = 1;
-if (_faction in ["CIV_F", "C_VIET", "SPE_CIV"]) then { _minScope = 2 };
+if (_factions findIf { _x in ["CIV_F", "C_VIET", "SPE_CIV"] } > -1) then { _minScope = 2 };
 
-private _classes = [0, _faction, "Man", false, _minScope] call ALiVE_fnc_findVehicleType;
+private _classes = [0, _factions, "Man", false, _minScope] call ALiVE_fnc_findVehicleType;
 
 if (_classes isEqualTo []) exitWith { _fallback };
 

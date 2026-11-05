@@ -275,7 +275,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_FACTION">
-    <English>Civilian Faction:</English>
+    <English>Civilian Faction(s):</English>
     <Chinese>平民派系:</Chinese>
     <Chinesesimp>平民派系:</Chinesesimp>
     <Spanish>Facción civil:</Spanish>
@@ -285,7 +285,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_FACTION_COMMENT">
-    <English>Faction of the civilians to be placed (e.g. CIV_F, mod_faction_name)</English>
+    <English>Factions of the civilians to be placed. Tick one or more; each civilian is picked from all the ticked factions.</English>
     <Chinese>要放置的平民所屬派系 (例如 CIV_F、mod_faction_name)</Chinese>
     <Chinesesimp>要放置的平民所属派系 (例如 CIV_F、mod_faction_name)</Chinesesimp>
     <Spanish>Facción de los civiles que se colocarán (p. ej. CIV_F, mod_faction_name)</Spanish>
@@ -415,7 +415,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION">
-    <English>Ambient Vehicle Faction:</English>
+    <English>Ambient Vehicle Faction(s):</English>
     <Chinesesimp>周围的环境车辆势力</Chinesesimp>
     <Chinese>環境車輛派系:</Chinese>
     <Spanish>Facción de vehículos ambientales:</Spanish>
@@ -425,7 +425,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION_COMMENT">
-    <English>Ambient vehicles pulled from this faction (e.g. CIV_F, mod_faction_name)</English>
+    <English>Parked vehicles are picked from all the ticked factions.</English>
     <Chinese>環境車輛將從此派系取用 (例如 CIV_F、mod_faction_name)</Chinese>
     <Chinesesimp>环境车辆将从此派系取用 (例如 CIV_F、mod_faction_name)</Chinesesimp>
     <Spanish>Los vehículos ambientales se tomarán de esta facción (p. ej. CIV_F, mod_faction_name)</Spanish>

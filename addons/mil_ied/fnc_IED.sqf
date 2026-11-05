@@ -969,7 +969,8 @@ switch(_operation) do {
 
                         waituntil {!isnil QMOD(amb_civ_placement)};
 
-                        _factions = [ALiVE_amb_civ_placement getvariable ["faction","CIV_F"]];
+                        // its civilian factions, a list since several can be ticked
+                        _factions = [ALiVE_amb_civ_placement, "faction"] call ALiVE_fnc_AMBCP;
                     } else {
                         // Else get faction from side
                         _factions = [];
