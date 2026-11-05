@@ -505,6 +505,15 @@ switch(_operation) do {
                 //Get all enterable houses
                 _houses = []; {_houses = _houses + ([_x select 0, _x select 1] call ALiVE_fnc_getEnterableHouses)} foreach _collection;
 
+                // The Garrison Building Blacklist (the class picker's Delete list, or typed into a placement
+                // module) is meant for every garrison, CQB's included (spooked on Discord, 5 Nov 2026)
+                private _classBlacklist = call ALIVE_fnc_garrisonBuildingBlacklist;
+                if (_classBlacklist isNotEqualTo []) then {
+                    private _before = count _houses;
+                    _houses = _houses select { !((toLower typeOf _x) in _classBlacklist) };
+                    if (count _houses < _before) then { ["CQB [%1] - %2 houses left out by the Garrison Building Blacklist", _id, _before - count _houses] call ALiVE_fnc_dump };
+                };
+
                 // Fieldworks the terrain's index lists (an ALiVE 3 index, v3.1 on), trenches and bunkers soldiers
                 // can stand in, are ordinary houses to CQB unless the module says otherwise: left out, or strategic.
                 // One pass with an exact model lookup, as a jungle map hands this tens of thousands of houses.
@@ -1577,7 +1586,8 @@ switch(_operation) do {
             _grp setVariable ["ALIVE_profileIgnore", true];
 
             // if a house is not enterable, you can't spawn AI on it
-            if (!([_house] call ALiVE_fnc_isHouseEnterable)) exitWith {
+            // a house from a save made before its class was blacklisted is refused here too
+            if (!([_house] call ALiVE_fnc_isHouseEnterable) || {(toLower typeOf _house) in (call ALIVE_fnc_garrisonBuildingBlacklist)}) exitWith {
                 _house setVariable ["group", _grp, true];
                 [_logic, "clearHouse", _house] call ALiVE_fnc_CQB;
             };

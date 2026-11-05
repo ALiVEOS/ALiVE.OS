@@ -470,7 +470,7 @@ switch (_phase) do {
         };
         _context set ["positionCursor", _end];
         if (_end >= count _positions) then {
-            if (_usable isEqualTo [] || {!([_house] call ALiVE_fnc_isHouseEnterable)}) then {
+            if (_usable isEqualTo [] || {!([_house] call ALiVE_fnc_isHouseEnterable)} || {(toLower typeOf _house) in (call ALIVE_fnc_garrisonBuildingBlacklist)}) then {
                 _result = "failed";
             } else {
                 _context set ["phase", "group"];
