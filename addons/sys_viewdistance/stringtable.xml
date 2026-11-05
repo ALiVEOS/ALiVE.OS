@@ -27,6 +27,15 @@
     <Chinesesimp>在游戏中允许的视距最大值</Chinesesimp>
     <Spanish>Distancia de visión máxima permitida en el juego</Spanish>
 </Key>
+<Key ID="STR_ALIVE_OVDIST">
+    <English>Object View Distance</English>
+</Key>
+<Key ID="STR_ALIVE_OVDIST_MAX">
+    <English>Max Object View Distance (m):</English>
+</Key>
+<Key ID="STR_ALIVE_OVDIST_MAX_COMMENT">
+    <English>Furthest players can set how far away they see objects (buildings, trees, vehicles) on the View Settings window. It is never more than their view distance. Lower it to save frames on a busy map.</English>
+</Key>
 <Key ID="STR_ALIVE_VDIST_ENABLED">
     <English>Set View Settings</English>
     <Chinesesimp>修改视图设置</Chinesesimp>

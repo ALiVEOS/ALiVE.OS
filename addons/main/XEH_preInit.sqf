@@ -46,6 +46,8 @@ LOG(MSG_INIT);
 // mission maker set (#1083).
 // starting view distance, inside the View Distance module's minimum and maximum (fnc_vDist.sqf)
 ["ALiVE_prefViewDistance", "SLIDER", [localize "STR_ALIVE_SETTINGS_VD", localize "STR_ALIVE_SETTINGS_VD_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [0, 20000, 0, 0]] call CBA_fnc_addSetting;
+// starting object view distance, inside the View Distance module's minimum, its object maximum and the view distance (fnc_vDist.sqf)
+["ALiVE_prefObjectViewDistance", "SLIDER", [localize "STR_ALIVE_SETTINGS_OVD", localize "STR_ALIVE_SETTINGS_OVD_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [0, 20000, 0, 0]] call CBA_fnc_addSetting;
 // starting terrain detail, the View Distance module's tiers 1 to 5, inside its minimum and maximum (fnc_vDist.sqf)
 ["ALiVE_prefTerrainGrid", "LIST", [localize "STR_ALIVE_SETTINGS_TG", localize "STR_ALIVE_SETTINGS_TG_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [[0, 1, 2, 3, 4, 5], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALIVE_SETTINGS_TG_1", localize "STR_ALIVE_SETTINGS_TG_2", localize "STR_ALIVE_SETTINGS_TG_3", localize "STR_ALIVE_SETTINGS_TG_4", localize "STR_ALIVE_SETTINGS_TG_5"], 0]] call CBA_fnc_addSetting;
 // player tags hidden, or shorter than the mission's (fnc_playertags.sqf)

@@ -101,6 +101,12 @@
 <Key ID="STR_ALIVE_SETTINGS_VD_COMMENT">
     <English>Your view distance when a mission with ALiVE's Player Options starts, kept inside the mission's minimum and maximum. 0 keeps the game's own setting.</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_OVD">
+    <English>Starting object view distance</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_OVD_COMMENT">
+    <English>How far away you see objects such as buildings, trees and vehicles when a mission with ALiVE's Player Options starts, kept inside the mission's limits and never past your view distance. 0 keeps the game's own setting.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_TG">
     <English>Starting terrain detail</English>
 </Key>

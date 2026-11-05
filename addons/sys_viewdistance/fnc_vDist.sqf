@@ -181,6 +181,19 @@ switch(_operation) do {
                         _minsetvd = _minsetvd min _maxsetvd;
                         setViewDistance ((_prefVD max _minsetvd) min _maxsetvd);
                     };
+                    // the object view distance (buildings, trees, vehicles) kept under the module's Max Object
+                    // View Distance and the view distance, then the player's own starting value (Addon Options >
+                    // ALiVE > Game) inside the same limits; 0 leaves the game's own setting
+                    private _maxsetovd = parseNumber format ["%1", ADDON getVariable ["maxOVD", "20000"]];
+                    if (_maxsetovd <= 0) then { _maxsetovd = _maxsetvd };
+                    private _ovdCap = _maxsetovd min viewDistance;
+                    if ((getObjectViewDistance select 0) > _ovdCap) then { setObjectViewDistance _ovdCap };
+                    private _prefOVD = missionNamespace getVariable ["ALiVE_prefObjectViewDistance", 0];
+                    if (_prefOVD > 0) then {
+                        private _minsetovd = parseNumber format ["%1", ADDON getVariable ["minVD", "500"]];
+                        if (_minsetovd == 0) then { _minsetovd = 500 };
+                        setObjectViewDistance ((_prefOVD max (_minsetovd min _ovdCap)) min _ovdCap);
+                    };
 /*
                         // Initialise interaction key if undefined
                         if(isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};

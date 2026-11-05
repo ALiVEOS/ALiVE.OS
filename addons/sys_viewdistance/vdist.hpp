@@ -30,8 +30,9 @@ class vdist_dialog {
         class vd_text: RscText {
             idc = 1012;text = "$STR_ALIVE_VDIST";x = 0.452996 * safezoneW + safezoneX;y = 0.334787 * safezoneH + safezoneY;w = 0.0804017 * safezoneW;h = 0.0280024 * safezoneH;
         };
-        class vd_amnt: RscText {
-            idc = 10091;text = "";style = 2; //1 2 3...176
+        // the number over each slider is a box: type a value and press Enter, or click away (A. Ares wish-list)
+        class vd_amnt: RscEdit {
+            idc = 10091;text = "";style = 2;
             x = 0.454233 * safezoneW + safezoneX;y = 0.368389 * safezoneH + safezoneY;w = 0.0742169 * safezoneW;h = 0.0280024 * safezoneH;
         };
         class vd_slider: RscSlider // view distance slider
@@ -41,13 +42,24 @@ class vdist_dialog {
         class td_text: RscText {
             idc = 1013;text = "$STR_ALIVE_TGRID";x = 0.454233 * safezoneW + safezoneX;y = 0.457996 * safezoneH + safezoneY;w = 0.0742169 * safezoneW;h = 0.0280024 * safezoneH;
         };
-        class td_amnt: RscText {
-            idc = 10093;text = "";style = 2; //1 2 3...176
+        class td_amnt: RscEdit {
+            idc = 10093;text = "";style = 2;
             x = 0.454233 * safezoneW + safezoneX;y = 0.488799 * safezoneH + safezoneY;w = 0.0742169 * safezoneW;h = 0.0280024 * safezoneH;
         };
         class td_slider: RscSlider // view distance slider
         {
             idc = 1913;x = 0.435679 * safezoneW + safezoneX;y = 0.539204 * safezoneH + safezoneY;w = 0.11751 * safezoneW;h = 0.0280024 * safezoneH;
+        };
+        class ovd_text: RscText {
+            idc = 1014;text = "$STR_ALIVE_OVDIST";style = 2;x = 0.434442 * safezoneW + safezoneX;y = 0.582 * safezoneH + safezoneY;w = 0.11751 * safezoneW;h = 0.0280024 * safezoneH;
+        };
+        class ovd_amnt: RscEdit {
+            idc = 10095;text = "";style = 2;
+            x = 0.454233 * safezoneW + safezoneX;y = 0.6128 * safezoneH + safezoneY;w = 0.0742169 * safezoneW;h = 0.0280024 * safezoneH;
+        };
+        class ovd_slider: RscSlider // object view distance slider
+        {
+            idc = 1914;x = 0.434442 * safezoneW + safezoneX;y = 0.663 * safezoneH + safezoneY;w = 0.11751 * safezoneW;h = 0.0280024 * safezoneH;
         };
     };
 };

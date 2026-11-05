@@ -107,4 +107,5 @@
 class IGUIBack;
 class RscText;
 class RscSlider;
+class RscEdit;
 class RscPicture;

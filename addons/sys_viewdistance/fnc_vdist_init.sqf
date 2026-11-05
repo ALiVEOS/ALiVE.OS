@@ -3,6 +3,8 @@
 #define TEXT_VIEWDISTANCE ((vdist_dialog select 0) displayCtrl 10091)
 #define SLIDER_TERRAINGRID ((vdist_dialog select 0) displayCtrl 1913)
 #define TEXT_TERRAINGRID ((vdist_dialog select 0) displayCtrl 10093)
+#define SLIDER_OBJECTVD ((vdist_dialog select 0) displayCtrl 1914)
+#define TEXT_OBJECTVD ((vdist_dialog select 0) displayCtrl 10095)
 
 private ["_mingettg","_minsettg","_maxsettg","_maxgettg","_tgvalue","_settg"];
 // The fallbacks are the editor's defaults, for a module made by script. They were the number 2,
@@ -29,49 +31,90 @@ if (_maxsetvd == 0) then {_maxsetvd = 15000;};//if the maximum view distance has
 // Distance under the 500 m default Min, say) comes down to it rather than raising the cap.
 _minsetvd = _minsetvd min _maxsetvd;
 
-#define ESTABLISH_VDIST_SLIDER(DIALOG_GVAR,CTRL_NUMVD,RANGEMAX,INCREMENTER)    \
-CTRL_NUMVD sliderSetRange [_minsetvd,_maxsetvd]; \
-CTRL_NUMVD sliderSetPosition INCREMENTER;\
+// the object view distance (buildings, trees, vehicles) runs from the same minimum up to the module's
+// Max Object View Distance, and never past the view distance itself
+private _maxsetovd = parseNumber format ["%1", ADDON getVariable ["maxOVD", "20000"]];
+if (_maxsetovd <= 0) then { _maxsetovd = _maxsetvd };
+MINVD = _minsetvd;
 MAXVD = _maxsetvd;
+MAXOVD = _maxsetovd;
+MINTG = _minsettg;
+MAXTG = _maxsettg;
 
-#define ESTABLISH_TDTL_SLIDER(DIALOG_GVAR,CTRL_NUMTD,RANGEMAX,INCREMENTER)    \
-CTRL_NUMTD sliderSetRange [_minsettg, _maxsettg]; \
-sliderSetPosition [1913, terrainGrid];
-
-fn_vdist_Slider_ChangeViewDistance =
-{
-        private ["_val"];
-        _val = _this select 1;
-        setviewdistance _val;
-        TEXT_VIEWDISTANCE ctrlSetText "" + str(round viewdistance);
+// Each slider has a box over it showing its value. Moving the slider updates the box; typing a value in
+// the box and pressing Enter (or clicking away) sets it, kept inside the slider's range, and moves the slider.
+fn_vdist_refreshObjectVD = {
+    private _cap = (MAXOVD min viewDistance) max MINVD;
+    SLIDER_OBJECTVD sliderSetRange [MINVD, _cap];
+    private _now = getObjectViewDistance select 0;
+    private _o = (_now min _cap) max MINVD;
+    if (_o != _now) then { setObjectViewDistance _o };
+    SLIDER_OBJECTVD sliderSetPosition _o;
+    TEXT_OBJECTVD ctrlSetText str (round _o);
 };
-
-fn_vdist_Slider_ChangeTerrainGrid =
-{
-        private ["_terrainGrid"];
-        _terrainGrid = round(_this select 1);
-        terrainGrid = _terrainGrid;
-        if(tgvalue == 0) then {
-        TEXT_TERRAINGRID  ctrlSetText "Disabled";
-        } else {
-        TEXT_TERRAINGRID  ctrlSetText "" + str(round terrainGrid);
-        if (terrainGrid == _terrainGrid) then {
-                setterraingrid (TGARRAY select (terrainGrid - 1));
-        };
+fn_vdist_setViewDistance = {
+    params ["_value", ["_fromSlider", false]];
+    private _v = ((round _value) max MINVD) min MAXVD;
+    setViewDistance _v;
+    if (!_fromSlider) then { SLIDER_VIEWDISTANCE sliderSetPosition _v };
+    TEXT_VIEWDISTANCE ctrlSetText str (round viewDistance);
+    // a shorter view distance takes the object view distance down with it
+    call fn_vdist_refreshObjectVD;
 };
+fn_vdist_setObjectVD = {
+    params ["_value", ["_fromSlider", false]];
+    private _cap = (MAXOVD min viewDistance) max MINVD;
+    private _o = ((round _value) max MINVD) min _cap;
+    setObjectViewDistance _o;
+    if (!_fromSlider) then { SLIDER_OBJECTVD sliderSetPosition _o };
+    TEXT_OBJECTVD ctrlSetText str (round _o);
+};
+fn_vdist_setTerrainGrid = {
+    params ["_value", ["_fromSlider", false]];
+    private _t = ((round _value) max MINTG) min MAXTG;
+    terrainGrid = _t;
+    setTerrainGrid (TGARRAY select (_t - 1));
+    if (!_fromSlider) then { SLIDER_TERRAINGRID sliderSetPosition _t };
+    TEXT_TERRAINGRID ctrlSetText str _t;
+};
+// a box's value is applied on Enter or when it loses focus; anything that isn't a number puts the current value back
+fn_vdist_boxHandlers = {
+    params ["_box", "_apply", "_current"];
+    _box setVariable ["ALiVE_vdistApply", _apply];
+    _box setVariable ["ALiVE_vdistCurrent", _current];
+    _box setVariable ["ALiVE_vdistTake", {
+        params ["_box"];
+        private _n = parseNumber ctrlText _box;
+        if (_n <= 0) then { _n = call (_box getVariable "ALiVE_vdistCurrent") };
+        [_n] call (_box getVariable "ALiVE_vdistApply");
+    }];
+    _box ctrlAddEventHandler ["KillFocus", { [_this select 0] call ((_this select 0) getVariable "ALiVE_vdistTake") }];
+    _box ctrlAddEventHandler ["KeyDown", {
+        params ["_box", "_key"];
+        if (_key in [28, 156]) then { [_box] call (_box getVariable "ALiVE_vdistTake"); true } else { false }
+    }];
 };
 
 createDialog "vdist_dialog";
 
-ESTABLISH_VDIST_SLIDER(vdist_dialog,SLIDER_VIEWDISTANCE,15000,(viewDistance));
-TEXT_VIEWDISTANCE ctrlSetText "" + str(round viewDistance);
-SLIDER_VIEWDISTANCE ctrlSetEventHandler ["SliderPosChanged","_this call fn_vdist_Slider_ChangeViewDistance"];
+SLIDER_VIEWDISTANCE sliderSetRange [_minsetvd, _maxsetvd];
+SLIDER_VIEWDISTANCE sliderSetPosition viewDistance;
+TEXT_VIEWDISTANCE ctrlSetText str (round viewDistance);
+SLIDER_VIEWDISTANCE ctrlAddEventHandler ["SliderPosChanged", { [_this select 1, true] call fn_vdist_setViewDistance }];
+[TEXT_VIEWDISTANCE, fn_vdist_setViewDistance, { viewDistance }] call fn_vdist_boxHandlers;
 
-ESTABLISH_TDTL_SLIDER(vdist_dialog,SLIDER_TERRAINGRID,50,(terrainGrid));
-if(tgvalue == 0) then {
-        TEXT_TERRAINGRID  ctrlSetText "Disabled";
-        } else {
-TEXT_TERRAINGRID  ctrlSetText "" + str(round terrainGrid);
-SLIDER_TERRAINGRID ctrlSetEventHandler ["SliderPosChanged","_this call fn_vdist_Slider_ChangeTerrainGrid"];
+SLIDER_TERRAINGRID sliderSetRange [_minsettg, _maxsettg];
+SLIDER_TERRAINGRID sliderSetPosition terrainGrid;
+if (tgvalue == 0) then {
+    // one tier only: nothing to choose
+    TEXT_TERRAINGRID ctrlSetText "Disabled";
+    TEXT_TERRAINGRID ctrlEnable false;
+} else {
+    TEXT_TERRAINGRID ctrlSetText str (round terrainGrid);
+    SLIDER_TERRAINGRID ctrlAddEventHandler ["SliderPosChanged", { [_this select 1, true] call fn_vdist_setTerrainGrid }];
+    [TEXT_TERRAINGRID, fn_vdist_setTerrainGrid, { terrainGrid }] call fn_vdist_boxHandlers;
 };
 
+call fn_vdist_refreshObjectVD;
+SLIDER_OBJECTVD ctrlAddEventHandler ["SliderPosChanged", { [_this select 1, true] call fn_vdist_setObjectVD }];
+[TEXT_OBJECTVD, fn_vdist_setObjectVD, { getObjectViewDistance select 0 }] call fn_vdist_boxHandlers;
