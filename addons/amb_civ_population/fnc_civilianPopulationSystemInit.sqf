@@ -48,7 +48,24 @@ if(isServer) then {
             if (isNull _who) exitWith {};
             private _side = side group _who;
             if !(_side in [west, east, resistance]) exitWith {};
-            [getPosATL _building, [str _side], +5] call ALiVE_fnc_updateSectorHostility;
+            if (isNil "ALIVE_sectorGrid") exitWith {};
+
+            // An airstrike can flatten a village in one frame, and looking the town up once
+            // per house stalled the game (DrDetroit on Discord, 6 Nov). The houses are added
+            // up per grid sector and side, and each total is applied once, a second later.
+            private _cell = [ALIVE_sectorGrid, "positionToGridIndex", getPosATL _building] call ALiVE_fnc_sectorGrid;
+            private _key = str [_cell, _side];
+            if (isNil QGVAR(homeKilledQueue)) then {
+                GVAR(homeKilledQueue) = createHashMap;
+                [{
+                    private _queue = GVAR(homeKilledQueue);
+                    GVAR(homeKilledQueue) = nil;
+                    { _y params ["_pos", "_sideText", "_value"]; [_pos, [_sideText], _value] call ALiVE_fnc_updateSectorHostility } forEach _queue;
+                }, [], 1] call CBA_fnc_waitAndExecute;
+            };
+            private _entry = GVAR(homeKilledQueue) getOrDefault [_key, [getPosATL _building, str _side, 0]];
+            _entry set [2, (_entry select 2) + 5];
+            GVAR(homeKilledQueue) set [_key, _entry];
         }];
     };
 

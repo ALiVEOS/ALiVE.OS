@@ -52,7 +52,10 @@ ALiVE_advciv_voiceLines_hiding = [
 
 addMissionEventHandler ["EntityKilled", {
     params ["_killed", "_killer", "_instigator"];
-    if (side _killed == civilian) then {
+    // A dead civilian is a person whose class is a civilian. Buildings, fences and wrecks
+    // count as civilian side too, so every hut an airstrike flattened set the village
+    // panicking and marked the pilot as a civilian killer (DrDetroit on Discord, 6 Nov).
+    if (_killed isKindOf "CAManBase" && {getNumber (configOf _killed >> "side") == 3}) then {
         private _attackerUnit = if (!isNull _instigator) then {_instigator} else {_killer};
         if (!isNull _attackerUnit) then {
             _attackerUnit setVariable ["ALiVE_advciv_firedAtCivTime", time, true];

@@ -168,7 +168,9 @@ if (isServer) then {
     // Civilian killed event - spread panic
     addMissionEventHandler ["EntityKilled", {
         params ["_killed", "_killer", "_instigator"];
-        if (side _killed != civilian) exitWith {};
+        // only a person whose class is a civilian, as in fnc_advciv_init: huts and fences
+        // read as civilian side too
+        if !(_killed isKindOf "CAManBase" && {getNumber (configOf _killed >> "side") == 3}) exitWith {};
         private _attackerUnit = if (!isNull _instigator) then {_instigator} else {_killer};
         if (isNull _attackerUnit) exitWith {};
         if (_attackerUnit == _killed) exitWith {};
