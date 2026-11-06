@@ -47,6 +47,29 @@ private _run = 0;
 while { alive _veh && {(call _fnc_crewAboard) isNotEqualTo []} } do {
     sleep 1;
 
+    // an empty driver's seat (a player took it and got out again, say) stayed empty, and so did one with the driver
+    // dead in it: the seat is locked, which keeps the crew out too, so every order went nowhere (AshTray on Discord,
+    // 6 Nov). The driver is put back, or the next of the crew takes the seat
+    if (!alive driver _veh && {canMove _veh} && {time >= (_veh getVariable ["NEO_groundReseatAt", 0])}) then {
+        _veh setVariable ["NEO_groundReseatAt", time + 10];
+        private _crew = (units _grp) select { alive _x && {!isPlayer _x} && {lifeState _x != "INCAPACITATED"} };
+        private _i = _crew findIf { vehicle _x != _veh && {(_x distance _veh) < 60} };
+        private _drv = if (_i >= 0) then { _crew select _i } else { (_crew select { vehicle _x == _veh }) param [0, objNull] };
+        if (!isNull _drv) then {
+            // the lock holds against the move too, so it is lifted for the moment it takes
+            _veh lockDriver false;
+            // a dead driver is taken out of the seat first
+            if (!isNull driver _veh) then { moveOut (driver _veh); sleep 0.5 };
+            if (vehicle _drv == _veh) then { moveOut _drv; sleep 0.5 };
+            _drv assignAsDriver _veh;
+            _drv moveInDriver _veh;
+            sleep 1;
+            _veh lockDriver true;
+            ["ALiVE Combat Support - ground transport %1: driver's seat was empty, %2 put back in it: %3", _callsign, name _drv,
+                ["failed", "done"] select (driver _veh == _drv)] call ALiVE_fnc_dump;
+        };
+    };
+
     // can't move (wrecked wheels or engine, or an empty tank): hold for repair or fuel. A road
     // patrol carries on afterwards; any other order has stopped and waits for the next one
     if (!canMove _veh || {fuel _veh < 0.02}) then {
