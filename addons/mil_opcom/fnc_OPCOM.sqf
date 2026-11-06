@@ -2287,8 +2287,31 @@ switch (_operation) do {
                             ["OPCOM HELP - %1: group %2 down to %3 of %4 asked for help against %5, %6 sent (%7)",
                                 _mySide, _id, _count, _peak, _enemyID, _helpers, _helpType] call ALiVE_fnc_dump;
                         } else {
-                            ["OPCOM HELP - %1: group %2 down to %3 of %4 asked for help against %5, nobody free (tried %6)",
-                                _mySide, _id, _count, _peak, _enemyID, _tried] call ALiVE_fnc_dump;
+                            if (_tried isEqualTo []) then {
+                                // no kind had a group in reach, so none was asked. "tried []" read as the commander
+                                // ignoring the groups it has (AshTray on Discord, 6 Nov): say how far off the nearest
+                                // of each kind is instead
+                                private _nearest = [];
+                                {
+                                    private _kind = _x;
+                                    private _pool = _pools select _forEachIndex;
+                                    if (!isNil "_pool" && {_pool isEqualType []}) then {
+                                        private _best = 1e9;
+                                        {
+                                            private _p = _profilesById get _x;
+                                            if (_x != _id && {!isNil "_p"}) then {
+                                                _best = _best min (([_p, "position", [0,0,0]] call ALiVE_fnc_HashGet) distance2D _enemyPos);
+                                            };
+                                        } forEach _pool;
+                                        if (_best < 1e9) then { _nearest pushBack format ["%1 %2 km", _kind, (round (_best / 100)) / 10] };
+                                    };
+                                } forEach _poolNames;
+                                ["OPCOM HELP - %1: group %2 down to %3 of %4 asked for help against %5, no group within reach (1 km for infantry and mechanized, 3 km for motorized and armored; nearest: %6)",
+                                    _mySide, _id, _count, _peak, _enemyID, ["none left", _nearest joinString ", "] select (_nearest isNotEqualTo [])] call ALiVE_fnc_dump;
+                            } else {
+                                ["OPCOM HELP - %1: group %2 down to %3 of %4 asked for help against %5, nobody free (tried %6)",
+                                    _mySide, _id, _count, _peak, _enemyID, _tried] call ALiVE_fnc_dump;
+                            };
                         };
                     };
                 };
