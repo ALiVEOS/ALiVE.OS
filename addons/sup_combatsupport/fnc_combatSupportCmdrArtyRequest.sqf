@@ -82,87 +82,17 @@ private _uid = [getPlayerUID _caller, str _caller] select (getPlayerUID _caller 
 if (time - (ALiVE_CS_cmdrArtyInflight getOrDefault [_uid, -100]) < 5) exitWith { format ["refused %1: a request is already on its way", name _caller] call _say };
 ALiVE_CS_cmdrArtyInflight set [_uid, time];
 
-if (isNil "ALIVE_profileHandler") exitWith { "refused: no Virtual AI System" call _say; ["STR_ALIVE_CS_MSG_CMDR_NOGUNS"] call _fnc_reply };
-
-// the nearest ready battery of the caller's side, by the commander's own rules
-private _best = [];
-private _bestLogic = objNull;
-private _bestDist = 1e9;
-{
-    private _inst = _x;
-    private _prof = _inst getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
-    if ((_inst getVariable ["activeMissions", 0]) < (_prof select 5)) then {
-        // an Insurgency commander answers with mortars only; a module not synced to its commander
-        // knows that side only by looking the commander up, as its own requests do
-        private _mortarsOnly = _mode == 1 || {_sideText in (_inst getVariable ["asymSides", []])} || {
-            ((missionNamespace getVariable ["OPCOM_instances", []]) findIf {
-                _x isEqualType [] && {toUpper ([_x, "side", ""] call ALiVE_fnc_hashGet) == _sideText} && {([_x, "controltype", ""] call ALiVE_fnc_hashGet) == "asymmetric"}
-            }) >= 0
-        };
-        {
-            private _rec = _x;
-            private _recSide = [_rec, "side", ""] call ALiVE_fnc_hashGet;
-            private _recSideText = if (_recSide isEqualType west) then { toUpper str _recSide } else { toUpper _recSide };
-            if (_recSideText == _sideText
-                && {([_rec, "state", ""] call ALiVE_fnc_hashGet) == "IDLE"}
-                && {time > ([_rec, "cooldownUntil", 0] call ALiVE_fnc_hashGet)}
-                && {([_rec, "rounds", 0] call ALiVE_fnc_hashGet) > 0}
-                && {!_mortarsOnly || {([_rec, "kind", "gun"] call ALiVE_fnc_hashGet) == "mortar"}}) then {
-                private _ep = [ALIVE_profileHandler, "getProfile", [_rec, "entityID", ""] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler;
-                if (!isNil "_ep") then {
-                    private _dist = ([_ep, "position"] call ALiVE_fnc_hashGet) distance2D _pos;
-                    private _reach = ([_rec, "maxRange", 0] call ALiVE_fnc_hashGet) * ([1.25, 0.95] select ([_rec, "probed", false] call ALiVE_fnc_hashGet));
-                    if (_dist < _reach && {_dist > (([_rec, "minRange", 300] call ALiVE_fnc_hashGet) max 300)} && {_dist < _bestDist}) then {
-                        private _vClass = "";
-                        private _veh = objNull;
-                        private _vp = [ALIVE_profileHandler, "getProfile", ([_rec, "vehicleIDs", []] call ALiVE_fnc_hashGet) param [0, ""]] call ALIVE_fnc_profileHandler;
-                        if (!isNil "_vp") then {
-                            _vClass = [_vp, "vehicleClass", ""] call ALiVE_fnc_hashGet;
-                            if ([_vp, "active", false] call ALiVE_fnc_hashGet) then { _veh = [_vp, "vehicle", objNull] call ALiVE_fnc_hashGet };
-                        };
-                        if (isNil "ALiVE_CS_fnc_cmdrOrdnance" || {_ord in ([_vClass, _veh] call ALiVE_CS_fnc_cmdrOrdnance)}) then {
-                            _best = _rec; _bestLogic = _inst; _bestDist = _dist;
-                        };
-                    };
-                };
-            };
-        } forEach (_inst getVariable ["batteryRegistry", []]);
+private _cmdrArtyFireAllowed = true;
+private _r = [_side, _pos, _ord, _count, _mode == 1, _caller] call ALIVE_fnc_combatSupportCmdrArtyFire;
+_r params ["_fired", "_what", "_dist"];
+if (!_fired) exitWith {
+    if (_what == "friendlies") then {
+        format ["refused %1: friendlies near %2", name _caller, _grid] call _say;
+        ["STR_ALIVE_CS_MSG_CMDR_FRIENDLIES"] call _fnc_reply;
+    } else {
+        format ["no ready %1 battery reaches %2 with %3 for %4", _sideText, _grid, _ord, name _caller] call _say;
+        ["STR_ALIVE_CS_MSG_CMDR_NOGUNS"] call _fnc_reply;
     };
-} forEach (missionNamespace getVariable ["ALIVE_MilArtilleryInstances", []]);
-
-if (_best isEqualTo []) exitWith {
-    format ["no ready %1 battery reaches %2 with %3 for %4", _sideText, _grid, _ord, name _caller] call _say;
-    ["STR_ALIVE_CS_MSG_CMDR_NOGUNS"] call _fnc_reply;
 };
-
-// friendlies near the grid refuse the call before any cooldown is spent; the fire mission checks again
-if !([_bestLogic, "dangerClose"] call ALIVE_fnc_MilArtillery) then {
-    private _prof = _bestLogic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
-    private _ffRadius = (_prof select 2) + 150;
-    private _blocked = false;
-    {
-        if (!_blocked && {([_x, "type", ""] call ALiVE_fnc_hashGet) in ["entity", "vehicle"]}) then {
-            private _pSide = [_x, "side", ""] call ALiVE_fnc_hashGet;
-            if (_pSide isEqualType "" && {_pSide != ""}
-                && {[([_pSide] call ALIVE_fnc_sideTextToObject), _side] call BIS_fnc_sideIsFriendly}
-                && {([_x, "position"] call ALiVE_fnc_hashGet) distance2D _pos < _ffRadius}) then {
-                _blocked = true;
-            };
-        };
-    } forEach (([ALIVE_profileHandler, "profiles"] call ALiVE_fnc_hashGet) select 2);
-    if (!_blocked) then {
-        _blocked = ((allPlayers - entities "HeadlessClient_F") findIf { _x distance2D _pos < _ffRadius && {[side group _x, _side] call BIS_fnc_sideIsFriendly} }) > -1;
-    };
-    if (_blocked) then { _bestLogic = objNull };
-};
-if (isNull _bestLogic) exitWith {
-    format ["refused %1: friendlies near %2", name _caller, _grid] call _say;
-    ["STR_ALIVE_CS_MSG_CMDR_FRIENDLIES"] call _fnc_reply;
-};
-
-// unscheduled from the pick to here, so nothing else can take this battery in between
-[_best, "state", "FIRING"] call ALiVE_fnc_hashSet;
-_bestLogic setVariable ["activeMissions", (_bestLogic getVariable ["activeMissions", 0]) + 1];
-[_bestLogic, _best, "", _pos, false, _ord, _count, _caller] spawn ALIVE_fnc_MilArtilleryFireMission;
-format ["%1 asked for %2 %3 at %4: battery %5 (%6 m) fires", name _caller, _count, _ord, _grid, [_best, "entityID", ""] call ALiVE_fnc_hashGet, round _bestDist] call _say;
+format ["%1 asked for %2 %3 at %4: battery %5 (%6 m) fires", name _caller, _count, _ord, _grid, _what, _dist] call _say;
 ["STR_ALIVE_CS_MSG_CMDR_STANDBY"] call _fnc_reply;

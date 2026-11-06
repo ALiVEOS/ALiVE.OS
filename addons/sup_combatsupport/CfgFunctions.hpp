@@ -41,6 +41,16 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportCmdrArtyRequest.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class combatSupportCmdrArtyFire {
+                                description = "Server side: the battery pick, danger close check and fire mission the commander's guns requests share";
+                                file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportCmdrArtyFire.sqf";
+                                ALIVE_RECOMPILE;
+                        };
+                        class combatSupportCmdrArtyOrder {
+                                description = "Server side: the commander's guns ordered from outside the game, such as the War Room's live map";
+                                file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportCmdrArtyOrder.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class packMortar {
                                 description = "Enables a group to pack a mortar";
                                 file = "\x\alive\addons\sup_combatsupport\fnc_packMortar.sqf";
