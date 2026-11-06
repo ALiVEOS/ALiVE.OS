@@ -270,6 +270,8 @@ switch (_operation) do {
             _event = _args;
             _type = [_event, "type"] call ALIVE_fnc_hashGet;
             _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
+            // read by TASK_GENERATE below, to tell a task a player asked for from one that arrived unasked
+            private _taskEventFrom = [_event, "from", ""] call ALIVE_fnc_hashGet;
 
             [_logic, _type, _eventData] call MAINCLASS;
 
@@ -464,10 +466,12 @@ switch (_operation) do {
         // counter battery, convoy protection and the commander's own. Anything added
         // later arrives here too, so it is covered without being told about.
         //
-        // Tasks a player asks for do not come through here at all. The tablet builds one
-        // directly, so asking for an order still works with this turned off, which is the
-        // point: it silences what arrives unasked, not what is requested.
-        if (!isNil "ALiVE_c2istar_autoPlayerTasks" && {!ALiVE_c2istar_autoPlayerTasks}) exitWith {
+        // A task a player makes on the tablet (Generate, then Create) does come through here, sent
+        // from "C2ISTAR_PLAYER", and goes through: the switch silences what arrives unasked, not
+        // what is requested. It was dropped with the rest, so a hand-made task never appeared with
+        // Automatic Player Tasks set to No (Blazingfire on Discord, 6 Nov).
+        if (!isNil "ALiVE_c2istar_autoPlayerTasks" && {!ALiVE_c2istar_autoPlayerTasks}
+            && {isNil "_taskEventFrom" || {_taskEventFrom != "C2ISTAR_PLAYER"}}) exitWith {
             if (_debug) then {
                 ["Task Handler - automatic player tasks are turned off, task not generated"] call ALiVE_fnc_dump;
             };

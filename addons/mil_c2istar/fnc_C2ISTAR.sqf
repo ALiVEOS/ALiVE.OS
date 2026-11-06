@@ -4318,7 +4318,8 @@ if (isServer) then {
                             deleteMarkerLocal format["%1%2",MTEMPLATE,"return"];
                         };
 
-                        _event = ['TASK_GENERATE', _eventData, "C2ISTAR"] call ALIVE_fnc_event;
+                        // sent as a player's own request, so it still goes through with Automatic Player Tasks off
+                        _event = ['TASK_GENERATE', _eventData, "C2ISTAR_PLAYER"] call ALIVE_fnc_event;
 
                         if(isServer) then {
                             [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
