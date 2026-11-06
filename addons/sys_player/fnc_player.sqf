@@ -421,6 +421,9 @@ switch(_operation) do {
                         if (_save && {PLAYER_STATE_UNSAVEABLE(_unit)}) then {
                             _save = false;
                             ["SYS_PLAYER - DISCONNECT SAVE SKIPPED, %1 IS NOT ALIVE", _name] call ALiVE_fnc_dump;
+                            // and leaving must not be the way out of it: the last good save is marked so the
+                            // rejoin puts them back down or dead rather than up and well
+                            [MOD(sys_player), "leftWhileDown", [_unit, _uid, _name]] call ALIVE_fnc_player;
                         };
 
                         if (_save) then {
@@ -740,6 +743,40 @@ switch(_operation) do {
                                 _result = _playerHash;
                             };
                         };
+        };
+        case "leftWhileDown": {
+                // A player who left while dead or down kept their last good save (#885: a dead or downed state is
+                // never stored), so rejoining brought them back up and well where that save was: leaving was a
+                // way out of being down. The save is now marked, and the restore (ALIVE_fnc_getPlayer) acts on it:
+                // - down with ACE (which saves and restores its own unconscious state): the save takes where they
+                //   lay and ACE's medical state, so they come back unconscious there, out of any vehicle;
+                // - dead, or down without ACE: they come back dead and respawn as the mission allows.
+                // Never alive from a dead state either way. A later good save writes a fresh record without the mark.
+                _args params ["_unit", "_uid", ["_name", ""]];
+                _result = "";
+                if (isNull _unit || {_uid == ""}) exitWith {};
+                private _key = [_unit, _uid] call ALiVE_fnc_playerKey;
+                private _rec = [GVAR(player_data), _key] call ALIVE_fnc_hashGet;
+                if (isNil "_rec") exitWith {};
+                private _aceDown = alive _unit
+                    && {!isNil "ace_medical_fnc_serializeState"}
+                    && {_unit getVariable ["ACE_isUnconscious", false]};
+                if (_aceDown) then {
+                    private _at = if (vehicle _unit == _unit) then { getPosATL _unit } else {
+                        // out of the vehicle, beside where it stands
+                        private _p = (getPosATL vehicle _unit) getPos [5, random 360];
+                        [_p select 0, _p select 1, 0]
+                    };
+                    [_rec, "position", _at] call ALIVE_fnc_hashSet;
+                    [_rec, "dir", getDir _unit] call ALIVE_fnc_hashSet;
+                    [_rec, "vehicle", "NONE"] call ALIVE_fnc_hashSet;
+                    [_rec, "seat", "NONE"] call ALIVE_fnc_hashSet;
+                    [_rec, "damage", damage _unit] call ALIVE_fnc_hashSet;
+                    [_rec, "aceMedical", [_unit] call ace_medical_fnc_serializeState] call ALIVE_fnc_hashSet;
+                };
+                _result = ["dead", "down"] select _aceDown;
+                [_rec, "leftDown", _result] call ALIVE_fnc_hashSet;
+                ["SYS_PLAYER - %1 LEFT WHILE %2: THE REJOIN PUTS THEM BACK %3", _name, ["DEAD OR DOWN", "DOWN (ACE)"] select _aceDown, ["DEAD, TO RESPAWN", "DOWN WHERE THEY LAY"] select _aceDown] call ALiVE_fnc_dump;
         };
         case "checkPlayer": {
                    // Check to see if the player joining has the same class as the one stored in memory

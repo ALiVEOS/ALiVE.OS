@@ -103,6 +103,23 @@ if (local _player) then {
 
     } foreach _data;
 
+    // Left while dead or down (the server marks the save as they go, ALIVE_fnc_player "leftWhileDown"): never back
+    // up and well. Down with ACE, the save holds ACE's unconscious state, put back above; anything else comes back dead
+    private _left = [_playerHash, "leftDown", ""] call ALIVE_fnc_hashGet;
+    if (_left isEqualType "" && {_left != ""}) then {
+        [_player, _left] spawn {
+            params ["_player", "_left"];
+            // ACE puts its unconscious state back through its own state machine: give it a moment
+            sleep 2;
+            if (!alive _player) exitWith {};
+            if (_left == "down" && {_player getVariable ["ACE_isUnconscious", false]}) exitWith {
+                ["SYS_PLAYER - %1 left while down and is back down where they lay", name _player] call ALiVE_fnc_dump;
+            };
+            _player setDamage 1;
+            ["SYS_PLAYER - %1 left while %2 and is back dead, to respawn", name _player, _left] call ALiVE_fnc_dump;
+        };
+    };
+
     _player setVariable[QGVAR(playerloaded), true];
 
     // Unless the restore has just sent this player off for joining in the wrong role, hand the
