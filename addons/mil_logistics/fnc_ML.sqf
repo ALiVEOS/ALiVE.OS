@@ -8890,6 +8890,27 @@ switch(_operation) do {
                             _remotePosition = _reinforcementPosition;
                         };
 
+                        // With profile pathfinding off a road convoy in the background drives the straight line. The
+                        // water checks above look along the line from the reinforcement objective, but the convoy sets
+                        // off from its supply network departure, and a delivery of vehicles only still went by road: two
+                        // trucks drove straight across the bay from Neochori to Anthrakia on Altis (Jman, 6 Nov). Look
+                        // along the line it will really drive, and turn the delivery down if that crosses water.
+                        if (_eventType == "STANDARD" && {!_shipLaunch}
+                            && {!isNil "ALIVE_profileSystem"} && {!([ALIVE_profileSystem, "pathfinding", true] call ALIVE_fnc_hashGet)}) then {
+                            private _roadFrom = [_reinforcementPosition, _remotePosition] select _paraDrop;
+                            private _roadLength = _roadFrom distance2D _eventPosition;
+                            private _roadDir = _roadFrom getDir _eventPosition;
+                            private _roadWet = false;
+                            for "_d" from 20 to (_roadLength - 20) step 20 do {
+                                if (surfaceIsWater (_roadFrom getPos [_d, _roadDir])) exitWith { _roadWet = true };
+                            };
+                            if (_roadWet) then {
+                                ["ML - STANDARD: the road from %1 to %2 crosses water and pathfinding is off, so the convoy would drive across it. Event %3 is turned down.",
+                                    [_roadFrom] call ALIVE_fnc_taskGetNearestLocationName, [_eventPosition] call ALIVE_fnc_taskGetNearestLocationName, _eventID] call ALiVE_fnc_dump;
+                                [_logic, "removeEvent", _eventID] call MAINCLASS;
+                            };
+                        };
+
                         if (_paraDrop && _eventType == "STANDARD") then {
                             ["ML - STANDARD delivery: players within 500m of departure. Ground-spawning out of sight at remote anchor %1 (base %2). No paradrop.",
                                 _remotePosition, _reinforcementPosition] call ALiVE_fnc_dump;
