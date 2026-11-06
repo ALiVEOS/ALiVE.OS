@@ -4482,13 +4482,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_ENABLED_COMMENT">
-    <English>Enable the Advanced Civilian behaviour system. When set to No, all Advanced Civilians parameters below this one are ignored and the system has zero runtime cost.</English>
-    <French>Active le système de comportement Civils avancés. Lorsqu'il est sur Non, tous les paramètres Civils avancés en dessous sont ignorés et le système n'a aucun coût d'exécution.</French>
-    <Portuguese>Ativa o sistema de comportamento avançado de civis. Quando definido como Não, todos os parâmetros de Civis Avançados abaixo são ignorados e o sistema não gera nenhum custo em tempo de execução.</Portuguese>
-    <Russian>Включить систему продвинутого поведения гражданских. При значении «Нет» все приведённые ниже параметры игнорируются, и система не расходует ресурсов.</Russian>
-    <Spanish>Activa el sistema de comportamiento de Civiles Avanzados. Si se pone en No, todos los parámetros de Civiles Avanzados siguientes se ignoran y el sistema no tiene coste en tiempo de ejecución.</Spanish>
-    <Chinese>啟用進階平民行為系統。設為「否」時,以下所有進階平民參數都會被忽略,系統將不消耗任何執行時資源。</Chinese>
-    <Chinesesimp>启用高级平民行为系统。设为“否”时,其下方的所有高级平民参数都将被忽略,系统无运行开销。</Chinesesimp>
+    <English>Enable the Advanced Civilian behaviour system. When set to No, the settings in every ADVANCED CIVILIANS section are ignored and the system has zero runtime cost. Sections outside them, such as On Spawn Hook, still apply.</English>
+    <French>Active le système de comportement Civils avancés. Lorsqu'il est sur Non, les paramètres de toutes les sections ADVANCED CIVILIANS sont ignorés et le système n'a aucun coût d'exécution. Les autres sections, comme On Spawn Hook, s'appliquent toujours.</French>
+    <Portuguese>Ativa o sistema de comportamento avançado de civis. Quando definido como Não, os parâmetros de todas as seções ADVANCED CIVILIANS são ignorados e o sistema não gera nenhum custo em tempo de execução. As outras seções, como On Spawn Hook, continuam valendo.</Portuguese>
+    <Russian>Включить систему продвинутого поведения гражданских. При значении «Нет» параметры всех разделов ADVANCED CIVILIANS игнорируются, и система не расходует ресурсов. Остальные разделы, например On Spawn Hook, продолжают действовать.</Russian>
+    <Spanish>Activa el sistema de comportamiento de Civiles Avanzados. Si se pone en No, los parámetros de todas las secciones ADVANCED CIVILIANS se ignoran y el sistema no tiene coste en tiempo de ejecución. Las demás secciones, como On Spawn Hook, siguen aplicándose.</Spanish>
+    <Chinese>啟用進階平民行為系統。設為「否」時,所有 ADVANCED CIVILIANS 區段的參數都會被忽略,系統將不消耗任何執行時資源。其他區段(例如 On Spawn Hook)仍然有效。</Chinese>
+    <Chinesesimp>启用高级平民行为系统。设为“否”时,所有 ADVANCED CIVILIANS 部分的参数都将被忽略,系统无运行开销。其他部分(例如 On Spawn Hook)仍然有效。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_DEBUG">
