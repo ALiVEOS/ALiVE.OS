@@ -1017,7 +1017,9 @@ switch(_operation) do {
                         private ["_locs", "_data", "_locPos"];
                         _locs = [GVAR(STORE), "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
                         _data = [] call ALiVE_fnc_hashCreate;
-                        _locPos = [_pos select 0, _pos select 1, _pos select 2, _size];
+                        // a town found from a 2D position has no height, and "_pos select 2" on it
+                        // saved a gap that broke every later load (DrDetroit on Discord, 6 Nov)
+                        _locPos = [_pos select 0, _pos select 1, _pos param [2, 0], _size];
                         [_data, "LocationPos",   _locPos] call ALiVE_fnc_hashSet;
                         [_data, "LocationLabel", _label]  call ALiVE_fnc_hashSet;
                         [_data, "LocationFate",  _fate]   call ALiVE_fnc_hashSet;
@@ -1797,6 +1799,8 @@ switch(_operation) do {
                 case "ARRAY": {
                     _converted = [];
                     {
+                        // an older save can hold a gap where a town's height was
+                        if (isNil "_x") then { _converted pushBack 0; continue };
                         if (typeName _x != "SCALAR") then {
                             _converted pushBack (parseNumber _x);
                         } else {
