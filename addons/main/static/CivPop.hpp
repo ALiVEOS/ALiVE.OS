@@ -534,3 +534,14 @@ SPE_CIV_ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 [ALIVE_civilianFactionHouseTracks, "gm_fc_gc_civ", ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
 [ALIVE_civilianFactionHouseTracks, "gm_fc_ge_civ", ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
 
+// Western Sahara villagers and ALiVE's own African civilians had no set of their own, so their
+// houses played the default one with its Greek radio (A. Ares on Discord, 6 Nov)
+CIV_F_WSAHARA_ALIVE_civilianHouseTracks =+CUP_C_TK_ALIVE_civilianHouseTracks;
+[ALIVE_civilianFactionHouseTracks, "CIV_F_WSAHARA", CIV_F_WSAHARA_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
+
+CIV_F_AFRICA_ALIVE_civilianHouseTracks =+CFP_C_AFRCHRISTIAN_ALIVE_civilianHouseTracks;
+[CIV_F_AFRICA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_7"] call ALIVE_fnc_hashRem; // Greek Radio
+[CIV_F_AFRICA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_11"] call ALIVE_fnc_hashRem; // Greek Radio
+[CIV_F_AFRICA_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_12"] call ALIVE_fnc_hashRem; // Greek Radio
+[ALIVE_civilianFactionHouseTracks, "CIV_F_AFRICA", CIV_F_AFRICA_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
+
