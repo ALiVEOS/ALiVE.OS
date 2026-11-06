@@ -634,6 +634,8 @@ switch (_operation) do {
             _currentJobData = [false, [false,false,false], _layer1Data, _layer2Data, _startSector, _goalSector, _startSubSector, _goalSubSector, []];
             // Slot 10: route memory for this request (#1086), [] when it is off or not a ground route.
             _currentJobData set [10, [nil, "jobContext", [_procedure select 1, _nextJob param [7, ""], _callbackArgs, _nextJob param [8, []]]] call ALiVE_fnc_pathfinderRouteMemory];
+            // Slot 11: the goal point itself, after the snap to land above (read by the invalid-goal check).
+            _currentJobData set [11, _endPos];
 
             _logic set ["currentJobData", _currentJobData];
         } else {
@@ -789,8 +791,13 @@ switch (_operation) do {
             private _goalCaps = _procedure select 1;
             private _invalidGoal = false;
             if (!(_goalCaps select 4) && {!((_startSubSector select 0) isEqualTo (_goalSubSector select 0))}) then {
+                // A land goal is judged by the point asked for, not by its cell's centre. A cell on a shore
+                // can have its centre out in the water while the goal stands on dry land, as Anthrakia's does
+                // on Altis: judged by the centre, the route came back as the cell the unit stood in, and
+                // with pathfinding on a truck sent there never set off (Jman, 6 Nov).
                 _invalidGoal = if (_goalCaps select 0) then {
-                    (((_goalSubSector select 4) select 1) select 2)
+                    private _goalPoint = _currentJobData param [11, (_goalSubSector select 2)];
+                    (getTerrainHeightASL [_goalPoint select 0, _goalPoint select 1])
                         < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)
                 } else {
                     (_goalCaps select 3) && {!(_goalCaps select 1)} && {!(_goalCaps select 2)}
