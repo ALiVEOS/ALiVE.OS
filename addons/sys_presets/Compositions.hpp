@@ -147,7 +147,7 @@ class Cfg3DEN {
             side = 1;
             editorCategory = "ALiVE_PresetCat";
             editorSubcategory = "ALiVE_PresetSub";
-            displayName = "Insurgency: FIA against NATO";
+            displayName = "Insurgency campaign: FIA against NATO";
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };

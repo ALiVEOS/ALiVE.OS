@@ -1,5 +1,5 @@
 version=54;
-name="Insurgency: FIA against NATO";
+name="Insurgency campaign: FIA against NATO";
 author="Mendigoo";
 category="EdSubcat_Military";
 requiredAddons[]={"alive_main","alive_sys_profile","alive_mil_opcom","alive_mil_placement_custom","alive_civ_placement","alive_mil_ied","alive_mil_cqb","alive_amb_civ_placement","alive_amb_civ_population","alive_sup_cas","alive_sup_combatsupport","alive_sup_artillery","alive_sup_transport","alive_sup_player_resupply","alive_sys_data","alive_sys_playeroptions"};
