@@ -118,7 +118,10 @@ for "_n" from 1 to 12 do {
     } forEach _circles;
     if (_hit isEqualTo []) exitWith {};
     _hit params ["_ci", "_k", "_t", "_len", "_u", "_nv", "_side"];
-    (_circles select _ci) params ["_c", "_R"];
+    // the pilot is sent on 400 m short of each turn (NEO_fnc_transportAvoidFly) and cuts the corner
+    // by about 300 m, so the turn is set as if the circle were that much wider (F610)
+    (_circles select _ci) params ["_c", "_R0"];
+    private _R = _R0 + 350;
     _done pushBack _ci;
     private _a = _path select _k;
     private _s = [1, -1] select (_side < 0);
