@@ -44,13 +44,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_TYPE_DESC">
-    <English>Pick the vehicle from the list of suitable classes across all loaded factions (use the Side button to narrow the list). Type a classname into the Override field for vehicles the list doesn't show. A gun synced to this module is used in place of this setting.</English>
-    <Chinese>從所有已載入陣營的適用類別清單中選取載具（使用「陣營」按鈕縮小清單範圍）。若清單未列出所需載具，可在覆寫欄位中輸入類別名稱。</Chinese>
-    <Chinesesimp>从所有已加载阵营的适用类别列表中选择载具(使用阵营按钮缩小列表范围)。若列表中未显示所需载具,可在覆盖字段中输入其类名。</Chinesesimp>
-    <Spanish>Elija el vehículo de la lista de clases adecuadas de todas las facciones cargadas (use el botón de Bando para acotar la lista). Escriba un nombre de clase en el campo de Anulación para vehículos que la lista no muestre.</Spanish>
-    <French>Choisissez le véhicule dans la liste des classes adaptées, toutes factions chargées confondues (utilisez le bouton Camp pour restreindre la liste). Saisissez un nom de classe dans le champ de remplacement pour les véhicules absents de la liste.</French>
-    <Portuguese>Escolha o veículo na lista de classes adequadas entre todas as facções carregadas (use o botão Lado para restringir a lista). Digite um nome de classe no campo Substituir para veículos que não aparecem na lista.</Portuguese>
-    <Russian>Выберите технику из списка подходящих классов по всем загруженным фракциям (используйте кнопку "Сторона", чтобы сузить список). Введите класснейм в поле переопределения для техники, отсутствующей в списке.</Russian>
+    <English>Pick the vehicle from the list of suitable classes across all loaded factions (use the Side button to narrow the list). Type a classname into Custom Vehicle Classname for vehicles the list doesn't show. A gun synced to this module is used in place of this setting.</English>
+    <Chinese>從所有已載入陣營的適用類別清單中選取載具（使用「陣營」按鈕縮小清單範圍）。若清單未列出所需載具，可在「自訂載具類別名稱」中輸入類別名稱。</Chinese>
+    <Chinesesimp>从所有已加载阵营的适用类别列表中选择载具(使用阵营按钮缩小列表范围)。若列表中未显示所需载具,可在“自定义载具类名”中输入其类名。</Chinesesimp>
+    <Spanish>Elija el vehículo de la lista de clases adecuadas de todas las facciones cargadas (use el botón de Bando para acotar la lista). Escriba un nombre de clase en Nombre de clase de vehículo personalizado para vehículos que la lista no muestre.</Spanish>
+    <French>Choisissez le véhicule dans la liste des classes adaptées, toutes factions chargées confondues (utilisez le bouton Camp pour restreindre la liste). Saisissez un nom de classe dans Nom de classe de véhicule personnalisé pour les véhicules absents de la liste.</French>
+    <Portuguese>Escolha o veículo na lista de classes adequadas entre todas as facções carregadas (use o botão Lado para restringir a lista). Digite um nome de classe em Nome de Classe do Veículo Personalizado para veículos que não aparecem na lista.</Portuguese>
+    <Russian>Выберите технику из списка подходящих классов по всем загруженным фракциям (используйте кнопку "Сторона", чтобы сузить список). Введите класснейм в поле «Пользовательский класснейм техники» для техники, отсутствующей в списке.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_TYPE_CUSTOM">

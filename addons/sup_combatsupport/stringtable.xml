@@ -2354,13 +2354,13 @@
     <Russian>Лимит возрождений наземного транспорта</Russian>
 </Key>
 <Key ID="STR_ALIVE_GROUND_LIMIT_COMMENT">
-    <English>How many times a lost ground transport is replaced. Leave blank for no limit.</English>
-    <Chinesesimp>损失的地面运输可被替换的次数。留空表示无限制。</Chinesesimp>
-    <Chinese>損失的地面運輸可被替換的次數。留空表示無限制。</Chinese>
-    <Spanish>Cuántas veces se reemplaza un transporte terrestre perdido. Déjalo vacío para no tener límite.</Spanish>
-    <French>Combien de fois un transport terrestre perdu est remplacé. Laissez vide pour aucune limite.</French>
-    <Portuguese>Quantas vezes um transporte terrestre perdido é substituído. Deixe vazio para sem limite.</Portuguese>
-    <Russian>Сколько раз заменяется потерянный наземный транспорт. Оставьте пустым — без ограничения.</Russian>
+    <English>Total number of times destroyed ground transport vehicles can be replaced, shared across all ground transport assets. 0 disables replacement. Leave it blank, or enter a negative number, for no limit.</English>
+    <Chinesesimp>被摧毁的地面运输载具可被替换的总次数,由所有地面运输资产共用。0 表示不替换。留空或输入负数表示无限制。</Chinesesimp>
+    <Chinese>被摧毀的地面運輸載具可被替換的總次數,由所有地面運輸資產共用。0 表示不替換。留空或輸入負數表示無限制。</Chinese>
+    <Spanish>Número total de veces que se pueden reemplazar los vehículos de transporte terrestre destruidos, compartido entre todos los recursos de transporte terrestre. 0 desactiva el reemplazo. Déjalo vacío, o pon un número negativo, para no tener límite.</Spanish>
+    <French>Nombre total de remplacements possibles des véhicules de transport terrestre détruits, partagé entre tous les moyens de transport terrestre. 0 désactive le remplacement. Laissez vide, ou entrez un nombre négatif, pour aucune limite.</French>
+    <Portuguese>Número total de vezes que veículos de transporte terrestre destruídos podem ser substituídos, compartilhado entre todos os recursos de transporte terrestre. 0 desativa a substituição. Deixe vazio, ou digite um número negativo, para sem limite.</Portuguese>
+    <Russian>Общее число замен уничтоженного наземного транспорта, общее для всех наземных транспортных средств поддержки. 0 отключает замену. Оставьте пустым или введите отрицательное число — без ограничения.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_OUT_OF_GROUND">
     <English>All units! We are out of ground transport</English>

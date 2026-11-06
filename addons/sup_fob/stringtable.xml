@@ -321,7 +321,7 @@
                 <English>Build List</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDLIST_COMMENT">
-                <English>Nothing to fill in here. This opens the FOB Build List in your browser: everything players can build, with its class name and cost. Put the class names you want in Never Build or Also Build, just below.</English>
+                <English>Nothing to fill in here. This opens the FOB Build List in your browser: everything players can build, with its class name and cost. Put the class names you want in Build Only These, Never Build or Also Build, further down this section.</English>
             </Key>
             <Key ID="STR_ALIVE_FOB_BUILDLIST_OPEN">
                 <English>Open the list (fill in below)</English>

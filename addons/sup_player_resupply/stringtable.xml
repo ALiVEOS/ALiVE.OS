@@ -664,7 +664,7 @@
     <English>Tablet Catalogue</English>
 </Key>
 <Key ID="STR_ALIVE_PR_CATALOGUE_COMMENT">
-    <English>Nothing to fill in here. This opens the Build and Supply Catalogue in your browser: every vehicle, crate, soldier and group the tablet can offer, with the names to put in the three lists just below.</English>
+    <English>Nothing to fill in here. This opens the Build and Supply Catalogue in your browser: every vehicle, crate, soldier and group the tablet can offer, with the names to put in Requisition Only These, Never Requisition and Also Requisition, further down this section.</English>
 </Key>
 <Key ID="STR_ALIVE_PR_CATALOGUE_OPEN">
     <English>Open the catalogue (fill in below)</English>
@@ -865,7 +865,7 @@
     <English>Hub Catalogue</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_LIST_COMMENT">
-    <English>Nothing to fill in here. This opens the Build and Supply Catalogue in your browser: everything the tablet can offer, with its name. Put the names you want in Only These, Never or Also, just below.</English>
+    <English>Nothing to fill in here. This opens the Build and Supply Catalogue in your browser: everything the tablet can offer, with its name. Put the names you want in Only These, Never or Also, further down this section.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_LIST_OPEN">
     <English>Open the catalogue (fill in below)</English>
