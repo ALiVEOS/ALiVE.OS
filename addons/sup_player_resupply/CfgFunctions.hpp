@@ -36,6 +36,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRSendHome.sqf";
                 ALIVE_RECOMPILE;
             };
+            class PRMapOrder {
+                description = "Server side: Player Combat Logistics requested, cancelled or sent home from outside the game, such as the War Room's live map";
+                file = "\x\alive\addons\sup_player_resupply\fnc_PRMapOrder.sqf";
+                ALIVE_RECOMPILE;
+            };
             class PRTabletEventToClient {
                 description = "Call the tablet on the client from the server";
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRTabletEventToClient.sqf";
