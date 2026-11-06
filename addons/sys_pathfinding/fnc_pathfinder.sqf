@@ -485,6 +485,94 @@ switch (_operation) do {
         };
     };
 
+    // Infantry may swim water, and the route search heads for the goal without weighing a
+    // detour, so a group swam a river beside a bridge rather than walk to it. Each leg of a
+    // finished route that swims deep water goes over a bridge instead, when one is close
+    // enough that the walk round is no more than ALiVE_pathfinding_bridgeDetour metres longer.
+    case "bridgeDetour": {
+        _args params ["_from", "_path"];
+        _result = _path;
+        private _maxDetour = missionNamespace getVariable ["ALiVE_pathfinding_bridgeDetour", 1000];
+        if (!(_maxDetour isEqualType 0) || {_maxDetour <= 0} || {_path isEqualTo []}) exitWith {};
+        private _deep = ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin;
+        // On a bridge deck: within half its width (plus a little) of a bridge road segment.
+        // roadAt does not see a bridge deck, so measure to the segment itself.
+        private _fnc_onBridge = {
+            params ["_p"];
+            ((_p nearRoads 30) findIf {
+                private _info = getRoadInfo _x;
+                (_info select 8) && {
+                    private _s = _info select 6;
+                    private _vx = ((_info select 7) select 0) - (_s select 0);
+                    private _vy = ((_info select 7) select 1) - (_s select 1);
+                    private _len2 = _vx * _vx + _vy * _vy;
+                    private _t = if (_len2 == 0) then {0} else {
+                        0 max ((((_p select 0) - (_s select 0)) * _vx + ((_p select 1) - (_s select 1)) * _vy) / _len2) min 1
+                    };
+                    ([(_s select 0) + _t * _vx, (_s select 1) + _t * _vy] distance2D _p) < ((_info select 1) / 2 + 4)
+                }
+            }) >= 0
+        };
+        // First point of a leg, every 10 m, standing in deep water off any bridge deck; [] if none.
+        private _fnc_swim = {
+            params ["_a", "_b"];
+            private _n = ceil ((_a distance2D _b) / 10) max 1;
+            private _dx = ((_b select 0) - (_a select 0)) / _n;
+            private _dy = ((_b select 1) - (_a select 1)) / _n;
+            private _hit = [];
+            for "_i" from 0 to _n do {
+                private _p = [(_a select 0) + _dx * _i, (_a select 1) + _dy * _i];
+                if ((getTerrainHeightASL _p) < _deep && {!([_p] call _fnc_onBridge)}) exitWith { _hit = _p };
+            };
+            _hit
+        };
+        private _points = [_from] + _path;
+        private _out = [];
+        private _changed = false;
+        for "_k" from 1 to (count _points - 1) do {
+            private _a = _points select (_k - 1);
+            private _b = _points select _k;
+            private _swim = [_a, _b] call _fnc_swim;
+            if (_swim isNotEqualTo []) then {
+                // Bridge ends on dry ground near the crossing, each with whether it reaches A and B dry.
+                private _ends = [];
+                {
+                    private _info = getRoadInfo _x;
+                    if (_info select 8) then {
+                        {
+                            private _e = [_x select 0, _x select 1];
+                            if ((getTerrainHeightASL _e) >= _deep && {(_ends findIf { (_x select 0) distance2D _e < 1 }) < 0}) then {
+                                _ends pushBack [_e, ([_a, _e] call _fnc_swim) isEqualTo [], ([_e, _b] call _fnc_swim) isEqualTo []];
+                            };
+                        } forEach [_info select 6, _info select 7];
+                    };
+                } forEach (_swim nearRoads (_maxDetour / 2));
+                private _direct = _a distance2D _b;
+                private _best = [];
+                private _bestLength = _direct + _maxDetour;
+                {
+                    _x params ["_e1", "_dryFromA"];
+                    if (_dryFromA) then {
+                        {
+                            _x params ["_e2", "", "_dryToB"];
+                            private _span = _e1 distance2D _e2;
+                            if (_dryToB && {_span > 1} && {_span < 300} && {([_e1, _e2] call _fnc_swim) isEqualTo []}) then {
+                                private _length = (_a distance2D _e1) + _span + (_e2 distance2D _b);
+                                if (_length < _bestLength) then { _bestLength = _length; _best = [_e1, _e2] };
+                            };
+                        } forEach _ends;
+                    };
+                } forEach _ends;
+                if (_best isNotEqualTo []) then {
+                    { _out pushBack [_x select 0, _x select 1, 0] } forEach _best;
+                    _changed = true;
+                };
+            };
+            _out pushBack _b;
+        };
+        if (_changed) then { _result = _out };
+    };
+
     ////////// JOB FUNCTIONS //////////
     case "findPath": {
 
@@ -1113,6 +1201,11 @@ switch (_operation) do {
         if (_layer1Complete && _layer2Complete) then {
             _jobComplete = true;
             _result = _layer2 select 3;
+            // Infantry: a leg that swims a river goes over a nearby bridge instead.
+            private _caps = _procedure select 1;
+            if ((_caps select 0) && {_caps select 3} && {!(_caps select 4)} && {_result isEqualType []}) then {
+                _result = [nil, "bridgeDetour", [_startPos, _result]] call MAINCLASS;
+            };
         };
 
         if (_jobComplete) then {
