@@ -47,3 +47,4 @@ PREP(divingEH);
 PREP(weaponKind);
 PREP(vehicleKind);
 PREP(roleKind);
+PREP(seatKind);

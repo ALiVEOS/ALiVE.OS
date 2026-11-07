@@ -46,6 +46,8 @@ if (GVAR(ENABLED)) then {
     _vehicle = _this select 0;
     _position = _this select 1;
     _unit = _this select 2;
+    // the seat in plain words (pilot, copilot, gunner, cargo...); vehiclePos stays the engine's own name for it
+    private _seat = [_vehicle, _position, _this param [3, [], [[]]]] call GVAR(fnc_seatKind);
 
     //["GetIn: %1", _this] call ALiVE_fnc_dump;
 
@@ -80,7 +82,7 @@ if (GVAR(ENABLED)) then {
         _vehiclePos = mapgridposition _vehicle;
 
         // Log data
-        _data = [ ["Event","GetIn"] , ["unitSide",_sideunit] , ["unitfaction",_factionunit] , ["unitType",_unitType] , ["unitClass",_unitVehicleClass] , ["unitPos",_unitPos] , ["unitGeoPos",_unitGeoPos] , ["vehicleSide",_sidevehicle] , ["vehiclefaction",_factionvehicle] , ["vehicleType",_vehicleType] , ["vehicleClass",_vehicleVehicleClass] , ["VehicleKind", _vehicle call GVAR(fnc_vehicleKind)] , ["vehiclePos",_position] , ["unit",str(_unit)] , ["vehicle",_vehicle] , ["vehiclePosition",_vehiclePos], ["vehicleConfig",_vehicleCfg], ["unitConfig",_unitCfg]   ];
+        _data = [ ["Event","GetIn"] , ["unitSide",_sideunit] , ["unitfaction",_factionunit] , ["unitType",_unitType] , ["unitClass",_unitVehicleClass] , ["unitPos",_unitPos] , ["unitGeoPos",_unitGeoPos] , ["vehicleSide",_sidevehicle] , ["vehiclefaction",_factionvehicle] , ["vehicleType",_vehicleType] , ["vehicleClass",_vehicleVehicleClass] , ["VehicleKind", _vehicle call GVAR(fnc_vehicleKind)] , ["vehiclePos",_position] , ["vehicleSeat",_seat] , ["unit",str(_unit)] , ["vehicle",_vehicle] , ["vehiclePosition",_vehiclePos], ["vehicleConfig",_vehicleCfg], ["unitConfig",_unitCfg]   ];
 
         _data = _data + [ ["Player",getplayeruid _unit],["playerGroup", [_unit] call ALiVE_fnc_getPlayerGroup] , ["PlayerName",name _unit] ];
 
