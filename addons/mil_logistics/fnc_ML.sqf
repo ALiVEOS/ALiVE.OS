@@ -8350,6 +8350,9 @@ switch(_operation) do {
                         if (_eventType == "STANDARD" && {_wetRoad} && {_eventForceInfantry > 0} && {count _airTrans > 0}) then {
                             ["ML - Delivery type: HELI_INSERT (road route crosses water with pathfinding off: %1 infantry squads fly, %2 vehicle groups stay behind, event %3)",
                                 _eventForceInfantry, _eventForceMotorised + _eventForceMechanised + _eventForceArmour, _eventID] call ALiVE_fnc_dump;
+                            if (!isNil "ALiVE_fnc_diagEvent") then {
+                                ["ML", "ML_HELI_WATER", format ["Event %1 flies its infantry in: the road crosses water with pathfinding off", _eventID], _eventPosition] call ALiVE_fnc_diagEvent;
+                            };
                             _eventForceMotorised  = 0;
                             _eventForceMechanised = 0;
                             _eventForceArmour     = 0;
@@ -8907,6 +8910,9 @@ switch(_operation) do {
                             if (_roadWet) then {
                                 ["ML - STANDARD: the road from %1 to %2 crosses water and pathfinding is off, so the convoy would drive across it. Event %3 is turned down.",
                                     [_roadFrom] call ALIVE_fnc_taskGetNearestLocationName, [_eventPosition] call ALIVE_fnc_taskGetNearestLocationName, _eventID] call ALiVE_fnc_dump;
+                                if (!isNil "ALiVE_fnc_diagEvent") then {
+                                    ["ML", "ML_ROAD_WATER", format ["Event %1 turned down: its road crosses water with pathfinding off", _eventID], _eventPosition] call ALiVE_fnc_diagEvent;
+                                };
                                 [_logic, "removeEvent", _eventID] call MAINCLASS;
                             };
                         };

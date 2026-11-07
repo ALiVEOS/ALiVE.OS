@@ -1240,6 +1240,11 @@ switch (_operation) do {
         if (_jobComplete) then {
             PROFILE_SCOPE(PFFINISH, "ALiVE pathfinder: finish job")
             if (isNil {_result select 0;}) then {["Error - Undefined value in path: %1 \n%2", _layer2, _result] call Alive_fnc_Dump;};
+            // for the War Room (development builds): a route between two cells that came back as one point leaves the unit where it is
+            if (!isNil "ALiVE_fnc_diagEvent" && {_result isEqualType []} && {count _result == 1} && {!isNil "_startSubSector"} && {!isNil "_goalSubSector"}
+                && {(_startSubSector select 0) isNotEqualTo (_goalSubSector select 0)}) then {
+                ["PATH", "PATH_ONE_POINT", format ["%1 route for %2 came back as one point", _procedure select 0, _callbackArgs param [0, ""]], _startPos] call ALiVE_fnc_diagEvent;
+            };
 
             // Optional debug draw of the final computed route (gated by the
             // "Draw Paths" toggle - Eden param ALiVE_sys_profile_pathfindingDrawPaths

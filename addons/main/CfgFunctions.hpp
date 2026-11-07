@@ -234,6 +234,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_buildAirsideCache.sqf";
                 ALIVE_RECOMPILE;
             };
+            class diagnostics {
+                description = "Starts the development-build diagnostics on the server: a snapshot every 30 s and the event ring, for the War Room";
+                file = "\x\alive\addons\main\fnc_diagnostics.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class diagEvent {
+                description = "Records one diagnostics event for the War Room in a development build";
+                file = "\x\alive\addons\main\fnc_diagEvent.sqf";
+                ALIVE_RECOMPILE;
+            };
             class isAirside {
                 description = "True when a position is on airfield surface ground movement should keep off: runway, approach strips, taxiway or parking. Hot path, cached arithmetic only";
                 file = "\x\alive\addons\main\fnc_isAirside.sqf";

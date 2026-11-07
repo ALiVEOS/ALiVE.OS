@@ -92,6 +92,15 @@
 <Key ID="STR_ALIVE_SETTINGS_LOGO_COMMENT">
     <English>Shows the ALiVE logo above the settings in an ALiVE module's attributes window.</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_DIAGCAT">
+    <English>Diagnostics</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_DIAG">
+    <English>Collect server diagnostics (development builds)</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_DIAG_COMMENT">
+    <English>In a development build of ALiVE, the server keeps a record of its frame rate, its AI Commanders, Military Logistics and route requests, and of things that went wrong, for the War Room to show. A release build never collects any of it. The War Room's own switch takes over once it is used.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_GAME">
     <English>Game</English>
 </Key>

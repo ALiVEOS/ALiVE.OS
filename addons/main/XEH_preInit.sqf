@@ -82,6 +82,15 @@ LOG(MSG_INIT);
 // the tablet artwork: as the mission sets (by default, picked by scenario), or one era always (ALiVE_fnc_tabletEra)
 ["ALiVE_prefTabletEra", "LIST", [localize "STR_ALIVE_SETTINGS_TABLET", localize "STR_ALIVE_SETTINGS_TABLET_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["auto", "modern", "coldwar", "vietnam", "ww2"], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALiVE_TABLET_MODERN", localize "STR_ALiVE_TABLET_COLDWAR", localize "STR_ALiVE_TABLET_VIETNAM", localize "STR_ALiVE_TABLET_WW2"], 0]] call CBA_fnc_addSetting;
 
+// ALiVE > Diagnostics: the server's record for the War Room, development builds only (ALiVE_fnc_diagnostics).
+// The server's value counts; the War Room's own switch, ALiVE_WR_diagOn, overrides it once set.
+["ALiVE_diagEnabled", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_DIAG", localize "STR_ALIVE_SETTINGS_DIAG_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_DIAGCAT"], true, 1] call CBA_fnc_addSetting;
+// Started once the mission runs; does nothing in a release build. The function exists only once addons/main
+// has been rebuilt, so a game still on the old build skips it.
+if (isServer && {!is3DEN}) then {
+    [] spawn { waitUntil {time > 0}; if (!isNil "ALiVE_fnc_diagnostics") then { [] call ALiVE_fnc_diagnostics } };
+};
+
 // Every module's own areas (TAOR, blacklist, CQB's lists, the air commander's airspace) out of sight at once, on
 // every machine with a screen, from the first module init on that machine (ALIVE_fnc_dumpModuleInit). Each module
 // also hides its own when it starts, but they start one after another, and a module late in a cold start left its

@@ -460,4 +460,8 @@ if (_debug) then {
     };
 };
 
+if (_found isEqualTo [] && {!isNil "ALiVE_fnc_diagEvent"}) then {
+    ["SPAWN", "SPAWN_VEHICLE", format ["No spawn position for %1; the caller fell back", _vehicleClass], _centerPos] call ALiVE_fnc_diagEvent;
+};
+
 _found

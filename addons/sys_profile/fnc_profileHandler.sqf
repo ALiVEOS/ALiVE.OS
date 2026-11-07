@@ -665,6 +665,8 @@ switch(_operation) do {
         };
 
         _profilesActive pushback _profileID;
+        // the War Room's count of spawns (ALiVE_fnc_diagnostics, development builds)
+        if (missionNamespace getVariable ["ALiVE_diag_active", false]) then { ALiVE_diag_spawns = ALiVE_diag_spawns + 1 };
 
         private _profilesActiveBySide = [_logic, "profilesActiveBySide"] call ALIVE_fnc_hashGet;
         private _profilesInActiveBySide = [_logic, "profilesInActiveBySide"] call ALIVE_fnc_hashGet;
@@ -691,6 +693,7 @@ switch(_operation) do {
         };
 
         _profilesInActive pushback _profileID;
+        if (missionNamespace getVariable ["ALiVE_diag_active", false]) then { ALiVE_diag_despawns = ALiVE_diag_despawns + 1 };
 
         private _profilesActiveBySide = [_logic,"profilesActiveBySide"] call ALIVE_fnc_hashGet;
         private _profilesInActiveBySide = [_logic,"profilesInActiveBySide"] call ALIVE_fnc_hashGet;

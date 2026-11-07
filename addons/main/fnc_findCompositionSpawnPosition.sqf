@@ -1191,6 +1191,9 @@ if (count _result == 0 && {_radius >= 50 || _callerDebug || _debug}) then {
     };
     ["[ALiVE CompSpawn] FAIL: no spot for a %2 composition within %3 m of %1%7. Why: %8. Details: envelope=%4m after %5 tries - not positioned: %6",
         _centerPos, _mode, _radius, _envelope, _maxAttempts, _reasons, _near, _why] call ALiVE_fnc_dump;
+    if (!isNil "ALiVE_fnc_diagEvent") then {
+        ["SPAWN", "SPAWN_COMPOSITION", format ["No spot for a %1 composition within %2 m%3. Why: %4", _mode, _radius, _near, _why], _centerPos] call ALiVE_fnc_diagEvent;
+    };
 };
 
 call _fnc_profDone;
