@@ -5152,6 +5152,34 @@ switch (_operation) do {
             };
         } foreach _objectives;
 
+        // the War Room's live feed (Statistics): an objective this side now holds alone that an enemy held at the last
+        // look that found only one side there. Taking an empty one isn't a capture, so it isn't sent.
+        if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+            if (isNil "ALiVE_opcom_feedHeld") then { ALiVE_opcom_feedHeld = createHashMap };
+            private _opcomID = [_logic,"opcomID",""] call ALiVE_fnc_HashGet;
+            private _first = !(_opcomID in ALiVE_opcom_feedHeld);
+            private _held = ALiVE_opcom_feedHeld getOrDefault [_opcomID, createHashMap, true];
+            private _mySide = [_logic,"side",""] call ALiVE_fnc_HashGet;
+            { _held set [_x select 0, (((_x select 2) select 0) select 2) select 3] } forEach _enemyObjectives;
+            {
+                private _id = _x select 0;
+                private _was = _held getOrDefault [_id, ""];
+                _held set [_id, _mySide];
+                if (!_first && {_was != ""} && {_was != _mySide}) then {
+                    private _obj = ([_logic,"objectivesByID",createHashMap] call ALiVE_fnc_HashGet) get _id;
+                    if (!isNil "_obj") then {
+                        private _c = [_obj,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+                        private _loc = nearestLocations [_c, ["NameCityCapital","NameCity","NameVillage","NameLocal","Airport","Hill"], 1000];
+                        [["Event","ObjectiveTaken"], ["objectiveId",_id],
+                            ["name", if (_loc isEqualTo []) then {""} else {text (_loc select 0)}],
+                            ["side",_mySide], ["fromSide",_was], ["pos",[round (_c select 0), round (_c select 1)]],
+                            ["objectiveType",[_obj,"objectiveType",""] call ALiVE_fnc_HashGet]
+                        ] call ALIVE_sys_statistics_fnc_feedEvent;
+                    };
+                };
+            } forEach _friendlyObjectives;
+        };
+
         private _clusterOccupation = [_friendlyObjectives, _enemyObjectives, _contestedObjectives, time];
         // the look before this one is kept as well: a place whose defenders were wiped out just before this look is
         // already the enemy's in it, and Military Logistics asks whether this side held a place another side has taken

@@ -56,6 +56,11 @@ if (_task == "LOITER") then {
 //New Task
 _veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE, player, _loiterDuration], true];
 
+// for the War Room's live feed (Statistics)
+if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+    [["Event","SupportCall"], ["support","CAS"], ["callsign",_callsign], ["side",str playerSide], ["PlayerName",name player], ["pos",[round (_pos select 0), round (_pos select 1)]], ["task",_task]] call ALIVE_sys_statistics_fnc_feedEvent;
+};
+
 
 if (_audio) then {
     player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];

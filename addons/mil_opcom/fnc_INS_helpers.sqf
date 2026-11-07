@@ -3291,6 +3291,24 @@ ALIVE_fnc_INS_buildingKilledEH = {
         _events pushBack _event;
 
         private _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
+
+        // the War Room's live feed (Statistics): destroyed, or dismantled by a player or friendly forces
+        if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+            private _insSide = "";
+            if ([_objective] call ALIVE_fnc_isHash) then {
+                private _oid = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
+                private _i = (missionNamespace getVariable ["OPCOM_instances", []]) findIf { ([_x,"opcomID",""] call ALiVE_fnc_HashGet) == _oid };
+                if (_i >= 0) then { _insSide = [OPCOM_instances select _i,"side",""] call ALiVE_fnc_HashGet };
+            };
+            private _killerOK = !isNil "_killer" && {_killer isEqualType objNull} && {!isNull _killer};
+            [["Event","InsurgentHQ"], ["what","Destroyed"], ["side",_insSide],
+                ["bySide", if (_killerOK) then { str side group _killer } else { "" }],
+                ["pos",[round (_pos select 0), round (_pos select 1)]],
+                ["PlayerName", if (_killerOK && {isPlayer _killer}) then { name _killer } else { "" }],
+                ["kind", switch (_installationType) do { case "hq": {"HQ"}; case "depot": {"Depot"}; case "factory": {"Factory"}; default { (toUpper (_installationType select [0,1])) + (_installationType select [1]) } }]
+            ] call ALIVE_sys_statistics_fnc_feedEvent;
+        };
+
         if ([_objective] call ALIVE_fnc_isHash) then {
             private _objectiveOpcomID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
             private _objectivePos = [_objective,"center",_pos] call ALiVE_fnc_HashGet;

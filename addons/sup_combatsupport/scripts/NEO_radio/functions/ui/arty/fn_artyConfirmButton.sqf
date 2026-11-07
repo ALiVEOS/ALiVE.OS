@@ -80,6 +80,11 @@ if (_audio) then {
 //NEW TASK
 _battery setVariable ["NEO_radioArtyNewTask", [_type, _ordnanceType, _rate, _count, _dispersion, _pos, _unit, _ord, _callsignPlayer, player], true];
 
+// for the War Room's live feed (Statistics)
+if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+    [["Event","SupportCall"], ["support","Artillery"], ["callsign",_callsign], ["side",str playerSide], ["PlayerName",name player], ["pos",[round (_pos select 0), round (_pos select 1)]], ["task",format ["%1 x%2", _ordnanceType, _count]]] call ALIVE_sys_statistics_fnc_feedEvent;
+};
+
 // show the panel the battery is engaged the moment the mission is called - the
 // FSM only flips the status to MISSION once it actually fires (after crew-up and
 // the ranging round), which left Confirm active and the status reading

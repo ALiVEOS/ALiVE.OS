@@ -92,6 +92,11 @@ _chopper setVariable ["NEO_transportRoute", _avoid, true];
 
 //New Task
 _chopper setVariable ["NEO_radioTransportNewTask", _arguments, true];
+
+// for the War Room's live feed (Statistics)
+if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+    [["Event","SupportCall"], ["support","Transport"], ["callsign",_callsign], ["side",str playerSide], ["PlayerName",name player], ["pos",[round (_pos select 0), round (_pos select 1)]], ["task",_task]] call ALIVE_sys_statistics_fnc_feedEvent;
+};
 // its escort, from the Escort box (Eric on Discord, 22 Oct); heading home takes the escort home too
 if (toUpper _task != "RTB") then {
     private _escortCb = _display displayCtrl 655638;

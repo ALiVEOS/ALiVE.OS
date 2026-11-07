@@ -253,6 +253,11 @@ switch (_op) do {
         };
 
         ["register", [_id]] call ALiVE_fnc_fobObjectives;
+        // for the War Room's live feed (Statistics)
+        if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+            private _fp = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+            [["Event","FOBBuilt"], ["side",[_entry, "side", ""] call ALIVE_fnc_hashGet], ["pos",[round (_fp select 0), round (_fp select 1)]], ["name",[_entry, "name", ""] call ALIVE_fnc_hashGet], ["PlayerName",name _caller]] call ALIVE_sys_statistics_fnc_feedEvent;
+        };
         ALiVE_FOB_tagged deleteAt (netId _kit);
         deleteVehicle _kit;
         // a respawn point from deployment when Respawn Point is From tier 1
@@ -304,6 +309,11 @@ switch (_op) do {
             _result = ["", "STR_ALIVE_FOB_REFUSED_SPOT", []];
         };
         ["register", [_id]] call ALiVE_fnc_fobObjectives;
+        // for the War Room's live feed (Statistics)
+        if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+            private _fp = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+            [["Event","FOBBuilt"], ["side",[_entry, "side", ""] call ALIVE_fnc_hashGet], ["pos",[round (_fp select 0), round (_fp select 1)]], ["name",[_entry, "name", ""] call ALIVE_fnc_hashGet], ["PlayerName",""]] call ALIVE_sys_statistics_fnc_feedEvent;
+        };
         ["respawn", [_id]] call ALiVE_fnc_fobOps;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
@@ -356,6 +366,11 @@ switch (_op) do {
         _args params [["_id", "", [""]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { _result = false };
+        // for the War Room's live feed (Statistics)
+        if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+            private _fp = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+            [["Event","FOBLost"], ["side",[_entry, "side", ""] call ALIVE_fnc_hashGet], ["pos",[round (_fp select 0), round (_fp select 1)]], ["name",[_entry, "name", ""] call ALIVE_fnc_hashGet], ["PlayerName",""]] call ALIVE_sys_statistics_fnc_feedEvent;
+        };
         // a repair count still running stops, and its marker goes
         ["cancel", ["fob:" + _id]] call ALiVE_fnc_siteClock;
         // anyone in this FOB's arsenal pays first, while it still has its supply
@@ -1151,6 +1166,11 @@ switch (_op) do {
         { if ((_y select 1) == _id) then { _inArsenal pushBack _x } } forEach (missionNamespace getVariable ["ALiVE_FOB_arsenalSessions", createHashMap]);
         { ["arsenalSettle", [_x, "fob"]] call ALiVE_fnc_fobOps } forEach _inArsenal;
         private _name = [_entry, "name", _id] call ALIVE_fnc_hashGet;
+        // for the War Room's live feed (Statistics)
+        if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+            private _fp = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
+            [["Event","FOBLost"], ["side",[_entry, "side", ""] call ALIVE_fnc_hashGet], ["pos",[round (_fp select 0), round (_fp select 1)]], ["name",[_entry, "name", ""] call ALIVE_fnc_hashGet], ["PlayerName",""]] call ALIVE_sys_statistics_fnc_feedEvent;
+        };
         isNil {
             ["unregister", [_id]] call ALiVE_fnc_fobObjectives;
             ["releaseGarrison", [_id]] call ALiVE_fnc_fobOps;

@@ -187,6 +187,10 @@ switch (_op) do {
         _veh setVariable ["NEO_transportRoute", _avoid, true];
         private _order = [_task, _pos, 0, player, _posB, _avoid];
         _veh setVariable ["NEO_radioGroundNewTask", _order, true];
+        // for the War Room's live feed (Statistics)
+        if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
+            [["Event","SupportCall"], ["support","Ground"], ["callsign",_entry select 2], ["side",str playerSide], ["PlayerName",name player], ["pos",[round (_pos select 0), round (_pos select 1)]], ["task",_task]] call ALIVE_sys_statistics_fnc_feedEvent;
+        };
         // its escort, from the Escort box (a new order with none lets the old one go)
         private _escortId = if (lbCurSel _escortCb > -1) then { _escortCb lbData (lbCurSel _escortCb) } else { "" };
         [[_veh, _escortId, "GROUND", player], "NEO_fnc_transportEscort", false, false] spawn BIS_fnc_MP;

@@ -48,3 +48,5 @@ PREP(weaponKind);
 PREP(vehicleKind);
 PREP(roleKind);
 PREP(seatKind);
+// mission events for the War Room's live feed, from other modules
+PREP(feedEvent);

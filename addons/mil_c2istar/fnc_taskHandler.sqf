@@ -53,6 +53,26 @@ params [
 
 #define MTEMPLATE "ALiVE_TASKHANDLER_%1"
 
+// A task created or ended, for the War Room's live feed (Statistics). Top-level tasks only, not their stages.
+private _fnc_feedTask = {
+    params ["_t", "_state"];
+    if (isNil "ALIVE_sys_statistics_fnc_feedEvent" || {!isServer} || {(_t param [11, "None"]) != "None"}) exitWith {};
+    private _source = _t param [12, ""];
+    if !(_source isEqualType "") then { _source = "" };
+    private _parts = _source splitString "-";
+    private _pos = _t param [3, []];
+    if !(_pos isEqualType [] && {count _pos > 1} && {(_pos select 0) isEqualType 0}) then { _pos = [0, 0] };
+    private _who = "";
+    if (_source == "PLAYER") then {
+        private _u = [_t param [1, ""]] call ALIVE_fnc_getPlayerByUID;
+        if (!isNull _u) then { _who = name _u };
+    };
+    [["Event","TaskState"], ["taskId",_t select 0], ["title",_t param [5, ""]],
+        ["taskType", if (count _parts >= 3) then { toLower (_parts select (count _parts - 2)) } else { "" }],
+        ["side",_t param [2, ""]], ["state",_state], ["pos",[round (_pos select 0), round (_pos select 1)]], ["PlayerName",_who]
+    ] call ALIVE_sys_statistics_fnc_feedEvent;
+};
+
 switch (_operation) do {
     case "destroy": {
         [_logic, "debug", false] call MAINCLASS;
@@ -182,7 +202,10 @@ switch (_operation) do {
                     _newTask set [14,[_task,"_rev"] call ALIVE_fnc_hashGet];
                     _newTask set [15,[_task,"_id"] call ALIVE_fnc_hashGet];
 
+                    // a saved task coming back isn't a new one for the War Room's live feed
+                    ALiVE_c2istar_taskLoading = true;
                     [_logic, "registerTask", _newTask] call MAINCLASS;
+                    ALiVE_c2istar_taskLoading = nil;
 
                     [_logic, "updateTaskState", _newTask] call MAINCLASS;
 
@@ -1443,6 +1466,8 @@ switch (_operation) do {
             private _sideTasks = [_tasksBySide, _taskSide] call ALIVE_fnc_hashGet;
             [_sideTasks, _taskID, _taskID] call ALIVE_fnc_hashSet;
 
+            if (isNil "ALiVE_c2istar_taskLoading") then { [_task, "Created"] call _fnc_feedTask };
+
             // store in tasks by player hash
             private _tasksByPlayer = [_logic, "tasksByPlayer"] call ALIVE_fnc_hashGet;
 
@@ -1573,6 +1598,14 @@ switch (_operation) do {
             };
 
             private _task = [_logic, "getTask", _taskID] call MAINCLASS;
+            // once per task: the stored task can already carry the new state when it is changed in place
+            if (_taskState in ["Succeeded", "Failed", "Canceled"]) then {
+                if (isNil "ALiVE_c2istar_taskFed") then { ALiVE_c2istar_taskFed = createHashMap };
+                if ((ALiVE_c2istar_taskFed getOrDefault [_taskID, ""]) != _taskState) then {
+                    ALiVE_c2istar_taskFed set [_taskID, _taskState];
+                    [_updatedTask, _taskState] call _fnc_feedTask;
+                };
+            };
             private _previousTaskPlayers = _task select 7 select 0;
             private _previousTaskApplyType = _task select 9;
             private _previousTaskCurrent = _task select 10;

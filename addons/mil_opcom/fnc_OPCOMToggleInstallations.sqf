@@ -53,6 +53,14 @@ private _forFaction = if (count _this > 5) then {_this select 5} else {""};
 private _logOn = !isNil "_pos" && {_forSide != ""} && {!isNil "ALIVE_fnc_intelLog"} && {missionNamespace getVariable ["ALiVE_c2istar_intelLogEnabled", false]};
 private _fnc_log = {
     params ["_kind", "_obj", "_label"];
+    // the War Room's live feed (Statistics): intel a side was given showed it one of the three installations
+    if (!isNil "_pos" && {_forSide != ""} && {_obj in [_HQ, _depot, _factory]} && {!isNil "ALIVE_sys_statistics_fnc_feedEvent"}) then {
+        private _at = getPosATL _obj;
+        [["Event","InsurgentHQ"], ["what","Found"], ["side",str _sideOPCOM], ["bySide",_forSide],
+            ["pos",[round (_at select 0), round (_at select 1)]], ["PlayerName",""],
+            ["kind", ["HQ","Depot","Factory"] select ([_HQ, _depot, _factory] find _obj)]
+        ] call ALIVE_sys_statistics_fnc_feedEvent;
+    };
     if (_logOn) then {
         ["add", [_forSide, _forFaction, _kind, getPosATL _obj, _label,
             format ["From %1. Part of a %2 objective at grid %3", _source, _type, mapGridPosition _center], _source, format ["%1_%2", _id, _label]]] call ALIVE_fnc_intelLog;
