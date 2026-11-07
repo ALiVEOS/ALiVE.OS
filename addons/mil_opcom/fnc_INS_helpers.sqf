@@ -1453,7 +1453,9 @@ ALiVE_fnc_INS_getRoadblockPosition = {
                 params [["_roadblockSource", objNull, [objNull, []]]];
 
                 if (_roadblockSource isEqualType objNull) then {
-                    getPosATL _roadblockSource
+                    // a road point from createRoadblock: the roadblock itself can stand up to 60 m along the road from
+                    // it, too far for the 30 m search below, so the action went on a cone instead (#1100)
+                    (missionNamespace getVariable ["ALiVE_CIV_PLACEMENT_ROADBLOCK_AT", createHashMap]) getOrDefault [getPosATL _roadblockSource, getPosATL _roadblockSource]
                 } else {
                     _roadblockSource
                 };
@@ -1617,7 +1619,10 @@ ALiVE_fnc_INS_addRoadblockHoldActionWhenReady = {
                 [_roadblockSource] spawn {
                     params [["_roadblockSource", objNull, [objNull, []]]];
 
-                    private _timeout = time + 10;
+                    // the roadblock is built in its own script after createRoadblock returns; on a slow server that
+                    // took longer than the 10 s this used to wait, and the action went on a cone with the roadblock
+                    // left without one (#1100)
+                    private _timeout = time + 180;
                     waitUntil {
                         sleep 0.25;
                         !(([_roadblockSource] call ALiVE_fnc_INS_getRoadblockCompositionHandlers) isEqualTo []) ||

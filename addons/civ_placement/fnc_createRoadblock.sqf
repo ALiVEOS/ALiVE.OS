@@ -323,6 +323,10 @@ for "_j" from 1 to (count _roadpoints) do {
         };
     };
     if (!_clear) exitWith {};
+    // where the roadblock went, by its road point, which is what this returns: the insurgents' disable action
+    // looks for the roadblock there (ALiVE_fnc_INS_getRoadblockPosition)
+    if (isNil QGVAR(ROADBLOCK_AT)) then {GVAR(ROADBLOCK_AT) = createHashMap};
+    GVAR(ROADBLOCK_AT) set [getPosATL _roadpos, _spawnedSafePos];
 
     if (_debug) then {
         ["CMP createRoadblock [%1] - %2 spawned at %3 dir %4 (envelope=%5)", _fac, _spawnedClass, _spawnedSafePos, _spawnedSafeDir, ([_spawnedComp] call ALiVE_fnc_getCompositionRadius)] call ALiVE_fnc_dump;
