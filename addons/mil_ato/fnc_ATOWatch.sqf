@@ -507,7 +507,8 @@ switch(_operation) do {
                                 };
                             } forEach _offers;
                             {
-                                if (_y > serverTime && {!isNil "ALiVE_profileHandler"}) then {
+                                // held sites stay held while tasks wait out an auto pause; SEAD renews the hold on its next tick
+                                if ((_y > serverTime || {(missionNamespace getVariable ["ALiVE_PAUSEMODULES_PAUSEDAT", -1]) >= 0}) && {!isNil "ALiVE_profileHandler"}) then {
                                     private _pr = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_profileHandler;
                                     if (!isNil "_pr") then { _held pushBack ([_pr, "position", []] call ALiVE_fnc_hashGet) };
                                 };

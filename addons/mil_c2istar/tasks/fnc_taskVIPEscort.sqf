@@ -87,10 +87,10 @@ private _updateVipPanicState = {
             };
             "ready"
         } else {
-            if (serverTime > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
+            if ((call ALiVE_fnc_taskTime) > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
         };
     } else {
-        if (serverTime > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
+        if ((call ALiVE_fnc_taskTime) > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
     };
 };
 
@@ -273,7 +273,7 @@ switch (_taskState) do {
             if !(_unit getVariable ["ALIVE_Task_VIPPicked", false]) exitWith {};
 
             _unit setVariable ["ALIVE_Task_VIPPanicked", true, true];
-            _unit setVariable ["ALIVE_Task_VIPPanicUntil", serverTime + (_unit getVariable ["ALIVE_Task_VIPPanicTimeout", 180]), true];
+            _unit setVariable ["ALIVE_Task_VIPPanicUntil", (call ALiVE_fnc_taskTime) + (_unit getVariable ["ALIVE_Task_VIPPanicTimeout", 180]), true];
 
             if (vehicle _unit == _unit) then {
                 private _fleePos = [getPosATL _unit, 25, 80, 1, 0, 0.25, 0] call BIS_fnc_findSafePos;

@@ -535,7 +535,7 @@ switch (_taskState) do {
                         [position _hostage,_taskSide,_taskPlayers,_taskID,"hostage","",_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
                         // store the data on the params
-                        [_params, "startTime", time] call ALIVE_fnc_hashSet;
+                        [_params, "startTime", (call ALiVE_fnc_taskTime)] call ALIVE_fnc_hashSet;
                         [_params, "hostageSpawned",true] call ALIVE_fnc_hashSet;
                         [_params, "entityProfileIDs",[_hostageProfile1ID]] call ALIVE_fnc_hashSet;
 
@@ -552,7 +552,7 @@ switch (_taskState) do {
             _entitiesState = [_entityProfiles] call ALIVE_fnc_taskGetStateOfEntityProfiles;
             _dead = [_entitiesState,"allDestroyed"] call ALIVE_fnc_hashGet;
 
-            if (_dead || {time > _startTime + 3300}) then {
+            if (_dead || {(call ALiVE_fnc_taskTime) > _startTime + 3300}) then {
 
                 //execute hostage as a sort of cleanup :)
                 _hostage setCaptive false;

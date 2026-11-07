@@ -123,6 +123,18 @@ ALiVE_moduleAreaSweep = {
     } forEach (allMissionObjects "Logic");
 };
 
+// C2ISTAR task clock: mission time less the seconds ALiVE's auto pause has held the mission, so task
+// deadlines wait with it (fnc_pauseModulesAuto.sqf). serverTime in multiplayer, time in single player
+// (as fnc_siteClock). Equals that base when auto pause is off or has never fired. Defined here so it
+// exists on every machine before any task code runs.
+ALiVE_fnc_taskTime = {
+    private _base = [time, serverTime] select isMultiplayer;
+    private _at = missionNamespace getVariable ["ALiVE_PAUSEMODULES_PAUSEDAT", -1];
+    private _total = missionNamespace getVariable ["ALiVE_PAUSEMODULES_PAUSEDTOTAL", 0];
+    if (_at >= 0) then { _total = _total + (serverTime - _at) };
+    _base - _total
+};
+
 // One line saying exactly what this install is, first thing in the log. Which
 // build a report came from has had to be worked out from which diagnostic lines
 // happen to be present, and getting that wrong has cost a reporter a wasted test

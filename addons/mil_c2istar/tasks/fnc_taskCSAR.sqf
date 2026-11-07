@@ -144,7 +144,7 @@ switch (_taskState) do {
             ALiVE_c2istar_csarCount = 0;
         };
 
-        private _now = time;
+        private _now = call ALiVE_fnc_taskTime;
         private _timeout = missionNamespace getVariable ["ALIVE_taskCsarTimeout", CSAR_DEFAULT_TIMEOUT];
         if !(_timeout isEqualType 0) then {_timeout = CSAR_DEFAULT_TIMEOUT};
         _timeout = _timeout max CSAR_MIN_TIMEOUT;
@@ -906,7 +906,7 @@ switch (_taskState) do {
         [_taskParams,"dialog",_dialogOption] call ALIVE_fnc_hashSet;
         [_taskParams,"pilotNetIDs",_netIDs] call ALIVE_fnc_hashSet;
         [_taskParams,"wreckNetID",_wreckNetID] call ALIVE_fnc_hashSet;
-        [_taskParams,"expiresAt",time + _timeout] call ALIVE_fnc_hashSet;
+        [_taskParams,"expiresAt",(call ALiVE_fnc_taskTime) + _timeout] call ALIVE_fnc_hashSet;
         [_taskParams,"strobes",[]] call ALIVE_fnc_hashSet;
         [_taskParams,"pilotFound",false] call ALIVE_fnc_hashSet;
         [_taskParams,"lastState",""] call ALIVE_fnc_hashSet;
@@ -990,7 +990,7 @@ switch (_taskState) do {
             };
 
             // nobody came in time
-            case (time > _expiresAt): {
+            case ((call ALiVE_fnc_taskTime) > _expiresAt): {
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
                 _task set [8,"Canceled"];
@@ -1057,7 +1057,7 @@ switch (_taskState) do {
                     // the trip home gets a window of its own
                     private _timeout = missionNamespace getVariable ["ALIVE_taskCsarTimeout", CSAR_DEFAULT_TIMEOUT];
                     if !(_timeout isEqualType 0) then {_timeout = CSAR_DEFAULT_TIMEOUT};
-                    [_params, "expiresAt", time + (_timeout max CSAR_MIN_TIMEOUT)] call ALIVE_fnc_hashSet;
+                    [_params, "expiresAt", (call ALiVE_fnc_taskTime) + (_timeout max CSAR_MIN_TIMEOUT)] call ALIVE_fnc_hashSet;
                 };
             };
         };
@@ -1091,7 +1091,7 @@ switch (_taskState) do {
             [_params, "retire"] call _fnc_cleanupTask;
         } else {
             // never brought home in time
-            if (time > _expiresAt) exitWith {
+            if ((call ALiVE_fnc_taskTime) > _expiresAt) exitWith {
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
                 _task set [8,"Canceled"];

@@ -53,16 +53,17 @@ private _applyFailurePopulationEffect = {
 private _updateConvoyAbandonment = {
     params ["_taskParams", "_vehicle", "_taskPlayers"];
 
+    private _now = call ALiVE_fnc_taskTime;
     private _contactRadius = [_taskParams, "contactRadius", 250] call ALIVE_fnc_hashGet;
     private _closestPlayer = [position _vehicle, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
 
     if !(isNull _closestPlayer) then {
         if (_closestPlayer distance2D _vehicle <= _contactRadius) then {
-            [_taskParams, "lastConvoyContact", serverTime] call ALIVE_fnc_hashSet;
+            [_taskParams, "lastConvoyContact", _now] call ALIVE_fnc_hashSet;
         };
     };
 
-    (serverTime - ([_taskParams, "lastConvoyContact", serverTime] call ALIVE_fnc_hashGet)) > ([_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashGet)
+    (_now - ([_taskParams, "lastConvoyContact", _now] call ALIVE_fnc_hashGet)) > ([_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashGet)
 };
 
 switch (_taskState) do {
@@ -413,7 +414,7 @@ switch (_taskState) do {
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
         [_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashSet;
         [_taskParams, "contactRadius", 250] call ALIVE_fnc_hashSet;
-        [_taskParams, "lastConvoyContact", serverTime] call ALIVE_fnc_hashSet;
+        [_taskParams, "lastConvoyContact", (call ALiVE_fnc_taskTime)] call ALIVE_fnc_hashSet;
 
         _result = [_tasks, _taskParams];
     };
@@ -459,7 +460,7 @@ switch (_taskState) do {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "convoy departure"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
             if ([_taskPosition, _taskPlayers, 100] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
-                [_params, "lastConvoyContact", serverTime] call ALIVE_fnc_hashSet;
+                [_params, "lastConvoyContact", (call ALiVE_fnc_taskTime)] call ALIVE_fnc_hashSet;
                 [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 2] call ALIVE_fnc_hashSet;
 
                 _task set [8, "Succeeded"];

@@ -53,16 +53,17 @@ private _applyFailurePopulationEffect = {
 private _updateAidVehicleAbandonment = {
     params ["_taskParams", "_vehicle", "_taskPlayers"];
 
+    private _now = call ALiVE_fnc_taskTime;
     private _contactRadius = [_taskParams, "contactRadius", 250] call ALIVE_fnc_hashGet;
     private _closestPlayer = [position _vehicle, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
 
     if !(isNull _closestPlayer) then {
         if (_closestPlayer distance2D _vehicle <= _contactRadius) then {
-            [_taskParams, "lastVehicleContact", serverTime] call ALIVE_fnc_hashSet;
+            [_taskParams, "lastVehicleContact", _now] call ALIVE_fnc_hashSet;
         };
     };
 
-    (serverTime - ([_taskParams, "lastVehicleContact", serverTime] call ALIVE_fnc_hashGet)) > ([_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashGet)
+    (_now - ([_taskParams, "lastVehicleContact", _now] call ALIVE_fnc_hashGet)) > ([_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashGet)
 };
 
 switch (_taskState) do {
@@ -394,7 +395,7 @@ switch (_taskState) do {
         [_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashSet;
         [_taskParams, "contactRadius", 250] call ALIVE_fnc_hashSet;
         [_taskParams, "airlift", _airlift] call ALIVE_fnc_hashSet;
-        [_taskParams, "lastVehicleContact", serverTime] call ALIVE_fnc_hashSet;
+        [_taskParams, "lastVehicleContact", (call ALiVE_fnc_taskTime)] call ALIVE_fnc_hashSet;
 
         _result = [_tasks, _taskParams];
     };
@@ -448,7 +449,7 @@ switch (_taskState) do {
             };
 
             if (_vehicleSecured) then {
-                [_params, "lastVehicleContact", serverTime] call ALIVE_fnc_hashSet;
+                [_params, "lastVehicleContact", (call ALiVE_fnc_taskTime)] call ALIVE_fnc_hashSet;
                 [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 2] call ALIVE_fnc_hashSet;
 
                 _task set [8, "Succeeded"];

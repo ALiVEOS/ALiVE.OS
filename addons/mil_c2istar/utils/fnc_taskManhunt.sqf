@@ -64,7 +64,7 @@ switch (_mode) do {
             ["ManhuntWindow", []], ["ManhuntMeetPos", []], ["ManhuntMeetName", ""], ["ManhuntMoved", false],
             ["ManhuntExtended", false], ["ManhuntMoves", 0], ["ManhuntLastClueAt", -1e6], ["ManhuntBaseDesc", _baseDesc]
         ];
-        ALiVE_c2istar_manhunts set [_taskID, [_taskSide, _enemySide, _params, time]];
+        ALiVE_c2istar_manhunts set [_taskID, [_taskSide, _enemySide, _params, (call ALiVE_fnc_taskTime)]];
         ["C2ISTAR - HVT manhunt %1 for %2: hideout at %3, search area centred on %4", _taskID, _taskSide,
             mapGridPosition ([_params, "HVTArea", [0,0,0]] call _fnc_get), mapGridPosition _center] call ALiVE_fnc_dump;
     };
@@ -97,7 +97,7 @@ switch (_mode) do {
         // task is registered only once the whole task set is built
         {
             private _t = [ALIVE_taskHandler, "getTask", _x] call ALIVE_fnc_taskHandler;
-            if (isNil "_t" && {time - ((ALiVE_c2istar_manhunts get _x) param [3, 0]) > 300}) then { ALiVE_c2istar_manhunts deleteAt _x };
+            if (isNil "_t" && {(call ALiVE_fnc_taskTime) - ((ALiVE_c2istar_manhunts get _x) param [3, 0]) > 300}) then { ALiVE_c2istar_manhunts deleteAt _x };
         } forEach (keys ALiVE_c2istar_manhunts);
     };
 
@@ -123,7 +123,7 @@ switch (_mode) do {
         // dropped while the task was still being built: put back from the task itself
         if !(_rootID in ALiVE_c2istar_manhunts) then {
             private _es = ([_params, "enemyFaction", ""] call _fnc_get) call ALiVE_fnc_factionSide;
-            ALiVE_c2istar_manhunts set [_rootID, [_task select 2, [[_es] call ALIVE_fnc_sideObjectToNumber] call ALIVE_fnc_sideNumberToText, _params, time]];
+            ALiVE_c2istar_manhunts set [_rootID, [_task select 2, [[_es] call ALIVE_fnc_sideObjectToNumber] call ALIVE_fnc_sideNumberToText, _params, (call ALiVE_fnc_taskTime)]];
         };
         (ALiVE_c2istar_manhunts get _rootID) params ["_taskSide", "_enemySide"];
         private _stage = [_params, "ManhuntStage", "search"] call _fnc_get;
@@ -205,7 +205,8 @@ switch (_mode) do {
             if (_meet isEqualTo []) then { _meet = +_area };
             _meet = [_meet, 150] call ALiVE_fnc_findFlatArea;
             _meet set [2, 0];
-            private _start = time + 900 + random 600;
+            private _now = call ALiVE_fnc_taskTime;
+            private _start = _now + 900 + random 600;
             [_params, "ManhuntWindow", [_start, _start + 600]] call _fnc_set;
             [_params, "ManhuntMeetPos", _meet] call _fnc_set;
             [_params, "ManhuntMeetName", _meet call _fnc_placeName] call _fnc_set;
@@ -213,15 +214,15 @@ switch (_mode) do {
             [_params, "ManhuntExtended", false] call _fnc_set;
             [_params, "ManhuntStage", "window"] call _fnc_set;
             // as the game clock shows them, with the mission's time acceleration
-            private _at = [((daytime + (_start - time) * timeMultiplier / 3600) mod 24), "HH:MM"] call BIS_fnc_timeToString;
-            private _to = [((daytime + (_start + 600 - time) * timeMultiplier / 3600) mod 24), "HH:MM"] call BIS_fnc_timeToString;
+            private _at = [((daytime + (_start - _now) * timeMultiplier / 3600) mod 24), "HH:MM"] call BIS_fnc_timeToString;
+            private _to = [((daytime + (_start + 600 - _now) * timeMultiplier / 3600) mod 24), "HH:MM"] call BIS_fnc_timeToString;
             private _place = _meet call _fnc_placeName;
             // the task points at the meeting, and the search area comes off the map
             [_taskPlayers, _stageID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             [_meet, format [localize "STR_ALIVE_C2ISTAR_MANHUNT_DESC_WINDOW", _name, _place, mapGridPosition _meet, _at, _to]] call _fnc_update;
             (format [localize "STR_ALIVE_C2ISTAR_MANHUNT_MSG_WINDOW", _name, _place, _at, _to]) call _fnc_radio;
             [_meet, format ["%1 expected at %2", _name, _place], format [localize "STR_ALIVE_C2ISTAR_MANHUNT_MSG_WINDOW", _name, _place, _at, _to]] call _fnc_log;
-            ["C2ISTAR - HVT manhunt %1: he is expected at %2 from %3 (in %4 s)", _rootID, mapGridPosition _meet, _at, round (_start - time)] call ALiVE_fnc_dump;
+            ["C2ISTAR - HVT manhunt %1: he is expected at %2 from %3 (in %4 s)", _rootID, mapGridPosition _meet, _at, round (_start - _now)] call ALiVE_fnc_dump;
         };
 
         if !([_params, "ManhuntDrawn", false] call _fnc_get) then {
@@ -231,11 +232,11 @@ switch (_mode) do {
 
         // a clue, at most one each two minutes: one conversation with a civilian can report the same place several times
         private _pending = [_params, "ManhuntPending", 0] call _fnc_get;
-        if (_pending > 0 && {_stage in ["search", "wiretap"]} && {time - ([_params, "ManhuntLastClueAt", -1e6] call _fnc_get) >= 120}) then {
+        if (_pending > 0 && {_stage in ["search", "wiretap"]} && {(call ALiVE_fnc_taskTime) - ([_params, "ManhuntLastClueAt", -1e6] call _fnc_get) >= 120}) then {
             private _clues = ([_params, "ManhuntClues", 0] call _fnc_get) + 1;
             [_params, "ManhuntClues", _clues] call _fnc_set;
             [_params, "ManhuntPending", 0] call _fnc_set;
-            [_params, "ManhuntLastClueAt", time] call _fnc_set;
+            [_params, "ManhuntLastClueAt", (call ALiVE_fnc_taskTime)] call _fnc_set;
             // the area is redrawn only when it shrinks: a new circle at the same size each time would let players
             // narrow him down to where the circles overlap
             private _was = [_params, "ManhuntRadius", 1500] call _fnc_get;
@@ -266,7 +267,7 @@ switch (_mode) do {
             if (_houses isNotEqualTo []) then { _td pushBack [_houses select 0] };
             [ALIVE_eventLog, "addEvent", ["TASK_GENERATE", _td, "C2ISTAR"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
             [_params, "ManhuntWiretapID", _wt] call _fnc_set;
-            [_params, "ManhuntWiretapAt", time] call _fnc_set;
+            [_params, "ManhuntWiretapAt", (call ALiVE_fnc_taskTime)] call _fnc_set;
             [_params, "ManhuntStage", "wiretap"] call _fnc_set;
             _stage = "wiretap";
             private _r = [_params, "ManhuntRadius", 1500] call _fnc_get;
@@ -281,7 +282,7 @@ switch (_mode) do {
             switch (true) do {
                 case (_how == "Succeeded"): { call _fnc_forecast; _stage = "window" };
                 // failed, cancelled, or never made (no house to tap, or the task could not be built): two more clues
-                case (_how != "" || {isNil "_live" && {time - ([_params, "ManhuntWiretapAt", 0] call _fnc_get) > 60}}): {
+                case (_how != "" || {isNil "_live" && {(call ALiVE_fnc_taskTime) - ([_params, "ManhuntWiretapAt", 0] call _fnc_get) > 60}}): {
                     ["C2ISTAR - HVT manhunt %1: Wiretap task %2 %3; two more clues are needed", _rootID, _wt, [_how, "was not made"] select (_how == "")] call ALiVE_fnc_dump;
                     [_params, "ManhuntWiretapID", ""] call _fnc_set;
                     [_params, "ManhuntNeed", _clues + 2] call _fnc_set;
@@ -300,13 +301,14 @@ switch (_mode) do {
             private _meet = [_params, "ManhuntMeetPos", []] call _fnc_get;
             // his window opens: he goes to the meeting, tried each tick while he is on a player's screen (he can't be
             // moved then). The task points there only once he is
-            if (time >= _from && {time < _until} && {!([_params, "ManhuntMoved", false] call _fnc_get)}) then {
+            private _now = call ALiVE_fnc_taskTime;
+            if (_now >= _from && {_now < _until} && {!([_params, "ManhuntMoved", false] call _fnc_get)}) then {
                 if ([_meet] call _fnc_moveTo) then {
                     [_params, "ManhuntMoved", true] call _fnc_set;
                     ["C2ISTAR - HVT manhunt %1: his window opens, he is at %2", _rootID, mapGridPosition _meet] call ALiVE_fnc_dump;
                 };
             };
-            if (time >= _until) then {
+            if (_now >= _until) then {
                 private _area = [_params, "HVTArea", [0,0,0]] call _fnc_get;
                 private _players = (_taskPlayers apply { [_x] call ALIVE_fnc_getPlayerByUID }) select { !isNull _x && {alive _x} };
                 private _close = (_players findIf { (_x distance2D _area) < 400 }) > -1;

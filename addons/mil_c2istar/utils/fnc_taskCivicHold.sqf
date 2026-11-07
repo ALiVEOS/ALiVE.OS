@@ -33,7 +33,7 @@ params ["_params", "_pos", "_side"];
 private _duration = missionNamespace getVariable ["ALIVE_civicHoldDuration", 120];
 if (_duration <= 0) exitWith { true };
 
-private _now = serverTime;
+private _now = call ALiVE_fnc_taskTime;
 private _left = [_params, "holdLeft", -1] call ALIVE_fnc_hashGet;
 private _last = [_params, "holdLast", _now] call ALIVE_fnc_hashGet;
 private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
@@ -53,7 +53,9 @@ private _step = (_now - _last) max 0;
 
 // players of the side near: none for 30 seconds and the task is lost
 private _near = (allPlayers select { alive _x && {side group _x == _sideObj} && {(_x distance2D _pos) < 200} }) isNotEqualTo [];
-private _away = if (_near) then { 0 } else { ([_params, "holdAway", 0] call ALIVE_fnc_hashGet) + _step };
+// nobody of the side in the game (left, or still loading in): nobody "left the area"
+private _sideOnline = (allPlayers findIf { alive _x && {side group _x == _sideObj} }) >= 0;
+private _away = if (_near || {!_sideOnline}) then { 0 } else { ([_params, "holdAway", 0] call ALIVE_fnc_hashGet) + _step };
 [_params, "holdAway", _away] call ALIVE_fnc_hashSet;
 if (_away >= 30) exitWith {
     [_params, "holdFailed", true] call ALIVE_fnc_hashSet;

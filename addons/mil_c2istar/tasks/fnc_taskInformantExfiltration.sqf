@@ -58,8 +58,8 @@ private _spawnInfantry = {
 private _retargetHunters = {
     params ["_taskParams", "_vip"];
     if (([_taskParams, "kind", "classic"] call ALIVE_fnc_hashGet) != "timed" || {isNull _vip}) exitWith {};
-    if (serverTime < ([_taskParams, "huntersRetargetAt", 0] call ALIVE_fnc_hashGet)) exitWith {};
-    [_taskParams, "huntersRetargetAt", serverTime + 30] call ALIVE_fnc_hashSet;
+    if ((call ALiVE_fnc_taskTime) < ([_taskParams, "huntersRetargetAt", 0] call ALIVE_fnc_hashGet)) exitWith {};
+    [_taskParams, "huntersRetargetAt", (call ALiVE_fnc_taskTime) + 30] call ALIVE_fnc_hashSet;
     private _last = [_taskParams, "huntersTarget", []] call ALIVE_fnc_hashGet;
     if (_last isNotEqualTo [] && {(_last distance2D _vip) < 150}) exitWith {};
     [_taskParams, "huntersTarget", getPosATL _vip] call ALIVE_fnc_hashSet;
@@ -143,10 +143,10 @@ private _updateVipPanicState = {
             };
             "ready"
         } else {
-            if (serverTime > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
+            if ((call ALiVE_fnc_taskTime) > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
         };
     } else {
-        if (serverTime > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
+        if ((call ALiVE_fnc_taskTime) > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
     };
 };
 
@@ -329,7 +329,7 @@ switch (_taskState) do {
             if !(_unit getVariable ["ALIVE_Task_VIPPicked", false]) exitWith {};
 
             _unit setVariable ["ALIVE_Task_VIPPanicked", true, true];
-            _unit setVariable ["ALIVE_Task_VIPPanicUntil", serverTime + (_unit getVariable ["ALIVE_Task_VIPPanicTimeout", 180]), true];
+            _unit setVariable ["ALIVE_Task_VIPPanicUntil", (call ALiVE_fnc_taskTime) + (_unit getVariable ["ALIVE_Task_VIPPanicTimeout", 180]), true];
 
             if (vehicle _unit == _unit) then {
                 private _fleePos = [getPosATL _unit, 25, 80, 1, 0, 0.25, 0] call BIS_fnc_findSafePos;
@@ -574,9 +574,9 @@ switch (_taskState) do {
                         [_params, "hunterIDs", _hunters] call ALIVE_fnc_hashSet;
                         [_params, "huntersTarget", getPosATL _vip] call ALIVE_fnc_hashSet;
                         [_params, "entityProfileIDs", ([_params, "entityProfileIDs", []] call ALIVE_fnc_hashGet) + _hunters] call ALIVE_fnc_hashSet;
-                        _arrive = serverTime + ((missionNamespace getVariable ["ALiVE_c2istar_informantHuntTime", 900]) max 120);
+                        _arrive = (call ALiVE_fnc_taskTime) + ((missionNamespace getVariable ["ALiVE_c2istar_informantHuntTime", 900]) max 120);
                         [_params, "huntersArriveAt", _arrive] call ALIVE_fnc_hashSet;
-                        ["Task Update", format ["HQ: A hunter team is moving on the informant in %1. Secure him within about %2 minutes.", _town, ceil ((_arrive - serverTime) / 60)]] remoteExec ["ALIVE_fnc_taskSubtitle", _players];
+                        ["Task Update", format ["HQ: A hunter team is moving on the informant in %1. Secure him within about %2 minutes.", _town, ceil ((_arrive - (call ALiVE_fnc_taskTime)) / 60)]] remoteExec ["ALIVE_fnc_taskSubtitle", _players];
                     };
                 } else {
                     [_params, _vip] call _retargetHunters;
@@ -592,7 +592,7 @@ switch (_taskState) do {
                         };
                     } else {
                         private _near = _hunters findIf { (([_x, "position", [0, 0, 0]] call ALIVE_fnc_hashGet) distance2D _vip) < 50 };
-                        if (serverTime > _arrive || {_near >= 0}) then {
+                        if ((call ALiVE_fnc_taskTime) > _arrive || {_near >= 0}) then {
                             _vip setDamage 1;
                             ["Task Update", ["HQ: Time's up. We've lost the informant.", "HQ: The hunters got to the informant first."] select (_near >= 0)] remoteExec ["ALIVE_fnc_taskSubtitle", _players];
                         };

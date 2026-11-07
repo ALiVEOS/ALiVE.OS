@@ -147,7 +147,7 @@ switch (_taskState) do {
         [_taskParams,"enemyFaction",_taskEnemyFaction] call ALIVE_fnc_hashSet;
         [_taskParams,"targets",[_targetBuilding]] call ALIVE_fnc_hashSet;
         [_taskParams,"lazeDecoys",_lazeDecoys] call ALIVE_fnc_hashSet;
-        [_taskParams,"expiryTime",time + _windowSeconds] call ALIVE_fnc_hashSet;
+        [_taskParams,"expiryTime",(call ALiVE_fnc_taskTime) + _windowSeconds] call ALIVE_fnc_hashSet;
         [_taskParams,"lazeConfirmed",false] call ALIVE_fnc_hashSet;
         [_taskParams,"lastState",""] call ALIVE_fnc_hashSet;
 
@@ -212,7 +212,7 @@ switch (_taskState) do {
 
         } else {
 
-            if (time > _expiryTime) then {
+            if ((call ALiVE_fnc_taskTime) > _expiryTime) then {
 
                 // strike window closed - the sortie was shot down, aborted, missed,
                 // or never flew. Fail cleanly rather than hang forever.

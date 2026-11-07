@@ -2215,6 +2215,11 @@ switch (_operation) do {
 
             // start the manager loop
             waituntil {
+                // auto pause has the mission: tasks wait with it (their clock is ALiVE_fnc_taskTime)
+                if ((missionNamespace getVariable ["ALiVE_PAUSEMODULES_PAUSEDAT", -1]) >= 0) exitWith {
+                    if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then { ["[C2ISTAR #1002 DIAG] manager cycle: paused with the mission"] call ALIVE_fnc_dump };
+                    uiSleep 10; false
+                };
                 private _managedTasks = [_logic, "managedTasks"] call ALIVE_fnc_hashGet;
                 private _activeTasks = [_logic, "activeTasks"] call ALIVE_fnc_hashGet;
                 private _managedTaskParams = [_logic, "managedTaskParams"] call ALIVE_fnc_hashGet;
@@ -2235,6 +2240,7 @@ switch (_operation) do {
                 // waitUntil for good, and every managed task then sits at its current
                 // stage for the rest of the mission looking exactly like a completion
                 // check that never fires. If these lines stop, the thread died.
+                // A "paused with the mission" line instead means alive and waiting.
                 if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
                     ["[C2ISTAR #1002 DIAG] manager cycle: %1 managed task(s)", count (_managedTasks select 1)] call ALIVE_fnc_dump;
                 };
@@ -2281,9 +2287,10 @@ switch (_operation) do {
                         private _takeoverMinutes = missionNamespace getVariable ["ALiVE_c2istar_aiTaskTakeover", 0];
                         if (_takeoverMinutes > 0) then {
                             if (isNil "ALiVE_c2istar_taskTakeover") then { ALiVE_c2istar_taskTakeover = createHashMap };
+                            private _now = call ALiVE_fnc_taskTime;
                             private _since = ALiVE_c2istar_taskTakeover getOrDefault [_rootTaskID, -1];
-                            if (_since isEqualTo -1) then { ALiVE_c2istar_taskTakeover set [_rootTaskID, time]; _since = time };
-                            if (_since >= 0 && {time - _since > _takeoverMinutes * 60}) then {
+                            if (_since isEqualTo -1) then { ALiVE_c2istar_taskTakeover set [_rootTaskID, _now]; _since = _now };
+                            if (_since >= 0 && {_now - _since > _takeoverMinutes * 60}) then {
                                 // handled once per task, whether or not a group was found
                                 ALiVE_c2istar_taskTakeover set [_rootTaskID, -2];
                                 private _taskPos = _mainTask select 3;
