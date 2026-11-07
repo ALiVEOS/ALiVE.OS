@@ -383,39 +383,43 @@ switch(_operation) do {
 
                 private _profileFaction = [_profile,"faction"] call ALIVE_fnc_hashGet;
 
-                private _profilesFaction = [_profilesByFaction, _profileFaction] call ALIVE_fnc_hashGet;
+                // checked and made in one go: two placement modules registering the first groups of a faction at the same
+                // time could otherwise each make the faction's lists, or one find the faction listed before its lists by
+                // type were made, and throw "Undefined variable _profilefactiontype" below
+                private ["_profilesFaction","_profilesFactionType","_profilesFactionVehicleType"];
+                isNil {
+                    _profilesFaction = [_profilesByFaction, _profileFaction] call ALIVE_fnc_hashGet;
 
-                private ["_profilesFactionType","_profilesFactionVehicleType"];
+                    if (!isnil "_profilesFaction") then {
+                        _profilesFactionType = [_profilesByFactionByType,_profileFaction] call ALIVE_fnc_hashGet;
+                        _profilesFactionVehicleType = [_profilesByFactionByVehicleType,_profileFaction] call ALIVE_fnc_hashGet;
+                    } else {
+                        _profilesFaction = [];
+                        [_profilesByFaction,_profileFaction, _profilesFaction] call ALIVE_fnc_hashSet;
 
-                if (!isnil "_profilesFaction") then {
-                    _profilesFactionType = [_profilesByFactionByType,_profileFaction] call ALIVE_fnc_hashGet;
-                    _profilesFactionVehicleType = [_profilesByFactionByVehicleType,_profileFaction] call ALIVE_fnc_hashGet;
-                } else {
-                    _profilesFaction = [];
-                    [_profilesByFaction,_profileFaction, _profilesFaction] call ALIVE_fnc_hashSet;
+                        _profilesFactionType = [
+                            [
+                                ["entity", []],
+                                ["vehicle", []]
+                            ]
+                        ] call ALIVE_fnc_hashCreate;
+                        [_profilesByFactionByType,_profileFaction, _profilesFactionType] call ALIVE_fnc_hashSet;
 
-                    _profilesFactionType = [
-                        [
-                            ["entity", []],
-                            ["vehicle", []]
-                        ]
-                    ] call ALIVE_fnc_hashCreate;
-                    [_profilesByFactionByType,_profileFaction, _profilesFactionType] call ALIVE_fnc_hashSet;
-
-                    _profilesFactionVehicleType = [
-                        [
-                            ["Car", []],
-                            ["Tank", []],
-                            ["Armored", []],
-                            ["Truck", []],
-                            ["Ship", []],
-                            ["Helicopter", []],
-                            ["Plane", []],
-                            ["StaticWeapon", []],
-                            ["Vehicle", []]
-                        ]
-                    ] call ALIVE_fnc_hashCreate;
-                    [_profilesByFactionByVehicleType,_profileFaction, _profilesFactionVehicleType] call ALIVE_fnc_hashSet;
+                        _profilesFactionVehicleType = [
+                            [
+                                ["Car", []],
+                                ["Tank", []],
+                                ["Armored", []],
+                                ["Truck", []],
+                                ["Ship", []],
+                                ["Helicopter", []],
+                                ["Plane", []],
+                                ["StaticWeapon", []],
+                                ["Vehicle", []]
+                            ]
+                        ] call ALIVE_fnc_hashCreate;
+                        [_profilesByFactionByVehicleType,_profileFaction, _profilesFactionVehicleType] call ALIVE_fnc_hashSet;
+                    };
                 };
 
                 _profilesFaction pushback _profileID;
