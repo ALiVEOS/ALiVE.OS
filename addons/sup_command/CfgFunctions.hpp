@@ -61,6 +61,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_command\fnc_SCOMCmdrControlOrder.sqf";
                 ALIVE_RECOMPILE;
             };
+            class SCOMGroupOrder {
+                description = "Orders for one AI group (move, stop, lock, unlock) from outside the game, server only";
+                file = "\x\alive\addons\sup_command\fnc_SCOMGroupOrder.sqf";
+                ALIVE_RECOMPILE;
+            };
         };
     };
 };
