@@ -311,7 +311,18 @@ for "_j" from 1 to (count _roadpoints) do {
         // ["CMP createRoadblock [%1] - no candidate fit at roadpoint %2 (%3 candidates tried, validator rejected all - slope / clearance / building footprint)", _fac, _roadpos, count _candidates] call ALiVE_fnc_dump;
     };
 
-    GVAR(ROADBLOCKS) pushBack _spawnedSafePos;
+    // Checked again where the roadblock really goes, and recorded in the same step. The check at the top is on the
+    // road point, but the spot found above can be up to 60 m from it; and on a slow server two callers could both
+    // pass that check before either had recorded its roadblock. Either way two roadblocks ended up under 100 m apart
+    // (#1100). isNil runs the check and the record with nothing in between.
+    private _clear = false;
+    isNil {
+        if (({_spawnedSafePos distance2D _x < 100} count GVAR(ROADBLOCKS)) == 0) then {
+            GVAR(ROADBLOCKS) pushBack _spawnedSafePos;
+            _clear = true;
+        };
+    };
+    if (!_clear) exitWith {};
 
     if (_debug) then {
         ["CMP createRoadblock [%1] - %2 spawned at %3 dir %4 (envelope=%5)", _fac, _spawnedClass, _spawnedSafePos, _spawnedSafeDir, ([_spawnedComp] call ALiVE_fnc_getCompositionRadius)] call ALiVE_fnc_dump;
