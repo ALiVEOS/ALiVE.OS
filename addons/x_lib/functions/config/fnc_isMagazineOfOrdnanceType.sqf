@@ -232,10 +232,11 @@ switch (_ordnanceType) do {
         // cluster call wants immediate area effect.
         // A dispenser whose one submunition is a bare class with no spread is a shell that goes off in a second
         // stage, not a cluster round: Spearhead's 81mm HE (M1, Mle 1932) is built that way and offered a Cluster
-        // mission that fired plain HE. Only when the magazine already counts as HE, so nothing loses its only type
-        // (vanilla's MLRS HE rocket is shaped the same and counts as nothing else).
+        // mission that fired plain HE. Only when the magazine already counts as HE or ROCKETS, so nothing loses its
+        // only type: vanilla's MLRS HE rocket and the RHS/3CB M31 are shaped the same and count as ROCKETS, and
+        // listing them as CLUSTER too fired the same single-warhead rocket.
         (getNumber (_ammoCfg >> "laserLock") == 0) && {
-            ((call _fnc_isDispenser) && {!(isText (_ammoCfg >> "submunitionAmmo") && {!isArray (_ammoCfg >> "submunitionConeType")} && {["HE", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType})}) || {
+            ((call _fnc_isDispenser) && {!(isText (_ammoCfg >> "submunitionAmmo") && {!isArray (_ammoCfg >> "submunitionConeType")} && {(["HE", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType) || {["ROCKETS", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType}})}) || {
                 (call _fnc_isShell)
                     && {!(_ammo isKindOf ["SmokeShell", _cfgAmmoRoot])}
                     && {!(_ammo isKindOf ["FlareCore", _cfgAmmoRoot])}
