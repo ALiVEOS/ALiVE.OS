@@ -696,6 +696,30 @@ switch (_operation) do {
                 [_logic,"loadCurrentJobData"] call MAINCLASS;
             };
 
+            // A vehicle route that starts on dry land in a cell whose centre is in the sea, on a shore,
+            // was judged from that centre: every way out read as a water crossing, and the route came
+            // back as the centre alone, out in the water. Such a start cell is searched from the start
+            // point itself; a copy, so the grid's own cell keeps its centre. Not for a procedure that
+            // can swim: it already gets out from the centre, and from the point it may not.
+            // Edges out of such a cell are judged from this point, so they keep to this job's own cache
+            // (slots 2 and 3, coarse and fine) rather than the grid's, which every other route reads.
+            private _startFromPoint = [false, false, createHashMap, createHashMap];
+            if (_canLand && {!((_procedure select 1) select 3)} && {(getTerrainHeightASL [_startPos select 0, _startPos select 1]) >= (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}) then {
+                private _deepStart = {
+                    ((getTerrainHeightASL ((_this select 2) select [0, 2])) < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin))
+                };
+                if (_startSector call _deepStart) then {
+                    _startSector = +_startSector;
+                    _startSector set [2, [_startPos select 0, _startPos select 1, 0]];
+                    _startFromPoint set [0, true];
+                };
+                if (_startSubSector call _deepStart) then {
+                    _startSubSector = +_startSubSector;
+                    _startSubSector set [2, [_startPos select 0, _startPos select 1, 0]];
+                    _startFromPoint set [1, true];
+                };
+            };
+
             // Coarse search state.
             private _cameFromMapLayer1 = createHashMap;
             private _costSoFarMapLayer1 = createHashMap;
@@ -726,6 +750,8 @@ switch (_operation) do {
             _currentJobData set [10, [nil, "jobContext", [_procedure select 1, _nextJob param [7, ""], _callbackArgs, _nextJob param [8, []]]] call ALiVE_fnc_pathfinderRouteMemory];
             // Slot 11: the goal point itself, after the snap to land above (read by the invalid-goal check).
             _currentJobData set [11, _endPos];
+            // Slot 12: whether the coarse and fine start cells are searched from the start point, and their edge caches.
+            _currentJobData set [12, _startFromPoint];
 
             _logic set ["currentJobData", _currentJobData];
         } else {
@@ -811,6 +837,7 @@ switch (_operation) do {
             private _subSectorSize = _terrainGrid get "subSectorSize";
             private _sectorWaterEdgeCache = [_terrainGrid, _sectorSize] call ALiVE_fnc_pathfinderGetWaterEdgeCache;
             private _subSectorWaterEdgeCache = [_terrainGrid, _subSectorSize] call ALiVE_fnc_pathfinderGetWaterEdgeCache;
+            (_currentJobData param [12, [false, false, createHashMap, createHashMap]]) params ["_startCoarseFromPoint", "_startFineFromPoint", "_startCoarseEdgeCache", "_startFineEdgeCache"];
             private _airsideActive =
                 ALiVE_pathfinding_airsideWeight != 1
                 && {!((_capabilities select 4))}
@@ -970,7 +997,7 @@ switch (_operation) do {
                         private _finalCostCanImprove = isNil "_knownCost" || {_newCostSoFar < _knownCost};
                         private _traversal = 0;
                         if (_mustCheckTraversal || {_finalCostCanImprove}) then {
-                            _traversal = [_procedure, _neighSector, _currentSector, _sectorSize, _sectorWaterEdgeCache] call ALiVE_fnc_pathfinderCanTraverse;
+                            _traversal = [_procedure, _neighSector, _currentSector, _sectorSize, [_sectorWaterEdgeCache, _startCoarseEdgeCache] select (_startCoarseFromPoint && {(_currentSector select 0) isEqualTo (_startSector select 0)})] call ALiVE_fnc_pathfinderCanTraverse;
                         };
                         if (_traversal > 0) then {
                             if (_finalCostCanImprove) then {
@@ -1124,7 +1151,7 @@ switch (_operation) do {
                         private _finalCostCanImprove = isNil "_knownCost" || {_newCostSoFar < _knownCost};
                         private _traversal = 0;
                         if (_mustCheckTraversal || {_finalCostCanImprove}) then {
-                            _traversal = [_procedure, _neighSubSector, _currentSubSector, _subSectorSize, _subSectorWaterEdgeCache] call ALiVE_fnc_pathfinderCanTraverse;
+                            _traversal = [_procedure, _neighSubSector, _currentSubSector, _subSectorSize, [_subSectorWaterEdgeCache, _startFineEdgeCache] select (_startFineFromPoint && {(_currentSubSector select 0) isEqualTo (_startSubSector select 0)})] call ALiVE_fnc_pathfinderCanTraverse;
                         };
 
                         if (_traversal > 0) then {
