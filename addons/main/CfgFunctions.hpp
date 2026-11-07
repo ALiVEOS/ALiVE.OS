@@ -244,6 +244,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_diagEvent.sqf";
                 ALIVE_RECOMPILE;
             };
+            class reportsForWarRoom {
+                description = "Every SPOTREP, SITREP and PATROLREP filed, from the server's stores, as plain rows for the War Room's live map";
+                file = "\x\alive\addons\main\fnc_reportsForWarRoom.sqf";
+                ALIVE_RECOMPILE;
+            };
             class isAirside {
                 description = "True when a position is on airfield surface ground movement should keep off: runway, approach strips, taxiway or parking. Hot path, cached arithmetic only";
                 file = "\x\alive\addons\main\fnc_isAirside.sqf";
