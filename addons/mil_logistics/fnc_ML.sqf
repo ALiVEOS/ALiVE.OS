@@ -6671,8 +6671,8 @@ switch(_operation) do {
                                     _armourProfiles = [_eventCargoProfiles, 'armour', []] call ALIVE_fnc_hashGet;
                                     _mechanisedProfiles = [_eventCargoProfiles, 'mechanised', []] call ALIVE_fnc_hashGet;
                                     _motorisedProfiles = [_eventCargoProfiles, 'motorised', []] call ALIVE_fnc_hashGet;
-                                    _planeProfiles = [_eventCargoProfiles, 'plane'] call ALIVE_fnc_hashGet;
-                                    _heliProfiles = [_eventCargoProfiles, 'heli'] call ALIVE_fnc_hashGet;
+                                    _planeProfiles = [_eventCargoProfiles, 'plane', []] call ALIVE_fnc_hashGet;
+                                    _heliProfiles = [_eventCargoProfiles, 'heli', []] call ALIVE_fnc_hashGet;
 
                                     _allRequestedProfiles = [];
                                     _anyActive = false;
@@ -17826,12 +17826,12 @@ switch(_operation) do {
         _eventPosition = _eventData select 0;
         _eventCargoProfiles = [_event, "cargoProfiles"] call ALIVE_fnc_hashGet;
 
-        _infantryProfiles = [_eventCargoProfiles, 'infantry'] call ALIVE_fnc_hashGet;
-        _armourProfiles = [_eventCargoProfiles, 'armour'] call ALIVE_fnc_hashGet;
-        _mechanisedProfiles = [_eventCargoProfiles, 'mechanised'] call ALIVE_fnc_hashGet;
-        _motorisedProfiles = [_eventCargoProfiles, 'motorised'] call ALIVE_fnc_hashGet;
-        _planeProfiles = [_eventCargoProfiles, 'plane'] call ALIVE_fnc_hashGet;
-        _heliProfiles = [_eventCargoProfiles, 'heli'] call ALIVE_fnc_hashGet;
+        _infantryProfiles = [_eventCargoProfiles, 'infantry', []] call ALIVE_fnc_hashGet;
+        _armourProfiles = [_eventCargoProfiles, 'armour', []] call ALIVE_fnc_hashGet;
+        _mechanisedProfiles = [_eventCargoProfiles, 'mechanised', []] call ALIVE_fnc_hashGet;
+        _motorisedProfiles = [_eventCargoProfiles, 'motorised', []] call ALIVE_fnc_hashGet;
+        _planeProfiles = [_eventCargoProfiles, 'plane', []] call ALIVE_fnc_hashGet;
+        _heliProfiles = [_eventCargoProfiles, 'heli', []] call ALIVE_fnc_hashGet;
 
         _eventAssets = [_event, "eventAssets"] call ALIVE_fnc_hashGet;
 
@@ -18121,14 +18121,14 @@ switch(_operation) do {
             private ["_emptyProfiles","_joinIndividualProfiles","_staticIndividualProfiles","_reinforceIndividualProfiles",
             "_joinGroupProfiles","_staticGroupProfiles","_reinforceGroupProfiles","_payloadGroupProfiles","_player","_logEvent","_finalDestination"];
 
-            _emptyProfiles = [_playerRequestProfiles,"empty"] call ALIVE_fnc_hashGet;
-            _joinIndividualProfiles = [_playerRequestProfiles,"joinIndividuals"] call ALIVE_fnc_hashGet;
-            _staticIndividualProfiles = [_playerRequestProfiles,"staticIndividuals"] call ALIVE_fnc_hashGet;
-            _reinforceIndividualProfiles = [_playerRequestProfiles,"reinforceIndividuals"] call ALIVE_fnc_hashGet;
-            _joinGroupProfiles = [_playerRequestProfiles,"joinGroups"] call ALIVE_fnc_hashGet;
-            _staticGroupProfiles = [_playerRequestProfiles,"staticGroups"] call ALIVE_fnc_hashGet;
-            _reinforceGroupProfiles = [_playerRequestProfiles,"reinforceGroups"] call ALIVE_fnc_hashGet;
-            _payloadGroupProfiles = [_playerRequestProfiles,"payloadGroups"] call ALIVE_fnc_hashGet;
+            _emptyProfiles = [_playerRequestProfiles,"empty", []] call ALIVE_fnc_hashGet;
+            _joinIndividualProfiles = [_playerRequestProfiles,"joinIndividuals", []] call ALIVE_fnc_hashGet;
+            _staticIndividualProfiles = [_playerRequestProfiles,"staticIndividuals", []] call ALIVE_fnc_hashGet;
+            _reinforceIndividualProfiles = [_playerRequestProfiles,"reinforceIndividuals", []] call ALIVE_fnc_hashGet;
+            _joinGroupProfiles = [_playerRequestProfiles,"joinGroups", []] call ALIVE_fnc_hashGet;
+            _staticGroupProfiles = [_playerRequestProfiles,"staticGroups", []] call ALIVE_fnc_hashGet;
+            _reinforceGroupProfiles = [_playerRequestProfiles,"reinforceGroups", []] call ALIVE_fnc_hashGet;
+            _payloadGroupProfiles = [_playerRequestProfiles,"payloadGroups", []] call ALIVE_fnc_hashGet;
 
             // reinforce profiles get released
             // to OPCOM control
