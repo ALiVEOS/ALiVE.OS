@@ -2546,9 +2546,12 @@ switch(_operation) do {
     case "playerRequest": {
         _result = false;
         if (!isServer || {!(_args isEqualType [])}) exitWith {};
-        _args params [["_unit", objNull, [objNull]], ["_type", "CAS", [""]], ["_pos", [], [[]]]];
-        if (isNull _unit || {count _pos < 2} || {isNil "ALIVE_eventLog"}) exitWith {};
-        private _playerSide = side group _unit;
+        // with no player: [objNull, type, position, side, who asked] for a request in a side's name from code on
+        // the server (the War Room's Commander's Picture Strike)
+        _args params [["_unit", objNull, [objNull]], ["_type", "CAS", [""]], ["_pos", [], [[]]], ["_askSide", sideUnknown, [west]], ["_askBy", "", [""]]];
+        if ((isNull _unit && {!(_askSide in [west, east, resistance])}) || {count _pos < 2} || {isNil "ALIVE_eventLog"}) exitWith {};
+        private _playerSide = if (isNull _unit) then { _askSide } else { side group _unit };
+        private _askName = if (isNull _unit) then { _askBy } else { name _unit };
         private _chosen = objNull;
         private _chosenSide = _playerSide;
         // the player's own side's commander first; failing that, an allied side's
@@ -2566,22 +2569,22 @@ switch(_operation) do {
             } forEach _maccs;
         } forEach [false, true];
         if (isNull _chosen) exitWith {
-            [format ["No air commander takes %1 requests for your side.", _type]] remoteExec ["hint", _unit];
-            ["ALIVE_fnc_ATOKernel - %1 asked for %2 at %3, but no air commander of side %4 flies it", name _unit, _type, mapGridPosition _pos, _playerSide] call ALiVE_fnc_dump;
+            if (!isNull _unit) then { [format ["No air commander takes %1 requests for your side.", _type]] remoteExec ["hint", _unit] };
+            ["ALIVE_fnc_ATOKernel - %1 asked for %2 at %3, but no air commander of side %4 flies it", _askName, _type, mapGridPosition _pos, _playerSide] call ALiVE_fnc_dump;
         };
         private _faction = ([_chosen, "factions"] call MAINCLASS) param [0, [_chosen, "faction"] call MAINCLASS];
-        private _uid = getPlayerUID _unit;
+        private _uid = if (isNull _unit) then { "SIDE" } else { getPlayerUID _unit };
         // numbered too, so two clicks in the same second are two requests
         ALiVE_ATO_playerReqSeq = (missionNamespace getVariable ["ALiVE_ATO_playerReqSeq", 0]) + 1;
         private _requestId = format ["PLAYER_%1_%2_%3_%4", _type, _uid, round time, ALiVE_ATO_playerReqSeq];
         private _event = ["ATO_REQUEST", [_type, _chosenSide, _faction, [_pos select 0, _pos select 1, 0], [], _requestId, _uid], "PLAYER"] call ALIVE_fnc_event;
         [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
-        ["ALIVE_fnc_ATOKernel - %1 asked for %2 at %3 (request %4, to %5)", name _unit, _type, mapGridPosition _pos, _requestId, _faction] call ALiVE_fnc_dump;
+        ["ALIVE_fnc_ATOKernel - %1 asked for %2 at %3 (request %4, to %5)", _askName, _type, mapGridPosition _pos, _requestId, _faction] call ALiVE_fnc_dump;
 
         // A marker where it was asked for, seen only by the side that asked (players joining later too), and
         // taken down when the sortie is over: complete or turned down, or never raised at all.
         private _marker = format ["ALiVE_ATO_request_%1", ALiVE_ATO_playerReqSeq];
-        [[_marker, [_pos select 0, _pos select 1, 0], format ["%1 requested (%2)", _type, name _unit]], {
+        [[_marker, [_pos select 0, _pos select 1, 0], format ["%1 requested (%2)", _type, _askName]], {
             params ["_name", "_at", "_text"];
             if (!hasInterface) exitWith {};
             deleteMarkerLocal _name;

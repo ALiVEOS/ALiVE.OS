@@ -46,6 +46,21 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_command\fnc_SCOMSetTerrainMode.sqf";
                 ALIVE_RECOMPILE;
             };
+            class SCOMCmdrObjectiveOrder {
+                description = "Objectives for a side's AI commander from outside the game, server only";
+                file = "\x\alive\addons\sup_command\fnc_SCOMCmdrObjectiveOrder.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class SCOMCmdrPictureOrder {
+                description = "The Commander's Picture orders (Go now, Look again, Strike) from outside the game, server only";
+                file = "\x\alive\addons\sup_command\fnc_SCOMCmdrPictureOrder.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class SCOMCmdrControlOrder {
+                description = "The AI Commander's controls (Go, stance, pause) from outside the game, server only";
+                file = "\x\alive\addons\sup_command\fnc_SCOMCmdrControlOrder.sqf";
+                ALIVE_RECOMPILE;
+            };
         };
     };
 };

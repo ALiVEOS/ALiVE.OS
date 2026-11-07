@@ -2979,9 +2979,9 @@ switch(_operation) do {
 
     case "intelOrder": {
 
-        // Commander's Picture orders: [uid, "GO"|"LOOK", objective ID]. Only with C2ISTAR's setting at Read and orders,
-        // only for an objective one of the caller's own side's commanders is still finding out about, under the Ops
-        // limit, and not more than once a minute per objective or once every two minutes per player
+        // Commander's Picture orders: [uid, "GO"|"LOOK"|"STRIKE", objective ID]. Only with C2ISTAR's setting at Read and
+        // orders, only for an objective one of the caller's own side's commanders is still finding out about, under the
+        // Ops limit, and not more than once a minute per objective or once every two minutes per player
 
         if (_args isEqualType []) then {
 
@@ -2997,81 +2997,110 @@ switch(_operation) do {
             if !(_kind in ["GO","LOOK","STRIKE"]) exitWith {};
 
             private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
-            private _opcom = nil;
-            private _obj = nil;
-            {
-                if (([_x,"side",""] call ALiVE_fnc_hashGet) == _side && {[_x,"intelCycle",false] call ALiVE_fnc_hashGet}
-                    && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_x,"opsLimit"]] call MAINCLASS}) then {
-                    private _byID = [_x,"objectivesByID"] call ALiVE_fnc_hashGet;
-                    if (!isNil "_byID") then {
-                        private _o = _byID get _oid;
-                        if (!isNil "_o") exitWith { _opcom = _x; _obj = _o };
-                    };
-                };
-                if (!isNil "_obj") exitWith {};
-            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
-            if (isNil "_obj") exitWith { "That objective isn't one your commander is working on." call _reply };
-
-            private _place = [[_obj,"center",[0,0,0]] call ALiVE_fnc_hashGet] call ALIVE_fnc_taskGetNearestLocationName;
-            private _intel = [_obj,"intel"] call ALiVE_fnc_hashGet;
-            if (isNil "_intel") exitWith { "That objective isn't one your commander is working on." call _reply };
-            // Go now and Look again only while it is still finding out; Strike until the objective is taken
-            if (_kind != "STRIKE" && {(_intel select 6) >= 0}) exitWith { format ["The attack on %1 has already gone in.", _place] call _reply };
-            private _known = [[], []];
-            private _macc = objNull;
-            if (_kind == "STRIKE") then {
-                _known = [_opcom,"intelKnownVehicles",[_obj,1]] call ALiVE_fnc_OPCOM;
-                _macc = ((entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" }) param [0, objNull];
+            private _opcoms = (missionNamespace getVariable ["OPCOM_instances", []]) select {
+                ([_x,"side",""] call ALiVE_fnc_hashGet) == _side
+                && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_x,"opsLimit"]] call MAINCLASS}
             };
-            // as the picture has it: still finding out, or going in and not yet taken
-            if (_kind == "STRIKE" && {(_intel select 6) >= 0} && {(_intel param [13, false]) || {!(([_obj,"opcom_state",""] call ALiVE_fnc_hashGet) in ["attack","attacking"])}}) exitWith {
-                format ["The commander isn't attacking %1 any more.", _place] call _reply;
-            };
-            if (_kind == "STRIKE" && {(_known select 0) isEqualTo []}) exitWith { format ["No enemy vehicles are known at %1.", _place] call _reply };
-            if (_kind == "STRIKE" && {isNull _macc}) exitWith { "There's no air commander in this mission to ask." call _reply };
-
-            if (isNil "ALiVE_c2istar_orderTimes") then { ALiVE_c2istar_orderTimes = createHashMap };
-            if (time - (ALiVE_c2istar_orderTimes getOrDefault ["o" + _oid, -1e9]) < 60) exitWith {
-                format ["Give the commander a minute before the next order on %1.", _place] call _reply;
-            };
-            if (time - (ALiVE_c2istar_orderTimes getOrDefault ["u" + _playerID, -1e9]) < 120) exitWith {
-                "Give the commander two minutes between your orders." call _reply;
-            };
-
-            private _name = name _player;
-            private _text = "";
-            if (_kind == "STRIKE") then {
-                private _at = (_known select 1) select 0;
-                if ([_macc,"playerRequest",[_player,"CAS",_at]] call ALIVE_fnc_ATOKernel) then {
-                    _text = format ["Air support asked for on the latest vehicle seen at %1, grid %2. Asked by %3.", _place, mapGridPosition _at, _name];
-                } else {
-                    _text = "No air commander flies close air support for your side.";
-                };
-            };
-            if (_kind == "GO") then {
-                if ([_opcom,"intelRelease",[_obj,_name]] call ALiVE_fnc_OPCOM) then {
-                    _text = format ["The attack on %1 goes ahead now. Ordered by %2.", _place, _name];
-                };
-            };
-            if (_kind == "LOOK") then {
-                ([_opcom,"intelLook",_obj] call ALiVE_fnc_OPCOM) params ["_done","_air"];
-                if (_done) then {
-                    _text = format ["The commander looks again at %1 for up to 10 minutes, unless it becomes sure first%2. Asked by %3.", _place,
-                        ["", ", and asks for another air recce"] select _air, _name];
-                } else {
-                    _text = format ["The commander has already looked again twice at %1.", _place];
-                };
-            };
-            if (_text == "") exitWith { format ["The attack on %1 has already gone in.", _place] call _reply };
-            if ((_text find "already looked") < 0 && {(_text find "No air commander") < 0}) then {
-                ALiVE_c2istar_orderTimes set ["o" + _oid, time];
-                ALiVE_c2istar_orderTimes set ["u" + _playerID, time];
-                [_opcom,"opRadio",_text] call ALiVE_fnc_OPCOM;
-                ["[OPCOM INTEL] %1 %2: tablet order %3 by %4", _side, _oid, _kind, _name] call ALiVE_fnc_dump;
-            };
-            _text call _reply;
+            // the order itself is shared with the War Room's entry (ALiVE_fnc_SCOMCmdrPictureOrder)
+            (([_logic,"intelOrderFor",[_opcoms,_kind,_oid,name _player,"u" + _playerID,_player,_side]] call MAINCLASS) select 2) call _reply;
 
         };
+
+    };
+
+    case "intelOrderFor": {
+
+        // One Commander's Picture order for commanders the caller has already chosen and authorised:
+        // [commanders, "GO"|"LOOK"|"STRIKE", objective ID, who for the radio, caller's cooldown key, player or objNull,
+        // side text]. The objective must be one of theirs still being found out about (Strike: until it is taken); one
+        // order a minute per objective, one every two minutes per caller. Returns [ok, code, text]; the code is "" on
+        // success, else gone / attackin / notattacking / novehicles / noair / objwait / callerwait / looked. With no
+        // player, Strike asks the air commander in the side's name.
+
+        _args params ["_opcoms","_kind","_oid","_name","_userKey",["_player",objNull],["_side",""]];
+
+        private _opcom = nil;
+        private _obj = nil;
+        {
+            if ([_x,"intelCycle",false] call ALiVE_fnc_hashGet) then {
+                private _byID = [_x,"objectivesByID"] call ALiVE_fnc_hashGet;
+                if (!isNil "_byID") then {
+                    private _o = _byID get _oid;
+                    if (!isNil "_o") exitWith { _opcom = _x; _obj = _o };
+                };
+            };
+            if (!isNil "_obj") exitWith {};
+        } forEach _opcoms;
+        _result = [false,"gone","That objective isn't one your commander is working on."];
+        if (isNil "_obj") exitWith {};
+
+        private _place = [[_obj,"center",[0,0,0]] call ALiVE_fnc_hashGet] call ALIVE_fnc_taskGetNearestLocationName;
+        private _intel = [_obj,"intel"] call ALiVE_fnc_hashGet;
+        if (isNil "_intel") exitWith {};
+        // Go now and Look again only while it is still finding out; Strike until the objective is taken
+        if (_kind != "STRIKE" && {(_intel select 6) >= 0}) exitWith { _result = [false,"attackin",format ["The attack on %1 has already gone in.", _place]] };
+        private _known = [[], []];
+        private _macc = objNull;
+        if (_kind == "STRIKE") then {
+            _known = [_opcom,"intelKnownVehicles",[_obj,1]] call ALiVE_fnc_OPCOM;
+            _macc = ((entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" }) param [0, objNull];
+        };
+        // as the picture has it: still finding out, or going in and not yet taken
+        if (_kind == "STRIKE" && {(_intel select 6) >= 0} && {(_intel param [13, false]) || {!(([_obj,"opcom_state",""] call ALiVE_fnc_hashGet) in ["attack","attacking"])}}) exitWith {
+            _result = [false,"notattacking",format ["The commander isn't attacking %1 any more.", _place]];
+        };
+        if (_kind == "STRIKE" && {(_known select 0) isEqualTo []}) exitWith { _result = [false,"novehicles",format ["No enemy vehicles are known at %1.", _place]] };
+        if (_kind == "STRIKE" && {isNull _macc}) exitWith { _result = [false,"noair","There's no air commander in this mission to ask."] };
+
+        if (isNil "ALiVE_c2istar_orderTimes") then { ALiVE_c2istar_orderTimes = createHashMap };
+        if (time - (ALiVE_c2istar_orderTimes getOrDefault ["o" + _oid, -1e9]) < 60) exitWith {
+            _result = [false,"objwait",format ["Give the commander a minute before the next order on %1.", _place],
+                ceil (60 - (time - (ALiVE_c2istar_orderTimes get ("o" + _oid))))];
+        };
+        if (time - (ALiVE_c2istar_orderTimes getOrDefault [_userKey, -1e9]) < 120) exitWith {
+            _result = [false,"callerwait","Give the commander two minutes between your orders.",
+                ceil (120 - (time - (ALiVE_c2istar_orderTimes get _userKey)))];
+        };
+
+        private _text = "";
+        private _code = "";
+        if (_kind == "STRIKE") then {
+            private _at = (_known select 1) select 0;
+            private _asked = if (isNull _player) then {
+                [_macc,"playerRequest",[objNull,"CAS",_at,[_side] call ALiVE_fnc_sideTextToObject,_name]] call ALIVE_fnc_ATOKernel
+            } else {
+                [_macc,"playerRequest",[_player,"CAS",_at]] call ALIVE_fnc_ATOKernel
+            };
+            if (_asked) then {
+                _text = format ["Air support asked for on the latest vehicle seen at %1, grid %2. Asked by %3.", _place, mapGridPosition _at, _name];
+            } else {
+                _text = "No air commander flies close air support for your side.";
+                _code = "noair";
+            };
+        };
+        if (_kind == "GO") then {
+            if ([_opcom,"intelRelease",[_obj,_name]] call ALiVE_fnc_OPCOM) then {
+                _text = format ["The attack on %1 goes ahead now. Ordered by %2.", _place, _name];
+            };
+        };
+        if (_kind == "LOOK") then {
+            ([_opcom,"intelLook",_obj] call ALiVE_fnc_OPCOM) params ["_done","_air"];
+            if (_done) then {
+                _text = format ["The commander looks again at %1 for up to 10 minutes, unless it becomes sure first%2. Asked by %3.", _place,
+                    ["", ", and asks for another air recce"] select _air, _name];
+            } else {
+                _text = format ["The commander has already looked again twice at %1.", _place];
+                _code = "looked";
+            };
+        };
+        if (_text == "") exitWith { _result = [false,"attackin",format ["The attack on %1 has already gone in.", _place]] };
+        if (_code == "") then {
+            ALiVE_c2istar_orderTimes set ["o" + _oid, time];
+            ALiVE_c2istar_orderTimes set [_userKey, time];
+            [_opcom,"opRadio",_text] call ALiVE_fnc_OPCOM;
+            ["[OPCOM INTEL] %1 %2: tablet order %3 by %4", [_opcom,"side",""] call ALiVE_fnc_hashGet, _oid, _kind, _name] call ALiVE_fnc_dump;
+        };
+        _result = [_code == "",_code,_text];
 
     };
 
@@ -3132,122 +3161,142 @@ switch(_operation) do {
                 if (_marker != "") then { ["You can't direct that commander"] call _fnc_reply };
             };
 
-            if (isnil "_opcom") exitwith {
-                ["No commander to take it"] call _fnc_reply;
-            };
-
-            private _opcomSide = [_opcom,"side",""] call ALiVE_fnc_hashGet;
-
-            private _cooldown = [_logic,"playerObjectiveCooldown",300] call ALiVE_fnc_hashGet;
-            private _cooldowns = [_logic,"playerObjectiveCooldowns"] call ALiVE_fnc_hashGet;
-            private _lastDesignation = [_cooldowns,_playerID,-999999] call ALiVE_fnc_hashGet;
-
-            if (time - _lastDesignation < _cooldown) exitwith {
-                private _remaining = ceil (_cooldown - (time - _lastDesignation));
-                [format ["Objective cooldown: %1s remaining", _remaining]] call _fnc_reply;
-            };
-
-            // Recon (NeisAEL on Discord, 17 Oct): the commander sends its nearest free foot group to look at the place
-            // and report, as its own recon orders do. It isn't an objective the commander keeps, so the cap doesn't
-            // count it and deleting the marker doesn't call the group back.
-            // obj sad and obj ambush go the same way, given their orders by the commander's addTimedTask
-            if (_intent in ["recon", "sad", "ambush"]) exitwith {
-                // an insurgency commander has no TACOM to send scouts with; two at a time per commander at most
-                if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") exitwith { ["This commander doesn't take orders like that"] call _fnc_reply };
-                // a Dug In commander keeps everyone where they are
-                if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "dugin") exitwith { ["This commander holds its ground and won't send anyone out"] call _fnc_reply };
-                if ({ [_x,"manualTask",false] call ALiVE_fnc_hashGet && {!([_x,"deleted",false] call ALiVE_fnc_hashGet)} } count ([_opcom,"objectives",[]] call ALiVE_fnc_hashGet) >= 2) exitwith {
-                    ["Two of your orders are already out: wait for one to finish"] call _fnc_reply;
-                };
-                // the group the commander itself would pick: nearest, not on another objective, not ordered, not in
-                // reserve, not fixed in place, not across water; never a player's, nor one already queued for an order
-                private _TACOM = [_opcom,"TACOM_FSM",-1] call ALiVE_fnc_hashGet;
-                private _queued = [];
-                if (_TACOM isEqualType 0 && {_TACOM > 0}) then {
-                    { _queued append ((_x param [1, []]) param [2, []]) } forEach (_TACOM getFSMVariable ["_TACOM_QUEUE",[]]);
-                };
-                private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
-                private _free = ([_opcom,"NearestAvailableSection",[_pos,4,["infantry"]]] call ALiVE_fnc_OPCOM) select {
-                    private _p = _profilesById get _x;
-                    !isNil "_p" && {!((_p select 2) param [30, false])} && {!(_x in _queued)}
-                };
-                // none free: one from a quiet objective (in reserve or idle) that keeps at least one other group,
-                // so no garrison is left empty
-                if (_free isEqualTo []) then {
-                    private _infantry = [_opcom,"infantry",[]] call ALiVE_fnc_hashGet;
-                    {
-                        if (([_x,"opcom_state",""] call ALiVE_fnc_hashGet) in ["reserve","reserving","idle"]) then {
-                            private _section = ([_x,"section",[]] call ALiVE_fnc_hashGet) select { _x in _infantry };
-                            if (count ([_x,"section",[]] call ALiVE_fnc_hashGet) >= 2) then {
-                                _free append (_section select {
-                                    private _p = _profilesById get _x;
-                                    !isNil "_p" && {!((_p select 2) param [30, false])} && {!(_x in _queued)}
-                                    && {!([_p,"busy",false] call ALiVE_fnc_hashGet)}
-                                    && {isNil "ALIVE_profileStationary" || {!([ALIVE_profileStationary, _x, false] call ALiVE_fnc_hashGet)}}
-                                    && {!([(_p select 2 select 2), _pos] call ALiVE_fnc_crossesSea)}
-                                });
-                            };
-                        };
-                    } forEach ([_opcom,"objectives",[]] call ALiVE_fnc_hashGet);
-                    _free = [_free, [], { ((_profilesById get _x) select 2 select 2) distance2D _pos }, "ASCEND"] call BIS_fnc_sortBy;
-                };
-                if (_free isEqualTo []) exitwith { ["No group is free to send"] call _fnc_reply };
-                private _scout = _free select 0;
-                private _from = round (((_profilesById get _scout) select 2 select 2) distance2D _pos);
-                private _task = if (_intent == "recon") then {
-                    [_opcom,"addTask",["recon",_pos,[_scout]]] call ALiVE_fnc_OPCOM
-                } else {
-                    [_opcom,"addTimedTask",[_intent,_pos,[_scout],600]] call ALiVE_fnc_OPCOM
-                };
-                if (isNil "_task") exitwith { ["The commander can't take orders just now"] call _fnc_reply };
-                [_cooldowns,_playerID,time] call ALiVE_fnc_hashSet;
-                [format [switch (_intent) do {
-                    case "sad": {"Search and destroy ordered: a group %1 m away is on its way, for ten minutes"};
-                    case "ambush": {"Ambush ordered: a group %1 m away will lie in wait there for ten minutes"};
-                    default {"Recon ordered: a group %1 m away is going to look at it from a distance"};
-                }, _from]] call _fnc_reply;
-            };
-
-            private _maxObjectives = [_logic,"maxPlayerObjectives",3] call ALiVE_fnc_hashGet;
-            private _playerObjectiveCount = [_logic,"opsCountPlayerObjectives", _opcomSide] call MAINCLASS;
-
-            if (_playerObjectiveCount >= _maxObjectives) exitwith {
-                ["Maximum player objectives reached"] call _fnc_reply;
-            };
-
-            // front-insert as unassigned - OPCOM classifies it on the next
-            // analysis cycle, and front array position makes it the first
-            // pick within its state bucket
-
-            // monotonic counter keeps IDs unique even when two designations
-            // drain from the remoteExec queue in the same server frame
-
-            private _counter = ([_logic,"playerObjectiveCounter",0] call ALiVE_fnc_hashGet) + 1;
-            [_logic,"playerObjectiveCounter",_counter] call ALiVE_fnc_hashSet;
-
-            private _opcomID = [_opcom,"opcomID",""] call ALiVE_fnc_hashGet;
-            private _objectiveID = format ["%1_player_obj_%2", _opcomID, _counter];
-
-            // a Dug In commander holds what it has and takes on nothing new: its order table only answers the
-            // objectives it already holds, so a new one would be accepted and then never acted on
-            if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "dugin") exitwith { ["This commander holds its ground and won't take on new objectives"] call _fnc_reply };
-
-            // taken or held as the player asked, or judged by the commander when he didn't say
-            private _state = ["unassigned", "attack"] select (_intent == "take");
-            private _objective = [_opcom,"addObjective",[_objectiveID,_pos,100,"custom",100,_state,"none",_opcomID,true,true]] call ALiVE_fnc_OPCOM;
-            if (!isNil "_objective" && {_intent != ""}) then { [_objective,"playerIntent",_intent] call ALiVE_fnc_hashSet };
-            [_cooldowns,_playerID,time] call ALiVE_fnc_hashSet;
+            // the checks and the order itself are shared with the War Room's entry (ALiVE_fnc_SCOMCmdrObjectiveOrder)
+            private _r = [_logic,"opsAddObjectiveFor",[_opcom,_pos,_intent,_playerID]] call MAINCLASS;
+            _r params ["_ok","_code","_text",["_objectiveID",""]];
 
             // a marker that made it: deleting the marker takes the objective away again
-            if (_marker != "") then {
+            if (_ok && {_marker != ""} && {_objectiveID isEqualType ""} && {_objectiveID != ""}) then {
                 private _byMarker = [_logic,"playerObjectiveMarkers",[] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
                 [_byMarker,_marker,[_objectiveID,_playerID,+_selOpcom]] call ALiVE_fnc_hashSet;
                 [_logic,"playerObjectiveMarkers",_byMarker] call ALiVE_fnc_hashSet;
             };
 
-            [switch (_intent) do { case "take": {"Objective designated: take it"}; case "hold": {"Objective designated: hold it"}; default {"Objective designated"} }] call _fnc_reply;
+            [_text] call _fnc_reply;
 
         };
+
+    };
+
+    case "opsAddObjectiveFor": {
+
+        // One objective or order for a commander that the caller has already resolved and authorised, with every
+        // check the tablet makes. _cooldownKey is whose cooldown it counts against: a player's UID, or the War Room's
+        // key for a side. Returns [ok, code, text, objective id or seconds left]; the code is "" on success, else
+        // nocommander / cooldown / asym / dugin / busy / nogroup / notready / quota. Unscheduled callers only: the
+        // cooldown and the cap are read and written in one go.
+
+        _args params ["_opcom",["_pos",[],[[]]],["_intent","",[""]],["_cooldownKey","",[""]]];
+
+        _result = [false,"nocommander","No commander to take it"];
+
+        if (isnil "_opcom") exitwith {};
+
+        private _opcomSide = [_opcom,"side",""] call ALiVE_fnc_hashGet;
+        private _controlType = [_opcom,"controltype",""] call ALiVE_fnc_hashGet;
+
+        private _cooldown = [_logic,"playerObjectiveCooldown",300] call ALiVE_fnc_hashGet;
+        private _cooldowns = [_logic,"playerObjectiveCooldowns"] call ALiVE_fnc_hashGet;
+        private _lastDesignation = [_cooldowns,_cooldownKey,-999999] call ALiVE_fnc_hashGet;
+
+        if (time - _lastDesignation < _cooldown) exitwith {
+            private _remaining = ceil (_cooldown - (time - _lastDesignation));
+            _result = [false,"cooldown",format ["Objective cooldown: %1s remaining", _remaining],_remaining];
+        };
+
+        // Recon (NeisAEL on Discord, 17 Oct): the commander sends its nearest free foot group to look at the place
+        // and report, as its own recon orders do. It isn't an objective the commander keeps, so the cap doesn't
+        // count it and deleting the marker doesn't call the group back.
+        // obj sad and obj ambush go the same way, given their orders by the commander's addTimedTask
+        if (_intent in ["recon", "sad", "ambush"]) exitwith {
+            // an insurgency commander has no TACOM to send scouts with; two at a time per commander at most
+            if (_controlType == "asymmetric") exitwith { _result = [false,"asym","This commander doesn't take orders like that"] };
+            // a Dug In commander keeps everyone where they are
+            if (_controlType == "dugin") exitwith { _result = [false,"dugin","This commander holds its ground and won't send anyone out"] };
+            if ({ [_x,"manualTask",false] call ALiVE_fnc_hashGet && {!([_x,"deleted",false] call ALiVE_fnc_hashGet)} } count ([_opcom,"objectives",[]] call ALiVE_fnc_hashGet) >= 2) exitwith {
+                _result = [false,"busy","Two of your orders are already out: wait for one to finish"];
+            };
+            // the group the commander itself would pick: nearest, not on another objective, not ordered, not in
+            // reserve, not fixed in place, not across water; never a player's, nor one already queued for an order
+            private _TACOM = [_opcom,"TACOM_FSM",-1] call ALiVE_fnc_hashGet;
+            private _queued = [];
+            if (_TACOM isEqualType 0 && {_TACOM > 0}) then {
+                { _queued append ((_x param [1, []]) param [2, []]) } forEach (_TACOM getFSMVariable ["_TACOM_QUEUE",[]]);
+            };
+            private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+            private _free = ([_opcom,"NearestAvailableSection",[_pos,4,["infantry"]]] call ALiVE_fnc_OPCOM) select {
+                private _p = _profilesById get _x;
+                !isNil "_p" && {!((_p select 2) param [30, false])} && {!(_x in _queued)}
+            };
+            // none free: one from a quiet objective (in reserve or idle) that keeps at least one other group,
+            // so no garrison is left empty
+            if (_free isEqualTo []) then {
+                private _infantry = [_opcom,"infantry",[]] call ALiVE_fnc_hashGet;
+                {
+                    if (([_x,"opcom_state",""] call ALiVE_fnc_hashGet) in ["reserve","reserving","idle"]) then {
+                        private _section = ([_x,"section",[]] call ALiVE_fnc_hashGet) select { _x in _infantry };
+                        if (count ([_x,"section",[]] call ALiVE_fnc_hashGet) >= 2) then {
+                            _free append (_section select {
+                                private _p = _profilesById get _x;
+                                !isNil "_p" && {!((_p select 2) param [30, false])} && {!(_x in _queued)}
+                                && {!([_p,"busy",false] call ALiVE_fnc_hashGet)}
+                                && {isNil "ALIVE_profileStationary" || {!([ALIVE_profileStationary, _x, false] call ALiVE_fnc_hashGet)}}
+                                && {!([(_p select 2 select 2), _pos] call ALiVE_fnc_crossesSea)}
+                            });
+                        };
+                    };
+                } forEach ([_opcom,"objectives",[]] call ALiVE_fnc_hashGet);
+                _free = [_free, [], { ((_profilesById get _x) select 2 select 2) distance2D _pos }, "ASCEND"] call BIS_fnc_sortBy;
+            };
+            if (_free isEqualTo []) exitwith { _result = [false,"nogroup","No group is free to send"] };
+            private _scout = _free select 0;
+            private _from = round (((_profilesById get _scout) select 2 select 2) distance2D _pos);
+            private _task = if (_intent == "recon") then {
+                [_opcom,"addTask",["recon",_pos,[_scout]]] call ALiVE_fnc_OPCOM
+            } else {
+                [_opcom,"addTimedTask",[_intent,_pos,[_scout],600]] call ALiVE_fnc_OPCOM
+            };
+            if (isNil "_task") exitwith { _result = [false,"notready","The commander can't take orders just now"] };
+            [_cooldowns,_cooldownKey,time] call ALiVE_fnc_hashSet;
+            _result = [true,"",format [switch (_intent) do {
+                case "sad": {"Search and destroy ordered: a group %1 m away is on its way, for ten minutes"};
+                case "ambush": {"Ambush ordered: a group %1 m away will lie in wait there for ten minutes"};
+                default {"Recon ordered: a group %1 m away is going to look at it from a distance"};
+            }, _from],""];
+        };
+
+        private _maxObjectives = [_logic,"maxPlayerObjectives",3] call ALiVE_fnc_hashGet;
+        private _playerObjectiveCount = [_logic,"opsCountPlayerObjectives", _opcomSide] call MAINCLASS;
+
+        if (_playerObjectiveCount >= _maxObjectives) exitwith {
+            _result = [false,"quota","Maximum player objectives reached"];
+        };
+
+        // a Dug In commander holds what it has and takes on nothing new: its order table only answers the
+        // objectives it already holds, so a new one would be accepted and then never acted on
+        if (_controlType == "dugin") exitwith { _result = [false,"dugin","This commander holds its ground and won't take on new objectives"] };
+
+        // front-insert as unassigned - OPCOM classifies it on the next
+        // analysis cycle, and front array position makes it the first
+        // pick within its state bucket
+
+        // monotonic counter keeps IDs unique even when two designations
+        // drain from the remoteExec queue in the same server frame
+
+        private _counter = ([_logic,"playerObjectiveCounter",0] call ALiVE_fnc_hashGet) + 1;
+        [_logic,"playerObjectiveCounter",_counter] call ALiVE_fnc_hashSet;
+
+        private _opcomID = [_opcom,"opcomID",""] call ALiVE_fnc_hashGet;
+        private _objectiveID = format ["%1_player_obj_%2", _opcomID, _counter];
+
+        // taken or held as the player asked, or judged by the commander when he didn't say
+        private _state = ["unassigned", "attack"] select (_intent == "take");
+        private _objective = [_opcom,"addObjective",[_objectiveID,_pos,100,"custom",100,_state,"none",_opcomID,true,true]] call ALiVE_fnc_OPCOM;
+        if (isNil "_objective") exitwith { _result = [false,"notready","The commander can't take orders just now"] };
+        if (_intent != "") then { [_objective,"playerIntent",_intent] call ALiVE_fnc_hashSet };
+        [_cooldowns,_cooldownKey,time] call ALiVE_fnc_hashSet;
+
+        _result = [true,"",switch (_intent) do { case "take": {"Objective designated: take it"}; case "hold": {"Objective designated: hold it"}; default {"Objective designated"} },_objectiveID];
 
     };
 
