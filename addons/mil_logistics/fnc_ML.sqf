@@ -3913,7 +3913,11 @@ switch(_operation) do {
                                     _tProfID, _phaseTimer, round _distFromIssue,
                                     round _distFromDest, round _heliAGLr, _heliSpdR] call ALiVE_fnc_dump;
                             };
-                            if (_distFromDest > 1200 || _phaseTimer > 600) then {
+                            // Home also counts as done. Where the base is under 1200 m from the drop the distance never
+                            // got there, so the helicopter hung over its base until the 600 s ran out: several hovering
+                            // over the logistics base at once (#1100)
+                            if (_distFromDest > 1200 || {_phaseTimer > 600}
+                                || {_phaseTimer > 30 && {_returnPos isEqualType []} && {count _returnPos > 1} && {(_heli distance2D _returnPos) < 300}}) then {
                                 // With a player near, it lands at its base and waits there until nobody is, rather than being
                                 // deleted in front of them with everyone aboard. At most 3 wait at a base; past that, as before.
                                 private _guardRadiusC = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500;
