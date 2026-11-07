@@ -5107,7 +5107,8 @@ switch (_operation) do {
             private _nearEnemies = [];
             {
                 private _values = _x select 2;
-                if ((_values select 5) == "entity") then {
+                // a profile partway through "destroy" can hold a list in these slots, and == on a list throws
+                if ((_values param [5, 0]) isEqualTo "entity" && {(_values param [2, 0]) isEqualTypeParams [0,0,0]}) then {
                     private _side = _values select 3;
                     private _friendly = _side in _sidesFriendly;
                     if ((_friendly || {_side in _sidesEnemy}) && {((_values select 2) distance _pos) <= 500}) then {

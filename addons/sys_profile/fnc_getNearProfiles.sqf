@@ -69,9 +69,11 @@ if (_categorySelector isEqualTo []) then {
 
     if (_hasSideFilter || {_hasTypeFilter} || {_hasObjectTypeFilter}) then {
         // (_x select 2) is [] for a profile destroyed since findInRange returned it (#1071), and slot 2 no
-        // longer holds a position for one caught partway through "destroy" (its keys go one at a time)
+        // longer holds a position for one caught partway through "destroy" (its keys go one at a time).
+        // The side and type slots shift the same way, and comparing a list there with == throws.
         _filtered = _near select {
-            if !(((_x select 2) param [2, 0]) isEqualTypeParams [0,0,0]) then {false} else {
+            private _entry = _x select 2;
+            if !((_entry param [2, 0]) isEqualTypeParams [0,0,0] && {(_entry param [3, 0]) isEqualType ""} && {(_entry param [5, 0]) isEqualType ""}) then {false} else {
                 private _sideMatches = if (!_hasSideFilter) then {
                     true
                 } else {
