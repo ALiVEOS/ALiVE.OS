@@ -3221,7 +3221,14 @@ switch(_operation) do {
             private _TACOM = [_opcom,"TACOM_FSM",-1] call ALiVE_fnc_hashGet;
             private _queued = [];
             if (_TACOM isEqualType 0 && {_TACOM > 0}) then {
-                { _queued append ((_x param [1, []]) param [2, []]) } forEach (_TACOM getFSMVariable ["_TACOM_QUEUE",[]]);
+                // only an order waiting for TACOM names its groups (["manual_order", [order, objective, groups]]); the
+                // queue's other entries carry an objective id or orders in that place
+                {
+                    if ((_x param [0, ""]) isEqualTo "manual_order") then {
+                        private _groups = (_x param [1, []]) param [2, []];
+                        if (_groups isEqualType []) then { _queued append _groups };
+                    };
+                } forEach (_TACOM getFSMVariable ["_TACOM_QUEUE",[]]);
             };
             private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
             private _free = ([_opcom,"NearestAvailableSection",[_pos,4,["infantry"]]] call ALiVE_fnc_OPCOM) select {
