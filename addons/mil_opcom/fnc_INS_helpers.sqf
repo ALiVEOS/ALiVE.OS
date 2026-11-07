@@ -2478,7 +2478,18 @@ ALiVE_fnc_spawnFurniture = {
     private _type = _this param [4, ""];
     private _faction = _this param [5, ""];
 
-    if (!(alive _building) || {count (_building getvariable [QGVAR(furnitured),[]]) > 0}) exitwith {[]};
+    // The building is claimed before any work, in one step with the check. furnitured is only written at the end,
+    // and dressing a room takes long enough for a slow server to start a second pass on the same building in the
+    // meantime: that put two sets in one Recruitment HQ, and the set the second pass overwrote in furnitured was
+    // left behind with no action when the installation was dismantled (#1100). Released at each exit below.
+    private _claimed = false;
+    isNil {
+        if (alive _building && {!(_building getVariable [QGVAR(furnishing), false])} && {count (_building getvariable [QGVAR(furnitured),[]]) == 0}) then {
+            _building setVariable [QGVAR(furnishing), true];
+            _claimed = true;
+        };
+    };
+    if (!_claimed) exitwith {[]};
 
     // tables, what sits on them, and what stands on the floor: the commander's Installation Props
     // theme, or the mission's own list for this kind of installation (ALiVE_fnc_INS_propSet)
@@ -2500,6 +2511,7 @@ ALiVE_fnc_spawnFurniture = {
 
     if (count _positions == 0) exitwith {
         ["ALiVE MIL OPCOM Insurgency has not found indoor Houspositions to place IED Factory/HQ/depot objects for building %1 at %2",_building, getposATL _building] call ALiVE_fnc_Dump;
+        _building setVariable [QGVAR(furnishing), nil];
         [];
     };
 
@@ -2536,6 +2548,7 @@ ALiVE_fnc_spawnFurniture = {
     };
     if (_created isNotEqualTo []) exitWith {
         _building setvariable [QGVAR(furnitured), _created];
+        _building setVariable [QGVAR(furnishing), nil];
         _created
     };
 
@@ -2639,6 +2652,7 @@ ALiVE_fnc_spawnFurniture = {
     };
 
     _building setvariable [QGVAR(furnitured),_created];
+    _building setVariable [QGVAR(furnishing), nil];
 
     _created
 };
