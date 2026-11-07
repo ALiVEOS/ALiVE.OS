@@ -1,5 +1,5 @@
-// Generated 2026-11-04 from 175 terrain indexes in addons/main/static: every model at least two indexes list and
-// all of them categorise the same way (5576 models: 2508 categorised, 3068 blacklist only). The in-game indexer
+// Generated 2026-11-07 from 176 terrain indexes in addons/main/static: every model at least two indexes list and
+// all of them categorise the same way (5591 models: 2517 categorised, 3074 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
     ["a3\air_f_jets\plane_fighter_02\plane_fighter_02_wreck_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -2681,6 +2681,7 @@
     ["ca\wheeled\skodovka_wrecked.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["csj_heli\w\csj_uh1_d2_wrk.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["csj_seaobj\csj_rockgod.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["csj_seaobj\csj_stall02.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["csj_seaobj\csj_temple1.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianHQBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["csj_village\csj_pagoda.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianHQBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["csj_village\csj_pagoda2.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
@@ -3337,6 +3338,8 @@
     ["ibr\sah_bunker_obj\bunker_room_2_tall.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militaryHQBuildingTypes"]],
     ["ibr\sah_bunker_obj\bunker_room_3.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes"]],
     ["ibr\sah_bunker_obj\bunker_wall_5m.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["indo_building\indo_hut_1.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
+    ["indo_building\indo_hut_2.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["jbad_bridge_kammeny\jbad_kamenny_most30.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_bridge_most\jbad_most_stred30.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_misc\billboards\jbad_board1.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -3879,10 +3882,14 @@
     ["raz_nam_obj\m\hut\raz_hut06.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["raz_nam_obj\m\hut\raz_hut07.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["raz_nam_obj\m\hut\raz_hut08.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
+    ["raz_nam_obj\m\pier\pier1_clutter.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["raz_nam_obj\m\pier\pier1_tyres.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["raz_nam_obj\m\pier\pier2.p3d", ["ALIVE_civilianMarineBuildingTypes"]],
     ["raz_nam_obj\m\razorwire\razorwire.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["raz_nam_obj\m\tent\tent_east.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes"]],
     ["raz_nam_obj\m\tent\tent_east_m.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes"]],
     ["raz_nam_obj\m\tent\tent_east_o.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes"]],
+    ["raz_nam_obj\m\timbers\timbers.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["raz_nam_obj\m\water_pipe\water_pipe.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["raz_nam_obj\m\well\vill_well.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["raz_nam_obj\m\wood_floor\wood_floor.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -4032,14 +4039,18 @@
     ["rhsterracore\addons\rhs_structures_village\village_house_05\rhs_village_house_05_t5.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["rhsterracore\addons\rhs_structures_village\village_house_05\rhs_village_house_05_t5_dam.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["uc\buildings2\shed_small\shed_w03.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
+    ["uc\buildings\hangar_2.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes", "ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes", "ALIVE_civilianConstructionBuildingTypes"]],
     ["uc\misc2\bagfencecorner.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uc\misc2\bagfenceend.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uc\misc2\bagfenceround.p3d", ["ALIVE_militaryBuildingTypes"]],
+    ["uc\misc3\wf\wf_field_hospital_east.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes"]],
     ["uc\structures\misc\armory\woodenramp\woodenramp.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["uc\structures\nav_boathouse\nav_boathouse_pierl.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes", "ALIVE_civilianMarineBuildingTypes"]],
     ["uc\structures\nav_boathouse\nav_boathouse_piert.p3d", ["ALIVE_civilianMarineBuildingTypes"]],
+    ["uc\structures_e\housea\a_office01\a_office01_ep1.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes", "ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianHQBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["uc\structures_e\housec\house_c_10_ep1.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianHQBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["uc\structures_e\misc\misc_interier\teapot_ep1.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["uc\structures_e\misc\misc_market\kiosk_ep1.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["uns_buildings\civilian_buildings\csj_bar.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["uns_buildings\civilian_buildings\csj_hut01.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianHQBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["uns_buildings\civilian_buildings\csj_hut02.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianHQBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
@@ -4101,6 +4112,7 @@
     ["uns_buildings\west_buildings\mortarpit_sb.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uns_buildings\west_buildings\sb_bunker_main.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes", "ALIVE_militaryFieldworkBuildingTypes"]],
     ["uns_buildings\west_buildings\sb_bunker_main02.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes"]],
+    ["uns_buildings\west_buildings\sb_bunker_small.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militaryFieldworkBuildingTypes"]],
     ["uns_buildings\west_buildings\scntr_open.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uns_buildings\west_buildings\t_2_fop2.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uns_buildings\west_buildings\tarp_1.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militarySupplyBuildingTypes"]],
@@ -4149,6 +4161,7 @@
     ["uns_buildings\west_objects\shovel.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["uns_buildings\west_objects\t_sb_45.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uns_buildings\west_objects\t_sb_5_half.p3d", ["ALIVE_militaryBuildingTypes"]],
+    ["uns_buildings\west_objects\t_sb_cnr_half.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uns_buildings\west_objects\t_sb_pit1.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uns_buildings\west_objects\t_sb_pit2.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["uns_buildings\west_objects\t_sb_pit3.p3d", ["ALIVE_militaryBuildingTypes"]],
@@ -4168,6 +4181,7 @@
     ["uns_village\basket\uns_ricebasket1.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["uns_village\basket\uns_ricebasket2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["uns_village\bridge\uns_villbridge1.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
+    ["uns_village\bridge\uns_villbridge2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["uns_village\fence\uns_fence5.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["uns_village\fence\uns_fence6.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["uns_village\misc\uns_barrel.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -5577,5 +5591,6 @@
     ["ww2\spex_terrains\tem_utah_beach_objects\objects\trenches\utah_beach_trench_entrance_dirt.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ww2\spex_terrains\tem_utah_beach_objects\objects\trenches\utah_beach_trench_long_dirt.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militaryFieldworkBuildingTypes"]],
     ["ww2\spex_terrains\tem_utah_beach_objects\objects\trenches\utah_beach_trench_short_dirt.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["ww2\spex_terrains\tem_utah_beach_objects\objects\trenches\utah_beach_trench_t_dirt.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militaryFieldworkBuildingTypes"]]
+    ["ww2\spex_terrains\tem_utah_beach_objects\objects\trenches\utah_beach_trench_t_dirt.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militaryFieldworkBuildingTypes"]],
+    ["wx_objects\wx_baileybridge_01.p3d", ["ALIVE_Indexing_Blacklist"]]
 ]
