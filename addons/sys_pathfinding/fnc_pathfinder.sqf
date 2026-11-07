@@ -486,9 +486,11 @@ switch (_operation) do {
     };
 
     // Infantry may swim water, and the route search heads for the goal without weighing a
-    // detour, so a group swam a river beside a bridge rather than walk to it. Each leg of a
-    // finished route that swims deep water goes over a bridge instead, when one is close
-    // enough that the walk round is no more than ALiVE_pathfinding_bridgeDetour metres longer.
+    // detour, so a group swam a river beside a bridge rather than walk to it. Vehicles cannot
+    // swim, but the water check between grid cells misses a narrow river, so a route could
+    // still drive through one. Each leg of a finished ground route that crosses deep water goes
+    // over a bridge instead, when one is close enough that the way round is no more than
+    // ALiVE_pathfinding_bridgeDetour metres longer.
     case "bridgeDetour": {
         _args params ["_from", "_path"];
         _result = _path;
@@ -1201,9 +1203,9 @@ switch (_operation) do {
         if (_layer1Complete && _layer2Complete) then {
             _jobComplete = true;
             _result = _layer2 select 3;
-            // Infantry: a leg that swims a river goes over a nearby bridge instead.
+            // On the ground: a leg through a river goes over a nearby bridge instead.
             private _caps = _procedure select 1;
-            if ((_caps select 0) && {_caps select 3} && {!(_caps select 4)} && {_result isEqualType []}) then {
+            if ((_caps select 0) && {!(_caps select 4)} && {_result isEqualType []}) then {
                 _result = [nil, "bridgeDetour", [_startPos, _result]] call MAINCLASS;
             };
         };
