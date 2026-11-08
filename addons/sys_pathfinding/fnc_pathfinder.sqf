@@ -492,7 +492,7 @@ switch (_operation) do {
     // over a bridge instead, when one is close enough that the way round is no more than
     // ALiVE_pathfinding_bridgeDetour metres longer.
     case "bridgeDetour": {
-        _args params ["_from", "_path"];
+        _args params ["_from", "_path", ["_onFoot", false]];
         _result = _path;
         private _maxDetour = missionNamespace getVariable ["ALiVE_pathfinding_bridgeDetour", 1000];
         if (!(_maxDetour isEqualType 0) || {_maxDetour <= 0} || {_path isEqualTo []}) exitWith {};
@@ -528,6 +528,39 @@ switch (_operation) do {
             };
             _hit
         };
+        // A dry way from P to Q: [] when the straight line is dry, [V] when it goes round a river
+        // bend through one dry point V (shortest first), false when neither. A bridge end that the
+        // waypoint before a crossing cannot see in a straight line, because the river bends between
+        // them, was skipped and the group swam beside the bridge instead (Livonia).
+        private _fnc_link = {
+            params ["_p", "_q", "_limit"];
+            if (([_p, _q] call _fnc_swim) isEqualTo []) exitWith { [] };
+            private _m = [((_p select 0) + (_q select 0)) / 2, ((_p select 1) + (_q select 1)) / 2];
+            private _cands = [];
+            for "_r" from 100 to 500 step 100 do {
+                for "_h" from 0 to 315 step 45 do {
+                    private _v = _m getPos [_r, _h];
+                    _cands pushBack [(_p distance2D _v) + (_v distance2D _q), [_v select 0, _v select 1]];
+                };
+            };
+            _cands sort true;
+            private _via = false;
+            {
+                _x params ["_length", "_v"];
+                // shortest first, so nothing after this one fits either
+                if (_length > _limit) exitWith {};
+                if ((_v select 0) > 0 && {(_v select 1) > 0} && {(_v select 0) < worldSize} && {(_v select 1) < worldSize}
+                    && {(getTerrainHeightASL _v) >= _deep} && {([_p, _v] call _fnc_swim) isEqualTo []} && {([_v, _q] call _fnc_swim) isEqualTo []}
+                    // for a vehicle, open ground: not in a wood, a yard or against a rock, where it would stick
+                    && {_onFoot || {(nearestTerrainObjects [_v, ["TREE", "SMALL TREE", "FOREST", "HOUSE", "BUILDING", "WALL", "ROCK", "ROCKS"], 12, false, true]) isEqualTo []}}) exitWith { _via = [_v] };
+            } forEach _cands;
+            _via
+        };
+        private _fnc_length = {
+            private _l = 0;
+            for "_i" from 1 to (count _this - 1) do { _l = _l + ((_this select (_i - 1)) distance2D (_this select _i)) };
+            _l
+        };
         private _points = [_from] + _path;
         private _out = [];
         private _changed = false;
@@ -536,35 +569,57 @@ switch (_operation) do {
             private _b = _points select _k;
             private _swim = [_a, _b] call _fnc_swim;
             if (_swim isNotEqualTo []) then {
-                // Bridge ends on dry ground near the crossing, each with whether it reaches A and B dry.
+                // Bridge ends on dry ground near the crossing. The dry way from A to each, and from
+                // each to B, is worked out only when a pair could still beat the best so far.
                 private _ends = [];
                 {
                     private _info = getRoadInfo _x;
                     if (_info select 8) then {
                         {
                             private _e = [_x select 0, _x select 1];
-                            if ((getTerrainHeightASL _e) >= _deep && {(_ends findIf { (_x select 0) distance2D _e < 1 }) < 0}) then {
-                                _ends pushBack [_e, ([_a, _e] call _fnc_swim) isEqualTo [], ([_e, _b] call _fnc_swim) isEqualTo []];
+                            if ((getTerrainHeightASL _e) >= _deep && {(_ends findIf { _x distance2D _e < 1 }) < 0}) then {
+                                _ends pushBack _e;
                             };
                         } forEach [_info select 6, _info select 7];
                     };
                 } forEach (_swim nearRoads (_maxDetour / 2));
-                private _direct = _a distance2D _b;
+                private _fromA = _ends apply { 0 };
+                private _toB = _ends apply { 0 };
                 private _best = [];
-                private _bestLength = _direct + _maxDetour;
+                private _maxLength = (_a distance2D _b) + _maxDetour;
+                private _bestLength = _maxLength;
+                // Pairs over a bridge, shortest straight-line way first, so the first one that works
+                // rules out most of the rest.
+                private _pairs = [];
                 {
-                    _x params ["_e1", "_dryFromA"];
-                    if (_dryFromA) then {
-                        {
-                            _x params ["_e2", "", "_dryToB"];
-                            private _span = _e1 distance2D _e2;
-                            if (_dryToB && {_span > 1} && {_span < 300} && {([_e1, _e2] call _fnc_swim) isEqualTo []}) then {
-                                private _length = (_a distance2D _e1) + _span + (_e2 distance2D _b);
-                                if (_length < _bestLength) then { _bestLength = _length; _best = [_e1, _e2] };
-                            };
-                        } forEach _ends;
-                    };
+                    private _i1 = _forEachIndex;
+                    private _e1 = _x;
+                    {
+                        private _span = _e1 distance2D _x;
+                        if (_span > 1 && {_span < 300}) then {
+                            _pairs pushBack [(_a distance2D _e1) + _span + (_x distance2D _b), _i1, _forEachIndex];
+                        };
+                    } forEach _ends;
                 } forEach _ends;
+                _pairs sort true;
+                {
+                    _x params ["_bound", "_i1", "_i2"];
+                    if (_bound >= _bestLength) exitWith {};
+                    private _e1 = _ends select _i1;
+                    private _e2 = _ends select _i2;
+                    if (([_e1, _e2] call _fnc_swim) isEqualTo []) then {
+                        // the rest of the way is at least the straight line, so a link longer than this cannot fit
+                        if ((_fromA select _i1) isEqualTo 0) then { _fromA set [_i1, [_a, _e1, _maxLength - (_e1 distance2D _b)] call _fnc_link] };
+                        if ((_toB select _i2) isEqualTo 0) then { _toB set [_i2, [_e2, _b, _maxLength - (_a distance2D _e2)] call _fnc_link] };
+                        private _l1 = _fromA select _i1;
+                        private _l2 = _toB select _i2;
+                        if ((_l1 isEqualType []) && {_l2 isEqualType []}) then {
+                            private _way = _l1 + [_e1, _e2] + _l2;
+                            private _length = ([_a] + _way + [_b]) call _fnc_length;
+                            if (_length < _bestLength) then { _bestLength = _length; _best = _way };
+                        };
+                    };
+                } forEach _pairs;
                 if (_best isNotEqualTo []) then {
                     { _out pushBack [_x select 0, _x select 1, 0] } forEach _best;
                     _changed = true;
@@ -1233,7 +1288,7 @@ switch (_operation) do {
             // On the ground: a leg through a river goes over a nearby bridge instead.
             private _caps = _procedure select 1;
             if ((_caps select 0) && {!(_caps select 4)} && {_result isEqualType []}) then {
-                _result = [nil, "bridgeDetour", [_startPos, _result]] call MAINCLASS;
+                _result = [nil, "bridgeDetour", [_startPos, _result, _caps select 1]] call MAINCLASS;
             };
         };
 
