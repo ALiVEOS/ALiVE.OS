@@ -206,6 +206,34 @@ switch(_operation) do {
             };
         } foreach _allFactions;
 
+        // the factions no mod defines (#1099), found by initAssetsByFaction: listed under their Eden
+        // category's name, with no flag or groups of their own
+        {
+            _y params ["_factionConfigName", "_factionDisplayName", "_factionSide"];
+            private _faction = _factionConfigName;
+            private _factionAssetData = [_assetsByFaction, _x] call ALiVE_fnc_hashGet;
+
+            _newFaction = [nil,"create"] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"init"] call ALiVE_fnc_orbatCreatorFaction;
+
+            private _factionGroupCategories = [_newFaction,"groupCategories"] call ALiVE_fnc_hashGet;
+            _factionGroupCategoriesData = [_logic,"initFactionGroupCategories", _factionGroupCategories] call MAINCLASS;
+            _factionGroupCategoriesData params ["_factionGroupCategoriesName","_factionGroupCategories"];
+
+            [_newFaction,"configName", _factionConfigName] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"displayName", _factionDisplayName] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"flag", ""] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"icon", ""] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"priority", 0] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"side", _factionSide] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"groupCategoriesRootName", _factionGroupCategoriesName] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"groupCategories", _factionGroupCategories] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"assetCategories", _factionAssetData select 0] call ALiVE_fnc_orbatCreatorFaction;
+            [_newFaction,"assets", _factionAssetData select 1] call ALiVE_fnc_orbatCreatorFaction;
+
+            [_factions,_factionConfigName,_newFaction] call ALiVE_fnc_hashSet;
+        } forEach ALiVE_orbatCreator_noFaction;
+
         [_state,"factions", _factions] call ALiVE_fnc_hashSet;
 
         private _customUnits = +_tmpHash;
@@ -1652,6 +1680,7 @@ switch(_operation) do {
 
         // set unit classes to factions
 
+        ALiVE_orbatCreator_noFaction = createHashMap;
         private _configPath = configFile >> "CfgVehicles";
         for "_i" from 0 to (count _configPath - 1) do {
 
@@ -1669,6 +1698,21 @@ switch(_operation) do {
 
                         _factionData = nil;
                         _factionData = [_result,_entryFaction] call ALiVE_fnc_hashGet;
+
+                        // A unit whose faction no mod defines (#1099): a mod that only adds an Eden category,
+                        // such as Generation Kill Era Vehicles, is listed under no faction, so its vehicles
+                        // could not be picked at all. Such a faction gets an entry of its own, named after
+                        // the unit's Eden category.
+                        if (isnil "_factionData" && {_entryFaction != ""}
+                            && {!isClass (configFile >> "CfgFactionClasses" >> _entryFaction)}
+                            && {!isClass (missionConfigFile >> "CfgFactionClasses" >> _entryFaction)}) then {
+                            private _category = getText (_entry >> "editorCategory");
+                            private _name = getText (configFile >> "CfgEditorCategories" >> _category >> "displayName");
+                            if (_name == "") then { _name = getText (_entry >> "faction") };
+                            ALiVE_orbatCreator_noFaction set [_entryFaction, [getText (_entry >> "faction"), _name, _entrySide]];
+                            _factionData = [[],[]];
+                            [_result,_entryFaction,_factionData] call ALiVE_fnc_hashSet;
+                        };
 
                         if (!isnil "_factionData") then {
                             _entryConfigName = configName _entry;
