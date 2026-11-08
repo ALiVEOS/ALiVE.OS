@@ -108,10 +108,6 @@ _IED setVectorUp [0,0,-1];
     if (!isNil "_marker") then {[_marker] call CBA_fnc_deleteEntity;};
 };
 
-// Do NOT call ALIVE_fnc_armIED here. The VBIED detonation is handled
-// entirely by the HandleDamage event handler below. armIED creates a
-// proximity polling loop that would immediately detect the host vehicle
-// as a nearby LandVehicle and detonate on the first 0.5s tick.
 
 // Add damage handler
 _ehID = _IED addeventhandler ["HandleDamage",{
@@ -145,7 +141,17 @@ _ehID = _IED addeventhandler ["HandleDamage",{
 }];
 
 _IED setVariable ["ehID",_ehID, true];
-_IED setvariable ["charge", _vehicle, true]; // store the host vehicle for cleanup
+// The charge is its own: a disarm, a Combat Support crew or removeIED delete what this names,
+// and naming the car took the car away with it.
+_IED setvariable ["charge", _IED, true];
+
+// Set off by whoever comes near, as a roadside IED is (#1102): a parked car bomb beeped at a player
+// walking up and did nothing. armIED was left out in April because it took the empty car it sits
+// under for a vehicle driving onto it; it now counts only men and vehicles with someone alive in
+// them, so the car sets it off only once a player gets in. An engineer gets its careful approach
+// and Disarm action, and the charge can still be shot. A car bomb's blast, as when the charge is shot:
+// the roadside IED's mostly small shell barely scratched the car.
+[_IED, typeOf _vehicle, [["Bomb_04_F","Bomb_03_F","R_60mm_HE"],[3,3,1]] call BIS_fnc_selectRandomWeighted] call ALIVE_fnc_armIED;
 
 // what gives it away: the load, sitting low, the beeping, a detector (each set in the module)
 [_vehicle, _IED] call ALiVE_fnc_vbiedTells;
