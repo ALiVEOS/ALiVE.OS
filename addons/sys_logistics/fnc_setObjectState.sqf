@@ -72,6 +72,14 @@ if (_boughtBy isEqualType "" && {_boughtBy != ""}) then {
     }];
 };
 
+// Paint and fitted parts as saved (#1104), before the damage, as putting parts on can repair them
+private _custom = [_state, QGVAR(CUSTOM)] call ALiVE_fnc_HashGet;
+if (!isNil "_custom" && {_custom isEqualType []} && {count _custom == 2} && {(_custom select 0) isEqualType []} && {(_custom select 1) isEqualType []}) then {
+    // an empty list as false, which leaves that half alone: given [] the function may pick at random
+    _custom params ["_tex", "_anim"];
+    [_object, [false, _tex] select (_tex isNotEqualTo []), [false, _anim] select (_anim isNotEqualTo [])] call BIS_fnc_initVehicle;
+};
+
 _damageModel = [_state,QGVAR(POINTDAMAGE)] call ALiVE_fnc_HashGet;
 
 

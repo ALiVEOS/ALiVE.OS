@@ -338,6 +338,17 @@ switch (_operation) do {
                         [_args,QGVAR(RECRUITCOST)] call ALiVE_fnc_HashRem;
                     };
 
+                    //Paint and fitted parts as set in the Garage, Eden or Zeus (#1104): a load gave the car back
+                    //as its class comes, so a repainted one lost its paint and its extras
+                    if (_x isKindOf "LandVehicle" || {_x isKindOf "Air"} || {_x isKindOf "Ship"}) then {
+                        private _custom = [_x] call BIS_fnc_getVehicleCustomization;
+                        if (_custom isEqualType [] && {count _custom == 2} && {(_custom select 0) isNotEqualTo [] || {(_custom select 1) isNotEqualTo []}}) then {
+                            [_args,QGVAR(CUSTOM),_custom] call ALiVE_fnc_HashSet;
+                        } else {
+                            [_args,QGVAR(CUSTOM)] call ALiVE_fnc_HashRem;
+                        };
+                    };
+
                     //Only stored when opted in, so default saves are unchanged
                     if ((_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true) then {
                         [_args,QGVAR(NOREMAP),true] call ALiVE_fnc_HashSet;
@@ -1360,6 +1371,8 @@ switch (_operation) do {
                 // who bought a Recruitment vehicle, and for how much
                 [QGVAR(RECRUITEDBY),"ASL_RB"],
                 [QGVAR(RECRUITCOST),"ASL_RC"],
+                // paint and fitted parts from the Garage (#1104)
+                [QGVAR(CUSTOM),"ASL_CU"],
                 ["_rev","_rev"]
             ];
 
