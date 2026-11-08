@@ -96,4 +96,43 @@ if (_object isKindof "LandVehicle" || _object isKindOf "Air" || _object isKindOf
 } else {
 	[_object,([_state,QGVAR(DAMAGE)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectDamage;
 };
+
+// Held still until the ground under it has settled (#1104). Craters, and mods that reshape the ground,
+// put their changes back after a load without moving what stands there, so a vehicle restored first sat
+// on ground that then dropped or rose under it, and it bounced, flipped or blew up. Frozen, it is set
+// back on the ground each time the ground under it moves, and let go once it has stayed put for 15 s
+// and ALiVE's craters are all back (3 minutes at most), or as soon as someone gets in. Stowed in a
+// container, it's left alone.
+if ((_object isKindOf "LandVehicle" || {_object isKindOf "Ship"} || {_object isKindOf "Air" && {((getPosATL _object) select 2) < 2}}) && {simulationEnabled _object}) then {
+    [_object, getPosATL _object, [vectorDir _object, vectorUp _object]] spawn {
+        params ["_v", "_at", "_dirUp"];
+        private _fnc_sim = { params ["_on"]; if (isMultiplayer) then { _v enableSimulationGlobal _on } else { _v enableSimulation _on } };
+        private _fnc_free = { isNull _v || {!alive _v} || {isObjectHidden _v} || {!isNull attachedTo _v} || {(crew _v) isNotEqualTo []} };
+        if (call _fnc_free) exitWith {};
+        [false] call _fnc_sim;
+        private _ground = getTerrainHeightASL _at;
+        private _still = time;
+        private _until = time + 180;
+        waitUntil {
+            sleep 1;
+            if (call _fnc_free) exitWith { true };
+            private _now = getTerrainHeightASL _at;
+            if (abs (_now - _ground) > 0.05) then {
+                _ground = _now;
+                _still = time;
+                // a frozen vehicle ignores a move, so it is let go for the move alone
+                [true] call _fnc_sim;
+                _v setPosATL _at;
+                _v setVectorDirAndUp _dirUp;
+                _v setVelocity [0, 0, 0];
+                [false] call _fnc_sim;
+            };
+            // ALiVE's own craters say when they are all back; until then the ground may still move
+            ((time - _still) > 15 && {isNil "ALiVE_sys_craters" || {ALiVE_sys_craters getVariable ["startupComplete", false]}}) || {time > _until}
+        };
+        // stowed or gone in the meantime: whatever stowed it decides
+        if (!isNull _v && {alive _v} && {!isObjectHidden _v} && {isNull attachedTo _v}) then { [true] call _fnc_sim };
+    };
+};
+
 _state;
