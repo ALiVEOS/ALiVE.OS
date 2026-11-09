@@ -286,6 +286,7 @@ switch(_operation) do {
             if (count _merged == 0) then { _merged = DEFAULT_FACTIONS; };
             _factions = [_logic, "factions", _merged] call ALiVE_fnc_CQB;
 
+
             private _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction","true"];
             if (_useDominantFaction isEqualType "") then {_useDominantFaction = (_useDominantFaction == "true")};
             _logic setVariable ["CQB_UseDominantFaction", _useDominantFaction];
@@ -566,6 +567,25 @@ switch(_operation) do {
                 _logic setVariable ["amount",_amount,true];
                 _logic setVariable ["debugColor",_debugColor,true];
                 _logic setVariable ["debugPrefix",_type,true];
+                // Static weapons left at the stock list (a NATO HMG and CSAT guns) follow the CQB factions instead:
+                // each faction's own static weapons, else its side's standard HMG. A list the mission maker typed is kept.
+                if ((_staticWeaponsClassnames - DEFAULT_STATICWEAPONS) isEqualTo []) then {
+                    private _own = [];
+                    {
+                        private _fac = _x;
+                        private _guns = ([0, _fac, "StaticWeapon"] call ALiVE_fnc_findVehicleType) select { getNumber (configFile >> "CfgVehicles" >> _x >> "isUav") != 1 };
+                        if (_guns isEqualTo []) then {
+                            private _side = [[_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideObjectToNumber] call ALiVE_fnc_sideNumberToText;
+                            _guns = [switch (_side) do { case "WEST": {"B_HMG_01_high_F"}; case "GUER": {"I_HMG_01_high_F"}; default {"O_HMG_01_high_F"} }];
+                        };
+                        { _own pushBackUnique _x } forEach _guns;
+                    } forEach _factions;
+                    if (_own isNotEqualTo []) then {
+                        _staticWeaponsClassnames = _own;
+                        _logic setVariable ["CQB_staticWeaponsClassnames", _own];
+                    };
+                    ["CQB static weapons for %1: %2", _factions, _staticWeaponsClassnames] call ALiVE_fnc_dump;
+                };
                 _logic setVariable ["staticWeaponsIntensity",_staticWeaponsIntensity,true];
 				_logic setVariable ["staticWeaponsClassnames",_staticWeaponsClassnames,true];
                 _logic setVariable ["cleared", []];
