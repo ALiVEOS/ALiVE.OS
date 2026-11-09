@@ -740,25 +740,29 @@ class FSM
        "" \n
        "        if!(_agentActive) then {" \n
        "" \n
-       "            if(_type == ""agent"") then {" \n
-       "            " \n
-       "                _countAgentsActive = count _agentsActive;" \n
+       "            // The cap counts civilians already sent to spawn, not only those that have finished (Jman 9 Nov)." \n
+       "            // A spawn runs in the scheduler and only joins the active list at its end, so on a busy server" \n
+       "            // dozens were sent while the count still read under the limit. Read fresh each time, too: a" \n
+       "            // despawn replaces the list, so the copy taken at CHECK goes stale. Cars count as well." \n
+       "            _agentsActive = [ALIVE_agentHandler, ""getActiveAgents""] call ALIVE_fnc_agentHandler;" \n
+       "            if (isNil ""ALiVE_civPop_pending"") then { ALiVE_civPop_pending = [] };" \n
+       "            ALiVE_civPop_pending = ALiVE_civPop_pending select {(time - (_x select 1)) < 60 && {!((_x select 0) in _agentsActive)}};" \n
+       "            _countAgentsActive = (count _agentsActive) + (count ALiVE_civPop_pending);" \n
        "" \n
-       "                //[""COUNT ACTIVE AGENTS: %1 LIMITER: %2"",_countAgentsActive, _activeLimiter] call ALIVE_fnc_dump;" \n
-       "" \n
-       "                if(_countAgentsActive >= _activeLimiter) then {" \n
-       "			if(_debug) then {" \n
-       "    				[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "                   	[""ACTIVE AGENT LIMIT REACHED at %1"", _countAgentsActive] call ALIVE_fnc_dump;" \n
-       "			};" \n
-       "			_spawnCount = _countToSpawn;" \n
-       "                }else{" \n
-       "                    [_agent, ""spawn""] spawn ALIVE_fnc_civilianAgent;" \n
-       "                    _spawnDelay = time;" \n
+       "            if(_countAgentsActive >= _activeLimiter) then {" \n
+       "                if(_debug) then {" \n
+       "                    [""ACTIVE AGENT LIMIT REACHED at %1"", _countAgentsActive] call ALIVE_fnc_dump;" \n
        "                };" \n
+       "                _spawnCount = _countToSpawn;" \n
        "            }else{" \n
-       "                [_agent, ""spawn""] spawn ALIVE_fnc_civilianVehicle; " \n
-       "            };        " \n
+       "                ALiVE_civPop_pending pushBack [_agent select 2 select 3, time];" \n
+       "                if(_type == ""agent"") then {" \n
+       "                    [_agent, ""spawn""] spawn ALIVE_fnc_civilianAgent;" \n
+       "                }else{" \n
+       "                    [_agent, ""spawn""] spawn ALIVE_fnc_civilianVehicle;" \n
+       "                };" \n
+       "                _spawnDelay = time;" \n
+       "            };" \n
        "        };" \n
        " };" \n
        "" \n
@@ -1483,25 +1487,29 @@ class FSM
        "" \n
        "        if!(_agentActive) then {" \n
        "" \n
-       "            if(_type == ""agent"") then {" \n
-       "            " \n
-       "                _countAgentsActive = count _agentsActive;" \n
+       "            // The cap counts civilians already sent to spawn, not only those that have finished (Jman 9 Nov)." \n
+       "            // A spawn runs in the scheduler and only joins the active list at its end, so on a busy server" \n
+       "            // dozens were sent while the count still read under the limit. Read fresh each time, too: a" \n
+       "            // despawn replaces the list, so the copy taken at CHECK goes stale. Cars count as well." \n
+       "            _agentsActive = [ALIVE_agentHandler, ""getActiveAgents""] call ALIVE_fnc_agentHandler;" \n
+       "            if (isNil ""ALiVE_civPop_pending"") then { ALiVE_civPop_pending = [] };" \n
+       "            ALiVE_civPop_pending = ALiVE_civPop_pending select {(time - (_x select 1)) < 60 && {!((_x select 0) in _agentsActive)}};" \n
+       "            _countAgentsActive = (count _agentsActive) + (count ALiVE_civPop_pending);" \n
        "" \n
-       "                //[""COUNT ACTIVE AGENTS: %1 LIMITER: %2"",_countAgentsActive, _activeLimiter] call ALIVE_fnc_dump;" \n
-       "" \n
-       "                if(_countAgentsActive >= _activeLimiter) then {" \n
-       "			if(_debug) then {" \n
-       "    				[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "                   	[""ACTIVE AGENT LIMIT REACHED at %1"", _countAgentsActive] call ALIVE_fnc_dump;" \n
-       "			};" \n
-       "			_spawnCount = _countToSpawn;" \n
-       "                }else{" \n
-       "                    [_agent, ""spawn""] spawn ALIVE_fnc_civilianAgent;" \n
-       "                    _spawnDelay = time;" \n
+       "            if(_countAgentsActive >= _activeLimiter) then {" \n
+       "                if(_debug) then {" \n
+       "                    [""ACTIVE AGENT LIMIT REACHED at %1"", _countAgentsActive] call ALIVE_fnc_dump;" \n
        "                };" \n
+       "                _spawnCount = _countToSpawn;" \n
        "            }else{" \n
-       "                [_agent, ""spawn""] spawn ALIVE_fnc_civilianVehicle; " \n
-       "            };        " \n
+       "                ALiVE_civPop_pending pushBack [_agent select 2 select 3, time];" \n
+       "                if(_type == ""agent"") then {" \n
+       "                    [_agent, ""spawn""] spawn ALIVE_fnc_civilianAgent;" \n
+       "                }else{" \n
+       "                    [_agent, ""spawn""] spawn ALIVE_fnc_civilianVehicle;" \n
+       "                };" \n
+       "                _spawnDelay = time;" \n
+       "            };" \n
        "        };" \n
        " };" \n
        "" \n
