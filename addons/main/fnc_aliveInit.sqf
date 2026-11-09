@@ -198,6 +198,12 @@ if (isServer) then {
         private _fast = diag_tickTime + 1800;
 
         while {isNil QMOD(REQUIRE_INITIALISED)} do {
+            // Whether this start brought back a save, sent once the profile system knows (Jman 9 Nov): a
+            // restore runs alongside placement and makes setup much slower, and the screen says so
+            if (isNil QMOD(SAVE_LOADED) && {!isNil "ALiVE_ProfileSystem"} && {[ALiVE_ProfileSystem, "startupComplete", false] call ALIVE_fnc_hashGet}) then {
+                MOD(SAVE_LOADED) = missionNamespace getVariable ["ALIVE_loadProfilesPersistent", false];
+                publicVariable QMOD(SAVE_LOADED);
+            };
             private _placed = (entities "Module_F") select {(typeOf _x) in _gate};
             private _done = _placed select {_x getVariable ["startupComplete", false]};
 
@@ -590,7 +596,12 @@ if (hasInterface) then {
             [_panel, format [
                 "<t align='center'><img image='\x\alive\addons\main\logo_alive.paa' size='14'/></t>"
                 + "<br /><br /><t align='center' size='1.7' color='#e4ebf0'>Preparing the battlefield</t>"
-                + "<br /><t align='center' size='1.05' color='#8fa0ab'>Placing units and setting up the commanders. Large missions take a few minutes.</t>"
+                + "<br /><t align='center' size='1.05' color='#8fa0ab'>"
+                + (if (missionNamespace getVariable [QMOD(SAVE_LOADED), false]) then {
+                    "Bringing back the saved mission while placing units. Setup takes longer after a save is loaded."
+                } else {
+                    "Placing units and setting up the commanders. Large missions take a few minutes."
+                }) + "</t>"
                 + "<br /><t align='center' size='1' color='#57b98a'>%6</t>"
                 + "<br /><br /><t align='center' size='1.15' color='#f2a541'>WAITING ON</t>"
                 + "<br /><t align='center' size='1.15' color='#e4ebf0'>%1</t>"
@@ -664,13 +675,20 @@ if (hasInterface) then {
             // moving and then stopped is worth reporting. A machine that was never told anything
             // cannot say whether the mission is healthy, and telling that player his mission may
             // be broken is a guess dressed up as a finding.
-            private _headline = "Setup has stopped";
-            private _lead = "This stopped reporting that it was working";
-            private _claim = "The screen is coming down rather than keeping you here. Parts of the mission may not be set up, and it is worth reporting.";
+            // Plain words (Jman 9 Nov: the old lines were "gobbledygook")
+            private _headline = "Setup is taking too long";
+            private _lead = "These modules stopped reporting progress:";
+            private _claim = "The loading screen has closed so you can play, but these modules may not perform correctly.";
             if (!_sawProgress) then {
-                _headline = "Taking this screen down";
-                _lead = "Nothing reported its progress to this machine";
-                _claim = "The screen is coming down rather than keeping you here. The mission may well still be setting itself up behind it.";
+                _headline = "Closing the loading screen";
+                _lead = "Waiting for the server to report setup progress.";
+                _claim = "The loading screen has closed so you can play. The server may still be setting up the mission.";
+            };
+            // a loaded save slows setup a lot (kawi0756's Lythium server, 9 Nov), so say that rather than leave it a mystery
+            if (_sawProgress && {missionNamespace getVariable [QMOD(SAVE_LOADED), false]}) then {
+                _headline = "Still setting up";
+                _lead = "The following modules are taking longer than expected:";
+                _claim = "Mission loaded a save, setting up mission will take longer.";
             };
 
             [_panel, format [
@@ -684,7 +702,7 @@ if (hasInterface) then {
                 _lead,
                 _stuck,
                 _claim,
-                _tookText
+                "Waited " + (_tookText select [5])
             ]] call _show;
 
             // The text already begins with the word took, so it is not introduced again here.
