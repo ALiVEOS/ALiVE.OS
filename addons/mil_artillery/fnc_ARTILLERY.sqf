@@ -1320,6 +1320,14 @@ switch(_operation) do {
         _settings params ["_cooldownBase","_cooldownJitter","_dispersion","_roundsPerMission"];
 
         private _debug = [_logic, "debug"] call MAINCLASS;
+        // Nothing is fired while ALiVE is paused with no players on (#1107): the commanders and
+        // profiles are stopped, so a battery killing profiles meanwhile changed a world nobody saw.
+        // Same window the air commander waits on.
+        if ((missionNamespace getVariable ["ALiVE_PAUSEMODULES_PAUSEDAT", -1]) >= 0) exitWith {
+            if (_debug) then {
+                ["ALiVE MIL_ARTILLERY - virtual fire mission held: ALiVE is paused"] call ALiVE_fnc_dump;
+            };
+        };
         private _entityID = [_record,"entityID"] call ALiVE_fnc_hashGet;
         private _kind = [_record,"kind","gun"] call ALiVE_fnc_hashGet;
         private _vehicleIDs = [_record,"vehicleIDs",[]] call ALiVE_fnc_hashGet;
