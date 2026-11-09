@@ -468,6 +468,9 @@ private _editCtrl = _display controlsGroupCtrl 102;
 if (!isNull _editCtrl) then {
     _editCtrl ctrlSetText (_missing joinString ",");
 };
+// The save handler keeps these only while they are still typed in the Override box, so clearing
+// the box really removes them (#1106: they came back because they also sat in the selection)
+_display setVariable ["alive_overrideSeed", _missing];
 
 // Wire button-click handlers for each filter row. Each click cycles the
 // filter index, updates the label, persists the new state to the logic

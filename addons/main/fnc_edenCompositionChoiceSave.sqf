@@ -54,8 +54,10 @@ private _classes = [];
 // filter changes - lbSelection on the listbox alone would lose selections
 // from previously-visible views.
 private _selectedClasses = _display getVariable ["alive_selectedClasses", []];
+// Entries the load handler could only show in the Override box come from that box alone (#1106)
+private _overrideSeed = _display getVariable ["alive_overrideSeed", []];
 {
-    if (typeName _x == "STRING" && {_x != ""}) then {
+    if (typeName _x == "STRING" && {_x != ""} && {!(_x in _overrideSeed)}) then {
         _classes pushBackUnique _x;
     };
 } forEach _selectedClasses;
