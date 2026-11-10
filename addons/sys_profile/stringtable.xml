@@ -2,10 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM">
     <English>ALiVE Virtual AI System</English>
     <Chinesesimp>ALiVE虚拟人工智能系统</Chinesesimp>
     <Spanish>Sistema de IA virtual de ALiVE</Spanish>
+    <Chinese>ALiVE 虛擬 AI 系統</Chinese>
+    <French>Système d'IA virtuelle ALiVE</French>
+    <Portuguese>Sistema de IA virtual do ALiVE</Portuguese>
+    <Russian>Виртуальная система ИИ ALiVE</Russian>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_COMMENT">
     <English>Virtual AI System (Profiles)</English>

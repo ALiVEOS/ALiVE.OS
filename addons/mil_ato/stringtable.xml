@@ -2,10 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ATO">
     <English>Military Air Component Commander</English>
     <Chinesesimp>军事空军部队指挥官</Chinesesimp>
     <Spanish>Comandante del componente aéreo militar</Spanish>
+    <Chinese>軍事空軍部隊指揮官</Chinese>
+    <French>Commandant de la composante aérienne militaire</French>
+    <Portuguese>Comandante do componente aéreo militar</Portuguese>
+    <Russian>Командующий военно-воздушным компонентом</Russian>
 </Key>
 <Key ID="STR_ALIVE_ATO_COMMENT">
     <English>Joint Forces Air Component Commander</English>

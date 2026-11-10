@@ -669,8 +669,15 @@
 <Key ID="STR_ALIVE_PR_CATALOGUE_OPEN">
     <English>Open the catalogue (fill in below)</English>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_HUB">
     <English>Logistics Hub</English>
+    <Chinesesimp>后勤枢纽</Chinesesimp>
+    <Chinese>後勤樞紐</Chinese>
+    <Spanish>Centro logístico</Spanish>
+    <French>Centre logistique</French>
+    <Portuguese>Hub de logística</Portuguese>
+    <Russian>Логистический узел</Russian>
 </Key>
 <Key ID="STR_ALIVE_HUB_UI_MANAGE">
     <English>Manage Hub</English>

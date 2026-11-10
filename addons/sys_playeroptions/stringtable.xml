@@ -2,10 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_playeroptions">
     <English>ALiVE Player Options</English>
     <Chinesesimp>ALiVE玩家选项</Chinesesimp>
     <Spanish>Opciones de jugador de ALiVE</Spanish>
+    <Chinese>ALiVE 玩家選項</Chinese>
+    <French>Options joueur ALiVE</French>
+    <Portuguese>Opções do jogador do ALiVE</Portuguese>
+    <Russian>Настройки игрока ALiVE</Russian>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_SHORT">
     <English>Player Options</English>

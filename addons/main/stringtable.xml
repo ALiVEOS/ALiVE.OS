@@ -277,6 +277,7 @@
     <Chinesesimp>仅对垃圾回收器启用调试，启用后它会将运行进度写入 RPT 日志。其他 ALiVE 模块有各自的调试设置。</Chinesesimp>
     <Spanish>Activa la depuración solo del recolector de basura, que entonces escribe su progreso en el registro RPT. Los demás módulos de ALiVE tienen sus propios ajustes de depuración.</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_REQUIRES_ALIVE">
     <English>ALiVE (Required)</English>
     <Chinesesimp>ALiVE (必需)</Chinesesimp>
@@ -285,9 +286,11 @@
     <Spanish>ALiVE Requieren </Spanish>
     <French>ALiVE Exiger</French>
     <Czech>ALiVE Vy�adovat</Czech>
-    <Russian>ALiVE ?????????</Russian>
+    <Russian>ALiVE (обязательный)</Russian>
     <Polish>ALiVE Wymagaj</Polish>
     <Hungarian>ALiVE Ig�nyl�se</Hungarian>
+    <Chinese>ALiVE (必需)</Chinese>
+    <Portuguese>ALiVE (obrigatório)</Portuguese>
 </Key>
 <Key ID="STR_ALIVE_REQUIRES_ALIVE_VERSIONING">
     <English>ALiVE Versioning:</English>

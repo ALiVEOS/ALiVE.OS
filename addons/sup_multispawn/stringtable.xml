@@ -2,10 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_multispawn">
     <English>Player Multispawn</English>
     <Chinesesimp>玩家大量生成</Chinesesimp>
     <Spanish>Multirreaparición de jugadores</Spanish>
+    <Chinese>玩家多重重生</Chinese>
+    <French>Multi-réapparition joueur</French>
+    <Portuguese>Multispawn do jogador</Portuguese>
+    <Russian>Мультиспавн игрока</Russian>
 </Key>
 <Key ID="STR_ALIVE_multispawn_COMMENT">
     <English>ALiVE Multispawn enables some handy Respawn functionalities! Please see our WiKi for more information!</English>

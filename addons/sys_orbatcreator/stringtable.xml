@@ -2,10 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ORBATCREATOR">
     <English>ALiVE ORBAT Creator</English>
     <Chinesesimp>ALiVE战斗序列(ORBAT)创造者</Chinesesimp>
     <Spanish>Creador de ORBAT de ALiVE</Spanish>
+    <Chinese>ALiVE 戰鬥序列(ORBAT)建立器</Chinese>
+    <French>Créateur d'ORBAT ALiVE</French>
+    <Portuguese>Criador de ORBAT do ALiVE</Portuguese>
+    <Russian>Редактор ORBAT ALiVE</Russian>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COMMENT">
     <English>Open the ORBAT Creator</English>

@@ -503,8 +503,15 @@
     <Portuguese>Custa %1 da reserva de forças.</Portuguese>
     <Russian>Стоит %1 из резерва сил.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_RALLY">
     <English>Rally Points</English>
+    <Chinesesimp>集结点</Chinesesimp>
+    <Chinese>集結點</Chinese>
+    <Spanish>Puntos de reunión</Spanish>
+    <French>Points de ralliement</French>
+    <Portuguese>Pontos de reunião</Portuguese>
+    <Russian>Точки сбора</Russian>
 </Key>
 <Key ID="STR_ALIVE_RALLY_COMMENT">
     <English>Sync to one or more objects, such as a flagpole or a tent. A player standing at one gets a Rally Points action to travel to any of the others, and a group leader brings the AI of their group. Each side's HQs and its Player FOBs can be rally points too, as set below. Name one with this setVariable ["ALiVE_rallyName", "Alpha"] in its init.</English>

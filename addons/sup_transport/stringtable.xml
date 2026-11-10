@@ -2,10 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_TRANSPORT">
     <English>Player Combat Support (Transport)</English>
     <Chinesesimp>玩家战斗支援(运输)</Chinesesimp>
     <Spanish>Apoyo de combate para jugadores (transporte)</Spanish>
+    <Chinese>玩家戰鬥支援(運輸)</Chinese>
+    <French>Soutien de combat joueur (transport)</French>
+    <Portuguese>Apoio de combate do jogador (transporte)</Portuguese>
+    <Russian>Боевая поддержка игрока (транспорт)</Russian>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_COMMENT">
     <English>Transport Module for ALiVE Combat Support</English>

@@ -16,7 +16,7 @@ class CfgVehicles {
 
     class ALiVE_sys_factioncompiler : ModuleAliveBase {
         scope = 2;
-        displayName = "ALiVE Custom Faction Compiler";
+        displayName = "$STR_ALIVE_FACTIONCOMPILER";
         function = "ALiVE_fnc_factionCompilerInit";
         author = MODULE_AUTHOR;
         functionPriority = 1;
@@ -156,7 +156,7 @@ class CfgVehicles {
 
     class ALiVE_sys_factioncompiler_category : ModuleAliveBase {
         scope = 2;
-        displayName = "ALiVE Custom Faction Group Category";
+        displayName = "$STR_ALIVE_FACTIONCOMPILER_CATEGORY";
         author = MODULE_AUTHOR;
         functionPriority = 2;
         isGlobal = 0;

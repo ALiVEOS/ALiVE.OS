@@ -2,8 +2,15 @@
 <Project name="ALiVE">
     <Package name="sup_fob">
         <Container name="Module">
+<!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_FOB">
                 <English>Player FOBs</English>
+                <Chinesesimp>玩家 FOB</Chinesesimp>
+                <Chinese>玩家 FOB</Chinese>
+                <Spanish>FOB de jugadores</Spanish>
+                <French>FOB des joueurs</French>
+                <Portuguese>FOBs do jogador</Portuguese>
+                <Russian>FOB игроков</Russian>
             </Key>
             <Key ID="STR_ALIVE_FOB_COMMENT">
                 <English>Lets players deploy forward operating bases, build them up from a supply count, and hold them. Enemy AI Commanders can find and attack them, and a FOB left undefended can be taken.</English>
@@ -1022,8 +1029,15 @@
             <Key ID="STR_ALIVE_FOB_UI_DISMANTLE_AGAIN">
                 <English>Press again to dismantle</English>
             </Key>
+<!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_FOB_TYPES">
                 <English>FOB Types</English>
+                <Chinesesimp>FOB 类型</Chinesesimp>
+                <Chinese>FOB 類型</Chinese>
+                <Spanish>Tipos de FOB</Spanish>
+                <French>Types de FOB</French>
+                <Portuguese>Tipos de FOB</Portuguese>
+                <Russian>Типы FOB</Russian>
             </Key>
             <Key ID="STR_ALIVE_FOB_TYPES_COMMENT">
                 <English>Gives a FOB kit a choice of types, such as a fire base or a patrol base, each with its own headquarters buildings, build list, map marker, limit, cost and who may deploy it.</English>

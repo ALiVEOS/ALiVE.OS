@@ -2,8 +2,15 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CLASSPICKER">
     <English>Class Picker</English>
+    <Chinesesimp>类别选择器</Chinesesimp>
+    <Chinese>類別選擇器</Chinese>
+    <Spanish>Selector de clases</Spanish>
+    <French>Sélecteur de classes</French>
+    <Portuguese>Seletor de classes</Portuguese>
+    <Russian>Выбор классов</Russian>
 </Key>
 <Key ID="STR_ALIVE_CLASSPICKER_COMMENT">
     <English>Collect building, vehicle and unit classnames by looking at them. Sync it to the placement modules it is picking for. Editor preview only.</English>
