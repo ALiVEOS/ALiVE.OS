@@ -821,6 +821,9 @@ switch(_operation) do {
             ["consuming", [] call ALIVE_fnc_hashCreate],
             // tail -> when its one logged rehome failure was written
             ["rehomeFailed", [] call ALIVE_fnc_hashCreate],
+            // profile id -> the refusal already logged for it, so a vehicle offered
+            // again every minute is written to the log once
+            ["refusedLogged", [] call ALIVE_fnc_hashCreate],
             // tails whose legacy profile came back but could not be adopted
             ["pendingLegacy", []],
             // [name, startedAt] while a pass that can sleep (sweep adoption,
@@ -1374,7 +1377,16 @@ switch(_operation) do {
 
         ([_logic, _class, _pylons] call _fnc_admit) params ["_ok", "_admitWhy", "_roles", "_caps"];
         if (!_ok) exitWith {
-            ["ALIVE_fnc_ATOPlace - not adopting %1 (%2): %3", _vehId, _class, _admitWhy] call ALiVE_fnc_dump;
+            // The Kernel offers the same vehicle again every minute: log each refusal once
+            private _logged = [_logic, "refusedLogged", []] call ALIVE_fnc_hashGet;
+            if !([_logged] call ALIVE_fnc_isHash) then {
+                _logged = [] call ALIVE_fnc_hashCreate;
+                [_logic, "refusedLogged", _logged] call ALIVE_fnc_hashSet;
+            };
+            if !(([_logged, _vehId, ""] call ALIVE_fnc_hashGet) isEqualTo _admitWhy) then {
+                [_logged, _vehId, _admitWhy] call ALIVE_fnc_hashSet;
+                ["ALIVE_fnc_ATOPlace - not adopting %1 (%2): %3", _vehId, _class, _admitWhy] call ALiVE_fnc_dump;
+            };
             _result = ["refused", _admitWhy];
         };
 
