@@ -2403,7 +2403,7 @@ switch(_operation) do {
                             if (_accepted) exitWith {};
                             private _cand = _x;
                             if ((_cand distance2D _position) <= _aaSearchRadius) then {
-                                private _aaResult = [_cand, 20, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
+                                private _aaResult = [_cand, 20, 10, "field", random 360, _debug, 0.6, [], false, false, false, true] call ALiVE_fnc_findCompositionSpawnPosition;
                                 if (count _aaResult >= 2) then {
                                     private _testPos = _aaResult select 0;
                                     // Post-validator road backstop - layered

@@ -78,6 +78,7 @@ ALiVE_DIAG_artyCalls = ALiVE_DIAG_artyCalls + 1;
 
 private _result = [];
 
+// A gun clears no trees when it spawns, so trees count as in its way (the last true below).
 // Once a gun stands on the centre, the validator's first try (the centre itself) is skipped.
 // It found the centre clear every time, because guns placed but not yet spawned don't block
 // it, so each later gun got the same spot six times, failed the spacing and was dropped: a
@@ -93,7 +94,7 @@ private _skipCentre = (_used findIf {_centre distance2D _x < _minSeparation}) >=
 // clear at all in the whole disc, and asking again would only repeat the same
 // search, so give up at once rather than paying for it six times over.
 for "_attempt" from 1 to 6 do {
-    private _found = [_centre, _radius, _envelope, _mode, random 360, _debug, 0.6, [], false, _skipCentre] call ALiVE_fnc_findCompositionSpawnPosition;
+    private _found = [_centre, _radius, _envelope, _mode, random 360, _debug, 0.6, [], false, _skipCentre, false, true] call ALiVE_fnc_findCompositionSpawnPosition;
 
     if (count _found < 2) exitWith {
         if (_debug) then {

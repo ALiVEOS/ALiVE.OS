@@ -84,6 +84,10 @@ Parameters:
                               field mode's road rule, as aprons count as roads), for
                               a caller the mission maker put on the airfield on
                               purpose (Custom Military Placement's Field HQ).
+    _this select 11: BOOL   - trees block the spot. Default false: a composition clears the
+                              vegetation it is built on, so trees don't count against it. A
+                              gun or an air defence vehicle clears nothing, and spawned in a
+                              tree line it gets damaged or blows up, so those pass true.
 
 Returns:
     ARRAY [_pos, _dir] on success, [] on failure.
@@ -131,7 +135,9 @@ params [
     // The airfield's own ground is allowed (the runway and taxiway check still runs). For a
     // Field HQ the mission maker put on an airfield: refusing the whole zone left an airport
     // base with no Field HQ at all.
-    ["_allowAirfieldArea", false, [true]]
+    ["_allowAirfieldArea", false, [true]],
+    // Trees count as obstacles: for a lone vehicle, which clears nothing when it spawns
+    ["_treesBlock", false, [true]]
 ];
 
 // _runwayClearanceMul scales the runway/taxiway rejection radius. Default
@@ -878,6 +884,15 @@ private _candidateClear = {
     if (_rockBlocked >= 0) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: rock footprint intrudes (rock %2)", _p, typeOf (_nearRocks select _rockBlocked)] call ALiVE_fnc_dump };
         _rejectCounts set [11, (_rejectCounts select 11) + 1];
+        false
+    };
+
+    // A gun or an air defence vehicle on its own: nothing hides the trees when it spawns, so a
+    // tree within its footprint (and a little more, for the barrel and the canopy) damages it or
+    // blows it up. Jungle maps put most of the ground in tree lines (Vietnam, 10 Nov).
+    if (_treesBlock && {(nearestTerrainObjects [_p, ["TREE", "SMALL TREE", "FOREST BORDER", "FOREST SQUARE", "FOREST TRIANGLE", "FOREST"], _envHalf + 3, false, true]) isNotEqualTo []}) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: trees in the way of a lone vehicle", _p] call ALiVE_fnc_dump };
+        _rejectCounts set [4, (_rejectCounts select 4) + 1];
         false
     };
 
