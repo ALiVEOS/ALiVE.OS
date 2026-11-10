@@ -6,6 +6,7 @@
  *
  *
  * Created by Tupolov
+ * Jman
  * Creation date: 19/05/2012
  *
  * */
@@ -44,9 +45,18 @@ if (GVAR(ENABLED)) then {
 
         _weaponName = getText (configFile >> "cfgWeapons" >> _weapon >> "displayName");
 
+        private _lastWeapon = [_weapon, _weaponName];
         if (_weaponName == "Throw") then {
             _weaponName = getText (configFile >> "cfgWeapons" >> _weaponName >> _muzzle >> "displayName");
+            _lastWeapon set [1, _weaponName];
             _weapon = _muzzle;
+        };
+
+        // The last weapon he fired, for a kill credited to him while he holds none (an ACE player
+        // with his weapon put away reads no weapon, and the kill was recorded as UNKNOWN).
+        // Shared only when it changes, not on every shot.
+        if !((_player getVariable [QGVAR(lastWeapon), []]) isEqualTo _lastWeapon) then {
+            _player setVariable [QGVAR(lastWeapon), _lastWeapon, true];
         };
 
         // Add weapon count to array

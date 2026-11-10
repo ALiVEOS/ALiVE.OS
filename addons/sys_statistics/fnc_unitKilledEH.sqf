@@ -117,6 +117,16 @@ if (_stats || {_killFeed != "None"}) then {
         _killerweapon = getText (configFile >> "cfgWeapons" >> (currentweapon _killer) >> "displayName");
         _killerweaponType = currentweapon _killer;
 
+        // A man on foot holding no weapon (an ACE player who has put his away, or a kill credited
+        // after he did) is given the last weapon he fired, rather than UNKNOWN
+        if (_killerweaponType == "" && {_killer isKindOf "Man"} && {vehicle _killer == _killer}) then {
+            (_killer getVariable [QGVAR(lastWeapon), []]) params [["_lastType", ""], ["_lastName", ""]];
+            if (_lastType != "") then {
+                _killerweaponType = _lastType;
+                _killerweapon = _lastName;
+            };
+        };
+
         // A car's only "weapon" is its horn, so a kill by a vehicle with no gun (a driver running someone
         // down, or a kill the game credits to the driver) read "Horn (GAZ-233011)". Those are recorded as
         // "Run over (vehicle)" instead, and still count as kills.
