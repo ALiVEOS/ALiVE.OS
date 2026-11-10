@@ -75,9 +75,10 @@ if (_class iskindOf "LandVehicle" && {_hasArtyScanner > 0}) then {
     };
 
     // a mortar fails the elevation test: the Mk6, the RHS M252 and 2B14 all report a maxElev of 13, the tube
-    // being laid by the artillery computer instead. A static weapon that is a StaticMortar, or carries a mortar
-    // name, counts when it has lethal artillery rounds
-    if (!_result && {_class isKindOf "StaticWeapon"}) then {
+    // being laid by the artillery computer instead. Vehicle-mounted mortars can also report low elevations.
+    // A StaticMortar or mortar name counts when it has lethal artillery rounds; the LandVehicle and
+    // artilleryScanner guards above still apply, including to mortars mounted on cars or tanks.
+    if (!_result) then {
         private _sig = toLower format ["%1 %2", _class, getText (configfile >> "CfgVehicles" >> _class >> "model")];
         // the same names getArtilleryType reads as a mortar (no "type63": that is also a rocket launcher)
         if (_class isKindOf "StaticMortar" || {(["mortar","m252","2b14","podnos","l16","m224","m29","type53","mk6","60mm","81mm","82mm","120mm"] findIf { _x in _sig }) > -1}) then {
