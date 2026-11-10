@@ -62,6 +62,12 @@ if ((_savedMissions findIf {_x isEqualType "" && {_x == _missionKey}}) < 0) then
 
 // Save Docs
 TRACE_1("Saving Data", _data);
-saveProfileNamespace;
+// An autosave writes the file once, after its last module (Jman 10 Nov 2026): this whole file is
+// rewritten on every call, and once per module froze a large mission's server for 2-3 s per autosave.
+if ((missionNamespace getVariable [QMOD(PNS_HOLD_FRAME), -1]) == diag_frameNo) then {
+    MOD(PNS_HOLD_DIRTY) = true;
+} else {
+    saveProfileNamespace;
+};
 
 _result;

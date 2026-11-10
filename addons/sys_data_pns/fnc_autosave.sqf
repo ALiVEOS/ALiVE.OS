@@ -57,6 +57,10 @@ private _handle = [_interval, _once] spawn {
 	    sleep 1;
 
 	    {
+			// Every module saved in this frame waits, and the file is written once at the end
+			MOD(PNS_HOLD_FRAME) = diag_frameNo;
+			MOD(PNS_HOLD_DIRTY) = false;
+
 			// Save player state player in SP or hosted
 			if (hasInterface) then {
 			    private ["_name","_uid","_id"];
@@ -190,6 +194,9 @@ private _handle = [_interval, _once] spawn {
 			        ["SYS DATA PNS Autosave - ATO State not saved on this pass: it's saved with the profiles, and the profile save waits five minutes between saves"] call ALiVE_fnc_dump;
 			    };
 			};
+
+			MOD(PNS_HOLD_FRAME) = -1;
+			if (MOD(PNS_HOLD_DIRTY)) then { saveProfileNamespace };
 
 		} call CBA_fnc_Directcall;
 
