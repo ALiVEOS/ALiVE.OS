@@ -8457,9 +8457,26 @@ switch(_operation) do {
 
                         }; // end if (count _testFromPos == 0) -- supply network anchor
 
-                        ["AI LOGCOM Side: %1 Type: %2 From: %3 To: %4 Dist: %5m Water: %6 Heavy: %7",
+                        // The delivery type was chosen on the distance from the objective OPCOM named, but the force leaves from the anchored
+                        // departure. When that is next to the destination (4NP 10 Nov: both in Nur, 17 m apart, against
+                        // 3,371 m measured from the named objective) there is nothing to fly: a helicopter insert there
+                        // waited 100 cycles (18 minutes) for a second held objective and then drove within the town
+                        // anyway. It goes by road at once, as a short ground-only delivery does (Rule 0 above).
+                        private _anchorDistance = _reinforcementPosition distance2D _eventPosition;
+                        if (_eventType == "HELI_INSERT" && {_anchorDistance < 500} && {!_wetRoad} && {!_shipLaunch} && {!_atoRequest} && {count _testFromPos == 0}) then {
+                            _eventType = "STANDARD";
+                            ["ML - Delivery type: STANDARD (event %1 departs %2 m from its destination, too close to fly)", _eventID, round _anchorDistance] call ALiVE_fnc_dump;
+                        };
+
+                        // Once per event and whenever its plan changes, not on every pass while it waits (468 times in
+                        // 21 minutes on 4NP)
+                        private _planLine = format ["AI LOGCOM Side: %1 Type: %2 From: %3 To: %4 Dist: %5m Water: %6 Heavy: %7",
                             _side, _eventType, _reinforcementPosition, _eventPosition,
-                            round _routeDistance, _water, !_noHeavy] call ALiVE_fnc_dump;
+                            round _anchorDistance, _water, !_noHeavy];
+                        if !(([_event, "planLogged", ""] call ALIVE_fnc_hashGet) isEqualTo _planLine) then {
+                            [_event, "planLogged", _planLine] call ALIVE_fnc_hashSet;
+                            [_planLine] call ALiVE_fnc_dump;
+                        };
 
                         // Armour is never sent via HELI_INSERT (ruled out in delivery decision above).
                         // Zero it out defensively in case of unexpected state.
@@ -9463,7 +9480,7 @@ switch(_operation) do {
                                 // HELI_PARADROP and pure-infantry HELI_INSERT never enter the outer
                                 // if(_eventType == "HELI_INSERT" && motorisedProfiles > 0) block
                                 // and are therefore completely unaffected.
-                                ["ML - HELI_INSERT slingload: No air transport assets found for faction=%1 side=%2 (limitToFaction=%3). Check ALIVE_factionDefaultAirTransport / ALIVE_sideDefaultAirTransport registration. Falling back to STANDARD for event %4.", _eventFaction, _side, _limitTransportToFaction, _eventID] call ALiVE_fnc_dump;
+                                ["ML - HELI_INSERT slingload: faction=%1 side=%2 has no helicopter able to lift vehicles (none listed, or every one failed a lift this session; limitToFaction=%3). Check ALIVE_factionDefaultAirTransport / ALIVE_sideDefaultAirTransport registration. Falling back to STANDARD for event %4.", _eventFaction, _side, _limitTransportToFaction, _eventID] call ALiVE_fnc_dump;
                                 if (_shipLaunch) exitWith {
                                     {
                                         {
@@ -10280,7 +10297,7 @@ switch(_operation) do {
                             // No air transport assets for mechanised slingload.
                             // Do NOT downgrade _eventType -- motorised slingload helis may already
                             // have been created. Only skip the mechanised slingload path.
-                            ["ML - HELI_INSERT mechanised slingload: No air transport assets for faction=%1 side=%2 (limitToFaction=%3). Mechanised groups will not be slingloaded. Event: %4.",
+                            ["ML - HELI_INSERT mechanised slingload: faction=%1 side=%2 has no helicopter able to lift vehicles (none listed, or every one failed a lift this session; limitToFaction=%3). Mechanised groups will not be slingloaded. Event: %4.",
                                 _eventFaction, _side, _limitTransportToFaction, _eventID] call ALiVE_fnc_dump;
                         };
 
