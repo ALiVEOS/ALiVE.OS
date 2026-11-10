@@ -27,7 +27,11 @@
 // a vanilla A3 faction on its dominant side, making it spawnable. Phase
 // 3c.2 will add unit substitution so the mod's actual units appear
 // instead of vanilla A3 fallbacks.
+// Timed apart, so a slow start can be put down to the data or to the faction inference
+private _staticInferStart = diag_tickTime;
+["staticData: data loaded, faction inference starting"] call ALiVE_fnc_dump;
 call ALiVE_fnc_inferFactionMappingsAll;
+["staticData: faction inference took %1 s", (diag_tickTime - _staticInferStart) toFixed 1] call ALiVE_fnc_dump;
 
 #include "Maps.hpp"
 

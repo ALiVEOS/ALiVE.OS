@@ -55,6 +55,16 @@ private _skippedAlreadyMapped = 0;
 private _skippedNoUnits = 0;
 private _factions = "true" configClasses (configFile >> "CfgFactionClasses");
 
+// Every faction that has a soldier, from one pass over the vehicle classes, for ALiVE_fnc_inferFactionMapping to
+// look up. It used to walk all of them for each faction it checked, which on a large mod set held every module
+// at startup for minutes.
+private _manFactions = createHashMap;
+{
+    private _f = toLower getText (_x >> "faction");
+    if (_f != "" && {!(_f in _manFactions)} && {(configName _x) isKindOf "Man"}) then { _manFactions set [_f, true] };
+} forEach ("true" configClasses (configFile >> "CfgVehicles"));
+ALiVE_inferManFactions = _manFactions;
+
 {
     private _faction = configName _x;
     if (_faction in (ALiVE_factionCustomMappings select 1)) then {
@@ -69,6 +79,7 @@ private _factions = "true" configClasses (configFile >> "CfgFactionClasses");
         };
     };
 } forEach _factions;
+ALiVE_inferManFactions = nil;
 
 [
     "ALiVE faction inference (Phase 3c.1 redirect-only): scanned=%1 already_mapped=%2 inferred=%3 skipped(no_units / vanilla / bad_side)=%4",

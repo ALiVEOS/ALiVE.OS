@@ -99,12 +99,17 @@ if (_faction in _vanillaTargets) exitWith { nil };
 // Without that we can't establish that the faction is meant for unit
 // spawning at all (e.g. mod might define a faction class for static-
 // object decoration, no actual units).
-private _vehicles = "true" configClasses (configFile >> "CfgVehicles");
+// Read from the set ALiVE_fnc_inferFactionMappingsAll builds in one pass when it is there. Walking every vehicle
+// class once per faction took 4.5 minutes of startup on a large mod set (393 factions, 79,525 classes).
 private _factionTagLower = toLower _faction;
-private _hasManUnit = (_vehicles findIf {
-    (toLower (getText (_x >> "faction"))) == _factionTagLower &&
-    {(configName _x) isKindOf "Man"}
-}) >= 0;
+private _hasManUnit = if (isNil "ALiVE_inferManFactions") then {
+    (("true" configClasses (configFile >> "CfgVehicles")) findIf {
+        (toLower (getText (_x >> "faction"))) == _factionTagLower &&
+        {(configName _x) isKindOf "Man"}
+    }) >= 0
+} else {
+    _factionTagLower in ALiVE_inferManFactions
+};
 if (!_hasManUnit) exitWith { nil };
 
 // Build the redirect mapping. Side and GroupSideName use the all-caps
