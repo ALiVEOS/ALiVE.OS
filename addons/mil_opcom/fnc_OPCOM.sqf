@@ -5345,20 +5345,6 @@ switch (_operation) do {
 
         private _playerProfileIDs = allPlayers apply { _x getVariable ["profileID", ""] };
         private _vehicleRoleCache = createHashMap;
-        private _pilotClassCache = createHashMap;
-        private _hasPilotClass = {
-            params ["_classes"];
-            private _hasPilot = (_classes findIf {
-                private _cachedPilot = _pilotClassCache get _x;
-                if (isNil "_cachedPilot") then {
-                    _cachedPilot = [toLower _x, "pilot"] call CBA_fnc_find != -1;
-                    _pilotClassCache set [_x, _cachedPilot];
-                };
-                _cachedPilot
-            }) >= 0;
-            _hasPilot
-        };
-
         {
             private ["_profile","_assignments","_type","_objectType","_vehicleClass","_busy"];
 
@@ -5443,12 +5429,14 @@ switch (_operation) do {
 
                     case ("entity") : {
                         _assignments = ([_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_hashGet) select 1;
-                        _unitClasses = [_profile,"unitClasses",[]] call ALIVE_fnc_hashGet;
 
+                        // Groups with a pilot in them used to be left out, but a crew on foot is one whose aircraft
+                        // is gone (shot down, or left on a pad): air crews flying for the air commander are aboard,
+                        // or not profiles at all. Left out, they stood in a field and were saved with the campaign
+                        // for good, so they are now taken on as infantry like any other group on foot.
                         if (
                             count _assignments == 0 && // entity is not assigned to a vehicle
                             {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)} && // not a player
-                            {!([_unitClasses] call _hasPilotClass)} && // no pilots in entity
                             {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _x, false] call ALIVE_fnc_hashGet})} // not a held roadblock / stationary garrison
                             ) then {
                             _inf pushback _x;
