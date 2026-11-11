@@ -1160,6 +1160,26 @@ switch (_operation) do {
 							_dispatchTasks pushback _x;
 							_dispatchIDs pushback _taskID;
 
+							// A player who joins after a side task was made is sent it, and now goes on its list
+							// of players too. A step looks for that list's players at its spot, and a cancel or
+							// an ending reaches only them, so he could stand on an FRV with nothing happening,
+							// and kept a cancelled task on his map (#1113). Each step is a side task of its own.
+							private _stored = [_logic, "getTask", _taskID] call MAINCLASS;
+							if (!isNil "_stored" && {_stored isEqualType []}) then {
+								private _listed = _stored select 7;
+								if (_listed isEqualType [] && {count _listed >= 2} && {!(_playerID in (_listed select 0))}) then {
+									(_listed select 0) pushBack _playerID;
+									(_listed select 1) pushBack (name _player);
+									private _tasksByPlayer = [_logic, "tasksByPlayer"] call ALIVE_fnc_hashGet;
+									if !(_playerID in (_tasksByPlayer select 1)) then {
+										[_tasksByPlayer, _playerID, [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+									};
+									private _byPlayer = [_tasksByPlayer, _playerID] call ALIVE_fnc_hashGet;
+									[_byPlayer, _taskID, _taskID] call ALIVE_fnc_hashSet;
+									[_tasksByPlayer, _playerID, _byPlayer] call ALIVE_fnc_hashSet;
+								};
+							};
+
 							// DEBUG -------------------------------------------------------------------------------------
 							if (_debug) then {
 								["Task Handler - Sync Side Task: %1",_x] call ALiVE_fnc_dump;
