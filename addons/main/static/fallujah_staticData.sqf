@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: fallujah (ALiVE 3 index v3.1, 2026-10-06)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: fallujah (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-06", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,35 +33,12 @@ ALiVE_mapCompositionType = "Desert";
 
  if (tolower(_worldName) == "fallujah") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f\mil\barracks\barracks_acc_proxy_1_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrier_big_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall6_f.p3d",
-        "a3\structures_f_enoch\industrial\smokestacks\smokestack_03_f.p3d",
-        "a3\structures_f_exp\civilian\accessories\clothesline_01_f.p3d",
-        "ca\buildings2\a_crane_02\crane_rails.p3d",
-        "ca\buildings2\a_crane_02\crane_rails_end.p3d",
         "ca\buildings2\ind_cementworks\ind_dopravnik\d_mlyn_vys.p3d",
-        "ca\buildings2\ind_cementworks\ind_silomale\ind_silomale.p3d",
-        "ca\buildings2\ind_shed_02\ind_shed_02_end.p3d",
         "ca\buildings2\ind_shed_02\ind_shed_02_main.p3d",
         "ca\buildings2\ind_tank\ind_tankbig_ruins.p3d",
-        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
-        "ca\buildings2\misc_cargo\misc_cargo1e.p3d",
-        "ca\buildings2\misc_cargo\misc_cargo1f.p3d",
-        "ca\buildings2\misc_cargo\misc_cargo1g.p3d",
-        "ca\buildings\dum_zboreny_lidice.p3d",
-        "ca\buildings\misc\zavora_2.p3d",
         "ca\buildings\misc\zed_civil.p3d",
-        "ca\buildings\misc\zed_dira_civil.p3d",
-        "ca\buildings\misc\zed_podplaz_civil.p3d",
-        "ca\misc2\bighbarrier.p3d",
-        "ca\misc2\hbarrier5.p3d",
-        "ca\misc3\fort_bagfence_round.p3d",
-        "ca\roads_pmc\bridge\bridge_asf_pmc.p3d",
         "ca\structures\house\a_fuelstation\a_fuelstation_shed_ruins.p3d",
-        "ca\structures\ind_quarry\ind_hammermill.p3d",
-        "ca\structures\misc\armory\pneu\pneu.p3d",
-        "ca\structures\rail\rail_misc\rail_najazdovarampa.p3d"
+        "ca\structures\misc\armory\pneu\pneu.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
@@ -148,12 +125,14 @@ ALiVE_mapCompositionType = "Desert";
     ];
 
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "ca\buildings\hangar_2.p3d",
         "ca\roads2\runway_end15.p3d",
         "ca\roads2\runway_end33.p3d",
         "ca\roads2\runway_main.p3d"
     ];
 
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "ca\buildings\hangar_2.p3d",
         "ca\roads2\runway_end15.p3d",
         "ca\roads2\runway_end33.p3d",
         "ca\roads2\runway_main.p3d"

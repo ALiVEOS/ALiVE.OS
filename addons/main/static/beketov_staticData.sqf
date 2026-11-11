@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: beketov (ALiVE 3 index v3.1, 2026-10-09)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: beketov (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-09", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,31 +33,11 @@ ALiVE_mapCompositionType = "Woodland";
 
  if (tolower(_worldName) == "beketov") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f\bridges\bridge_asphalt_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
         "beketov_br\t_larix3f.p3d",
         "beketov_br\t_larix3s.p3d",
-        "ca\buildings2\a_advertisingcolumn\a_advertcolumn.p3d",
-        "ca\buildings2\ind_cementworks\ind_silovelke\ind_silovelke_02.p3d",
-        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
-        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
         "ca\buildings2\shed_small\shed_m02.p3d",
-        "ca\buildings\dum_zboreny_lidice.p3d",
-        "ca\buildings\misc\zavora_2.p3d",
-        "ca\misc\svodidla.p3d",
-        "ca\roads2\dam\dam_conc\dam_concp_20.p3d",
-        "ca\roads2\path_10 100.p3d",
-        "ca\roads2\path_10 25.p3d",
-        "ca\roads2\path_10 50.p3d",
-        "ca\roads2\path_10 75.p3d",
-        "ca\structures\house\church_cross\church_cross_1.p3d",
-        "ca\structures\house\church_cross\church_cross_1a.p3d",
         "ca\structures\misc\armory\pneu\pneu.p3d",
-        "ca\structures\misc\armory\woodenramp\woodenramp.p3d",
         "rus\clutt\p_phragmites.p3d",
-        "rus\dor\b\asf1_10 100.p3d",
-        "rus\dor\b\asf1_10 50.p3d",
-        "rus\dor\b\asf1_10 75.p3d",
         "rus\les\les_10 100.p3d",
         "rus\les\les_10 25.p3d",
         "rus\les\les_10 50.p3d",
