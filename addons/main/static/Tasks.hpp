@@ -250,6 +250,18 @@
 		[_taskData,"description","Rescue a pilot who ejected and is waiting to be picked up."] call ALIVE_fnc_hashSet;
 		[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
+		// only used with C2ISTAR's CSAR Starts At The Crash Site
+		_taskData = [] call ALIVE_fnc_hashCreate;
+		[_taskData,"title","Search the Crash Site"] call ALIVE_fnc_hashSet;
+		[_taskData,"description","%1 has gone down near %2. Get to the crash site and find out what happened to the crew."] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_start",[["HQ","%1 is down near %2. Get to the crash site and find out what happened to the crew."],["PLAYERS","Roger, moving to the crash site"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_update",[["PLAYERS","At the crash site. Nobody in the wreck, the crew got out, Over"],["HQ","Copy. Their beacon puts them within 500 metres of grid %1. Find them, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_success",[["PLAYERS","At the crash site. The crew didn't make it, Over"],["HQ","Copy, crew killed. Thanks for checking, RTB, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_expired",[["HQ","Out of time. Another unit will search the crash site. Mission cancelled, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
+		[_tasksData,"Wreck",_taskData] call ALIVE_fnc_hashSet;
+
 		_taskData = [] call ALIVE_fnc_hashCreate;
 		[_taskData,"title","Locate Pilot"] call ALIVE_fnc_hashSet;
 		[_taskData,"description","%1 has been shot down. The crew ejected and landed in the vicinity of %2. Find them, secure them and bring them home. They cannot wait for long."] call ALIVE_fnc_hashSet;

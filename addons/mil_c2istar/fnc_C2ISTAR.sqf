@@ -2199,6 +2199,10 @@ if (isServer) then {
         missionNamespace setVariable ["ALIVE_taskBlacklistMarkers", _taskBlacklist - _missing, true];
         missionNamespace setVariable ["ALIVE_taskVipPanicTimeout", (_vipPanicTimeout max 30), true];
         missionNamespace setVariable ["ALIVE_taskCsarTimeout", (_csarTimeout max MIN_CSAR_TIMEOUT), true];
+        // CSAR Starts At The Crash Site (A. Ares on Discord): the rescue opens with a search of the wreck
+        private _csarCrashFirst = _logic getVariable ["csarCrashFirst", "false"];
+        if (_csarCrashFirst isEqualType "") then { _csarCrashFirst = (toLower _csarCrashFirst) == "true" };
+        missionNamespace setVariable ["ALIVE_taskCsarCrashFirst", _csarCrashFirst isEqualTo true, true];
         missionNamespace setVariable ["ALIVE_c2istar_filterEnemyFactions", _filterEnemyFactions, true];
         missionNamespace setVariable ["ALIVE_civicStateEnabled", _civicStateEnabled, true];
         missionNamespace setVariable ["ALIVE_civicTrustSuccessMultiplier", (_civicTrustSuccessMultiplier max 0), true];

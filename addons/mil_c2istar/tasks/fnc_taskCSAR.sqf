@@ -14,7 +14,11 @@ task, the pilot and his strobe are all cleared away. A pool pick or a tablet
 request carries no pilot, so "init" returns [] for it and the task handler picks
 another type.
 
-Besides the task stages ("init", "Parent", "Rescue", "Return") this file holds
+With C2ISTAR's CSAR Starts At The Crash Site on, and the aircraft down as a wreck,
+the task opens at the wreck instead ("Wreck"): reaching it tells the players
+whether the crew got out and where to search, or ends the task if they are dead.
+
+Besides the task stages ("init", "Parent", "Wreck", "Rescue", "Return") this file holds
 the operations that drive the task, because it is the only file the task has:
 
     "watchTick"    - the ejection watcher, run on the server every 2 s by the
@@ -833,6 +837,13 @@ switch (_taskState) do {
         // The marker sits 200-400 m from the pilot, so players have to search.
         private _newTaskPosition = _targetPosition getPos [200 + (random 200), random 360];
 
+        // Crash site first (A. Ares on Discord): only for an aircraft that is down as a wreck, and only
+        // when the task data has the stage (an older Tasks.hpp may not)
+        private _wreck = if (_wreckNetID isEqualType "" && {_wreckNetID != ""}) then {_wreckNetID call BIS_fnc_objectFromNetId} else {objNull};
+        private _crashFirst = (missionNamespace getVariable ["ALIVE_taskCsarCrashFirst", false]) isEqualTo true
+            && {!isNull _wreck} && {!alive _wreck} && {"Wreck" in (_dialogOption select 1)};
+        private _crashPosition = if (_crashFirst) then {getPosATL _wreck} else {[]};
+
         // Rescue
         private _nearestTown = [_newTaskPosition] call ALIVE_fnc_taskGetNearestLocationName;
         private _dialog = [_dialogOption,"Rescue"] call ALIVE_fnc_hashGet;
@@ -848,6 +859,19 @@ switch (_taskState) do {
         _formatMessage set [1,_formatMessageText];
         _formatChat set [0,_formatMessage];
         [_dialog,"chat_start",_formatChat] call ALIVE_fnc_hashSet;
+
+        // Crash site
+        if (_crashFirst) then {
+            private _crashTown = [_crashPosition] call ALIVE_fnc_taskGetNearestLocationName;
+            _dialog = [_dialogOption,"Wreck"] call ALIVE_fnc_hashGet;
+            _formatDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
+            [_dialog,"description",format[_formatDescription,_aircraftName,_crashTown]] call ALIVE_fnc_hashSet;
+            _formatChat = [_dialog,"chat_start"] call ALIVE_fnc_hashGet;
+            _formatMessage = _formatChat select 0;
+            _formatMessage set [1, format[_formatMessage select 1,_aircraftName,_crashTown]];
+            _formatChat set [0,_formatMessage];
+            [_dialog,"chat_start",_formatChat] call ALIVE_fnc_hashSet;
+        };
 
         // Return
         _nearestTown = [_returnPosition] call ALIVE_fnc_taskGetNearestLocationName;
@@ -875,23 +899,37 @@ switch (_taskState) do {
         private _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
         private _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
         private _taskSource = format["%1-CSAR-Parent",_taskID];
-        _tasks pushback [_taskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
+        _tasks pushback [_taskID,_requestPlayerID,_taskSide,[_newTaskPosition, _crashPosition] select _crashFirst,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,"N","None",_taskSource,false];
         _taskIDs pushback _taskID;
+
+        // crash site, when the task starts there; the rescue then waits its turn
+        private _childNo = 1;
+        if (_crashFirst) then {
+            _dialog = [_dialogOption,"Wreck"] call ALIVE_fnc_hashGet;
+            _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
+            _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
+            _taskSource = format["%1-CSAR-Wreck",_taskID];
+            _tasks pushback [format["%1_c%2",_taskID,_childNo],_requestPlayerID,_taskSide,_crashPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
+            _taskIDs pushback format["%1_c%2",_taskID,_childNo];
+            _childNo = _childNo + 1;
+        };
 
         // rescue
         _dialog = [_dialogOption,"Rescue"] call ALIVE_fnc_hashGet;
         _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
         _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-        private _newTaskID = format["%1_c1",_taskID];
+        private _newTaskID = format["%1_c%2",_taskID,_childNo];
         _taskSource = format["%1-CSAR-Rescue",_taskID];
-        _tasks pushback [_newTaskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,_state,_taskApplyType,_taskCurrent,_taskID,_taskSource,true];
+        _tasks pushback [_newTaskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,["Created", _state] select !_crashFirst,_taskApplyType,["N", _taskCurrent] select !_crashFirst,_taskID,_taskSource,true];
         _taskIDs pushback _newTaskID;
+        private _rescueID = _newTaskID;
+        _childNo = _childNo + 1;
 
         // return
         _dialog = [_dialogOption,"Return"] call ALIVE_fnc_hashGet;
         _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
         _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-        _newTaskID = format["%1_c2",_taskID];
+        _newTaskID = format["%1_c%2",_taskID,_childNo];
         _taskSource = format["%1-CSAR-Return",_taskID];
         _tasks pushback [_newTaskID,_requestPlayerID,_taskSide,_returnPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
         _taskIDs pushback _newTaskID;
@@ -913,6 +951,10 @@ switch (_taskState) do {
         [_taskParams,"aircraft",_aircraft] call ALIVE_fnc_hashSet;
         [_taskParams,"actualPosition",_targetPosition] call ALIVE_fnc_hashSet;
         [_taskParams,"enemyFaction",_taskEnemyFaction] call ALIVE_fnc_hashSet;
+        [_taskParams,"rescueID",_rescueID] call ALIVE_fnc_hashSet;
+        [_taskParams,"returnID",_newTaskID] call ALIVE_fnc_hashSet;
+        [_taskParams,"crashPosition",_crashPosition] call ALIVE_fnc_hashSet;
+        [_taskParams,"searchCentre",_newTaskPosition] call ALIVE_fnc_hashSet;
 
         // The pilots belong to this task now, and carry the hold action that
         // hands them to whoever reaches them. Keyed to the pilot, so it goes
@@ -957,6 +999,89 @@ switch (_taskState) do {
     };
 
     case "Parent":{
+    };
+
+    // ---- the crash site ------------------------------------------------------------
+    // Reaching the wreck tells the players whether the crew got out. Some alive: HQ passes on their
+    // beacon's search area and the rescue starts. All dead: there is nobody to search for, so finding
+    // the wreck is the end of the task.
+    case "Wreck":{
+        _task params ["_taskID", "_requestPlayerID", "_taskSide", "_taskPosition", "_taskFaction", "_taskTitle", "_taskDescription", "_taskPlayers"];
+        _taskPlayers = _taskPlayers select 0;
+
+        private _taskIDs = [_params, "taskIDs", [""]] call ALIVE_fnc_hashGet;
+        private _rootID = _taskIDs select 0;
+        private _taskDialog = [_params, "dialog"] call ALIVE_fnc_hashGet;
+        private _currentTaskDialog = [_taskDialog, _taskState] call ALIVE_fnc_hashGet;
+        private _netIDs = [_params, "pilotNetIDs", []] call ALIVE_fnc_hashGet;
+        private _pilots = [_netIDs, _rootID] call _fnc_resolvePilots;
+        private _expiresAt = [_params, "expiresAt", 0] call ALIVE_fnc_hashGet;
+        private _crash = [_params, "crashPosition", []] call ALIVE_fnc_hashGet;
+        if !(_crash isEqualType [] && {count _crash >= 2}) then {_crash = _taskPosition};
+
+        if !([_params, "chatStartDone_Wreck", false] call ALIVE_fnc_hashGet) then {
+            ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, "chatStartDone_Wreck", true] call ALIVE_fnc_hashSet;
+        };
+
+        switch (true) do {
+            case ((call ALiVE_fnc_taskTime) > _expiresAt): {
+                [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+
+                _task set [8,"Canceled"];
+                _task set [10,"N"];
+                _result = _task;
+
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                ["chat_expired", "chat_cancelled", _currentTaskDialog, _taskSide, _taskPlayers] call _fnc_chat;
+                [_params, "delete"] call _fnc_cleanupTask;
+
+                ["C2ISTAR - Task CSAR - %1 expired before the crash site was reached", _rootID] call ALiVE_fnc_Dump;
+            };
+
+            case ([_crash, _taskPlayers, 30] call ALIVE_fnc_taskHavePlayersReachedDestination): {
+                _task set [8,"Succeeded"];
+                _task set [10,"N"];
+                _result = _task;
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+
+                private _alive = [];
+                {
+                    private _unit = _pilots param [_forEachIndex, objNull];
+                    if (!isNull _unit && {alive _unit}) then {_alive pushBack _x};
+                } forEach _netIDs;
+
+                if (_alive isEqualTo []) then {
+                    [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+                    ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                    [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+                    [_params, "delete"] call _fnc_cleanupTask;
+                    ["C2ISTAR - Task CSAR - %1 crash site reached, no survivors", _rootID] call ALiVE_fnc_Dump;
+                } else {
+                    // the rescue follows only the crew still alive, or it would fail on the first one dead
+                    [_params, "pilotNetIDs", _alive] call ALIVE_fnc_hashSet;
+
+                    private _chat = +([_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet);
+                    private _message = +(_chat select 1);
+                    _message set [1, format [_message select 1, mapGridPosition ([_params, "searchCentre", _crash] call ALIVE_fnc_hashGet)]];
+                    _chat set [1, _message];
+                    private _updateDialog = +_currentTaskDialog;
+                    [_updateDialog, "chat_update", _chat] call ALIVE_fnc_hashSet;
+                    ["chat_update",_updateDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+
+                    // HQ has just told them where to look; the rescue's own opening call would repeat it
+                    [_params, "chatStartDone_Rescue", true] call ALIVE_fnc_hashSet;
+                    [_params,"nextTask",[_params,"rescueID",""] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+
+                    // the search gets a window of its own
+                    private _timeout = missionNamespace getVariable ["ALIVE_taskCsarTimeout", CSAR_DEFAULT_TIMEOUT];
+                    if !(_timeout isEqualType 0) then {_timeout = CSAR_DEFAULT_TIMEOUT};
+                    [_params, "expiresAt", (call ALiVE_fnc_taskTime) + (_timeout max CSAR_MIN_TIMEOUT)] call ALIVE_fnc_hashSet;
+
+                    ["C2ISTAR - Task CSAR - %1 crash site reached, %2 of %3 crew alive, search starts", _rootID, count _alive, count _netIDs] call ALiVE_fnc_Dump;
+                };
+            };
+        };
     };
 
     case "Rescue":{
@@ -1052,7 +1177,7 @@ switch (_taskState) do {
 
                     [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
 
-                    [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
+                    [_params,"nextTask",[_params,"returnID",_taskIDs select 2] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
 
                     // the trip home gets a window of its own
                     private _timeout = missionNamespace getVariable ["ALIVE_taskCsarTimeout", CSAR_DEFAULT_TIMEOUT];

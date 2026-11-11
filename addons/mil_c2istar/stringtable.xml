@@ -2120,6 +2120,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_CSAR_TIMEOUT">
     <English>Pilot Rescue Timeout (s):</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_CSAR_CRASH_FIRST">
+    <English>CSAR Starts At The Crash Site:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_CSAR_CRASH_FIRST_COMMENT">
+    <English>When Yes, a pilot rescue task first sends players to the wreck. Reaching it tells them whether the crew got out: if they did, HQ gives a search area within 500 m of a grid and the rescue goes on as usual; if the crew are dead, finding the wreck completes the task. An aircraft that did not come down as a wreck starts at the search as before. Default No.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_CSAR_TIMEOUT_COMMENT">
     <English>How long, in seconds, a downed pilot waits to be rescued. When it runs out the rescue task is cancelled and the pilot is removed. Never less than 300.</English>
 </Key>

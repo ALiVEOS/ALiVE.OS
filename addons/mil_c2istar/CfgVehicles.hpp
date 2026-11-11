@@ -392,6 +392,18 @@ class CfgVehicles {
                             defaultValue = """1800""";
                             typeName = "NUMBER";
                     };
+                    class csarCrashFirst : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_csarCrashFirst";
+                            displayName = "$STR_ALIVE_C2ISTAR_CSAR_CRASH_FIRST";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CSAR_CRASH_FIRST_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; default = 1; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
 
                     // ---- Task types --------------------------------------------------
                     class HDR_TASK_TYPES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TASK_TYPES"; displayName = "TASK TYPES"; };
