@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: ruha (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: ruha (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,103 +33,12 @@ ALiVE_mapCompositionType = "Woodland";
 
  if (tolower(_worldName) == "ruha") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\props_f_enoch\civilian\forest\anthill_01_f.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\bulldozer_01_wreck_f.p3d",
-        "a3\roads_f\roads_new\city_w10_a30_08_r20.p3d",
-        "a3\roads_f\roads_new\city_w10_a36_287_r15.p3d",
-        "a3\roads_f\roads_new\city_w10_a43_545_r25.p3d",
-        "a3\roads_f\roads_new\city_w10_a8_403_r75.p3d",
-        "a3\roads_f\roads_new\city_w10_l18.p3d",
-        "a3\structures_f\civ\accessories\timbers_f.p3d",
-        "a3\structures_f_argo\decals\horizontal\dirtpatch_01_6x8_f.p3d",
-        "a3\structures_f_bootcamp\items\sport\kartstand_01_f.p3d",
-        "a3\structures_f_bootcamp\items\sport\karttrolly_01_f.p3d",
-        "a3\structures_f_bootcamp\items\sport\karttyre_01_f.p3d",
-        "a3\structures_f_bootcamp\items\sport\karttyre_01_x4_f.p3d",
-        "a3\structures_f_enoch\civilian\accessories\stonewell_01_f.p3d",
-        "a3\structures_f_enoch\industrial\agriculture\haybale_01_decayed_f.p3d",
-        "a3\structures_f_enoch\industrial\agriculture\haybale_01_f.p3d",
-        "a3\structures_f_enoch\industrial\agriculture\manurepile_01_f.p3d",
-        "a3\structures_f_enoch\industrial\agriculture\silagestorage_01_f.p3d",
-        "a3\structures_f_enoch\industrial\agriculture\trough_01_f.p3d",
-        "a3\structures_f_enoch\industrial\farms\strawstack_01_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\timberlog_02_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\timberlog_04_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\timberlog_05_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\timberpile_02_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\timberpile_03_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\timberpile_05_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\woodpile_03_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\woodpile_04_f.p3d",
-        "a3\structures_f_enoch\industrial\sheds\shed_ind_old_ruins_f.p3d",
-        "a3\structures_f_enoch\military\training\shootingpos_roof_01_f.p3d",
-        "a3\structures_f_enoch\ruins\housewallruin_corner_01_f.p3d",
-        "a3\structures_f_enoch\ruins\housewallruin_corner_02_f.p3d",
-        "a3\structures_f_enoch\ruins\housewallruin_door_01_f.p3d",
-        "a3\structures_f_enoch\walls\polewalls\polewall_02_end_f.p3d",
-        "a3\structures_f_enoch\walls\polewalls\polewall_03_5m_v1_f.p3d",
-        "a3\structures_f_enoch\walls\stone\stonewall_02_s_10m_f.p3d",
-        "a3\structures_f_exp\civilian\accessories\clothesline_01_f.p3d",
-        "a3\structures_f_exp\civilian\sheds\shed_06_f.p3d",
-        "a3\structures_f_exp\commercial\fuelstation_01\fuelstation_01_arrow_f.p3d",
-        "a3\structures_f_exp\commercial\fuelstation_02\fuelstation_02_prices_f.p3d",
-        "a3\structures_f_exp\commercial\market\metalshelter_01_f.p3d",
-        "a3\structures_f_exp\cultural\ancientrelics\raistone_01_f.p3d",
-        "a3\structures_f_exp\industrial\stockyard_01\sy_01_block_f.p3d",
-        "a3\structures_f_exp\industrial\stockyard_01\sy_01_stockpile_02_f.p3d",
-        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shelter_narrow_f.p3d",
-        "a3\structures_f_exp\infrastructure\runways\runway_01_30m_end_f.p3d",
-        "a3\structures_f_exp\infrastructure\runways\runway_01_30m_f.p3d",
-        "a3\structures_f_exp\naval\piers\pierwooden_03_f.p3d",
-        "a3\structures_f_exp\walls\crashbarriers\crashbarrier_01_4m_f.p3d",
-        "a3\structures_f_exp\walls\crashbarriers\crashbarrier_01_8m_f.p3d",
-        "a3\structures_f_exp\walls\crashbarriers\crashbarrier_01_end_l_f.p3d",
-        "a3\structures_f_exp\walls\crashbarriers\crashbarrier_01_end_r_f.p3d",
-        "a3\structures_f_exp\walls\hedges\hedge_01_s_2m_f.p3d",
-        "a3\structures_f_exp\walls\hedges\hedge_01_s_4m_f.p3d",
-        "a3\structures_f_exp\walls\net\netfence_01_m_4m_nolc_f.p3d",
-        "a3\structures_f_exp\walls\net\netfence_01_m_8m_f.p3d",
-        "a3\structures_f_exp\walls\net\netfence_01_m_gate_f.p3d",
-        "a3\structures_f_exp\walls\net\netfence_01_m_pole_f.p3d",
-        "a3\structures_f_exp\walls\pipe\pipefence_01_m_2m_f.p3d",
-        "a3\structures_f_exp\walls\pipe\pipefence_01_m_8m_f.p3d",
-        "a3\structures_f_exp\walls\pipe\pipefence_01_m_gate_v2_f.p3d",
-        "a3\structures_f_exp\walls\polewalls\polewall_01_3m_f.p3d",
-        "a3\structures_f_exp\walls\polewalls\polewall_01_6m_f.p3d",
-        "a3\structures_f_exp\walls\slum\slumwall_01_s_4m_f.p3d",
-        "a3\structures_f_exp\walls\wired\wiredfence_01_16m_f.p3d",
-        "a3\structures_f_exp\walls\wired\wiredfence_01_pole_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_01_m_4m_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_01_m_8m_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_01_m_pole_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_02_s_2m_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_02_s_4m_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_02_s_8m_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_02_s_pole_f.p3d",
-        "a3\structures_f_heli\ind\cargo\cargo10_military_green_f.p3d",
-        "a3\structures_f_heli\ind\machines\waterpump_01_f.p3d",
-        "a3\structures_f_heli\items\tools\rope_01_f.p3d",
-        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
         "ca\buildings2\shed_small\shed_m02.p3d",
-        "ca\buildings\podesta_s5.p3d",
         "ca\misc\container.p3d",
-        "ca\misc\container2.p3d",
-        "ca\roads2\path_0 2000.p3d",
         "ca\roads2\path_1 1000.p3d",
         "ca\roads2\path_15 75.p3d",
         "ca\roads2\path_7 100.p3d",
-        "ca\roads_e\runway\runway_end27_ep1.p3d",
-        "ca\roads_pmc\bridge\bridge_asf_pmc.p3d",
-        "ca\structures\misc\armory\pneu\pneu.p3d",
-        "ca\structures\rail\rail_loco\loco_742_red.p3d",
-        "ca\structures\rail\rail_misc\rail_najazdovarampa.p3d",
-        "ca\structures\rail\rail_platform\rail_platform_segment.p3d",
-        "ca\structures\rail\rail_platform\rail_platform_start.p3d",
-        "ca\structures\rail\rail_wagon\wagon_box.p3d",
-        "ca\structures\rail\rail_wagon\wagon_flat.p3d",
-        "ca\structures\rail\rail_wagon\wagon_tanker.p3d",
-        "ca\structures\wall\wall_woodvil_pole.p3d",
-        "ca\structures_e\ind\ind_shed\ind_shed_02_ep1.p3d"
+        "ca\structures\misc\armory\pneu\pneu.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [

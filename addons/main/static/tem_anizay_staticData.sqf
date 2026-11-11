@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: tem_anizay (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: tem_anizay (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -32,37 +32,6 @@ ALIVE_civilianConstructionBuildingTypes = [];
 ALiVE_mapCompositionType = "Desert";
 
  if (tolower(_worldName) == "tem_anizay") then {
-    ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f\mil\fortification\hbarrier_big_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall4_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall6_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall_corner_f.p3d",
-        "a3\structures_f_exp\civilian\accessories\clothesline_01_f.p3d",
-        "a3\structures_f_exp\civilian\sheds\shed_06_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_24m_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_24m_high_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_8m_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_8m_high_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_curve_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_curve_high_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_end_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_pipe_up_f.p3d",
-        "a3\structures_f_exp\infrastructure\bridges\bridgewooden_01_f.p3d",
-        "a3\structures_f_exp\walls\hedges\hedge_01_s_2m_f.p3d",
-        "a3\structures_f_exp\walls\hedges\hedge_01_s_4m_f.p3d",
-        "a3\structures_f_exp\walls\net\netfence_02_m_gate_v1_f.p3d",
-        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
-        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
-        "ca\buildings\podesta_s5.p3d",
-        "ca\misc\betonl_velky.p3d",
-        "ca\structures_e\ind\ind_shed\ind_shed_02_ep1.p3d",
-        "ca\structures_e\misc\misc_interier\table_small_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_5m_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_1_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ruins_ep1.p3d"
-    ];
-
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
         "a3\structures_f\mil\bagbunker\bagbunker_large_f.p3d",
         "a3\structures_f\mil\barracks\i_barracks_v2_f.p3d",
