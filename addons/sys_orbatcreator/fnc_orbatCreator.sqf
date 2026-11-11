@@ -5006,41 +5006,6 @@ switch(_operation) do {
 
     };
 
-    case "convertConfigUnitToCustomUnit": {
-
-        // TODO: function incomplete
-
-        private _unit = _args;
-
-        if (_unit isEqualType "") then {
-
-            private ["_unitConfig","_unitConfigName","_unitSide","_unitFaction","_unitDisplayName","_unitLoadout"];
-
-            private _state = [_logic,"state"] call MAINCLASS;
-            private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
-
-            _unitConfig = configFile >> "CfgVehicles" >> _unit;
-            _unitConfigName = configName _unitConfig;
-            _unitSide = getNumber (_unitConfig >> "side");
-            _unitFaction = tolower (getText (_unitConfig >> "faction"));
-            _unitDisplayName = getText (_unitConfig >> "displayName");
-            _unitLoadout = getUnitLoadout _asset;
-
-            _newUnit = [nil,"create"] call ALiVE_fnc_orbatCreatorUnit;
-            [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
-            [_newUnit,"inheritsFrom", ""] call ALiVE_fnc_orbatCreatorUnit; // should be array
-            [_newUnit,"side", _unitSide] call ALiVE_fnc_hashSet;
-            [_newUnit,"faction", _unitFaction] call ALiVE_fnc_hashSet;
-            [_newUnit,"displayName", _unitDisplayName] call ALiVE_fnc_hashSet;
-            [_newUnit,"configName", _unitConfigName] call ALiVE_fnc_hashSet;
-            [_newUnit,"loadout", _unitLoadout] call ALiVE_fnc_hashSet;
-
-            [_customUnits,_unitConfigName, _newUnit] call ALiVE_fnc_hashSet;
-
-        };
-
-    };
-
     // edit unit
 
     case "onEditUnitUnitTypeUnitCategoryChanged": {

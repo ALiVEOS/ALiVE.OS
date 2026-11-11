@@ -167,14 +167,11 @@ switch(_operation) do {
 
                     // Check to see if data module has been placed
                     if (!isNil "ALIVE_sys_data") then {
-                        // Grab Server ID and Mission ID
-                        private ["_serverID","_missionName"];
+                        // Grab the mission name
+                        private ["_missionName"];
 
                         if (ALIVE_sys_data_DISABLED) exitWith {};
 
-						// FIXME: not used anywhere - is this needed at all?
-                        _serverID = [] call ALIVE_fnc_getServerName;
-                        MOD(sys_player) setVariable ["serverID", _serverID];
 
                         // Setup data handler
                         GVAR(datahandler) = [nil, "create"] call ALIVE_fnc_Data;
