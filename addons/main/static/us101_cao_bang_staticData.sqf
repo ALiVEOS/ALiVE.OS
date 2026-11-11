@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: us101_cao_bang (ALiVE 3 index v3.1, 2026-10-06)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: us101_cao_bang (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-06", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,127 +30,47 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Jungle";
+[ALIVE_mapBounds, worldName, 10240] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "us101_cao_bang") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "csj_seaobj\csj_rockgod.p3d",
-        "csj_village\csj_yard_pengate.p3d",
         "mbg_nam_obj\m\mbg_paddy_ditch_a.p3d",
         "mbg_nam_obj\m\mbg_ruin1.p3d",
         "mbg_nam_obj\m\mbg_ruin2.p3d",
-        "uc\buildings\misc\plutek.p3d",
-        "uc\misc2\bagfenceshort.p3d",
-        "uc\misc\mutt_vysilacka.p3d",
-        "uc\roads2\runwayold_40_main.p3d",
-        "uc\structures\misc\armory\woodenramp\woodenramp.p3d",
-        "uc\structures_e\misc\misc_interier\teapot_ep1.p3d",
         "uns_buildings\civilian_objects\basket_pan.p3d",
-        "uns_buildings\civilian_objects\baskete.p3d",
         "uns_buildings\civilian_objects\cook_pot.p3d",
-        "uns_buildings\civilian_objects\crate_timber.p3d",
-        "uns_buildings\civilian_objects\crate_timber_open.p3d",
-        "uns_buildings\civilian_objects\crop_earth.p3d",
-        "uns_buildings\civilian_objects\csj_pot.p3d",
-        "uns_buildings\civilian_objects\csj_pot2.p3d",
-        "uns_buildings\civilian_objects\csj_pot3.p3d",
-        "uns_buildings\civilian_objects\csjcartbroke.p3d",
-        "uns_buildings\civilian_objects\csjcartempty.p3d",
-        "uns_buildings\civilian_objects\drum_rusty.p3d",
-        "uns_buildings\civilian_objects\fish_trap.p3d",
         "uns_buildings\civilian_objects\fry_pan.p3d",
-        "uns_buildings\civilian_objects\ganh_hang_rong.p3d",
         "uns_buildings\civilian_objects\hand_broom.p3d",
-        "uns_buildings\civilian_objects\mat_hay.p3d",
-        "uns_buildings\civilian_objects\pen_sty.p3d",
-        "uns_buildings\civilian_objects\pen_sty2.p3d",
-        "uns_buildings\civilian_objects\plough.p3d",
         "uns_buildings\civilian_objects\rice_sack.p3d",
         "uns_buildings\civilian_objects\sack.p3d",
-        "uns_buildings\civilian_objects\small_pot.p3d",
-        "uns_buildings\civilian_objects\table_small.p3d",
-        "uns_buildings\civilian_objects\tool_1.p3d",
-        "uns_buildings\civilian_objects\tool_2.p3d",
-        "uns_buildings\civilian_objects\tool_3.p3d",
-        "uns_buildings\civilian_objects\uns_buda_idol.p3d",
-        "uns_buildings\civilian_objects\uns_candle.p3d",
-        "uns_buildings\civilian_objects\uns_conical.p3d",
-        "uns_buildings\civilian_objects\uns_crate_old.p3d",
-        "uns_buildings\civilian_objects\uns_crate_old2.p3d",
-        "uns_buildings\civilian_objects\uns_skull_gi.p3d",
-        "uns_buildings\civilian_objects\uns_veg_garden.p3d",
-        "uns_buildings\civilian_objects\washing.p3d",
         "uns_buildings\east_objects\nva_60mmbox_1.p3d",
         "uns_buildings\east_objects\nva_60mmbox_2.p3d",
-        "uns_buildings\east_objects\nva_akammobox_1.p3d",
-        "uns_buildings\east_objects\nva_akammobox_2.p3d",
-        "uns_buildings\east_objects\nva_ammobox.p3d",
-        "uns_buildings\east_objects\vc_biv.p3d",
-        "uns_buildings\uns_fence\uns_fence01.p3d",
         "uns_buildings\west_objects\105_gun.p3d",
         "uns_buildings\west_objects\105_projectile.p3d",
-        "uns_buildings\west_objects\105_projectile_stack.p3d",
-        "uns_buildings\west_objects\105_shell_crate.p3d",
-        "uns_buildings\west_objects\105_shell_crates.p3d",
         "uns_buildings\west_objects\105_shell_projectile.p3d",
-        "uns_buildings\west_objects\105_shell_stack.p3d",
         "uns_buildings\west_objects\c_ration.p3d",
-        "uns_buildings\west_objects\c_ration_16.p3d",
         "uns_buildings\west_objects\csj_bunk.p3d",
-        "uns_buildings\west_objects\csj_latrinecan.p3d",
-        "uns_buildings\west_objects\csj_locker.p3d",
-        "uns_buildings\west_objects\csj_lspkr.p3d",
-        "uns_buildings\west_objects\csj_punji.p3d",
-        "uns_buildings\west_objects\csj_punjiwall.p3d",
-        "uns_buildings\west_objects\csjjcan.p3d",
         "uns_buildings\west_objects\food_tray.p3d",
         "uns_buildings\west_objects\food_tray02.p3d",
         "uns_buildings\west_objects\food_tray2.p3d",
         "uns_buildings\west_objects\fry_pan2.p3d",
         "uns_buildings\west_objects\gbage.p3d",
-        "uns_buildings\west_objects\marsden_mat.p3d",
-        "uns_buildings\west_objects\p_wire1.p3d",
-        "uns_buildings\west_objects\p_wire2.p3d",
-        "uns_buildings\west_objects\revetment_5.p3d",
-        "uns_buildings\west_objects\sboard.p3d",
-        "uns_buildings\west_objects\shovel.p3d",
         "uns_buildings\west_objects\stove1.p3d",
         "uns_buildings\west_objects\table.p3d",
         "uns_buildings\west_objects\uns_basin.p3d",
-        "uns_buildings\west_objects\uns_sandbag.p3d",
-        "uns_buildings\west_objects\uns_sandbag_detail.p3d",
         "uns_ksobjects\clutter_grass_ele.p3d",
-        "uns_ksobjects\uns_corral1.p3d",
         "uns_ksobjects\uns_fence3_8.p3d",
-        "uns_village\basket\uns_ricebasket1.p3d",
-        "uns_village\basket\uns_ricebasket2.p3d",
         "uns_village\bridge\uns_villbridge2.p3d",
         "uns_village\crate\uns_crate1.p3d",
         "uns_village\crate\uns_crate2.p3d",
-        "uns_village\fence\uns_fence5.p3d",
-        "uns_village\fence\uns_fence6.p3d",
-        "uns_village\misc\uns_barrel.p3d",
-        "uns_village\misc\uns_barrel_side.p3d",
-        "uns_village\misc\uns_haystack1.p3d",
-        "uns_village\misc\uns_mound1.p3d",
         "uns_village\misc\uns_pitchfork.p3d",
         "uns_village\misc\uns_village_tower.p3d",
-        "uns_village\pot\uns_pot1.p3d",
-        "uns_village\pot\uns_pot2.p3d",
-        "uns_village\pot\uns_pot3.p3d",
-        "uns_village\pot\uns_pot4.p3d",
         "uns_village\pot\uns_pot5.p3d",
         "uns_village\pot\uns_pot6.p3d",
         "uns_village\pot\uns_pot7.p3d",
-        "uns_village\pot\uns_pot8.p3d",
-        "uns_village\pot\uns_wok1.p3d",
-        "uns_village\table\uns_bench1.p3d",
-        "uns_village\table\uns_bench2.p3d",
-        "uns_village\table\uns_villseat.p3d",
         "uns_village\table\uns_villtable1.p3d",
-        "uns_village\table\uns_villtable1a.p3d",
         "uns_village\table\uns_villtable2.p3d",
-        "uns_village\table\uns_villtable2a.p3d",
-        "uns_village\villwell\uns_villwell3.p3d"
+        "uns_village\table\uns_villtable2a.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
@@ -271,7 +191,17 @@ ALiVE_mapCompositionType = "Jungle";
     ];
 
     ALIVE_militaryFieldworkBuildingTypes = ALIVE_militaryFieldworkBuildingTypes + [
-        "uc\misc_e\fortified_nest_small_ep1.p3d"
+        "uc\misc_e\fortified_nest_small_ep1.p3d",
+        "uns_buildings\west_objects\t_sb_20_half.p3d",
+        "uns_buildings\west_objects\t_sb_45_half.p3d"
+    ];
+
+    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "uc\buildings\hangar_2.p3d"
+    ];
+
+    ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "uc\buildings\hangar_2.p3d"
     ];
 
     ALiVE_HeliBuildingTypes = ALiVE_HeliBuildingTypes + [

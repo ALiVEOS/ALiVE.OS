@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-05 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: lythium (ALiVE 3 index v3.1, 2026-10-05)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: lythium (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-05", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,78 +33,12 @@ ALiVE_mapCompositionType = "Desert";
 
  if (tolower(_worldName) == "lythium") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\roads_f\roads\path_w7_a10_695_r75.p3d",
-        "a3\roads_f\roads\road_w10_a0_573_r2000.p3d",
-        "a3\roads_f\roads_new\city_w10_l18.p3d",
-        "a3\roads_f\roads_new\path_w7_a0_144_r5000.p3d",
-        "a3\roads_f\runway\runway_main_f.p3d",
-        "a3\roads_f\runway\runway_secondary_end22_f.p3d",
-        "a3\structures_f\bridges\bridge_01_f.p3d",
-        "a3\structures_f\dominants\castle\castle_01_wall_09_f.p3d",
-        "a3\structures_f\ind\dieselpowerplant\dp_mainfactory_addon1_f.p3d",
-        "a3\structures_f\ind\dieselpowerplant\dp_mainfactory_addon2_f.p3d",
-        "a3\structures_f\ind\factory\factory_conv2_f.p3d",
-        "a3\structures_f\ind\factory\factory_tunnel_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrier_3_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrier_big_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall_corridor_f.p3d",
-        "a3\structures_f\naval\piers\pier_doubleside_f.p3d",
-        "a3\structures_f\training\shoot_house_tunnel_f.p3d",
-        "a3\structures_f_bootcamp\items\food\foodcontainer_01_f.p3d",
-        "a3\structures_f_epb\items\luggage\luggageheap_01_f.p3d",
         "ffaa_casas_af\ffaa_casa_caseta_peq.p3d",
-        "ffaa_casas_af\ffaa_cubierto_madera.p3d",
-        "jbad_bridge_kammeny\jbad_kamenny_most30.p3d",
-        "jbad_bridge_most\jbad_most_stred30.p3d",
-        "jbad_misc\misc_interier\jbad_carpet.p3d",
-        "jbad_misc\misc_interier\jbad_carpet_2.p3d",
-        "jbad_misc\misc_interier\jbad_carpetv2.p3d",
-        "jbad_misc\misc_interier\jbad_curtain.p3d",
-        "jbad_misc\misc_interier\jbad_curtain_mirrored.p3d",
-        "jbad_misc\misc_interier\jbad_pillow.p3d",
-        "jbad_misc\misc_interier\jbad_pillowv2.p3d",
-        "jbad_misc\misc_interier\jbad_urn.p3d",
-        "jbad_misc\misc_interier\jbad_vase.p3d",
-        "jbad_misc\misc_market\jbad_counter.p3d",
         "jbad_misc\misc_powerline\jbad_powlineb.p3d",
-        "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_1_ruins.p3d",
-        "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_2_ruins.p3d",
-        "jbad_structures\afghan_houses\jbad_house3_ruins.p3d",
-        "jbad_structures\afghan_houses\jbad_house5_ruins.p3d",
-        "jbad_structures\afghan_houses\jbad_house6_ruins.p3d",
-        "jbad_structures\afghan_houses\jbad_house7_ruins.p3d",
-        "jbad_structures\afghan_houses\jbad_house8_ruins.p3d",
-        "jbad_structures\afghan_houses_c\jbad_house_c_2_ruins.p3d",
-        "jbad_structures\afghan_houses_c\jbad_house_c_4_ruins.p3d",
-        "jbad_structures\afghan_houses_old\jbad_house_1_old_ruins.p3d",
-        "jbad_structures\afghan_houses_old\jbad_house_3_old_ruins.p3d",
-        "jbad_structures\afghan_houses_old\jbad_house_4_old_ruins.p3d",
-        "jbad_structures\afghan_houses_old\jbad_house_6_old_ruins.p3d",
-        "jbad_structures\afghan_houses_old\jbad_house_7_old_ruins.p3d",
-        "jbad_structures\afghan_houses_old\jbad_house_8_old_ruins.p3d",
-        "jbad_structures\afghan_houses_old\jbad_house_9_old_ruins.p3d",
-        "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_10.p3d",
-        "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_main.p3d",
         "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_main_ruins.p3d",
-        "jbad_structures\ind\ind_fuelstation\jbad_ind_fuelstation_feed.p3d",
-        "jbad_structures\ind\ind_shed\jbad_ind_shed_01.p3d",
-        "jbad_structures\ind\ind_shed\jbad_ind_shed_02.p3d",
-        "jbad_structures\mil\jbad_mil_barracks_ruins.p3d",
-        "jbad_structures\mosque_big\jbad_mosque_big_wall_corner_ruins.p3d",
-        "jbad_structures\mosque_big\jbad_mosque_big_wall_ruins.p3d",
-        "jbad_structures\opxmisc2\gate\jbad_opx2_gateturquoise.p3d",
-        "jbad_structures\opxmisc2\market\jbad_opx2_marketstand1.p3d",
-        "jbad_structures\opxmisc2\market\jbad_opx2_marketstand1_b.p3d",
-        "jbad_structures\opxmisc2\market\jbad_opx2_marketstand2_b.p3d",
-        "jbad_structures\opxmisc2\wall\jbad_opx2_fence1.p3d",
-        "jbad_structures\opxmisc2\wall\jbad_opx2_wall12.p3d",
-        "jbad_structures\opxmisc2\wall\jbad_opx2_wall3.p3d",
         "jbad_structures\opxmisc2\wall\jbad_opx2_wall9.p3d",
         "jbad_structures\walls\wall_l\jbad_wall_l_mosque_1.p3d",
-        "jbad_structures\walls\wall_l\jbad_wall_l_mosque_1_dam.p3d",
         "jbad_structures\walls\wall_l\jbad_wall_l_mosque_2.p3d",
-        "jbad_structures\walls\wall_l\jbad_wall_l_mosque_2_dam.p3d",
         "jbad_water\misc_rivers\riverwide_normal.p3d",
         "jbad_water\misc_rivers\stream6wide.p3d",
         "jbad_water\misc_rivers\stream6wide_dirt.p3d",
@@ -195,6 +129,7 @@ ALiVE_mapCompositionType = "Desert";
         "jbad_misc\misc_com\jbad_com_tower.p3d",
         "jbad_structures\ind\hangar_2\jbad_hangar_2.p3d",
         "jbad_structures\mil\jbad_mil_barracks.p3d",
+        "jbad_structures\mil\jbad_mil_barracks_ruins.p3d",
         "jbad_structures\mil\jbad_mil_controltower.p3d",
         "jbad_structures\mil\jbad_mil_guardhouse.p3d",
         "jbad_structures\mil\jbad_mil_house.p3d"
@@ -234,12 +169,14 @@ ALiVE_mapCompositionType = "Desert";
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
         "a3\structures_f\ind\airport\hangar_f.p3d",
         "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d",
-        "ffaa_casas_af\ffaa_casa_hangar_2.p3d"
+        "ffaa_casas_af\ffaa_casa_hangar_2.p3d",
+        "jbad_structures\ind\hangar_2\jbad_hangar_2.p3d"
     ];
 
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
         "a3\structures_f\ind\airport\hangar_f.p3d",
-        "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d"
+        "a3\structures_f\mil\tenthangar\tenthangar_v1_f.p3d",
+        "jbad_structures\ind\hangar_2\jbad_hangar_2.p3d"
     ];
 
     ALIVE_civilianAirBuildingTypes = ALIVE_civilianAirBuildingTypes + [
@@ -314,19 +251,26 @@ ALiVE_mapCompositionType = "Desert";
         "jbad_structures\afghan_house_a\a_minaret\jbad_a_minaret_dam.p3d",
         "jbad_structures\afghan_house_a\a_minaret_porto\jbad_a_minaret_porto.p3d",
         "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_1.p3d",
+        "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_1_ruins.p3d",
         "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_2.p3d",
+        "jbad_structures\afghan_house_a\a_mosque_small\jbad_a_mosque_small_2_ruins.p3d",
         "jbad_structures\afghan_house_a\a_stationhouse\jbad_a_stationhouse.p3d",
         "jbad_structures\afghan_house_a\a_villa\jbad_a_villa.p3d",
         "jbad_structures\afghan_houses\jbad_house2_basehide.p3d",
         "jbad_structures\afghan_houses\jbad_house3.p3d",
         "jbad_structures\afghan_houses\jbad_house3_dam.p3d",
+        "jbad_structures\afghan_houses\jbad_house3_ruins.p3d",
         "jbad_structures\afghan_houses\jbad_house5.p3d",
         "jbad_structures\afghan_houses\jbad_house5_dam.p3d",
+        "jbad_structures\afghan_houses\jbad_house5_ruins.p3d",
         "jbad_structures\afghan_houses\jbad_house6.p3d",
+        "jbad_structures\afghan_houses\jbad_house6_ruins.p3d",
         "jbad_structures\afghan_houses\jbad_house7.p3d",
         "jbad_structures\afghan_houses\jbad_house7_dam.p3d",
+        "jbad_structures\afghan_houses\jbad_house7_ruins.p3d",
         "jbad_structures\afghan_houses\jbad_house8.p3d",
         "jbad_structures\afghan_houses\jbad_house8_dam.p3d",
+        "jbad_structures\afghan_houses\jbad_house8_ruins.p3d",
         "jbad_structures\afghan_houses\jbad_house_1.p3d",
         "jbad_structures\afghan_houses\jbad_terrace.p3d",
         "jbad_structures\afghan_houses_c\damageproxies\jbad_house_c_5_addon01.p3d",
@@ -338,8 +282,10 @@ ALiVE_mapCompositionType = "Desert";
         "jbad_structures\afghan_houses_c\jbad_house_c_12_dam.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_1_v2.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_2.p3d",
+        "jbad_structures\afghan_houses_c\jbad_house_c_2_ruins.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_3.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_4.p3d",
+        "jbad_structures\afghan_houses_c\jbad_house_c_4_ruins.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_5.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_5_v1.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_5_v1_dam.p3d",
@@ -347,14 +293,21 @@ ALiVE_mapCompositionType = "Desert";
         "jbad_structures\afghan_houses_c\jbad_house_c_5_v3.p3d",
         "jbad_structures\afghan_houses_c\jbad_house_c_9.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_1_old.p3d",
+        "jbad_structures\afghan_houses_old\jbad_house_1_old_ruins.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_3_old.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_3_old_dam.p3d",
+        "jbad_structures\afghan_houses_old\jbad_house_3_old_ruins.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_4_old.p3d",
+        "jbad_structures\afghan_houses_old\jbad_house_4_old_ruins.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_6_old.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_6_old_dam.p3d",
+        "jbad_structures\afghan_houses_old\jbad_house_6_old_ruins.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_7_old.p3d",
+        "jbad_structures\afghan_houses_old\jbad_house_7_old_ruins.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_8_old.p3d",
+        "jbad_structures\afghan_houses_old\jbad_house_8_old_ruins.p3d",
         "jbad_structures\afghan_houses_old\jbad_house_9_old.p3d",
+        "jbad_structures\afghan_houses_old\jbad_house_9_old_ruins.p3d",
         "jbad_structures\generalstore\jbad_a_generalstore_01.p3d",
         "jbad_structures\generalstore\jbad_a_generalstore_01a.p3d",
         "jbad_structures\ind\ind_garage01\jbad_ind_garage01.p3d",
@@ -363,7 +316,9 @@ ALiVE_mapCompositionType = "Desert";
         "jbad_structures\mosque_big\jbad_mosque_big_minaret_2.p3d",
         "jbad_structures\mosque_big\jbad_mosque_big_wall.p3d",
         "jbad_structures\mosque_big\jbad_mosque_big_wall_corner.p3d",
+        "jbad_structures\mosque_big\jbad_mosque_big_wall_corner_ruins.p3d",
         "jbad_structures\mosque_big\jbad_mosque_big_wall_gate.p3d",
+        "jbad_structures\mosque_big\jbad_mosque_big_wall_ruins.p3d",
         "jbad_structures\opxbuildings2\jbad_opx2_apartmentcomplex5.p3d",
         "jbad_structures\opxbuildings2\jbad_opx2_big_d.p3d",
         "jbad_structures\opxbuildings2\jbad_opx2_big_e.p3d",

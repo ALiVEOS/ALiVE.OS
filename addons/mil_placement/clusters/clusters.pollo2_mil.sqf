@@ -1,4 +1,4 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 #include "\x\alive\addons\civ_placement\script_component.hpp"
 ALIVE_clusterBuild = [CLUSTERBUILD];
 ALIVE_clustersMil = [] call ALIVE_fnc_hashCreate;
@@ -372,7 +372,7 @@ _nodes set [count _nodes, ["620224",[13963.9,13066.6,0.817421]]];
 _nodes set [count _nodes, ["620364",[13966.9,13050.2,1.00717]]];
 _nodes set [count _nodes, ["620288",[13966.5,13002.8,-0.419484]]];
 _nodes set [count _nodes, ["620287",[13970.8,13002.7,0.0754206]]];
-_nodes set [count _nodes, ["616610",[13935.4,13147.9,0.0617718]]];
+_nodes set [count _nodes, ["616610",[13935.4,13147.9,0.0674509]]];
 _nodes set [count _nodes, ["616629",[13924.3,13158.3,0.519715]]];
 _nodes set [count _nodes, ["616491",[13898.3,13176.3,-0.366989]]];
 _nodes set [count _nodes, ["616498",[13884.4,13185.9,-0.15842]]];
