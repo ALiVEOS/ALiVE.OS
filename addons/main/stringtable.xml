@@ -277,6 +277,12 @@
     <Chinesesimp>仅对垃圾回收器启用调试，启用后它会将运行进度写入 RPT 日志。其他 ALiVE 模块有各自的调试设置。</Chinesesimp>
     <Spanish>Activa la depuración solo del recolector de basura, que entonces escribe su progreso en el registro RPT. Los demás módulos de ALiVE tienen sus propios ajustes de depuración.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_DEBUG_ALL">
+    <English>Debug All Modules:</English>
+</Key>
+<Key ID="STR_ALIVE_DEBUG_ALL_COMMENT">
+    <English>When Yes, every ALiVE module in the mission starts with its debug on, whatever its own debug setting says: markers on the map and progress in the RPT log. When No, each module keeps its own setting. Debug costs performance on a big mission, so use it for testing. Default No.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_REQUIRES_ALIVE">
     <English>ALiVE (Required)</English>

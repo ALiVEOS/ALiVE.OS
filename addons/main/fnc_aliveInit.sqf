@@ -89,6 +89,50 @@ _logic setVariable ["startupComplete", false];
 
 MOD(require) = _logic;
 
+// Debug All Modules (Jman): when Yes, every ALiVE module in the mission starts with its own debug on,
+// whatever its own setting says. The Required module inits first (priority 40), so this runs before
+// the others read theirs. Each module's debug settings are the attributes with "debug" in their name
+// and a Yes / No choice; each is set to its Yes value, in the type the module already holds it as.
+private _debugAll = _logic getVariable ["debugAll", "false"];
+if (_debugAll isEqualType "") then { _debugAll = (toLower _debugAll) in ["true", "1"] };
+if (_debugAll isEqualTo true) then {
+    private _switched = [];
+    {
+        private _module = _x;
+        {
+            private _attr = _x;
+            if (((toLower configName _attr) find "debug") > -1 && {isClass (_attr >> "Values")} && {count ("true" configClasses (_attr >> "Values")) == 2}) then {
+                private _expr = getText (_attr >> "expression");
+                private _name = configName _attr;
+                private _at = _expr find "setVariable ['";
+                if (_at > -1 && {(_expr find "%s") == -1}) then {
+                    private _rest = _expr select [_at + 14];
+                    _name = _rest select [0, _rest find "'"];
+                };
+                private _now = _module getVariable _name;
+                // left at its default in Eden the setting was never saved: its default gives the type
+                if (isNil "_now") then {
+                    private _default = getText (_attr >> "defaultValue");
+                    if (_default != "") then { _now = call compile _default };
+                };
+                private _on = switch (true) do {
+                    case (isNil "_now"): {nil};
+                    case (_now isEqualType true): {true};
+                    case (_now isEqualType 0): {1};
+                    case (_now isEqualType "" && {(toLower _now) in ["true", "false"]}): {"true"};
+                    case (_now isEqualType "" && {_now in ["0", "1"]}): {"1"};
+                    default {nil};
+                };
+                if (!isNil "_on" && {!(_now isEqualTo _on)}) then {
+                    _module setVariable [_name, _on];
+                    _switched pushBack format ["%1.%2", typeOf _module, _name];
+                };
+            };
+        } forEach ("true" configClasses (configFile >> "CfgVehicles" >> typeOf _module >> "Attributes"));
+    } forEach ((entities [["Logic"], [], false, true]) select {((toLower typeOf _x) find "alive_") == 0});
+    ["ALiVE Debug All Modules: debug turned on for %1", _switched] call ALiVE_fnc_dump;
+};
+
 // Outbreak: the zombie side (ALiVE_ZOMBIESIDE, "EAST" / "WEST" / "GUER") goes to war with every
 // other side but civilians. The server sets it straight away, before any AI Commander reads who is
 // at war with whom; every other machine sets it too once the server has published it

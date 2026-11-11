@@ -2379,6 +2379,26 @@ class CfgVehicles {
                             };
                     };
             };
+            class debugAll: Combo
+            {
+                    property =  MVAR(debugAll);
+                    displayName = "$STR_ALIVE_DEBUG_ALL";
+                    tooltip = "$STR_ALIVE_DEBUG_ALL_COMMENT";
+                    defaultValue = """false""";
+                    class Values
+                    {
+                            class No
+                            {
+                                    name = "No";
+                                    value = "false";
+                            };
+                            class Yes
+                            {
+                                    name = "Yes";
+                                    value = "true";
+                            };
+                    };
+            };
             class ALiVE_Versioning: Combo
             {
                     property =  MVAR(ALiVE_Versioning);
