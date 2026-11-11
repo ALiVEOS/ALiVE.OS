@@ -2663,9 +2663,12 @@ if (isServer) then {
             if (_debug) then {
                 ["---------------------------- C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
                 private _settings = allVariables _logic;
-                _settings = _settings - ["super","class"];
+                // CBA's event handler variables hold whole functions, which filled the log with other mods' source
+                _settings = (_settings - ["super","class"]) select {(_x find "cba_xeh_") != 0};
                 {
-                    ["C2ISTAR %1 %2 : %3", _logic, _x, _logic getVariable _x] call ALiVE_fnc_dump;
+                    private _value = _logic getVariable [_x, "any"];
+                    if (_value isEqualType {}) then { _value = "<code>" };
+                    ["C2ISTAR %1 %2 : %3", _logic, _x, _value] call ALiVE_fnc_dump;
                 } foreach _settings;
                 ["---------------------------------------------------------------------------------------------------", _logic] call ALiVE_fnc_dump;
             };
