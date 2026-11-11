@@ -1,0 +1,5 @@
+version=54;
+name="Island campaign: NATO holds the whole island, with support and saves";
+author="theone89";
+category="EdSubcat_Military";
+requiredAddons[]={"alive_main","alive_sys_profile","alive_mil_opcom","alive_mil_placement","alive_sys_aiskill","alive_sup_cas","alive_sup_combatsupport","alive_sup_artillery","alive_sup_transport","alive_sup_player_resupply","alive_sys_data","alive_sys_playeroptions"};
