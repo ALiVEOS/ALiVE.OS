@@ -373,6 +373,20 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      (!isNil "NEO_radioLogic") && {_csResult} && {call ALIVE_fnc_combatSupportIsOperator}
                 ],
+                // Ask HQ for a SITREP by radio (Fitz on Discord, 9 Nov). Shown when map intel needs a radio or the
+                // COP is off; the server checks the radio and the 5 minute wait, and answers after a short delay
+                ["Request SITREP from HQ",
+                    {
+                        ALiVE_c2istar_sitrepAsk = player;
+                        if (isServer) then { [player] call ALiVE_c2istar_fnc_sitrepRequest } else { publicVariableServer "ALiVE_c2istar_sitrepAsk" };
+                    },
+                    "",
+                    "Ask HQ by radio for the enemy reported near you",
+                    "",
+                     -1,
+                     true,
+                     _result && {(missionNamespace getVariable ["ALIVE_militaryIntelNeedsRadio", false]) || {!(missionNamespace getVariable ["ALIVE_COP_ACTIVE", false])}}
+                ],
                 ["Send SITREP",
                     {
                         ["RscDisplayALIVESITREP"] call ALiVE_fnc_tabletOpen;

@@ -1902,6 +1902,57 @@ switch(_operation) do {
                 ["C2ISTAR: %1 moved recon OP %2 to %3", name _player, _i + 1, mapGridPosition _pos] call ALiVE_fnc_dump;
             };
             "ALiVE_c2istar_reconMoveOP" addPublicVariableEventHandler { (_this select 1) call ALiVE_c2istar_fnc_reconMoveOP };
+            // A player asks HQ for a SITREP by radio (Fitz on Discord, 9 Nov): with a radio or at a command point, once
+            // every 5 minutes, he hears back after 20 to 40 seconds how many enemy groups are within 2 km of him, by
+            // compass direction and rough distance. For missions where the map shows little or nothing.
+            ALiVE_c2istar_fnc_sitrepRequest = {
+                params [["_player", objNull]];
+                if (isNull _player || {!alive _player}) exitWith {};
+                private _fnc_tell = { [localize "STR_ALIVE_C2ISTAR", _this] remoteExec ["ALIVE_fnc_sendHint", owner _player] };
+                if !(["Radios,ACE3_Radios,TFAR_Radios", "", [], _player] call ALIVE_fnc_playerHasAccessItems) exitWith {
+                    "You need a radio, or a command point, to reach HQ." call _fnc_tell;
+                };
+                if (isNil "ALiVE_c2istar_sitrepAt") then { ALiVE_c2istar_sitrepAt = createHashMap };
+                private _uid = getPlayerUID _player;
+                private _wait = (ALiVE_c2istar_sitrepAt getOrDefault [_uid, -1e6]) + 300 - time;
+                if (_wait > 0) exitWith { format ["HQ is busy. Ask again in %1 minutes.", ceil (_wait / 60)] call _fnc_tell };
+                ALiVE_c2istar_sitrepAt set [_uid, time];
+                "HQ copies. Stand by for SITREP." call _fnc_tell;
+                [_player, _fnc_tell] spawn {
+                    params ["_player", "_fnc_tell"];
+                    sleep (20 + random 20);
+                    if (isNull _player || {!alive _player}) exitWith {};
+                    private _pos = getPosATL _player;
+                    private _mySide = side group _player;
+                    private _enemy = [east, west, resistance] select { (_mySide getFriend _x) < 0.6 };
+                    private _counts = createHashMap;
+                    {
+                        private _sideText = [[_x] call ALIVE_fnc_sideObjectToNumber] call ALIVE_fnc_sideNumberToText;
+                        {
+                            private _p = [_x, "position", []] call ALIVE_fnc_hashGet;
+                            if (count _p > 1) then {
+                                private _dir = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] select (round ((_pos getDir _p) / 45) mod 8);
+                                private _band = "under 500 m";
+                                if ((_pos distance2D _p) >= 1000) then { _band = "1 to 2 km" } else { if ((_pos distance2D _p) >= 500) then { _band = "500 m to 1 km" } else { _band = "under 500 m" } };
+                                private _key = _band + " " + _dir;
+                                _counts set [_key, (_counts getOrDefault [_key, 0]) + 1];
+                            };
+                        } forEach ([_pos, 2000, [_sideText, "entity"]] call ALIVE_fnc_getNearProfiles);
+                    } forEach _enemy;
+                    private _lines = (keys _counts) apply { format ["%1 group%2 %3", _counts get _x, ["s", ""] select ((_counts get _x) == 1), _x] };
+                    _lines sort true;
+                    private _text = if (_lines isEqualTo []) then {
+                        format ["SITREP for grid %1: no enemy reported within 2 km.", mapGridPosition _pos]
+                    } else {
+                        format ["SITREP for grid %1, enemy reported within 2 km:
+%2", mapGridPosition _pos, _lines joinString "
+"]
+                    };
+                    _text call _fnc_tell;
+                    ["C2ISTAR: SITREP for %1 at %2: %3 reports", name _player, mapGridPosition _pos, count _lines] call ALiVE_fnc_dump;
+                };
+            };
+            "ALiVE_c2istar_sitrepAsk" addPublicVariableEventHandler { [_this select 1] call ALiVE_c2istar_fnc_sitrepRequest };
         };
         if (hasInterface) then {
             // A tablet's Back on its first page (#1089): closes it and opens the C2ISTAR menu again, at its list of
