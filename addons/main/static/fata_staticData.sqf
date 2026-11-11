@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: fata (ALiVE 3 index v3.1, 2026-10-09)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: fata (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-09", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,56 +30,16 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Desert";
+[ALIVE_mapBounds, worldName, 10240] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "fata") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "ca\buildings2\ind_shed_02\ind_shed_02_end.p3d",
         "ca\buildings2\ind_shed_02\ind_shed_02_main.p3d",
-        "ca\buildings2\misc_cargo\seacrate.p3d",
-        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
         "ca\buildings2\shed_small\shed_m02.p3d",
-        "ca\buildings\furniture\case_wooden_b.p3d",
-        "ca\buildings\furniture\conference_table_a.p3d",
         "ca\buildings\furniture\skrin_opalena.p3d",
-        "ca\buildings\misc\zavora_2.p3d",
         "ca\buildings\misc\zed_civil.p3d",
-        "ca\data\krater.p3d",
-        "ca\misc2\bighbarrier.p3d",
-        "ca\misc2\hbarrier1.p3d",
-        "ca\misc2\hbarrier3.p3d",
-        "ca\misc2\hbarrier5.p3d",
-        "ca\misc\mutt_vysilacka.p3d",
         "ca\misc_e\powergenerator.p3d",
-        "ca\misc_e\wreck_c130j.p3d",
-        "ca\misc_e\wreck_c130j_ep1_dirt.p3d",
-        "ca\roads_e\sidewalks\sw_c_crosst_ep1.p3d",
-        "ca\structures\misc\armory\conelight\conelight.p3d",
-        "ca\structures\misc\armory\woodenramp\woodenramp.p3d",
-        "ca\structures\ruins\glass_cullet_01.p3d",
-        "ca\structures_e\housea\a_mosque_big\a_mosque_big_wall_ruins_ep1.p3d",
-        "ca\structures_e\housek\house_k_1_ruins_ep1.p3d",
-        "ca\structures_e\housek\house_k_7_ruins_ep1.p3d",
-        "ca\structures_e\housel\house_l_1_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_end_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_main_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv2_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_hopper_ruins_ep1.p3d",
         "ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_switch_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_tunnel_ep1.p3d",
-        "ca\structures_e\ind\ind_shed\ind_shed_02_ep1.p3d",
-        "ca\structures_e\misc\misc_cables\misc_cable_ep1.p3d",
-        "ca\structures_e\misc\misc_powerline\powline_wire_ab_ep1.p3d",
-        "ca\structures_e\misc\misc_powerline\powlineb_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_5m_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_5m_ruins_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_pillar_ruins_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_1_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_1_ruins_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ruins_ep1.p3d",
-        "ca\wheeled\hmmwv_wrecked.p3d",
         "praa\praa_roads\bridges\praa_bridge_foot_none.p3d",
         "praa\praa_roads\bridges\praa_bridge_foot_start.p3d",
         "praa\praa_roads\roads\praa_map.road.p3d",
@@ -88,12 +48,6 @@ ALiVE_mapCompositionType = "Desert";
         "praa\praa_statics\furniture\mapimage.p3d",
         "praa\praa_statics\furniture\rubbishbox.p3d",
         "praa\praa_statics\furniture\trash.p3d",
-        "praa\praa_statics\furniture\trash2.p3d",
-        "praa\praa_statics\furniture\trash3.p3d",
-        "praa\praa_statics\furniture\trash4.p3d",
-        "praa\praa_statics\furniture\trash5.p3d",
-        "praa\praa_statics\furniture\trash6.p3d",
-        "praa\praa_statics\furniture\trash7.p3d",
         "praa\praa_statics\hoses\hose_ground.p3d",
         "praa\praa_statics\hoses\hose_wall.p3d",
         "praa\praa_statics\mil\barrier_long.p3d",
@@ -110,7 +64,6 @@ ALiVE_mapCompositionType = "Desert";
         "praa\praa_statics\mil\road_trafficcone.p3d",
         "praa\praa_statics\mil\t_barrier.p3d",
         "praa\praa_statics\mil\tx_barrier.p3d",
-        "praa\praa_statics\mil\tx_barrier_2.p3d",
         "praa\praa_statics\mil\tx_barrier_4.p3d",
         "praa\praa_statics\mil\tx_barrier_b.p3d",
         "praa\praa_statics\mil\tx_barrier_curve.p3d",
@@ -125,7 +78,6 @@ ALiVE_mapCompositionType = "Desert";
         "praa\praa_statics\poles\pole7m0.p3d",
         "praa\praa_statics\poles\pole8m0.p3d",
         "praa\praa_statics\poles\stake2m.p3d",
-        "praa\praa_statics\ramps\woodenramp1x3m90.p3d",
         "praa\praa_statics\steps\sidewalk.p3d",
         "praa\praa_statics\steps\stairs_timber_1_5x2m.p3d",
         "praa\praa_statics\steps\stairs_timber_1x2m.p3d",

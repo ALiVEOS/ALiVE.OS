@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: anim_helvantis_v2 (ALiVE 3 index v3.1, 2026-10-09)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: anim_helvantis_v2 (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-09", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,74 +30,20 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Woodland";
+[ALIVE_mapBounds, worldName, 10240] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "anim_helvantis_v2") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f\civ\belltowers\belltower_01_v2_f.p3d",
-        "a3\structures_f\ind\dieselpowerplant\dp_mainfactory_addon1_f.p3d",
-        "a3\structures_f\ind\dieselpowerplant\dp_mainfactory_addon2_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "a3\structures_f\naval\piers\pier_doubleside_f.p3d",
-        "a3\structures_f_bootcamp\ind\cargo\cargo20_vr_f.p3d",
         "anim_helvantis_v2\scorch\scorch.p3d",
-        "ca\buildings2\a_advertisingcolumn\a_advertcolumn.p3d",
-        "ca\buildings2\a_crane_02\crane_rails.p3d",
-        "ca\buildings2\a_crane_02\crane_rails_end.p3d",
         "ca\buildings2\ind_cementworks\ind_malykomin\ind_malykomin_ruins.p3d",
-        "ca\buildings2\ind_cementworks\ind_silomale\ind_silomale.p3d",
-        "ca\buildings2\ind_cementworks\ind_silovelke\ind_silovelke_02.p3d",
         "ca\buildings2\ind_pipeline\indpipe1\indpipe1_ul.p3d",
-        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
-        "ca\buildings2\misc_cargo\misc_cargo1e.p3d",
-        "ca\buildings2\misc_cargo\misc_cargo1f.p3d",
-        "ca\buildings2\misc_cargo\misc_cargo1g.p3d",
-        "ca\buildings2\misc_cargo\seacrate.p3d",
-        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
         "ca\buildings2\rail_house_01\rail_house_01_ruins.p3d",
         "ca\buildings2\shed_small\shed_m02.p3d",
-        "ca\buildings\kopa_1.p3d",
-        "ca\buildings\kopa_2.p3d",
-        "ca\buildings\kopa_3.p3d",
-        "ca\buildings\misc\plutek.p3d",
         "ca\buildings\misc\zed_civil.p3d",
-        "ca\buildings\misc\zed_dira_civil.p3d",
-        "ca\buildings\misc\zed_podplaz_civil.p3d",
         "ca\buildings\sara_domek_vilka.p3d",
         "ca\buildings\tents\stan.p3d",
         "ca\misc2\bagfenceround.p3d",
-        "ca\misc2\hbarrier5.p3d",
-        "ca\misc3\a_tent.p3d",
-        "ca\misc3\fort_bagfence_round.p3d",
-        "ca\misc\svodidla.p3d",
-        "ca\roads2\asf1_10 100.p3d",
-        "ca\roads2\asf1_10 50.p3d",
-        "ca\roads2\asf2_10 25.p3d",
-        "ca\roads2\asf2_10 50.p3d",
-        "ca\roads2\asf2_10 75.p3d",
-        "ca\structures\house\church_cross\church_cross_1.p3d",
-        "ca\structures\house\church_cross\church_cross_1a.p3d",
-        "ca\structures\ind_quarry\ind_hammermill.p3d",
-        "ca\structures\ind_sawmill\ind_sawmill_ruins.p3d",
-        "ca\structures\nav_pier\nav_pier_c_l10.p3d",
-        "ca\structures\rail\rail_loco\loco_742_blue.p3d",
-        "ca\structures\rail\rail_loco\loco_742_red.p3d",
-        "ca\structures\rail\rail_platform\rail_platform_cross.p3d",
-        "ca\structures\rail\rail_platform\rail_platform_segment.p3d",
-        "ca\structures\rail\rail_platform\rail_platform_start.p3d",
-        "ca\structures\rail\rail_station_big\rail_station_big_ruins.p3d",
-        "ca\structures\rail\rail_wagon\wagon_box.p3d",
-        "ca\structures\rail\rail_wagon\wagon_flat.p3d",
-        "ca\structures\rail\rail_wagon\wagon_tanker.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_main_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv2_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_hopper_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_main_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_tunnel_ep1.p3d",
-        "ca\structures_e\ind\ind_shed\ind_shed_02_ep1.p3d",
-        "ca\structures_e\misc\misc_billboards\billboard_3_ep1.p3d",
-        "ca\structures_e\misc\misc_cables\misc_cable_ep1.p3d",
-        "ca\structures_e\misc\misc_powerline\powline_wire_a_left_ep1.p3d",
-        "ca\structures_e\misc\misc_powerline\powlineb_ep1.p3d"
+        "ca\misc3\a_tent.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [

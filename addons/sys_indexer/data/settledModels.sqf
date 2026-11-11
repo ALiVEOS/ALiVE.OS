@@ -1,5 +1,5 @@
 // Generated 2026-11-11 from 176 terrain indexes in addons/main/static: every model at least two indexes list and
-// all of them categorise the same way (5498 models: 2521 categorised, 2977 blacklist only). The in-game indexer
+// all of them categorise the same way (5494 models: 2521 categorised, 2973 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
     ["a3\air_f_jets\plane_fighter_02\plane_fighter_02_wreck_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -1985,7 +1985,6 @@
     ["ca\buildings\kasna.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\komin.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["ca\buildings\kopa_1.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["ca\buildings\kopa_2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\kopa_3.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\kostel.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["ca\buildings\kostel3.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
@@ -2237,9 +2236,7 @@
     ["ca\misc_e\wf\wf_hq_m1130_cv_ep1.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_militaryHQBuildingTypes"]],
     ["ca\misc_e\wf\wf_uav_terminal_east_ep1.p3d", ["ALIVE_militaryBuildingTypes"]],
     ["ca\misc_e\wf\wf_vehicle_service_point_east_ep1.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["ca\misc_e\wreck_c130j.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc_e\wreck_c130j_ep1.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["ca\misc_e\wreck_c130j_ep1_dirt.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc_e\wreck_c130j_ep1_ruins.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\mp_armory\misc\info_board\info_board_ep1.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\mp_armory\misc\laptop\laptop.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -2449,7 +2446,6 @@
     ["ca\structures\rail\rail_platform\rail_platform_segment.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\structures\rail\rail_platform\rail_platform_start.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\structures\rail\rail_station_big\rail_station_big.p3d", ["ALIVE_civilianRailBuildingTypes"]],
-    ["ca\structures\rail\rail_station_big\rail_station_big_ruins.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\structures\rail\rail_wagon\wagon_box.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\structures\rail\rail_wagon\wagon_flat.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\structures\rail\rail_wagon\wagon_tanker.p3d", ["ALIVE_Indexing_Blacklist"]],
