@@ -10291,14 +10291,15 @@ switch(_operation) do {
                                     } forEach _groupProfile;
                                 } forEach _mechanisedProfiles;
 
+                            } else {
+                                // _transportGroups empty after faction + side lookup.
+                                // No air transport assets for mechanised slingload.
+                                // Do NOT downgrade _eventType -- motorised slingload helis may already
+                                // have been created. Only skip the mechanised slingload path.
+                                // (This sat on the outer check, so every road delivery with a mechanised group said it.)
+                                ["ML - HELI_INSERT mechanised slingload: faction=%1 side=%2 has no helicopter able to lift vehicles (none listed, or every one failed a lift this session; limitToFaction=%3). Mechanised groups will not be slingloaded. Event: %4.",
+                                    _eventFaction, _side, _limitTransportToFaction, _eventID] call ALiVE_fnc_dump;
                             };
-                        } else {
-                            // _transportGroups empty after faction + side lookup.
-                            // No air transport assets for mechanised slingload.
-                            // Do NOT downgrade _eventType -- motorised slingload helis may already
-                            // have been created. Only skip the mechanised slingload path.
-                            ["ML - HELI_INSERT mechanised slingload: faction=%1 side=%2 has no helicopter able to lift vehicles (none listed, or every one failed a lift this session; limitToFaction=%3). Mechanised groups will not be slingloaded. Event: %4.",
-                                _eventFaction, _side, _limitTransportToFaction, _eventID] call ALiVE_fnc_dump;
                         };
 
                         // plane
