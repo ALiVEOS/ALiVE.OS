@@ -33,7 +33,7 @@ class RscDisplayALiVESITREP
         class SITREP_MainTitle: SITREP_RscText
         {
             idc = 2;
-            text = "SITUATION REPORT (SITREP)"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_TITLE";
             x = 0.263812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.162713 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -43,20 +43,20 @@ class RscDisplayALiVESITREP
         {
             idc = 90010;
             action = "if !(isNil 'ALIVE_SYS_sitrep_mapStartMarker') then {deleteMarkerLocal ALIVE_SYS_sitrep_mapStartMarker;}; if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }";
-            text = "BACK"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_BACK";
             TABLET_KEY(TABLET_KEY_RX,2); // the painted key R3 (gui_grid.hpp)
         };
         class SITREP_Abort: SITREP_RscButton
         {
             idc = 3;
             action = "if !(isNil 'ALIVE_SYS_sitrep_mapStartMarker') then {deleteMarkerLocal ALIVE_SYS_sitrep_mapStartMarker;}; closeDialog 0";
-            text = "CANCEL"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_CANCEL";
             TABLET_KEY(TABLET_KEY_RX,3); // the painted key R4 (gui_grid.hpp)
         };
         class SITREP_sendButton: SITREP_RscButton
         {
             idc = 4;
-            text = "SEND SITREP"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_SEND";
             action = "call ALiVE_fnc_sitrepButtonAction";
             TABLET_KEY(TABLET_KEY_RX,0); // the painted key R1 (gui_grid.hpp)
         };
@@ -84,7 +84,7 @@ class RscDisplayALiVESITREP
             style = 1;
             idc = 1004;
 
-            text = "DTG:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_DTG";
             x = 0.437834 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.162713 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -110,7 +110,7 @@ class RscDisplayALiVESITREP
         {
             idc = 6;
 
-            text = "CALLSIGN:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_CALLSIGN";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.225979 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -127,7 +127,7 @@ class RscDisplayALiVESITREP
         {
             idc = 8;
 
-            text = "DATE/TIME:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_DATETIME";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.258982 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -145,7 +145,7 @@ class RscDisplayALiVESITREP
             idc = 10;
             style = 1;
 
-            text = "GRID:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_GRID";
             x = 0.427834 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.258982 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -161,7 +161,7 @@ class RscDisplayALiVESITREP
         class SITREP_EKIATEXT: SITREP_RscText
         {
             idc = 12;
-            text = "ENEMY KIA:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_EKIA";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.291984 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -178,7 +178,7 @@ class RscDisplayALiVESITREP
         {
             idc = 14;
 
-            text = "ENEMY STATE:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_ESTATE";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.35799 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.127817 * GUI_GRID_WAbs;
@@ -187,7 +187,7 @@ class RscDisplayALiVESITREP
         class CIV_TEXT: SITREP_RscText
         {
             idc = 18;
-            text = "CIVILIAN KIA:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_CKIA";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.324987 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.068 * GUI_GRID_WAbs;
@@ -196,7 +196,7 @@ class RscDisplayALiVESITREP
         {
             idc = 20;
 
-            text = "FRIENDLY KIA:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_FKIA";
             x = 0.427834 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.291984 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -206,7 +206,7 @@ class RscDisplayALiVESITREP
         {
             idc = 22;
 
-            text = "FRIENDLY WIA:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_FWIA";
             x = 0.417834 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.324987 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0780421 * GUI_GRID_WAbs;
@@ -216,7 +216,7 @@ class RscDisplayALiVESITREP
         {
             idc = 24;
 
-            text = "FRIENDLY STATE:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_FSTATE";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.467998 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.138318 * GUI_GRID_WAbs;
@@ -258,7 +258,7 @@ class RscDisplayALiVESITREP
         class SITREP_REMARKSTEXT: SITREP_RscText
         {
             idc = 32;
-            text = "REMARKS / INTEL / OTHER:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_REMARKS";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.578007 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.270421 * GUI_GRID_WAbs;
@@ -277,7 +277,7 @@ class RscDisplayALiVESITREP
         {
             idc = 33;
 
-            text = "DO NOT USE QUOTE MARKS IN TEXT BOXES"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_NOQUOTES";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.28826 * GUI_GRID_WAbs;
@@ -288,7 +288,7 @@ class RscDisplayALiVESITREP
             idc = 30;
             style = 1;
 
-            text = "AMMO:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_AMMO";
             x = 0.583011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.477998 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0570 * GUI_GRID_WAbs; // ends short of the dropdown
@@ -299,7 +299,7 @@ class RscDisplayALiVESITREP
             idc = 28;
             style = 1;
 
-            text = "CASUALTIES:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_CASUALTIES";
             x = 0.583011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.511001 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0570 * GUI_GRID_WAbs; // ends short of the dropdown
@@ -326,7 +326,7 @@ class RscDisplayALiVESITREP
             idc = 36;
             style = 1;
 
-            text = "VEHICLES:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_VEHICLES";
             x = 0.563011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.544004 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0770 * GUI_GRID_WAbs; // ends short of the dropdown
@@ -345,7 +345,7 @@ class RscDisplayALiVESITREP
             idc = 38;
             style = 1;
 
-            text = "COMBAT SPT:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_COMBATSPT";
             x = 0.563011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.577007 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0770 * GUI_GRID_WAbs; // ends short of the dropdown
@@ -362,7 +362,7 @@ class RscDisplayALiVESITREP
         class ALIVE_EYESTEXT: SITREP_RscText_Right
         {
             idc = 34;
-            text = "EYES ONLY:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_SITREP_UI_EYESONLY";
             style = 1;
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.742019 * GUI_GRID_HAbs + GUI_GRID_Y;

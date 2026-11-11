@@ -35,7 +35,7 @@ class RscDisplayALiVEPATROLREP
         class patrolrep_MainTitle: patrolrep_RscText
         {
             idc = 2;
-            text = "PATROL REPORT (PATROLREP)"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_TITLE";
             x = 0.263812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.162713 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.159596 * GUI_GRID_WAbs;
@@ -45,20 +45,20 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 90011;
             action = "deleteMarkerLocal ALIVE_SYS_patrolrep_mapStartMarker; deleteMarkerLocal ALIVE_SYS_patrolrep_mapEndMarker; if (isNil 'ALiVE_c2istar_fnc_backToMenu') then { closeDialog 0 } else { [] call ALiVE_c2istar_fnc_backToMenu }";
-            text = "BACK"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_BACK";
             TABLET_KEY(TABLET_KEY_RX,2); // the painted key R3 (gui_grid.hpp)
         };
         class patrolrep_Abort: patrolrep_RscButton
         {
             idc = 3;
             action = "deleteMarkerLocal ALIVE_SYS_patrolrep_mapStartMarker; deleteMarkerLocal ALIVE_SYS_patrolrep_mapEndMarker; closeDialog 0";
-            text = "CANCEL"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_CANCEL";
             TABLET_KEY(TABLET_KEY_RX,3); // the painted key R4 (gui_grid.hpp)
         };
         class patrolrep_sendButton: patrolrep_RscButton
         {
             idc = 4;
-            text = "SEND PATROLREP"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_SEND";
             action = "call ALiVE_fnc_patrolrepButtonAction";
             TABLET_KEY(TABLET_KEY_RX,0); // the painted key R1 (gui_grid.hpp)
         };
@@ -86,7 +86,7 @@ class RscDisplayALiVEPATROLREP
             style = 1;
             idc = 1004;
 
-            text = "DTG:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_DTG";
             x = 0.437834 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.162713 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -112,7 +112,7 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 6;
 
-            text = "CALLSIGN:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_CALLSIGN";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.225979 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -129,7 +129,7 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 8;
 
-            text = "START TIME:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_STARTTIME";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.258982 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -147,7 +147,7 @@ class RscDisplayALiVEPATROLREP
             idc = 10;
             style = 1;
 
-            text = "START GRID:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_STARTGRID";
             x = 0.427834 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.258982 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -164,7 +164,7 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 40;
 
-            text = "END TIME:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_ENDTIME";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.291984 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -180,7 +180,7 @@ class RscDisplayALiVEPATROLREP
         class patrolrep_ELOCTEXT: patrolrep_RscText_Right
         {
             idc = 12;
-            text = "END GRID:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_ENDGRID";
             x = 0.427834 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.291984 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -198,7 +198,7 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 14;
 
-            text = "PATROL COMPOSITION:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_COMPOSITION";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.35799 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.2 * GUI_GRID_WAbs;
@@ -207,7 +207,7 @@ class RscDisplayALiVEPATROLREP
         class TASK_TEXT: patrolrep_RscText
         {
             idc = 18;
-            text = "TASK SUMMARY:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_TASKSUMMARY";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.324987 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.088 * GUI_GRID_WAbs;
@@ -216,7 +216,7 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 20;
 
-            text = "SPOTREPS:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_SPOTREPS";
             x = 0.49 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.467998 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0680421 * GUI_GRID_WAbs;
@@ -226,7 +226,7 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 22;
 
-            text = "SITREPS:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_SITREPS";
             x = 0.49 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.35799 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0780421 * GUI_GRID_WAbs;
@@ -236,7 +236,7 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 24;
 
-            text = "ENEMY/BDA:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_ENEMYBDA";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.467998 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.138318 * GUI_GRID_WAbs;
@@ -285,7 +285,7 @@ class RscDisplayALiVEPATROLREP
         class patrolrep_RESULTSTEXT: patrolrep_RscText
         {
             idc = 32;
-            text = "RESULTS:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_RESULTS";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.578007 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.270421 * GUI_GRID_WAbs;
@@ -304,7 +304,7 @@ class RscDisplayALiVEPATROLREP
         {
             idc = 33;
 
-            text = "DO NOT USE QUOTE MARKS IN TEXT BOXES"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_NOQUOTES";
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.6 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.28826 * GUI_GRID_WAbs;
@@ -315,7 +315,7 @@ class RscDisplayALiVEPATROLREP
             idc = 30;
             style = 1;
 
-            text = "AMMO:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_AMMO";
             x = 0.583011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.477998 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0570 * GUI_GRID_WAbs; // ends short of the dropdown
@@ -326,7 +326,7 @@ class RscDisplayALiVEPATROLREP
             idc = 28;
             style = 1;
 
-            text = "CASUALTIES:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_CASUALTIES";
             x = 0.583011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.511001 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0570 * GUI_GRID_WAbs; // ends short of the dropdown
@@ -353,7 +353,7 @@ class RscDisplayALiVEPATROLREP
             idc = 36;
             style = 1;
 
-            text = "VEHICLES:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_VEHICLES";
             x = 0.563011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.544004 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0770 * GUI_GRID_WAbs; // ends short of the dropdown
@@ -372,7 +372,7 @@ class RscDisplayALiVEPATROLREP
             idc = 38;
             style = 1;
 
-            text = "COMBAT SPT:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_COMBATSPT";
             x = 0.563011 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.577007 * GUI_GRID_HAbs + GUI_GRID_Y;
             w = 0.0770 * GUI_GRID_WAbs; // ends short of the dropdown
@@ -389,7 +389,7 @@ class RscDisplayALiVEPATROLREP
         class ALIVE_EYESTEXT: patrolrep_RscText_Right
         {
             idc = 34;
-            text = "EYES ONLY:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_PATROLREP_UI_EYESONLY";
             style = 1;
             x = 0.283812 * GUI_GRID_WAbs + GUI_GRID_X;
             y = 0.742019 * GUI_GRID_HAbs + GUI_GRID_Y;

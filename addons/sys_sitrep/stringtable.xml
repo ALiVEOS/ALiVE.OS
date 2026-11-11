@@ -52,4 +52,193 @@
     <Chinesesimp>情况报告</Chinesesimp>
     <Spanish>SITREP</Spanish>
 </Key>
+<Key ID="STR_ALIVE_SITREP_UI_TITLE">
+    <English>SITUATION REPORT (SITREP)</English>
+    <Chinese>情況報告 (SITREP)</Chinese>
+    <Chinesesimp>情况报告 (SITREP)</Chinesesimp>
+    <Spanish>INFORME DE SITUACIÓN (SITREP)</Spanish>
+    <French>COMPTE RENDU DE SITUATION (SITREP)</French>
+    <Portuguese>RELATÓRIO DE SITUAÇÃO (SITREP)</Portuguese>
+    <Russian>ДОКЛАД ОБ ОБСТАНОВКЕ (SITREP)</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_BACK">
+    <English>BACK</English>
+    <Chinese>返回</Chinese>
+    <Chinesesimp>返回</Chinesesimp>
+    <Spanish>ATRÁS</Spanish>
+    <French>RETOUR</French>
+    <Portuguese>VOLTAR</Portuguese>
+    <Russian>НАЗАД</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_CANCEL">
+    <English>CANCEL</English>
+    <Chinese>取消</Chinese>
+    <Chinesesimp>取消</Chinesesimp>
+    <Spanish>CANCELAR</Spanish>
+    <French>ANNULER</French>
+    <Portuguese>CANCELAR</Portuguese>
+    <Russian>ОТМЕНА</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_SEND">
+    <English>SEND SITREP</English>
+    <Chinese>發送情況報告</Chinese>
+    <Chinesesimp>发送情况报告</Chinesesimp>
+    <Spanish>ENVIAR SITREP</Spanish>
+    <French>ENVOYER SITREP</French>
+    <Portuguese>ENVIAR SITREP</Portuguese>
+    <Russian>ОТПРАВИТЬ SITREP</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_DTG">
+    <English>DTG:</English>
+    <Chinese>日期時間組:</Chinese>
+    <Chinesesimp>日期时间组:</Chinesesimp>
+    <Spanish>GDH:</Spanish>
+    <French>GDH :</French>
+    <Portuguese>GDH:</Portuguese>
+    <Russian>ДВГ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_CALLSIGN">
+    <English>CALLSIGN:</English>
+    <Chinese>呼號:</Chinese>
+    <Chinesesimp>呼号:</Chinesesimp>
+    <Spanish>INDICATIVO:</Spanish>
+    <French>INDICATIF :</French>
+    <Portuguese>INDICATIVO:</Portuguese>
+    <Russian>ПОЗЫВНОЙ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_DATETIME">
+    <English>DATE/TIME:</English>
+    <Chinese>日期/時間:</Chinese>
+    <Chinesesimp>日期/时间:</Chinesesimp>
+    <Spanish>FECHA/HORA:</Spanish>
+    <French>DATE/HEURE :</French>
+    <Portuguese>DATA/HORA:</Portuguese>
+    <Russian>ДАТА/ВРЕМЯ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_GRID">
+    <English>GRID:</English>
+    <Chinese>座標:</Chinese>
+    <Chinesesimp>坐标:</Chinesesimp>
+    <Spanish>CUADRÍCULA:</Spanish>
+    <French>CARROYAGE :</French>
+    <Portuguese>QUADRÍCULA:</Portuguese>
+    <Russian>КВАДРАТ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_EKIA">
+    <English>ENEMY KIA:</English>
+    <Chinese>敵軍陣亡:</Chinese>
+    <Chinesesimp>敌军阵亡:</Chinesesimp>
+    <Spanish>ENEMIGOS MUERTOS:</Spanish>
+    <French>ENNEMIS TUÉS :</French>
+    <Portuguese>INIMIGOS MORTOS:</Portuguese>
+    <Russian>УБИТО ПРОТИВНИКОВ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_ESTATE">
+    <English>ENEMY STATE:</English>
+    <Chinese>敵軍狀態:</Chinese>
+    <Chinesesimp>敌军状态:</Chinesesimp>
+    <Spanish>ESTADO ENEMIGO:</Spanish>
+    <French>ÉTAT ENNEMI :</French>
+    <Portuguese>ESTADO INIMIGO:</Portuguese>
+    <Russian>СОСТОЯНИЕ ПРОТИВНИКА:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_CKIA">
+    <English>CIVILIAN KIA:</English>
+    <Chinese>平民死亡:</Chinese>
+    <Chinesesimp>平民死亡:</Chinesesimp>
+    <Spanish>CIVILES MUERTOS:</Spanish>
+    <French>CIVILS TUÉS :</French>
+    <Portuguese>CIVIS MORTOS:</Portuguese>
+    <Russian>ПОГИБЛО МИРНЫХ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_FKIA">
+    <English>FRIENDLY KIA:</English>
+    <Chinese>友軍陣亡:</Chinese>
+    <Chinesesimp>友军阵亡:</Chinesesimp>
+    <Spanish>PROPIOS MUERTOS:</Spanish>
+    <French>AMIS TUÉS :</French>
+    <Portuguese>ALIADOS MORTOS:</Portuguese>
+    <Russian>ПОТЕРИ УБИТЫМИ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_FWIA">
+    <English>FRIENDLY WIA:</English>
+    <Chinese>友軍受傷:</Chinese>
+    <Chinesesimp>友军受伤:</Chinesesimp>
+    <Spanish>PROPIOS HERIDOS:</Spanish>
+    <French>AMIS BLESSÉS :</French>
+    <Portuguese>ALIADOS FERIDOS:</Portuguese>
+    <Russian>ПОТЕРИ РАНЕНЫМИ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_FSTATE">
+    <English>FRIENDLY STATE:</English>
+    <Chinese>友軍狀態:</Chinese>
+    <Chinesesimp>友军状态:</Chinesesimp>
+    <Spanish>ESTADO PROPIO:</Spanish>
+    <French>ÉTAT AMI :</French>
+    <Portuguese>ESTADO ALIADO:</Portuguese>
+    <Russian>СОСТОЯНИЕ СВОИХ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_REMARKS">
+    <English>REMARKS / INTEL / OTHER:</English>
+    <Chinese>備註 / 情報 / 其他:</Chinese>
+    <Chinesesimp>备注 / 情报 / 其他:</Chinesesimp>
+    <Spanish>OBSERVACIONES / INTELIGENCIA / OTROS:</Spanish>
+    <French>REMARQUES / RENSEIGNEMENT / AUTRE :</French>
+    <Portuguese>OBSERVAÇÕES / INTELIGÊNCIA / OUTROS:</Portuguese>
+    <Russian>ПРИМЕЧАНИЯ / РАЗВЕДДАННЫЕ / ПРОЧЕЕ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_NOQUOTES">
+    <English>DO NOT USE QUOTE MARKS IN TEXT BOXES</English>
+    <Chinese>文字框中請勿使用引號</Chinese>
+    <Chinesesimp>文本框中请勿使用引号</Chinesesimp>
+    <Spanish>NO USES COMILLAS EN LOS CUADROS DE TEXTO</Spanish>
+    <French>N'UTILISEZ PAS DE GUILLEMETS DANS LES CHAMPS DE TEXTE</French>
+    <Portuguese>NÃO USE ASPAS NAS CAIXAS DE TEXTO</Portuguese>
+    <Russian>НЕ ИСПОЛЬЗУЙТЕ КАВЫЧКИ В ТЕКСТОВЫХ ПОЛЯХ</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_AMMO">
+    <English>AMMO:</English>
+    <Chinese>彈藥:</Chinese>
+    <Chinesesimp>弹药:</Chinesesimp>
+    <Spanish>MUNICIÓN:</Spanish>
+    <French>MUNITIONS :</French>
+    <Portuguese>MUNIÇÃO:</Portuguese>
+    <Russian>БОЕПРИПАСЫ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_CASUALTIES">
+    <English>CASUALTIES:</English>
+    <Chinese>傷亡:</Chinese>
+    <Chinesesimp>伤亡:</Chinesesimp>
+    <Spanish>BAJAS:</Spanish>
+    <French>PERTES :</French>
+    <Portuguese>BAIXAS:</Portuguese>
+    <Russian>ПОТЕРИ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_VEHICLES">
+    <English>VEHICLES:</English>
+    <Chinese>載具:</Chinese>
+    <Chinesesimp>载具:</Chinesesimp>
+    <Spanish>VEHÍCULOS:</Spanish>
+    <French>VÉHICULES :</French>
+    <Portuguese>VEÍCULOS:</Portuguese>
+    <Russian>ТЕХНИКА:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_COMBATSPT">
+    <English>COMBAT SPT:</English>
+    <Chinese>戰鬥支援:</Chinese>
+    <Chinesesimp>战斗支援:</Chinesesimp>
+    <Spanish>APOYO DE COMBATE:</Spanish>
+    <French>APPUI FEU :</French>
+    <Portuguese>APOIO DE COMBATE:</Portuguese>
+    <Russian>ОГНЕВАЯ ПОДДЕРЖКА:</Russian>
+</Key>
+<Key ID="STR_ALIVE_SITREP_UI_EYESONLY">
+    <English>EYES ONLY:</English>
+    <Chinese>僅限查閱:</Chinese>
+    <Chinesesimp>仅限查阅:</Chinesesimp>
+    <Spanish>SOLO PARA:</Spanish>
+    <French>DIFFUSION RESTREINTE :</French>
+    <Portuguese>SOMENTE PARA:</Portuguese>
+    <Russian>ТОЛЬКО ДЛЯ:</Russian>
+</Key>
 </Container></Package></Project>

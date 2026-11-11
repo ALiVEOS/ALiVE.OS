@@ -52,4 +52,202 @@
     <Chinesesimp>巡逻人员</Chinesesimp>
     <Spanish>patrolrep</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_TITLE">
+    <English>PATROL REPORT (PATROLREP)</English>
+    <Chinese>巡邏報告 (PATROLREP)</Chinese>
+    <Chinesesimp>巡逻报告 (PATROLREP)</Chinesesimp>
+    <Spanish>INFORME DE PATRULLA (PATROLREP)</Spanish>
+    <French>COMPTE RENDU DE PATROUILLE (PATROLREP)</French>
+    <Portuguese>RELATÓRIO DE PATRULHA (PATROLREP)</Portuguese>
+    <Russian>ДОКЛАД О ПАТРУЛИРОВАНИИ (PATROLREP)</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_BACK">
+    <English>BACK</English>
+    <Chinese>返回</Chinese>
+    <Chinesesimp>返回</Chinesesimp>
+    <Spanish>ATRÁS</Spanish>
+    <French>RETOUR</French>
+    <Portuguese>VOLTAR</Portuguese>
+    <Russian>НАЗАД</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_CANCEL">
+    <English>CANCEL</English>
+    <Chinese>取消</Chinese>
+    <Chinesesimp>取消</Chinesesimp>
+    <Spanish>CANCELAR</Spanish>
+    <French>ANNULER</French>
+    <Portuguese>CANCELAR</Portuguese>
+    <Russian>ОТМЕНА</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_SEND">
+    <English>SEND PATROLREP</English>
+    <Chinese>發送巡邏報告</Chinese>
+    <Chinesesimp>发送巡逻报告</Chinesesimp>
+    <Spanish>ENVIAR PATROLREP</Spanish>
+    <French>ENVOYER PATROLREP</French>
+    <Portuguese>ENVIAR PATROLREP</Portuguese>
+    <Russian>ОТПРАВИТЬ PATROLREP</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_DTG">
+    <English>DTG:</English>
+    <Chinese>日期時間組:</Chinese>
+    <Chinesesimp>日期时间组:</Chinesesimp>
+    <Spanish>GDH:</Spanish>
+    <French>GDH :</French>
+    <Portuguese>GDH:</Portuguese>
+    <Russian>ДВГ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_CALLSIGN">
+    <English>CALLSIGN:</English>
+    <Chinese>呼號:</Chinese>
+    <Chinesesimp>呼号:</Chinesesimp>
+    <Spanish>INDICATIVO:</Spanish>
+    <French>INDICATIF :</French>
+    <Portuguese>INDICATIVO:</Portuguese>
+    <Russian>ПОЗЫВНОЙ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_STARTTIME">
+    <English>START TIME:</English>
+    <Chinese>開始時間:</Chinese>
+    <Chinesesimp>开始时间:</Chinesesimp>
+    <Spanish>HORA DE INICIO:</Spanish>
+    <French>HEURE DE DÉBUT :</French>
+    <Portuguese>HORA DE INÍCIO:</Portuguese>
+    <Russian>ВРЕМЯ НАЧАЛА:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_STARTGRID">
+    <English>START GRID:</English>
+    <Chinese>起點座標:</Chinese>
+    <Chinesesimp>起点坐标:</Chinesesimp>
+    <Spanish>CUADRÍCULA DE INICIO:</Spanish>
+    <French>CARROYAGE DE DÉPART :</French>
+    <Portuguese>QUADRÍCULA DE INÍCIO:</Portuguese>
+    <Russian>КВАДРАТ НАЧАЛА:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_ENDTIME">
+    <English>END TIME:</English>
+    <Chinese>結束時間:</Chinese>
+    <Chinesesimp>结束时间:</Chinesesimp>
+    <Spanish>HORA DE FIN:</Spanish>
+    <French>HEURE DE FIN :</French>
+    <Portuguese>HORA DE TÉRMINO:</Portuguese>
+    <Russian>ВРЕМЯ ОКОНЧАНИЯ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_ENDGRID">
+    <English>END GRID:</English>
+    <Chinese>終點座標:</Chinese>
+    <Chinesesimp>终点坐标:</Chinesesimp>
+    <Spanish>CUADRÍCULA DE FIN:</Spanish>
+    <French>CARROYAGE D'ARRIVÉE :</French>
+    <Portuguese>QUADRÍCULA DE TÉRMINO:</Portuguese>
+    <Russian>КВАДРАТ ОКОНЧАНИЯ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_COMPOSITION">
+    <English>PATROL COMPOSITION:</English>
+    <Chinese>巡邏編組:</Chinese>
+    <Chinesesimp>巡逻编组:</Chinesesimp>
+    <Spanish>COMPOSICIÓN DE LA PATRULLA:</Spanish>
+    <French>COMPOSITION DE LA PATROUILLE :</French>
+    <Portuguese>COMPOSIÇÃO DA PATRULHA:</Portuguese>
+    <Russian>СОСТАВ ПАТРУЛЯ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_TASKSUMMARY">
+    <English>TASK SUMMARY:</English>
+    <Chinese>任務摘要:</Chinese>
+    <Chinesesimp>任务摘要:</Chinesesimp>
+    <Spanish>RESUMEN DE LA TAREA:</Spanish>
+    <French>RÉSUMÉ DE LA MISSION :</French>
+    <Portuguese>RESUMO DA TAREFA:</Portuguese>
+    <Russian>КРАТКО О ЗАДАЧЕ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_SPOTREPS">
+    <English>SPOTREPS:</English>
+    <Chinese>即時報告:</Chinese>
+    <Chinesesimp>即时报告:</Chinesesimp>
+    <Spanish>SPOTREPS:</Spanish>
+    <French>SPOTREPS :</French>
+    <Portuguese>SPOTREPS:</Portuguese>
+    <Russian>SPOTREP:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_SITREPS">
+    <English>SITREPS:</English>
+    <Chinese>情況報告:</Chinese>
+    <Chinesesimp>情况报告:</Chinesesimp>
+    <Spanish>SITREPS:</Spanish>
+    <French>SITREPS :</French>
+    <Portuguese>SITREPS:</Portuguese>
+    <Russian>SITREP:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_ENEMYBDA">
+    <English>ENEMY/BDA:</English>
+    <Chinese>敵軍/戰損評估:</Chinese>
+    <Chinesesimp>敌军/战损评估:</Chinesesimp>
+    <Spanish>ENEMIGO/EVALUACIÓN DE DAÑOS:</Spanish>
+    <French>ENNEMI/ÉVALUATION DES DÉGÂTS :</French>
+    <Portuguese>INIMIGO/AVALIAÇÃO DE DANOS:</Portuguese>
+    <Russian>ПРОТИВНИК/ОЦЕНКА УЩЕРБА:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_RESULTS">
+    <English>RESULTS:</English>
+    <Chinese>結果:</Chinese>
+    <Chinesesimp>结果:</Chinesesimp>
+    <Spanish>RESULTADOS:</Spanish>
+    <French>RÉSULTATS :</French>
+    <Portuguese>RESULTADOS:</Portuguese>
+    <Russian>РЕЗУЛЬТАТЫ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_NOQUOTES">
+    <English>DO NOT USE QUOTE MARKS IN TEXT BOXES</English>
+    <Chinese>文字框中請勿使用引號</Chinese>
+    <Chinesesimp>文本框中请勿使用引号</Chinesesimp>
+    <Spanish>NO USES COMILLAS EN LOS CUADROS DE TEXTO</Spanish>
+    <French>N'UTILISEZ PAS DE GUILLEMETS DANS LES CHAMPS DE TEXTE</French>
+    <Portuguese>NÃO USE ASPAS NAS CAIXAS DE TEXTO</Portuguese>
+    <Russian>НЕ ИСПОЛЬЗУЙТЕ КАВЫЧКИ В ТЕКСТОВЫХ ПОЛЯХ</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_AMMO">
+    <English>AMMO:</English>
+    <Chinese>彈藥:</Chinese>
+    <Chinesesimp>弹药:</Chinesesimp>
+    <Spanish>MUNICIÓN:</Spanish>
+    <French>MUNITIONS :</French>
+    <Portuguese>MUNIÇÃO:</Portuguese>
+    <Russian>БОЕПРИПАСЫ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_CASUALTIES">
+    <English>CASUALTIES:</English>
+    <Chinese>傷亡:</Chinese>
+    <Chinesesimp>伤亡:</Chinesesimp>
+    <Spanish>BAJAS:</Spanish>
+    <French>PERTES :</French>
+    <Portuguese>BAIXAS:</Portuguese>
+    <Russian>ПОТЕРИ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_VEHICLES">
+    <English>VEHICLES:</English>
+    <Chinese>載具:</Chinese>
+    <Chinesesimp>载具:</Chinesesimp>
+    <Spanish>VEHÍCULOS:</Spanish>
+    <French>VÉHICULES :</French>
+    <Portuguese>VEÍCULOS:</Portuguese>
+    <Russian>ТЕХНИКА:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_COMBATSPT">
+    <English>COMBAT SPT:</English>
+    <Chinese>戰鬥支援:</Chinese>
+    <Chinesesimp>战斗支援:</Chinesesimp>
+    <Spanish>APOYO DE COMBATE:</Spanish>
+    <French>APPUI FEU :</French>
+    <Portuguese>APOIO DE COMBATE:</Portuguese>
+    <Russian>ОГНЕВАЯ ПОДДЕРЖКА:</Russian>
+</Key>
+<Key ID="STR_ALIVE_PATROLREP_UI_EYESONLY">
+    <English>EYES ONLY:</English>
+    <Chinese>僅限查閱:</Chinese>
+    <Chinesesimp>仅限查阅:</Chinesesimp>
+    <Spanish>SOLO PARA:</Spanish>
+    <French>DIFFUSION RESTREINTE :</French>
+    <Portuguese>SOMENTE PARA:</Portuguese>
+    <Russian>ТОЛЬКО ДЛЯ:</Russian>
+</Key>
 </Container></Package></Project>

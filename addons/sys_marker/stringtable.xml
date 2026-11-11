@@ -52,4 +52,121 @@
     <Chinesesimp>spotrep</Chinesesimp>
     <Spanish>spotrep</Spanish>
 </Key>
+<Key ID="STR_ALIVE_MARKER_UI_ADD">
+    <English>ADD spotrep</English>
+    <Chinese>新增即時報告</Chinese>
+    <Chinesesimp>添加即时报告</Chinesesimp>
+    <Spanish>AÑADIR spotrep</Spanish>
+    <French>AJOUTER spotrep</French>
+    <Portuguese>ADICIONAR spotrep</Portuguese>
+    <Russian>ДОБАВИТЬ spotrep</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_TITLE">
+    <English>SPOTREP</English>
+    <Chinese>即時報告 (SPOTREP)</Chinese>
+    <Chinesesimp>即时报告 (SPOTREP)</Chinesesimp>
+    <Spanish>SPOTREP</Spanish>
+    <French>SPOTREP</French>
+    <Portuguese>SPOTREP</Portuguese>
+    <Russian>SPOTREP</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_DTG">
+    <English>DTG:</English>
+    <Chinese>日期時間組:</Chinese>
+    <Chinesesimp>日期时间组:</Chinesesimp>
+    <Spanish>GDH:</Spanish>
+    <French>GDH :</French>
+    <Portuguese>GDH:</Portuguese>
+    <Russian>ДВГ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_LOC">
+    <English>LOC:</English>
+    <Chinese>位置:</Chinese>
+    <Chinesesimp>位置:</Chinesesimp>
+    <Spanish>UBIC.:</Spanish>
+    <French>POS. :</French>
+    <Portuguese>LOC.:</Portuguese>
+    <Russian>МЕСТО:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_ENEMY">
+    <English>ENEMY</English>
+    <Chinese>敵軍</Chinese>
+    <Chinesesimp>敌军</Chinesesimp>
+    <Spanish>ENEMIGO</Spanish>
+    <French>ENNEMI</French>
+    <Portuguese>INIMIGO</Portuguese>
+    <Russian>ПРОТИВНИК</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_FACTION">
+    <English>FACTION:</English>
+    <Chinese>陣營:</Chinese>
+    <Chinesesimp>阵营:</Chinesesimp>
+    <Spanish>FACCIÓN:</Spanish>
+    <French>FACTION :</French>
+    <Portuguese>FACÇÃO:</Portuguese>
+    <Russian>ФРАКЦИЯ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_SIZE">
+    <English>SIZE:</English>
+    <Chinese>規模:</Chinese>
+    <Chinesesimp>规模:</Chinesesimp>
+    <Spanish>TAMAÑO:</Spanish>
+    <French>EFFECTIF :</French>
+    <Portuguese>TAMANHO:</Portuguese>
+    <Russian>СИЛЫ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_TYPE">
+    <English>TYPE:</English>
+    <Chinese>類型:</Chinese>
+    <Chinesesimp>类型:</Chinesesimp>
+    <Spanish>TIPO:</Spanish>
+    <French>TYPE :</French>
+    <Portuguese>TIPO:</Portuguese>
+    <Russian>ТИП:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_ACTIVITY">
+    <English>ACTIVITY:</English>
+    <Chinese>活動:</Chinese>
+    <Chinesesimp>活动:</Chinesesimp>
+    <Spanish>ACTIVIDAD:</Spanish>
+    <French>ACTIVITÉ :</French>
+    <Portuguese>ATIVIDADE:</Portuguese>
+    <Russian>ДЕЙСТВИЯ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_FRIENDLY">
+    <English>FRIENDLY</English>
+    <Chinese>友軍</Chinese>
+    <Chinesesimp>友军</Chinesesimp>
+    <Spanish>PROPIO</Spanish>
+    <French>AMI</French>
+    <Portuguese>ALIADO</Portuguese>
+    <Russian>СВОИ</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_ACTIONS">
+    <English>ACTIONS:</English>
+    <Chinese>行動:</Chinese>
+    <Chinesesimp>行动:</Chinesesimp>
+    <Spanish>ACCIONES:</Spanish>
+    <French>ACTIONS :</French>
+    <Portuguese>AÇÕES:</Portuguese>
+    <Russian>МЕРЫ:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_NOSPECIAL">
+    <English>Do not use special characters in your text!</English>
+    <Chinese>文字中請勿使用特殊字元!</Chinese>
+    <Chinesesimp>文本中请勿使用特殊字符!</Chinesesimp>
+    <Spanish>¡No uses caracteres especiales en el texto!</Spanish>
+    <French>N'utilisez pas de caractères spéciaux dans votre texte !</French>
+    <Portuguese>Não use caracteres especiais no texto!</Portuguese>
+    <Russian>Не используйте специальные символы в тексте!</Russian>
+</Key>
+<Key ID="STR_ALIVE_MARKER_UI_EYESONLY">
+    <English>EYES ONLY:</English>
+    <Chinese>僅限查閱:</Chinese>
+    <Chinesesimp>仅限查阅:</Chinesesimp>
+    <Spanish>SOLO PARA:</Spanish>
+    <French>DIFFUSION RESTREINTE :</French>
+    <Portuguese>SOMENTE PARA:</Portuguese>
+    <Russian>ТОЛЬКО ДЛЯ:</Russian>
+</Key>
 </Container></Package></Project>

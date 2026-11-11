@@ -356,7 +356,7 @@ class RscDisplayALiVEAdvancedMarker
         class ALIVE_spotrepCHECKTEXT: ALIVE_TextName
         {
             idc = 801198;
-            text = "ADD spotrep"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_ADD";
             x = "7.3 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "21.1 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -374,7 +374,7 @@ class RscDisplayALiVEAdvancedMarker
         class ALIVE_spotrepTEXT: ALIVE_TextShape
         {
             idc = 801007;
-            text = "SPOTREP"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_TITLE";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "2.5 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -384,7 +384,7 @@ class RscDisplayALiVEAdvancedMarker
         {
             idc = 801008;
             style = 1;
-            text = "DTG:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_DTG";
             x = "22.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "2.5 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -437,7 +437,7 @@ class RscDisplayALiVEAdvancedMarker
         {
             idc = 801010;
             style = 1;
-            text = "LOC:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_LOC";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "6.4 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -454,7 +454,7 @@ class RscDisplayALiVEAdvancedMarker
         class ALIVE_ENEMYTEXT: ALIVE_TextShape
         {
             idc = 801012;
-            text = "ENEMY"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_ENEMY";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "7.7 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -464,7 +464,7 @@ class RscDisplayALiVEAdvancedMarker
         {
             idc = 801022;
             style = 1;
-            text = "FACTION:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_FACTION";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "8.9 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -482,7 +482,7 @@ class RscDisplayALiVEAdvancedMarker
         {
             idc = 801023;
             style = 1;
-            text = "SIZE:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_SIZE";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "10 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -500,7 +500,7 @@ class RscDisplayALiVEAdvancedMarker
         {
             idc = 801021;
             style = 1;
-            text = "TYPE:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_TYPE";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "11.1 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -518,7 +518,7 @@ class RscDisplayALiVEAdvancedMarker
         {
             idc = 801015;
             style = 1;
-            text = "ACTIVITY:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_ACTIVITY";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "12.2 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -535,7 +535,7 @@ class RscDisplayALiVEAdvancedMarker
         class ALIVE_FRIENDLYTEXT: ALIVE_TextShape
         {
             idc = 801025;
-            text = "FRIENDLY"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_FRIENDLY";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "13.5 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -545,7 +545,7 @@ class RscDisplayALiVEAdvancedMarker
         {
             idc = 801026;
             style = 1;
-            text = "ACTIONS:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_ACTIONS";
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "14.6 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "5.5 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -563,7 +563,7 @@ class RscDisplayALiVEAdvancedMarker
         {
             idc = 801016;
             style = 24;
-            text = "Do not use special characters in your text!"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_NOSPECIAL";
             x = "14.35 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "15.7 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
             w = "18 *                     (            ((safezoneW / safezoneH) min 1.2) / 40)";
@@ -572,7 +572,7 @@ class RscDisplayALiVEAdvancedMarker
         class ALIVE_EYESTEXT: ALIVE_TextName
         {
             idc = 801017;
-            text = "EYES ONLY:"; //--- ToDo: Localize;
+            text = "$STR_ALIVE_MARKER_UI_EYESONLY";
             style = 1;
             x = "14.1 *                     (            ((safezoneW / safezoneH) min 1.2) / 40) +         (safezoneX + (safezoneW -                     ((safezoneW / safezoneH) min 1.2))/2)";
             y = "20.85 *                     (            (            ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) +         (safezoneY + (safezoneH -                     (            ((safezoneW / safezoneH) min 1.2) / 1.2))/2)";
