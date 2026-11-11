@@ -176,6 +176,32 @@ switch (_taskState) do {
             [true, _players, _mode param [1, ""]]
         };
 
+        // [ok, players, enemyFaction, taskSideText] for a downed pilot of this side: a rescue for his own
+        // side, or with C2ISTAR's Capture Enemy Pilots, a capture for a hostile side when his own can't
+        // take a rescue (AshTray on Discord)
+        private _fnc_offerGate = {
+            params ["_sideText"];
+
+            private _gate = [_sideText] call _fnc_sideGate;
+            if (_gate select 0) exitWith {_gate + [_sideText]};
+            if !((missionNamespace getVariable ["ALIVE_taskCsarCaptureEnemy", false]) isEqualTo true) exitWith {_gate + [""]};
+
+            private _own = [_sideText] call ALIVE_fnc_sideTextToObject;
+            private _found = _gate + [""];
+            {
+                private _other = [_x] call _fnc_sideText;
+                if (_other != _sideText && {(_x getFriend _own) < 0.6}) then {
+                    private _otherGate = [_other] call _fnc_sideGate;
+                    if (_otherGate select 0) then {
+                        _found = _otherGate + [_other];
+                        break;
+                    };
+                };
+            } forEach [west, east, resistance];
+
+            _found
+        };
+
         // [allowed, chance] for an air commander's aircraft: its own task switch
         // and its chance of rescue, read off the module flying that faction.
         private _fnc_atoTerms = {
@@ -278,10 +304,11 @@ switch (_taskState) do {
             _seat params ["", "_hullKey", "_class", "_tail"];
 
             private _sideText = [side group _unit] call _fnc_sideText;
-            if !(([_sideText] call _fnc_sideGate) select 0) exitWith {};
+            private _offerGate = [_sideText] call _fnc_offerGate;
+            if !(_offerGate select 0) exitWith {};
 
-            // The air commander's own aircraft keep its chance of rescue.
-            private _isATO = (_tail isEqualType "" && {_tail != ""}) || {_unit getVariable ["ALiVE_mil_ato_crew", false]};
+            // The air commander's own aircraft keep its chance of rescue; a capture has no such roll.
+            private _isATO = ((_offerGate select 3) == _sideText) && {(_tail isEqualType "" && {_tail != ""}) || {_unit getVariable ["ALiVE_mil_ato_crew", false]}};
             if (_isATO) then {
                 private _terms = [faction _unit, _sideText] call _fnc_atoTerms;
                 if (!(_terms select 0) || {(random 1) >= (_terms select 1)}) then {_isATO = "refused"};
@@ -308,8 +335,8 @@ switch (_taskState) do {
             params ["_entry"];
             _entry params ["_unit", "", "_hullKey", "_class", "", "_sideText"];
 
-            if !(([_sideText] call _fnc_sideGate) select 0) exitWith {
-                [_unit, "nobody on his side to rescue him"] call _fnc_dropPilot;
+            if !(([_sideText] call _fnc_offerGate) select 0) exitWith {
+                [_unit, "nobody on his side to rescue him or on the other side to capture him"] call _fnc_dropPilot;
             };
 
             // Down still strapped in his seat or chute: out of it first.
@@ -433,9 +460,11 @@ switch (_taskState) do {
             _handled append _group;
 
             private _crewAirborne = (ALiVE_c2istar_csarTracked findIf {(_x select 2) == _hullKey}) > -1;
-            private _open = ALiVE_c2istar_csarOpen getOrDefault [_sideText, ["", -1e9]];
+            private _gate = [_sideText] call _fnc_offerGate;
+            // the side the task goes to: his own for a rescue, the other for a capture
+            private _taskSideText = _gate select 3;
+            private _open = ALiVE_c2istar_csarOpen getOrDefault [_taskSideText, ["", -1e9]];
             private _busy = ((_open select 0) in _taskKeys) || {(_now - (_open select 1)) < CSAR_OFFER_GRACE};
-            private _gate = [_sideText] call _fnc_sideGate;
 
             private _giveUp = _autoOff || {(_now - _landedAt) > _timeout};
             private _wait = (_crewAirborne && {(_now - _landedAt) < CSAR_CREW_WINDOW}) || {_busy} || {!(_gate select 0)};
@@ -449,13 +478,26 @@ switch (_taskState) do {
                     _waiting append (ALiVE_c2istar_csarLanded select {(_x select 0) in _group});
                 } else {
                     ALiVE_c2istar_csarCount = ALiVE_c2istar_csarCount + 1;
-                    private _rootID = format ["CSAR_%1_%2_%3", _sideText, floor _now, ALiVE_c2istar_csarCount];
+                    private _rootID = format ["CSAR_%1_%2_%3", _taskSideText, floor _now, ALiVE_c2istar_csarCount];
                     private _netIDs = _group apply {_x call BIS_fnc_netId};
+
+                    // a capture is the capturing side's task, in a player's faction from that side
+                    private _taskFaction = faction _leader;
+                    if (_taskSideText != _sideText) then {
+                        private _taskSideObj = [_taskSideText] call ALIVE_fnc_sideTextToObject;
+                        private _players = allPlayers select {(side group _x) == _taskSideObj && {!(_x isKindOf "HeadlessClient_F")}};
+                        _taskFaction = if (_players isEqualTo []) then {
+                            // only a test side has nobody on it: any faction of that side
+                            private _sideNo = [_taskSideObj] call ALIVE_fnc_sideObjectToNumber;
+                            private _cfg = (format ["getNumber (_x >> 'side') == %1", _sideNo]) configClasses (configFile >> "CfgFactionClasses");
+                            if (_cfg isEqualTo []) then {""} else {configName (_cfg select 0)}
+                        } else {faction (_players select 0)};
+                    };
 
                     { _x setVariable ["ALIVE_csarTaskID", _rootID, true]; } forEach _group;
 
                     private _taskData = [
-                        _rootID, "C2ISTAR", _sideText, faction _leader, "CSAR", "NULL",
+                        _rootID, "C2ISTAR", _taskSideText, _taskFaction, "CSAR", "NULL",
                         getPosATL _leader, _gate select 1, _gate select 2, "Y", "Side",
                         [_netIDs, _hullKey]
                     ];
@@ -463,10 +505,10 @@ switch (_taskState) do {
                     private _event = ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event;
                     [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
 
-                    ALiVE_c2istar_csarOpen set [_sideText, [_rootID, _now]];
+                    ALiVE_c2istar_csarOpen set [_taskSideText, [_rootID, _now]];
                     { ALiVE_c2istar_csarOffered pushBack [_x, _rootID, _now]; } forEach _group;
 
-                    ["C2ISTAR - Task CSAR - rescue %1 offered to %2 for %3 (%4)", _rootID, _sideText, _group, _class] call ALiVE_fnc_dump;
+                    ["C2ISTAR - Task CSAR - %1 %2 offered to %3 for %4 (%5)", ["capture", "rescue"] select (_taskSideText == _sideText), _rootID, _taskSideText, _group, _class] call ALiVE_fnc_dump;
                 };
             };
         } forEach ALiVE_c2istar_csarLanded;
@@ -628,6 +670,9 @@ switch (_taskState) do {
             };
 
             { _unit enableAI _x; } forEach ["AUTOTARGET", "TARGET", "FSM", "MOVE", "PATH", "AUTOCOMBAT"];
+            // A detained enemy pilot is a prisoner: no weapons. Done here because removeAllWeapons only
+            // works where he is local, and he only becomes the players' a moment after he joins them.
+            if ((_unit getVariable ["ALIVE_csarForSide", ""]) != "") then { removeAllWeapons _unit };
             _unit setCaptive false;
             _unit setUnitPos "AUTO";
             // He still has the behaviour his aircraft's group flew with, which is CARELESS for
@@ -779,6 +824,19 @@ switch (_taskState) do {
         private _leader = _pilots select 0;
         private _targetPosition = getPosATL _leader;
 
+        // An enemy pilot: the same stages, worded as a capture, and taken with a Detain action
+        private _capture = ([side group _leader] call _fnc_sideText) != _taskSide;
+        if (_capture) then {
+            if !("Capture" in (_dialogOption select 1)) exitWith {_capture = "no dialog"};
+            {
+                _x params ["_stage", "_from"];
+                [_dialogOption, _stage, +([_dialogOption, _from] call ALIVE_fnc_hashGet)] call ALIVE_fnc_hashSet;
+            } forEach [["Parent", "CaptureParent"], ["Rescue", "Capture"], ["Return", "CaptureReturn"]];
+        };
+        if (_capture isEqualTo "no dialog") exitWith {
+            ["C2ISTAR - Task CSAR - %1: an enemy pilot, but no Capture dialog in the task data", _taskID] call ALiVE_fnc_Dump;
+        };
+
         // Return location: first try the friendly side's OPCOM main HQ
         // (the OPCOM module's Eden placement position). When no friendly
         // OPCOM is placed, fall back to the legacy friendly-cluster ->
@@ -841,7 +899,7 @@ switch (_taskState) do {
         // when the task data has the stage (an older Tasks.hpp may not)
         private _wreck = if (_wreckNetID isEqualType "" && {_wreckNetID != ""}) then {_wreckNetID call BIS_fnc_objectFromNetId} else {objNull};
         private _crashFirst = (missionNamespace getVariable ["ALIVE_taskCsarCrashFirst", false]) isEqualTo true
-            && {!isNull _wreck} && {!alive _wreck} && {"Wreck" in (_dialogOption select 1)};
+            && {!_capture} && {!isNull _wreck} && {!alive _wreck} && {"Wreck" in (_dialogOption select 1)};
         private _crashPosition = if (_crashFirst) then {getPosATL _wreck} else {[]};
 
         // Rescue
@@ -955,6 +1013,7 @@ switch (_taskState) do {
         [_taskParams,"returnID",_newTaskID] call ALIVE_fnc_hashSet;
         [_taskParams,"crashPosition",_crashPosition] call ALIVE_fnc_hashSet;
         [_taskParams,"searchCentre",_newTaskPosition] call ALIVE_fnc_hashSet;
+        [_taskParams,"capture",_capture] call ALIVE_fnc_hashSet;
 
         // The pilots belong to this task now, and carry the hold action that
         // hands them to whoever reaches them. Keyed to the pilot, so it goes
@@ -962,13 +1021,16 @@ switch (_taskState) do {
         {
             _x setVariable ["ALIVE_csarTaskID", _taskID, true];
             _x setVariable ["ALIVE_csarLive", true];
+            // the side that may detain him; empty for a rescue
+            _x setVariable ["ALIVE_csarForSide", ["", _taskSide] select _capture, true];
 
             [
                 _x,
-                format ["Rescue %1", name _x],
+                format [["Rescue %1", "Detain %1"] select _capture, name _x],
                 "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
                 "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                "_this distance _target < 3 && {alive _target} && {!(_target getVariable ['ALIVE_csarRescued', false])} && {((side group _this) getFriend (side group _target)) >= 0.6}",
+                ["_this distance _target < 3 && {alive _target} && {!(_target getVariable ['ALIVE_csarRescued', false])} && {((side group _this) getFriend (side group _target)) >= 0.6}",
+                 "_this distance _target < 3 && {alive _target} && {!(_target getVariable ['ALIVE_csarRescued', false])} && {(str side group _this) == (_target getVariable ['ALIVE_csarForSide', ''])}"] select _capture,
                 "_caller distance _target < 3",
                 {},
                 {},
@@ -979,13 +1041,19 @@ switch (_taskState) do {
 
                     _target setVariable ["ALIVE_csarRescued", true, true];
                     _target setVariable ["ALIVE_csarHeld", false, true];
+                    // a prisoner is disarmed by pilotRelease, once he is local to the group that took him
+                    private _prisoner = (_target getVariable ["ALIVE_csarForSide", ""]) != "";
                     // A pilot often outranks the players; keep their leader.
                     private _prevLeader = leader group _caller;
                     [_target] joinSilent (group _caller);
                     [group _caller, _prevLeader] remoteExecCall ["selectLeader", _prevLeader];
                     ["pilotRelease", "", [_target], [], false] call ALIVE_fnc_taskCSAR;
 
-                    ["Rescue", format ["You have rescued %1!", name _target]] call ALIVE_fnc_taskSubtitle;
+                    if (_prisoner) then {
+                        ["Capture", format ["You have detained %1!", name _target]] call ALIVE_fnc_taskSubtitle;
+                    } else {
+                        ["Rescue", format ["You have rescued %1!", name _target]] call ALIVE_fnc_taskSubtitle;
+                    };
                 },
                 {},
                 [],

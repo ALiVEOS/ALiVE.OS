@@ -2203,6 +2203,10 @@ if (isServer) then {
         private _csarCrashFirst = _logic getVariable ["csarCrashFirst", "false"];
         if (_csarCrashFirst isEqualType "") then { _csarCrashFirst = (toLower _csarCrashFirst) == "true" };
         missionNamespace setVariable ["ALIVE_taskCsarCrashFirst", _csarCrashFirst isEqualTo true, true];
+        // Capture Enemy Pilots (AshTray on Discord): an enemy pilot nobody on his side can rescue is a capture task
+        private _csarCaptureEnemy = _logic getVariable ["csarCaptureEnemy", "false"];
+        if (_csarCaptureEnemy isEqualType "") then { _csarCaptureEnemy = (toLower _csarCaptureEnemy) == "true" };
+        missionNamespace setVariable ["ALIVE_taskCsarCaptureEnemy", _csarCaptureEnemy isEqualTo true, true];
         missionNamespace setVariable ["ALIVE_c2istar_filterEnemyFactions", _filterEnemyFactions, true];
         missionNamespace setVariable ["ALIVE_civicStateEnabled", _civicStateEnabled, true];
         missionNamespace setVariable ["ALIVE_civicTrustSuccessMultiplier", (_civicTrustSuccessMultiplier max 0), true];

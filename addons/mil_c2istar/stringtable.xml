@@ -2126,6 +2126,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_CSAR_CRASH_FIRST_COMMENT">
     <English>When Yes, a pilot rescue task first sends players to the wreck. Reaching it tells them whether the crew got out: if they did, HQ gives a search area within 500 m of a grid and the rescue goes on as usual; if the crew are dead, finding the wreck completes the task. An aircraft that did not come down as a wreck starts at the search as before. Default No.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_CSAR_CAPTURE_ENEMY">
+    <English>Capture Enemy Pilots:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_CSAR_CAPTURE_ENEMY_COMMENT">
+    <English>When Yes, an enemy pilot who ejects and lands alive, with nobody on his own side to rescue him, gives the players a task to capture him: find him, detain him (he is disarmed and joins your group) and bring him back to base. Uses the Pilot Rescue Timeout. Default No.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_CSAR_TIMEOUT_COMMENT">
     <English>How long, in seconds, a downed pilot waits to be rescued. When it runs out the rescue task is cancelled and the pilot is removed. Never less than 300.</English>
 </Key>

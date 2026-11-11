@@ -284,6 +284,34 @@
 		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
 		[_tasksData,"Return",_taskData] call ALIVE_fnc_hashSet;
 
+		// an enemy pilot, with C2ISTAR's Capture Enemy Pilots: these replace Parent, Rescue and Return
+		_taskData = [] call ALIVE_fnc_hashCreate;
+		[_taskData,"title","Capture Enemy Pilot"] call ALIVE_fnc_hashSet;
+		[_taskData,"description","Capture an enemy pilot who ejected and bring him back for questioning."] call ALIVE_fnc_hashSet;
+		[_tasksData,"CaptureParent",_taskData] call ALIVE_fnc_hashSet;
+
+		_taskData = [] call ALIVE_fnc_hashCreate;
+		[_taskData,"title","Detain the Pilot"] call ALIVE_fnc_hashSet;
+		[_taskData,"description","An enemy %1 has been shot down and the pilot ejected near %2. Find him and detain him before his own side gets to him."] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_start",[["HQ","Enemy %1 down near %2, the pilot ejected. We want him alive. Find him and detain him."],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_update",[["HQ","All callsigns, SITREP. Air recon saw his parachute come down at grid %1. He has an IR strobe. Take him alive."],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_success",[["PLAYERS","Enemy pilot detained, we are RTB, Over"],["HQ","Roger, good work, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_failed",[["HQ","The enemy pilot is dead. Mission aborted, Over"],["PLAYERS","Roger, we are RTB, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_expired",[["HQ","The enemy pilot has got away. Mission cancelled, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+		[_tasksData,"Capture",_taskData] call ALIVE_fnc_hashSet;
+
+		_taskData = [] call ALIVE_fnc_hashCreate;
+		[_taskData,"title","Bring In the Prisoner"] call ALIVE_fnc_hashSet;
+		[_taskData,"description","Bring the captured pilot to the base near %1 for questioning."] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_start",[["HQ","Bring the prisoner to the base near %1"],["PLAYERS","Roger, moving now, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_failed",[["HQ","The prisoner is dead, abort mission and RTB, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_success",[["PLAYERS","Prisoner handed over at base, over."],["HQ","Roger, he'll be questioned. Well done, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_expired",[["HQ","Out of time. Another unit will collect the prisoner. Mission cancelled, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+		[_tasksData,"CaptureReturn",_taskData] call ALIVE_fnc_hashSet;
+
 		_options set [count _options,_tasksData];
 
 	[ALIVE_generatedTasks, "CSAR", ["Combat Search and Rescue",_options]] call ALIVE_fnc_hashSet;
