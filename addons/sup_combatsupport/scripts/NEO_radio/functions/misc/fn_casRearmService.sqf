@@ -167,7 +167,8 @@ if (_parked && _needsService && {alive _veh} && {!(call _fnc_retasked)}) then {
             _veh setVelocity [(sin _dir) * _spd, (cos _dir) * _spd, 0];
             sleep 3;
             _veh allowDamage true;
-            _veh setVariable ["NEO_radioCasNewTask", ["LOITER", _base, 500, 150, "", "", objNull], true];
+            // fire at will, the tablet's default: an empty value here made the FSM's setCombatMode throw
+            _veh setVariable ["NEO_radioCasNewTask", ["LOITER", _base, 500, 150, "", "RED", objNull], true];
             [[_veh, ["STR_ALIVE_CS_MSG_41", _callsign], "side"], "NEO_fnc_messageBroadcast", true, false] spawn BIS_fnc_MP;
         };
     };
