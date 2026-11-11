@@ -65,7 +65,7 @@
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_INITIAL_COMMENT">
-    <English>Sets the cloud and fog range, which for Continental, Tropical and Mediterranean follows the month of the mission date, and how often a weather change brings rain: Continental half the time, Tropical most of the time, Mediterranean a quarter of the time, Arid and Fair never. A month whose cloud stays light, as in their summers, stays dry, and one whose cloud stays heavy, as in the Tropical monsoon, rains regardless. Lightning comes with heavy cloud on its own.</English>
+    <English>Sets the cloud and fog range, which for Continental, Tropical and Mediterranean follows the month of the mission date, and how often a weather change brings rain: Continental half the time, Tropical most of the time, Mediterranean a quarter of the time, Arid and Fair never. A month whose cloud stays light, as in their summers, stays dry, and one whose cloud stays heavy, as in the Tropical monsoon, rains regardless. Lightning comes with heavy cloud on its own. Real currently has no weather source, so it gives Fair weather.</English>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE">
@@ -112,9 +112,13 @@
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT">
-    <English>For a complete list of valid Locales please refer to ALiVE wiki</English>
-    <Chinesesimp>有关有效区域设置的完整列表,请参阅ALiVE wiki</Chinesesimp>
-    <Spanish>Para la lista completa de localidades válidas, consulta la wiki de ALiVE</Spanish>
+    <English>Real Weather currently has no weather source, so this location is not used and the mission gets Fair weather.</English>
+    <Chinese>真實天氣目前沒有天氣資料來源,因此不會使用此地點,任務將使用晴朗天氣。</Chinese>
+    <Chinesesimp>真实天气目前没有天气数据来源,因此不会使用此地点,任务将使用晴朗天气。</Chinesesimp>
+    <Spanish>El clima real no tiene ahora ninguna fuente de datos, así que esta localidad no se usa y la misión tiene clima despejado.</Spanish>
+    <French>La météo réelle n'a actuellement aucune source de données : ce lieu n'est pas utilisé et la mission a un temps clair.</French>
+    <Portuguese>O clima real não tem fonte de dados no momento, então este local não é usado e a missão tem tempo bom.</Portuguese>
+    <Russian>Для реальной погоды сейчас нет источника данных, поэтому это место не используется, и в миссии будет ясная погода.</Russian>
 </Key>
 
 </Container></Package></Project>

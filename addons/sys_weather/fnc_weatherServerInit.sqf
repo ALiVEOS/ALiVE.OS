@@ -139,8 +139,11 @@ switch (INITIAL_WEATHER) do
             GVAR(REAL_WEATHER) = [WEATHER_CYCLE_REAL_LOCATION] call ALIVE_fnc_getRealWeather;
         };
 
+        // Real weather came from the ALiVE server extension's GetWeather call, and the current
+        // War Room extension has no weather service, so this fails on every server. The settings
+        // above stay at their defaults, which is the module's Fair weather.
         if (typeName GVAR(REAL_WEATHER) == "BOOL") exitWith {
-            ["--------------------------------- ERROR GETTING REAL WEATHER : %1", WEATHER_CYCLE_REAL_LOCATION] call ALiVE_fnc_dump;
+            ["ALiVE Weather - Real Weather is set, but no real-weather source is available, so the mission uses Fair weather instead (location %1)", WEATHER_CYCLE_REAL_LOCATION] call ALiVE_fnc_dump;
         };
 
         _rainProbability = (parseNumber ([GVAR(REAL_WEATHER),"rain", 0] call ALiVE_fnc_hashGet)) * 100;

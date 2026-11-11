@@ -23,6 +23,7 @@ See Also:
 
 Author:
 Tuplov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -168,10 +169,10 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
         _result = _weatherHash;
 
     } else {
-        ["--------------------------------- ERROR GETTING REAL WEATHER : %1", _realWeather] call ALiVE_fnc_dump;
+        // no usable answer: the caller says so in the RPT and keeps the module's own weather
     };
 } else {
-    ["--------------------------------- ERROR GETTING REAL WEATHER : %1", _newLoc] call ALiVE_fnc_dump;
+    // no weather source answered: the caller says so in the RPT and keeps the module's own weather
 };
 
 _result
