@@ -344,7 +344,28 @@ switch(_operation) do {
                 ["AMBCP - Startup"] call ALiVE_fnc_dump;
             };
 
+            // A setup that runs long says every two minutes which step it is on, so a server log shows
+            // where it stops. #1108: on one server setup never finished after a #restart, with nothing logged.
+            _logic setVariable ["startupStage", ["waiting for the Profile System", 0, 0]];
+            [_logic] spawn {
+                params ["_logic"];
+                private _t0 = diag_tickTime;
+                private _next = 120;
+                waitUntil {
+                    sleep 10;
+                    if (diag_tickTime - _t0 > _next) then {
+                        _next = _next + 120;
+                        (_logic getVariable ["startupStage", ["starting", 0, 0]]) params ["_stage", "_at", "_of"];
+                        ["ALiVE Ambient Civilian Placement - still setting up after %1 s: %2%3 (server fps %4, %5 scripts running)",
+                            round (diag_tickTime - _t0), _stage, ["", format [", cluster %1 of %2", _at, _of]] select (_of > 0),
+                            round diag_fps, count diag_activeSQFScripts] call ALiVE_fnc_dump;
+                    };
+                    isNull _logic || {_logic getVariable ["startupComplete", false]}
+                };
+            };
+
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+            _logic setVariable ["startupStage", ["waiting for the Civilian Population module", 0, 0]];
             waituntil {!(isnil "ALIVE_clusterHandler")};
 
             private _includeCustomObjectives = [_logic, "includeCustomObjectives"] call MAINCLASS;
@@ -353,6 +374,7 @@ switch(_operation) do {
                 private _customObjectiveModules = allMissionObjects "ALiVE_civ_placement_custom";
 
                 if (count _customObjectiveModules > 0) then {
+                    _logic setVariable ["startupStage", ["waiting for the Custom Civilian Objectives", 0, 0]];
                     private _customObjectiveWaitUntil = diag_tickTime + 60;
                     waitUntil {
                         (({
@@ -368,6 +390,7 @@ switch(_operation) do {
                 };
             };
 
+            _logic setVariable ["startupStage", ["loading the terrain's civilian index", 0, 0]];
             // Keep the load guard, index compilation and completion flag in one unscheduled call.
             [{
                 if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
@@ -679,6 +702,7 @@ switch(_operation) do {
                 if(count _landClasses > 0) then {
 
                     {
+                        _logic setVariable ["startupStage", ["placing parked vehicles", _forEachIndex + 1, count _clusters]];
                         private _supportCount = 0;
                         private _supportMax = 0;
 
@@ -876,6 +900,7 @@ switch(_operation) do {
                 if (count _poultryPool > 0) then {
                     private _poultryChance = 0.08 * _ambientAnimalAmount;
                     {
+                        _logic setVariable ["startupStage", ["placing poultry", _forEachIndex + 1, count _clusters]];
                         private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
                         private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
                         private _buildings = [_forEachIndex, _nodes] call _ambResolveBuildings;
@@ -905,6 +930,7 @@ switch(_operation) do {
                     private _herdsTried = 0;
                     private _herdsPlaced = 0;
                     {
+                        _logic setVariable ["startupStage", ["placing herds", _forEachIndex + 1, count _clusters]];
                         private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
                         private _center = [_x, "center"] call ALIVE_fnc_hashGet;
                         private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
@@ -1004,6 +1030,7 @@ switch(_operation) do {
             if(count _civClasses > 0) then {
 
                 {
+                    _logic setVariable ["startupStage", ["placing civilians", _forEachIndex + 1, count _clusters]];
                     private _clusterAgents = [];
                     private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
                     private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
@@ -1134,6 +1161,7 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
+            _logic setVariable ["startupStage", ["caching vehicle types", 0, 0]];
             [_factions + _ambientVehicleFactions] call ALiVE_fnc_initFindVehicleTypeCache;
 
             // set module as started
