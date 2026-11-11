@@ -457,6 +457,7 @@ if (hasInterface) then {
 
         params ["_args"];
         private _tracked = _args select 0;
+        if !(_tracked isEqualType []) then { _tracked = []; _args set [0, _tracked] };
 
         // These gates only skip aim detection; pending cleanup always runs.
         call {
@@ -549,9 +550,10 @@ if (hasInterface) then {
 
         // Refresh the current target first, then expire only tracked civs.
         // Cleanup continues outside range and during reaction states
-        _args set [0, _tracked select {
+        // A deleted civilian is dropped first. exitWith inside the filter used to leave the select itself, so
+        // the first deleted civilian turned the whole list into false and every later pass threw (Soar, 11 Nov)
+        _args set [0, (_tracked select { !isNull _x }) select {
             private _civ = _x;
-            if (isNull _civ) exitWith {false};
 
             private _lastSeen = _civ getVariable ["ALiVE_advciv_lastAimTick", -10];
             if (time - _lastSeen > 1) then {
