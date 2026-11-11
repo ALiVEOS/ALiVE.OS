@@ -145,6 +145,23 @@ class CfgVehicles {
                         class S300 { name = "5 minutes"; value = "300"; };
                     };
             };
+            class behaviourShareRange : Combo
+            {
+                    property = "ALiVE_sys_aiskill_behaviourShareRange";
+                    displayName = "$STR_ALIVE_AISKILL_BEHAVIOUR_SHARE_RANGE";
+                    tooltip = "$STR_ALIVE_AISKILL_BEHAVIOUR_SHARE_RANGE_COMMENT";
+                    typeName = "STRING";
+                    defaultValue = """300""";
+                    expression = "_this setVariable ['behaviourShareRange', _value, true];";
+                    ALiVE_showWhen[] = {{"behaviourEnabled", "is", "true"}};
+                    class Values
+                    {
+                        class R0 { name = "Off"; value = "0"; };
+                        class R150 { name = "150 m"; value = "150"; };
+                        class R300 { name = "300 m"; value = "300"; default = 1; };
+                        class R500 { name = "500 m"; value = "500"; };
+                    };
+            };
             class ModuleDescription : ModuleDescription {};
         };
     };

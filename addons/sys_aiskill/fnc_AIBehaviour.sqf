@@ -39,6 +39,8 @@ toPost, toMove - [unit] a garrison has put him on a post, or let him off one
 forget - [unit] hand one soldier back and take this code's handlers and records off him
 man - [unit] one soldier's step: idle, to cover, in cover, peeking to fire, recovering
 setting - [name, default] a module setting, read from the AI Skill module
+share - [group] pass the enemies its leader has a good fix on to friendly groups near it, at a capped
+    knowledge: each gets min(1, what the sender knows) * (1 - what it knows / 1.5), never above 1.5
 
 Returns:
 attach - Boolean, whether the group was taken on
@@ -538,6 +540,35 @@ switch (_operation) do {
         ALiVE_AIB_groups = ALiVE_AIB_groups - [_group];
     };
 
+    case "share": {
+        _args params ["_group"];
+        private _range = ALiVE_AIB_shareRange;
+        private _leader = leader _group;
+        if (_range <= 0 || {isNull _leader} || {!alive _leader}) exitWith {};
+        private _side = side _group;
+        private _known = (_leader targets [true, 1000]) select { (_leader knowsAbout _x) >= 1.5 };
+        if (_known isEqualTo []) exitWith {};
+        private _near = ALiVE_AIB_groups select {
+            _x != _group && {!isNull _x} && {side _x == _side} && {!isNull leader _x} && {((leader _x) distance _leader) < _range}
+        };
+        private _given = 0;
+        {
+            private _rg = _x;
+            private _rl = leader _rg;
+            {
+                private _has = _rl knowsAbout _x;
+                private _give = (1 min (_leader knowsAbout _x)) * (1 - (_has / 1.5));
+                if (_give > 0.05) then {
+                    _rg reveal [_x, 1.5 min (_has + _give)];
+                    _given = _given + 1;
+                };
+            } forEach _known;
+        } forEach _near;
+        if (_given > 0 && {(["setting", ["debug", false]] call ALiVE_fnc_AIBehaviour) in [true, 1, "1", "true"]}) then {
+            ["ALiVE Military AI - soldier behaviour: %1 passed %2 enemies to %3 groups (%4 in all)", _group, count _known, count _near, _given] call ALiVE_fnc_dump;
+        };
+    };
+
     case "tick": {
         if (isNil "ALiVE_AIB_groups") exitWith {};
         private _t0 = diag_tickTime;
@@ -594,6 +625,22 @@ switch (_operation) do {
                 };
             };
         } forEach +ALiVE_AIB_groups;
+        // Groups pass what they know about the enemy to friendly groups near them: two groups a tick, and each at
+        // most once every 20 seconds, so a large fight costs the same as a small one
+        ALiVE_AIB_shareRange = ["setting", ["behaviourShareRange", 300]] call ALiVE_fnc_AIBehaviour;
+        if (ALiVE_AIB_shareRange > 0) then {
+            private _count = count ALiVE_AIB_groups;
+            if (isNil "ALiVE_AIB_shareNext") then { ALiVE_AIB_shareNext = 0 };
+            for "_i" from 1 to (2 min _count) do {
+                if (ALiVE_AIB_shareNext >= _count) then { ALiVE_AIB_shareNext = 0 };
+                private _g = ALiVE_AIB_groups select ALiVE_AIB_shareNext;
+                ALiVE_AIB_shareNext = ALiVE_AIB_shareNext + 1;
+                if (!isNull _g && {local _g} && {time >= (_g getVariable ["ALiVE_AIB_sharedAt", -20]) + 20}) then {
+                    _g setVariable ["ALiVE_AIB_sharedAt", time];
+                    ["share", [_g]] call ALiVE_fnc_AIBehaviour;
+                };
+            };
+        };
         // [ticks, total ms, worst ms] for the debug line and tests
         private _ms = (diag_tickTime - _t0) * 1000;
         if (isNil "ALiVE_AIB_perf") then { ALiVE_AIB_perf = [0, 0, 0] };

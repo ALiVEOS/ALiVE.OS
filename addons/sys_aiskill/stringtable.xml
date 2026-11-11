@@ -468,4 +468,10 @@
 <Key ID="STR_ALIVE_AISKILL_BEHAVIOUR_MAX_ENGAGED_COMMENT">
     <English>The longest a soldier keeps reacting on his own before he hands back to his group's orders.</English>
 </Key>
+<Key ID="STR_ALIVE_AISKILL_BEHAVIOUR_SHARE_RANGE">
+    <English>Share Enemy Sightings:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_BEHAVIOUR_SHARE_RANGE_COMMENT">
+    <English>How far a group passes on the enemies it has a good fix on to friendly groups. The others learn roughly where the enemy is, never as well as the group that saw him.</English>
+</Key>
 </Container></Package></Project>
