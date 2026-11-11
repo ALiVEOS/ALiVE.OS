@@ -177,8 +177,22 @@ _detailLabel ctrlSetText "The one you have picked";
 _detailLabel ctrlSetTextColor [0.62, 0.66, 0.58, 1];
 [_detailLabel, 0.49, 0.155, 0.30, 0.04] call _fnc_at;
 
-private _detail = _display ctrlCreate ["RscStructuredText", IDC_DETAIL];
-[_detail, 0.49, 0.20, 0.49, 0.26] call _fnc_at;
+// The text sits in a group that scrolls (#1112): a long description ran off the bottom with no way to
+// read the rest. ALIVE_fnc_presetWindowDetail sets the text and makes the text box as tall as the text.
+private _detailGroup = _display ctrlCreate ["RscControlsGroup", -1];
+[_detailGroup, 0.49, 0.20, 0.49, 0.26] call _fnc_at;
+private _detail = _display ctrlCreate ["RscStructuredText", IDC_DETAIL, _detailGroup];
+_detail ctrlSetPosition [0, 0, 0.47 * _w, 0.26 * _h];
+_detail ctrlCommit 0;
+ALIVE_fnc_presetWindowDetail = {
+    params ["_ctrl", "_text"];
+    _ctrl ctrlSetStructuredText _text;
+    private _group = ctrlParentControlsGroup _ctrl;
+    private _p = ctrlPosition _ctrl;
+    _ctrl ctrlSetPosition [_p select 0, 0, _p select 2, (ctrlTextHeight _ctrl) max ((ctrlPosition _group) select 3)];
+    _ctrl ctrlCommit 0;
+    _group ctrlSetScrollValues [0, -1];
+};
 
 // Naming and describing a preset you collected. A preset from a stranger often
 // arrives with no name of its own, which is exactly when somebody wants to give
@@ -297,11 +311,11 @@ private _fnc_refresh = {
     };
     // how many there are, so a list scrolled part way down doesn't look short
     (_d displayCtrl IDC_LISTLABEL) ctrlSetText format ["Your presets  (%1, double click to place one)", count _entries];
-    (_d displayCtrl IDC_DETAIL) ctrlSetStructuredText parseText (
+    [_d displayCtrl IDC_DETAIL, parseText (
         if (count _entries == 0) then {
             "<t size='1'>Nothing here yet.<br/><br/>Copy a preset from alivemod.com or from somebody in Discord, then use Load from clipboard. It stays in your profile.</t>"
         } else { "" }
-    );
+    )] call ALIVE_fnc_presetWindowDetail;
 };
 
 private _fnc_show = {
@@ -354,14 +368,13 @@ private _fnc_show = {
     (_d displayCtrl IDC_NAME) ctrlEnable (!_shipped);
     (_d displayCtrl IDC_DESC) ctrlEnable (!_shipped);
     (_d displayCtrl IDC_AUTHOR) ctrlEnable (!_shipped);
-    (_d displayCtrl IDC_DETAIL) ctrlSetStructuredText parseText format [
-        // One blank line, not two. This pane cannot scroll and does not grow, so
-        // every line it spends on nothing is a line the text below it loses: the
-        // line saying what the preset needs pushed "Ships with ALiVE" off the
-        // bottom edge. The gap after the title earns its place because the title
-        // is a heading. The one before the grey block did not.
+    [_d displayCtrl IDC_DETAIL, parseText format [
+        // One blank line, not two. The pane scrolls now (#1112), but every line it
+        // spends on nothing still pushes "Ships with ALiVE" further down. The gap
+        // after the title earns its place because the title is a heading. The one
+        // before the grey block did not.
         "<t size='1.1'>%1</t><br/><br/><t size='0.95'>%2</t><br/><t size='0.9' color='#9aa08d'>%3<br/>%4</t>",
-        _name, _description, _what, _origin];
+        _name, _description, _what, _origin]] call ALIVE_fnc_presetWindowDetail;
 
     // The submit link is put on the button NOW, while the selection changes,
     // because a link can only be opened by a real click on a control already
