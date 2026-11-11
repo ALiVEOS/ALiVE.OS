@@ -42,8 +42,10 @@ addMissionEventHandler ["EntityCreated", {
     private _fnc_expected = {
         private _expected = createHashMap;
         private _fnc_add = {
-            params ["_value"];
-            if (_value isEqualType []) exitWith { { [_x] call _fnc_add } forEach _value };
+            // A module variable can be set to nothing, and a list can hold nothing (a CBA hash's default),
+            // so an empty value is skipped
+            params [["_value", ""]];
+            if (_value isEqualType []) exitWith { { if (!isNil "_x") then { [_x] call _fnc_add } } forEach _value };
             if (_value isEqualType "") then {
                 {
                     private _name = toLower ((_x splitString " """"'[]") joinString "");
