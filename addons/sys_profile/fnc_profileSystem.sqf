@@ -270,6 +270,9 @@ switch(_operation) do {
 
         [ALIVE_liveAnalysis,"start"] call ALIVE_fnc_liveAnalysis;
 
+        // Names the module behind any AI of a faction no ALiVE module is set to (#1105).
+        [] call ALiVE_fnc_profileWatchStrayFactions;
+
     };
 
     case "destroy": {

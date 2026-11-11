@@ -11,6 +11,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileSystem.sqf";
                 ALIVE_RECOMPILE;
             };
+            class profileWatchStrayFactions {
+                description = "Logs AI of a faction no ALiVE module in the mission is set to, with what made them (server)";
+                file = "\x\alive\addons\sys_profile\fnc_profileWatchStrayFactions.sqf";
+                ALIVE_RECOMPILE;
+            };
             class profileSpacialGrid {
                 description = "Profile-aware spatial grid";
                 file = "\x\alive\addons\sys_profile\fnc_profileSpacialGrid.sqf";
