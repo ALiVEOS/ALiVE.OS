@@ -727,6 +727,12 @@ switch(_operation) do {
                                 // the fact the earlier save still stands, so a
                                 // repeat reads as the same player still down.
                                 ["SYS_PLAYER - SAVE SKIPPED FOR %1 (%2), UNIT IS %3 - LAST GOOD SAVE KEPT", name _unit, _puid, [toUpper (lifeState _unit), "SENT OFF FOR THE WRONG ROLE"] select (_unit getVariable [QGVAR(kicked), false])] call ALiVE_fnc_dump;
+                                // The last good save is marked the same way as for a player who leaves while down, so a
+                                // server restart or the mission's end while they are still down doesn't bring them back
+                                // up and well. Their next good save is a fresh record without the mark.
+                                if !(_unit getVariable [QGVAR(kicked), false]) then {
+                                    [MOD(sys_player), "leftWhileDown", [_unit, _puid, name _unit, true]] call ALIVE_fnc_player;
+                                };
                                 _result = false;
                             } else {
                                 _playerHash = [_logic, [_unit, _puid]] call ALIVE_fnc_setPlayer;
@@ -752,7 +758,8 @@ switch(_operation) do {
                 //   lay and ACE's medical state, so they come back unconscious there, out of any vehicle;
                 // - dead, or down without ACE: they come back dead and respawn as the mission allows.
                 // Never alive from a dead state either way. A later good save writes a fresh record without the mark.
-                _args params ["_unit", "_uid", ["_name", ""]];
+                // quiet: the timed save marking a player still here, every interval while they are down
+                _args params ["_unit", "_uid", ["_name", ""], ["_quiet", false]];
                 _result = "";
                 if (isNull _unit || {_uid == ""}) exitWith {};
                 private _key = [_unit, _uid] call ALiVE_fnc_playerKey;
@@ -776,6 +783,7 @@ switch(_operation) do {
                 };
                 _result = ["dead", "down"] select _aceDown;
                 [_rec, "leftDown", _result] call ALIVE_fnc_hashSet;
+                if (_quiet) exitWith {};
                 ["SYS_PLAYER - %1 LEFT WHILE %2: THE REJOIN PUTS THEM BACK %3", _name, ["DEAD OR DOWN", "DOWN (ACE)"] select _aceDown, ["DEAD, TO RESPAWN", "DOWN WHERE THEY LAY"] select _aceDown] call ALiVE_fnc_dump;
         };
         case "checkPlayer": {
