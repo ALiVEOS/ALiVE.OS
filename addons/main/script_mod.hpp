@@ -6,8 +6,15 @@
 #define MINOR 2
 #define PATCHLVL 0
 // BUILD should be YYMMDDR eg 1311211. Stamped by the packing step on every
-// build, so a log identifies exactly which one an install came from.
+// build, so a log identifies exactly which one an install came from. From the
+// tenth build of a day R is a letter (10 = a ... 35 = z, eg 261111b), so it
+// stays seven characters. It is text, not a number: SQF reads it as QUOTE(BUILD).
 #define BUILD 2604133
+// BUILD as a number, for versionAr[], which CBA's version check compares between
+// server and client: YY * 100000 + day of the year * 100 + build of the day, eg
+// 2610303 for the third build on 13 Apr 2026. Seven digits, so a config number
+// holds it exactly. Stamped alongside BUILD.
+#define BUILD_NUM 2610303
 // DEV between releases, RELEASE when one is cut. Moves at the same moment MINOR
 // or PATCHLVL does, and back again straight after. Reported at startup so a
 // report says which kind of build it came from without anyone having to ask.
@@ -16,7 +23,7 @@
 #define CLUSTERBUILD "Arma 3","Arma3",222,154045,"Stable"
 
 #define VERSION MAJOR.MINOR.PATCHLVL.BUILD
-#define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
+#define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD_NUM
 
 // MINIMAL required version for the Mod. Components can specify others..
 #define REQUIRED_VERSION 2.14

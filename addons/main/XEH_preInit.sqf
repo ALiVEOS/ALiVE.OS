@@ -146,7 +146,7 @@ ALiVE_fnc_taskTime = {
 // The macro is only a fallback for when the config cannot be read at all.
 private _aliveVersion = getText (configFile >> "CfgPatches" >> QUOTE(ADDON) >> "versionStr");
 if (_aliveVersion isEqualTo "") then {
-    _aliveVersion = format ["%1.%2.%3.%4", MAJOR, MINOR, PATCHLVL, BUILD];
+    _aliveVersion = format ["%1.%2.%3.%4", MAJOR, MINOR, PATCHLVL, QUOTE(BUILD)];
 };
 private _buildType = getText (configFile >> "CfgPatches" >> QUOTE(ADDON) >> "buildType");
 if (_buildType isEqualTo "") then { _buildType = BUILDTYPE; };
