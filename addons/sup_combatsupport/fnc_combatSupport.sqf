@@ -376,6 +376,13 @@ switch(_operation) do {
                                     };
                                 };
                             } else {
+                                // A gun synced with no CS_TYPE is artillery, the only kind a ground
+                                // vehicle can be, rather than dropped as the CAS default with a warning.
+                                // A vehicle the game doesn't treat as artillery still gets the warning.
+                                if (!(_entry isKindOf "Logic") && {isNil {_entry getVariable "CS_TYPE"}} && {getNumber (configOf _entry >> "artilleryScanner") > 0}) then {
+                                    _type = "arty";
+                                    ["ALIVE_fnc_combatSupport - %1 is synced to Combat Support with no CS_TYPE; it is a gun, so it has been added as artillery", typeOf _entry] call ALiVE_fnc_dump;
+                                };
                                 switch (tolower(_type)) do {
                                    case ("arty") : {
                                         private ["_position","_callsign","_type"];
@@ -385,6 +392,8 @@ switch(_operation) do {
                                         _class = typeOf _entry;
 
                                            _callsign = _entry getvariable ["CS_CALLSIGN",groupID (group _entry)];
+                                           // an empty gun has no group yet, so it would have no name on the tablet
+                                           if (_callsign == "") then { _callsign = format ["%1 %2", getText (configOf _entry >> "displayName"), _i + 1] };
 
                                         _he = ["HE",parsenumber(_entry getvariable ["CS_artillery_he","30"])];
                                         _illum = ["ILLUM",parsenumber(_entry getvariable ["CS_artillery_illum","30"])];
