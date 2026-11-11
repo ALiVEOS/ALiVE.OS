@@ -1,4 +1,4 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 #include "\x\alive\addons\civ_placement\script_component.hpp"
 ALIVE_clusterBuild = [CLUSTERBUILD];
 ALIVE_clustersCiv = [] call ALIVE_fnc_hashCreate;
@@ -4687,7 +4687,7 @@ _nodes = [];
 _nodes set [count _nodes, ["2580348",[1898.96,5837.6,-0.00149536]]];
 _nodes set [count _nodes, ["2580185",[1946.91,5868.4,-0.00247192]]];
 _nodes set [count _nodes, ["2576474",[1485.04,5628.84,7.9155e-05]]];
-_nodes set [count _nodes, ["2575772",[1213.39,5683.84,1.80632]]];
+_nodes set [count _nodes, ["2575772",[1213.39,5683.84,1.81485]]];
 _nodes set [count _nodes, ["2575229",[1412.08,5758.25,-0.219534]]];
 _nodes set [count _nodes, ["2575230",[1432.75,5766.41,-0.269419]]];
 _nodes set [count _nodes, ["2575678",[1347.47,5743.5,0.000816345]]];
@@ -7119,7 +7119,7 @@ _nodes set [count _nodes, ["2609645",[12768.5,7772.11,0.00128174]]];
 ALIVE_clustersCivMarine = [] call ALIVE_fnc_hashCreate;
 _cluster = [nil, "create"] call ALIVE_fnc_cluster;
 _nodes = [];
-_nodes set [count _nodes, ["2575772",[1213.39,5683.84,1.80632]]];
+_nodes set [count _nodes, ["2575772",[1213.39,5683.84,1.81485]]];
 [_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
 [_cluster, "state", _cluster] call ALIVE_fnc_cluster;
 [_cluster,"clusterID","c_89"] call ALIVE_fnc_hashSet;
