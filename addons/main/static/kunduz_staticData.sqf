@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-07 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: kunduz (ALiVE 3 index v3.1, 2026-10-07)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: kunduz (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-07", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
