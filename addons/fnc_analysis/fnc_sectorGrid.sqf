@@ -27,6 +27,7 @@ Array - positionToGridIndex - Array position gets 2 dimensional grid index refer
 Array - gridIndexToSector - Array grid index takes a grid index (as returned by positionToGridIndex) and returns the sector object
 Array - positionToSector - Array position takes a position and returns the sector object the position is within
 Array - surroundingSectors - Array position takes a position and returns the surrounding sector objects
+Array - sectorCenterOnMap - Array sector takes a sector object and returns its centre, moved onto the grid for a sector that reaches past it
 
 Examples:
 (begin example)
@@ -74,6 +75,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -271,8 +273,11 @@ switch(_operation) do {
             private _gridPositionY = _gridPosition select 1;
             private _sectorWidth = _sectorDimensions select 0;
             private _sectorHeight = _sectorDimensions select 1;
-            private _rows = round(_gridSize / _sectorWidth);
-            private _columns = round(_gridSize / _sectorHeight);
+            // Rounded up, so a map that isn't a whole number of sectors gets its last strip at the north
+            // and east edges too. Rounded to nearest, a 20,480 m map had 20 sectors a side, and a position
+            // in the last 480 m was given row 20, which held no sector (the x_lib spacial grid rounds up too).
+            private _rows = ceil (_gridSize / _sectorWidth);
+            private _columns = ceil (_gridSize / _sectorHeight);
 
             // create a grid of sector objects
 
@@ -422,6 +427,36 @@ switch(_operation) do {
                 private _gridIndex = [_logic, "positionToGridIndex", _position] call MAINCLASS;
 
                 _result = [_logic, "gridIndexToSector", _gridIndex] call MAINCLASS;
+
+            };
+
+        };
+
+        case "sectorCenterOnMap": {
+
+            // A sector in the last row or column reaches past the grid when the map isn't a whole number of
+            // sectors, and its centre is off the map. Callers that need a place on the ground get the middle
+            // of the part that is on the map instead.
+
+            if (_args isEqualType []) then {
+
+                private _sector = _args;
+                private _center = +([_sector, "center"] call ALIVE_fnc_sector);
+                private _halfSize = [_sector, "dimensions"] call ALIVE_fnc_sector;
+                private _gridPosition = [_logic,"gridPosition"] call ALiVE_fnc_hashGet;
+                private _gridSize = [_logic,"gridSize"] call ALiVE_fnc_hashGet;
+
+                if (!isNil "_center" && {count _center >= 2} && {!isNil "_halfSize"} && {count _halfSize >= 2}) then {
+                    for "_axis" from 0 to 1 do {
+                        private _edge = (_gridPosition select _axis) + _gridSize;
+                        private _half = _halfSize select _axis;
+                        if ((_center select _axis) + _half > _edge) then {
+                            _center set [_axis, (((_center select _axis) - _half) + _edge) / 2];
+                        };
+                    };
+                };
+
+                _result = _center;
 
             };
 

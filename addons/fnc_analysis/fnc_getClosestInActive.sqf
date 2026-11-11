@@ -25,6 +25,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_position","_radius","_result","_err", "_sector","_sectorData","_active","_roads","_road","_sectors"];
@@ -51,7 +52,7 @@ if("active" in (_sectorData select 1)) then {
         if(count _sectors > 0) then {
             _sectors = [_sectors,_position] call ALIVE_fnc_sectorSortDistance;
             _sector = _sectors select 0;
-            _position = [_sector, "center"] call ALIVE_fnc_sector;
+            _position = [ALIVE_sectorGrid, "sectorCenterOnMap", _sector] call ALIVE_fnc_sectorGrid;
         }
 
     };

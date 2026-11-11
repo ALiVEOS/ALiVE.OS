@@ -23,6 +23,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_agentData","_commandState","_commandName","_args","_state","_debug"];
@@ -55,7 +56,7 @@ switch (_state) do {
         private _sectors = [ALIVE_sectorGrid, "surroundingSectors", getPos _agent] call ALIVE_fnc_sectorGrid;
         _sectors = [_sectors, "SEA"] call ALIVE_fnc_sectorFilterTerrain;
         private _sector = selectRandom _sectors;
-        private _center = [_sector,"center"] call ALIVE_fnc_sector;
+        private _center = [ALIVE_sectorGrid, "sectorCenterOnMap", _sector] call ALIVE_fnc_sectorGrid;
         private _destination = [_center] call ALIVE_fnc_getClosestRoad;
         private _activeAgents = [ALIVE_agentHandler, "getActive"] call ALIVE_fnc_agentHandler;
         private _activeVehicles = [];

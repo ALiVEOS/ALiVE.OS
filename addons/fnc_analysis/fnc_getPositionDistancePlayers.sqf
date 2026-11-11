@@ -48,7 +48,7 @@ _sectors = [_sectors, _position] call ALIVE_fnc_sectorSortDistance;
 private _found = [];
 
 {
-    private _centerPos = [_x, "center"] call ALIVE_fnc_sector;
+    private _centerPos = [ALIVE_sectorGrid, "sectorCenterOnMap", _x] call ALIVE_fnc_sectorGrid;
 
     if (([_centerPos, _distance] call ALiVE_fnc_anyPlayersInRange) == 0) then {
         // Check if position is water (in case of shore sector)

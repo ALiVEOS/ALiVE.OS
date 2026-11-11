@@ -104,7 +104,7 @@ if(count _sideSectors > 0) then {
             _targetSector = _spawnSectors select (_countSectors-1);
         };
 
-        _targetPosition = [_targetSector, "position"] call ALIVE_fnc_hashGet;
+        _targetPosition = [ALIVE_sectorGrid, "sectorCenterOnMap", _targetSector] call ALIVE_fnc_sectorGrid;
 
         // got a sector with enemy
         // refine position with more analysis data
@@ -133,7 +133,7 @@ if(count _sideSectors > 0) then {
 
         // A refined spot can sit just inside a blacklisted area the sector centre is clear of.
         if ((_taskBlacklist findIf {_targetPosition inArea _x}) >= 0) then {
-            _targetPosition = [_targetSector, "position"] call ALIVE_fnc_hashGet;
+            _targetPosition = [ALIVE_sectorGrid, "sectorCenterOnMap", _targetSector] call ALIVE_fnc_sectorGrid;
         };
 
     };

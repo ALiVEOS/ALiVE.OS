@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_grid","_export","_debug","_sectors","_exportString","_subGridRoads","_sector","_sectorData","_sectorID","_subGrid","_subGridSectors"];
@@ -55,6 +56,8 @@ if(_debug) then {
 };
 // DEBUG -------------------------------------------------------------------------------------
 
+private _mapSize = [] call ALiVE_fnc_getMapBounds;
+
 {
     _sector = _x;
     _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
@@ -75,6 +78,11 @@ if(_debug) then {
     _subGrid = _analysisGridArgs call ALIVE_fnc_sectorSubGrid;
     if (!_debug) then {_indexSubGrid = _subGrid;};
     _subGridSectors = [_subGrid, "sectors"] call ALIVE_fnc_sectorGrid;
+
+    // A sector at the north or east edge reaches past the map when the map isn't a whole number of
+    // sectors. Only its 100 m cells that start on the map are analysed. Every sector starts on the map,
+    // so each keeps at least one cell.
+    _subGridSectors = _subGridSectors select { ([_x, "position"] call ALIVE_fnc_sector) params ["_cellX", "_cellY"]; (_cellX - 50) < _mapSize && {(_cellY - 50) < _mapSize} };
 
     // DEBUG -------------------------------------------------------------------------------------
     if(_debug) then {
@@ -161,7 +169,7 @@ if(_debug) then {
         };
     } forEach _elevationSamples;
 
-    _elevation = _elevation / ((count _elevationSamples)-1);
+    _elevation = _elevation / (((count _elevationSamples)-1) max 1);
 
     if (_debug) then {
         ["L: %1",_landTerrain] call ALIVE_fnc_dump;
