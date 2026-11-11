@@ -49,10 +49,23 @@ PREPMAIN(ZEUSinit);
 // if no snapshot is available. Registered with the JIP flag so it
 // attaches to every machine, including headless clients that join
 // mid-mission. Mirrors the pattern in ACEX's acex_headless postInit.
+// A reset is not always a naked man: a faction built on another one's units (CFP and other ORBAT
+// Creator factions are built on CSAT and the like) resets to its base class's uniform, which is not
+// empty, so those men kept the base gear (NeisAEL on Discord, three headless clients). A man who
+// arrives in his class's config uniform while the snapshot taken just before the move has another
+// is reset as well.
 ["CAManBase", "Local", {
     params ["_unit", "_local"];
-    if (_local && {uniform _unit == ""}) then {
-        _unit setUnitLoadout (_unit getVariable ["ALiVE_HC_SavedLoadout", typeOf _unit]);
+    if (!_local) exitWith {};
+    private _saved = _unit getVariable ["ALiVE_HC_SavedLoadout", []];
+    private _now = uniform _unit;
+    private _reset = _now == "" || {
+        _saved isNotEqualTo []
+        && {_now == getText (configFile >> "CfgVehicles" >> typeOf _unit >> "uniformClass")}
+        && {((_saved param [3, []]) param [0, ""]) != _now}
+    };
+    if (_reset) then {
+        _unit setUnitLoadout ([_saved, typeOf _unit] select (_saved isEqualTo []));
     };
 }, true] call CBA_fnc_addClassEventHandler;
 
