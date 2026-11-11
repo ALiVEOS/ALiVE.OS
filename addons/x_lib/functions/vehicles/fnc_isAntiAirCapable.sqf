@@ -52,6 +52,17 @@ params [
 if (_class isEqualType objNull) then { _class = typeOf _class };
 if (_class == "") exitWith { false };
 
+// A mission maker's own word comes first (ren on Discord, 11 Nov: modded IFVs such as the BTR-82
+// pass the gun test, so Air Defence Spawning kept spawning them). Each list holds class names, and
+// a class counts if it is or inherits from one of them, so a base class covers its variants. Read
+// before the cache, so a list changed mid-mission applies at once. Set on the server, e.g. in init.sqf:
+//   ALiVE_antiAirExclude = ["rhs_btr80a_msv"];   never anti-air
+//   ALiVE_antiAirInclude = ["my_aa_truck"];      always anti-air
+private _exclude = missionNamespace getVariable ["ALiVE_antiAirExclude", []];
+if (_exclude isEqualType [] && {(_exclude findIf { _x isEqualType "" && {_class isKindOf _x} }) >= 0}) exitWith { false };
+private _include = missionNamespace getVariable ["ALiVE_antiAirInclude", []];
+if (_include isEqualType [] && {(_include findIf { _x isEqualType "" && {_class isKindOf _x} }) >= 0}) exitWith { true };
+
 if (isNil "ALIVE_isAntiAirCapableCache") then {
     ALIVE_isAntiAirCapableCache = createHashMap;
 };
