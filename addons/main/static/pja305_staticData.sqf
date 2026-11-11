@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: pja305 (ALiVE 3 index v3.1, 2026-10-09)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: pja305 (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-09", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,15 +33,7 @@ ALiVE_mapCompositionType = "Pacific";
 
  if (tolower(_worldName) == "pja305") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "ca\buildings2\a_advertisingcolumn\a_advertcolumn.p3d",
-        "ca\structures_e\housea\a_villa\a_villa_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_end_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_main_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_switch_ep1.p3d",
-        "ca\structures_e\misc\misc_powerline\powlineb_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_5m_ep1.p3d"
+        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_switch_ep1.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
