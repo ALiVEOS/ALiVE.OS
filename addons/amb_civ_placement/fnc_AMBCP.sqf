@@ -46,6 +46,8 @@ Jman
 #define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0.2"
 #define DEFAULT_AMBIENT_ANIMAL_AMOUNT "0"
 #define DEFAULT_PLACEMENT_MULTIPLIER "0.5"
+#define DEFAULT_MAX_CIVILIANS 0
+#define DEFAULT_MAX_CIVILIANS_PER_TOWN 0
 #define DEFAULT_INCLUDE_CUSTOM_OBJECTIVES false
 
 private ["_result"];
@@ -115,6 +117,8 @@ switch(_operation) do {
             "includeCustomObjectives",
             "faction",
             "placementMultiplier",
+            "maxCivilians",
+            "maxCiviliansPerTown",
             "ambientVehicleAmount",
             "ambientVehicleFaction",
             "ambientAnimalAmount",
@@ -235,6 +239,14 @@ switch(_operation) do {
     // Return the Placement Multiplier
     case "placementMultiplier": {
         _result = [_logic,_operation,_args,DEFAULT_PLACEMENT_MULTIPLIER] call ALIVE_fnc_OOsimpleOperation;
+    };
+
+    // Return the civilian caps (0 = no cap)
+    case "maxCivilians": {
+        _result = [_logic,_operation,_args,DEFAULT_MAX_CIVILIANS] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "maxCiviliansPerTown": {
+        _result = [_logic,_operation,_args,DEFAULT_MAX_CIVILIANS_PER_TOWN] call ALIVE_fnc_OOsimpleOperation;
     };
 
     // Return the Ambient Vehicle Amount
@@ -609,6 +621,16 @@ switch(_operation) do {
             private _factions = [_logic, "faction"] call MAINCLASS;
             private _faction = _factions select 0;
             private _placementMultiplier = parseNumber([_logic, "placementMultiplier"] call MAINCLASS);
+            // Caps on how many civilians are placed, for the whole module and per town (NeisAEL on Discord,
+            // 6 Nov). 0 means no cap. Eden saves an Edit as a number or a string, so either is read.
+            private _fnc_readCap = {
+                private _v = [_logic, _this] call MAINCLASS;
+                if (_v isEqualType "") then { _v = parseNumber _v };
+                if !(_v isEqualType 0) then { _v = 0 };
+                floor (_v max 0)
+            };
+            private _maxCivilians = "maxCivilians" call _fnc_readCap;
+            private _maxCiviliansPerTown = "maxCiviliansPerTown" call _fnc_readCap;
             private _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
             private _ambientVehicleFactions = [_logic, "ambientVehicleFaction"] call MAINCLASS;
             private _ambientAnimalAmount = parseNumber([_logic, "ambientAnimalAmount"] call MAINCLASS);
@@ -1029,6 +1051,32 @@ switch(_operation) do {
 
             if(count _civClasses > 0) then {
 
+                // Choose the buildings that get a civilian first, so the caps can be applied before anyone
+                // is created: each building's roll as before, then a random pick down to the per-town cap,
+                // then a random pick across all towns down to the module cap, so no town is favoured.
+                private _spawnChance = 0.25 * _placementMultiplier;
+                private _ambChosen = [];
+                {
+                    private _clusterNodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
+                    private _picked = ([_forEachIndex, _clusterNodes] call _ambResolveBuildings) select { random 1 < _spawnChance };
+                    if (_maxCiviliansPerTown > 0 && {count _picked > _maxCiviliansPerTown}) then {
+                        _picked = (_picked call BIS_fnc_arrayShuffle) select [0, _maxCiviliansPerTown];
+                    };
+                    _ambChosen pushBack _picked;
+                } forEach _clusters;
+                private _countChosen = 0;
+                { _countChosen = _countChosen + count _x } forEach _ambChosen;
+                if (_maxCivilians > 0 && {_countChosen > _maxCivilians}) then {
+                    private _all = [];
+                    { private _i = _forEachIndex; { _all pushBack [_i, _x] } forEach _x } forEach _ambChosen;
+                    _all = (_all call BIS_fnc_arrayShuffle) select [0, _maxCivilians];
+                    _ambChosen = _ambChosen apply { [] };
+                    { (_ambChosen select (_x select 0)) pushBack (_x select 1) } forEach _all;
+                };
+                if (_maxCivilians > 0 || {_maxCiviliansPerTown > 0}) then {
+                    ["AMBCP %1 - Civilian caps: module %2, per town %3; %4 buildings chosen before the caps", _factions, _maxCivilians, _maxCiviliansPerTown, _countChosen] call ALiVE_fnc_dump;
+                };
+
                 {
                     _logic setVariable ["startupStage", ["placing civilians", _forEachIndex + 1, count _clusters]];
                     private _clusterAgents = [];
@@ -1038,108 +1086,99 @@ switch(_operation) do {
 
                     //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
-                    private _buildings = [_forEachIndex, _nodes] call _ambResolveBuildings;
-
-                    //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
-
-                    private _countBuildings = count _buildings;
-
-                    private _spawnChance = 0.25 * _placementMultiplier;
+                    private _buildings = _ambChosen select _forEachIndex;
 
                     {
 
-                        if(random 1 < _spawnChance) then {
+                        private _building = _x;
 
-                            private _building = _x;
+                        private _unitClass = selectRandom _civClasses;
+                        private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
 
-                            private _unitClass = selectRandom _civClasses;
-                            private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
-
-                            private _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
-                            // No indoor position nearby: the building's centre is inside its walls on almost every
-                            // building (2,626 of 2,639 on Malden), so the civilian stood in the middle of it. Use the
-                            // building's own exit, or failing that a spot just outside its footprint.
-                            private _buildingPosition = if (count _buildingPositions > 0) then {selectRandom _buildingPositions} else {
-                                private _exit = _building buildingExit 0;
-                                if !(_exit isEqualTo [0,0,0]) then { ASLToATL (AGLToASL _exit) } else {
-                                    (boundingBoxReal _building) params ["_bbMin", "_bbMax"];
-                                    private _out = (((_bbMax select 0) - (_bbMin select 0)) max ((_bbMax select 1) - (_bbMin select 1))) / 2 + 2;
-                                    private _spot = _building getPos [_out, getDir _building + 180];
-                                    _spot set [2, 0];
-                                    _spot
-                                };
+                        private _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
+                        // No indoor position nearby: the building's centre is inside its walls on almost every
+                        // building (2,626 of 2,639 on Malden), so the civilian stood in the middle of it. Use the
+                        // building's own exit, or failing that a spot just outside its footprint.
+                        private _buildingPosition = if (count _buildingPositions > 0) then {selectRandom _buildingPositions} else {
+                            private _exit = _building buildingExit 0;
+                            if !(_exit isEqualTo [0,0,0]) then { ASLToATL (AGLToASL _exit) } else {
+                                (boundingBoxReal _building) params ["_bbMin", "_bbMax"];
+                                private _out = (((_bbMax select 0) - (_bbMin select 0)) max ((_bbMax select 1) - (_bbMin select 1))) / 2 + 2;
+                                private _spot = _building getPos [_out, getDir _building + 180];
+                                _spot set [2, 0];
+                                _spot
                             };
-
-                            private _agent = [nil, "create"] call ALIVE_fnc_civilianAgent;
-                            [_agent, "init"] call ALIVE_fnc_civilianAgent;
-                            // These setters only store their string values; their return values are unused.
-                            // Use stable per-key setters to avoid any hashSetMany payload parsing edge cases.
-                            [_agent, "agentID", _agentID] call ALIVE_fnc_civilianAgent;
-                            [_agent, "agentClass", _unitClass] call ALIVE_fnc_civilianAgent;
-                            [_agent, "side", _side] call ALIVE_fnc_civilianAgent;
-                            private _unitFaction = getText (configFile >> "CfgVehicles" >> _unitClass >> "faction");
-                            if !(_unitFaction in _factions) then { _unitFaction = _faction };
-                            [_agent, "faction", _unitFaction] call ALIVE_fnc_civilianAgent;
-                            [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
-                            // Preserve position normalization and the position setter's debug refresh.
-                            [_agent, "position", _buildingPosition] call ALIVE_fnc_civilianAgent;
-                            [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
-                            // The Civilian Population module's Hostility is where civilians start (A. Ares on Discord, 19 Oct:
-                            // it used to be a floor under them all): the least-liked side's figure, from which they calm
-                            // towards the resting 30 over time unless given cause. Low and Medium (0, 30) change nothing.
-                            if (!isNil "ALIVE_civilianHostility") then {
-                                private _start = 0;
-                                { if (_x isEqualType 0) then { _start = _start max _x } } forEach (ALIVE_civilianHostility select 2);
-                                if (_start > 30) then { [_agent, "posture", _start min 100] call ALIVE_fnc_hashSet };
-                            };
-
-                            // Add persistent name to civ. Defensive path:
-                            // genericNames may be defined as either text (class
-                            // name pointing to CfgWorlds >> GenericNames) or as
-                            // an array (some third-party unit configs); handle
-                            // both. Also guard against missing GenericNames
-                            // sub-config or empty FirstNames / LastNames lists
-                            // so non-conforming factions don't silently assign
-                            // empty names.
-                            private _genNamesProperty = configFile >> "CfgVehicles" >> _unitClass >> "genericNames";
-                            private _genName = "";
-                            if (isText _genNamesProperty) then {
-                                _genName = getText _genNamesProperty;
-                            };
-                            if (isArray _genNamesProperty) then {
-                                _genName = (getArray _genNamesProperty) param [0, ""];
-                            };
-
-                            private _firstName = "";
-                            private _lastName = "";
-                            private _genNamesCfg = configFile >> "CfgWorlds" >> "GenericNames" >> _genName;
-                            if (isClass _genNamesCfg) then {
-                                private _firstNamesCfg = _genNamesCfg >> "FirstNames";
-                                private _lastNamesCfg = _genNamesCfg >> "LastNames";
-                                if (count _firstNamesCfg > 0) then {
-                                    _firstName = getText (_firstNamesCfg select floor random count _firstNamesCfg);
-                                };
-                                if (count _lastNamesCfg > 0) then {
-                                    _lastName = getText (_lastNamesCfg select floor random count _lastNamesCfg);
-                                };
-                            };
-
-                            [_agent, "firstName", _firstName] call ALIVE_fnc_civilianAgent;
-                            [_agent, "lastName", _lastName] call ALIVE_fnc_civilianAgent;
-
-                            if (count _ambientCivilianRoles > 0 && {random 1 > 0.5}) then {
-                                private _role = selectRandom _ambientCivilianRoles;
-                                //private _roles = _ambientCivilianRoles - [_role];
-
-                                [_agent, _role, true] call ALIVE_fnc_HashSet;
-                            };
-
-                            [_agent] call ALIVE_fnc_selectCivilianCommand;
-
-                            _clusterAgents pushBack _agent;
-
-                            _countCivilianUnits = _countCivilianUnits + 1;
                         };
+
+                        private _agent = [nil, "create"] call ALIVE_fnc_civilianAgent;
+                        [_agent, "init"] call ALIVE_fnc_civilianAgent;
+                        // These setters only store their string values; their return values are unused.
+                        // Use stable per-key setters to avoid any hashSetMany payload parsing edge cases.
+                        [_agent, "agentID", _agentID] call ALIVE_fnc_civilianAgent;
+                        [_agent, "agentClass", _unitClass] call ALIVE_fnc_civilianAgent;
+                        [_agent, "side", _side] call ALIVE_fnc_civilianAgent;
+                        private _unitFaction = getText (configFile >> "CfgVehicles" >> _unitClass >> "faction");
+                        if !(_unitFaction in _factions) then { _unitFaction = _faction };
+                        [_agent, "faction", _unitFaction] call ALIVE_fnc_civilianAgent;
+                        [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
+                        // Preserve position normalization and the position setter's debug refresh.
+                        [_agent, "position", _buildingPosition] call ALIVE_fnc_civilianAgent;
+                        [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
+                        // The Civilian Population module's Hostility is where civilians start (A. Ares on Discord, 19 Oct:
+                        // it used to be a floor under them all): the least-liked side's figure, from which they calm
+                        // towards the resting 30 over time unless given cause. Low and Medium (0, 30) change nothing.
+                        if (!isNil "ALIVE_civilianHostility") then {
+                            private _start = 0;
+                            { if (_x isEqualType 0) then { _start = _start max _x } } forEach (ALIVE_civilianHostility select 2);
+                            if (_start > 30) then { [_agent, "posture", _start min 100] call ALIVE_fnc_hashSet };
+                        };
+
+                        // Add persistent name to civ. Defensive path:
+                        // genericNames may be defined as either text (class
+                        // name pointing to CfgWorlds >> GenericNames) or as
+                        // an array (some third-party unit configs); handle
+                        // both. Also guard against missing GenericNames
+                        // sub-config or empty FirstNames / LastNames lists
+                        // so non-conforming factions don't silently assign
+                        // empty names.
+                        private _genNamesProperty = configFile >> "CfgVehicles" >> _unitClass >> "genericNames";
+                        private _genName = "";
+                        if (isText _genNamesProperty) then {
+                            _genName = getText _genNamesProperty;
+                        };
+                        if (isArray _genNamesProperty) then {
+                            _genName = (getArray _genNamesProperty) param [0, ""];
+                        };
+
+                        private _firstName = "";
+                        private _lastName = "";
+                        private _genNamesCfg = configFile >> "CfgWorlds" >> "GenericNames" >> _genName;
+                        if (isClass _genNamesCfg) then {
+                            private _firstNamesCfg = _genNamesCfg >> "FirstNames";
+                            private _lastNamesCfg = _genNamesCfg >> "LastNames";
+                            if (count _firstNamesCfg > 0) then {
+                                _firstName = getText (_firstNamesCfg select floor random count _firstNamesCfg);
+                            };
+                            if (count _lastNamesCfg > 0) then {
+                                _lastName = getText (_lastNamesCfg select floor random count _lastNamesCfg);
+                            };
+                        };
+
+                        [_agent, "firstName", _firstName] call ALIVE_fnc_civilianAgent;
+                        [_agent, "lastName", _lastName] call ALIVE_fnc_civilianAgent;
+
+                        if (count _ambientCivilianRoles > 0 && {random 1 > 0.5}) then {
+                            private _role = selectRandom _ambientCivilianRoles;
+                            //private _roles = _ambientCivilianRoles - [_role];
+
+                            [_agent, _role, true] call ALIVE_fnc_HashSet;
+                        };
+
+                        [_agent] call ALIVE_fnc_selectCivilianCommand;
+
+                        _clusterAgents pushBack _agent;
+
+                        _countCivilianUnits = _countCivilianUnits + 1;
 
                     } forEach _buildings;
 

@@ -102,6 +102,8 @@ class CfgVehicles {
                                     class EXTREME { name = "$STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_EXTREME"; value = "4"; };
                                 };
                         };
+                        class maxCivilians : Edit { property = "ALiVE_amb_civ_placement_maxCivilians"; displayName = "$STR_ALIVE_AMBCP_MAX_CIVILIANS"; tooltip = "$STR_ALIVE_AMBCP_MAX_CIVILIANS_COMMENT"; defaultValue = """0"""; typeName = "NUMBER"; };
+                        class maxCiviliansPerTown : Edit { property = "ALiVE_amb_civ_placement_maxCiviliansPerTown"; displayName = "$STR_ALIVE_AMBCP_MAX_CIVILIANS_TOWN"; tooltip = "$STR_ALIVE_AMBCP_MAX_CIVILIANS_TOWN_COMMENT"; defaultValue = """0"""; typeName = "NUMBER"; };
                         class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_placement_HDR_AMBIENT"; displayName = "AMBIENT VEHICLES"; };
                         class ambientVehicleAmount : Combo
                         {

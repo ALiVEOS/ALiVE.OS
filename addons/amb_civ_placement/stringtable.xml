@@ -623,4 +623,40 @@
     <Portuguese>Defina as configurações no módulo e coloque marcadores TAOR / Lista negra opcionais!</Portuguese>
     <Russian>Настройте параметры модуля и расставьте опциональные маркеры TAOR / чёрного списка!</Russian>
 </Key>
+<Key ID="STR_ALIVE_AMBCP_MAX_CIVILIANS">
+    <English>Max Civilians:</English>
+    <Chinese>平民上限:</Chinese>
+    <Chinesesimp>平民上限:</Chinesesimp>
+    <Spanish>Máximo de civiles:</Spanish>
+    <French>Civils maximum :</French>
+    <Portuguese>Máximo de civis:</Portuguese>
+    <Russian>Макс. гражданских:</Russian>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_MAX_CIVILIANS_COMMENT">
+    <English>The most civilians this module places in all its towns together. When the buildings chosen come to more, civilians are dropped at random across the towns. 0 means no limit. Default: 0.</English>
+    <Chinese>此模組在所有城鎮中放置的平民總數上限。若選中的建築物超過此數,會在各城鎮中隨機刪減。0 表示不限制。預設值:0。</Chinese>
+    <Chinesesimp>此模块在所有城镇中放置的平民总数上限。若选中的建筑超过此数,会在各城镇中随机删减。0 表示不限制。默认:0。</Chinesesimp>
+    <Spanish>El máximo de civiles que este módulo coloca en todas sus ciudades juntas. Si los edificios elegidos superan esa cifra, se quitan civiles al azar entre las ciudades. 0 significa sin límite. Por defecto: 0.</Spanish>
+    <French>Le nombre maximal de civils que ce module place dans toutes ses villes réunies. Si les bâtiments choisis sont plus nombreux, des civils sont retirés au hasard dans les villes. 0 signifie aucune limite. Par défaut : 0.</French>
+    <Portuguese>O máximo de civis que este módulo coloca em todas as suas cidades juntas. Se os edifícios escolhidos passarem desse número, civis são retirados ao acaso entre as cidades. 0 significa sem limite. Padrão: 0.</Portuguese>
+    <Russian>Наибольшее число гражданских, которое модуль размещает во всех своих населённых пунктах вместе. Если выбранных зданий больше, лишние гражданские убираются случайно по всем пунктам. 0 — без ограничения. По умолчанию: 0.</Russian>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_MAX_CIVILIANS_TOWN">
+    <English>Max Civilians Per Town:</English>
+    <Chinese>每城鎮平民上限:</Chinese>
+    <Chinesesimp>每城镇平民上限:</Chinesesimp>
+    <Spanish>Máximo de civiles por ciudad:</Spanish>
+    <French>Civils maximum par ville :</French>
+    <Portuguese>Máximo de civis por cidade:</Portuguese>
+    <Russian>Макс. гражданских на пункт:</Russian>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_MAX_CIVILIANS_TOWN_COMMENT">
+    <English>The most civilians placed in any one town. A town whose chosen buildings come to more gets a random selection of them. 0 means no limit. Default: 0.</English>
+    <Chinese>任一城鎮放置的平民上限。若某城鎮選中的建築物超過此數,會從中隨機挑選。0 表示不限制。預設值:0。</Chinese>
+    <Chinesesimp>任一城镇放置的平民上限。若某城镇选中的建筑超过此数,会从中随机挑选。0 表示不限制。默认:0。</Chinesesimp>
+    <Spanish>El máximo de civiles en una sola ciudad. Si una ciudad tiene más edificios elegidos, se escoge una parte al azar. 0 significa sin límite. Por defecto: 0.</Spanish>
+    <French>Le nombre maximal de civils dans une même ville. Une ville dont les bâtiments choisis sont plus nombreux en reçoit une sélection au hasard. 0 signifie aucune limite. Par défaut : 0.</French>
+    <Portuguese>O máximo de civis em uma única cidade. Uma cidade com mais edifícios escolhidos recebe uma seleção ao acaso. 0 significa sem limite. Padrão: 0.</Portuguese>
+    <Russian>Наибольшее число гражданских в одном населённом пункте. Если выбранных зданий больше, берётся случайная часть. 0 — без ограничения. По умолчанию: 0.</Russian>
+</Key>
 </Container></Package></Project>
