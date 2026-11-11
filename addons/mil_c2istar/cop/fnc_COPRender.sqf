@@ -678,6 +678,15 @@ ALIVE_fnc_COPDrawAll = {
     private _sideKey = ALIVE_COP_playerSideKey;
     if (_sideKey == "UNKNOWN") exitWith {};
 
+    // Map Intel Needs A Radio: no radio, no COP. Checked every 2 seconds, not every frame.
+    if (missionNamespace getVariable ["ALIVE_militaryIntelNeedsRadio", false]) then {
+        if (time >= (missionNamespace getVariable ["ALIVE_COP_radioCheckAt", -1])) then {
+            ALIVE_COP_radioCheckAt = time + 2;
+            ALIVE_COP_hasRadio = ["Radios,ACE3_Radios,TFAR_Radios", "", [], player] call ALIVE_fnc_playerHasAccessItems;
+        };
+    } else { ALIVE_COP_hasRadio = true };
+    if !(missionNamespace getVariable ["ALIVE_COP_hasRadio", true]) exitWith {};
+
     // Anchor resolved once per frame.
     private _anchor = getPos player;
     private _anchorDist = missionNamespace getVariable ["ALIVE_COP_ANCHOR_DISTANCE", 1000];

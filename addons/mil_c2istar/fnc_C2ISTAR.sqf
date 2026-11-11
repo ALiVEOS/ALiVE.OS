@@ -2389,6 +2389,10 @@ if (isServer) then {
 
             missionNamespace setVariable ["ALIVE_militaryIntelVisibility", _mapIntelVisibility, true];
             missionNamespace setVariable ["ALIVE_militaryIntelRevealInstallations", _mapIntelRevealInstallations, true];
+            // Map intel and the COP for radio carriers only (Fitz on Discord, 9 Nov: 1960-90s play, intel too perfect)
+            private _needsRadio = _logic getVariable ["mapIntelNeedsRadio", "false"];
+            if (_needsRadio isEqualType "") then { _needsRadio = (toLower _needsRadio) == "true" };
+            missionNamespace setVariable ["ALIVE_militaryIntelNeedsRadio", _needsRadio isEqualTo true, true];
 
             if(_displayIntel || _displayPlayerSectors || _displayMilitarySectors || _friendlyIntel) then {
 

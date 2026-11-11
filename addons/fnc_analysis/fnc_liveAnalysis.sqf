@@ -178,6 +178,15 @@ switch(_operation) do {
             };
             default {allPlayers select {side (group _x) == _sourceSide}};
         };
+        _result = [_logic, "radioFilter", _result] call MAINCLASS;
+    };
+
+    // With Map Intel Needs A Radio on, keeps only the players carrying a radio or standing at a command point
+    case "radioFilter": {
+        _result = _args;
+        if (missionNamespace getVariable ["ALIVE_militaryIntelNeedsRadio", false]) then {
+            _result = _args select { ["Radios,ACE3_Radios,TFAR_Radios", "", [], _x] call ALIVE_fnc_playerHasAccessItems };
+        };
     };
 
     // Shows intel markers, given as data, to the players listed and takes them off everyone
@@ -578,6 +587,7 @@ switch(_operation) do {
                 };
                 default {allPlayers select {side (group _x) == _sourceSide}};
             };
+            _intelRecipients = [_logic, "radioFilter", _intelRecipients] call MAINCLASS;
             private _intelNonRecipients = allPlayers - _intelRecipients;
 
             // Installations
@@ -1451,7 +1461,7 @@ switch(_operation) do {
 
                             // A side's coverage is shown to that side and the sides friendly to it,
                             // never to its enemies. Everyone saw it before.
-                            private _sideRecipients = allPlayers select {(_coverageSide getFriend (side (group _x))) >= 0.6};
+                            private _sideRecipients = [_logic, "radioFilter", allPlayers select {(_coverageSide getFriend (side (group _x))) >= 0.6}] call MAINCLASS;
                             if (count _sideRecipients > 0 && {count _sideData > 0}) then {
                                 [objNull,"createMarkersLocally", _sideData] remoteExecCall ["ALiVE_fnc_liveAnalysis", _sideRecipients];
                             };

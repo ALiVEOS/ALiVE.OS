@@ -828,6 +828,18 @@ class CfgVehicles {
                             };
                             ALiVE_showWhen[] = {{"displayIntel", "is", "true"}};
                     };
+                    class mapIntelNeedsRadio : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_mapIntelNeedsRadio";
+                            displayName = "$STR_ALIVE_C2ISTAR_MAP_INTEL_NEEDS_RADIO";
+                            tooltip = "$STR_ALIVE_C2ISTAR_MAP_INTEL_NEEDS_RADIO_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; default = 1; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
                     class mapIntelRevealInstallations : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_mapIntelRevealInstallations";
