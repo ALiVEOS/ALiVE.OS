@@ -189,6 +189,9 @@ switch(_operation) do {
                     private _ovdCap = _maxsetovd min viewDistance;
                     if ((getObjectViewDistance select 0) > _ovdCap) then { setObjectViewDistance _ovdCap };
                     private _prefOVD = missionNamespace getVariable ["ALiVE_prefObjectViewDistance", 0];
+                    // no value of the player's own: the mission maker's Start Object View Distance (A. Ares on
+                    // Discord, 9 Nov), inside the same limits
+                    if (_prefOVD <= 0) then { _prefOVD = parseNumber format ["%1", ADDON getVariable ["startOVD", "0"]] };
                     if (_prefOVD > 0) then {
                         private _minsetovd = parseNumber format ["%1", ADDON getVariable ["minVD", "500"]];
                         if (_minsetovd == 0) then { _minsetovd = 500 };

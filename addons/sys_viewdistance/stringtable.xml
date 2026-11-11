@@ -36,6 +36,24 @@
 <Key ID="STR_ALIVE_OVDIST_MAX_COMMENT">
     <English>Furthest players can set how far away they see objects (buildings, trees, vehicles) on the View Settings window. It is never more than their view distance. Lower it to save frames on a busy map.</English>
 </Key>
+<Key ID="STR_ALIVE_OVDIST_START">
+    <English>Start Object View Distance (m):</English>
+    <Chinese>起始物件可視距離 (公尺):</Chinese>
+    <Chinesesimp>起始物体可视距离 (米):</Chinesesimp>
+    <Spanish>Distancia inicial de visión de objetos (m):</Spanish>
+    <French>Distance d'affichage des objets au départ (m) :</French>
+    <Portuguese>Distância inicial de visão de objetos (m):</Portuguese>
+    <Russian>Начальная дальность прорисовки объектов (м):</Russian>
+</Key>
+<Key ID="STR_ALIVE_OVDIST_START_COMMENT">
+    <English>How far away players see objects (buildings, trees, vehicles) when the mission starts, unless they have set their own value in Addon Options > ALiVE > Game. Kept within the minimum view distance and the Max Object View Distance. 0 leaves the game's own setting.</English>
+    <Chinese>任務開始時玩家看見物件(建築物、樹木、載具)的距離,除非玩家已在 Addon Options > ALiVE > Game 中設定自己的數值。會保持在最小可視距離與最大物件可視距離之間。0 表示沿用遊戲本身的設定。</Chinese>
+    <Chinesesimp>任务开始时玩家看见物体(建筑、树木、载具)的距离,除非玩家已在 Addon Options > ALiVE > Game 中设置了自己的数值。会保持在最小可视距离与最大物体可视距离之间。0 表示沿用游戏本身的设置。</Chinesesimp>
+    <Spanish>A qué distancia ven los jugadores los objetos (edificios, árboles, vehículos) al empezar la misión, salvo que hayan fijado su propio valor en Addon Options > ALiVE > Game. Se mantiene entre la distancia de visión mínima y la distancia máxima de visión de objetos. 0 deja el ajuste del propio juego.</Spanish>
+    <French>La distance à laquelle les joueurs voient les objets (bâtiments, arbres, véhicules) au début de la mission, sauf s'ils ont réglé leur propre valeur dans Addon Options > ALiVE > Game. Reste entre la distance de vue minimale et la distance d'affichage maximale des objets. 0 garde le réglage du jeu.</French>
+    <Portuguese>A que distância os jogadores veem objetos (edifícios, árvores, veículos) quando a missão começa, a menos que tenham definido seu próprio valor em Addon Options > ALiVE > Game. Fica entre a distância de visão mínima e a distância máxima de visão de objetos. 0 mantém a configuração do próprio jogo.</Portuguese>
+    <Russian>На каком расстоянии игроки видят объекты (здания, деревья, технику) в начале миссии, если они не задали своё значение в Addon Options > ALiVE > Game. Остаётся в пределах минимальной дальности обзора и максимальной дальности прорисовки объектов. 0 — оставить настройку игры.</Russian>
+</Key>
 <Key ID="STR_ALIVE_VDIST_ENABLED">
     <English>Set View Settings</English>
     <Chinesesimp>修改视图设置</Chinesesimp>
