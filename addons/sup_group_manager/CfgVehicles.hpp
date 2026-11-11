@@ -2,7 +2,7 @@ class CfgVehicles {
     class Logic;
     class Module_F : Logic
     {
-        class AttributesBase { class Edit; class Combo; class ModuleDescription; };
+        class AttributesBase { class Edit; class Combo; class ModuleDescription; class ALiVE_EditMultilineSQF; };
     };
     class ModuleAliveBase : Module_F
     {
@@ -268,6 +268,19 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        // a placed one's object deleted when it is overrun (A. Ares on Discord, 27 Oct)
+                        class deleteOverrun : Combo
+                        {
+                                property = "ALiVE_sup_rally_deleteOverrun";
+                                displayName = "$STR_ALIVE_RALLY_DELETEOVERRUN";
+                                tooltip = "$STR_ALIVE_RALLY_DELETEOVERRUN_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         class HDR_TRAVEL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_rally_HDR_TRAVEL"; displayName = "TRAVEL RULES"; };
                         class squadRadius : Edit
                         {
@@ -345,6 +358,14 @@ class CfgVehicles {
                             displayName = "$STR_ALIVE_RALLY_LEADERCLASS";
                             tooltip = "$STR_ALIVE_RALLY_LEADERCLASS_COMMENT";
                             typeName = "STRING";
+                            defaultValue = """""";
+                            ALiVE_showWhen[] = {{"leaderRally", "not", "OFF"}};
+                    };
+                    class leaderRallyInit : ALiVE_EditMultilineSQF
+                    {
+                            property = "ALiVE_sup_rally_leaderRallyInit";
+                            displayName = "$STR_ALIVE_RALLY_LEADERINIT";
+                            tooltip = "$STR_ALIVE_RALLY_LEADERINIT_COMMENT";
                             defaultValue = """""";
                             ALiVE_showWhen[] = {{"leaderRally", "not", "OFF"}};
                     };

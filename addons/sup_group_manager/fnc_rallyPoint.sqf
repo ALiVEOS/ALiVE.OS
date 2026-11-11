@@ -245,6 +245,10 @@ switch (_op) do {
         if (!isNil "ALiVE_rallyPending") then { ALiVE_rallyPending = ALiVE_rallyPending select { !((_x select 0) == str side _grp && {(_x select 1) == groupId _grp}) } };
         ["add", [_obj, _name, str side _grp, "leader", [_grp, grpNull] select (_mode == "SIDE"), _grp]] call ALiVE_fnc_rallyPoint;
         _result = _obj;
+        // Leader Rally Point Init (A. Ares on Discord, 27 Oct): the mission's own code on each object a squad leader's rally
+        // point makes, put down or brought back, as Eden and Zeus points have their init fields. _this = [object, group]
+        private _init = ["leaderRallyInit", ""] call _set;
+        if (_init isEqualType "" && {_init != ""}) then { [_obj, _grp] call compile _init };
         [_obj, _grp, _r, ["leaderOverrun", 30] call _set, ["repairTime", 0] call _set] spawn {
             params ["_obj", "_grp", "_r", "_overrun", "_repair"];
             // the server's own: this runs on from a player's deploy request, which it would otherwise count as asking

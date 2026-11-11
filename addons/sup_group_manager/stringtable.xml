@@ -880,4 +880,16 @@
 <Key ID="STR_ALIVE_RALLY_POINTCAPTURE_COMMENT">
     <English>Yes: when an overrun placed rally point's Overrun Repair Time is up and the enemy holds the ground within Enemy Radius, with none of its own side there, it comes back as the enemy's rally point, for anyone of that side. Needs an Overrun Repair Time. A squad leader's own point always comes back to the squad. A point synced or listed in Eden is its own side's again after a restart. No, the default: it always comes back for its own side.</English>
 </Key>
+<Key ID="STR_ALIVE_RALLY_DELETEOVERRUN">
+    <English>Delete Overrun Placed Objects</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_DELETEOVERRUN_COMMENT">
+    <English>Yes: when a placed rally point (synced to the module or of a class in Rally Point Classes) is overrun, its object is deleted, so it never comes back and Overrun Repair Time does not apply to it. No, the default: the object stays where it is. One object can have its own answer from its init field, this setVariable ["ALiVE_rallyDeleteOverrun", true] (or false to keep it), and that works for any kind of rally point with an overrun time.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADERINIT">
+    <English>Leader Rally Point Init</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_LEADERINIT_COMMENT">
+    <English>Code run on the server on each object a squad leader's rally point makes, when it is put down and when it comes back after Overrun Repair Time, as Eden and Zeus rally points have their init fields. _this is [object, group]. It runs on the server, so an action players should see goes out to them, for example: [_this select 0, ["Arsenal", { ["Open", true] spawn BIS_fnc_arsenal }]] remoteExec ["addAction", 0, _this select 0]. The usual backpack is a simple object with no inventory or actions of its own; set Squad Rally Point Object to an object that can carry them. Empty (default) runs nothing.</English>
+</Key>
 </Container></Package></Project>

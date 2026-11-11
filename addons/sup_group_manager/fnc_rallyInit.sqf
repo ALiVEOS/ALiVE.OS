@@ -56,7 +56,9 @@ if (isServer && {_main}) then { ["permLoad"] call ALiVE_fnc_rallyPoint };
 // Placed Rally Point Overrun Time (A. Ares on Discord, 27 Oct): a synced or class-listed rally point of one side is lost
 // once enemies have held it this long, as a squad's own is. An object's ALiVE_rallyOverrun overrides the module, and gives
 // any other kind of point (a side HQ, a script's) a time of its own. 0, the default, is never; an "ANY" point has no enemy.
-// The object is left standing: it is the mission's own.
+// The object is left standing: it is the mission's own, unless Delete Overrun Objects says otherwise (A. Ares on Discord,
+// 27 Oct). An object's ALiVE_rallyDeleteOverrun (true or false) overrides the module, for any kind of point; a deleted one
+// has nothing to bring back, so Overrun Repair Time doesn't apply to it.
 if (isServer && {_main}) then {
     [_logic] spawn {
         params ["_logic"];
@@ -64,6 +66,7 @@ if (isServer && {_main}) then {
         private _r = (parseNumber format ["%1", _logic getVariable ["enemyRadius", 100]]) max 50;
         // Overrun Repair Time: back on the list this long after, if the object still stands; 0 is never
         private _repair = parseNumber format ["%1", _logic getVariable ["repairTime", 0]];
+        private _delete = (toLower format ["%1", _logic getVariable ["deleteOverrun", "false"]]) in ["true", "1"];
         while { true } do {
             sleep 5;
             private _lost = [];
@@ -81,13 +84,17 @@ if (isServer && {_main}) then {
             } forEach (missionNamespace getVariable ["ALiVE_rallyPoints", []]);
             {
                 private _row = _x;
-                _row params ["_o", "_name", "_who"];
+                _row params ["_o", "_name", "_who", "_kind"];
+                private _del = _o getVariable ["ALiVE_rallyDeleteOverrun", _delete && {_kind in ["synced", "class"]}];
+                if !(_del isEqualType true) then { _del = (toLower format ["%1", _del]) in ["true", "1"] };
+                private _back = _repair > 0 && {!_del};
                 ["remove", [_o]] call ALiVE_fnc_rallyPoint;
-                ["ALiVE Rally Points: %1 (%2) was overrun%3", _name, _who, ["", format ["; back in %1 s", _repair]] select (_repair > 0)] call ALiVE_fnc_dump;
+                ["ALiVE Rally Points: %1 (%2) was overrun%3", _name, _who, [["", "; its object is deleted"] select _del, format ["; back in %1 s", _repair]] select _back] call ALiVE_fnc_dump;
                 private _label = format [localize "STR_ALIVE_SITE_RALLY", _name];
-                ["notify", [["lost", "down"] select (_repair > 0), _who, _label, _repair / 60]] call ALiVE_fnc_siteClock;
+                ["notify", [["lost", "down"] select _back, _who, _label, _repair / 60]] call ALiVE_fnc_siteClock;
+                if (_del) then { deleteVehicle _o };
                 // on the sites' shared clock, set after the remove, which calls off any earlier wait; the key is the token
-                if (_repair > 0) then {
+                if (_back) then {
                     private _token = ["newKey", ["rally"]] call ALiVE_fnc_siteClock;
                     _o setVariable ["ALiVE_rallyBack", _token];
                     ["start", [_token, _repair, "ALiVE_fnc_rallyPoint", ["restore", [_row, _token]], [_who, getPosATL _o, _label, "back"]]] call ALiVE_fnc_siteClock;
