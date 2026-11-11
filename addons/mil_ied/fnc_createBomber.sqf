@@ -69,6 +69,8 @@ if (isNil "_bomber") then {
     // kept on the server from the start: a headless client given him would run neither the handlers
     // nor the chase below, and a move can reset his loadout and lose the vest. ACE's own transfer reads
     // its blacklist, which ALiVE otherwise only copies across every 15 s.
+    // set before anything waits: an ORBAT Creator faction's own loadout script runs 0.2 s after he is made (#1103)
+    _bomber setVariable ["ALiVE_OverrideLoadout", true, true];
     _bomber setVariable ["ALiVE_ignore_HC", true, true];
     _bomber setVariable ["acex_headless_blacklist", true, true];
     _grp setVariable ["acex_headless_blacklist", true, true];

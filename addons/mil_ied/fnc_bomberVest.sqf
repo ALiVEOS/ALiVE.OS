@@ -63,6 +63,10 @@ if (_own isEqualTo [] || {_own isEqualTo [_default]}) then {
 };
 private _vest = selectRandom _own;
 
+// A faction made with the ORBAT Creator (CFP and many others) puts its own loadout back on a moment after
+// the man is made, which took the vest off again and left the charges with nothing to hang on (#1103).
+// This flag is the one that script checks, so it leaves him as he is dressed here.
+_unit setVariable ["ALiVE_OverrideLoadout", true, true];
 // dressed again: the old charges go first
 { deleteVehicle _x } forEach (_unit getVariable ["ALiVE_bomberCharges", []]);
 _unit setVariable ["ALiVE_bomberCharges", []];
@@ -109,6 +113,13 @@ if !(_unit getVariable ["ALiVE_bomberDeletedEH", false]) then {
     // from another machine the vest takes a moment to show here
     private _until = time + 15;
     waitUntil { sleep 0.5; isNull _unit || {vest _unit == _vest} || {time > _until} };
+    // something else dressed him after this did (a mod's own loadout script): put the vest on once more
+    if (!isNull _unit && {alive _unit} && {vest _unit != _vest}) then {
+        ["ALiVE IED: %1 lost his vest straight after he was dressed, putting it back on", typeOf _unit] call ALiVE_fnc_dump;
+        if (local _unit) then { _unit addVest _vest } else { [_unit, _vest] remoteExecCall ["addVest", _unit] };
+        _until = time + 15;
+        waitUntil { sleep 0.5; isNull _unit || {vest _unit == _vest} || {time > _until} };
+    };
     waitUntil {
         sleep 1;
         isNull _unit ||
