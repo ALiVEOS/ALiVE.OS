@@ -1,4 +1,4 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 #include "\x\alive\addons\civ_placement\script_component.hpp"
 ALIVE_clusterBuild = [CLUSTERBUILD];
 ALIVE_clustersMil = [] call ALIVE_fnc_hashCreate;
@@ -210,7 +210,7 @@ _nodes set [count _nodes, ["5674",[2694.32,5634.58,-0.0554862]]];
 [_cluster, "state", _cluster] call ALIVE_fnc_cluster;
 [_cluster,"clusterID","c_3"] call ALIVE_fnc_hashSet;
 [_cluster,"center",[2551.88,5358.74]] call ALIVE_fnc_hashSet;
-[_cluster,"size",831.859] call ALIVE_fnc_hashSet;
+[_cluster,"size",831.86] call ALIVE_fnc_hashSet;
 [_cluster,"type","MIL"] call ALIVE_fnc_hashSet;
 [_cluster,"priority",20] call ALIVE_fnc_hashSet;
 [_cluster,"debugColor","ColorOrange"] call ALIVE_fnc_hashSet;
@@ -716,8 +716,5 @@ _nodes set [count _nodes, ["25146",[3544.66,4641.55,-0.00635481]]];
 [_cluster,"debugColor","ColorOrange"] call ALIVE_fnc_hashSet;
 [ALIVE_clustersMilAir,"c_24",_cluster] call ALIVE_fnc_hashSet;
 ALIVE_clustersMilHeli = [] call ALIVE_fnc_hashCreate;
-// fieldworks: used only when Military Placement's Fieldworks setting asks for them
-ALIVE_clustersMilFieldwork = [] call ALIVE_fnc_hashCreate;
-
 // fieldworks: used only when Military Placement's Fieldworks setting asks for them
 ALIVE_clustersMilFieldwork = [] call ALIVE_fnc_hashCreate;

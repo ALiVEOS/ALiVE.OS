@@ -1,4 +1,4 @@
-// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 #include "\x\alive\addons\civ_placement\script_component.hpp"
 ALIVE_clusterBuild = [CLUSTERBUILD];
 ALIVE_clustersMil = [] call ALIVE_fnc_hashCreate;
@@ -359,51 +359,3 @@ _nodes set [count _nodes, ["753665",[6511.00,2137.00,0]]];
 [_cluster,"priority",5] call ALIVE_fnc_hashSet;
 [_cluster,"debugColor","ColorBrown"] call ALIVE_fnc_hashSet;
 [ALIVE_clustersMilFieldwork,"c_16",_cluster] call ALIVE_fnc_hashSet;
-
-// fieldworks: used only when Military Placement's Fieldworks setting asks for them
-ALIVE_clustersMilFieldwork = [] call ALIVE_fnc_hashCreate;
-_cluster = [nil, "create"] call ALIVE_fnc_cluster;
-_nodes = [];
-_nodes set [count _nodes, ["754454",[6569.0,1863.0,0]]];
-_nodes set [count _nodes, ["754453",[6594.0,1884.0,0]]];
-_nodes set [count _nodes, ["754452",[6530.0,1893.0,0]]];
-_nodes set [count _nodes, ["754577",[6617.0,1903.0,0]]];
-_nodes set [count _nodes, ["754118",[6534.0,1940.0,0]]];
-_nodes set [count _nodes, ["754276",[6638.0,1924.0,0]]];
-[_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
-[_cluster, "state", _cluster] call ALIVE_fnc_cluster;
-[_cluster,"clusterID","c_17"] call ALIVE_fnc_hashSet;
-[_cluster,"center",[6580.33,1901.17]] call ALIVE_fnc_hashSet;
-[_cluster,"size",90] call ALIVE_fnc_hashSet;
-[_cluster,"type","MIL"] call ALIVE_fnc_hashSet;
-[_cluster,"priority",5] call ALIVE_fnc_hashSet;
-[_cluster,"debugColor","ColorBrown"] call ALIVE_fnc_hashSet;
-[ALIVE_clustersMilFieldwork,"c_17",_cluster] call ALIVE_fnc_hashSet;
-_cluster = [nil, "create"] call ALIVE_fnc_cluster;
-_nodes = [];
-_nodes set [count _nodes, ["422259",[6839.0,1995.0,0]]];
-_nodes set [count _nodes, ["422427",[6871.0,2011.0,0]]];
-_nodes set [count _nodes, ["420967",[6827.0,2024.0,0]]];
-[_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
-[_cluster, "state", _cluster] call ALIVE_fnc_cluster;
-[_cluster,"clusterID","c_18"] call ALIVE_fnc_hashSet;
-[_cluster,"center",[6845.67,2010.0]] call ALIVE_fnc_hashSet;
-[_cluster,"size",50] call ALIVE_fnc_hashSet;
-[_cluster,"type","MIL"] call ALIVE_fnc_hashSet;
-[_cluster,"priority",5] call ALIVE_fnc_hashSet;
-[_cluster,"debugColor","ColorBrown"] call ALIVE_fnc_hashSet;
-[ALIVE_clustersMilFieldwork,"c_18",_cluster] call ALIVE_fnc_hashSet;
-_cluster = [nil, "create"] call ALIVE_fnc_cluster;
-_nodes = [];
-_nodes set [count _nodes, ["753721",[6457.0,2089.0,0]]];
-_nodes set [count _nodes, ["753722",[6483.0,2111.0,0]]];
-_nodes set [count _nodes, ["753665",[6511.0,2137.0,0]]];
-[_cluster,"nodes",_nodes] call ALIVE_fnc_hashSet;
-[_cluster, "state", _cluster] call ALIVE_fnc_cluster;
-[_cluster,"clusterID","c_19"] call ALIVE_fnc_hashSet;
-[_cluster,"center",[6483.67,2112.33]] call ALIVE_fnc_hashSet;
-[_cluster,"size",60] call ALIVE_fnc_hashSet;
-[_cluster,"type","MIL"] call ALIVE_fnc_hashSet;
-[_cluster,"priority",5] call ALIVE_fnc_hashSet;
-[_cluster,"debugColor","ColorBrown"] call ALIVE_fnc_hashSet;
-[ALIVE_clustersMilFieldwork,"c_19",_cluster] call ALIVE_fnc_hashSet;

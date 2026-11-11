@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: dunkirk (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: dunkirk (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,68 +30,14 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Woodland";
+[ALIVE_mapBounds, worldName, 8192] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "dunkirk") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\data_f\particleeffects\craterlong\craterlong_small.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\bulldozer_01_abandoned_f.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\bulldozer_01_wreck_f.p3d",
-        "a3\props_f_exp\naval\boats\boat_05_wreck_f.p3d",
-        "a3\structures_f\ind\factory\factory_tunnel_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "a3\structures_f_argo\cultural\statues\pedestal_01_f.p3d",
-        "a3\structures_f_argo\cultural\statues\statue_02_f.p3d",
-        "a3\structures_f_argo\decals\horizontal\dirtpatch_01_6x8_f.p3d",
-        "a3\structures_f_argo\industrial\agriculture\vineyardfence_01_f.p3d",
-        "a3\structures_f_argo\military\fortifications\barricade_01_4m_f.p3d",
-        "a3\structures_f_argo\military\fortifications\sandbagbarricade_01_f.p3d",
-        "a3\structures_f_argo\military\fortifications\sandbagbarricade_01_half_f.p3d",
-        "a3\structures_f_argo\military\fortifications\sandbagbarricade_01_hole_f.p3d",
-        "a3\structures_f_argo\walls\city\wallcity_01_4m_grey_f.p3d",
-        "a3\structures_f_argo\walls\city\wallcity_01_8m_grey_f.p3d",
-        "a3\structures_f_argo\walls\city\wallcity_01_8m_plain_grey_f.p3d",
-        "a3\structures_f_argo\walls\city\wallcity_01_gate_blue_f.p3d",
-        "a3\structures_f_argo\walls\city\wallcity_01_gate_grey_f.p3d",
-        "a3\structures_f_enoch\industrial\farms\strawstack_01_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\timberlog_04_f.p3d",
-        "a3\structures_f_enoch\industrial\materials\timberlog_05_f.p3d",
-        "a3\structures_f_enoch\military\training\shellcrater_02_small_f.p3d",
-        "a3\structures_f_enoch\walls\brick\brickwall_01_l_5m_f.p3d",
-        "a3\structures_f_enoch\walls\brick\brickwall_04_l_pole_f.p3d",
-        "a3\structures_f_enoch\walls\wooden\woodenwall_05_m_4m_v1_f.p3d",
-        "a3\structures_f_enoch\walls\wooden\woodenwall_05_m_d_4m_f.p3d",
-        "a3\structures_f_exp\industrial\stockyard_01\sy_01_stockpile_01_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_heap_sugarcane_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_shed_f.p3d",
-        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shelter_narrow_f.p3d",
-        "a3\structures_f_exp\military\emplacements\emplacementgun_01_rusty_f.p3d",
-        "a3\structures_f_exp\military\trenches\trench_01_grass_f.p3d",
-        "a3\structures_f_exp\naval\piers\breakwater_02_f.p3d",
-        "a3\structures_f_exp\walls\hedges\hedge_01_s_4m_f.p3d",
-        "a3\weapons_f\ammoboxes\usbasicammo.p3d",
-        "a3\weapons_f\ammoboxes\usbasicweapons.p3d",
-        "a3\weapons_f\ammoboxes\uslaunchers.p3d",
-        "ca\buildings2\houseruins\r_shed_ind02.p3d",
         "ca\buildings2\ind_cementworks\ind_pec\ind_pec_03_ruins.p3d",
-        "ca\buildings2\ind_cementworks\ind_silovelke\ind_silovelke_02.p3d",
         "ca\buildings2\shed_small\shed_m02.p3d",
-        "ca\buildings\podesta_10.p3d",
         "ca\buildings\podesta_1_mid_cornl.p3d",
-        "ca\buildings\podesta_5.p3d",
         "ca\desert2\data\road\asf25.p3d",
-        "ca\desert2\data\road\asf6konec.p3d",
-        "ca\roads2\path_0 2000.p3d",
-        "ca\roads_pmc\bridge\bridge_asf_pmc.p3d",
-        "ca\structures\nav_pier\nav_pier_c_r10.p3d",
-        "ca\structures\nav_pier\nav_pier_pneu.p3d",
-        "ca\structures\nav_pier\nav_pier_uvaz.p3d",
-        "ca\structures\rail\rail_misc\rail_najazdovarampa.p3d",
-        "ca\structures\rail\rail_platform\rail_platform_segment.p3d",
-        "ca\structures\rail\rail_platform\rail_platform_start.p3d",
-        "ca\structures\rail\rail_wagon\wagon_box.p3d",
-        "ca\structures\rail\rail_wagon\wagon_flat.p3d",
-        "ca\structures\rail\rail_wagon\wagon_tanker.p3d",
-        "ca\structures_e\misc\misc_cables\misc_cable_ep1.p3d",
         "ww2\assets_m\misc\items_m\if_gerradio.p3d",
         "ww2\assets_m\misc\items_m\if_sovradio.p3d",
         "ww2\assets_m\misc\items_m\if_staszow_map.p3d",
@@ -102,50 +48,26 @@ ALiVE_mapCompositionType = "Woodland";
         "ww2\assets_m\vehicles\wrecks_m\if_opelblitz_wreck2.p3d",
         "ww2\assets_m\vehicles\wrecks_m\if_us6_wreck.p3d",
         "ww2\assets_m\vehicles\wrecks_m\if_zis5v_wreck.p3d",
-        "ww2\assets_m\weapons\ammoboxes_m\if_su_weapons_big.p3d",
         "ww2\objects_m\misc\i44_mcn_objects_m\i44_hedge2.p3d",
         "ww2\objects_m\misc\i44_objects_map_m\i44_braken.p3d",
         "ww2\objects_m\misc\i44_ttw1_objects_m\i44_garden1.p3d",
         "ww2\objects_m\misc\i44_ttw1_objects_m\i44_land_old_bridge_ruins.p3d",
-        "ww2\objects_m\misc\i44_ttw1_objects_m\i44_old_bridge.p3d",
-        "ww2\objects_m\misc\i44_vine_fence_m\i44_vine.p3d",
-        "ww2\objects_m\misc\i44_vine_fence_m\i44_vine_fence.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_big1.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_big2.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_big3.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small03.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small05.p3d",
         "ww2\objects_m\misc\jns_snow_objects_m\railway\ww2_jns_rails_bridge_40.p3d",
         "ww2\objects_m\misc\ww2_cobbles_m\ww2_cobble_1.p3d",
         "ww2\objects_m\misc\ww2_cobbles_m\ww2_cobble_4.p3d",
-        "ww2\objects_m\misc\ww2_misc_m\oderbruch\ww2_mg_wagon_box.p3d",
         "ww2\objects_m\misc\ww2_misc_m\oderbruch\ww2_mg_wagon_coal.p3d",
-        "ww2\objects_m\misc\ww2_misc_m\oderbruch\ww2_mg_wagon_tanker.p3d",
-        "ww2\objects_m\structures\cup_structureswinter_m\nav_boathouse\cup_nav_boathouse_pierl_w.p3d",
-        "ww2\objects_m\structures\i44_buildings_m\walls\i44_lapmpost.p3d",
         "ww2\objects_m\structures\i44_buildings_m\walls\i44_telegraphpost01.p3d",
         "ww2\objects_m\structures\i44_buildings_m\walls\i44_telegraphpost02.p3d",
         "ww2\objects_m\structures\i44_buildings_m\walls\i44_woodfence01.p3d",
         "ww2\objects_m\structures\if_buildings2_m\ww2_french_stone_wall.p3d",
         "ww2\objects_m\structures\if_buildings2_m\ww2_french_wood_wall.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_market1.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_market2.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_market3.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_s_bruno.p3d",
         "ww2\objects_m\structures\if_buildings_m\ww2_sarai_big.p3d",
         "ww2\objects_m\structures\if_buildings_m\ww2_setka_car.p3d",
         "ww2\objects_m\structures\if_buildings_m\ww2_setka_dor.p3d",
         "ww2\objects_m\structures\if_buildings_m\ww2_setka_vert.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_wire_1.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_wire_2.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_wire_3.p3d",
-        "ww2\objects_m\structures\if_buildingsrw_m\ww2_gryada.p3d",
         "ww2\objects_m\structures\if_buildingsrw_m\ww2_shed_w01.p3d",
-        "ww2\objects_m\structures\if_buildingsrw_m\ww2_wicker_fence3.p3d",
-        "ww2\objects_m\structures\if_buildingsrw_m\ww2_wicker_fence_short_dammage.p3d",
         "ww2\objects_m\structures\if_ponton_m\ww2_ponton_apparel1.p3d",
         "ww2\objects_m\structures\if_ponton_m\ww2_ponton_bridge.p3d",
-        "ww2\objects_m\structures\ww2_trenches_m\ww2_swu_corrugated_roof_desert.p3d",
         "ww2\objects_m\structures\ww2_trenches_m\ww2_swu_trench_fence_long.p3d"
     ];
 
