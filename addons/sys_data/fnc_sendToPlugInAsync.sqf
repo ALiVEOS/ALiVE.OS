@@ -23,6 +23,7 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -31,16 +32,11 @@ PARAMS_1(_cmd);
 
 // Send command to the async call handler (PVEH)
 
-// update the async queue, send back response immediately
-GVAR(ASYNC_QUEUE) pushBack _cmd;
+// The ALiVEPlugIn extension is no longer called (see ALIVE_fnc_sendToPlugIn), so nothing would
+// ever take the command off the queue: it is dropped.
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     ["SYS DATA - SEND TO PLUGIN ASYNC: %1, %2", _cmd, count GVAR(ASYNC_QUEUE)] call ALiVE_fnc_dump;
-};
-
-// Is this needed? No longer using PVEH
-if (!isDedicated) then {
-    publicVariableServer QGVAR(ASYNC_QUEUE);
 };
 
 _response = "SENT";

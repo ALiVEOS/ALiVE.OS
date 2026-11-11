@@ -5,7 +5,8 @@ SCRIPT(getServerTime);
 Function: ALIVE_fnc_getServerTime
 
 Description:
-Gets the current server local or UTC time via ALiVEPlugIn (Dedi only)
+Gets the current server local or UTC time, as "dd/mm/yyyy HH:MM:SS", from the engine clock
+(it used to come from ALiVEPlugIn, on a dedicated server only)
 
 Parameters:
 BOOL - True indicates the time returned should be local not UTC
@@ -23,6 +24,7 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -35,11 +37,9 @@ if (count _this == 1) then {
 	_UTC = false;
 };
 
-if (_UTC) then {
-	_response = ["DateTime ['%d/%m/%Y %H:%M:%S']"] call ALIVE_fnc_sendToPlugIn;
-} else {
-	_response = ["DateTimeLocal ['%d/%m/%Y %H:%M:%S']"] call ALIVE_fnc_sendToPlugIn;
-};
+private _t = [systemTime, systemTimeUTC] select _UTC;
+private _pad = { if (_this < 10) then {"0" + str _this} else {str _this} };
+_response = format ["%1/%2/%3 %4:%5:%6", (_t select 2) call _pad, (_t select 1) call _pad, _t select 0, (_t select 3) call _pad, (_t select 4) call _pad, (_t select 5) call _pad];
 
 TRACE_1("GET SERVER TIME: ", _response);
 

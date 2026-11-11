@@ -104,6 +104,15 @@
 <Key ID="STR_ALIVE_SETTINGS_GAME">
     <English>Game</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_SERVER">
+    <English>Server</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_GROUPNAME">
+    <English>Old War Room Group Name</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_GROUPNAME_COMMENT">
+    <English>Only for a server that was set up for the old War Room with @ALiVEServer and an alive.cfg file. Saves made then are named after the group in that file; enter the same name here, exactly as it was, so they keep loading. Leave it empty on any other server: saves are then named ALiVE, as they have always been without the old set-up.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_VD">
     <English>Starting view distance</English>
 </Key>

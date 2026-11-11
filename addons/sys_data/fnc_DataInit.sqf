@@ -93,23 +93,16 @@ if (isDedicated || (isServer && _pns)) then {
     GVAR(databaseName) = "arma3live";
     GVAR(source) = MOD(sys_data) getVariable ["source","pns"];
 
-    // Try initialising the plugin
-    private _initmsg = [_logic getVariable ["disablePerfMon","true"]] call ALIVE_fnc_startALiVEPlugIn;
+    // The ALiVEPlugIn extension (@ALiVEServer) is no longer started or called: the cloud service it
+    // talked to is gone, and a server without it logged "could not be found" and
+    // "SYS DATA START PLUGIN: SYS_DATA_ERROR" on every start. The War Room link is alive_wr, below.
+    private _initmsg = "";
 
-    if (isDedicated) then {
-
-        ["SYS DATA START PLUGIN: %1", _initmsg] call ALIVE_fnc_dump;
-        private _serverIP = [] call ALIVE_fnc_getServerIP;
-        // If the host IP web service is down, just use the serverName
-        if (_serverIP != "SYS_DATA_ERROR" && typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"}) then {
-            ["SYS DATA - YOUR SERVER EXTERNAL IP ADDRESS AS SEEN BY WAR ROOM: %1 (Ensure it matches with your War Room server entry if you have any issues)",_serverIP] call ALiVE_fnc_dump;
-        };
-    };
-
-    GVAR(GROUP_ID) = [] call ALIVE_fnc_getGroupID;
-    if (GVAR(GROUP_ID) == "SYS_DATA_ERROR") then {
-        GVAR(GROUP_ID) = "ALiVE";
-    };
+    // A server registered with the old War Room had a group name in its alive.cfg, which the plugin
+    // passed on, and the saves made then are named after it instead of "ALiVE". The server's
+    // ALiVE > Server > Old War Room Group Name setting gives the name back, so they still load.
+    private _groupName = missionNamespace getVariable ["ALiVE_dataGroupName", ""];
+    GVAR(GROUP_ID) = if (_groupName isEqualType "" && {_groupName != ""}) then {_groupName} else {"ALiVE"};
 
     // Saved data is kept per map now (ALiVE_fnc_storeKeys). Move this mission's saves
     // from the old names before anything loads them. Every loader builds its name from
@@ -160,7 +153,9 @@ if (isDedicated || (isServer && _pns)) then {
     ["SYS_DATA - Attempting to load web services config."] call ALiVE_fnc_dump;
 
     // Get global config information
-    _config = if (GVAR(warRoom)) then { "WARROOM" } else { [GVAR(datahandler), "read", ["sys_data", [], "config"], "CouchDB"] call ALIVE_fnc_Data };
+    // the old cloud config came through ALiVEPlugIn, which is no longer called, so without the War
+    // Room there is no config: the same answer the old service gave once it was gone
+    _config = if (GVAR(warRoom)) then { "WARROOM" } else { "SYS_DATA_ERROR" };
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
         ["SYS DATA - CONFIG: %1",_config] call ALiVE_fnc_dump;
@@ -444,40 +439,9 @@ if (isDedicated || (isServer && _pns)) then {
 
         // loop and wait for queue to be updated
         // When queue changes process request, wait for response
+        // kept empty: the write loop that sent it through ALiVEPlugIn is gone with the plugin
         GVAR(ASYNC_QUEUE) = [];
         publicVariable QGVAR(ASYNC_QUEUE);
-
-        // Need to optimise this with PFH
-        [] spawn {
-            ["SYS DATA - ASYNC WRITE LOOP STARTING"] call ALiVE_fnc_dump;
-            while {true} do {
-                TRACE_1("ASYNC QUEUE COUNT", count GVAR(ASYNC_QUEUE));
-            //    {
-            //        ["SYS_DATA - ASYNC QUEUE %2: %1", _x, _forEachIndex] call ALiVE_fnc_dump;
-            //    } foreach GVAR(ASYNC_QUEUE);
-                {
-                    private ["_cmd","_response"];
-                    _cmd = _x;
-
-                    //"Arma2Net.Unmanaged" callExtension _cmd;
-                    "ALiVEPlugIn" callExtension _cmd;
-
-                    waitUntil {sleep 0.3; _response = ["SendJSONAsync []"] call ALIVE_fnc_sendToPlugIn; _response != "WAITING"};
-
-                    GVAR(ASYNC_QUEUE) deleteAt _forEachIndex;
-
-                    TRACE_3("ASYNC WRITE LOOP", _cmd, _response, count GVAR(ASYNC_QUEUE));
-
-                    if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["SYS DATA - ASYNC WRITE LOOP: %1 : %2", _cmd, _response] call ALiVE_fnc_dump;
-                    };
-
-                    sleep 0.3;
-
-                } foreach GVAR(ASYNC_QUEUE);
-                sleep 5;
-            };
-        };
 
         TRACE_2("SYS_DATA PERF VAR", MOD(sys_data) getVariable "disablePerf", ALIVE_sys_perf_ENABLED);
         // Start the perf monitoring module

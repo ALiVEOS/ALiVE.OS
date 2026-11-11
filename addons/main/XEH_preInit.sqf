@@ -76,6 +76,9 @@ LOG(MSG_INIT);
 }] call CBA_fnc_addSetting;
 // scroll wheel or ACE for rally points, talking to soldiers and FOBs (rallyInit, C2ISTAR, fobActions)
 ["ALiVE_prefInterface", "LIST", [localize "STR_ALIVE_SETTINGS_UI", localize "STR_ALIVE_SETTINGS_UI_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["MODULE", "SCROLL", "ACE", "BOTH"], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALIVE_SETTINGS_UI_SCROLL", localize "STR_ALIVE_SETTINGS_UI_ACE", localize "STR_ALIVE_SETTINGS_UI_BOTH"], 0]] call CBA_fnc_addSetting;
+// ALiVE > Server: the group name a server registered with the old War Room had in its alive.cfg. ALiVEPlugIn
+// passed it on and the saves made then are named after it; the plugin is no longer called (ALIVE_fnc_DataInit).
+["ALiVE_dataGroupName", "EDITBOX", [localize "STR_ALIVE_SETTINGS_GROUPNAME", localize "STR_ALIVE_SETTINGS_GROUPNAME_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_SERVER"], "", 1] call CBA_fnc_addSetting;
 // ALiVE's scroll-wheel actions in a colour of the player's choosing, off by default (ALiVE_fnc_actionTitle)
 ["ALiVE_prefActionColourOn", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_ACTCOL_ON", localize "STR_ALIVE_SETTINGS_ACTCOL_ON_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], false] call CBA_fnc_addSetting;
 ["ALiVE_prefActionColour", "COLOR", [localize "STR_ALIVE_SETTINGS_ACTCOL", localize "STR_ALIVE_SETTINGS_ACTCOL_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [0.788, 0.443, 0.157]] call CBA_fnc_addSetting;

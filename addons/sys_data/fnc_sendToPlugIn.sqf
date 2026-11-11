@@ -23,6 +23,7 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 Wolffy.au 24 Oct 2012
 ---------------------------------------------------------------------------- */
@@ -31,13 +32,13 @@ PARAMS_1(_cmd);
 
 TRACE_1("SEND TO PLUGIN CMD: ", _cmd);
 
-_response = "ALiVEPlugIn" callExtension _cmd;
-
-// ["RESPONSE: %2:%1", _response, typeName _response] call ALiVE_fnc_dump;
+// The ALiVEPlugIn extension (@ALiVEServer) is no longer called: the cloud service it talked to is
+// gone, and servers without it logged "could not be found" on every start. Every caller gets the
+// answer a server without the plugin always got.
+_response = "";
 
 // If null response return error
 if (isNil "_response" || _response == "") exitWith {
-	["SYS DATA - No response received from ALiVEPlugIn."] call ALiVE_fnc_dump;
 	_response = "SYS_DATA_ERROR";
 	_response
 };
