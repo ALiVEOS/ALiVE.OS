@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: mef_alaska2035 (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: mef_alaska2035 (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,6 +30,7 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Woodland";
+[ALIVE_mapBounds, worldName, 20480] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "mef_alaska2035") then {
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
