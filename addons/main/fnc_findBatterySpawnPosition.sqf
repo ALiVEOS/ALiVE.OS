@@ -39,6 +39,11 @@ _this select 3: ARRAY  - spots already taken, to stay clear of. Default []
 _this select 4: NUMBER - how far to stay from those, in metres. Default 25
 _this select 5: BOOL   - debug. Default false
 _this select 6: STRING - validator mode. Default "field"
+_this select 7: BOOL   - answer only for an ALiVE_artillery marker, [] when there is none. Default false
+
+An area marker (rectangle or ellipse) named ALiVE_artillery, or starting with it
+(ALiVE_artillery_1, ALiVE_artillery_north), whose centre is inside the search area
+puts the guns inside that marker instead.
 
 Returns:
 ARRAY - [position, direction], or [] when there is nowhere clear
@@ -65,7 +70,8 @@ params [
     ["_used",          [],      [[]]],
     ["_minSeparation", 25,      [0]],
     ["_debug",         false,   [false]],
-    ["_mode",          "field", [""]]
+    ["_mode",          "field", [""]],
+    ["_markerOnly",    false,   [false]]
 ];
 
 if (count _centre < 2) exitWith {[]};
@@ -77,6 +83,27 @@ if (isNil "ALiVE_DIAG_artyCalls") then { ALiVE_DIAG_artyCalls = 0 };
 ALiVE_DIAG_artyCalls = ALiVE_DIAG_artyCalls + 1;
 
 private _result = [];
+
+// A mission maker can choose where an objective's guns go (ItsJonesSir on Discord, 10 Nov): an area marker
+// whose name starts with "ALiVE_artillery", with its centre inside this search area. The nearest such
+// marker replaces the area, and a spot counts only if it is inside the marker. A marker with nowhere
+// clear in it gets no gun rather than one outside it, which is what the mission maker asked for.
+private _zone = "";
+private _zoneDist = 1e9;
+{
+    if ((toLower _x) find "alive_artillery" == 0 && {markerShape _x in ["RECTANGLE", "ELLIPSE"]}) then {
+        private _d = _centre distance2D (markerPos _x);
+        if (_d <= _radius && {_d < _zoneDist}) then { _zone = _x; _zoneDist = _d };
+    };
+} forEach allMapMarkers;
+if (_zone != "") then {
+    (markerSize _zone) params ["_a", "_b"];
+    _centre = markerPos _zone;
+    _radius = 10 max (sqrt ((_a * _a) + (_b * _b)));
+    if (_debug) then { ["[ALiVE Battery] guns go inside marker %1", _zone] call ALiVE_fnc_dump };
+};
+// Asked only for a marker's spot (an artillery group, placed like any other group unless a marker says otherwise)
+if (_markerOnly && {_zone == ""}) exitWith {[]};
 
 // A gun clears no trees when it spawns, so trees count as in its way (the last true below).
 // Once a gun stands on the centre, the validator's first try (the centre itself) is skipped.
@@ -93,20 +120,24 @@ private _skipCentre = (_used findIf {_centre distance2D _x < _minSeparation}) >=
 // Coming back with nothing is different. That means the validator found nowhere
 // clear at all in the whole disc, and asking again would only repeat the same
 // search, so give up at once rather than paying for it six times over.
-for "_attempt" from 1 to 6 do {
+for "_attempt" from 1 to ([6, 12] select (_zone != "")) do {
     private _found = [_centre, _radius, _envelope, _mode, random 360, _debug, 0.6, [], false, _skipCentre, false, true] call ALiVE_fnc_findCompositionSpawnPosition;
 
-    if (count _found < 2) exitWith {
+    // Inside a marker an empty answer can be bad luck too, since the disc searched is wider than the
+    // marker, so only the open search gives up at once
+    if (count _found < 2 && {_zone == ""}) exitWith {
         if (_debug) then {
             ["[ALiVE Battery] nowhere clear within %1m of %2", _radius, _centre] call ALiVE_fnc_dump;
         };
     };
 
-    private _candidate = _found select 0;
-
-    if ((_used findIf {_candidate distance2D _x < _minSeparation}) < 0) exitWith {
-        _result = _found;
+    if (count _found >= 2) then {
+        private _candidate = _found select 0;
+        if ((_zone == "" || {_candidate inArea _zone}) && {(_used findIf {_candidate distance2D _x < _minSeparation}) < 0}) then {
+            _result = _found;
+        };
     };
+    if (count _result >= 2) exitWith {};
 };
 
 _result

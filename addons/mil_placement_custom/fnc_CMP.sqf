@@ -1129,6 +1129,7 @@ switch(_operation) do {
             // OPCOM buckets them as an artillery force class
             private _artilleryWarned = false;
             private _artilleryGroupNames = [];
+            private _artyZoneUsed = [];
             private _artilleryFallback = 0;
             // #887 - optional donor faction for artillery: models batteries
             // attached from a sister branch (e.g. RHS Tank Troops guns
@@ -1646,6 +1647,12 @@ switch(_operation) do {
                             };
                         };
 
+                        // An ALiVE_artillery marker near the objective takes its artillery groups too (fnc_findBatterySpawnPosition)
+                        private _inArtyZone = false;
+                        if (_group in _artilleryGroupNames) then {
+                            private _zoneSpot = [position _logic, 200 max _size, 10, _artyZoneUsed, 25, false, "field", true] call ALiVE_fnc_findBatterySpawnPosition;
+                            if (count _zoneSpot >= 2) then { _position = _zoneSpot select 0; _activeDir = _zoneSpot select 1; _artyZoneUsed pushBack _position; _inArtyZone = true };
+                        };
                         // A spot in the water gets ten more tries within the objective, which keeps
                         // groups spread out along a coast, then dry ground by the nearest land; a
                         // group with none is left out and counted below, not unseen. A parked
@@ -1664,6 +1671,25 @@ switch(_operation) do {
 
                         if !(surfaceIsWater _position) then {
                             private _profiles = [_group, _position, _activeDir, false, _groupFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                            // and each of its guns its own clear spot inside the marker, rather than the group's 20 m spread around it
+                            if (_inArtyZone) then {
+                                private _onAnchor = true;
+                                {
+                                    if (([_x, "type", ""] call ALIVE_fnc_hashGet) == "vehicle") then {
+                                        // the first gun takes the group's own spot, already clear and inside the marker
+                                        private _gunSpot = if (_onAnchor) then { [_position, _activeDir] } else { [_position, 200, 10, _artyZoneUsed, 25, false, "field", true] call ALiVE_fnc_findBatterySpawnPosition };
+                                        _onAnchor = false;
+                                        if (count _gunSpot >= 2) then {
+                                            _artyZoneUsed pushBackUnique (_gunSpot select 0);
+                                            [_x, "position", _gunSpot select 0] call ALIVE_fnc_profileVehicle;
+                                            [_x, "direction", _gunSpot select 1] call ALIVE_fnc_profileVehicle;
+                                            if (count ([_x, "despawnPosition", []] call ALIVE_fnc_hashGet) > 0) then { [_x, "despawnPosition", _gunSpot select 0] call ALIVE_fnc_profileVehicle };
+                                        } else {
+                                            ["CMP - Artillery: no clear spot left inside the ALiVE_artillery marker near %1 for a %2, so it stays beside its battery", mapGridPosition _position, [_x, "vehicleClass", ""] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
+                                        };
+                                    };
+                                } forEach _profiles;
+                            };
 
                             if (_debug && {_group in _artilleryGroupNames}) then {
                                 ["CMP - Artillery section %1 placed at grid %2 %3", _group, mapGridPosition _position, _position] call ALiVE_fnc_dump;
