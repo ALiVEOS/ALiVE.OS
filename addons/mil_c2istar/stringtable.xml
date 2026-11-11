@@ -2124,7 +2124,7 @@
     <English>CSAR Starts At The Crash Site:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CSAR_CRASH_FIRST_COMMENT">
-    <English>When Yes, a pilot rescue task first sends players to the wreck. Reaching it tells them whether the crew got out: if they did, HQ gives a search area within 500 m of a grid and the rescue goes on as usual; if the crew are dead, finding the wreck completes the task. An aircraft that did not come down as a wreck starts at the search as before. Default No.</English>
+    <English>When Yes, a pilot rescue task first sends players to the wreck. Reaching it tells them whether the crew got out: if they did, HQ gives a search area within 500 m of a grid and the rescue goes on as usual; if the crew are dead, finding the wreck completes the task. An aircraft that did not come down as a wreck starts at the search as before. A plane or helicopter that comes down with its crew still aboard also raises the task at its wreck, while its side has players taking tasks. Default No.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CSAR_CAPTURE_ENEMY">
     <English>Capture Enemy Pilots:</English>

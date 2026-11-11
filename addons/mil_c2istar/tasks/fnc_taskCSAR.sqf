@@ -17,6 +17,11 @@ another type.
 With C2ISTAR's CSAR Starts At The Crash Site on, and the aircraft down as a wreck,
 the task opens at the wreck instead ("Wreck"): reaching it tells the players
 whether the crew got out and where to search, or ends the task if they are dead.
+With the setting on, a plane or helicopter that comes down with its crew still
+aboard raises the same task at its wreck: crew alive near it are held for the
+rescue, and with none alive, reaching the wreck ends it. A crew rescued this way
+is taken out of the AI Commander's hands; with nobody on their side to rescue
+them, the commander keeps them as infantry on foot.
 
 Besides the task stages ("init", "Parent", "Wreck", "Rescue", "Return") this file holds
 the operations that drive the task, because it is the only file the task has:
@@ -76,6 +81,12 @@ Jman
 // means it was never going to.
 #define CSAR_OFFER_GRACE 30
 #define CSAR_RETIRE_DELAY 60
+// An aircraft counts as having come down with its crew when it is wrecked this
+// soon after it was last seen flying; it is looked at once it has lain still
+// this long, so the crew in it have lived or died.
+#define CSAR_CRASH_WINDOW 30
+#define CSAR_CRASH_SETTLE 8
+#define CSAR_CRASH_RADIUS 150
 
 private ["_taskState","_taskID","_task","_params","_debug","_result"];
 
@@ -143,6 +154,9 @@ switch (_taskState) do {
             ALiVE_c2istar_csarLanded = [];
             // offered: [unit, rootTaskID, offeredAt]
             ALiVE_c2istar_csarOffered = [];
+            // flying with a crew, for a crash nobody ejects from:
+            // hullKey -> [aircraft, class, sideText, crew, tail, lastFlyingAt, downAt]
+            ALiVE_c2istar_csarAirframes = createHashMap;
             // side text -> [rootTaskID, offeredAt], one open rescue per side
             ALiVE_c2istar_csarOpen = createHashMap;
             ALiVE_c2istar_csarCount = 0;
@@ -377,6 +391,132 @@ switch (_taskState) do {
                 } forEach (fullCrew _veh);
             };
         } forEach vehicles;
+
+        // ---- 1b. aircraft that come down with their crew aboard, with CSAR Starts At The Crash Site on
+        if ((missionNamespace getVariable ["ALIVE_taskCsarCrashFirst", false]) isEqualTo true && {!_autoOff}) then {
+            if (isNil "ALiVE_c2istar_csarAirframes") then {ALiVE_c2istar_csarAirframes = createHashMap};
+
+            {
+                private _veh = _x;
+                if (alive _veh && {_veh isKindOf "Plane" || {_veh isKindOf "Helicopter"}} && {!unitIsUAV _veh}) then {
+                    // the men flying it, not passengers in the back or in FFV seats
+                    private _crew = ((fullCrew _veh) select {
+                        _x params ["_unit", "_role", "", "", ["_personTurret", false]];
+                        alive _unit && {!isPlayer _unit} && {!_personTurret} && {(toLower _role) in ["driver", "gunner", "commander", "turret"]}
+                    }) apply {_x select 0};
+                    if (_crew isNotEqualTo []
+                        && {!isTouchingGround _veh}
+                        && {((getPosATL _veh) select 2) > 5}
+                        && {((units group (_crew select 0)) findIf {isPlayer _x}) == -1}
+                    ) then {
+                        private _hullKey = _veh call BIS_fnc_netId;
+                        private _known = ALiVE_c2istar_csarAirframes getOrDefault [_hullKey, []];
+                        // the crew seen aboard in flight, kept across ticks so men killed in the air still count
+                        private _all = _known param [3, []];
+                        { _all pushBackUnique _x } forEach _crew;
+                        ALiVE_c2istar_csarAirframes set [_hullKey, [_veh, typeOf _veh, [side group (_crew select 0)] call _fnc_sideText, _all, _veh getVariable ["ALiVE_mil_ato_tail", ""], _now, -1]];
+                    };
+                };
+            } forEach vehicles;
+
+            {
+                private _hullKey = _x;
+                _y params ["_veh", "_class", "_sideText", "_crew", "_tail", "_flyingAt", "_downAt"];
+
+                // gone with the profile system, or never came to rest
+                if (isNull _veh || {(_now - _flyingAt) > (CSAR_CRASH_WINDOW + CSAR_CRASH_SETTLE * 4)}) then {
+                    ALiVE_c2istar_csarAirframes deleteAt _hullKey;
+                    continue
+                };
+                if (_flyingAt == _now) then {continue};
+
+                // landed whole, or still on its way down
+                private _wrecked = !alive _veh || {!canMove _veh};
+                if (!_wrecked) then {
+                    if ((_now - _flyingAt) > CSAR_CRASH_WINDOW) then {ALiVE_c2istar_csarAirframes deleteAt _hullKey};
+                    continue
+                };
+
+                // let it come to rest first, so the crew in it have lived or died
+                if (_downAt < 0) then {
+                    private _pos = getPosATL _veh;
+                    if ((speed _veh) < 3 && {isTouchingGround _veh || {(_pos select 2) < 2} || {surfaceIsWater _pos}}) then {
+                        (ALiVE_c2istar_csarAirframes get _hullKey) set [6, _now];
+                    };
+                    continue
+                };
+                if ((_now - _downAt) < CSAR_CRASH_SETTLE) then {continue};
+                ALiVE_c2istar_csarAirframes deleteAt _hullKey;
+
+                // a crew that got out by seat or canopy is the ejection watcher's
+                private _aboard = _crew select {!isNull _x};
+                if (_aboard isEqualTo [] || {(_aboard findIf {(_x getVariable ["ALIVE_csarSeen", false]) || {_x getVariable ["ALIVE_csarTracked", false]}}) > -1}) then {continue};
+
+                private _survivors = _aboard select {alive _x && {(_x distance2D _veh) <= CSAR_CRASH_RADIUS} && {!isPlayer _x}};
+
+                // a rescue only: the side must be taking tasks, one rescue per side at a time
+                private _gate = [_sideText] call _fnc_sideGate;
+                if !(_gate select 0) then {
+                    ["C2ISTAR - Task CSAR - %1 came down with %2 of %3 crew alive, nobody on %4 to send", _class, count _survivors, count _aboard, _sideText] call ALiVE_fnc_dump;
+                    continue
+                };
+                private _open = ALiVE_c2istar_csarOpen getOrDefault [_sideText, ["", -1e9]];
+                if (((_open select 0) in _taskKeys) || {(_now - (_open select 1)) < CSAR_OFFER_GRACE}) then {
+                    ["C2ISTAR - Task CSAR - %1 came down, %2 already has a rescue open", _class, _sideText] call ALiVE_fnc_dump;
+                    continue
+                };
+                if ((_tail isEqualType "" && {_tail != ""}) || {(_aboard findIf {_x getVariable ["ALiVE_mil_ato_crew", false]}) > -1}) then {
+                    private _terms = [faction (_aboard select 0), _sideText] call _fnc_atoTerms;
+                    if (!(_terms select 0) || {(random 1) >= (_terms select 1)}) then {_gate = "refused"};
+                };
+                if (_gate isEqualTo "refused") then {
+                    ["C2ISTAR - Task CSAR - %1 came down, air commander rolled no rescue", _class] call ALiVE_fnc_dump;
+                    continue
+                };
+
+                // the survivors leave the AI Commander for the rescue: out of the wreck, held where they are
+                private _held = [];
+                {
+                    private _unit = _x;
+                    if !(isNull objectParent _unit) then {
+                        if (local _unit) then {moveOut _unit} else {[_unit] remoteExecCall ["moveOut", _unit]};
+                    };
+                    private _spot = ["findRestSpot", "", [getPosATL _unit, _unit], [], false] call ALIVE_fnc_taskCSAR;
+                    if (_spot isNotEqualTo []) then {
+                        private _grp = [_unit] call _fnc_releasePilot;
+                        if !(isNull _grp) then {
+                            if ((_spot distance2D _unit) > 0.5) then {_unit setPosATL _spot};
+                            _unit setVariable ["ALIVE_csarTracked", true, true];
+                            _unit setVariable ["ALIVE_csarAircraft", _class, true];
+                            [_unit, "STR_ALIVE_TARGETID_PILOT"] call ALiVE_fnc_giveTargetPapers;
+                            _unit setVariable ["ALIVE_csarHeld", true, true];
+                            ["pilotHold", "", [_unit], [], false] remoteExec ["ALIVE_fnc_taskCSAR", _unit];
+                            _held pushBack _unit;
+                        };
+                    };
+                } forEach _survivors;
+
+                // none alive: the dead crew are the task's, and reaching the wreck ends it
+                private _group = [_held, _aboard select {!alive _x}] select (_held isEqualTo []);
+                if (_group isEqualTo []) then {continue};
+                ALiVE_c2istar_csarCount = ALiVE_c2istar_csarCount + 1;
+                private _rootID = format ["CSAR_%1_%2_%3", _sideText, floor _now, ALiVE_c2istar_csarCount];
+                { _x setVariable ["ALIVE_csarTaskID", _rootID, true]; } forEach _group;
+
+                private _taskData = [
+                    _rootID, "C2ISTAR", _sideText, faction (_aboard select 0), "CSAR", "NULL",
+                    getPosATL ([_held param [0, objNull], _veh] select (_held isEqualTo [])), _gate select 1, _gate select 2, "Y", "Side",
+                    [_group apply {_x call BIS_fnc_netId}, _hullKey, true]
+                ];
+                private _event = ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event;
+                [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+
+                ALiVE_c2istar_csarOpen set [_sideText, [_rootID, _now]];
+                { ALiVE_c2istar_csarOffered pushBack [_x, _rootID, _now]; } forEach _held;
+
+                ["C2ISTAR - Task CSAR - %1 came down with its crew, %2 of %3 alive, rescue %4 offered to %5", _class, count _held, count _aboard, _rootID, _sideText] call ALiVE_fnc_dump;
+            } forEach +ALiVE_c2istar_csarAirframes;
+        };
 
         // ---- 2. men in an ejection seat or under a canopy
         {
@@ -794,11 +934,18 @@ switch (_taskState) do {
 
         private _netIDs = _targets select 0;
         private _wreckNetID = _targets param [1, ""];
+        // a crash nobody ejected from; with no crew alive, the task is the wreck alone
+        private _crashed = (_targets param [2, false]) isEqualTo true;
 
         private _pilots = [];
         private _bad = false;
+        private _dead = 0;
         {
             private _unit = if (_x isEqualType "") then {_x call BIS_fnc_objectFromNetId} else {objNull};
+            if (_crashed && {isNull _unit || {!alive _unit}}) then {
+                _dead = _dead + 1;
+                continue
+            };
             if (isNull _unit
                 || {!alive _unit}
                 || {!(_unit getVariable ["ALIVE_csarTracked", false])}
@@ -810,8 +957,12 @@ switch (_taskState) do {
             };
         } forEach _netIDs;
 
-        if (_bad) exitWith {
+        if (_bad || {_pilots isNotEqualTo [] && {_dead > 0}}) exitWith {
             ["C2ISTAR - Task CSAR - %1: a pilot in %2 is gone or not this task's", _taskID, _netIDs] call ALiVE_fnc_Dump;
+        };
+        private _crashWreck = if (_crashed && {_wreckNetID isEqualType ""}) then {_wreckNetID call BIS_fnc_objectFromNetId} else {objNull};
+        if (_pilots isEqualTo [] && {isNull _crashWreck}) exitWith {
+            ["C2ISTAR - Task CSAR - %1: no crew alive and the wreck is gone", _taskID] call ALiVE_fnc_Dump;
         };
 
         private _dialogOptions = [ALIVE_generatedTasks, "CSAR", ["", []]] call ALIVE_fnc_hashGet;
@@ -821,11 +972,11 @@ switch (_taskState) do {
         };
         private _dialogOption = +(_dialogOptions select 0);
 
-        private _leader = _pilots select 0;
-        private _targetPosition = getPosATL _leader;
+        private _leader = _pilots param [0, objNull];
+        private _targetPosition = getPosATL ([_leader, _crashWreck] select (isNull _leader));
 
         // An enemy pilot: the same stages, worded as a capture, and taken with a Detain action
-        private _capture = ([side group _leader] call _fnc_sideText) != _taskSide;
+        private _capture = !isNull _leader && {([side group _leader] call _fnc_sideText) != _taskSide};
         if (_capture) then {
             if !("Capture" in (_dialogOption select 1)) exitWith {_capture = "no dialog"};
             {
@@ -888,7 +1039,7 @@ switch (_taskState) do {
             ["C2ISTAR - Task CSAR - %1: no return position for %2", _taskID, _taskSide] call ALiVE_fnc_Dump;
         };
 
-        private _aircraft = _leader getVariable ["ALIVE_csarAircraft", ""];
+        private _aircraft = if (isNull _leader) then {typeOf _crashWreck} else {_leader getVariable ["ALIVE_csarAircraft", ""]};
         private _aircraftName = if (_aircraft != "") then {getText (configFile >> "CfgVehicles" >> _aircraft >> "displayName")} else {""};
         if (_aircraftName == "") then {_aircraftName = "An aircraft"};
 
@@ -899,7 +1050,10 @@ switch (_taskState) do {
         // when the task data has the stage (an older Tasks.hpp may not)
         private _wreck = if (_wreckNetID isEqualType "" && {_wreckNetID != ""}) then {_wreckNetID call BIS_fnc_objectFromNetId} else {objNull};
         private _crashFirst = (missionNamespace getVariable ["ALIVE_taskCsarCrashFirst", false]) isEqualTo true
-            && {!_capture} && {!isNull _wreck} && {!alive _wreck} && {"Wreck" in (_dialogOption select 1)};
+            && {!_capture} && {!isNull _wreck} && {!alive _wreck || {_crashed && {!canMove _wreck}}} && {"Wreck" in (_dialogOption select 1)};
+        if (_crashed && {!_crashFirst}) exitWith {
+            ["C2ISTAR - Task CSAR - %1: a crash with no ejection needs the crash site stage", _taskID] call ALiVE_fnc_Dump;
+        };
         private _crashPosition = if (_crashFirst) then {getPosATL _wreck} else {[]};
 
         // Rescue
@@ -1107,7 +1261,8 @@ switch (_taskState) do {
                 ["C2ISTAR - Task CSAR - %1 expired before the crash site was reached", _rootID] call ALiVE_fnc_Dump;
             };
 
-            case ([_crash, _taskPlayers, 30] call ALIVE_fnc_taskHavePlayersReachedDestination): {
+            // at ground or sea level: a wreck at sea lies on the bottom, its height measured from there
+            case ([[_crash select 0, _crash select 1, 0], _taskPlayers, 30] call ALIVE_fnc_taskHavePlayersReachedDestination): {
                 _task set [8,"Succeeded"];
                 _task set [10,"N"];
                 _result = _task;
