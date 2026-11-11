@@ -1931,6 +1931,7 @@ switch(_operation) do {
                         {
                             private _p = [_x, "position", []] call ALIVE_fnc_hashGet;
                             if (count _p > 1) then {
+                                if (!isNil "ALiVE_c2istar_fnc_reportedPos") then { _p = [[_x, "profileID", ""] call ALIVE_fnc_hashGet, _p] call ALiVE_c2istar_fnc_reportedPos };
                                 private _dir = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] select (round ((_pos getDir _p) / 45) mod 8);
                                 private _band = "under 500 m";
                                 if ((_pos distance2D _p) >= 1000) then { _band = "1 to 2 km" } else { if ((_pos distance2D _p) >= 500) then { _band = "500 m to 1 km" } else { _band = "under 500 m" } };
@@ -2444,6 +2445,28 @@ if (isServer) then {
             private _needsRadio = _logic getVariable ["mapIntelNeedsRadio", "false"];
             if (_needsRadio isEqualType "") then { _needsRadio = (toLower _needsRadio) == "true" };
             missionNamespace setVariable ["ALIVE_militaryIntelNeedsRadio", _needsRadio isEqualTo true, true];
+            // How far off a reported enemy position can be, in metres; 0 is exact. The COP, map intel and the
+            // SITREP reply all ask ALiVE_c2istar_fnc_reportedPos. A group keeps the same error for 10 minutes,
+            // so its marker doesn't jump about between updates, then gets a fresh one.
+            private _posError = _logic getVariable ["intelPositionError", "0"];
+            if (_posError isEqualType "") then { _posError = parseNumber _posError };
+            if !(_posError isEqualType 0) then { _posError = 0 };
+            missionNamespace setVariable ["ALIVE_militaryIntelPositionError", _posError max 0, true];
+            if (isNil "ALiVE_c2istar_fnc_reportedPos") then {
+                ALiVE_c2istar_posErrors = createHashMap;
+                ALiVE_c2istar_fnc_reportedPos = {
+                    params ["_id", "_pos"];
+                    private _err = missionNamespace getVariable ["ALIVE_militaryIntelPositionError", 0];
+                    if (_err <= 0 || {!(_pos isEqualType [])} || {count _pos < 2}) exitWith { _pos };
+                    private _e = ALiVE_c2istar_posErrors getOrDefault [_id, []];
+                    if (_e isEqualTo [] || {time > (_e select 2)}) then {
+                        // sqrt spreads the points evenly over the circle instead of bunching them in the middle
+                        _e = [_err * sqrt (random 1), random 360, time + 600];
+                        ALiVE_c2istar_posErrors set [_id, _e];
+                    };
+                    _pos getPos [_e select 0, _e select 1]
+                };
+            };
 
             if(_displayIntel || _displayPlayerSectors || _displayMilitarySectors || _friendlyIntel) then {
 

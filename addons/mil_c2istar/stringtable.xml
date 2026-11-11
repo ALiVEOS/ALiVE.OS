@@ -727,6 +727,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_MAP_INTEL_NEEDS_RADIO_COMMENT">
     <English>When Yes, map intel markers and the COP overlay only show to players carrying a radio (vanilla, ACE/ACRE or TFAR) or standing at a command point (Command Point Classes within Command Point Radius). A player who drops his radio loses them at the next update; picking one up brings them back. Suits period missions where intel came over the radio. Default No.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_INTEL_POSITION_ERROR">
+    <English>Reported Enemy Positions:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_INTEL_POSITION_ERROR_COMMENT">
+    <English>How accurately enemy groups are reported on the COP, on the map intel sighting arrows and in a SITREP from HQ. Exact shows them where the commander knows them to be. Within 100 m or 300 m moves each group's report by up to that far in a random direction; a group keeps the same error for 10 minutes, then gets a new one. Suits period missions where reports came by radio and map. Default Exact.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_COMMENT">
     <English>Controls which players see C2ISTAR map intel. Covers both OPCOM-sourced intel (G2 spotrep events from the OPCOM-side pipeline, gated by Commander Intel Sides) and profile-system events (PROFILE_KILLED, IED detonations, civilian agent kills) which fire independently of OPCOM sync. This is a RECIPIENT filter that composes with Commander Intel Sides (source filter): only intel from the picked OPCOM sides reaches C2ISTAR, then this filter decides which players see those markers.\n\n• Same Side: only players on the same side as the reporting OPCOM.\n• Same Faction: only players whose unit faction matches the reporting OPCOM's faction.\n• Friendly Sides: players on any side allied to the reporting OPCOM (side allegiance is per-mission, see sys_aiskill / OPCOM hostility settings).\n• All Players: every player, regardless of side.</English>
     <Chinese>控制哪些玩家能看到 C2ISTAR 地圖情報。涵蓋來自 OPCOM 的情報(來自 OPCOM-side 管線的 G2 spotrep 事件,由 Commander Intel Sides 控制)以及 profile 系統事件(PROFILE_KILLED、IED 引爆、平民代理人擊殺),後者獨立於 OPCOM 同步觸發。此為接收者過濾器 — 與 Commander Intel Sides(來源過濾器)組合運作:只有來自所選 OPCOM 陣營的情報能到達 C2ISTAR,然後此過濾器決定哪些玩家能看到這些標記。\n\n• Same Side — 僅與回報 OPCOM 同一陣營的玩家。\n• Same Faction — 僅單位陣營(faction)與回報 OPCOM 之 faction 相符的玩家。\n• Friendly Sides — 與回報 OPCOM 結盟之任何陣營的玩家(陣營結盟為每任務設定,參見 sys_aiskill / OPCOM hostility 設定)。\n• All Players — 所有玩家,不分陣營。</Chinese>

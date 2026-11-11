@@ -840,6 +840,19 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = "true"; };
                             };
                     };
+                    class intelPositionError : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_intelPositionError";
+                            displayName = "$STR_ALIVE_C2ISTAR_INTEL_POSITION_ERROR";
+                            tooltip = "$STR_ALIVE_C2ISTAR_INTEL_POSITION_ERROR_COMMENT";
+                            defaultValue = """0""";
+                            class Values
+                            {
+                                    class Exact  { name = "Exact";           value = "0"; default = 1; };
+                                    class Small  { name = "Within 100 m";    value = "100"; };
+                                    class Large  { name = "Within 300 m";    value = "300"; };
+                            };
+                    };
                     class mapIntelRevealInstallations : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_mapIntelRevealInstallations";

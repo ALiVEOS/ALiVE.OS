@@ -619,6 +619,8 @@ switch(_operation) do {
                     private _profile = _profilesByID get _profileID;
                     if !(isnil "_profile") then {
                         _position = _profile select 2 select 2;
+                        // the mission's position error, as on the COP (mil_c2istar)
+                        if (!isNil "ALiVE_c2istar_fnc_reportedPos") then { _position = [_profileID, _position] call ALiVE_c2istar_fnc_reportedPos };
 
                         if!(surfaceIsWater _position) then {
                             _profiles pushback _profileID;

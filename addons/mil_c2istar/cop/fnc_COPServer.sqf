@@ -576,6 +576,8 @@ ALIVE_fnc_COPDeriveActivity = {
                     _seenThisCycle set [_profileID, true];
                     private _age = _now - (ALIVE_COP_PROFILE_FIRST_SEEN get _profileID);
 
+                    // reported where the commander thinks he is, give or take the mission's position error
+                    if (!isNil "ALiVE_c2istar_fnc_reportedPos") then { _pos = [_profileID, _pos] call ALiVE_c2istar_fnc_reportedPos };
                     private _spotrep = [_profileID, _pos, _age] call ALIVE_fnc_COPBuildSpotrep;
                     if (!isNil "_spotrep") then {
                         _profilesProcessed = _profilesProcessed + 1;
