@@ -1,5 +1,5 @@
-// Generated 2026-11-07 from 176 terrain indexes in addons/main/static: every model at least two indexes list and
-// all of them categorise the same way (5591 models: 2517 categorised, 3074 blacklist only). The in-game indexer
+// Generated 2026-11-11 from 176 terrain indexes in addons/main/static: every model at least two indexes list and
+// all of them categorise the same way (5580 models: 2517 categorised, 3063 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
     ["a3\air_f_jets\plane_fighter_02\plane_fighter_02_wreck_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -596,7 +596,6 @@
     ["a3\structures_f_argo\commercial\shop_02\i_shop_02_b_white_f.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["a3\structures_f_argo\commercial\shop_02\i_shop_02_b_whiteblue_f.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["a3\structures_f_argo\commercial\shop_02\i_shop_02_b_yellow_f.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
-    ["a3\structures_f_argo\commercial\shop_02\shop_02_b_blue_ruins_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_argo\commercial\shop_02\shop_02_b_brown_ruins_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_argo\commercial\shop_02\shop_02_b_yellow_ruins_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_argo\commercial\supermarket_01\supermarket_01_malden_f.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
@@ -1631,9 +1630,7 @@
     ["a3\structures_f_heli\ind\machines\waterpump_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_heli\items\airport\airintakeplug_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_heli\items\airport\airintakeplug_02_f.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["a3\structures_f_heli\items\airport\airintakeplug_05_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_heli\items\airport\helicopterwheels_01_disassembled_f.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["a3\structures_f_heli\items\airport\pitottubecover_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_heli\items\airport\portablehelipadlight_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_heli\items\airport\rotorcoversbag_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_heli\items\food\ketchup_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -2045,7 +2042,6 @@
     ["ca\buildings\misc\zed_desert.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\misc\zed_dira.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\misc\zed_dira_civil.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["ca\buildings\misc\zed_dira_desert.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\misc\zed_podplaz.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\misc\zed_podplaz_civil.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\misc\zed_podplaz_desert.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -2209,7 +2205,6 @@
     ["ca\misc\bilboard_revolucion.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\bilboard_revolucion_bez_noh.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["ca\misc\bilboard_test.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["ca\misc\bmp2_af.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\container.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\container2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\danger!.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -3369,13 +3364,9 @@
     ["jbad_misc\misc_com\jbad_com_tower.p3d", ["ALIVE_militaryBuildingTypes", "ALIVE_civilianCommsBuildingTypes"]],
     ["jbad_misc\misc_fueltank\jbad_ind_tanksmall.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_misc\misc_furniture\jbad_dkamna_bila.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["jbad_misc\misc_interier\jbad_cabinet.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_misc\misc_interier\jbad_carpet.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_misc\misc_interier\jbad_carpet_2.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["jbad_misc\misc_interier\jbad_carpet_wall.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["jbad_misc\misc_interier\jbad_carpet_wallv2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_misc\misc_interier\jbad_carpetv2.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["jbad_misc\misc_interier\jbad_chest.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_misc\misc_interier\jbad_cloth.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_misc\misc_interier\jbad_cloth_3.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_misc\misc_interier\jbad_curtain.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -3441,7 +3432,6 @@
     ["jbad_structures\afghan_houses_c\jbad_house_c_5_v2.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["jbad_structures\afghan_houses_c\jbad_house_c_9.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
     ["jbad_structures\afghan_houses_c\jbad_house_c_9_dam.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
-    ["jbad_structures\afghan_houses_old\damageproxies\jbad_house_4_dam1.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_structures\afghan_houses_old\damageproxies\jbad_house_4_roadway.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_structures\afghan_houses_old\damageproxies\jbad_house_9_stuff.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_structures\afghan_houses_old\jbad_entrance.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -3601,7 +3591,6 @@
     ["jbad_structures\walls\wall_l\jbad_wall_gate.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_structures\walls\wall_l\jbad_wall_l_gate.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_structures\walls\wall_l\jbad_wall_l_mosque_1.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["jbad_structures\walls\wall_l\jbad_wall_l_mosque_1_dam.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_structures\walls\wall_l\jbad_wall_l_mosque_2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_structures\walls\wall_l\jbad_wall_l_mosque_2_dam.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["jbad_structures\walls\wall_l\jbad_wall_l_pillar.p3d", ["ALIVE_Indexing_Blacklist"]],

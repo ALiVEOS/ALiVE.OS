@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: pandora (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: pandora (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,19 +30,10 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Woodland";
+[ALIVE_mapBounds, worldName, 20480] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "pandora") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f\ind\solarpowerplant\solarpanel_3_f.p3d",
-        "a3\structures_f\research\dome_b_cargo_entrance_f.p3d",
-        "a3\structures_f\research\dome_b_person_entrance_f.p3d",
-        "a3\structures_f_heli\civ\constructions\gastank_01_khaki_f.p3d",
-        "a3\structures_f_heli\ind\airport\mobilelandingplatform_01_f.p3d",
-        "a3\structures_f_heli\ind\cargo\cargo10_military_green_f.p3d",
-        "a3\structures_f_heli\ind\cargo\cargo10_white_f.p3d",
-        "a3\structures_f_heli\ind\cargo\cargo10_yellow_f.p3d",
-        "a3\structures_f_heli\ind\machines\dieselgroundpowerunit_01_f.p3d",
-        "a3\structures_f_heli\items\airport\portablehelipadlight_01_f.p3d",
         "pandoracustom\cablecar.p3d",
         "pandoracustom\connector.p3d",
         "pandoracustom\connectordome.p3d",

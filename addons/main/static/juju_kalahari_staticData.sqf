@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: juju_kalahari (ALiVE 3 index v3.1, 2026-10-06)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: juju_kalahari (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-06", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,53 +30,12 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Desert";
+[ALIVE_mapBounds, worldName, 10240] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "juju_kalahari") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\props_f_exp\industrial\heavyequipment\bulldozer_01_wreck_f.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\combineharvester_01_wreck_f.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\excavator_01_wreck_f.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\haultruck_01_abandoned_f.p3d",
-        "a3\props_f_exp\infrastructure\railways\railwaycar_01_passenger_f.p3d",
-        "a3\props_f_exp\infrastructure\railways\railwaycar_01_tank_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "a3\structures_f_argo\walls\city\wallcity_01_4m_grey_f.p3d",
-        "a3\structures_f_enoch\industrial\mines\mine_01_heap_f.p3d",
-        "a3\structures_f_enoch\industrial\mines\mine_01_rail_track_end_f.p3d",
-        "a3\structures_f_enoch\infrastructure\railways\rail_track_passing_10_f.p3d",
-        "a3\structures_f_enoch\infrastructure\railways\rail_tracke_25_f.p3d",
-        "a3\structures_f_enoch\infrastructure\railways\rail_tracke_r25_5_f.p3d",
-        "a3\structures_f_enoch\infrastructure\railways\rail_tracke_turnoutl_f.p3d",
-        "a3\structures_f_enoch\walls\polewalls\polewall_03_5m_v2_f.p3d",
-        "a3\structures_f_enoch\walls\polewalls\polewall_03_end_f.p3d",
-        "a3\structures_f_enoch\walls\stone\mound04_8m_f.p3d",
-        "a3\structures_f_enoch\wrecks\mi8_wreck_f.p3d",
-        "a3\structures_f_enoch\wrecks\powergenerator_wreck_f.p3d",
-        "a3\structures_f_enoch\wrecks\trailercistern_wreck_f.p3d",
-        "a3\structures_f_enoch\wrecks\v3s_wreck_f.p3d",
-        "a3\structures_f_exp\civilian\accessories\clothesline_01_f.p3d",
-        "a3\structures_f_exp\civilian\sheds\shed_06_f.p3d",
-        "a3\structures_f_exp\commercial\addons\addon_03_f.p3d",
-        "a3\structures_f_exp\commercial\market\metalshelter_01_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_shed_f.p3d",
-        "a3\structures_f_exp\infrastructure\runways\runwaydigit_7_f.p3d",
-        "a3\structures_f_exp\infrastructure\runways\runwayholdmark_23-05_f.p3d",
-        "a3\structures_f_exp\walls\bamboo\bamboofence_01_s_4m_f.p3d",
-        "a3\structures_f_exp\walls\bamboo\bamboofence_01_s_8m_f.p3d",
-        "a3\structures_f_exp\walls\bamboo\bamboofence_01_s_d_f.p3d",
-        "a3\structures_f_exp\walls\polewalls\polewall_01_6m_f.p3d",
-        "a3\structures_f_exp\walls\stone\stonewall_01_s_10m_f.p3d",
-        "a3\structures_f_exp\walls\stone\stonewall_01_s_d_f.p3d",
-        "a3\structures_f_exp\walls\tin\tinwall_01_m_4m_v1_f.p3d",
-        "a3\structures_f_exp\walls\tin\tinwall_01_m_4m_v2_f.p3d",
-        "ca\buildings2\houseruins\r_shed_ind02.p3d",
-        "ca\buildings2\ind_shed_02\ind_shed_02_end.p3d",
         "ca\buildings2\shed_small\shed_m02.p3d",
-        "ca\misc2\bagfenceround.p3d",
-        "ca\roads2\runwayold_40_main.p3d",
-        "ca\structures_e\housea\a_stationhouse\a_stationhouse_ruins_ep1.p3d",
-        "ca\structures_e\housek\terrace_k_1_r_ep1.p3d",
-        "ca\structures_e\housel\house_l_1_ruins_ep1.p3d"
+        "ca\misc2\bagfenceround.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [

@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-07 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: kobbvatn (ALiVE 3 index v3.1, 2026-10-07)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: kobbvatn (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-07", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,20 +30,9 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Woodland";
+[ALIVE_mapBounds, worldName, 16384] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "kobbvatn") then {
-    ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\soft_f_beta\truck_02\truck_02_covered_f.p3d",
-        "a3\structures_f\bridges\bridge_01_f.p3d",
-        "a3\structures_f\bridges\bridge_asphalt_f.p3d",
-        "a3\structures_f\bridges\bridge_highway_f.p3d",
-        "a3\structures_f\civ\accessories\timbers_f.p3d",
-        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
-        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
-        "ca\buildings\misc\zavora.p3d",
-        "ca\buildings\podesta_10.p3d"
-    ];
-
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
         "a3\structures_f\mil\bunker\bunker_f.p3d",
         "a3\structures_f\mil\offices\miloffices_v1_f.p3d",

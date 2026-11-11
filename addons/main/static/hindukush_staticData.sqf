@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: hindukush (ALiVE 3 index v3.1, 2026-10-09)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: hindukush (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-09", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -30,85 +30,24 @@ ALIVE_civilianFuelBuildingTypes = [];
 ALIVE_civilianConstructionBuildingTypes = [];
 
 ALiVE_mapCompositionType = "Desert";
+[ALIVE_mapBounds, worldName, 20480] call ALIVE_fnc_hashSet;
 
  if (tolower(_worldName) == "hindukush") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f\civ\accessories\timbers_f.p3d",
-        "a3\structures_f\ind\reservoirtank\reservoirtank_rust_ruins_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrier_3_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrier_big_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall4_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall6_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall_corner_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall_corridor_f.p3d",
-        "a3\structures_f\walls\mil_wallbig_gate_f.p3d",
-        "a3\structures_f_bootcamp\items\food\foodcontainer_01_f.p3d",
-        "a3\structures_f_heli\civ\constructions\gastank_01_blue_f.p3d",
-        "a3\structures_f_heli\civ\constructions\gastank_01_khaki_f.p3d",
-        "a3\structures_f_heli\civ\constructions\gastank_01_yellow_f.p3d",
-        "a3\structures_f_heli\civ\constructions\gastank_02_f.p3d",
-        "a3\structures_f_heli\civ\constructions\mobilescafolding_01_f.p3d",
-        "a3\structures_f_heli\civ\constructions\tooltrolley_01_f.p3d",
-        "a3\structures_f_heli\civ\constructions\tooltrolley_02_f.p3d",
-        "a3\structures_f_heli\civ\constructions\weldingtrolley_01_f.p3d",
-        "a3\structures_f_heli\civ\market\pallettrolley_01_khaki_f.p3d",
-        "a3\structures_f_heli\ind\airport\mobilelandingplatform_01_f.p3d",
-        "a3\structures_f_heli\ind\machines\dieselgroundpowerunit_01_f.p3d",
-        "a3\structures_f_heli\ind\machines\waterpump_01_f.p3d",
-        "a3\structures_f_heli\items\airport\airintakeplug_01_f.p3d",
-        "a3\structures_f_heli\items\airport\airintakeplug_03_f.p3d",
-        "a3\structures_f_heli\items\airport\airintakeplug_05_f.p3d",
-        "a3\structures_f_heli\items\airport\helicopterwheels_01_disassembled_f.p3d",
-        "a3\structures_f_heli\items\airport\portablehelipadlight_01_f.p3d",
-        "a3\structures_f_heli\items\airport\rotorcoversbag_01_f.p3d",
-        "a3\structures_f_heli\items\food\ketchup_01_f.p3d",
-        "a3\structures_f_heli\items\food\mustard_01_f.p3d",
-        "a3\structures_f_heli\items\food\tableware_01_cup_f.p3d",
-        "a3\structures_f_heli\items\food\tableware_01_stackofnapkins_f.p3d",
-        "a3\structures_f_heli\items\tools\rope_01_f.p3d",
-        "a3\structures_f_heli\items\tools\wheelchock_01_f.p3d",
-        "a3\supplies_f_heli\cargonets\cargonet_01_box_f.p3d",
-        "a3\supplies_f_heli\fuel\flexibletank_01_f.p3d",
-        "jbad_misc\misc_furniture\jbad_dkamna_bila.p3d",
-        "jbad_misc\misc_interier\jbad_cabinet.p3d",
-        "jbad_misc\misc_interier\jbad_carpet.p3d",
-        "jbad_misc\misc_interier\jbad_carpet_2.p3d",
-        "jbad_misc\misc_interier\jbad_carpet_wall.p3d",
-        "jbad_misc\misc_interier\jbad_carpet_wallv2.p3d",
-        "jbad_misc\misc_interier\jbad_carpetv2.p3d",
-        "jbad_misc\misc_interier\jbad_chest.p3d",
-        "jbad_misc\misc_interier\jbad_cloth.p3d",
-        "jbad_misc\misc_interier\jbad_curtain.p3d",
-        "jbad_misc\misc_interier\jbad_pillow.p3d",
-        "jbad_misc\misc_interier\jbad_pillowv2.p3d",
-        "jbad_misc\misc_interier\jbad_rack.p3d",
-        "jbad_misc\misc_market\jbad_counter.p3d",
-        "jbad_misc\misc_market\jbad_sunshade.p3d",
         "jbad_misc\misc_rivers\riverwide.p3d",
         "jbad_misc\misc_rivers\stream6wide_dirt.p3d",
         "jbad_structures\afghan_house_a\a_villa\proxies\a_villa_unhide1_ep1.p3d",
         "jbad_structures\afghan_house_a\a_villa\proxies\a_villa_unhide2_ep1.p3d",
         "jbad_structures\afghan_house_a\a_villa\proxies\a_villa_unhide3_ep1.p3d",
-        "jbad_structures\afghan_houses_old\damageproxies\jbad_house_4_dam1.p3d",
         "jbad_structures\afghan_houses_old\damageproxies\jbad_house_7_dam1.p3d",
-        "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_10.p3d",
-        "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_end.p3d",
-        "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv1_main.p3d",
-        "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_conv2.p3d",
-        "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_hopper.p3d",
         "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_main_part2.p3d",
         "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_rail.p3d",
         "jbad_structures\ind\ind_coltan_mine\jbad_ind_coltan_rail_switch.p3d",
-        "jbad_structures\ind\ind_coltan_mine\proxies\jbad_ind_coltan_conv1_end_add.p3d",
-        "jbad_structures\ind\ind_coltan_mine\proxies\jbad_ind_coltan_conv2_add.p3d",
-        "jbad_structures\ind\ind_shed\jbad_ind_shed_01.p3d",
-        "jbad_structures\ind\ind_shed\jbad_ind_shed_02.p3d",
         "jbad_structures\mil\proxies\mil_house_room_01_proxy.p3d",
         "jbad_structures\mosque_big\damageproxies\jbad_mosque_small_1_dam_roadway_unhide1.p3d",
         "jbad_structures\mosque_big\damageproxies\jbad_mosque_small_1_dam_roadway_unhide2.p3d",
         "jbad_structures\mosque_big\damageproxies\jbad_mosque_small_1_dam_roadway_unhide3.p3d",
         "jbad_structures\walls\wall_l\jbad_wall_l_mosque_1.p3d",
-        "jbad_structures\walls\wall_l\jbad_wall_l_mosque_1_dam.p3d",
         "jbad_structures\walls\wall_l\jbad_wall_l_mosque_1_ruins.p3d",
         "jbad_structures\walls\wall_l\jbad_wall_l_mosque_2.p3d"
     ];
