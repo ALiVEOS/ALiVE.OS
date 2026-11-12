@@ -291,8 +291,10 @@ switch (_operation) do {
             {
                 private ["_args","_id","_cont"];
 
-                //Ensure object is existing and not profiled
-                if (!(isnil "_x") && {!(isNull _x)} && {!(_x getVariable [QGVAR(DISABLE),false])} && {isnil {_x getVariable "profileID"}}) then {
+                //Ensure object is existing and not profiled. A map object with no class (some terrain
+                //buildings, reported here when destroyed) is left out: a load can't make one from an
+                //empty class, so its record only failed on every start and was never cleared.
+                if (!(isnil "_x") && {!(isNull _x)} && {typeOf _x != ""} && {!(_x getVariable [QGVAR(DISABLE),false])} && {isnil {_x getVariable "profileID"}}) then {
                     _id = [_logic,"id",_x] call ALiVE_fnc_logistics;
                     _args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
 
@@ -1218,6 +1220,14 @@ switch (_operation) do {
 
                 _args = [GVAR(STORE),_x] call ALiVE_fnc_HashGet;
                 _type = [_args,QGVAR(TYPE)] call ALiVE_fnc_hashGet;
+
+                //Saves made before classless map objects were left out hold records with no class.
+                //Nothing can be made from them, so they are dropped from the store instead.
+                if (isNil "_type" || {!(_type isEqualType "")} || {_type == ""}) then {
+                    if ((!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable ["DEBUG",false]}) || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then {["SYS LOGISTICS - dropped saved object %1: it has no class",_x] call ALiVE_fnc_dump;};
+                    [_logic,"removeObject",_x] call ALiVE_fnc_logistics;
+                    continue
+                };
 
                 if (({_type iskindOf _x} count _blacklist) == 0) then {
 
