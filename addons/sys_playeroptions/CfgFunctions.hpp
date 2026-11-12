@@ -11,6 +11,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sys_playeroptions\fnc_playeroptionsInit.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class playeroptionsAce {
+                                description = "The ACE fatigue and weapon sway options";
+                                file = "\x\alive\addons\sys_playeroptions\fnc_playeroptionsAce.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class playeroptionsMenuDef {
                                 description = "The menu definition function";
                                 file = "\x\alive\addons\sys_playeroptions\fnc_playeroptionsMenuDef.sqf";

@@ -100,6 +100,15 @@ if (_menuName == "playeroptions") then {
                      1,
                      true
                 ],
+                [localize "STR_ALIVE_PLAYEROPTIONS_ACE" + " >",
+                    "",
+                    "",
+                    localize "STR_ALIVE_PLAYEROPTIONS_ACE_COMMENT",
+                    ["call ALiVE_fnc_playeroptionsMenuDef", "aceoptions", 1],
+                    -1,
+                    true,
+                    ["available"] call ALiVE_fnc_playeroptionsAce
+                ],
                 [localize "STR_ALIVE_PLAYERTAGS_DISPLAY_ENABLE",
                     { MOD(sys_playertags) setVariable ["display_enabled", true]; true call MOD(sys_playertags_TRIGGER); },
                     "",
@@ -162,6 +171,56 @@ if (_menuName == "playeroptions") then {
                      -1,
                      true,
                      !(MOD(require) getVariable["ALiVE_DISABLEMARKERS",false])
+                ]
+            ]
+        ]
+    ];
+};
+
+// ACE: the player's own fatigue and weapon sway (ALiVE_fnc_playeroptionsAce). An item whose
+// value the server or mission chose stays listed but disabled.
+if (_menuName == "aceoptions") then {
+    private _fatigueShown = ["fatigueOn"] call ALiVE_fnc_playeroptionsAce;
+    private _fatigueFree = !(["forced", "ace_advanced_fatigue_performanceFactor"] call ALiVE_fnc_playeroptionsAce);
+    private _light = missionNamespace getVariable ["ALiVE_playerOptions_aceFatigue", false];
+    private _swayShown = ["swayOn"] call ALiVE_fnc_playeroptionsAce;
+    private _swayFree = !(["forced", "ace_common_swayFactor"] call ALiVE_fnc_playeroptionsAce);
+    private _sway = ["swayValue"] call ALiVE_fnc_playeroptionsAce;
+    private _fatigueTip = [localize "STR_ALIVE_PLAYEROPTIONS_ACE_FORCED", localize "STR_ALIVE_PLAYEROPTIONS_ACE_FATIGUE_COMMENT"] select _fatigueFree;
+    private _swayTip = [localize "STR_ALIVE_PLAYEROPTIONS_ACE_FORCED", localize "STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_COMMENT"] select _swayFree;
+    _menus set [count _menus,
+        [
+            ["aceoptions", localize "STR_ALIVE_PLAYEROPTIONS_ACE", "popup"],
+            [
+                [localize "STR_ALIVE_PLAYEROPTIONS_ACE_FATIGUE_LIGHT",
+                    { ["fatigue", true] call ALiVE_fnc_playeroptionsAce },
+                    "", _fatigueTip, "", -1,
+                    _fatigueFree,
+                    _fatigueShown && {!_light}
+                ],
+                [localize "STR_ALIVE_PLAYEROPTIONS_ACE_FATIGUE_NORMAL",
+                    { ["fatigue", false] call ALiVE_fnc_playeroptionsAce },
+                    "", _fatigueTip, "", -1,
+                    true,
+                    _fatigueShown && {_light}
+                ],
+                [localize "STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_NORMAL",
+                    { ["sway", 1] call ALiVE_fnc_playeroptionsAce },
+                    "", _swayTip, "", -1,
+                    true,
+                    _swayShown && {_sway != 1}
+                ],
+                [localize "STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_REDUCED",
+                    { ["sway", 0.5] call ALiVE_fnc_playeroptionsAce },
+                    "", _swayTip, "", -1,
+                    _swayFree,
+                    _swayShown && {_sway != 0.5}
+                ],
+                [localize "STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_OFF",
+                    { ["sway", 0] call ALiVE_fnc_playeroptionsAce },
+                    "", _swayTip, "", -1,
+                    _swayFree,
+                    _swayShown && {_sway != 0}
                 ]
             ]
         ]

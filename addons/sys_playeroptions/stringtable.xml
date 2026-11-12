@@ -62,4 +62,40 @@
     <Chinesesimp>在本地重新初始化ALIVE SYS标记存储</Chinesesimp>
     <Spanish>Reinicializa localmente el almacén de marcadores de ALiVE</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ALLOWACE">
+    <English>Allow ACE Fatigue And Sway Options</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ALLOWACE_COMMENT">
+    <English>With ACE loaded, players get an ACE menu in Player Options to make their own ACE fatigue lighter and their own weapon sway smaller. Settings the server or mission forces always win. Choices last until the player leaves.</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE">
+    <English>ACE</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_COMMENT">
+    <English>Your own ACE fatigue and weapon sway, if the mission allows it</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_FATIGUE_LIGHT">
+    <English>Fatigue: make it light</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_FATIGUE_NORMAL">
+    <English>Fatigue: back to normal</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_FATIGUE_COMMENT">
+    <English>Light fatigue gives your soldier the fitness ACE allows at most: you still tire, but recover very quickly</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_NORMAL">
+    <English>Weapon sway: normal</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_REDUCED">
+    <English>Weapon sway: half</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_OFF">
+    <English>Weapon sway: none</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_COMMENT">
+    <English>Scales your own weapon sway on top of the server setting</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_FORCED">
+    <English>Set by the server or mission</English>
+</Key>
 </Container></Package></Project>

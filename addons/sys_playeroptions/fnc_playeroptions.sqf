@@ -191,6 +191,9 @@ switch (_operation) do {
                                 ["main", "alive_flexiMenu_rscPopup"]
                         ]
                 ] call CBA_fnc_flexiMenu_Add;
+
+                // ACE fatigue and weapon sway, when ACE is loaded and the mission allows them
+                ["init"] call ALiVE_fnc_playeroptionsAce;
             };
 
             ["%1 - Initialisation Completed...", _logic] call ALiVE_fnc_Dump;
