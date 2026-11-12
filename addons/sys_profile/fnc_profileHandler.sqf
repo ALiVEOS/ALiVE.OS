@@ -1069,7 +1069,9 @@ switch(_operation) do {
             ["SYS PROFILE - LOAD PROFILE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
         };
 
+        private _readStart = diag_tickTime;
         _result = [ALIVE_profileDatahandler, "bulkLoad", ["sys_profile", _missionName, _async]] call ALIVE_fnc_Data;
+        ALiVE_profileRestoreReadTime = diag_tickTime - _readStart;
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
             ["SYS PROFILE - LOAD PROFILE DATA RESULT: %1",_result] call ALiVE_fnc_dump;
@@ -1422,6 +1424,14 @@ switch(_operation) do {
             private _importedOrders = [];
             _total = [_logic,"profileCount",0] call ALIVE_fnc_hashGet;
 
+            // Rebuilt unscheduled, a block at a time. A restored save is hundreds of profiles, rebuilt while
+            // every placement module starts, so scheduled it queued behind them all and the Profile System
+            // took over a minute longer to start (#1108). A block of 40 costs one frame of under 100 ms.
+            private _importStarted = diag_tickTime;
+            private _importList = _profiles select 2;
+            private _importBlock = missionNamespace getVariable ["ALiVE_profileImportBlock", 40];
+            for "_importStart" from 0 to (count _importList - 1) step _importBlock do {
+            isNil {
             {
                 _profile = _x;
                 _profileType = [_profile,"type"] call ALIVE_fnc_hashGet;
@@ -1753,7 +1763,9 @@ switch(_operation) do {
                     };
                 };
 
-            } forEach (_profiles select 2);
+            } forEach (_importList select [_importStart, _importBlock]);
+            };
+            };
 
             // A partial load can omit a crew, vehicle or sling partner. Remove stale
             // links before speed calculation and pending movement requests use them.
@@ -1824,6 +1836,10 @@ switch(_operation) do {
             [_logic,"profileVehicleCount", _vehicles max ([_logic,"profileVehicleCount",0] call ALIVE_fnc_hashGet)] call ALIVE_fnc_hashSet;
             [_logic,"profileEntityCount", _entities max ([_logic,"profileEntityCount",0] call ALIVE_fnc_hashGet)] call ALIVE_fnc_hashSet;
             [_logic,"profileCount", _total] call ALIVE_fnc_hashSet;
+            // Says where a restore's time goes: reading the save, or rebuilding the profiles from it (#1108).
+            ["ALiVE Profile System - rebuilt %1 saved profiles in %2 s (reading the save took %3 s)", count _importList, (round ((diag_tickTime - _importStarted) * 10)) / 10,
+                (round ((missionNamespace getVariable ["ALiVE_profileRestoreReadTime", 0]) * 10)) / 10] call ALiVE_fnc_dump;
+            ALiVE_profileRestoreReadTime = nil;
         };
     };
 
