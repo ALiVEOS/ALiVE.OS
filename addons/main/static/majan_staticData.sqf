@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: majan (ALiVE 3 index v3.1, 2026-10-06)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: majan (ALiVE 3 index v3.1, 2026-11-12)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-06", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-12", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,50 +33,10 @@ ALiVE_mapCompositionType = "Desert";
 
  if (tolower(_worldName) == "majan") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\props_f_exp\industrial\heavyequipment\bulldozer_01_wreck_f.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\excavator_01_wreck_f.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\haultruck_01_abandoned_f.p3d",
-        "a3\props_f_exp\industrial\heavyequipment\miningshovel_01_abandoned_f.p3d",
-        "a3\props_f_exp\military\oldplanewrecks\historicalplanewreck_03_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "a3\structures_f\ind\solarpowerplant\solarpanel_3_f.p3d",
-        "a3\structures_f_argo\commercial\fuelstation_01\fuelstation_01_prices_malevil_f.p3d",
-        "a3\structures_f_argo\commercial\fuelstation_01\fuelstation_01_roof_malevil_f.p3d",
-        "a3\structures_f_argo\military\bunkers\bunker_01_blocks_3_f.p3d",
-        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shelter_narrow_f.p3d",
-        "a3\structures_f_exp\walls\backalleys\backalley_01_l_gate_f.p3d",
-        "a3\structures_f_exp\walls\hedges\hedge_01_s_2m_f.p3d",
-        "a3\structures_f_exp\walls\net\netfence_01_m_8m_f.p3d",
-        "a3\structures_f_exp\walls\net\netfence_01_m_pole_f.p3d",
-        "a3\structures_f_exp\walls\railings\guardrailing_01_f.p3d",
-        "a3\structures_f_kart\civ\sportsgrounds\oil_spill.p3d",
-        "ca\buildings2\houseruins\r_shed_ind02.p3d",
         "ca\buildings\misc\zed_civil.p3d",
         "ca\buildings\podesta_1_cube.p3d",
-        "ca\buildings\podesta_s5.p3d",
-        "ca\roads2\dam\dam_conc\dam_concp_20.p3d",
-        "ca\roads2\runwayold_40_main.p3d",
-        "ca\roads_e\sidewalks\sw_c_crosst_ep1.p3d",
-        "ca\roads_pmc\sidewalks\sw_c_end_l_pmc.p3d",
-        "ca\roads_pmc\sidewalks\sw_c_end_r_pmc.p3d",
         "ca\roads_pmc\sidewalks\sw_c_turn_pmc.p3d",
-        "ca\structures\furniture\cases\case_bedroom_a\case_bedroom_a.p3d",
-        "ca\structures\ind_quarry\ind_hammermill.p3d",
-        "ca\structures\misc\armory\conelight\conelight.p3d",
-        "ca\structures\nav_pier\nav_pier_pneu.p3d",
-        "ca\structures\rail\rail_misc\rail_najazdovarampa.p3d",
-        "ca\structures_e\housea\a_mosque_big\a_mosque_big_wall_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_main_ep1.p3d",
-        "ca\structures_e\misc\shed_m01_ruins_ep1.p3d",
         "ca\structures_e\proxy_buildingparts\house_a\a_villa_ep1_column.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_5m_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_5m_ruins_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_pillar_ruins_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_1_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_1_ruins_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ruins_ep1.p3d",
-        "ffaa_casas_af\ffaa_cubierto_madera.p3d",
         "majan_obj\aizdihar.p3d",
         "majan_obj\alabjadia.p3d",
         "majan_obj\alaishab.p3d",

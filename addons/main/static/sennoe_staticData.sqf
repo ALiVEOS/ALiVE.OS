@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: sennoe (ALiVE 3 index v3.1, 2026-10-06)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: sennoe (ALiVE 3 index v3.1, 2026-11-12)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-06", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-12", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -32,11 +32,6 @@ ALIVE_civilianConstructionBuildingTypes = [];
 ALiVE_mapCompositionType = "Woodland";
 
  if (tolower(_worldName) == "sennoe") then {
-    ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\props_f_exp\industrial\heavyequipment\combineharvester_01_wreck_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d"
-    ];
-
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
         "a3\structures_f\mil\barracks\i_barracks_v2_dam_f.p3d"
     ];

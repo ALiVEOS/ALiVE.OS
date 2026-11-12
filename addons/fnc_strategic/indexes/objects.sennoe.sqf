@@ -1,4 +1,4 @@
-// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo Sennoe.pbo
 ///////<HEADER>///////
@@ -809,19 +809,6 @@ wrp_objects=
 			[603,[4866,6281]],
 			[606,[4884,6281]],
 			[605,[4902,6281]]
-		]
-	],
-	["a3\structures_f\ind\shed\shed_big_f.p3d",
-		[
-			[612,[5058,6265]],
-			[613,[5040,6282]]
-		]
-	],
-	["a3\props_f_exp\industrial\heavyequipment\combineharvester_01_wreck_f.p3d",
-		[
-			[24817,[3666,7080]],
-			[24818,[3692,7096]],
-			[24819,[3699,7100]]
 		]
         ]
 ];
