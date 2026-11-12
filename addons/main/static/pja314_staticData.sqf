@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: pja314 (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: pja314 (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,13 +33,8 @@ ALiVE_mapCompositionType = "Woodland";
 
  if (tolower(_worldName) == "pja314") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "ca\buildings2\ind_shed_02\ind_shed_02_end.p3d",
         "ca\buildings2\ind_shed_02\ind_shed_02_main.p3d",
-        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
-        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
-        "ca\buildings2\shed_small\shed_m02.p3d",
-        "ca\buildings\misc\plot_rust_vrat_o.p3d",
-        "ca\structures\ind_quarry\ind_hammermill.p3d"
+        "ca\buildings2\shed_small\shed_m02.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [

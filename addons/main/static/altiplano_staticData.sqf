@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-06 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: altiplano (ALiVE 3 index v3.1, 2026-10-06)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: altiplano (ALiVE 3 index v3.1, 2026-11-12)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-06", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-12", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,18 +33,7 @@ ALiVE_mapCompositionType = "Desert";
 
  if (tolower(_worldName) == "altiplano") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\roads_f\runway\runway_end02_f.p3d",
-        "a3\structures_f\bridges\bridge_asphalt_f.p3d",
-        "a3\structures_f\bridges\bridge_highway_f.p3d",
-        "a3\structures_f\ind\cargo\cargo40_color_v3_ruins_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "a3\structures_f\ind\solarpowerplant\spp_mirror_ruins_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrier_big_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall4_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall6_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall_corner_f.p3d",
-        "a3\structures_f\mil\fortification\hbarrierwall_corridor_f.p3d",
-        "a3\structures_f\walls\mil_wallbig_gate_f.p3d"
+        "a3\structures_f\ind\solarpowerplant\spp_mirror_ruins_f.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [

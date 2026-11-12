@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: isladuala3 (ALiVE 3 index v3.1, 2026-10-09)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: isladuala3 (ALiVE 3 index v3.1, 2026-11-12)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-09", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-12", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,36 +33,15 @@ ALiVE_mapCompositionType = "Woodland";
 
  if (tolower(_worldName) == "isladuala3") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f\dominants\castle\castle_01_wall_06_f.p3d",
-        "a3\structures_f\dominants\castle\castle_01_wall_09_f.p3d",
         "a3\structures_f\ind\fuelstation\fuelstation_shed_ruins_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "ca\buildings2\a_crane_02\crane_rails.p3d",
-        "ca\buildings2\a_crane_02\crane_rails_end.p3d",
-        "ca\buildings2\misc_cargo\seacrate.p3d",
         "ca\buildings2\shed_small\shed_m02.p3d",
         "ca\buildings2\shed_small\shed_m02_ruins.p3d",
-        "ca\buildings\dum_zboreny_lidice.p3d",
-        "ca\buildings\misc\plot_rust_vrat_o.p3d",
-        "ca\buildings\misc\plutek.p3d",
-        "ca\buildings\misc\zavora_2.p3d",
         "ca\buildings\misc\zed_civil.p3d",
-        "ca\buildings\misc\zed_podplaz_civil.p3d",
         "ca\buildings\tents\pristresek_mensi.p3d",
-        "ca\data\library\humps_dirt.p3d",
-        "ca\data\library\obstacle_saddle.p3d",
-        "ca\data\library\road_cone.p3d",
-        "ca\data\library\roadbarrier_long.p3d",
         "ca\misc2\bagfencecorner.p3d",
         "ca\misc2\bagfenceround.p3d",
-        "ca\misc2\bighbarrier.p3d",
         "ca\misc3\a_tent.p3d",
-        "ca\misc3\fort_bagfence_round.p3d",
-        "ca\misc3\wf\wf_anti_radar_east.p3d",
-        "ca\roads_pmc\bridge\bridge_asf_pmc.p3d",
-        "ca\structures\misc\armory\climbing_obstacle\climbing_obstacle.p3d",
         "ca\structures\misc\armory\pneu\pneu.p3d",
-        "ca\structures\misc\armory\woodenramp\woodenramp.p3d",
         "ibr\ibr_dualaobjects\bilboard_bordercontrol.p3d",
         "ibr\ibr_dualaobjects\bilboard_ice.p3d",
         "ibr\ibr_dualaobjects\bilboard_noobia.p3d",
@@ -75,8 +54,6 @@ ALiVE_mapCompositionType = "Woodland";
         "ibr\ibr_dualaobjects\bilboard_welcome_molatia.p3d",
         "ibr\ibr_dualaobjects\hemp.p3d",
         "ibr\ibr_dualaobjects\hemptall.p3d",
-        "ibr\ibr_dualaobjects\ibr_mostd_bez_lamp.p3d",
-        "ibr\ibr_dualaobjects\ibr_mostd_stred30.p3d",
         "ibr\ibr_dualaobjects\wall_duala.p3d",
         "ibr\ibr_dualaobjects\wall_dualalow.p3d",
         "mbg\mbg_generic_african_buildings\slums\mbg_slum02h.p3d"

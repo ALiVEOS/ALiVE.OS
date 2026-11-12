@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-07 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-11 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: tem_kujari (ALiVE 3 index v3.1, 2026-10-07)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: tem_kujari (ALiVE 3 index v3.1, 2026-11-11)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-07", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-11", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -32,31 +32,6 @@ ALIVE_civilianConstructionBuildingTypes = [];
 ALiVE_mapCompositionType = "Desert";
 
  if (tolower(_worldName) == "tem_kujari") then {
-    ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\props_f_orange\furniture\tablebig_01_f.p3d",
-        "a3\structures_f\dominants\amphitheater\amphitheater_f.p3d",
-        "a3\structures_f\ind\solarpowerplant\solarpanel_3_f.p3d",
-        "a3\structures_f_exp\civilian\accessories\clothesline_01_f.p3d",
-        "a3\structures_f_exp\civilian\sheds\shed_06_f.p3d",
-        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_heap_sugarcane_f.p3d",
-        "a3\structures_f_exp\infrastructure\bridges\bridgewooden_01_f.p3d",
-        "a3\structures_f_exp\infrastructure\bridges\bridgewooden_01_pillar_f.p3d",
-        "a3\structures_f_exp\naval\piers\pierwooden_03_f.p3d",
-        "a3\structures_f_exp\walls\bamboo\bamboofence_01_s_4m_f.p3d",
-        "a3\structures_f_exp\walls\bamboo\bamboofence_01_s_8m_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_01_m_8m_f.p3d",
-        "a3\structures_f_exp\walls\wooden\woodenwall_01_m_pole_f.p3d",
-        "a3\structures_f_heli\items\food\tableware_01_cup_f.p3d",
-        "a3\weapons_f\dummybinoc.p3d",
-        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
-        "ca\buildings\furniture\case_wooden_b.p3d",
-        "ca\structures_e\ind\ind_fuelstation\ind_fuelstation_build_ruins_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_5m_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_1_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ruins_ep1.p3d"
-    ];
-
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
         "ca\structures_e\mil\mil_hangar_ep1.p3d"
     ];
