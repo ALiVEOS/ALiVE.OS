@@ -44,7 +44,9 @@ _nextStateArgs = [];
 
 _garrisonRadius = _args select 0;
 _garrisonPosition = _args select 2;
-_profileCount = _args select 3;
+// Military Logistics sends three items for a new arrival and four (with the group count) for a hold; with
+// no count the garrison call below failed on an undefined variable and the group never garrisoned
+_profileCount = _args param [3, 0];
 
 
 
