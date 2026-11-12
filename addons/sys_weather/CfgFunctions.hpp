@@ -31,11 +31,6 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sys_weather\fnc_weatherDebugEvent.sqf";
                                                                 ALIVE_RECOMPILE;
                         };
-                        class getRealWeather {
-                                description = "Gets real weather for a time and location function";
-                                file = "\x\alive\addons\sys_weather\fnc_getRealWeather.sqf";
-                                                                ALIVE_RECOMPILE;
-                        };
                         class weatherEffects {
                                 description = "Weather effects";
                                 file = "\x\alive\addons\sys_weather\fnc_weatherEffects.sqf";

@@ -9,8 +9,7 @@ Runs locally to player only.
 
 Should support:
 1. ALiVE Weather
-2. ALiVE Real Weather
-3. ACE Weather
+2. ACE Weather
 
 Parameters:
 STRING - Effect Type
@@ -38,6 +37,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 
 // Weather Effects

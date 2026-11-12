@@ -53,7 +53,6 @@ class CfgVehicles {
                         class initialTropical { name = "Tropical"; value = 2; };
                         class initialMediterranean { name = "Mediterranean"; value = 3; };
                         class initialRandom { name = "Random"; value = 4; };
-                        class initialRealWeather { name = "Real"; value = 5; };
                     };
             };
             class weather_override_setting : Combo
@@ -69,12 +68,10 @@ class CfgVehicles {
                         class overrideOvercast { name = "Overcast"; value = 2; };
                         class overrideStormy { name = "Stormy"; value = 3; };
                         class overrideFoggy { name = "Foggy"; value = 4; };
-                        class overrideReal { name = "Real Weather: Use weather from real time not game time"; value = 5; };
                     };
             };
-            class weather_cycle_delay_setting : Edit { property = "ALiVE_sys_weather_weather_cycle_delay_setting"; displayName = "$STR_ALIVE_WEATHER_CYCLE_DELAY"; tooltip = "$STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT"; defaultValue = """1800"""; typeName = "NUMBER"; ALiVE_showWhen[] = {{"weather_initial_setting", "not", 5}}; };
-            class weather_cycle_variance_setting : Edit { property = "ALiVE_sys_weather_weather_cycle_variance_setting"; displayName = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE"; tooltip = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT"; defaultValue = """0.2"""; typeName = "NUMBER"; ALiVE_showWhen[] = {{"weather_initial_setting", "not", 5}}; };
-            class weather_real_location_setting : Edit { property = "ALiVE_sys_weather_weather_real_location_setting"; displayName = "$STR_ALIVE_WEATHER_REAL_LOCATION"; tooltip = "$STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT"; defaultValue = """COUNTRY/CITY"""; typeName = "STRING"; ALiVE_showWhen[] = {{"weather_initial_setting", "is", 5}}; };
+            class weather_cycle_delay_setting : Edit { property = "ALiVE_sys_weather_weather_cycle_delay_setting"; displayName = "$STR_ALIVE_WEATHER_CYCLE_DELAY"; tooltip = "$STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT"; defaultValue = """1800"""; typeName = "NUMBER"; };
+            class weather_cycle_variance_setting : Edit { property = "ALiVE_sys_weather_weather_cycle_variance_setting"; displayName = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE"; tooltip = "$STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT"; defaultValue = """0.2"""; typeName = "NUMBER"; };
             class weather_precipitation_setting : Combo
             {
                 property = "ALiVE_sys_weather_weather_precipitation_setting";
