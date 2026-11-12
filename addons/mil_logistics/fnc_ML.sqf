@@ -7127,10 +7127,12 @@ switch(_operation) do {
                         // OPCOM from requesting unreasonably large reinforcements.
                         // Also recompute _forceMakeupTotal after capping.
                         // -----------------------------------------------------------------
+                        // A Start From Ship wave is left as it is: its size is the commander's own Groups Per Wave
+                        // setting, and the cap held every wave to five whatever that said (TheLogatron on Discord, 12 Nov)
                         private _capApplied = false;
                         for "_capIdx" from 0 to ((count _eventForceMakeup) - 1) do {
                             private _capVal = _eventForceMakeup select _capIdx;
-                            if (_capVal > MAX_GROUPS_PER_REQUEST) then {
+                            if (_capVal > MAX_GROUPS_PER_REQUEST && {!_shipLaunch}) then {
                                 _eventForceMakeup set [_capIdx, MAX_GROUPS_PER_REQUEST];
                                 _capApplied = true;
                             };
