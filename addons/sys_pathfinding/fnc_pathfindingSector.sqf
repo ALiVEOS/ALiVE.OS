@@ -62,58 +62,6 @@ private _fnc_getRoadModifier = {
     [_subRoadModifier,_subHasRoads,_subHasTrails,_subHasBridge];
 };
 
-private _fnc_getHeightWaterModifier = {
-
-    params ["_subSector", "_radius"];
-    private _subWater = [];
-    private _subHasWater = false;
-    private _subIsEntirelyWater = true;
-    private _subWaterModifier = 0;
-
-    private _sPos = (_subSector select 2); // Center
-    private _subHeightASL = getTerrainHeightASL _sPos;
-
-    //Check for Water in multiple positions from center
-    private _sOffset = _radius * 0.7;
-    private _sPositions = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
-    private _seaLevel = missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0];
-    {
-        private _testPos = [
-            (_sPos select 0) + ((_x select 0 ) * _sOffset),
-            (_sPos select 1) + ((_x select 1 ) * _sOffset)
-            ];
-        // Classify water from terrain height relative to sea level; this is independent
-        // of whether distant pond objects are loaded.
-        if (getTerrainHeightASL _testPos < _seaLevel) then {_subHasWater = true;_subWaterModifier = _subWaterModifier + 1;} else {_subIsEntirelyWater = false;};
-
-    } foreach _sPositions;
-    
-    _subWaterModifier = _subWaterModifier / 8;
-    _subWater pushback _subHasWater;
-    _subWater pushback _subWaterModifier;
-    _subWater pushback _subHeightASL;   // Cached centre height for deep-water rejection.
-    (_subSector select 4) pushback _subWater;
-    (_subSector select 4) pushback _subHeightASL;
-    private _hasBridge = (((_subSector select 4) select 0) select 2);
-    if (_subIsEntirelyWater && !_hasBridge) then {
-        _subSector set [3,"WATER"];
-    } else {
-        if (_hasBridge) then {
-            _subSector set [3, "BRIDGE"];
-            _subIsEntirelyWater = false;
-        } else {
-            if (_subHasWater) then {
-                _subSector set [3, "COAST"];
-            };
-        };
-    };
-    
-
-
-    [_subIsEntirelyWater, _subWaterModifier, _subHeightASL];
-
-};
-
 switch (_operation) do {
 
     case "create": {
@@ -142,25 +90,17 @@ switch (_operation) do {
         private _type = "LAND";  // Can be "LAND" , "WATER", "COAST" (for coastline or rivers - basically a mix), or "BRIDGE"
         private _modifiers = [];
 
-        ////// ROAD ANALYSIS //////
+        // Every cell is looked at once, in the same order as before, for its roads, its water and height
+        // and its trees, rocks and buildings. The grid covers the whole map (50,000 cells on Takistan), so
+        // the per-cell work is kept small: a cell with no road skips the road analysis, and the 8 water
+        // test points are worked out once per sector. The grid that comes out is the same as before.
         private _roadModifier = 0;
         private _hasRoads = false;
         private _hasTrails = false;
         private _hasBridge = false;
-        {
-            private _roadData = [_x select 1,_subSectorRadius] call _fnc_getRoadModifier;
-            if (_roadModifier < _roadData select 0) then {_roadModifier = _roadData select 0};
-            if (_roadData select 1) then {_hasRoads = true;};
-            if (_roadData select 2) then {_hasTrails = true;};
-            if (_roadData select 3) then {_hasBridge = true;};
-        } foreach _subSectors;
-
-        private _roadModData = [_hasRoads,_hasTrails,_hasBridge,_roadModifier];
-        _modifiers pushback _roadModData;
 
         private _numLandAreas = 0.01;
         private _numWaterAreas = 0.01;
-        ////// WATER / HEIGHT ANALYSIS //////
         private _sumHeightASL = 0;
         private _sumWaterModifier = 0;
         private _hasWater = false;
@@ -170,46 +110,76 @@ switch (_operation) do {
         _waterSectorArray = [[-1,-1], [-1,-1], [-1,-1], "WATER",[[false,false,false,0],[true,1,-99],-99,0]];   // water sub 3rd = centre height: -99 = always deep
         ////
 
+        private _roadRadius = _subSectorRadius * 1.2;
+        private _sOffset = _subSectorRadius * 0.7;
+        private _waterOffsets = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]] apply { [(_x select 0) * _sOffset, (_x select 1) * _sOffset] };
+        private _seaLevel = missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0];
+
+        private _sumDensityModifier = 0;
+        // Normalize object counts to the 50 m sampling area used by procedure density limits.
+        private _densitySizeAdjust = 2500 / (_subSize * _subSize);
+        private _searchArray = ["tree","rock","house","building","fence","wall"];
+
         {
-            private _heightData = [_x select 1,_subSectorRadius] call _fnc_getHeightWaterModifier;
-            if (_heightData select 0) then {
+            private _subSector = _x select 1;
+            private _sPos = _subSector select 2; // Center
+            private _subMods = _subSector select 4;
+
+            ////// ROADS //////
+            private _subHasBridge = false;
+            if ((nearestTerrainObjects [_sPos, ["MAIN ROAD","ROAD","TRACK","TRAIL"], _roadRadius, false, true]) isEqualTo []) then {
+                _subMods pushback [false,false,false,0];
+            } else {
+                private _roadData = [_subSector,_subSectorRadius] call _fnc_getRoadModifier;
+                if (_roadModifier < _roadData select 0) then {_roadModifier = _roadData select 0};
+                if (_roadData select 1) then {_hasRoads = true;};
+                if (_roadData select 2) then {_hasTrails = true;};
+                if (_roadData select 3) then {_hasBridge = true; _subHasBridge = true;};
+            };
+
+            ////// WATER / HEIGHT //////
+            private _subHeightASL = getTerrainHeightASL _sPos;
+            private _px = _sPos select 0;
+            private _py = _sPos select 1;
+            private _wet = { getTerrainHeightASL [_px + (_x select 0), _py + (_x select 1)] < _seaLevel } count _waterOffsets;
+            private _subWaterModifier = _wet / 8;
+            _subMods pushback [_wet > 0, _subWaterModifier, _subHeightASL];
+            _subMods pushback _subHeightASL;
+            private _subIsEntirelyWater = (_wet == 8) && !_subHasBridge;
+            if (_subIsEntirelyWater) then {
+                _subSector set [3,"WATER"];
                 _numWaterAreas = _numWaterAreas + 1;
                 _sumWaterModifier = _sumWaterModifier + 1;
                 _hasWater = true;
                 _x set [1,_waterSectorArray]; // For compression
             } else {
-                if ((_heightData select 1) > 0) then {
-                    _sumWaterModifier = _sumWaterModifier + (_heightData select 1);
+                if (_subHasBridge) then {
+                    _subSector set [3, "BRIDGE"];
+                } else {
+                    if (_wet > 0) then { _subSector set [3, "COAST"]; };
+                };
+                if (_subWaterModifier > 0) then {
+                    _sumWaterModifier = _sumWaterModifier + _subWaterModifier;
                     _numWaterAreas = _numWaterAreas + 1;
                     _hasWater = true;
                 };
-                if ((_heightData select 2) > 0) then {_numLandAreas = _numLandAreas + 1;};
+                if (_subHeightASL > 0) then {_numLandAreas = _numLandAreas + 1;};
                 _isEntirelyWater = false;
+
+                ////// ROUGHNESS //////
+                private _subDensityModifier = count nearestTerrainObjects [_sPos, _searchArray, _subSectorRadius, false];
+                _subMods pushback _subDensityModifier * _densitySizeAdjust;
+                _sumDensityModifier = _sumDensityModifier + _subDensityModifier * _densitySizeAdjust;
             };
-            _sumHeightASL = _sumHeightASL + (_heightData select 2);
+            _sumHeightASL = _sumHeightASL + _subHeightASL;
         } foreach _subSectors;
 
         // for compression
         if (_isEntirelyWater) exitwith { _sector = [_index,_waterSectorArray]; _result = [_sector, _subSectors]; };
- 
-        private _waterModData = [_hasWater, _sumWaterModifier/_numWaterAreas, getTerrainHeightASL _posCenter];   // 3rd = sector centre height
-        _modifiers pushback _waterModData;
-        _modifiers pushback (_sumHeightASL/(count _subsectors)); //Height Data
 
-        /////// ROUGHNESS ANALYSIS ///////
-        private _sumDensityModifier = 0;
-        // Normalize object counts to the 50 m sampling area used by procedure density limits.
-        private _densitySizeAdjust = 2500 / (_subSize * _subSize);
-        private _searchArray = ["tree","rock","house","building","fence","wall"];
-        {
-            private _subSector = _x select 1;
-            private _sPos = _subSector select 2; // Center
-            if (_subSector select 3 != "WATER") then {
-                private _subDensityModifier = count nearestTerrainObjects [_sPos, _searchArray, _subSectorRadius, false];
-                (_subSector select 4) pushback _subDensityModifier * _densitySizeAdjust;
-                _sumDensityModifier = _sumDensityModifier + _subDensityModifier * _densitySizeAdjust;
-            };
-        } foreach _subSectors;
+        _modifiers pushback [_hasRoads,_hasTrails,_hasBridge,_roadModifier];
+        _modifiers pushback [_hasWater, _sumWaterModifier/_numWaterAreas, getTerrainHeightASL _posCenter];   // 3rd = sector centre height
+        _modifiers pushback (_sumHeightASL/(count _subsectors)); //Height Data
         _modifiers pushback (_sumDensityModifier/_numLandAreas);
 
 
