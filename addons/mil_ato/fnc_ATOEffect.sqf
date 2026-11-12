@@ -230,7 +230,14 @@ switch(_operation) do {
         };
 
         if (!isNull _obj && {(_effect in LOCAL_ONLY)} && {!local _obj}) exitWith {
-            ["ALIVE_fnc_ATOEffect - %1 refused on %2: the hull is owned elsewhere", _effect, typeOf _obj] call ALiVE_fnc_dump;
+            // said once per aircraft and effect: the table asks again every few seconds, which put
+            // thousands of these lines in an evening's log
+            private _said = _obj getVariable ["ALiVE_mil_ato_remoteSaid", []];
+            if !(_effect in _said) then {
+                _said pushBack _effect;
+                _obj setVariable ["ALiVE_mil_ato_remoteSaid", _said];
+                ["ALIVE_fnc_ATOEffect - %1 refused on %2: the hull is owned elsewhere (said once for this aircraft)", _effect, typeOf _obj] call ALiVE_fnc_dump;
+            };
             _result = ["refused", false, "remote"];
         };
 

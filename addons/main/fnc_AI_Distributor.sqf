@@ -60,7 +60,8 @@ waituntil {time > 0};
 // ACE now ships its headless transfer as ace_headless (it was acex_headless); both still read
 // acex_headless_enabled and acex_headless_blacklist. With ACE's transfer on, ALiVE stands down,
 // and instead keeps ACE's blacklist set on what ALiVE itself keeps off headless clients:
-// units marked ALiVE_ignore_HC and Combat Support vehicles, which ACE would otherwise move.
+// units marked ALiVE_ignore_HC, Combat Support vehicles and the air tasking module's aircraft and
+// crews, which ACE would otherwise move.
 if (isClass(configFile >> "CfgPatches" >> "acex_headless") || {isClass(configFile >> "CfgPatches" >> "ace_headless")}) then {
     waitUntil {!isNil "acex_headless_enabled"};
 
@@ -71,7 +72,9 @@ if (isClass(configFile >> "CfgPatches" >> "acex_headless") || {isClass(configFil
                 while {true} do {
                     {
                         private _keep = (_x getVariable ["ALiVE_ignore_HC", false]) isEqualTo true
-                            || {((vehicle _x) getVariable ["ALiVE_CombatSupport", false]) isEqualTo true};
+                            || {((vehicle _x) getVariable ["ALiVE_CombatSupport", false]) isEqualTo true}
+                            || {(_x getVariable ["ALiVE_mil_ato_crew", false]) isEqualTo true}
+                            || {((vehicle _x) getVariable ["ALiVE_mil_ato_tail", ""]) isNotEqualTo ""};
                         private _ours = _x getVariable ["ALiVE_aceBlacklisted", false];
                         if (_keep && {!(_x getVariable ["acex_headless_blacklist", false])}) then {
                             _x setVariable ["acex_headless_blacklist", true, true];
@@ -122,7 +125,11 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
             // Abandon loop if no HCs connected //
             if (GVAR(AI_DISTRIBUTOR_HCLIST) isEqualTo []) exitWith {["AI Distributor detected no HCs, idling for %1 seconds.", _delay] call ALiVE_fnc_Dump};
 
-            if ( (local _x) && { { (alive _x) && { !((vehicle _x) getVariable ["ALiVE_CombatSupport", false])} && {!(_x getVariable ["ALiVE_ignore_HC", false])}} count (units _x) > 0}) then {
+            // The air tasking module's aircraft stay on the server with their crews: it orders them
+            // from there, and a crew moved to a headless client took the aircraft with it, so every
+            // order was refused from then on and the aircraft flew no more sorties
+            if ( (local _x) && { { (alive _x) && { !((vehicle _x) getVariable ["ALiVE_CombatSupport", false])} && {!(_x getVariable ["ALiVE_ignore_HC", false])}
+                && {!(_x getVariable ["ALiVE_mil_ato_crew", false])} && {((vehicle _x) getVariable ["ALiVE_mil_ato_tail", ""]) isEqualTo ""}} count (units _x) > 0}) then {
 
                 // Distribute to available HCs //
                 if (_HC_index > ((count GVAR(AI_DISTRIBUTOR_HCLIST)) -1)) then {_HC_index = 0};
