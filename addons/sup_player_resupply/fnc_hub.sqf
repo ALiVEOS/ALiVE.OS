@@ -270,8 +270,10 @@ switch (_op) do {
         publicVariable "ALiVE_hub_list";
         // every player's machine, joining later too, keeps the hubs on its map
         ["markers", []] remoteExec ["ALIVE_fnc_hub", 0, "ALiVE_hub_markers"];
-        ["ALiVE Logistics Hub: %1 hubs of side %2, radius %3 m, Who Can Collect [%4], Collect %5, enemy can dismantle %6, repair %7 s, Who Can Dismantle [%8]",
-            count _hubs, _side, _radius, _who, ["off (not synced to Player Combat Logistics)", "on"] select _collect, _dismantle, _repairTime, _dWho] call _debug;
+        // Trade In too: a mission whose own side's hub had it off showed no action and nothing in the RPT (#1116)
+        ["ALiVE Logistics Hub: %1 hubs of side %2, radius %3 m, Who Can Collect [%4], Collect %5, enemy can dismantle %6, repair %7 s, Who Can Dismantle [%8], Trade In %9%10",
+            count _hubs, _side, _radius, _who, ["off (not synced to Player Combat Logistics)", "on"] select _collect, _dismantle, _repairTime, _dWho,
+            _trade, ["", format [" (own side pays %1)", _tradeOwn]] select (_trade == "ANY")] call _debug;
 
         // The side's catalogue, what can't work, and the hubs' place in the supply network, worked
         // out off the frame
