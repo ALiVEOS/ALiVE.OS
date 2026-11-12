@@ -76,7 +76,9 @@ if(_debug) then {
 _excludedObject = true;
 _nearbyObjects = [];
 
-for "_i" from 1 to 4 do {
+// One pass: every pass took the same first road and ran the same searches, so passes 2 to 4 repeated
+// the first one's answer at four times the cost (the nearby-object searches are the slow part).
+for "_i" from 1 to 1 do {
 
   if (count _road_seg_list > 0) then {
  	
