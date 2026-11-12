@@ -30,11 +30,22 @@ switch (_operation) do {
         private _subSectors = [];
         private _gridWidth = ceil(worldsize / _sectorSize) + 1;
 
-        for "_i" from 0 to _gridWidth - 1 do {
-            for "_j" from 0 to _gridWidth - 1 do {
-                private _newSectorData = [nil,"create", [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _sectorSize, _subSectorSize, _gridWidth]] call alive_fnc_pathfindingSector;
-                _sectors pushback (_newSectorData select 0);
-                _subSectors append (_newSectorData select 1);
+        // Sectors are built in one go for up to 15 ms at a time, in the same order as before. Built from a
+        // scheduled script, the grid waited its turn behind every other script between each of its cells, so
+        // on a busy mission start it took four times its own work (22 s on Takistan).
+        private _sectorCount = _gridWidth * _gridWidth;
+        private _k = 0;
+        while {_k < _sectorCount} do {
+            isNil {
+                private _blockStart = diag_tickTime;
+                while {_k < _sectorCount && {diag_tickTime - _blockStart < 0.015}} do {
+                    private _j = _k mod _gridWidth;
+                    private _i = floor (_k / _gridWidth);
+                    private _newSectorData = [nil,"create", [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _sectorSize, _subSectorSize, _gridWidth]] call alive_fnc_pathfindingSector;
+                    _sectors pushback (_newSectorData select 0);
+                    _subSectors append (_newSectorData select 1);
+                    _k = _k + 1;
+                };
             };
         };
 
