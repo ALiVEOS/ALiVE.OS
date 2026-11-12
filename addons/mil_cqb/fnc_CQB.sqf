@@ -419,7 +419,21 @@ switch(_operation) do {
 
                         if ((typeof _mod) in _placementTypes) then {
                             _used = true;
-                            waituntil {_mod getVariable ["startupComplete", false]};
+                            // #1108: this wait has no limit, and a placement module that never finishes
+                            // leaves the mission on the CQB loading line with nothing in the log. Every
+                            // two minutes it now says which module it is still waiting for.
+                            private _waitFrom = diag_tickTime;
+                            private _waitSaid = _waitFrom;
+                            waituntil {
+                                sleep 1;
+                                if (diag_tickTime - _waitSaid >= 120) then {
+                                    _waitSaid = diag_tickTime;
+                                    ["CQB [%1] - still waiting after %2 s for %3 (%4) to finish setting up; its stage: %5 (server fps %6, %7 scripts running)",
+                                        _id, round (_waitSaid - _waitFrom), typeOf _mod, [vehicleVarName _mod, str _mod] select (vehicleVarName _mod == ""),
+                                        _mod getVariable ["startupStage", "not reported"], round diag_fps, count diag_activeSQFScripts] call ALiVE_fnc_dumpR;
+                                };
+                                _mod getVariable ["startupComplete", false]
+                            };
                             [format ["waited for %1", typeOf _mod]] call _fnc_cqbDiagMark;
 
                             _obj = [_mod,"objectives",objNull,[]] call ALIVE_fnc_OOsimpleOperation;

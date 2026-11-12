@@ -359,12 +359,21 @@ switch(_operation) do {
             // A setup that runs long says every two minutes which step it is on, so a server log shows
             // where it stops. #1108: on one server setup never finished after a #restart, with nothing logged.
             _logic setVariable ["startupStage", ["waiting for the Profile System", 0, 0]];
+            // A setup over a minute also says where the time went, step by step, sampled every 5 s (#1108: 6.4 min on
+            // one server, with every module starting at once, against 1.5 s on its own). The probe and admins can
+            // move the minute with ALiVE_AMBCP_breakdownAfter.
             [_logic] spawn {
                 params ["_logic"];
                 private _t0 = diag_tickTime;
                 private _next = 120;
+                private _steps = [];
+                private _fnc_sample = {
+                    private _now = (_logic getVariable ["startupStage", ["starting", 0, 0]]) select 0;
+                    if (_steps isEqualTo [] || {((_steps select (count _steps - 1)) select 0) != _now}) then { _steps pushBack [_now, diag_tickTime] };
+                };
                 waitUntil {
-                    sleep 10;
+                    sleep 5;
+                    call _fnc_sample;
                     if (diag_tickTime - _t0 > _next) then {
                         _next = _next + 120;
                         (_logic getVariable ["startupStage", ["starting", 0, 0]]) params ["_stage", "_at", "_of"];
@@ -373,6 +382,18 @@ switch(_operation) do {
                             round diag_fps, count diag_activeSQFScripts] call ALiVE_fnc_dump;
                     };
                     isNull _logic || {_logic getVariable ["startupComplete", false]}
+                };
+                private _total = diag_tickTime - _t0;
+                // ALiVE_AMBCP_breakdownAfter (seconds) moves the threshold, 0 for every setup
+                if (_total > (missionNamespace getVariable ["ALiVE_AMBCP_breakdownAfter", 60]) && {!isNull _logic}) then {
+                    private _parts = [];
+                    {
+                        _x params ["_name", "_at"];
+                        private _end = if (_forEachIndex + 1 < count _steps) then { (_steps select (_forEachIndex + 1)) select 1 } else { diag_tickTime };
+                        if (_end - _at >= 1) then { _parts pushBack format ["%1 %2 s", _name, round (_end - _at)] };
+                    } forEach _steps;
+                    ["ALiVE Ambient Civilian Placement - set up in %1 s (server fps %2, %3 scripts running); where the time went: %4",
+                        round _total, round diag_fps, count diag_activeSQFScripts, _parts joinString ", "] call ALiVE_fnc_dump;
                 };
             };
 
@@ -446,6 +467,7 @@ switch(_operation) do {
             };
 
             if!(_error) then {
+                _logic setVariable ["startupStage", ["choosing settlements inside the TAOR", 0, 0]];
                 private _taor = [_logic, "taor"] call MAINCLASS;
                 private _blacklist = [_logic, "blacklist"] call MAINCLASS;
                 private _sizeFilter = parseNumber([_logic, "sizeFilter"] call MAINCLASS);
@@ -573,6 +595,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
 
             private _clusters = [_logic, "objectives"] call MAINCLASS;
+            _logic setVariable ["startupStage", ["registering settlements", 0, 0]];
 
             if(count _clusters > 0) then {
                 {
@@ -644,6 +667,7 @@ switch(_operation) do {
             private _initialdamage = [_logic, "initialdamage"] call MAINCLASS;
 
             // side-effect call: primes the civilian-population global posture
+            _logic setVariable ["startupStage", ["loading static data", 0, 0]];
             [] call ALIVE_fnc_getGlobalPosture;
 
             // DEBUG -------------------------------------------------------------------------------------
@@ -702,6 +726,7 @@ switch(_operation) do {
 
             if(_ambientVehicleAmount > 0) then {
 
+                _logic setVariable ["startupStage", ["finding the vehicle factions' cars", 0, 0]];
                 private _carClasses = [0,_ambientVehicleFactions,"Car"] call ALiVE_fnc_findVehicleType;
                 private _landClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
