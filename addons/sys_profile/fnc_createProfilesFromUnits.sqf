@@ -308,6 +308,9 @@ if(_debug) then {
                         [_profileVehicle, "vehicleClass", _vehicleClass] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "position", _position] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "despawnPosition", _position] call ALIVE_fnc_profileVehicle;
+                        // a static weapon placed in the editor is made exactly where it was placed, as one built at a FOB,
+                        // not moved off a gun pit's floor or a bunker roof to flat ground nearby when it spawns
+                        if (_vehicle isKindOf "StaticWeapon") then { [_profileVehicle, "exactPosition", true] call ALIVE_fnc_hashSet; };
                         [_profileVehicle, "direction", getDir _vehicle] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "damage", _vehicle call ALIVE_fnc_vehicleGetDamage] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "fuel", fuel _vehicle] call ALIVE_fnc_profileVehicle;
@@ -476,6 +479,9 @@ if(_debug) then {
             [_profileVehicle, "vehicleClass", _vehicleClass] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "position", _position] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "despawnPosition", _position] call ALIVE_fnc_profileVehicle;
+            // a static weapon placed in the editor is made exactly where it was placed, as one built at a FOB,
+            // not moved off a gun pit's floor or a bunker roof to flat ground nearby when it spawns
+            if (_vehicle isKindOf "StaticWeapon") then { [_profileVehicle, "exactPosition", true] call ALIVE_fnc_hashSet; };
             [_profileVehicle, "direction", getDir _vehicle] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "damage", _vehicle call ALIVE_fnc_vehicleGetDamage] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "fuel", fuel _vehicle] call ALIVE_fnc_profileVehicle;
