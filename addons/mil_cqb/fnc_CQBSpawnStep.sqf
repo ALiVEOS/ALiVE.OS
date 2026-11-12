@@ -490,6 +490,7 @@ switch (_phase) do {
         private _group = createGroup _side;
         _group setVariable ["house", _house];
         _group setVariable ["ALIVE_profileIgnore", true];
+        ["guard", [_group]] call ALiVE_fnc_modConflicts;
         _house setVariable ["group", _group];
         // Retain the owned resource if the house object is deleted before the
         // controller handles a failure or module shutdown.
@@ -529,6 +530,7 @@ switch (_phase) do {
                         _unit setVariable ["house", _house];
                         _unit setVariable ["ALIVE_profileIgnore", true];
                         _unit setVariable ["ALIVE_cqb_instance", _logic, true];
+                        ["unit", [_unit]] call ALiVE_fnc_modConflicts;
                     };
 
                     _context set ["nextUnitAt", time + MOD(smoothSpawn)];

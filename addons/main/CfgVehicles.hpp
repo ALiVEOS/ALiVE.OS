@@ -2419,6 +2419,31 @@ class CfgVehicles {
                             };
                     };
             };
+            class ALiVE_ModConflicts: Combo
+            {
+                    property =  MVAR(ALiVE_ModConflicts);
+                    displayName = "Other AI mods";
+                    tooltip = "What ALiVE does when a mod known to change its AI is loaded (LAMBS Danger, VCOM AI, ASR AI3, BHL AI).\nGuard: keep ALiVE's own groups out of the mod where the mod allows it, and tell admins.\nWarn: only tell admins and players.\nOff: do nothing.";
+                    defaultValue = """GUARD""";
+                    class Values
+                    {
+                            class guard
+                            {
+                                    name = "Guard";
+                                    value = "GUARD";
+                            };
+                            class warn
+                            {
+                                    name = "Warn";
+                                    value = "WARN";
+                            };
+                            class off
+                            {
+                                    name = "Off";
+                                    value = "OFF";
+                            };
+                    };
+            };
 
             class ALiVE_AI_DISTRIBUTION: Combo
             {

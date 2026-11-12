@@ -814,6 +814,9 @@ _GC setVariable ["ALiVE_GC_INDIVIDUALTYPES", _logic getVariable ["ALiVE_GC_INDIV
 
 //---------------------------------------------------------------------------------------------------------//
 
+// Mods that change ALiVE's AI: found and reported on every machine; under Guard, ALiVE's groups are kept out of them
+[_logic] spawn { ["init", [_this select 0]] call ALiVE_fnc_modConflicts };
+
 // Only on Server
 if (isServer) then {
     //Sets global type of Versioning (Kick or Warn)

@@ -71,6 +71,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_versioning.sqf";
                 ALIVE_RECOMPILE;
             };
+            class modConflicts {
+                description = "Finds mods that interfere with ALiVE, reports them and keeps ALiVE's AI out of them";
+                file = "\x\alive\addons\main\fnc_modConflicts.sqf";
+                ALIVE_RECOMPILE;
+            };
             class isModuleInitialised {
                 description = "Checks if given modules are initialised";
                 file = "\x\alive\addons\main\fnc_isModuleInitialised.sqf";

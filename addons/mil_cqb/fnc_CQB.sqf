@@ -1759,6 +1759,7 @@ switch(_operation) do {
             _house setVariable ["group", _grp];
 
             {if !(isnil "_x") then {_unit = _grp createUnit [_x, getPosATL _house, [], 0 , "NONE"]}} foreach _units;
+            ["guard", [_grp]] call ALiVE_fnc_modConflicts;
 
             if (count units _grp == 0) exitWith {
                 if (_debug) then {

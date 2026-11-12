@@ -1224,6 +1224,10 @@ switch(_operation) do {
             {
                 [_logic, "removeUnit", _x] call MAINCLASS;
             } forEach _removeIndexes;
+
+            if (_active && {!isNull _newGroup}) then {
+                ["guard", [_newGroup]] call ALiVE_fnc_modConflicts;
+            };
         };
     };
 
@@ -1494,6 +1498,8 @@ switch(_operation) do {
             // for a deletion and drop the unit, or the whole profile, for good.
             [_logic,"spawnIncomplete", (_units findIf {isNull _x}) > -1] call ALIVE_fnc_hashSet;
             [_logic,"leader", leader _group] call ALIVE_fnc_hashSet;
+            // other AI mods' opt-outs, under the ALiVE (Required) module's Guard setting
+            ["guard", [_group]] call ALiVE_fnc_modConflicts;
             [_logic,"group", _group] call ALIVE_fnc_hashSet;
             [_logic,"units", _units] call ALIVE_fnc_hashSet;
             [_logic,"active", true] call ALIVE_fnc_hashSet;

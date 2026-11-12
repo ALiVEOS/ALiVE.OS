@@ -13,6 +13,7 @@
 #include "CfgALiVEAmbientAnimals.hpp"
 #include "CfgALiVEC2ISTARAccessItems.hpp"
 #include "CfgALiVELists.hpp"
+#include "CfgALiVEModConflicts.hpp"
 #include "\x\alive\addons\main\data\ui\main.hpp"
 #include "\x\alive\addons\main\data\ui\siteWho.hpp"
 
