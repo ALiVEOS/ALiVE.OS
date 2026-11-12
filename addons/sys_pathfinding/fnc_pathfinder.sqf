@@ -78,11 +78,9 @@ switch (_operation) do {
         // to crossing when none does. isNil-guarded so a console override survives a
         // mission restart. Set to 1 to disable the penalty entirely.
         if (isNil "ALiVE_pathfinding_airsideWeight") then { ALiVE_pathfinding_airsideWeight = 6 };
-        private _terrainGrid = [nil,"create", _pathfindingSize] call ALiVE_fnc_pathfindingGrid;
-
         // Pathfinder state is an opaque HashMap handle passed to this dispatcher.
+        // "terrainGrid" is added once the grid is built, below; until then route requests wait in the queue.
         _logic = createHashMapFromArray [
-            ["terrainGrid", _terrainGrid],
             ["pathfindingProcedures", createHashMap],
             ["currentJobData", []],
             ["pathJobs", []],
@@ -100,6 +98,27 @@ switch (_operation) do {
         addMissionEventHandler ["EachFrame", {
             [ALiVE_pathfinder,"onFrame"] call ALiVE_fnc_pathfinder;
         }];
+
+        // The route grid is built in the background, so the Profile System and everything after it go on
+        // starting up. On a large map the first look over the terrain kept them waiting 20 s or more. Routes
+        // asked for meanwhile wait in the queue and are worked out, the same as before, once the grid is ready.
+        [_logic, _pathfindingSize] spawn {
+            params ["_logic", "_pathfindingSize"];
+            private _start = diag_tickTime;
+            private _terrainGrid = [nil,"create", _pathfindingSize] call ALiVE_fnc_pathfindingGrid;
+            isNil {
+                _logic set ["terrainGrid", _terrainGrid];
+                if (count (_logic get "pathJobs") > 0) then {
+                    [_logic,"loadCurrentJobData"] call ALiVE_fnc_pathfinder;
+                };
+                // the grid overlay asked for (Eden setting or admin menu) before the grid was there
+                if (missionNamespace getVariable ["ALiVE_pathfinding_drawGrid", false]) then {
+                    [_terrainGrid, "enableDebugMarkers", [true]] call ALiVE_fnc_pathfindingGrid;
+                };
+            };
+            private _firstWait = _logic getOrDefault ["firstWaitStart", diag_tickTime];
+            ["Pathfinding: route grid ready after %1 s; %2 routes were waiting for it, the first for %3 s", (diag_tickTime - _start) toFixed 1, count (_logic get "pathJobs"), (diag_tickTime - _firstWait) toFixed 1] call ALiVE_fnc_dump;
+        };
 
         _result = _logic;
 
@@ -184,6 +203,10 @@ switch (_operation) do {
             ["_procedure",["genericCanSwimButNoWater", [true, true, true, false, false], [0.7, 0], [-0.5, 0, 0, 0]],[[]],[4]]
         ];
 
+        // before the route grid is ready, the straight-line check used with pathfinding off
+        if (isNil {_logic get "terrainGrid"}) exitWith {
+            _result = [_startPos,_endPos] call ALiVE_fnc_crossesSea;
+        };
 
         private _terrainGrid = _logic get "terrainGrid";
         private _sectorSize = _terrainGrid get "sectorSize";
@@ -658,6 +681,8 @@ switch (_operation) do {
         // each see two jobs and both skip the load, stalling the queue.
         isNil {
             _pathJobs pushBack _newJob;
+            // when the first route began waiting for the grid, for the line logged once it is ready
+            if (isNil {_logic get "terrainGrid"} && {isNil {_logic get "firstWaitStart"}}) then { _logic set ["firstWaitStart", diag_tickTime] };
             if (count _pathJobs == 1) then {
                 [_logic,"loadCurrentJobData"] call MAINCLASS;
             };
@@ -684,6 +709,9 @@ switch (_operation) do {
     };
 
     case "loadCurrentJobData": {
+
+        // jobs wait in the queue until the route grid is ready, which loads the first of them
+        if (isNil {_logic get "terrainGrid"}) exitWith {};
 
         private _pathJobs = _logic get "pathJobs";
 
@@ -820,6 +848,7 @@ switch (_operation) do {
         private _pathJobs = _logic get "pathJobs";
         private _queuedPathCount = count _pathJobs;
         if (_queuedPathCount == 0) exitwith {};
+        if (isNil {_logic get "terrainGrid"}) exitWith {};
 
         private _currentJob = _pathJobs select 0;
         private _currentJobData = _logic get "currentJobData";

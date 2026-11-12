@@ -123,7 +123,7 @@ switch (_operation) do {
     // [positions, size class, weight]: mark sub-sectors blocked for that size; a fresh pair per write, as deposit
     case "block": {
         _args params [["_positions", []], ["_class", "man"], ["_weight", 1]];
-        if (isNil "ALiVE_routeMemory_blocked" || {isNil "ALiVE_pathfinder"}) exitWith {};
+        if (isNil "ALiVE_routeMemory_blocked" || {isNil "ALiVE_pathfinder"} || {isNil {ALiVE_pathfinder get "terrainGrid"}}) exitWith {};
         private _size = (ALiVE_pathfinder get "terrainGrid") get "subSectorSize";
         private _now = missionNamespace getVariable ["ALiVE_simulationTime", time];
         private _table = ALiVE_routeMemory_blocked getOrDefault [_class, createHashMap, true];
@@ -139,7 +139,7 @@ switch (_operation) do {
     // its size and is given a detour to that waypoint, laid in front of it. Its own orders are never touched.
     case "stallPass": {
         if ((missionNamespace getVariable ["ALiVE_pathfinding_routeMemory", "off"]) == "off") exitWith {};
-        if (isNil "ALiVE_profileHandler" || {isNil "ALiVE_pathfinder"}) exitWith {};
+        if (isNil "ALiVE_profileHandler" || {isNil "ALiVE_pathfinder"} || {isNil {ALiVE_pathfinder get "terrainGrid"}}) exitWith {};
         private _now = missionNamespace getVariable ["ALiVE_simulationTime", time];
         private _stall = ALiVE_routeMemory_stall;
         private _active = [ALiVE_profileHandler, "getActiveEntities"] call ALiVE_fnc_profileHandler;
@@ -337,7 +337,7 @@ switch (_operation) do {
     // [position, side, weight]: add danger for that side at the position's sector, half as much around it
     case "deposit": {
         _args params [["_pos", []], ["_side", ""], ["_weight", 0]];
-        if (isNil "ALiVE_routeMemory_danger" || {isNil "ALiVE_pathfinder"}) exitWith {};
+        if (isNil "ALiVE_routeMemory_danger" || {isNil "ALiVE_pathfinder"} || {isNil {ALiVE_pathfinder get "terrainGrid"}}) exitWith {};
         if (_side isEqualType west) then { _side = str _side };
         if !(_side isEqualType "" && {_pos isEqualType []} && {count _pos > 1}) exitWith {};
         private _size = (ALiVE_pathfinder get "terrainGrid") get "sectorSize";
