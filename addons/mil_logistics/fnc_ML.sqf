@@ -18035,6 +18035,13 @@ switch(_operation) do {
             };
 
 
+            // A delivery whose transports were still about when they finished comes here twice: then, and again at its
+            // end. Releasing the men above is safe to repeat; the rest goes once, as for a player's request: every arrival
+            // was logged twice, about 10 s apart, with two completion events, so ATO adopted and the supply network
+            // registered the same delivery twice.
+            if ([_event, "aiHandedOver", false] call ALIVE_fnc_hashGet) exitWith {};
+            [_event, "aiHandedOver", true] call ALIVE_fnc_hashSet;
+
             // -----------------------------------------------------------------
             // FIX: Start stalled unit watchdog for all released cargo profiles
             // to ensure units move toward their destination if OPCOM does not
