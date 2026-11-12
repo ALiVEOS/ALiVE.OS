@@ -291,17 +291,18 @@ switch (_op) do {
                     ["ALiVE Logistics Hub: Collect is on at the module at %1, but no Military Logistics module serves side %2, so requisitions at these hubs will be refused", mapGridPosition _logic, _side] call ALiVE_fnc_dumpR;
                 };
             };
-            {
-                if !(_side in (_x call _commanderSides)) then {
-                    ["ALiVE Logistics Hub: the Military Logistics module at %1 has no AI Commander of side %2, so the hubs of the module at %3 are no supply point for it", mapGridPosition _x, _side, mapGridPosition _logic] call ALiVE_fnc_dumpR;
-                };
-            } forEach _mlMods;
-
             // Supply points: once Military Logistics has set up its network, after its first look at
             // the objectives
             if (_mlMods isEqualTo []) exitWith {};
             private _t1 = time;
             waitUntil { sleep 5; time - _t1 > 600 || {(_mlMods findIf { !(_x getVariable ["initialAnalysisComplete", false]) }) < 0} };
+            // Only now: an AI Commander sets up its side some time after the mission starts, so checked
+            // straight away (with Collect off nothing waited first) every commander looked missing (RaptorSKA, Discord)
+            {
+                if !(_side in (_x call _commanderSides)) then {
+                    ["ALiVE Logistics Hub: the Military Logistics module at %1 has no AI Commander of side %2, so the hubs of the module at %3 are no supply point for it", mapGridPosition _x, _side, mapGridPosition _logic] call ALiVE_fnc_dumpR;
+                };
+            } forEach _mlMods;
             if (isNil "ALIVE_ML_supplyNetwork") exitWith {
                 ["ALiVE Logistics Hub: Military Logistics has no supply network after 10 minutes, so the hubs of the module at %1 are no supply point", mapGridPosition _logic] call ALiVE_fnc_dumpR;
             };
