@@ -1687,6 +1687,13 @@ switch(_operation) do {
                     if (_importLocked isEqualTo true) then {
                         [_profileVehicle, "ALiVE_reserveLocked", true] call ALIVE_fnc_hashSet;
                     };
+                    // A static weapon placed in the editor or built at a FOB comes back made where it was put:
+                    // the mark was saved but never read back, so after a reload the gun was moved again.
+                    private _importExact = [_profile, "exactPosition", false] call ALIVE_fnc_hashGet;
+                    if (_importExact isEqualType "") then { _importExact = (toLower _importExact) == "true" };
+                    if (_importExact isEqualTo true) then {
+                        [_profileVehicle, "exactPosition", true] call ALIVE_fnc_hashSet;
+                    };
 
                     // Fuel, damage and ammo as saved, applied when the vehicle next spawns. The export
                     // leaves out whatever matches a fresh vehicle, and so does a save written before
