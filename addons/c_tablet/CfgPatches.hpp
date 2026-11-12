@@ -1,8 +1,8 @@
 // Simply a package which requires other addons.
 class CfgPatches {
     class ADDON {
-        units[] = {};
-        weapons[] = {"Tablet"};
+        units[] = {"Item_ALIVE_Tablet"};
+        weapons[] = {"ALIVE_Tablet"};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"A3_Weapons_F"};
         versionDesc = "ALiVE";

@@ -1,5 +1,14 @@
 class CfgVehicles
 {
+ // The tablet on the ground, so Zeus and Eden can place it (it was only an inventory item)
+ class Item_Base_F;
+ class Item_ALIVE_Tablet: Item_Base_F
+ {
+  scope = 2; scopeCurator = 2;
+  displayName = "$STR_ALIVE_Tablet";
+  author = "ALiVE Mod"; vehicleClass = "Items";
+  class TransportItems { class ALIVE_Tablet { name = "ALIVE_Tablet"; count = 1; }; };
+ };
  class NATO_Box_Base;
  class East_Box_Base;
  class IND_Box_Base;
