@@ -518,7 +518,9 @@ switch(_operation) do {
                 private ["_houses","_total","_result","_debugColor"];
 
                 //Get all enterable houses
-                _houses = []; {_houses = _houses + ([_x select 0, _x select 1] call ALiVE_fnc_getEnterableHouses)} foreach _collection;
+                // appended in place: "_houses = _houses + ..." copied the whole list again for every area, which on a
+                // big map with hundreds of objectives meant copying tens of thousands of houses hundreds of times
+                _houses = []; {_houses append ([_x select 0, _x select 1] call ALiVE_fnc_getEnterableHouses)} foreach _collection;
 
                 // The Garrison Building Blacklist (the class picker's Delete list, or typed into a placement
                 // module) is meant for every garrison, CQB's included (spooked on Discord, 5 Nov 2026)
