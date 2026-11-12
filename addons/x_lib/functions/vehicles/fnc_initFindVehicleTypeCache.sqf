@@ -17,6 +17,7 @@ Boolean - true
 
 Author:
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -58,9 +59,7 @@ private _normalizedFactions = [];
 private _missingFactions = _normalizedFactions select {!(_x in ALiVE_findVehicleTypeCachedFactions)};
 if (_missingFactions isEqualTo []) exitWith {true};
 
-private _missingLookup = createHashMap;
 {
-    _missingLookup set [_x, true];
     ALiVE_findVehicleTypeFactionIndex set [_x, []];
 } forEach _missingFactions;
 
@@ -89,16 +88,39 @@ private _cacheClass = {
     true
 };
 
-for "_i" from 1 to (count _cfgVehicles - 1) do {
-    private _entry = _cfgVehicles select _i;
+// One walk of CfgVehicles lists every class under its faction, kept for the mission. Each module asks for
+// its own factions, so walking the whole config once per new faction set cost several full walks at setup.
+// Run unscheduled so the walk finishes in one go instead of being spread over many scheduler slices.
+if (isNil "ALiVE_findVehicleTypeConfigFactionClasses") then {
+    isNil {
+        if (isNil "ALiVE_findVehicleTypeConfigFactionClasses") then {
+            private _byFaction = createHashMap;
+            for "_i" from 1 to (count _cfgVehicles - 1) do {
+                private _entry = _cfgVehicles select _i;
 
-    if (isClass _entry) then {
-        private _faction = getText (_entry >> "faction");
-        if (_faction in _missingLookup) then {
-            [configName _entry, _faction] call _cacheClass;
+                if (isClass _entry) then {
+                    private _faction = getText (_entry >> "faction");
+                    if (_faction != "") then {
+                        private _list = _byFaction get _faction;
+                        if (isNil "_list") then {
+                            _list = [];
+                            _byFaction set [_faction, _list];
+                        };
+                        _list pushBack (configName _entry);
+                    };
+                };
+            };
+            ALiVE_findVehicleTypeConfigFactionClasses = _byFaction;
         };
     };
 };
+
+{
+    private _faction = _x;
+    {
+        [_x, _faction] call _cacheClass;
+    } forEach (ALiVE_findVehicleTypeConfigFactionClasses getOrDefault [_faction, []]);
+} forEach _missingFactions;
 
 {
     private _faction = _x;
