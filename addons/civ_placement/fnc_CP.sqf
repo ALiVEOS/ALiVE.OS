@@ -531,7 +531,9 @@ switch(_operation) do {
                 //_error = true;
             };
 
-            if(!(_clusterVersion == _version) || !(_clusterBuild == _build)) then {
+            // Only the game version is compared. A hotfix (2.22.154045 to 2.22.154089) changes the
+            // build number alone, and the cluster data still fits, so it no longer warns (Jman).
+            if !(_clusterVersion == _version) then {
                 _message = format["Warning: This version of ALiVE is build for A3 version: %1.%2. The server is running version: %3.%4. Please contact your server administrator and update to the latest ALiVE release version.",_clusterVersion, _clusterBuild, _version, _build];
                 [_message] call ALIVE_fnc_dump;
                 //_error = true;

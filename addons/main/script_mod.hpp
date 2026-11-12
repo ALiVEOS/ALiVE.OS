@@ -20,7 +20,7 @@
 // report says which kind of build it came from without anyone having to ask.
 #define BUILDTYPE "DEV"
 
-#define CLUSTERBUILD "Arma 3","Arma3",222,154045,"Stable"
+#define CLUSTERBUILD "Arma 3","Arma3",222,154089,"Stable"
 
 #define VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD_NUM
