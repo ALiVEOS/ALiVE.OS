@@ -216,6 +216,44 @@ switch(_operation) do {
                             };
                         }];
                     };
+                    // ACE's View Distance Limiter is on by default, and on every vehicle change it sets the view
+                    // distance for on foot, land or air. Left at 0 ("video settings") it put back the player's own
+                    // setting, so a choice made here was lost getting in or out of a vehicle (A. Ares, #1115).
+                    // Where ACE's value for that kind of vehicle is 0 the choice is put back after it, under ACE's
+                    // limit; a value set in ACE still wins.
+                    if (isNil "ALiVE_vdistVehicleEH" && {isClass (configFile >> "CfgPatches" >> "ace_viewdistance")}) then {
+                        ALiVE_vdistVehicleEH = true;
+                        private _fnc_afterAce = {
+                            [{
+                                if !(missionNamespace getVariable ["ace_viewdistance_enabled", false]) exitWith {};
+                                if (isNil "ALiVE_vdistChoice" || {isNull ACE_player}) exitWith {};
+                                private _veh = vehicle ACE_player;
+                                private _uav = (missionNamespace getVariable ["ACE_controlledUAV", [objNull]]) param [0, objNull];
+                                if (!isNull _uav) then { _veh = _uav };
+                                private _setting = switch (true) do {
+                                    case (_veh isKindOf "LandVehicle" || {_veh isKindOf "Ship_F"}): { "ace_viewdistance_viewDistanceLandVehicle" };
+                                    case (_veh isKindOf "Air"): { "ace_viewdistance_viewDistanceAirVehicle" };
+                                    default { "ace_viewdistance_viewDistanceOnFoot" };
+                                };
+                                if ((missionNamespace getVariable [_setting, 0]) != 0) exitWith {};
+                                ALiVE_vdistChoice params ["_vd", "_ovd"];
+                                _vd = _vd min (missionNamespace getVariable ["ace_viewdistance_limitViewDistance", _vd]);
+                                setViewDistance _vd;
+                                // ACE's object view distance: Off keeps the choice made here, a share of the view distance
+                                // is worked out again from the new one, and FoV Based is left to ACE
+                                private _coefIdx = missionNamespace getVariable ["ace_viewdistance_objectViewDistanceCoeff", 0];
+                                switch (true) do {
+                                    case (_coefIdx == 0): { setObjectViewDistance (_ovd min _vd) };
+                                    case (_coefIdx < 6 && {!isNil "ace_viewdistance_fnc_returnObjectCoeff"}): {
+                                        setObjectViewDistance (([_coefIdx] call ace_viewdistance_fnc_returnObjectCoeff) * viewDistance);
+                                    };
+                                    default {};
+                                };
+                            }, [], 0.1] call CBA_fnc_waitAndExecute;
+                        };
+                        ["vehicle", _fnc_afterAce] call CBA_fnc_addPlayerEventHandler;
+                        ["ACE_controlledUAV", _fnc_afterAce] call CBA_fnc_addEventHandler;
+                    };
 /*
                         // Initialise interaction key if undefined
                         if(isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]];};
