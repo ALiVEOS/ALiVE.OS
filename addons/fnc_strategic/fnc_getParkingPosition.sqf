@@ -30,6 +30,16 @@ nil
 ---------------------------------------------------------------------------- */
 
 
+// Run in one go. Called from a scheduled script, each check waited its turn behind every other running
+// script: on a busy server parking a town's cars took minutes for well under a millisecond of work a call.
+if (canSuspend) exitWith {
+    private _result = [];
+    isNil { _result = _this call ALIVE_fnc_getParkingPosition };
+    if (isNil "_result") then { _result = [] };
+    _result
+};
+
+
 private ["_vehicleClass","_building","_debug","_direction","_bbr","_bboxA","_p1","_p2","_maxWidth","_maxLength","_longest","_buildingPosition","_position","_safePos","_center","_vehicleMapSize","_excludedObject","_nearbyObjects","_blacklist","_road_seg_list_raw","_road_seg_list_filtered","_road_seg_list","_P1","_P2","_x0","_x1","_x2","_y0","_y1","_y2","_distanceFromCenterLineOfRoad","_minDistanceFromCenterLineOfRoad","_maxDistanceFromCenterLineOfRoad","_connected_road","_current_road","_veh_type","_pos_flat_empty","_pos_flat_empty_attempts","_road_seg_width","_road_seg_length","_min_distance_nearby_objects","_tmp_pos","_car_length_allowed","_car_extra_space","_num_cars_in_road_segment","_distance_between_cars","_pos_middle_right","_pos_back_right","_last_pos","_pos_veh","_dir_slightly_randomized","_pos_veh_slightly_randomized","_nearbyObjectdistance"];
 
 _vehicleClass = _this select 0;
@@ -103,12 +113,11 @@ for "_i" from 0 to (((count _road_seg_list) min 3) - 1) max 0 do {
    _road_seg_width = (getRoadInfo _road) select 1;
    private _side = ((_road_seg_width / 2) + 1.3) max 3.5 min 7;
    _position = _road getpos [_side, _direction - 90];
-	 // Sweep radius for the OBJECT pass scales with vehicle mapSize the same way the TERRAIN pass does:
-	 // long vehicles (HEMTT, MTVR) missed buildings and walls whose origins sit 16-25 m away but whose
-	 // footprint reaches the candidate. Only a blacklisted object here rules the road out. That anything
-	 // at all was near used to stop the search before any check below ran, so cars went down unchecked.
-	 _nearbyObjects = (nearestObjects [_position, ["house","Wreck_Base","Ruins","Building","land_vn_cave_base","Car", "Truck", "Tank", "Plane", "Helicopter"], _vehicleMapSize + _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["BUILDING","BUNKER", "BUSH","BUSSTOP","CHAPEL","CHURCH","CROSS","FENCE","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST","FORTRESS","FOUNTAIN","FUELSTATION","HIDE","HOSPITAL","HOUSE","LIGHTHOUSE","POWER LINES","POWERSOLAR","POWERWAVE","POWERWIND","QUAY","RAILWAY","ROCK","ROCKS","RUIN","SHIPWRECK","SMALL TREE","STACK", "TOURISM", "TRANSMITTER", "TREE","VIEW-TOWER", "WALL", "WATERTOWER","Wreck_Base"],_vehicleMapSize + _nearbyObjectdistance]);
+	 // Only a blacklisted object near the spot rules this road out, so only those are searched for (the
+	 // search radius grows with the vehicle's mapSize, for long trucks). That anything at all was near used
+	 // to stop the search before any check below ran, so cars went down unchecked.
 	 if (count _blacklist == 0) then {_blacklist = ["Land_BarGate_F"];};
+	 _nearbyObjects = nearestObjects [_position, _blacklist, _vehicleMapSize + _nearbyObjectdistance];
 	 private _blacklisted = _nearbyObjects findIf {(typeOf _x) in _blacklist};
 	 if (_blacklisted >= 0) exitWith {
 		 if(_debug) then {
@@ -116,41 +125,40 @@ for "_i" from 0 to (((count _road_seg_list) min 3) - 1) max 0 do {
 		 };
 	 };
 
-	 // Room for this vehicle, within 1.5 m so it stays at the roadside: the engine's own check, so a car
-	 // is not put down inside another vehicle or a placed object.
-	 private _clear = [_position#0, _position#1, 0] findEmptyPosition [0, 1.5, _vehicleClass];
-	 if (_clear isEqualTo []) exitWith {
+	 // The vehicle's size from the size cache when it has the class, else from its mapSize, so no test
+	 // vehicle is spawned here.
+	 private _vehBox = (missionNamespace getVariable ["ALiVE_vehicleBBoxCache", createHashMap]) getOrDefault [toLower _vehicleClass, [_vehicleMapSize, 2, 3]];
+	 private _reach = ((_vehBox param [0, 4]) / 2) + 0.5;
+	 private _vehHeight = (_vehBox param [2, 2.5]) max 1.5;
+	 // Blocked: a map wall, fence, bush, tree, rock or building within half the vehicle's length (+0.5 m),
+	 // or a roof over the spot (sheds, fuel-station canopies, awnings; a vehicle put down inside one
+	 // explodes). The engine's room check below passes over these map objects.
+	 private _fnc_blocked = {
+		 params ["_p"];
+		 (count (nearestTerrainObjects [[_p#0, _p#1], ["TREE","SMALL TREE","BUSH","WALL","FENCE","HIDE","ROCK","ROCKS","RUIN","BUILDING","HOUSE"], _reach, false, true]) > 0)
+		 || {count (lineIntersectsObjs [AGLToASL [_p#0, _p#1, 0.5], AGLToASL [_p#0, _p#1, _vehHeight + 0.5], objNull, objNull, true, 1, "GEOM"]) > 0}
+	 };
+	 // the cheap checks first; the room check costs thirty times as much
+	 if ([_position] call _fnc_blocked) exitWith {
+		 if(_debug) then {
+			 ["Spot blocked by a map object or a roof, exiting"] call ALiVE_fnc_dump;
+		 };
+	 };
+	 // Room for this vehicle within 1.5 m, so it stays at the roadside: the engine's own check, so a car is
+	 // not put down inside another vehicle or a placed object. If it moved the spot, the new one is checked again.
+	 // With no vehicle or object of any kind within 5 m of the car the spot is clear as it is, and the check
+	 // (thirty times the cost of the others) is skipped.
+	 private _clear = if ((nearestObjects [[_position#0, _position#1], ["AllVehicles","Static","Building","Thing"], _reach + 5]) isEqualTo []) then {
+		 [_position#0, _position#1, 0]
+	 } else {
+		 [_position#0, _position#1, 0] findEmptyPosition [0, 1.5, _vehicleClass]
+	 };
+	 if (_clear isEqualTo [] || {(_clear distance2D _position) > 0.2 && {[_clear] call _fnc_blocked}}) exitWith {
 		 if(_debug) then {
 			 ["No room for %1 beside the road, exiting", _vehicleClass] call ALiVE_fnc_dump;
 		 };
 	 };
 	 _position = _clear;
-
-	 // The room check above passes over the map's own walls, fences, bushes and trees, so cars were still
-	 // put down against a wall or in a hedge. Nothing of these within half the vehicle's length (+0.5 m).
-	 private _vehBox = [_vehicleClass] call ALIVE_fnc_getVehicleBoundingBox;
-	 private _reach = ((_vehBox param [0, 4]) / 2) + 0.5;
-	 private _touching = nearestTerrainObjects [[_position#0, _position#1], ["TREE","SMALL TREE","BUSH","WALL","FENCE","HIDE","ROCK","ROCKS","RUIN","BUILDING","HOUSE"], _reach, false, true];
-	 if (count _touching > 0) exitWith {
-		 if(_debug) then {
-			 ["Spot touches %1, exiting", _touching#0] call ALiVE_fnc_dump;
-		 };
-	 };
-
-	 // Overhead-obstacle guard: the sweeps above miss a roof whose footprint centre is further out but
-	 // which reaches over the spot (sheds, fuel-station canopies, awnings). A vehicle put down inside
-	 // one explodes, so cast up to the vehicle's height (+0.5 m) and reject anything in the way.
-	 private _vehHeight = (_vehBox param [2, 2.5]) max 1.5;
-	 private _overheadHits = lineIntersectsObjs [
-		 AGLToASL [_position#0, _position#1, 0.5],
-		 AGLToASL [_position#0, _position#1, _vehHeight + 0.5],
-		 objNull, objNull, true, 1, "GEOM"
-	 ];
-	 if (count _overheadHits > 0) exitWith {
-		 if(_debug) then {
-			 ["Overhead obstacle, exiting (%1)", typeOf (_overheadHits#0)] call ALiVE_fnc_dump;
-		 };
-	 };
 
 	 // parked along the road, a little off straight; only a spot that passed every check is used
 	 _direction = _direction + random [-7, 0, 7];
