@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: pja312 (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: pja312 (ALiVE 3 index v3.1, 2026-11-12)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-12", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,11 +33,6 @@ ALiVE_mapCompositionType = "Jungle";
 
  if (tolower(_worldName) == "pja312") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "ca\structures_e\housea\a_villa\a_villa_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ruins_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_end_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_main_ep1.p3d",
         "ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_switch_ep1.p3d"
     ];
 

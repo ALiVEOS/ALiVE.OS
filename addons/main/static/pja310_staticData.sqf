@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-09 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: pja310 (ALiVE 3 index v3.1, 2026-10-09)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: pja310 (ALiVE 3 index v3.1, 2026-11-12)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-09", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-12", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,33 +33,10 @@ ALiVE_mapCompositionType = "Desert";
 
  if (tolower(_worldName) == "pja310") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "ca\buildings2\a_advertisingcolumn\a_advertcolumn.p3d",
-        "ca\buildings2\a_crane_02\crane_rails.p3d",
-        "ca\buildings2\a_crane_02\crane_rails_end.p3d",
-        "ca\buildings2\ind_shed_02\ind_shed_02_end.p3d",
         "ca\buildings2\ind_shed_02\ind_shed_02_main.p3d",
         "ca\roads2\runway_main_40.p3d",
         "ca\roads2\runway_poj_l_1.p3d",
-        "ca\roads2\runway_poj_l_1_end.p3d",
-        "ca\structures\nav_pier\nav_pier_c_270.p3d",
-        "ca\structures\nav_pier\nav_pier_c_l10.p3d",
-        "ca\structures\nav_pier\nav_pier_c_r30.p3d",
-        "ca\structures\rail\rail_loco\loco_742_blue.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_end_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_main_ep1.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_switch_ep1.p3d",
-        "ca\structures_e\ind\ind_pipes\indpipe2_bigbuild2_r_ep1.p3d",
-        "ca\structures_e\ind\ind_pipes\indpipe2_smallbuild2_l_ep1.p3d",
-        "ca\structures_e\ind\ind_shed\ind_shed_02_ep1.p3d",
-        "ca\structures_e\misc\misc_billboards\billboard_2_ep1.p3d",
-        "ca\structures_e\misc\misc_billboards\billboard_4_ep1.p3d",
-        "ca\structures_e\misc\misc_billboards\billboard_a_ep1.p3d",
-        "ca\structures_e\misc\misc_powerline\powlineb_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l3_5m_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_1_ep1.p3d",
-        "ca\structures_e\wall\wall_l\wall_l_mosque_2_ep1.p3d",
-        "ca\wheeled\skodovka_wrecked.p3d"
+        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_switch_ep1.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [

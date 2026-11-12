@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: winthera3 (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: winthera3 (ALiVE 3 index v3.1, 2026-11-12)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-12", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,36 +33,8 @@ ALiVE_mapCompositionType = "Woodland";
 
  if (tolower(_worldName) == "winthera3") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f\bridges\bridge_01_f.p3d",
-        "a3\structures_f\bridges\bridge_asphalt_f.p3d",
-        "a3\structures_f\civ\lamps\lampsolar_off_f.p3d",
-        "a3\structures_f\ind\shed\shed_big_f.p3d",
-        "a3\structures_f\walls\mil_wallbig_gate_f.p3d",
-        "ca\air2\uh1y\uh1y_crashed.p3d",
-        "ca\air2\uh1y\uh1ywreck.p3d",
-        "ca\buildings2\a_crane_02\crane_rails.p3d",
-        "ca\buildings2\a_crane_02\crane_rails_end.p3d",
-        "ca\buildings2\ind_tank\ind_tanksmall.p3d",
-        "ca\buildings2\misc_cargo\seacrate.p3d",
-        "ca\buildings2\misc_waterstation\misc_waterstation.p3d",
         "ca\buildings2\shed_small\shed_m02.p3d",
-        "ca\buildings\dum_istan4_zidka.p3d",
-        "ca\buildings\dum_zboreny_lidice.p3d",
         "ca\misc\snow.p3d",
-        "ca\misc\snowman.p3d",
-        "ca\roads2\runway_poj_l_1_end.p3d",
-        "ca\roads_pmc\bridge\bridge_asf_pmc.p3d",
-        "ca\structures\wall\wall_woodvil_pole.p3d",
-        "ca\structures_e\ind\ind_coltan_mine\ind_coltan_tunnel_ep1.p3d",
-        "ibr\ibr_dinopark\ibr_zoodoor.p3d",
-        "ibr\ibr_dinopark\ibr_zoofence.p3d",
-        "ibr\ibr_dinopark\ibr_zoogate.p3d",
-        "ibr\panthera_objects\bilboard_patreon.p3d",
-        "ibr\panthera_objects\bilboard_ss.p3d",
-        "ibr\panthera_objects\brg_deadstuff1.p3d",
-        "ibr\panthera_objects\conslab.p3d",
-        "ibr\panthera_objects\ibr_most_bez_lamp.p3d",
-        "ibr\panthera_objects\ibr_most_stred30.p3d",
         "ibr\panthera_objects\ibr_rock_w.p3d",
         "ibr\winthera_objects\b_elderberry2s_pmc.p3d",
         "ibr\winthera_objects\b_hip2s_pmc.p3d",
@@ -71,9 +43,7 @@ ALiVE_mapCompositionType = "Woodland";
         "ibr\winthera_objects\p_trnka.p3d",
         "ibr\winthera_objects\t_ficusb2s_f.p3d",
         "ibr\winthera_objects\t_malus.p3d",
-        "ibr\winthera_objects\zed.p3d",
-        "ibr\winthera_objects\zed_dira.p3d",
-        "ibr\winthera_objects\zed_podplaz.p3d"
+        "ibr\winthera_objects\zed.p3d"
     ];
 
     ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [

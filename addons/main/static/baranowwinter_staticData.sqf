@@ -1,11 +1,11 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["SETTING UP MAP: baranowwinter (ALiVE 3 index v3.1, 2026-10-08)"] call ALiVE_fnc_dump;
+["SETTING UP MAP: baranowwinter (ALiVE 3 index v3.1, 2026-11-12)"] call ALiVE_fnc_dump;
 
-ALiVE_indexVersion = ["3.1", "2026-10-08", "web", true];
+ALiVE_indexVersion = ["3.1", "2026-11-12", "web", true];
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_militaryBuildingTypes = [];
@@ -33,48 +33,8 @@ ALiVE_mapCompositionType = "Woodland";
 
  if (tolower(_worldName) == "baranowwinter") then {
     ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
-        "a3\structures_f_argo\decals\horizontal\puddle_01_f.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_big1.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_big2.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_big3.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small01.p3d",
         "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small02.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small03.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small04.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small05.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small06.p3d",
-        "ww2\objects_m\misc\if_coredata_m\pyatna\ww2_pyatno_small07.p3d",
-        "ww2\objects_m\structures\cup_structureswinter_m\nav_boathouse\cup_nav_boathouse_pierl_w.p3d",
         "ww2\objects_m\structures\cup_structureswinter_m\nav_boathouse\cup_nav_boathouse_piert_w.p3d",
-        "ww2\objects_m\structures\if_buildings_m\props\ww2_barrier_p1.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_s_bruno.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_wire_2.p3d",
-        "ww2\objects_m\structures\if_buildings_m\ww2_wire_3.p3d",
-        "ww2\objects_m\structures\if_buildingsrw_m\ww2_r2_stone.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_gryada_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_shed_m01_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_shed_w01_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_shed_w02_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_shed_w03_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_wicker_fence3_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_wicker_fence_short_dammage_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_wicker_fence_short_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_zed_civil_down_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_zed_civil_w.p3d",
-        "ww2\objects_m\structures\if_buildingsrwwinter_m\ww2_zed_dira_civi_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_banya_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_bozemuka_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_countryside_house_2_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_dom_pl_big_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_dom_pol_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_hata_2_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_kladovka2_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_kolonka_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_market1_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_market2_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_market3_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_sarai_mid_ruins_w.p3d",
-        "ww2\objects_m\structures\if_buildingswinter_m\ww2_well_w.p3d",
         "ww2\objects_m\structures\if_pontonwinter_m\ww2_ponton_apparel1_w.p3d",
         "ww2\objects_m\structures\if_pontonwinter_m\ww2_ponton_bridge_w.p3d"
     ];

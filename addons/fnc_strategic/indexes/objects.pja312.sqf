@@ -1,4 +1,4 @@
-// ALiVE 3 index v3.1, made 2026-10-08 by the ALiVE web indexer, building positions measured
+// ALiVE 3 index v3.1, made 2026-11-12 by the ALiVE web indexer, building positions measured
 /*=================*/
 /*opening pbo projeta3012.pbo
 ///////<HEADER>///////
@@ -2311,14 +2311,6 @@ wrp_objects=
 			[445261,[8421,12710]]
 		]
 	],
-	["ca\structures_e\housea\a_villa\a_villa_ruins_ep1.p3d",
-		[
-			[1672952,[7655,1911]],
-			[1756607,[8100,1596]],
-			[2509989,[12926,5536]],
-			[2511814,[13019,5321]]
-		]
-	],
 	["ca\structures_e\misc\misc_market\kiosk_ep1.p3d",
 		[
 			[1015470,[2362,6931]],
@@ -2475,13 +2467,6 @@ wrp_objects=
 			[2251008,[13226,8987]]
 		]
 	],
-	["ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ep1.p3d",
-		[
-			[2475500,[13078,6869]],
-			[229442,[3483,13148]],
-			[2251121,[13130,8894]]
-		]
-	],
 	["ca\buildings2\ind_workshop01\ind_workshop01_03.p3d",
 		[
 			[2475457,[12995,6892]],
@@ -2497,32 +2482,11 @@ wrp_objects=
 			[2251116,[13135,8886]]
 		]
 	],
-	["ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_end_ep1.p3d",
-		[
-			[2475493,[13084,6869]],
-			[231972,[3487,13150]],
-			[2251115,[13123,8890]]
-		]
-	],
 	["ca\structures_e\ind\ind_coltan_mine\ind_coltan_main_part2_ep1.p3d",
 		[
 			[2475498,[13102,6868]],
 			[231974,[3504,13158]],
 			[2251119,[13106,8882]]
-		]
-	],
-	["ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ruins_ep1.p3d",
-		[
-			[2475492,[13134,6867]],
-			[231971,[3533,13172]],
-			[2251114,[13078,8866]]
-		]
-	],
-	["ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_main_ep1.p3d",
-		[
-			[2475494,[13082,6898]],
-			[229437,[3473,13176]],
-			[2251247,[13138,8866]]
 		]
 	],
 	["ca\structures_e\ind\ind_coltan_mine\ind_coltan_hopper_ep1.p3d",
