@@ -63,16 +63,40 @@
     <Spanish>Reinicializa localmente el almacén de marcadores de ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_ALLOWACE">
-    <English>Allow ACE Fatigue And Sway Options</English>
+    <English>Allow Fatigue And Sway Options</English>
+    <Chinesesimp>允许疲劳和晃动选项</Chinesesimp>
+    <Chinese>允許疲勞和晃動選項</Chinese>
+    <Spanish>Permitir opciones de fatiga y balanceo</Spanish>
+    <French>Autoriser les options de fatigue et de balancement</French>
+    <Portuguese>Permitir opções de fadiga e oscilação</Portuguese>
+    <Russian>Разрешить настройки усталости и раскачки</Russian>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_ALLOWACE_COMMENT">
-    <English>With ACE loaded, players get an ACE menu in Player Options to make their own ACE fatigue lighter and their own weapon sway smaller. Settings the server or mission forces always win. Choices last until the player leaves.</English>
+    <English>Players get a menu in Player Options to lighten their own fatigue and weapon sway: ACE's when ACE runs them, the game's stamina and sway otherwise. Settings the server or mission forces always win. A choice is put back on after a respawn, over the mission's own respawn settings; stamina a mission turns off stays off. Choices last until the player leaves.</English>
+    <Chinesesimp>玩家可在玩家选项中减轻自己的疲劳和武器晃动：ACE运行时使用ACE的设置，否则使用游戏自带的耐力和晃动。服务器或任务强制的设置始终优先。重生后会重新应用玩家的选择，覆盖任务自身的重生设置；任务关闭的耐力保持关闭。选择持续到玩家离开。</Chinesesimp>
+    <Chinese>玩家可在玩家選項中減輕自己的疲勞和武器晃動：ACE運行時使用ACE的設定，否則使用遊戲內建的耐力和晃動。伺服器或任務強制的設定始終優先。重生後會重新套用玩家的選擇，覆蓋任務自身的重生設定；任務關閉的耐力保持關閉。選擇持續到玩家離開。</Chinese>
+    <Spanish>Los jugadores tienen un menú en Opciones de jugador para reducir su propia fatiga y el balanceo del arma: los de ACE cuando ACE los gestiona y, si no, la resistencia y el balanceo del juego. Los ajustes que fuerza el servidor o la misión siempre prevalecen. La elección se vuelve a aplicar tras reaparecer, por encima de los ajustes de reaparición de la misión; la resistencia que la misión desactiva sigue desactivada. Las elecciones duran hasta que el jugador sale.</Spanish>
+    <French>Les joueurs disposent d'un menu dans les Options joueur pour alléger leur propre fatigue et le balancement de leur arme : ceux d'ACE quand ACE les gère, sinon l'endurance et le balancement du jeu. Les réglages imposés par le serveur ou la mission l'emportent toujours. Le choix est réappliqué après une réapparition, par-dessus les réglages de réapparition de la mission ; l'endurance désactivée par la mission reste désactivée. Les choix durent jusqu'au départ du joueur.</French>
+    <Portuguese>Os jogadores têm um menu nas Opções do jogador para reduzir a própria fadiga e a oscilação da arma: as do ACE quando o ACE as controla, caso contrário a estamina e a oscilação do jogo. As definições impostas pelo servidor ou pela missão prevalecem sempre. A escolha é reaplicada após o renascimento, por cima das definições de renascimento da missão; a estamina que a missão desliga continua desligada. As escolhas duram até o jogador sair.</Portuguese>
+    <Russian>Игроки получают меню в настройках игрока, чтобы облегчить собственную усталость и раскачку оружия: настройки ACE, если ими управляет ACE, иначе выносливость и раскачка самой игры. Настройки, заданные сервером или миссией, всегда в приоритете. Выбор применяется снова после возрождения, поверх собственных настроек миссии; выносливость, отключённая миссией, остаётся отключённой. Выбор действует, пока игрок не выйдет.</Russian>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_ACE">
-    <English>ACE</English>
+    <English>Fatigue and sway</English>
+    <Chinesesimp>疲劳和晃动</Chinesesimp>
+    <Chinese>疲勞和晃動</Chinese>
+    <Spanish>Fatiga y balanceo</Spanish>
+    <French>Fatigue et balancement</French>
+    <Portuguese>Fadiga e oscilação</Portuguese>
+    <Russian>Усталость и раскачка</Russian>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_COMMENT">
-    <English>Your own ACE fatigue and weapon sway, if the mission allows it</English>
+    <English>Your own fatigue and weapon sway, if the mission allows it</English>
+    <Chinesesimp>你自己的疲劳和武器晃动（如任务允许）</Chinesesimp>
+    <Chinese>你自己的疲勞和武器晃動（如任務允許）</Chinese>
+    <Spanish>Tu propia fatiga y balanceo del arma, si la misión lo permite</Spanish>
+    <French>Votre propre fatigue et le balancement de votre arme, si la mission le permet</French>
+    <Portuguese>A sua própria fadiga e oscilação da arma, se a missão permitir</Portuguese>
+    <Russian>Ваша собственная усталость и раскачка оружия, если миссия позволяет</Russian>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_FATIGUE_LIGHT">
     <English>Fatigue: make it light</English>
@@ -94,6 +118,33 @@
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_COMMENT">
     <English>Scales your own weapon sway on top of the server setting</English>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_STAMINA_OFF">
+    <English>Stamina: off</English>
+    <Chinesesimp>耐力：关闭</Chinesesimp>
+    <Chinese>耐力：關閉</Chinese>
+    <Spanish>Resistencia: desactivada</Spanish>
+    <French>Endurance : désactivée</French>
+    <Portuguese>Estamina: desligada</Portuguese>
+    <Russian>Выносливость: выкл.</Russian>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_STAMINA_NORMAL">
+    <English>Stamina: back to normal</English>
+    <Chinesesimp>耐力：恢复正常</Chinesesimp>
+    <Chinese>耐力：恢復正常</Chinese>
+    <Spanish>Resistencia: volver a la normal</Spanish>
+    <French>Endurance : revenir à la normale</French>
+    <Portuguese>Estamina: voltar ao normal</Portuguese>
+    <Russian>Выносливость: как обычно</Russian>
+</Key>
+<Key ID="STR_ALIVE_PLAYEROPTIONS_STAMINA_COMMENT">
+    <English>Turns the game's stamina off for your soldier, and back on. Kept after a respawn</English>
+    <Chinesesimp>为你的士兵关闭或重新开启游戏耐力。重生后保留</Chinesesimp>
+    <Chinese>為你的士兵關閉或重新開啟遊戲耐力。重生後保留</Chinese>
+    <Spanish>Desactiva la resistencia del juego para tu soldado, y la vuelve a activar. Se mantiene tras reaparecer</Spanish>
+    <French>Désactive l'endurance du jeu pour votre soldat, puis la réactive. Conservé après une réapparition</French>
+    <Portuguese>Desliga a estamina do jogo para o seu soldado, e volta a ligá-la. Mantém-se após renascer</Portuguese>
+    <Russian>Отключает выносливость игры для вашего бойца и включает обратно. Сохраняется после возрождения</Russian>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_ACE_FORCED">
     <English>Set by the server or mission</English>

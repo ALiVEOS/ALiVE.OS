@@ -177,15 +177,18 @@ if (_menuName == "playeroptions") then {
     ];
 };
 
-// ACE: the player's own fatigue and weapon sway (ALiVE_fnc_playeroptionsAce). An item whose
-// value the server or mission chose stays listed but disabled.
+// The player's own fatigue and weapon sway (ALiVE_fnc_playeroptionsAce): ACE's when they are running,
+// the game's stamina and sway otherwise. An item whose value the server or mission chose stays listed
+// but disabled.
 if (_menuName == "aceoptions") then {
     private _fatigueShown = ["fatigueOn"] call ALiVE_fnc_playeroptionsAce;
     private _fatigueFree = !(["forced", "ace_advanced_fatigue_performanceFactor"] call ALiVE_fnc_playeroptionsAce);
     private _light = missionNamespace getVariable ["ALiVE_playerOptions_aceFatigue", false];
-    private _swayShown = ["swayOn"] call ALiVE_fnc_playeroptionsAce;
-    private _swayFree = !(["forced", "ace_common_swayFactor"] call ALiVE_fnc_playeroptionsAce);
-    private _sway = ["swayValue"] call ALiVE_fnc_playeroptionsAce;
+    private _aceSway = ["swayOn"] call ALiVE_fnc_playeroptionsAce;
+    private _swayShown = true;
+    private _swayFree = !_aceSway || {!(["forced", "ace_common_swayFactor"] call ALiVE_fnc_playeroptionsAce)};
+    private _sway = if (_aceSway) then { ["swayValue"] call ALiVE_fnc_playeroptionsAce } else { missionNamespace getVariable ["ALiVE_playerOptions_aceSway", 1] };
+    private _staminaOff = missionNamespace getVariable ["ALiVE_playerOptions_staminaOff", false];
     private _fatigueTip = [localize "STR_ALIVE_PLAYEROPTIONS_ACE_FORCED", localize "STR_ALIVE_PLAYEROPTIONS_ACE_FATIGUE_COMMENT"] select _fatigueFree;
     private _swayTip = [localize "STR_ALIVE_PLAYEROPTIONS_ACE_FORCED", localize "STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_COMMENT"] select _swayFree;
     _menus set [count _menus,
@@ -203,6 +206,20 @@ if (_menuName == "aceoptions") then {
                     "", _fatigueTip, "", -1,
                     true,
                     _fatigueShown && {_light}
+                ],
+                // the game's stamina: only the player's own "off" is undone, so stamina a mission
+                // turned off itself stays off
+                [localize "STR_ALIVE_PLAYEROPTIONS_STAMINA_OFF",
+                    { ["stamina", true] call ALiVE_fnc_playeroptionsAce },
+                    "", localize "STR_ALIVE_PLAYEROPTIONS_STAMINA_COMMENT", "", -1,
+                    true,
+                    !_fatigueShown && {!_staminaOff} && {isStaminaEnabled player}
+                ],
+                [localize "STR_ALIVE_PLAYEROPTIONS_STAMINA_NORMAL",
+                    { ["stamina", false] call ALiVE_fnc_playeroptionsAce },
+                    "", localize "STR_ALIVE_PLAYEROPTIONS_STAMINA_COMMENT", "", -1,
+                    true,
+                    !_fatigueShown && {_staminaOff}
                 ],
                 [localize "STR_ALIVE_PLAYEROPTIONS_ACE_SWAY_NORMAL",
                     { ["sway", 1] call ALiVE_fnc_playeroptionsAce },
