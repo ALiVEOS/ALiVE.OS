@@ -1747,7 +1747,10 @@ switch (_operation) do {
                 if (count _y > count _best && {_centre distance2D _pos < 10000}) then { _best = _y; _bestKey = _x };
             } forEach _cells;
             if (count _best >= 25) then {
-                private _chosen = _troopsUnsorted select [0, _sizeBase];
+                // the attack's own groups are the nearest as before, but sentry pairs are passed over for the next
+                // nearest when there are enough others, and the pile gives the rest
+                private _big = _troopsUnsorted select { ([_x,"unitCount",0] call ALiVE_fnc_HashGet) >= 3 };
+                private _chosen = (if (count _big >= _sizeBase) then {_big} else {_troopsUnsorted}) select [0, _sizeBase];
                 private _centre = [(_bestKey select 0) * 500 + 250, (_bestKey select 1) * 500 + 250, 0];
                 private _pile = [_best, [_centre], { ([_x,"position",[0,0,0]] call ALiVE_fnc_HashGet) distance2D _Input0 }, "ASCEND"] call ALiVE_fnc_SortBy;
                 {
@@ -1762,7 +1765,7 @@ switch (_operation) do {
                     if (_ok && {!(_profile in _chosen)}) then { _chosen pushBack _profile };
                 } forEach _pile;
                 // the nearest ones fill anything the pile could not
-                { if (count _chosen < _size && {!(_x in _chosen)}) then { _chosen pushBack _x } } forEach _troopsUnsorted;
+                { if (count _chosen < _size && {!(_x in _chosen)}) then { _chosen pushBack _x } } forEach (_big + _troopsUnsorted);
                 _troopsUnsorted = _chosen;
             };
         };
