@@ -135,7 +135,8 @@ if (_stats || {_killFeed != "None"}) then {
             _killerweapon = format ["Run over (%1)", getText (configFile >> "cfgVehicles" >> (typeOf _this) >> "displayName")];
             _killerweaponType = typeOf _this;
         };
-        if !(_killer isKindof "Man") then {
+        // no killer at all (ACE kept a null last damage source): no vehicle to name, so not a run-over
+        if (!isNull _killer && {!(_killer isKindof "Man")}) then {
                 _killerweapon = _killerweapon + format[" (%1)", getText (configFile >> "cfgVehicles" >> (typeof (vehicle _killer)) >> "displayName")];
                 if ((currentWeapon _killer) isEqualTo "" || {(currentWeapon _killer) call _isHorn}) then { (vehicle _killer) call _runOver };
         };
@@ -187,7 +188,8 @@ if (_stats || {_killFeed != "None"}) then {
         };
 
         // Might get a false reading if unit is ace killed and dies some time after last damage
-        _distance = ceil(_killed distance _killer);
+        // and no distance for a null killer, which used to read as 10^10 m
+        _distance = if (isNull _killer) then {0} else {ceil(_killed distance _killer)};
 
         _killerPos = mapgridposition _killer;
         _killerGeoPos = position _killer;
