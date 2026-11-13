@@ -104,6 +104,21 @@ class FSM
                          "_exitFSM = false;" \n
                          "_TAC_confirmed = false;" \n
                          "_orderID = -1; _orderDeadline = -1;" \n
+                         "// Keeps the order TACOM is working on open. OPCOM's window counts from the moment TACOM picks the order up" \n
+                         "// and is held open while the group search runs: on a busy server with a crowd of groups near the objective" \n
+                         "// that search took minutes (an HQ on the MSI, 13 Nov), and orders that ran out mid-search were dropped and" \n
+                         "// sent again, over and over, so the groups never left." \n
+                         "_orderSearchHold = 300;" \n
+                         "_holdOrder = {" \n
+                         "    params [""_seconds""];" \n
+                         "    if (_orderID <= 0) exitWith {};" \n
+                         "    private _orders = _OPCOM_FSM getFSMVariable [""_unconfirmedOrders"",[]];" \n
+                         "    private _i = _orders findIf {((_x select 0) isEqualTo _orderID)};" \n
+                         "    if (_i < 0) exitWith {};" \n
+                         "    _orderDeadline = time + _seconds;" \n
+                         "    (_orders select _i) set [3,_orderDeadline];" \n
+                         "    [_OPCOM_FSM,_orderID,_seconds] call (_OPCOM_FSM getFSMVariable [""_armOrderExpiry"",{}]);" \n
+                         "};" \n
                          "_manualOrder = false;" \n
                          "_objectiveDeleted = false;" \n
                          "" \n
@@ -394,6 +409,8 @@ class FSM
                          "                _OPCOM_FSM setFSMVariable [""_OPCOM_QUEUE"",_queue];" \n
                          "                _busy = false;" \n
                          "            };" \n
+                         "            // the order's time starts now, not when OPCOM sent it: it may have waited behind slower ones" \n
+                         "            [_OPCOM_FSM getFSMVariable [""_orderConfirmationTimeout"",10]] call _holdOrder;" \n
                          "            if (time >= _orderDeadline) exitwith {call _rejectExpiredOrder};" \n
                          "" \n
                          "            _pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
@@ -1256,6 +1273,7 @@ class FSM
                          "" \n
                          "_section = [_objective, ""section"",[]] call ALiVE_fnc_HashGet;" \n
                          "if (!_manualOrder && {count _section < _size}) then {" \n
+                         "    [_orderSearchHold] call _holdOrder;" \n
                          "    _hdl = [_OPCOM_HANDLER,[_objective,_size,_taskTypes],_controltype == ""assault"",_operation == ""recon""] spawn {" \n
                          "        private [""_objective"",""_pos"",""_taskTypes""];" \n
                          "" \n
@@ -1317,6 +1335,7 @@ class FSM
                          "" \n
                          "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {};" \n
                          "if (_orderID > 0 && {time >= _orderDeadline}) exitwith {};" \n
+                         "[_OPCOM_FSM getFSMVariable [""_orderConfirmationTimeout"",10]] call _holdOrder;" \n
                          "" \n
                          "private [""_sectionAssist""];" \n
                          "_sectionAssist = [_objective,""sectionAssist"",[]] call AliVE_fnc_HashGet;" \n

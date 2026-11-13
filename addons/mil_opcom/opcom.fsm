@@ -238,6 +238,22 @@ class FSM
                          "private _lastanalyze = 0;" \n
                          "private _orderFailed = false;" \n
                          "private _orderConfirmationTimeout = 10;" \n
+                         "// Arms the check that drops an order TACOM has not answered in time. TACOM uses it too, through this" \n
+                         "// variable, when it holds the order it is working on open." \n
+                         "private _armOrderExpiry = {" \n
+                         "    params [""_opcomFSM"",""_orderID"",""_seconds""];" \n
+                         "    [{" \n
+                         "        params [""_opcomFSM"",""_orderID""];" \n
+                         "        if !(_opcomFSM getFSMVariable [""_exitFSM"",true]) then {" \n
+                         "            private _orders = _opcomFSM getFSMVariable [""_unconfirmedOrders"",[]];" \n
+                         "            if ((_orders findIf {((_x select 0) isEqualTo _orderID)}) >= 0) then {" \n
+                         "                private _opcomQueue = _opcomFSM getFSMVariable [""_OPCOM_QUEUE"",[]];" \n
+                         "                _opcomQueue pushBack [""expire_order"",_orderID];" \n
+                         "                _opcomFSM setFSMVariable [""_OPCOM_QUEUE"",_opcomQueue];" \n
+                         "            };" \n
+                         "        };" \n
+                         "    },[_opcomFSM,_orderID],_seconds] call CBA_fnc_waitAndExecute;" \n
+                         "};" \n
                          "private _nextOrderID = 0;" \n
                          "private _unconfirmedOrders = [];" \n
                          "private _colorside = ""ColorRed"";" \n
@@ -593,6 +609,14 @@ class FSM
                          "            private _unconfirmedOrderIndex = _unconfirmedOrders findIf {((_x select 0) isEqualTo _orderID)};" \n
                          "            if (_unconfirmedOrderIndex >= 0) then {" \n
                          "                private _unconfirmedOrder = _unconfirmedOrders select _unconfirmedOrderIndex;" \n
+                         "                // An order still waiting in TACOM's queue behind slower ones hasn't been looked at yet: its time" \n
+                         "                // starts when TACOM picks it up, so it is given another window instead of being dropped" \n
+                         "                private _tacQueue = if (isNil ""_TACOM_FSM"" || {_TACOM_FSM <= 0} || {completedFSM _TACOM_FSM}) then {[]} else {_TACOM_FSM getFSMVariable [""_TACOM_QUEUE"",[]]};" \n
+                         "                private _waiting = (_tacQueue findIf {(_x param [0,""""]) == ""analyze_order"" && {((_x param [1,[]]) param [0,-1]) isEqualTo _orderID}}) >= 0;" \n
+                         "                if (_waiting && {time >= (_unconfirmedOrder select 3)}) then {" \n
+                         "                    _unconfirmedOrder set [3, time + _orderConfirmationTimeout];" \n
+                         "                    [_OPCOM_FSM,_orderID,_orderConfirmationTimeout] call _armOrderExpiry;" \n
+                         "                };" \n
                          "                if (time >= (_unconfirmedOrder select 3)) then {" \n
                          "                    if (_debug) then {" \n
                          "                        [""OPCOM %1 expired unconfirmed TACOM order %2 for objective %3"",_side,_orderID,[(_unconfirmedOrder select 2),""objectiveID"",""unknown""] call ALiVE_fnc_HashGet] call ALiVE_fnc_DumpR;" \n
@@ -971,17 +995,7 @@ class FSM
                          "    _queue pushBack [""analyze_order"",[_orderID,_operation,_orderTarget,_orderDeadline]];" \n
                          "    _TACOM_FSM setFSMVariable [""_TACOM_QUEUE"",_queue];" \n
                          "    _OPCOM_QUEUE pushBack [""analyze"",nil];" \n
-                         "    [{" \n
-                         "        params [""_opcomFSM"",""_orderID""];" \n
-                         "        if !(_opcomFSM getFSMVariable [""_exitFSM"",true]) then {" \n
-                         "            private _orders = _opcomFSM getFSMVariable [""_unconfirmedOrders"",[]];" \n
-                         "            if ((_orders findIf {((_x select 0) isEqualTo _orderID)}) >= 0) then {" \n
-                         "                private _opcomQueue = _opcomFSM getFSMVariable [""_OPCOM_QUEUE"",[]];" \n
-                         "                _opcomQueue pushBack [""expire_order"",_orderID];" \n
-                         "                _opcomFSM setFSMVariable [""_OPCOM_QUEUE"",_opcomQueue];" \n
-                         "            };" \n
-                         "        };" \n
-                         "    },[_OPCOM_FSM,_orderID],_orderConfirmationTimeout] call CBA_fnc_waitAndExecute;" \n
+                         "    [_OPCOM_FSM,_orderID,_orderConfirmationTimeout] call _armOrderExpiry;" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

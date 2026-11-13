@@ -1654,44 +1654,64 @@ switch (_operation) do {
         };
         private _footCanGo = { ([_profile] call _fnc_hasBoat) || {!(call _crossesStraight)} };
 
-        // Filter troops
+        // Filter troops. Nearest first, and only until the section is full: with a crowd of groups next to the
+        // objective (about 200 at an HQ on the MSI, 13 Nov), testing every one of them, sea and path checks
+        // included, took up to three minutes on a busy server, and the order ran out before it was done.
+        // Cheap tests go first and a group keeps its answer as the search widens. A recon order that prefers
+        // SpecOps still looks at all of them, as it picks SpecOps groups before nearer ones.
+        private _troopSet = createHashMap;
+        { _troopSet set [_x, true] } forEach _troops;
+        private _checked = createHashMap;
+        private _fnc_valid = {
+            if ([_profile,"busy",false] call ALiVE_fnc_HashGet) exitWith {false};
+            if !(_profileID in _troopSet) exitWith {false};
+            if (!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet}) exitWith {false};
+            if (_barredFactions isNotEqualTo [] && {toLower format ["%1", [_profile,"faction",""] call ALiVE_fnc_HashGet] in _barredFactions}) exitWith {false};
+
+            // Static AA gate: profiles registered as "static" in
+            // ALIVE_aaProfileBehaviour (populated by mil_placement
+            // / mil_placement_custom AA spawn) skip section
+            // composition - keeps emplaced AA at its spawn point
+            // instead of being repositioned on attack / defend
+            // orders. Roaming AA passes through as a normal
+            // force unit.
+            private _aaBehVal = if (!isNil "ALIVE_aaProfileBehaviour") then {
+                [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
+            } else { nil };
+            if (!isNil "_aaBehVal" && {_aaBehVal isEqualType ""} && {_aaBehVal == "static"}) exitWith {false};
+
+            // the sea and path tests last, as they cost the most
+            private _commander = (count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0);
+            private _isSeaTravel = if (_pathfindingEnabled) then { //Use new pathfinding function instead of straight line check
+                {[Alive_pathfinder,"layer1SeaTravelCheck",[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos]] call Alive_fnc_pathfinder;}
+            } else {
+                {[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos] call ALiVE_fnc_crossesSea}
+            };
+            if (_commander) then {if (_profileID in _seaProfileIDs) then {call _isSeaTravel} else {!(call _crossesStraight) && {!(call _isSeaTravel)}}} else {call _footCanGo}
+        };
+
         _radius = 2000;
         while
         {
             private _nearProfiles = [_pos, _radius, [_searchSide,"entity"]] call ALIVE_fnc_getNearProfiles;
+            private _byDistance = [];
+            {
+                if (!isNil "_x") then {_byDistance pushBack [([_x,"position",_pos] call ALiVE_fnc_HashGet) distance _pos, _forEachIndex]};
+            } forEach _nearProfiles;
+            _byDistance sort true;
 
             _troopsUnsorted = [];
-
             {
-                private _profile = _x;
-
-                if (!isnil "_profile") then {
-
-                    private _profileID = [_profile,"profileID",""] call ALiVE_fnc_HashGet;
-                    private _commander = (count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0);
-                    private _busy = ([_profile,"busy",false] call ALiVE_fnc_HashGet);
-                    private _isSeaTravel = if (_pathfindingEnabled) then { //Use new pathfinding function instead of straight line check
-                        {[Alive_pathfinder,"layer1SeaTravelCheck",[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos]] call Alive_fnc_pathfinder;}
-                    } else {
-                        {[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos] call ALiVE_fnc_crossesSea}
-                    };
-                    
-                    // Static AA gate: profiles registered as "static" in
-                    // ALIVE_aaProfileBehaviour (populated by mil_placement
-                    // / mil_placement_custom AA spawn) skip section
-                    // composition - keeps emplaced AA at its spawn point
-                    // instead of being repositioned on attack / defend
-                    // orders. Roaming AA passes through as a normal
-                    // force unit.
-                    private _aaBehVal = if (!isNil "ALIVE_aaProfileBehaviour") then {
-                        [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
-                    } else { nil };
-                    private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
-                    private _valid = !_busy && {_profileID in _troops} && {if (_commander) then {if (_profileID in _seaProfileIDs) then {call _isSeaTravel} else {!(call _crossesStraight) && {!(call _isSeaTravel)}}} else {call _footCanGo}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})} && {_barredFactions isEqualTo [] || {!(toLower format ["%1", [_profile,"faction",""] call ALiVE_fnc_HashGet] in _barredFactions)}};
-
-                    if (_valid) then {_troopsUnsorted pushBack _profile};
+                private _profile = _nearProfiles select (_x select 1);
+                private _profileID = [_profile,"profileID",""] call ALiVE_fnc_HashGet;
+                private _ok = _checked get _profileID;
+                if (isNil "_ok") then {
+                    _ok = call _fnc_valid;
+                    _checked set [_profileID, _ok];
                 };
-            } foreach _nearProfiles;
+                if (_ok) then {_troopsUnsorted pushBack _profile};
+                if (!_preferSpecOps && {count _troopsUnsorted >= _size}) exitWith {};
+            } forEach _byDistance;
 
             // Expand only while the current radius cannot fill the section.
             ((count _troopsUnsorted < _size) && {_radius < 15000});
