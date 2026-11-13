@@ -45,6 +45,22 @@ if (!isServer) exitWith {};
 #define ATTACK_TIME 1200
 #define REACHED 50
 
+// the gun of a static step. A netId means nothing after a restart, so when it no longer names a live
+// static gun at the step's point, the nearest one within 5 m is taken and the step is given its netId.
+private _fnc_gun = {
+    params ["_profile", "_pos", "_netId"];
+    private _gun = objectFromNetId _netId;
+    if (isNull _gun || {!alive _gun} || {!(_gun isKindOf "StaticWeapon")} || {(_gun distance2D _pos) > 5}) then {
+        _gun = (nearestObjects [_pos, ["StaticWeapon"], 5]) param [0, objNull];
+        if (!isNull _gun && {alive _gun}) then {
+            private _queue = [_profile, "warRoomQueue", []] call ALiVE_fnc_hashGet;
+            private _step = _queue select ([_profile, "warRoomQueueIdx", 0] call ALiVE_fnc_hashGet);
+            _step set [3, netId _gun];
+        };
+    };
+    _gun
+};
+
 private _fnc_group = {
     params ["_profile"];
     if !([_profile, "active", false] call ALiVE_fnc_hashGet) exitWith { grpNull };
@@ -170,7 +186,7 @@ switch (_op) do {
                 };
             };
             case "static": {
-                private _gun = objectFromNetId _extra;
+                private _gun = [_profile, _pos, _extra] call _fnc_gun;
                 if (isNull _gun || {!alive _gun}) exitWith { _done = true };
                 private _g = [_profile] call _fnc_group;
                 if (isNull _g) exitWith { _state deleteAt "crewed" };
