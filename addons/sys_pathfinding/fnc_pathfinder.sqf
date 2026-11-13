@@ -1138,6 +1138,7 @@ switch (_operation) do {
                 private _currentSubSector = [_frontierLayer2, _costSoFarMapLayer2] call ALiVE_fnc_pathfinderPriorityPullFresh;
                 if (isNil "_currentSubSector") exitWith {
                     if (call _fnc_coarseRoute) then {breakTo "main"};
+                    _layer2 set [7, "nothing left to search"]; // for the PATH_ONE_POINT event
                     [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                     breakTo "main";
                 };
@@ -1280,6 +1281,7 @@ switch (_operation) do {
                             if (/*(_distanceToGoal > (_closestSubSector select 0)*4) ||*/ (_itersSinceClosest > 500)) exitwith {
                                 // Unable to complete path to goal - spent too much time looking
                                 if (call _fnc_coarseRoute) then {breakTo "main"};
+                                _layer2 set [7, "500 steps without getting closer"]; // for the PATH_ONE_POINT event
                                 [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                                 breakto "main";
                             };
@@ -1294,6 +1296,7 @@ switch (_operation) do {
                             private _failedApproaches = _goalEvidence select 2;
                             if (_indxCS in _goalIncoming) then {_failedApproaches pushBackUnique (+_indxCS)};
                             if (count _goalIncoming > 0 && {count _failedApproaches == count _goalIncoming}) exitWith {
+                                _layer2 set [7, "every way into the goal cell is blocked"]; // for the PATH_ONE_POINT event
                                 [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                                 breakTo "main";
                             };
@@ -1304,6 +1307,7 @@ switch (_operation) do {
                 if (count _frontierLayer2 == 0) exitwith {
                     // Unable to complete path to goal - ran out of sectors to check
                     if (call _fnc_coarseRoute) then {breakTo "main"};
+                    _layer2 set [7, "nothing left to search"]; // for the PATH_ONE_POINT event
                     [_logic,"beginLayerPath", [2, _startSubSector, (_closestSubSector select 1), _cameFromMapLayer2, _pathLayer2, _subSectorSize, true]] call MAINCLASS;
                     breakto "main";
                 };
@@ -1326,8 +1330,10 @@ switch (_operation) do {
             if (isNil {_result select 0;}) then {["Error - Undefined value in path: %1 \n%2", _layer2, _result] call Alive_fnc_Dump;};
             // for the War Room (development builds): a route between two cells that came back as one point leaves the unit where it is
             if (!isNil "ALiVE_fnc_diagEvent" && {_result isEqualType []} && {count _result == 1} && {!isNil "_startSubSector"} && {!isNil "_goalSubSector"}
-                && {(_startSubSector select 0) isNotEqualTo (_goalSubSector select 0)}) then {
-                ["PATH", "PATH_ONE_POINT", format ["%1 route for %2 came back as one point", _procedure select 0, _callbackArgs param [0, ""]], _startPos] call ALiVE_fnc_diagEvent;
+                && {(_startSubSector select 0) isNotEqualTo (_goalSubSector select 0)}
+                // a goal in the next cell is reached in one step, so only a goal further away is a fault
+                && {(abs (((_startSubSector select 0) select 0) - ((_goalSubSector select 0) select 0)) > 1) || {abs (((_startSubSector select 0) select 1) - ((_goalSubSector select 0) select 1)) > 1}}) then {
+                ["PATH", "PATH_ONE_POINT", format ["%1 route for %2 came back as one point (%3) towards %4, %5 m away", _procedure select 0, _callbackArgs param [0, ""], _layer2 param [7, "no reason recorded"], [round ((_goalSubSector select 2) select 0), round ((_goalSubSector select 2) select 1)], round (_startPos distance2D (_goalSubSector select 2))], _startPos] call ALiVE_fnc_diagEvent;
             };
 
             // Optional debug draw of the final computed route (gated by the
