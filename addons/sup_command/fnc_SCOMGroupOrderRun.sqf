@@ -44,6 +44,7 @@ if (!isServer) exitWith {};
 #define RETARGET 150
 #define ATTACK_TIME 1200
 #define REACHED 50
+#define RETRIES 3
 
 // the gun of a static step. A netId means nothing after a restart, so when it no longer names a live
 // static gun at the step's point, the nearest one within 5 m is taken and the step is given its netId.
@@ -123,6 +124,7 @@ switch (_op) do {
         (_queue select _idx) params ["_step", "_px", "_py", ["_extra", ""]];
         private _pos = [_px, _py];
         _state set ["started", time];
+        _state set ["retries", 0];
         switch (_step) do {
             case "move": {
                 [_profile, "addWaypoint", [_profile, _pos] call _fnc_waypoint] call ALiVE_fnc_profileEntity;
@@ -167,7 +169,23 @@ switch (_op) do {
         private _here = [_profile, "position", [0, 0, 0]] call ALiVE_fnc_hashGet;
         private _done = false;
         switch (_step) do {
-            case "move": { _done = (_here distance2D _pos) < REACHED };
+            case "move": {
+                _done = (_here distance2D _pos) < REACHED;
+                // A group that isn't spawned finishes a waypoint once it is within two of its steps of it,
+                // so it can stop well short of the point. With its route used up and nothing still being
+                // planned, it is sent on to the point again, at most RETRIES times for the step.
+                if (!_done && {!([_profile, "active", false] call ALiVE_fnc_hashGet)}
+                    && {([_profile, "waypoints", []] call ALiVE_fnc_hashGet) isEqualTo []}
+                    && {([_profile, "pendingWaypointPaths", []] call ALiVE_fnc_hashGet) isEqualTo []}) then {
+                    private _tries = _state getOrDefault ["retries", 0];
+                    if (_tries < RETRIES) then {
+                        _state set ["retries", _tries + 1];
+                        [_profile, "addWaypoint", [_profile, _pos] call _fnc_waypoint] call ALiVE_fnc_profileEntity;
+                    } else {
+                        _done = true;
+                    };
+                };
+            };
             case "attack": {
                 private _target = [ALiVE_profileHandler, "getProfile", _extra] call ALiVE_fnc_profileHandler;
                 if (isNil "_target" || {time - (_state getOrDefault ["started", time]) > ATTACK_TIME}) exitWith { _done = true };
