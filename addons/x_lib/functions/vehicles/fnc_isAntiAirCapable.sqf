@@ -58,10 +58,29 @@ if (_class == "") exitWith { false };
 // before the cache, so a list changed mid-mission applies at once. Set on the server, e.g. in init.sqf:
 //   ALiVE_antiAirExclude = ["rhs_btr80a_msv"];   never anti-air
 //   ALiVE_antiAirInclude = ["my_aa_truck"];      always anti-air
+// The ALiVE (Required) module's Anti-air: never count and Anti-air: always count fields (ren, 13 Nov) add to
+// these lists without init.sqf; both are read, so neither overwrites the other.
+private _lists = missionNamespace getVariable "ALiVE_antiAirModuleLists";
+if (isNil "_lists") then {
+    _lists = [[], []];
+    {
+        private _module = _x;
+        {
+            private _text = _module getVariable [_x, ""];
+            if (_text isEqualType "") then { (_lists select _forEachIndex) append ((_text splitString ", ;") select { _x != "" }) };
+        } forEach ["ALiVE_AA_NEVER", "ALiVE_AA_ALWAYS"];
+    } forEach (entities "ALiVE_require");
+    // the module exists once the mission is running; before that, look again next time
+    if (time > 0) then { ALiVE_antiAirModuleLists = _lists };
+};
 private _exclude = missionNamespace getVariable ["ALiVE_antiAirExclude", []];
-if (_exclude isEqualType [] && {(_exclude findIf { _x isEqualType "" && {_class isKindOf _x} }) >= 0}) exitWith { false };
+if !(_exclude isEqualType []) then { _exclude = [] };
+_exclude = _exclude + (_lists select 0);
+if ((_exclude findIf { _x isEqualType "" && {_x != ""} && {_class isKindOf _x} }) >= 0) exitWith { false };
 private _include = missionNamespace getVariable ["ALiVE_antiAirInclude", []];
-if (_include isEqualType [] && {(_include findIf { _x isEqualType "" && {_class isKindOf _x} }) >= 0}) exitWith { true };
+if !(_include isEqualType []) then { _include = [] };
+_include = _include + (_lists select 1);
+if ((_include findIf { _x isEqualType "" && {_x != ""} && {_class isKindOf _x} }) >= 0) exitWith { true };
 
 if (isNil "ALIVE_isAntiAirCapableCache") then {
     ALIVE_isAntiAirCapableCache = createHashMap;

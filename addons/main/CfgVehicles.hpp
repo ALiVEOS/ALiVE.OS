@@ -2445,6 +2445,22 @@ class CfgVehicles {
                     };
             };
 
+            // class lists for ALiVE_fnc_isAntiAirCapable, added to ALiVE_antiAirExclude / ALiVE_antiAirInclude (ren, 13 Nov)
+            class ALiVE_AA_NEVER: Edit
+            {
+                    property =  MVAR(ALiVE_AA_NEVER);
+                    displayName = "Anti-air: never count";
+                    tooltip = "Vehicle class names, separated by commas, that ALiVE never treats as anti-air, such as a mod IFV whose gun can point up. A class also covers every class that inherits from it.\nTo find a vehicle's class name, look at it in the game and run typeOf cursorObject in the debug console.\nScript lists set in init.sqf (ALiVE_antiAirExclude) still count as well.";
+                    defaultValue = """""";
+            };
+            class ALiVE_AA_ALWAYS: Edit
+            {
+                    property =  MVAR(ALiVE_AA_ALWAYS);
+                    displayName = "Anti-air: always count";
+                    tooltip = "Vehicle class names, separated by commas, that ALiVE always treats as anti-air, for mod AA vehicles it doesn't recognise. A class also covers every class that inherits from it. Never count wins when a class is in both.\nTo find a vehicle's class name, look at it in the game and run typeOf cursorObject in the debug console.\nScript lists set in init.sqf (ALiVE_antiAirInclude) still count as well.";
+                    defaultValue = """""";
+            };
+
             class ALiVE_AI_DISTRIBUTION: Combo
             {
                     property =  MVAR(ALiVE_AI_DISTRIBUTION);
