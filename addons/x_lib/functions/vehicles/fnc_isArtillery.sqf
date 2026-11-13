@@ -36,6 +36,30 @@ switch (typeName _class) do {
     case ("STRING") : {_class = _class};
 };
 
+// A mission maker's own word comes first (TheLogatron, 12 Nov: mod guns ALiVE doesn't count as artillery).
+// Each list holds class names, and a class counts if it is or inherits from one of them. Read before the
+// cache, so a list changed mid-mission applies at once. Set on the server, e.g. in init.sqf:
+//   ALiVE_artilleryExclude = ["my_spotter_truck"];   never artillery
+//   ALiVE_artilleryInclude = ["my_mortar_carrier"];  always artillery
+// The Commander Artillery module's Extra artillery classes field adds to the include list. A listed
+// vehicle with no artillery computer is counted but can't fire (getArtilleryAmmo is empty for it).
+private _fnc_listed = {
+    _this isEqualType [] && {(_this findIf { _x isEqualType "" && {_x != ""} && {_class isKindOf _x} }) >= 0}
+};
+if ((missionNamespace getVariable ["ALiVE_artilleryExclude", []]) call _fnc_listed) exitWith { false };
+if ((missionNamespace getVariable ["ALiVE_artilleryInclude", []]) call _fnc_listed) exitWith { true };
+private _fromModules = missionNamespace getVariable "ALiVE_artilleryModuleInclude";
+if (isNil "_fromModules") then {
+    _fromModules = [];
+    {
+        private _text = _x getVariable ["extraArtillery", _x getVariable ["ALiVE_mil_artillery_extraArtillery", ""]];
+        if (_text isEqualType "") then { _fromModules append ((_text splitString ", ;") select { _x != "" }) };
+    } forEach (entities "ALiVE_mil_artillery");
+    // the modules exist once the mission is running; before that, look again next time
+    if (time > 0) then { ALiVE_artilleryModuleInclude = _fromModules };
+};
+if (_fromModules call _fnc_listed) exitWith { true };
+
 // callers hit this in monitor loops and config sweeps - cache per class
 if (isNil "ALIVE_isArtilleryCache") then {
     ALIVE_isArtilleryCache = [] call ALIVE_fnc_hashCreate;

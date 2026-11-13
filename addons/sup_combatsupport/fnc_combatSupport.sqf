@@ -379,7 +379,7 @@ switch(_operation) do {
                                 // A gun synced with no CS_TYPE is artillery, the only kind a ground
                                 // vehicle can be, rather than dropped as the CAS default with a warning.
                                 // A vehicle the game doesn't treat as artillery still gets the warning.
-                                if (!(_entry isKindOf "Logic") && {isNil {_entry getVariable "CS_TYPE"}} && {getNumber (configOf _entry >> "artilleryScanner") > 0}) then {
+                                if (!(_entry isKindOf "Logic") && {isNil {_entry getVariable "CS_TYPE"}} && {getNumber (configOf _entry >> "artilleryScanner") > 0 || {[typeOf _entry] call ALIVE_fnc_isArtillery}}) then {
                                     _type = "arty";
                                     ["ALIVE_fnc_combatSupport - %1 is synced to Combat Support with no CS_TYPE; it is a gun, so it has been added as artillery", typeOf _entry] call ALiVE_fnc_dump;
                                 };

@@ -256,6 +256,14 @@ class CfgVehicles
                         defaultValue = """3000""";
                         typeName = "NUMBER";
                 };
+                // classes a mission marks as artillery, at its own risk (TheLogatron, 12 Nov); read by ALIVE_fnc_isArtillery
+                class extraArtillery : Edit
+                {
+                        property = "ALiVE_mil_artillery_extraArtillery";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_EXTRA";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_EXTRA_COMMENT";
+                        defaultValue = ;
+                };
                 class ModuleDescription : ModuleDescription {};
         };
         class ModuleDescription

@@ -414,6 +414,12 @@
     <Portuguese>Alcance de fogo visível (m):</Portuguese>
     <Russian>Дальность видимого огня (m):</Russian>
 </Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_EXTRA">
+    <English>Extra artillery classes:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_EXTRA_COMMENT">
+    <English>Vehicle class names, separated by commas, that ALiVE should treat as artillery, for mod guns it doesn't recognise. A class also covers every class that inherits from it. They count everywhere ALiVE looks for artillery: the commander's batteries, placed artillery and guns synced to Player Combat Support. At your own risk: these are counted as artillery whatever they carry, and a vehicle without an artillery computer can't fire a fire mission. Leave empty for none.</English>
+</Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_VISUALRANGE_COMMENT">
     <English>How close a player must be to the target or the firing battery for real shells to spawn and be seen. Beyond this range a mission resolves on the ledger with no visible shells, to save performance. Raise it for large maps or Zeus/spectator observation. Type the range in metres, at least 500. Default 3000.</English>
     <Chinese>玩家需距離目標或開火砲兵連多近，實體砲彈才會生成並可見。超出此範圍，射擊任務將僅在帳目上結算、不產生可見砲彈，以節省效能。大型地圖或Zeus／觀戰觀察時可調高。預設3公里。</Chinese>
