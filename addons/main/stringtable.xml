@@ -115,9 +115,21 @@
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_MISSIONFILE">
     <English>Local saves in the mission's own file</English>
+    <Chinesesimp>本地存档保存在任务自己的文件中</Chinesesimp>
+    <Chinese>本地存檔保存在任務自己的檔案中</Chinese>
+    <Spanish>Guardados locales en el archivo propio de la misión</Spanish>
+    <French>Sauvegardes locales dans le fichier propre à la mission</French>
+    <Portuguese>Gravações locais no ficheiro próprio da missão</Portuguese>
+    <Russian>Локальные сохранения в собственном файле миссии</Russian>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_MISSIONFILE_COMMENT">
     <English>On: a mission's Local saves go in its own save file beside the server's profile, so each autosave writes only that mission's saves and pauses the server for less. Until a save has loaded back from that file once, it is also kept in the profile file every mission shares. Off: saves go in the shared profile file only, as before.</English>
+    <Chinesesimp>开启：任务的本地存档保存在服务器配置文件旁边该任务自己的存档文件中，因此每次自动保存只写入该任务的存档，服务器暂停时间更短。在存档从该文件成功读回一次之前，它也会保留在所有任务共用的配置文件中。关闭：存档只保存在共用配置文件中，与以前相同。</Chinesesimp>
+    <Chinese>開啟：任務的本地存檔保存在伺服器設定檔旁邊該任務自己的存檔檔案中，因此每次自動存檔只寫入該任務的存檔，伺服器暫停時間更短。在存檔從該檔案成功讀回一次之前，它也會保留在所有任務共用的設定檔中。關閉：存檔只保存在共用設定檔中，與以前相同。</Chinese>
+    <Spanish>Activado: los guardados locales de una misión van a su propio archivo junto al perfil del servidor, así que cada autoguardado escribe solo los de esa misión y detiene menos el servidor. Hasta que un guardado se haya cargado una vez desde ese archivo, también se conserva en el archivo de perfil que comparten todas las misiones. Desactivado: los guardados van solo al archivo de perfil compartido, como antes.</Spanish>
+    <French>Activé : les sauvegardes locales d'une mission vont dans son propre fichier à côté du profil du serveur, donc chaque sauvegarde automatique n'écrit que celles de cette mission et bloque moins le serveur. Tant qu'une sauvegarde n'a pas été rechargée une fois depuis ce fichier, elle est aussi gardée dans le fichier de profil partagé par toutes les missions. Désactivé : les sauvegardes vont seulement dans le fichier de profil partagé, comme avant.</French>
+    <Portuguese>Ligado: as gravações locais de uma missão vão para o seu próprio ficheiro junto ao perfil do servidor, por isso cada gravação automática escreve só as dessa missão e para menos o servidor. Até uma gravação ter sido carregada uma vez desse ficheiro, também é mantida no ficheiro de perfil partilhado por todas as missões. Desligado: as gravações vão só para o ficheiro de perfil partilhado, como antes.</Portuguese>
+    <Russian>Вкл.: локальные сохранения миссии записываются в её собственный файл рядом с профилем сервера, поэтому каждое автосохранение пишет только сохранения этой миссии и меньше задерживает сервер. Пока сохранение хотя бы раз не загрузится из этого файла, оно также хранится в общем файле профиля всех миссий. Выкл.: сохранения записываются только в общий файл профиля, как раньше.</Russian>
 </Key>
 <Key ID="STR_ALIVE_SETTINGS_VD">
     <English>Starting view distance</English>
