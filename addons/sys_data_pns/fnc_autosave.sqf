@@ -56,6 +56,7 @@ private _handle = [_interval, _once] spawn {
 	    TitleText ["ALiVE IS SAVING...","PLAIN"];
 	    sleep 1;
 
+	    private _saveStart = diag_tickTime;
 	    {
 			// Every module saved in this frame waits, and the file is written once at the end
 			MOD(PNS_HOLD_FRAME) = diag_frameNo;
@@ -199,6 +200,10 @@ private _handle = [_interval, _once] spawn {
 			if (MOD(PNS_HOLD_DIRTY)) then { saveProfileNamespace };
 
 		} call CBA_fnc_Directcall;
+	    // how long the one-frame save held the server, for the War Room's Diagnostics
+	    if (isServer && {!isNil "ALiVE_fnc_diagEvent"}) then {
+	        ["SYS_DATA", "AUTOSAVE", format ["Saved in %1 s", (round ((diag_tickTime - _saveStart) * 100)) / 100], [0,0]] call ALiVE_fnc_diagEvent;
+	    };
 
 	    sleep 0.2;
         ["SAVING FINISHED!"] call ALiVE_fnc_dumpMPH;

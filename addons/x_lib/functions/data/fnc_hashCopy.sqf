@@ -24,50 +24,40 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
-private ["_target","_whitelist","_blacklist","_hash","_key","_value","_copy","_hashCopy","_arrayCopy"];
+params ["_target", ["_whitelist", []], ["_blacklist", []]];
 
-_target = _this select 0;
-_whitelist = if(count _this > 1) then {_this select 1} else {[]};
-_blacklist = if(count _this > 2) then {_this select 2} else {[]};
-
-_hash = [] call ALIVE_fnc_hashCreate;
-
-{
-    _key = _x;
-    _value = [_target,_key] call ALIVE_fnc_hashGet;
-    _copy = true;
-
-    if(count _whitelist > 0) then {
-        _copy = false;
-        if(_key in _whitelist) then {
-            _copy = true;
-        };
-    };
-
-    if(count _blacklist > 0) then {
-        _copy = false;
-        if!(_key in _blacklist) then {
-            _copy = true;
-        };
-    };
-
-    if(_copy) then {
-        if(typeName _value == "ARRAY") then {
-            if([_value] call ALIVE_fnc_isHash) then {
-                _hashCopy = [_value, _whitelist, _blacklist] call ALiVE_fnc_hashCopy;
-                [_hash, _key, _hashCopy] call ALIVE_fnc_hashSet;
-            } else {
-                _arrayCopy = [];
-                _arrayCopy = + _value;
-                [_hash, _key, _arrayCopy] call ALIVE_fnc_hashSet;
+// Builds the copy's key and value lists directly. The old loop went through
+// hashGet and hashSet for every key, and each hashSet searched the keys built
+// so far, so copying every profile for a save took most of the save's time in
+// the one frame the autosave holds the server. The result is the same: a
+// blacklist, when given, wins over the whitelist; nested hashes are copied
+// with the same lists; other arrays are copied; and the copy has the plain
+// nil default of a new hash, as before.
+private _fnc_copy = {
+    params ["_source"];
+    private _keys = [];
+    private _values = [];
+    private _sourceValues = _source select 2;
+    {
+        private _copy = if (_blacklist isNotEqualTo []) then { !(_x in _blacklist) } else { _whitelist isEqualTo [] || {_x in _whitelist} };
+        if (_copy) then {
+            private _value = _sourceValues select _forEachIndex;
+            if (!isNil "_value") then {
+                if (_value isEqualType []) then {
+                    _value = if ([_value] call ALIVE_fnc_isHash) then { [_value] call _fnc_copy } else { +_value };
+                };
+                _keys pushBack _x;
+                _values pushBack _value;
             };
-        }else{
-            [_hash, _key, _value] call ALIVE_fnc_hashSet;
-        }
-    };
+        };
+    } forEach (_source select 1);
+    private _hash = [] call ALIVE_fnc_hashCreate;
+    _hash set [1, _keys];
+    _hash set [2, _values];
+    _hash
+};
 
-} forEach (_target select 1);
-
-_hash
+[_target] call _fnc_copy

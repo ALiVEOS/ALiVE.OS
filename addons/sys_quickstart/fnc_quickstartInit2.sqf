@@ -18,6 +18,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -118,5 +119,7 @@ if (hasInterface) then {
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
 
 ["Global INIT COMPLETE"] call ALiVE_fnc_dump;
+// for the War Room's Diagnostics, once its record is running (it starts a moment after the mission does)
+if (isServer && {!isNil "ALiVE_fnc_diagEvent"}) then { [] spawn { private _t = diag_tickTime; waitUntil { sleep 1; missionNamespace getVariable ["ALiVE_diag_active", false] || {diag_tickTime - _t > 60} }; ["MAIN", "INIT_DONE", "ALiVE ready", [0,0]] call ALiVE_fnc_diagEvent } };
 [false,"ALiVE Global Init Timer Complete","INIT"] call ALIVE_fnc_timer;
 [" "] call ALIVE_fnc_dump;
