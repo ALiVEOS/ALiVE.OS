@@ -231,6 +231,7 @@ switch (_op) do {
         if (_busy && {!_ours}) exitWith {};
         // the step, checked before anything changes
         private _step = [];
+        private _seatsFree = 0;
         switch (_op) do {
             case "move": { _step = ["move", _pos select 0, _pos select 1, ""] };
             case "patrol": {
@@ -282,7 +283,8 @@ switch (_op) do {
                 private _crew = (crew _veh) select { alive _x && {!(_x in units _g)} };
                 if (_crew isNotEqualTo [] && {((side group (_crew select 0)) getFriend (side _g)) < 0.6}) exitWith { _code = "hostile" };
                 if ((_veh distance2D (leader _g)) > 500) exitWith { _code = "far" };
-                if (((fullCrew [_veh, "", true]) findIf { isNull (_x select 0) }) < 0) exitWith { _code = "full" };
+                _seatsFree = { isNull (_x select 0) } count (fullCrew [_veh, "", true]);
+                if (_seatsFree == 0) exitWith { _code = "full" };
                 _step = ["getin", (getPosATL _veh) select 0, (getPosATL _veh) select 1, _vid];
             };
         };
@@ -311,7 +313,7 @@ switch (_op) do {
             case "follow": { "Group following the group chosen. The commander leaves it alone until it is unlocked." };
             case "retreat": { format ["Group falling back to grid %1. The commander leaves it alone until it is unlocked.", _grid] };
             case "defend": { format ["Group defending grid %1. The commander leaves it alone until it is unlocked.", _grid] };
-            case "getin": { format ["Group boarding the vehicle at grid %1. The commander leaves it alone until it is unlocked.", mapGridPosition [_step select 1, _step select 2]] };
+            case "getin": { format ["Group boarding the vehicle at grid %1 (%2 free seats). The commander leaves it alone until it is unlocked.", mapGridPosition [_step select 1, _step select 2], _seatsFree] };
         };
     };
 };

@@ -136,7 +136,10 @@ switch (_op) do {
                 [_profile, "warRoomDefending", false] call ALiVE_fnc_hashSet;
                 [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
             };
-            if (_state getOrDefault ["retreating", false]) then { [_profile, ["YELLOW", "AWARE", "NORMAL"]] call _fnc_stanceNow };
+            if ([_profile, "warRoomRetreating", false] call ALiVE_fnc_hashGet) then {
+                [_profile, "warRoomRetreating", false] call ALiVE_fnc_hashSet;
+                [_profile, ["YELLOW", "AWARE", "NORMAL"]] call _fnc_stanceNow;
+            };
         };
         _held deleteAt _arg;
     };
@@ -165,9 +168,9 @@ switch (_op) do {
             [_profile, "warRoomDefending", false] call ALiVE_fnc_hashSet;
             [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
         };
-        // and a retreat's hold-fire with it
-        if (_state getOrDefault ["retreating", false]) then {
-            _state set ["retreating", false];
+        // and a retreat's hold-fire with it (on the profile: the step's state starts afresh with each step)
+        if ([_profile, "warRoomRetreating", false] call ALiVE_fnc_hashGet) then {
+            [_profile, "warRoomRetreating", false] call ALiVE_fnc_hashSet;
             [_profile, call _fnc_stanceAfter] call _fnc_stanceNow;
         };
         _state deleteAt "boarding";
@@ -208,7 +211,7 @@ switch (_op) do {
                 [_profile, "addWaypoint", [_profile, _pos, "MOVE", 30] call _fnc_waypoint] call ALiVE_fnc_profileEntity;
             };
             case "retreat": {
-                _state set ["retreating", true];
+                [_profile, "warRoomRetreating", true] call ALiVE_fnc_hashSet;
                 [_profile, RETREAT_STANCE] call _fnc_stanceNow;
                 private _g = [_profile] call _fnc_group;
                 if (!isNull _g) then { [units _g, { { _x doWatch objNull; _x doTarget objNull } forEach _this }] remoteExecCall ["call", leader _g] };
@@ -333,7 +336,17 @@ switch (_op) do {
             };
             case "defend": {
                 // holds until the next order: it only garrisons once there (or once its route to it is used up)
-                if ([_profile, "warRoomDefending", false] call ALiVE_fnc_hashGet) exitWith {};
+                if ([_profile, "warRoomDefending", false] call ALiVE_fnc_hashGet) exitWith {
+                    // a garrison something else took off it, or one it has wandered from, is sent back to the point
+                    private _radius = if (_extra isEqualType 0 && {_extra > 0}) then {_extra} else {100};
+                    private _kept = (([_profile, "activeCommands", []] call ALiVE_fnc_hashGet) findIf { toLower (_x param [0, ""]) == "alive_fnc_garrison" }) >= 0;
+                    if (_kept && {(_here distance2D _pos) < _radius * 1.5}) exitWith {};
+                    ["ALiVE SCOM - War Room defend: %1 %2, sent back to its point", _id, ["lost its garrison", format ["is %1 m from its point", round (_here distance2D _pos)]] select _kept] call ALiVE_fnc_dump;
+                    [_profile, "warRoomDefending", false] call ALiVE_fnc_hashSet;
+                    if (_kept) then { [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity };
+                    [_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
+                    [_profile, "addWaypoint", [_profile, _pos] call _fnc_waypoint] call ALiVE_fnc_profileEntity;
+                };
                 private _there = (_here distance2D _pos) < REACHED
                     || {!([_profile, "active", false] call ALiVE_fnc_hashGet)
                         && {([_profile, "waypoints", []] call ALiVE_fnc_hashGet) isEqualTo []}
