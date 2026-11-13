@@ -2126,6 +2126,26 @@ switch(_operation) do {
         _result = _out;
     };
 
+    // What an aircraft is tasked with, read only, for outside readers such as the War Room's tracking card:
+    // [type, state, targetPos, zone, sortieId], or [] for a tail the commander doesn't hold or a parked one with no
+    // task. A stable shape, so readers don't depend on how the commander keeps its rows.
+    case "taskOf": {
+        _result = [];
+        private _k = [_logic] call _fnc_kernel;
+        if (_k isEqualTo [] || {!(_args isEqualType "")}) exitWith {};
+        private _row = [[_k, "rows", []] call ALIVE_fnc_hashGet, _args, []] call ALIVE_fnc_hashGet;
+        if !([_row] call ALIVE_fnc_isHash) exitWith {};
+        private _tuple = [_row] call _fnc_tupleOf;
+        if (_tuple isEqualTo []) exitWith {};
+        _result = [
+            _tuple param [0, ""],
+            [_row, "state", ""] call ALIVE_fnc_hashGet,
+            +(_tuple param [1, []]),
+            if ((_tuple param [6, ""]) isEqualType "") then { _tuple param [6, ""] } else { "" },   // the airspace marker
+            _tuple param [4, ""]
+        ];
+    };
+
     case "state": {
         _result = [];
         private _k = [_logic] call _fnc_kernel;
