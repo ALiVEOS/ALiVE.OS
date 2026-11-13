@@ -262,7 +262,7 @@ class CfgVehicles
                         property = "ALiVE_mil_artillery_extraArtillery";
                         displayName = "$STR_ALIVE_MIL_ARTILLERY_EXTRA";
                         tooltip = "$STR_ALIVE_MIL_ARTILLERY_EXTRA_COMMENT";
-                        defaultValue = ;
+                        defaultValue = """""";
                 };
                 class ModuleDescription : ModuleDescription {};
         };
