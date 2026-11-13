@@ -1588,6 +1588,30 @@ switch(_operation) do {
                         };
                     } forEach ["warRoomOrdered", "warRoomLocked"];
 
+                    // and its War Room order list, its step and stance (ALIVE_fnc_SCOMGroupOrderRun), which
+                    // start again once loaded. A Cloud save can return numbers as strings.
+                    if ([_profileEntity, "warRoomOrdered", false] call ALIVE_fnc_hashGet) then {
+                        private _num = { if (_this isEqualType "") then { parseNumber _this } else { _this } };
+                        private _queue = [_profile, "warRoomQueue", []] call ALIVE_fnc_hashGet;
+                        _queue = if (_queue isEqualType []) then {
+                            (_queue select { _x isEqualType [] && {count _x >= 3} && {(_x select 0) in ["move", "attack", "static", "patrol"]} }) apply {
+                                _x params ["_op", "_qx", "_qy", ["_extra", ""]];
+                                [_op, _qx call _num, _qy call _num, if (_op == "patrol") then { _extra call _num } else { _extra }]
+                            }
+                        } else { [] };
+                        private _stance = [_profile, "warRoomStance", ["", "", ""]] call ALIVE_fnc_hashGet;
+                        if !(_stance isEqualType [] && {count _stance == 3}) then { _stance = ["", "", ""] };
+                        private _loop = [_profile, "warRoomLoop", false] call ALIVE_fnc_hashGet;
+                        if (_loop isEqualType "") then { _loop = (toLower _loop) == "true" };
+                        [_profileEntity, "warRoomQueue", _queue select [0, 8]] call ALIVE_fnc_hashSet;
+                        [_profileEntity, "warRoomQueueIdx", ([_profile, "warRoomQueueIdx", 0] call ALIVE_fnc_hashGet) call _num] call ALIVE_fnc_hashSet;
+                        [_profileEntity, "warRoomLoop", _loop isEqualTo true] call ALIVE_fnc_hashSet;
+                        [_profileEntity, "warRoomStance", _stance] call ALIVE_fnc_hashSet;
+                        if (_queue isNotEqualTo [] && {!isNil "ALIVE_fnc_SCOMGroupOrderRun"}) then {
+                            ["register", [_profileEntity, "profileID"] call ALIVE_fnc_hashGet] call ALIVE_fnc_SCOMGroupOrderRun;
+                        };
+                    };
+
                     // The route, saved since #756. A Cloud save comes back through JSON, where each value takes
                     // the type the data dictionary holds for its key name, so a number can come back as a string.
                     // Put back what the waypoint code reads; a Local save already has the right types. The type

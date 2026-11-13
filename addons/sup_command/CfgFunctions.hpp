@@ -62,8 +62,14 @@ class CfgFunctions {
                 ALIVE_RECOMPILE;
             };
             class SCOMGroupOrder {
-                description = "Orders for one AI group (move, stop, lock, unlock) from outside the game, server only";
+                description = "Orders for one AI group (move, stop, lock, unlock, attack, man a static, patrol, stance, hand back, order list) from outside the game, server only";
                 file = "\x\alive\addons\sup_command\fnc_SCOMGroupOrder.sqf";
+                ALIVE_RECOMPILE;
+            };
+            class SCOMGroupOrderRun {
+                description = "Carries out the War Room's order lists for the groups it holds, server only";
+                file = "\x\alive\addons\sup_command\fnc_SCOMGroupOrderRun.sqf";
+                preInit = 1;
                 ALIVE_RECOMPILE;
             };
         };

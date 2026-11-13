@@ -5,29 +5,45 @@ SCRIPT(SCOMGroupOrder);
 Function: ALIVE_fnc_SCOMGroupOrder
 
 Description:
-Orders for one AI group from outside the game, for example from the War Room's live map: move it, stop
-it, or lock and unlock it. Server side, and only for code already running on the server: a call that
-arrives by remoteExec (from any machine) is refused. They act as the tablet's Operations tab does
-(Apply waypoints, Clear and Lock): a group moved or stopped is taken from its AI Commander until it is
-unlocked. A move or stop is refused for a locked group, which is one locked from the tablet or here,
-or one something else in ALiVE is holding (an HVT's guards, for one), but a group already moved from
-here can be moved again. A player's group is never ordered. Every call is logged with the name it was
-given.
+Orders for one AI group from outside the game, for example from the War Room's live map. Server side, and
+only for code already running on the server: a call that arrives by remoteExec (from any machine) is
+refused. They act as the tablet's Operations tab does (Apply waypoints, Clear and Lock): a group given an
+order is taken from its AI Commander until it is unlocked or handed back. An order is refused for a
+locked group, which is one locked from the tablet or here, or one something else in ALiVE is holding (an
+HVT's guards, for one), but a group already ordered from here can be ordered again. A player's group is
+never ordered. Every call is logged with the name it was given.
+
+A move, attack, static or patrol replaces the group's orders, or, sent with append, is added to the end
+of its list (8 steps at most), which ALIVE_fnc_SCOMGroupOrderRun works through. Which of the newer
+operations this build takes is in ALIVE_SCOMGroupOrderOps.
 
 Parameters:
 String - the group's profile id
-String - "move", "stop", "lock" or "unlock"
-Array - [x, y] for "move" (nil or [] otherwise)
+String - the operation:
+    "move", "stop", "lock", "unlock"
+    "attack" - search and destroy, following the target; extra [target profile id]
+    "static" - its nearest men crew a static gun; extra [the gun's netId]
+    "patrol" - a loop around a point; extra [radius in m] (150 if not given)
+    "stance" - extra [rules of engagement, behaviour, speed], "" to keep one
+    "handback" - off its gun, its orders and stance cleared, back to its commander
+    "qdel" - extra [step], "qmove" - extra [from, to] (steps from 0), "qclear", "loop" - extra [true or false]
+Array - [x, y] for move, attack, static and patrol (nil or [] otherwise)
 String - who gave the order, for the log (optional)
+Array - extra, as above (optional)
+Boolean - append: add a move, attack, static or patrol to the group's list (optional, default false)
 
 Returns:
 Array - [true, text] or [false, reason]. The reasons: "refused" (remoteExec'd or not the server),
-"badargs", "gone" (no such profile), "notgroup" (a vehicle profile, not a group), "player" (a player's
-group), "locked" (move or stop on a locked group)
+"badargs", "gone" (no such profile, or no such target), "notgroup" (a vehicle profile, not a group),
+"player" (a player's group), "locked" (an order to a locked group), "notheld" (stance, list or hand
+back for a group the War Room doesn't hold), "friendly" (an attack on a friendly group), "playertarget"
+(an attack on a player's group), "nostatic" (no such gun), "manned" (a gun already crewed), "noloop" (a
+loop with steps other than moves and patrols), "queuefull" (8 steps already), "badindex" (no such step)
 
 Examples:
 (begin example)
 private _r = ["agent_42", "move", [3200, 5800], "War Room (Jman)"] call ALIVE_fnc_SCOMGroupOrder;
+private _r = ["agent_42", "attack", [3400, 6100], "War Room (Jman)", ["agent_77"], true] call ALIVE_fnc_SCOMGroupOrder;
 private _r = ["agent_42", "unlock", nil, "War Room (Jman)"] call ALIVE_fnc_SCOMGroupOrder;
 (end)
 
@@ -41,12 +57,12 @@ if (isRemoteExecuted) exitWith {
     [false, "refused"]
 };
 private _say = { ["ALiVE SCOM - War Room group order: %1", _this] call ALiVE_fnc_dump };
-if !(_this isEqualType [] && {count _this in [2, 3, 4]}) exitWith { "refused a call that is not [profile id, operation, position]" call _say; [false, "badargs"] };
-_this params [["_profileID", "", [""]], ["_op", "", [""]], ["_pos", [], [[]]], ["_by", "", [""]]];
+if !(_this isEqualType [] && {count _this in [2, 3, 4, 5, 6]}) exitWith { "refused a call that is not [profile id, operation, position]" call _say; [false, "badargs"] };
+_this params [["_profileID", "", [""]], ["_op", "", [""]], ["_pos", [], [[]]], ["_by", "", [""]], ["_extra", [], [[]]], ["_append", false, [false]]];
 _op = toLower _op;
-if (_profileID == "" || {!(_op in ["move", "stop", "lock", "unlock"])}) exitWith { format ["refused %1 for %2", _op, _profileID] call _say; [false, "badargs"] };
-if (_op == "move" && {!(count _pos in [2, 3] && {(_pos findIf { !(_x isEqualType 0) || {!finite _x} }) < 0})}) exitWith {
-    format ["refused a move for %1 without a usable grid", _profileID] call _say; [false, "badargs"]
+if (_profileID == "" || {!(_op in ["move", "stop", "lock", "unlock", "attack", "static", "patrol", "stance", "handback", "qdel", "qmove", "qclear", "loop"])}) exitWith { format ["refused %1 for %2", _op, _profileID] call _say; [false, "badargs"] };
+if (_op in ["move", "attack", "static", "patrol"] && {!(count _pos in [2, 3] && {(_pos findIf { !(_x isEqualType 0) || {!finite _x} }) < 0})}) exitWith {
+    format ["refused %1 for %2 without a usable grid", _op, _profileID] call _say; [false, "badargs"]
 };
 if (_by == "") then { _by = "an order from outside the game" };
 if (isNil "ALiVE_profileHandler") exitWith { format ["%1 asked to %2 %3: no profiles in this mission", _by, _op, _profileID] call _say; [false, "gone"] };
@@ -59,6 +75,35 @@ if ((_profile select 2) param [30, false]) exitWith { format ["%1 asked to %2 %3
 private _busy = [_profile, "busy", false] call ALiVE_fnc_hashGet;
 private _ours = [_profile, "warRoomOrdered", false] call ALiVE_fnc_hashGet;
 private _text = "";
+private _code = "locked";
+private _queue = +([_profile, "warRoomQueue", []] call ALiVE_fnc_hashGet);
+private _idx = [_profile, "warRoomQueueIdx", 0] call ALiVE_fnc_hashGet;
+
+// held from the commander, as the tablet's Apply waypoints and Clear
+private _fnc_take = {
+    [_profile, "busy", true] call ALiVE_fnc_profileEntity;
+    [_profile, "warRoomOrdered", true] call ALiVE_fnc_hashSet;
+    // The commander lets go too. A group still in an objective's section was given that objective's
+    // orders again at the next cycle, which overwrote the War Room's move.
+    {
+        if (_x isEqualType []) then { [_x, "resetProfileOrders", _profileID] call ALiVE_fnc_OPCOM };
+    } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+    // and the commands the commander gave it go too: a garrison holds a spawned group's men on their posts,
+    // so a moved group never left, and the reset above sets a group with no commands wandering. A stop
+    // keeps a garrison, whose men are already staying put.
+    private _commands = [_profile, "activeCommands", []] call ALiVE_fnc_hashGet;
+    if (_commands isNotEqualTo [] && {_op != "stop" || {(_commands findIf { toLower (_x param [0, ""]) != "alive_fnc_garrison" }) != -1}}) then {
+        [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
+    };
+};
+// the list as it now is, and the step the group is on started (ALIVE_fnc_SCOMGroupOrderRun)
+private _fnc_run = {
+    [_profile, "warRoomQueue", _queue] call ALiVE_fnc_hashSet;
+    [_profile, "warRoomQueueIdx", _idx] call ALiVE_fnc_hashSet;
+    if (_queue isEqualTo [] || {(_queue findIf { !((_x select 0) in ["move", "patrol"]) }) != -1}) then { [_profile, "warRoomLoop", false] call ALiVE_fnc_hashSet };
+    ["apply", _profile] call ALIVE_fnc_SCOMGroupOrderRun;
+};
+private _grid = if (count _pos >= 2) then { mapGridPosition _pos } else { "" };
 
 switch (_op) do {
     case "lock": {
@@ -73,32 +118,135 @@ switch (_op) do {
         [_profile, "warRoomLocked", false] call ALiVE_fnc_hashSet;
         _text = "Group unlocked: the commander can give it orders again.";
     };
+    // off its gun, its list and stance gone, and back to its commander
+    case "handback": {
+        if (!_ours && {!([_profile, "warRoomLocked", false] call ALiVE_fnc_hashGet)}) exitWith { _code = "notheld" };
+        ["dismount", _profile] call ALIVE_fnc_SCOMGroupOrderRun;
+        ["release", _profileID] call ALIVE_fnc_SCOMGroupOrderRun;
+        {
+            [_profile, _x select 0, _x select 1] call ALiVE_fnc_hashSet;
+        } forEach [["warRoomQueue", []], ["warRoomQueueIdx", 0], ["warRoomLoop", false], ["warRoomStance", ["", "", ""]],
+            ["busy", false], ["warRoomOrdered", false], ["warRoomLocked", false]];
+        _text = "Group handed back to its commander.";
+    };
+    case "stance": {
+        if (!_ours) exitWith { _code = "notheld" };
+        private _now = ([_profile, "warRoomStance", []] call ALiVE_fnc_hashGet) + ["", "", ""];
+        private _stance = [0, 1, 2] apply {
+            private _v = _extra param [_x, ""];
+            if (_v isEqualType "" && {_v != ""}) then { toUpper _v } else { _now select _x }
+        };
+        [_profile, "warRoomStance", _stance] call ALiVE_fnc_hashSet;
+        // a spawned group takes it now; the step it is on is given again with it in its waypoints
+        private _g = [_profile, "group", grpNull] call ALiVE_fnc_hashGet;
+        if ([_profile, "active", false] call ALiVE_fnc_hashGet && {_g isEqualType grpNull} && {!isNull _g}) then {
+            [[_g, _stance], {
+                params ["_g", "_stance"];
+                _stance params ["_roe", "_beh", "_speed"];
+                if (_roe != "") then { _g setCombatMode _roe };
+                if (_beh != "") then { _g setBehaviour _beh };
+                if (_speed != "") then { _g setSpeedMode _speed };
+            }] remoteExecCall ["call", leader _g];
+        };
+        if (_idx < count _queue) then { call _fnc_run };
+        _text = format ["Group's stance set: %1.", (_stance select { _x != "" }) joinString ", "];
+    };
+    case "qclear": {
+        if (!_ours) exitWith { _code = "notheld" };
+        _queue = [];
+        _idx = 0;
+        call _fnc_run;
+        _text = "Group's orders cleared: it holds where it is.";
+    };
+    case "qdel": {
+        if (!_ours) exitWith { _code = "notheld" };
+        private _i = _extra param [0, -1];
+        if !(_i isEqualType 0 && {_i >= 0} && {_i < count _queue}) exitWith { _code = "badindex" };
+        _queue deleteAt _i;
+        if (_i < _idx) then { _idx = _idx - 1 };
+        // taking off the step it is on starts the next one
+        if (_i == _idx) then { call _fnc_run } else {
+            [_profile, "warRoomQueue", _queue] call ALiVE_fnc_hashSet;
+            [_profile, "warRoomQueueIdx", _idx] call ALiVE_fnc_hashSet;
+        };
+        _text = format ["Step %1 taken off the group's orders.", _i + 1];
+    };
+    case "qmove": {
+        if (!_ours) exitWith { _code = "notheld" };
+        _extra params [["_from", -1], ["_to", -1]];
+        if !(_from isEqualType 0 && {_to isEqualType 0} && {_from >= 0} && {_to >= 0} && {_from < count _queue} && {_to < count _queue}) exitWith { _code = "badindex" };
+        private _current = if (_idx < count _queue) then { _queue select _idx } else { [] };
+        private _moved = _queue deleteAt _from;
+        _queue insert [_to, [_moved]];
+        // the group carries on with the step it is on, wherever that is now in the list
+        if (_current isNotEqualTo []) then { _idx = _queue find _current };
+        [_profile, "warRoomQueue", _queue] call ALiVE_fnc_hashSet;
+        [_profile, "warRoomQueueIdx", _idx] call ALiVE_fnc_hashSet;
+        _text = format ["Step %1 moved to %2.", _from + 1, _to + 1];
+    };
+    case "loop": {
+        if (!_ours) exitWith { _code = "notheld" };
+        private _on = _extra param [0, false];
+        if !(_on isEqualType true) exitWith { _code = "badargs" };
+        if (_on && {_queue isEqualTo [] || {(_queue findIf { !((_x select 0) in ["move", "patrol"]) }) != -1}}) exitWith { _code = "noloop" };
+        [_profile, "warRoomLoop", _on] call ALiVE_fnc_hashSet;
+        // a list already done starts again from the top
+        if (_on && {_idx >= count _queue}) then { _idx = 0; call _fnc_run };
+        _text = if (_on) then { "Group's orders loop." } else { "Group's orders stop after the last step." };
+    };
     default {
         if (_busy && {!_ours}) exitWith {};
-        // as the tablet's Apply waypoints and Clear: held from the commander, then its waypoints replaced
-        [_profile, "busy", true] call ALiVE_fnc_profileEntity;
-        [_profile, "warRoomOrdered", true] call ALiVE_fnc_hashSet;
-        // The commander lets go too. A group still in an objective's section was given that objective's
-        // orders again at the next cycle, which overwrote the War Room's move.
-        {
-            if (_x isEqualType []) then { [_x, "resetProfileOrders", _profileID] call ALiVE_fnc_OPCOM };
-        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
-        // and the commands the commander gave it go too: a garrison holds a spawned group's men on their posts,
-        // so a moved group never left, and the reset above sets a group with no commands wandering. A stop
-        // keeps a garrison, whose men are already staying put.
-        private _commands = [_profile, "activeCommands", []] call ALiVE_fnc_hashGet;
-        if (_commands isNotEqualTo [] && {_op == "move" || {(_commands findIf { toLower (_x param [0, ""]) != "alive_fnc_garrison" }) != -1}}) then {
-            [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
+        // the step, checked before anything changes
+        private _step = [];
+        switch (_op) do {
+            case "move": { _step = ["move", _pos select 0, _pos select 1, ""] };
+            case "patrol": {
+                private _r = _extra param [0, 150];
+                if !(_r isEqualType 0 && {finite _r} && {_r > 0}) then { _r = 150 };
+                _step = ["patrol", _pos select 0, _pos select 1, (_r max 25) min 2000];
+            };
+            case "attack": {
+                private _tid = _extra param [0, ""];
+                private _target = if (_tid isEqualType "" && {_tid != ""}) then { [ALiVE_profileHandler, "getProfile", _tid] call ALiVE_fnc_profileHandler } else { nil };
+                if (isNil "_target") exitWith { _code = "gone" };
+                if ((_target select 2) param [30, false]) exitWith { _code = "playertarget" };
+                private _sides = [_profile, _target] apply { [(_x select 2) param [3, "CIV"]] call ALiVE_fnc_sideTextToObject };
+                if (((_sides select 0) getFriend (_sides select 1)) >= 0.6) exitWith { _code = "friendly" };
+                private _at = [_target, "position", _pos] call ALiVE_fnc_hashGet;
+                _step = ["attack", _at select 0, _at select 1, _tid];
+            };
+            case "static": {
+                private _gun = objectFromNetId (_extra param [0, ""]);
+                if (isNull _gun || {!alive _gun} || {!(_gun isKindOf "StaticWeapon")}) exitWith { _code = "nostatic" };
+                if (((crew _gun) select { alive _x }) isNotEqualTo []) exitWith { _code = "manned" };
+                _step = ["static", (getPosATL _gun) select 0, (getPosATL _gun) select 1, netId _gun];
+            };
         };
-        [_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
-        if (_op == "move") then {
-            [_profile, "addWaypoint", [[_pos select 0, _pos select 1, 0]] call ALiVE_fnc_createProfileWaypoint] call ALiVE_fnc_profileEntity;
-            _text = format ["Group moving to grid %1. The commander leaves it alone until it is unlocked.", mapGridPosition _pos];
-        } else {
-            _text = "Group stopped. The commander leaves it alone until it is unlocked.";
+        if (_op != "stop" && {_step isEqualTo []}) exitWith {};
+
+        // added to the list of a group already the War Room's
+        if (_append && {_ours} && {_op != "stop"}) exitWith {
+            if (count _queue >= 8) exitWith { _code = "queuefull" };
+            _queue pushBack _step;
+            [_profile, "warRoomQueue", _queue] call ALiVE_fnc_hashSet;
+            // a list already done goes on with the new step
+            if (_idx >= count _queue - 1) then { _idx = count _queue - 1; call _fnc_run };
+            _text = format ["Step %1 added to the group's orders.", count _queue];
+        };
+
+        call _fnc_take;
+        _queue = if (_op == "stop") then { [] } else { [_step] };
+        _idx = 0;
+        call _fnc_run;
+        _text = switch (_op) do {
+            case "move": { format ["Group moving to grid %1. The commander leaves it alone until it is unlocked.", _grid] };
+            case "stop": { "Group stopped. The commander leaves it alone until it is unlocked." };
+            case "attack": { format ["Group attacking the group at grid %1. The commander leaves it alone until it is unlocked.", mapGridPosition [_step select 1, _step select 2]] };
+            case "static": { format ["Group manning the gun at grid %1. The commander leaves it alone until it is unlocked.", _grid] };
+            case "patrol": { format ["Group patrolling %1 m around grid %2. The commander leaves it alone until it is unlocked.", _step select 3, _grid] };
         };
     };
 };
-if (_text == "") exitWith { format ["%1 asked to %2 %3: the group is locked", _by, _op, _profileID] call _say; [false, "locked"] };
+if (_text == "") exitWith { format ["%1 asked to %2 %3: refused (%4)", _by, _op, _profileID, _code] call _say; [false, _code] };
 format ["%1 asked to %2 %3: %4", _by, _op, _profileID, _text] call _say;
 [true, _text]
