@@ -52,11 +52,21 @@ A few practical points:
 - Keep unrelated tidy ups out of the same pull request.
 - Say how you tested it, and mention if you have not been able to test on a dedicated server.
 
+### Testing a fix
+
+Fixes go out first on the [ALiVE Development Version](https://steamcommunity.com/sharedfiles/filedetails/?id=2791077612) Workshop item, usually the same day they are pushed. When a fix for your report is out, the issue gets a reply saying what changed and what to try. If it works for you, please close the issue.
+
+### Terrain indexes
+
+If you index a terrain ALiVE doesn't know yet, you can [submit it](https://www.alivemod.com/alive3/submit_terrain.htm) so it ships for everyone. Accepted indexes are credited to your handle.
+
+### Licence of contributions
+
+ALiVE is not open source; all rights belong to the ALiVE Mod Team (see [LICENSE.txt](LICENSE.txt)). By opening a pull request or sending a terrain index, composition, translation or other content, you confirm it is your own work and agree to section 4 of the licence: its rights pass to the ALiVE Mod Team, and you are credited for it.
+
 ### Getting help
 
 For questions about setting up or running missions, rather than a defect in ALiVE itself, the Discord is usually faster than the issue tracker.
 
-- Wiki: https://alivewiki.com/
-- Discord: https://discord.gg/KkacXFx
-</content>
-</invoke>
+- Documentation: https://www.alivemod.com/alive3/ (with an [FAQ](https://www.alivemod.com/alive3/faq.htm))
+- Discord: https://discord.gg/KkacXFx (#alive-help)
