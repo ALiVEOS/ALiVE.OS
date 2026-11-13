@@ -1356,7 +1356,10 @@ switch(_operation) do {
                     };
 
                     _pos = [_closestHQCluster,"center"] call ALiVE_fnc_HashGet;
-                    _size = [_closestHQCluster,"size",300] call ALiVE_fnc_HashGet;
+                    // The HQ objective's own size, kept to this block. Written to the module's _size it replaced the
+                    // force size, so a 1200-man force was counted as the 150 m objective it sits on and placed a
+                    // handful of vehicle groups (#1119)
+                    private _size = [_closestHQCluster,"size",300] call ALiVE_fnc_HashGet;
 
                     // Pick the composition FIRST so we can size the validator's
                     // envelope to the actual footprint. When persistence already
