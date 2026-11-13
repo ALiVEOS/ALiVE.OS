@@ -261,6 +261,16 @@ switch(_operation) do {
                             //Not compatible with revive
                             if ([QMOD(SYS_REVIVE)] call ALiVE_fnc_isModuleAvailable) exitwith {["SUP MULTISPAWN - Revive is enabled, exiting Multispawn!"] call ALiVE_fnc_dump};
 
+                            // A mission using the game's own respawn menu (the MenuPosition template): Forward Spawn used
+                            // to put a second picker on a black screen straight after it, and ENTER moved the player off
+                            // the spot they had chosen there. Now the squad mates, rally points and hubs go into that
+                            // menu instead, beside the bases, mobile HQs and FOBs, and the player spawns where they pick.
+                            private _templates = getMissionConfigValue [format ["respawnTemplates%1", side group player], getMissionConfigValue ["respawnTemplates", []]];
+                            if (_templates isEqualType [] && {(_templates findIf {_x isEqualType "" && {_x == "MenuPosition"}}) >= 0}) exitwith {
+                                ["SUP MULTISPAWN - The mission's respawn menu (MenuPosition) is in use: squad mates, rally points and hubs are added to it"] call ALiVE_fnc_dump;
+                                [_logic, "menuPositions"] call MAINCLASS;
+                            };
+
                             waituntil {!isnull player};
 
                             if (missionNamespace getVariable [QGVAR(DEBUG), false]) then {["SUP MULTISPAWN - Forward Spawn EH placed at %1...", time] call ALiVE_fnc_dump;};
@@ -443,6 +453,62 @@ switch(_operation) do {
                         default {};
                     };
                 };
+        };
+
+        // The game's respawn menu, on a player's machine: each living squad mate, each rally point the player
+        // may use and each working hub of their side is a place to respawn, for this player only. A squad mate
+        // in a vehicle with a free seat puts the player in that seat (the game's own rule for a unit). Kept in
+        // step every 3 s: the list is made again when someone joins, leaves or dies, a point or hub comes or
+        // goes, or the player has respawned as a new unit. A Player FOB's respawn point is made by the FOB
+        // itself, so FOB rally rows are left out here.
+        case "menuPositions": {
+            if (!hasInterface || {!isNil QGVAR(MENU_LOOP)}) exitWith {};
+            GVAR(MENU_LOOP) = [] spawn {
+                // a position added on a client before the mission has started isn't sent on
+                waitUntil { sleep 1; !isNull player && {time > 0} };
+                private _added = [];
+                private _sig = [];
+                while { true } do {
+                    private _want = [];
+                    {
+                        if (alive _x && {_x != player}) then {
+                            _want pushBack [_x, format [localize "STR_ALIVE_multispawn_POS_MATE", name _x]];
+                        };
+                    } forEach (units group player);
+                    // rally points keep travel's rules: none while the player waits between trips, and none with
+                    // enemies near it (the server's answer to the last check, as ALiVE's virtual groups count)
+                    if (!isNil "ALiVE_fnc_rallyPoint" && {(missionNamespace getVariable ["ALiVE_rallyPoints", []]) isNotEqualTo []}) then {
+                        ["menuCheck", [player]] remoteExecCall ["ALiVE_fnc_rallyPoint", 2];
+                        private _waiting = (missionNamespace getVariable ["ALiVE_rallyNext_" + ([str player, getPlayerUID player] select (isPlayer player)), 0]) > time;
+                        private _blocked = missionNamespace getVariable ["ALiVE_rallyMenuBlocked", []];
+                        if (!_waiting) then {
+                            {
+                                _x params ["_name", "_posASL", "_obj", ["_fob", ""]];
+                                if (_fob == "" && {!isNull _obj} && {!(_obj in _blocked)}) then {
+                                    _want pushBack [_obj, format [localize "STR_ALIVE_multispawn_POS_RALLY", _name]];
+                                };
+                            } forEach (["list", [player]] call ALiVE_fnc_rallyPoint);
+                        };
+                    };
+                    if (!isNil "ALIVE_fnc_hub" && {!isNil "ALiVE_hub_list"}) then {
+                        private _side = ["unitSide", [player]] call ALIVE_fnc_hub;
+                        {
+                            (_x getVariable ["ALiVE_hub", []]) params [["_s", ""], ["_up", false]];
+                            if (!isNull _x && {_up} && {_s == _side}) then {
+                                _want pushBack [_x, format [localize "STR_ALIVE_multispawn_POS_HUB", ["label", [_x]] call ALIVE_fnc_hub]];
+                            };
+                        } forEach ALiVE_hub_list;
+                    };
+                    private _now = [player] + _want;
+                    if (_now isNotEqualTo _sig) then {
+                        _sig = _now;
+                        // an id under 0 means the game already had that place for this player and added nothing
+                        { if ((_x select 1) >= 0) then { _x call BIS_fnc_removeRespawnPosition } } forEach _added;
+                        _added = _want apply { [player, _x select 0, _x select 1] call BIS_fnc_addRespawnPosition };
+                    };
+                    sleep 3;
+                };
+            };
         };
 
         case "selectDefaultVehicle": {

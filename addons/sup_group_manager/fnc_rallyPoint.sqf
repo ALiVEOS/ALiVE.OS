@@ -50,6 +50,9 @@ Operations:
                                 FOBs set to Persistent)
 "list"    [unit]                the rally points the unit may use:
                                 [[name, posASL, object or objNull, FOB id or ""], ...]
+"menuCheck" [unit]             server: which of the rally points the unit may use have enemies near
+                                them, by travel's rule for the far end; answered with "menuBlocked"
+                                (Multispawn lists the rest in the game's respawn menu)
 "near"    [unit]                the rally point the unit stands at, or []
 "travel"  [unit, destination, force]
                                 destination: a row from "list", an object, or a position.
@@ -652,6 +655,32 @@ switch (_op) do {
                 };
             } forEach ALiVE_FOB_registryMirror;
         };
+    };
+
+    // The game's respawn menu (Multispawn): a rally point is offered there only while travel to it would be
+    // allowed, so the menu is no way round the enemy check. A player respawning leaves nothing behind, so only
+    // the far end is checked, and only when the module checks that end at all.
+    case "menuCheck": {
+        if (!isServer) exitWith {};
+        _args params [["_unit", objNull, [objNull]]];
+        if (isNull _unit) exitWith {};
+        private _r = ["enemyRadius", 100] call _set;
+        private _ends = toUpper (["enemyCheck", "BOTH"] call _set);
+        private _side = str side group _unit;
+        private _profiles = !isNil "ALIVE_profileHandler";
+        private _blocked = [];
+        if (_r > 0 && {_ends in ["BOTH", "DEST"]}) then {
+            {
+                private _obj = _x select 2;
+                if (!isNull _obj && {[getPosATL _obj, _side, _r, _profiles] call ALIVE_fnc_isEnemyNear}) then { _blocked pushBack _obj };
+            } forEach (["list", [_unit]] call ALiVE_fnc_rallyPoint);
+        };
+        ["menuBlocked", [_blocked]] remoteExecCall ["ALiVE_fnc_rallyPoint", _unit];
+    };
+
+    case "menuBlocked": {
+        _args params [["_blocked", [], [[]]]];
+        ALiVE_rallyMenuBlocked = _blocked;
     };
 
     case "near": {

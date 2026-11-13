@@ -1,6 +1,7 @@
 #include "\x\alive\addons\sup_multispawn\script_component.hpp"
 
 #define __NMEDISTANCE 50
+#define FS_PICK_TIME 30
 
 private ["_reset","_hdl"];
 
@@ -12,16 +13,15 @@ if (isnil "keyspressed") then {
     keyspressed = {
             _key = _this select 1;
 
+            // RIGHT went one past the last squad mate before wrapping, onto an empty slot
             if (_key == 205) then {
                 actualUnits = actualUnits + 1;
-                if (actualUnits > (count aliveUnits)) then {actualUnits = 0};
-                TitleText[format["Select unit with ARROWKEYS and press ENTER to select, Backspace to exit!",true],"PLAIN DOWN"];
-                };
+                if (actualUnits >= (count aliveUnits)) then {actualUnits = 0};
+            };
 
             if (_key == 203) then {
                 actualUnits = actualUnits - 1;
-                if (actualUnits < 0) then {actualUnits = 0};
-                TitleText[format["Select unit with ARROWKEYS and press ENTER to select, Backspace to exit!",true],"PLAIN DOWN"];
+                if (actualUnits < 0) then {actualUnits = ((count aliveUnits) - 1) max 0};
             };
 
             if (_key == 28) then {keyout = _key};
@@ -49,13 +49,24 @@ _cam camsetrelpos [0,-5,2.5];
 _cam camcommit 0;
 _cam attachTo [_selection, [0,-5,2.5]];
 
-TitleText[format["Select unit with ARROWKEYS and press ENTER to select, Backspace to exit!",true],"PLAIN DOWN"];
+// The keys used to be one line at the foot of a black screen, easy to miss, and nothing happened until
+// one was pressed, so players took it for a respawn that had stuck. They are now shown in the middle
+// of the screen with a countdown; when it runs out the player stays where they respawned.
+private _deadline = diag_tickTime + FS_PICK_TIME;
+private _shown = -1;
+private _timedOut = false;
 _DispId = ["KeyDown", "_this call keyspressed"] call CBA_fnc_addDisplayHandler;
 
 titleText ["Respawn in progress...", "BLACK IN",3];
 disableUserInput false;
 
 while {!(keyout > 0)} do {
+    private _left = ceil (_deadline - diag_tickTime);
+    if (_left != _shown) then {
+        _shown = _left;
+        hintSilent parseText format [localize "STR_ALIVE_multispawn_FS_PROMPT", _left max 0];
+    };
+    if (_left <= 0) exitWith {keyout = 14; EXITFSS = true; _timedOut = true};
     _currentmate = (aliveUnits select actualUnits);
     if (isnil "_currentmate") then {
         actualUnits = 0;
@@ -92,6 +103,9 @@ while {!(keyout > 0)} do {
     sleep 0.1;
 };
 ["KeyDown", _DispId] call CBA_fnc_removeDisplayHandler;
+
+hintSilent "";
+if (_timedOut) then {titleText [localize "STR_ALIVE_multispawn_FS_TIMEOUT", "PLAIN DOWN"]};
 
 If (EXITFSS) exitwith {showCinemaBorder false; player cameraEffect ["terminate","back"];camdestroy _cam; disableUserInput false};
 

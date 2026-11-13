@@ -138,4 +138,49 @@ ALiVE_SUP_MULTISPAWN_DESTINATION_%FACTION%&lt;br /&gt;
     <Chinesesimp>使用与玩家被杀时相同的装备重生</Chinesesimp>
     <Spanish>Reaparece con el mismo equipo que llevaba el jugador al morir</Spanish>
 </Key>
+<Key ID="STR_ALIVE_multispawn_FS_PROMPT">
+    <English>&lt;t size='1.2' align='center'&gt;Forward Spawn&lt;/t&gt;&lt;br/&gt;&lt;t align='center'&gt;LEFT / RIGHT: choose a squad mate&lt;br/&gt;ENTER: spawn with them&lt;br/&gt;BACKSPACE: stay here&lt;br/&gt;&lt;br/&gt;Staying here in %1 s&lt;/t&gt;</English>
+    <Chinesesimp>&lt;t size='1.2' align='center'&gt;前线重生&lt;/t&gt;&lt;br/&gt;&lt;t align='center'&gt;左 / 右:选择一名队友&lt;br/&gt;回车:在其身边重生&lt;br/&gt;退格:留在此处&lt;br/&gt;&lt;br/&gt;%1 秒后留在此处&lt;/t&gt;</Chinesesimp>
+    <Spanish>&lt;t size='1.2' align='center'&gt;Reaparición avanzada&lt;/t&gt;&lt;br/&gt;&lt;t align='center'&gt;IZQUIERDA / DERECHA: elegir compañero&lt;br/&gt;INTRO: reaparecer con él&lt;br/&gt;RETROCESO: quedarse aquí&lt;br/&gt;&lt;br/&gt;Te quedas aquí en %1 s&lt;/t&gt;</Spanish>
+    <Chinese>&lt;t size='1.2' align='center'&gt;前線重生&lt;/t&gt;&lt;br/&gt;&lt;t align='center'&gt;左 / 右:選擇一名隊友&lt;br/&gt;Enter:在其身邊重生&lt;br/&gt;Backspace:留在此處&lt;br/&gt;&lt;br/&gt;%1 秒後留在此處&lt;/t&gt;</Chinese>
+    <French>&lt;t size='1.2' align='center'&gt;Réapparition avancée&lt;/t&gt;&lt;br/&gt;&lt;t align='center'&gt;GAUCHE / DROITE : choisir un équipier&lt;br/&gt;ENTRÉE : réapparaître avec lui&lt;br/&gt;RETOUR ARRIÈRE : rester ici&lt;br/&gt;&lt;br/&gt;Vous restez ici dans %1 s&lt;/t&gt;</French>
+    <Portuguese>&lt;t size='1.2' align='center'&gt;Reaparecimento avançado&lt;/t&gt;&lt;br/&gt;&lt;t align='center'&gt;ESQUERDA / DIREITA: escolher um colega&lt;br/&gt;ENTER: reaparecer com ele&lt;br/&gt;BACKSPACE: ficar aqui&lt;br/&gt;&lt;br/&gt;Fica aqui em %1 s&lt;/t&gt;</Portuguese>
+    <Russian>&lt;t size='1.2' align='center'&gt;Передовой респаун&lt;/t&gt;&lt;br/&gt;&lt;t align='center'&gt;ВЛЕВО / ВПРАВО: выбрать товарища&lt;br/&gt;ENTER: появиться рядом с ним&lt;br/&gt;BACKSPACE: остаться здесь&lt;br/&gt;&lt;br/&gt;Остаётесь здесь через %1 с&lt;/t&gt;</Russian>
+</Key>
+<Key ID="STR_ALIVE_multispawn_FS_TIMEOUT">
+    <English>No squad mate chosen, staying at the respawn point.</English>
+    <Chinesesimp>未选择队友,留在重生点。</Chinesesimp>
+    <Spanish>No se eligió compañero; te quedas en el punto de reaparición.</Spanish>
+    <Chinese>未選擇隊友,留在重生點。</Chinese>
+    <French>Aucun équipier choisi, vous restez au point de réapparition.</French>
+    <Portuguese>Nenhum colega escolhido, fica no ponto de reaparecimento.</Portuguese>
+    <Russian>Товарищ не выбран, вы остаётесь в точке возрождения.</Russian>
+</Key>
+<Key ID="STR_ALIVE_multispawn_POS_MATE">
+    <English>Squad mate: %1</English>
+    <Chinesesimp>队友:%1</Chinesesimp>
+    <Spanish>Compañero: %1</Spanish>
+    <Chinese>隊友:%1</Chinese>
+    <French>Équipier : %1</French>
+    <Portuguese>Colega: %1</Portuguese>
+    <Russian>Товарищ: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_multispawn_POS_RALLY">
+    <English>Rally point: %1</English>
+    <Chinesesimp>集结点:%1</Chinesesimp>
+    <Spanish>Punto de reunión: %1</Spanish>
+    <Chinese>集結點:%1</Chinese>
+    <French>Point de ralliement : %1</French>
+    <Portuguese>Ponto de reunião: %1</Portuguese>
+    <Russian>Точка сбора: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_multispawn_POS_HUB">
+    <English>Hub: %1</English>
+    <Chinesesimp>枢纽:%1</Chinesesimp>
+    <Spanish>Centro: %1</Spanish>
+    <Chinese>樞紐:%1</Chinese>
+    <French>Centre : %1</French>
+    <Portuguese>Centro: %1</Portuguese>
+    <Russian>Узел: %1</Russian>
+</Key>
 </Container></Package></Project>
