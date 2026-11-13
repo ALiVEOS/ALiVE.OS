@@ -9,13 +9,17 @@ Ambient sea patrol movement command
 
 Parameters:
 Profile - profile
-Args - array (SCALAR - radius, STRING - behaviour, ARRAY - objective pos)
+Args - array (SCALAR - radius, STRING - behaviour, ARRAY - objective pos, optional ARRAY - area markers)
+
+With area markers (a placement module's TAOR), a boat patrol ranges over the water in and around them,
+up to 3 km from where it starts, rather than circling its harbour.
 
 Returns:
 
 Examples:
 (begin example)
 [_profile, [1000, "SAFE", _objective]] call ALiVE_fnc_seaPatrol;
+[_profile, [1000, "AWARE", _harbour, ["taor_1"]]] call ALiVE_fnc_seaPatrol;
 (end)
 
 See Also:
@@ -149,6 +153,39 @@ if (!_isDiverTeam) then {
 // Keep the last accepted destination across iterations and bound failed probes.
 private _lastpos = if (_isDiverTeam) then {+_objective} else {+_startPos};
 private _attempts = 0;
+
+// Patrol the module's area (spooked on Discord, 12 Nov: patrols stayed by their harbour). A boat given the
+// TAOR markers stops at up to three points on water inside them or within 1 km of one, each 500 m to 3 km
+// from the last and within 3 km of the start, so the way home is no longer. Where none is found, or with
+// no markers, the patrol keeps to its harbour as before.
+private _areas = [];
+if (_params isEqualType [] && {count _params > 3} && {(_params select 3) isEqualType []}) then {
+    {
+        if (_x isEqualType "" && {markerShape _x in ["RECTANGLE", "ELLIPSE"]}) then {
+            private _size = markerSize _x;
+            _areas pushBack [markerPos _x, (_size select 0) + 1000, (_size select 1) + 1000, markerDir _x, markerShape _x == "RECTANGLE"];
+        };
+    } forEach (_params select 3);
+};
+if (!_isDiverTeam && {_areas isNotEqualTo []}) then {
+    private _stops = 0;
+    private _tries = 0;
+    while {_stops < 3 && {_tries < 40} && {_plannedWaypoints < 4}} do {
+        _tries = _tries + 1;
+        private _p = _startPos getPos [500 + random 2500, random 360];
+        _p set [2, 0];
+        private _leg = _p distance2D _lastpos;
+        if (_leg >= 500 && {_leg <= 3000} && {(_areas findIf { _p inArea _x }) >= 0} && {_p call _isWaterPosition}
+            && {_pathfindingEnabled || {[_lastpos, _p, _navalSettings, [], _pointCache] call ALiVE_fnc_pathfinderNavalSegment}}) then {
+            [_p, _type, 100] call _addPatrolWaypoint;
+            _lastpos = +_p;
+            _stops = _stops + 1;
+        };
+    };
+    if (_debug) then {
+        ["SEA PATROL - %1 patrols its area: %2 stops in %3 tries", _profileID, _stops, _tries] call ALiVE_fnc_dump;
+    };
+};
 while {_plannedWaypoints < 5 && {_attempts < 64}} do {
     private _gpos = [];
     private _last = false;

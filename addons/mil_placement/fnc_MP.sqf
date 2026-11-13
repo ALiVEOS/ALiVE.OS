@@ -1984,7 +1984,7 @@ switch(_operation) do {
 
             // Sea patrols, as Civilian Placement places them: at each harbour inside the module's area, by the
             // Sea Patrols chance, a naval group of the faction (or the Sea Patrol Faction on the same side, as
-            // most factions have no boats) on the nearest water, patrolling 1 km round it.
+            // most factions have no boats) on the nearest water, patrolling the water in and around the TAOR.
             private _seaChance = [_logic, "placeSeaPatrols"] call MAINCLASS;
             if (_seaChance > 0 && {!isNil "ALIVE_clustersCivMarine"}) then {
                 private _seaTaor = ([_logic, "taor"] call MAINCLASS) select { [_x] call ALIVE_fnc_markerExists };
@@ -2017,7 +2017,7 @@ switch(_operation) do {
                         private _patrol = [_seaGroup, _at, random 360, true, _seaFaction, true, false, "STEALTH", _seaHook, _seaHookOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                         {
                             if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", ["ALiVE_fnc_SeaPatrol", "spawn", [1000, "AWARE", _harbour]]] call ALIVE_fnc_profileEntity;
+                                [_x, "setActiveCommand", ["ALiVE_fnc_SeaPatrol", "spawn", [1000, "AWARE", _harbour, _seaTaor]]] call ALIVE_fnc_profileEntity;
                                 _seaPlaced = _seaPlaced + 1;
                             };
                         } forEach _patrol;

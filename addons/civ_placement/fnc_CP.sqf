@@ -1728,7 +1728,8 @@ switch(_operation) do {
                                 // Set Waypoints for patrol
                                 {
                                     if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                        [_x, "setActiveCommand", ["ALiVE_fnc_SeaPatrol","spawn",[1000,"AWARE",_center]]] call ALIVE_fnc_profileEntity;
+                                        // round the module's TAOR, not only this harbour
+                                        [_x, "setActiveCommand", ["ALiVE_fnc_SeaPatrol","spawn",[1000,"AWARE",_center,([_logic, "taor"] call MAINCLASS) select { [_x] call ALIVE_fnc_markerExists }]]] call ALIVE_fnc_profileEntity;
                                         _countSeaPatrols = _countSeaPatrols + 1;
                                     } else {
                                         // Sea Patrol Tasks (#426): the boat is noted for the intercept tasks.
