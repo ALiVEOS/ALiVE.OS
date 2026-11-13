@@ -172,6 +172,8 @@ switch (_operation) do {
         private _holdForGo = (toLower format ["%1", _logic getVariable ["holdForGo", "false"]]) in ["true", "1"];
         // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
         private _callForHelp = (toLower format ["%1", _logic getVariable ["callForHelp", "false"]]) in ["true", "1"];
+        // Relieve Worn Groups (ashtray_by on Discord, 13 Nov): a worn-out group is swapped for a fresh one and filled up at the rear
+        private _relieveWorn = (toLower format ["%1", _logic getVariable ["relieveWorn", "true"]]) in ["true", "1"];
         // Start From Ship (Ando on Discord, 24 Oct): the starting force is aboard a static ship and lands by helicopter
         private _shipStart = (toLower format ["%1", _logic getVariable ["shipStart", "false"]]) in ["true", "1"];
         private _shipInf = floor ((parseNumber format ["%1", _logic getVariable ["shipInfantry", 6]]) max 0);
@@ -519,6 +521,7 @@ switch (_operation) do {
             ["intelMarkers", _intelMarkers],
             ["followPlayers", _followPlayers],
             ["callForHelp", _callForHelp],
+            ["relieveWorn", _relieveWorn],
             // true while it waits for Go; only "go" clears it, so the empty-server pause and the save menu can't lift it
             ["startPaused", false],
             // per group: [peak men, men last pass, time of the last loss, time it last asked]; runtime only, not saved
@@ -702,6 +705,23 @@ switch (_operation) do {
                     // and not while Dug In, which sends nobody out after a contact (the stance can change mid-mission)
                     if (!([_handler, "pause", false] call ALiVE_fnc_HashGet) && {([_handler, "controltype", ""] call ALiVE_fnc_HashGet) != "dugin"}) then {
                         [_handler, "callForHelp"] call ALiVE_fnc_OPCOM;
+                    };
+                };
+            };
+        };
+
+        // Relieve Worn Groups: a minute-by-minute look at the commander's groups, after 5 minutes for the first orders to go
+        // out. Not for an insurgent commander, and quiet while paused or Dug In, which keeps everyone where they are
+        if (_relieveWorn && {_type != "asymmetric"}) then {
+            [_handler] spawn {
+                params ["_handler"];
+                sleep 300;
+                while {true} do {
+                    sleep 60;
+                    private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
+                    if (isNull _module) exitWith {};
+                    if (!([_handler, "pause", false] call ALiVE_fnc_HashGet) && {([_handler, "controltype", ""] call ALiVE_fnc_HashGet) != "dugin"}) then {
+                        [_handler, "relieveWorn"] call ALiVE_fnc_OPCOM;
                     };
                 };
             };
@@ -2377,6 +2397,335 @@ switch (_operation) do {
         { if !(_x in _seen) then { _unanswered deleteAt _x } } forEach (keys _unanswered);
 
         _result = _sent;
+    };
+
+    // Relieve Worn Groups (ashtray_by on Discord, 13 Nov). Every minute, a group holding or taking an objective that is
+    // out of the fight and worn out hands its place to a fresh group of its own kind and pulls back to the rear to be
+    // filled up. Worn: no loss for 5 minutes, no known enemy within 500 m and not in combat, and under half the most men
+    // it has had, 2 men or fewer, or (spawned) most of its men out of ammunition. At most 2 a pass, and 15 minutes
+    // between reliefs of one group. Players, reserves, Dug In posts, player and timed orders, groups on their way
+    // somewhere, and groups in a call for help are left alone. No fresh group free means no relief.
+    // The fresh group is a free one of the same kind, else one taken from a reserve objective that keeps at least one.
+    // The rear is the nearest Logistics Hub of the side, else the commander's HQ, else the nearest reserve objective,
+    // skipping any with a known enemy within 500 m. There an infantry group gets its missing men back from the Military
+    // Logistics force pool (one point a man; free with an infinite pool) and a spawned one is rearmed. It goes back to
+    // the commander once it is above half strength again; one that can't be filled up (a vehicle group, an empty pool,
+    // no Military Logistics) stays there as a garrison.
+    case "relieveWorn": {
+        _result = [];
+        if (!isServer) exitWith {};
+
+        private _QUIET    = 300;   // seconds without a loss
+        private _RANGE    = 500;   // no known enemy this close, to the group or to the rear it goes to
+        private _COOLDOWN = 900;   // seconds between reliefs of one group
+        private _RETRY    = 300;   // seconds before a worn group nobody could relieve is looked at again
+        private _MAX      = 2;     // reliefs a pass
+        private _AT_OBJ   = 500;   // how near its objective a group has to be to count as holding or taking it
+
+        private _state = [_logic, "reliefState", createHashMap] call ALiVE_fnc_HashGet;
+        if !(_state isEqualType createHashMap) then { _state = createHashMap };
+        [_logic, "reliefState", _state] call ALiVE_fnc_HashSet;
+        // groups pulled back, to the one-off objective that holds them at the rear
+        private _active = [_logic, "reliefActive", createHashMap] call ALiVE_fnc_HashGet;
+        if !(_active isEqualType createHashMap) then { _active = createHashMap };
+        [_logic, "reliefActive", _active] call ALiVE_fnc_HashSet;
+
+        private _mySide      = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
+        private _factions    = [_logic, "factions", []] call ALiVE_fnc_HashGet;
+        private _profilesById = [ALiVE_ProfileHandler, "profilesById"] call ALiVE_fnc_hashGet;
+        private _playerIDs   = allPlayers apply { _x getVariable ["profileID", ""] };
+        private _reserved    = [_logic, "ProfileIDsReserve", []] call ALiVE_fnc_HashGet;
+        private _pending     = ([_logic, "pendingorders", []] call ALiVE_fnc_HashGet) apply { _x select 1 };
+        private _assignment  = [_logic, "profileObjectiveAssignment", createHashMap] call ALiVE_fnc_HashGet;
+        private _objectivesByID = [_logic, "objectivesByID", createHashMap] call ALiVE_fnc_HashGet;
+        private _objectives  = ([_logic, "objectives", []] call ALiVE_fnc_HashGet) select { !([_x, "deleted", false] call ALiVE_fnc_HashGet) };
+        private _poolNames   = ["infantry", "motorized", "mechanized", "armored"];
+        private _pools       = [_logic, _poolNames] call ALiVE_fnc_hashGetMany;
+        private _known       = ([_logic, "knownentities", []] call ALiVE_fnc_HashGet) select {
+            !isNil "_x" && {_x isEqualType []} && {count _x > 1} && {(_x select 1) isEqualType []}
+        };
+        private _fnc_enemyNear = { params ["_p"]; (_known findIf { ((_x select 1) distance2D _p) < _RANGE }) >= 0 };
+
+        // groups in a call for help, asking or answering, within the last 5 minutes
+        private _helping = [];
+        private _helpSent = [_logic, "helpSent", createHashMap] call ALiVE_fnc_HashGet;
+        if (_helpSent isEqualType createHashMap) then {
+            { if (time - ((_y param [2, -1e9])) < 300) then { _helping pushBack _x; _helping append (_y param [1, []]) } } forEach _helpSent;
+        };
+        private _dugIn = [];
+        { _dugIn append ([_x, "dugInMembers", []] call ALiVE_fnc_HashGet) } forEach _objectives;
+
+        // forget pulled-back groups that are gone, and their holding objective with them
+        {
+            if (isNil {_profilesById get _x}) then {
+                if (!isNil {_objectivesByID get _y}) then { [_logic, "removeObjective", _y] call MAINCLASS };
+                _active deleteAt _x;
+            };
+        } forEach +_active;
+
+        private _fnc_kind = {
+            params ["_id"];
+            _pools findIf { !isNil "_x" && {_x isEqualType []} && {_id in _x} }
+        };
+
+        // where a pulled-back group goes: [position, what it is] or []
+        private _fnc_rear = {
+            params ["_profile", "_from", "_fromObjID"];
+            private _picks = [];
+            if (!isNil "ALIVE_ML_supplyNetwork") then {
+                private _hubs = []; private _hqs = [];
+                {
+                    {
+                        if (_x isEqualType [] && {count _x > 0} && {(_x select 0) isEqualType []}) then {
+                            if ((_x param [3, ""]) isEqualTo "HUB") then { _hubs pushBack [_x select 0, "a logistics hub"] } else {
+                                if (_x param [2, false]) then { _hqs pushBack [_x select 0, "the commander's HQ"] };
+                            };
+                        };
+                    } forEach ([ALIVE_ML_supplyNetwork, _x, []] call ALIVE_fnc_hashGet);
+                } forEach _factions;
+                _picks append ([_hubs, [], { (_x select 0) distance2D _from }, "ASCEND"] call BIS_fnc_sortBy);
+                _picks append _hqs;
+            };
+            private _rest = (_objectives select {
+                ([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["reserve", "reserving", "idle"]
+                && {([_x, "objectiveID", ""] call ALiVE_fnc_HashGet) != _fromObjID}
+                && {!([_x, "manualTask", false] call ALiVE_fnc_HashGet)}
+            }) apply { [[_x, "center", [0,0,0]] call ALiVE_fnc_HashGet, format ["reserve objective %1", [_x, "objectiveID", ""] call ALiVE_fnc_HashGet]] };
+            _picks append ([_rest, [], { (_x select 0) distance2D _from }, "ASCEND"] call BIS_fnc_sortBy);
+            private _i = _picks findIf {
+                private _p = _x select 0;
+                count _p > 1 && {!surfaceIsWater _p} && {(_p distance2D _from) > _RANGE} && {!([_p] call _fnc_enemyNear)}
+                && {!([_logic, "seaBlocked", [_profile, _p]] call MAINCLASS)}
+            };
+            if (_i < 0) then { [] } else { _picks select _i }
+        };
+
+        // a group that is itself worn is never the fresh one
+        private _fnc_fit = {
+            params ["_fid"];
+            private _fs = _state getOrDefault [_fid, []];
+            private _fp = _profilesById get _fid;
+            if (isNil "_fp") exitWith { false };
+            private _n = [_fp, "unitCount", 0] call ALiVE_fnc_HashGet;
+            private _m = (_fs param [0, _n]) max _n;
+            _n >= _m * 0.5 && {_n > 2 || {_m <= 2}}
+        };
+        // a free group of this kind for the objective, else one from a reserve objective that keeps at least one
+        private _fnc_fresh = {
+            params ["_kind", "_objPos", "_objType", "_skip"];
+            private _f = ([_logic, "NearestAvailableSection", [_objPos, 1, [_kind], _objType, true]] call MAINCLASS) param [0, ""];
+            if (_f isEqualType "" && {_f != ""} && {!(_f in _skip)} && {[_f] call _fnc_fit}) exitWith { [_f, "free"] };
+            private _pool = _pools select (_poolNames find _kind);
+            if (isNil "_pool" || {!(_pool isEqualType [])}) exitWith { [] };
+            private _best = []; private _bestD = 3000;
+            {
+                private _objID = [_x, "objectiveID", ""] call ALiVE_fnc_HashGet;
+                private _section = [_x, "section", []] call ALiVE_fnc_HashGet;
+                if (([_x, "opcom_state", ""] call ALiVE_fnc_HashGet) in ["reserve", "reserving", "idle"] && {count _section > 1}
+                    && {!([_x, "manualTask", false] call ALiVE_fnc_HashGet)}) then {
+                    {
+                        private _p = _profilesById get _x;
+                        if (!isNil "_p" && {_x in _pool} && {!(_x in _skip)} && {!(_x in _playerIDs)} && {!(_x in _pending)}
+                            && {!(_x in _dugIn)} && {!([_p, "busy", false] call ALiVE_fnc_HashGet)} && {[_x] call _fnc_fit}) then {
+                            private _d = ([_p, "position", [0,0,0]] call ALiVE_fnc_HashGet) distance2D _objPos;
+                            if (_d < _bestD) then { _bestD = _d; _best = [_x, format ["from reserve objective %1", _objID]] };
+                        };
+                    } forEach _section;
+                };
+            } forEach _objectives;
+            _best
+        };
+
+        private _relieved = 0;
+        private _seen = createHashMap;
+        private _ids = [];
+        { _ids append ([ALiVE_ProfileHandler, "getProfilesByFaction", _x] call ALiVE_fnc_ProfileHandler) } forEach _factions;
+        {
+            private _id = _x;
+            private _profile = _profilesById get _id;
+            if (!isNil "_profile" && {([_profile, "type", ""] call ALiVE_fnc_HashGet) == "entity"} && {!(_id in _playerIDs)}) then {
+                _seen set [_id, true];
+                private _classes = +([_profile, "unitClasses", []] call ALiVE_fnc_HashGet);
+                private _count = count _classes;
+                // [most men it has had, its classes then, time of the last loss, time it was last looked at for relief]
+                private _s = _state getOrDefault [_id, [_count, +_classes, -1e9, -1e9]];
+                _s params ["_most", "_full", "_lostAt", "_triedAt", ["_last", _count]];
+                if (_count < _last) then { _lostAt = time };
+                if (_count > _most) then { _most = _count; _full = +_classes };
+                _state set [_id, [_most, _full, _lostAt, _triedAt, _count]];
+
+                private _kindIdx = [_id] call _fnc_kind;
+                private _objID = _assignment getOrDefault [_id, ""];
+                private _objective = if (_objID isEqualType "" && {_objID != ""}) then { _objectivesByID get _objID };
+
+                if (_relieved < _MAX && {_count > 0} && {_kindIdx >= 0} && {!isNil "_objective"}
+                    && {time - _lostAt > _QUIET} && {time - _triedAt > _COOLDOWN}
+                    && {!(_id in _active)} && {!(_id in _reserved)} && {!(_id in _pending)} && {!(_id in _dugIn)} && {!(_id in _helping)}
+                    && {!([_profile, "busy", false] call ALiVE_fnc_HashGet)}
+                    && {!([_objective, "manualTask", false] call ALiVE_fnc_HashGet)}) then {
+
+                    private _pos = [_profile, "position", [0,0,0]] call ALiVE_fnc_HashGet;
+                    private _objPos = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+                    private _spawned = _profile select 2 select 1;
+                    private _g = _profile select 2 select 13;
+                    private _units = if (_spawned && {_g isEqualType grpNull} && {!isNull _g}) then { (units _g) select { alive _x } } else { [] };
+
+                    private _why = "";
+                    if (_count < _most * 0.5) then { _why = format ["%1 of %2 men", _count, _most] } else {
+                        if (_count <= 2 && {_most > 2}) then { _why = format ["%1 men left", _count] } else {
+                            if (_units isNotEqualTo [] && {(({ !someAmmo _x } count _units) * 2) >= count _units}) then { _why = "low on ammunition" };
+                        };
+                    };
+
+                    if (_why != "" && {(_pos distance2D _objPos) < _AT_OBJ} && {!([_pos] call _fnc_enemyNear)}
+                        && {_units isEqualTo [] || {behaviour (leader _g) != "COMBAT"}}) then {
+                        _state set [_id, [_most, _full, _lostAt, time - _COOLDOWN + _RETRY, _count]];
+                        private _kind = _poolNames select _kindIdx;
+                        private _rear = [_profile, _pos, _objID] call _fnc_rear;
+                        private _fresh = if (_rear isEqualTo []) then { [] } else {
+                            [_kind, _objPos, [_objective, "objectiveType", "MIL"] call ALiVE_fnc_HashGet, [_id] + (keys _active)] call _fnc_fresh
+                        };
+                        if (_rear isEqualTo [] || {_fresh isEqualTo []}) then {
+                            private _reason = if (_rear isEqualTo []) then { "there is nowhere safe behind it to go" } else { format ["no fresh %1 group is free", _kind] };
+                            ["OPCOM RELIEVE - %1: group %2 at objective %3 is worn (%4) but %5, so it stays",
+                                _mySide, _id, _objID, _why, _reason] call ALiVE_fnc_dump;
+                        } else {
+                            _fresh params ["_freshID", "_freshFrom"];
+                            _rear params ["_rearPos", "_rearWhat"];
+                            _relieved = _relieved + 1;
+                            _state set [_id, [_most, _full, _lostAt, time, _count]];
+
+                            // the fresh group takes the worn one's place, with the order the objective is under
+                            private _op = switch ([_objective, "opcom_state", ""] call ALiVE_fnc_HashGet) do {
+                                case "attack"; case "attacking": { "capture" };
+                                case "defend"; case "defending": { "defend" };
+                                default { "reserve" };
+                            };
+                            private _section = [_objective, "section", []] call ALiVE_fnc_HashGet;
+                            [_logic, "setObjectiveSection", [_objective, (_section - [_id]) + [_freshID]]] call MAINCLASS;
+                            [_logic, "setSectionOrders", [_objective, _objID, _op, [[_objPos, _freshID]]]] call MAINCLASS;
+
+                            // the worn group is held at the rear under a one-off objective, as a player's timed order is,
+                            // so the commander leaves it alone on the way and while it is filled up
+                            private _manualTaskSequence = ([_logic, "manualTaskSequence", 0] call ALiVE_fnc_HashGet) + 1;
+                            private _mid = format ["%1_manual_%2", [_logic, "opcomID", "OPCOM"] call ALiVE_fnc_HashGet, _manualTaskSequence];
+                            while { !isNil {_objectivesByID get _mid} } do {
+                                _manualTaskSequence = _manualTaskSequence + 1;
+                                _mid = format ["%1_manual_%2", [_logic, "opcomID", "OPCOM"] call ALiVE_fnc_HashGet, _manualTaskSequence];
+                            };
+                            [_logic, "manualTaskSequence", _manualTaskSequence] call ALiVE_fnc_HashSet;
+                            private _hold = [_logic, "addObjective", [_mid, _rearPos, 100, "internal", 100, "internal"]] call MAINCLASS;
+                            [_hold, "manualTask", true] call ALiVE_fnc_HashSet;
+                            [_hold, "manualSince", time] call ALiVE_fnc_HashSet;
+                            [_logic, "setObjectiveSection", [_hold, [_id]]] call MAINCLASS;
+                            _active set [_id, _mid];
+
+                            [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                            [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
+                            private _dest = _rearPos getPos [20 + random 40, random 360];
+                            [_profile, "addWaypoint", [_dest, 30, "MOVE", "NORMAL", 50, [], "NO CHANGE", "NO CHANGE", "AWARE"] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+                            private _stay = [_dest, 0, "HOLD", "LIMITED", 30, [], "NO CHANGE", "YELLOW", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
+                            // never completes on its own: the group waits there until it is handed back
+                            [_stay, "statements", ["false", ""]] call ALiVE_fnc_hashSet;
+                            [_profile, "addWaypoint", _stay] call ALIVE_fnc_profileEntity;
+
+                            ["OPCOM RELIEVE - %1: group %2 at objective %3 is worn (%4); %5 group %6 (%7) takes its place and it pulls back to %8, %9 m away",
+                                _mySide, _id, _objID, _why, _kind, _freshID, _freshFrom, _rearWhat, round (_pos distance2D _rearPos)] call ALiVE_fnc_dump;
+                            _result pushBack [_id, _freshID, _rearPos];
+
+                            [_logic, _id, _mid, _dest, _rearWhat, _kind] spawn {
+                                params ["_logic", "_id", "_mid", "_dest", "_rearWhat", "_kind"];
+                                private _side = [_logic, "side", ""] call ALiVE_fnc_HashGet;
+                                private _fnc_gone = { isNil {([_logic, "objectivesByID", createHashMap] call ALiVE_fnc_HashGet) get _mid} };
+                                private _fnc_profile = { [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler };
+                                // on its way, for up to 20 minutes; after that it is dealt with where it got to
+                                private _until = time + 1200;
+                                waitUntil {
+                                    sleep 10;
+                                    private _p = call _fnc_profile;
+                                    (call _fnc_gone) || {isNil "_p"} || {time > _until}
+                                    || {(([_p, "position", [0,0,0]] call ALiVE_fnc_HashGet) distance2D _dest) < 100}
+                                };
+                                private _profile = call _fnc_profile;
+                                if ((call _fnc_gone) || {isNil "_profile"}) exitWith {};
+
+                                // rearmed where it lives, which can be a headless client
+                                private _g = _profile select 2 select 13;
+                                if (_profile select 2 select 1 && {_g isEqualType grpNull} && {!isNull _g}) then {
+                                    { [_x, 1] remoteExec ["setVehicleAmmo", _x] } forEach (((units _g) apply { vehicle _x }) arrayIntersect ((units _g) apply { vehicle _x }));
+                                };
+                                // filled up only while virtual, as men added to a spawned group would only appear when it
+                                // next spawns; a spawned one is given up to 10 minutes to go virtual
+                                private _wait = time + 600;
+                                waitUntil { sleep 10; private _p = call _fnc_profile; (call _fnc_gone) || {isNil "_p"} || {!(_p select 2 select 1)} || {time > _wait} };
+                                _profile = call _fnc_profile;
+                                if ((call _fnc_gone) || {isNil "_profile"}) exitWith {};
+
+                                private _st = ([_logic, "reliefState", createHashMap] call ALiVE_fnc_HashGet) getOrDefault [_id, []];
+                                private _most = _st param [0, 0];
+                                private _full = _st param [1, []];
+                                private _classes = [_profile, "unitClasses", []] call ALiVE_fnc_HashGet;
+                                private _added = 0;
+                                private _note = "";
+                                if (!(_profile select 2 select 1) && {count _classes < _most} && {([_profile, "vehiclesInCommandOf", []] call ALiVE_fnc_HashGet) isEqualTo []}) then {
+                                    // the men it is missing, by class, from what it had at its strongest
+                                    private _have = +_classes;
+                                    private _need = [];
+                                    { private _i = _have find _x; if (_i < 0) then { _need pushBack _x } else { _have deleteAt _i } } forEach _full;
+                                    private _faction = [_profile, "faction", ""] call ALiVE_fnc_HashGet;
+                                    // the Military Logistics module that pays for this faction, and what it has
+                                    private _moduleID = "";
+                                    private _module = objNull;
+                                    if (!isNil "ALIVE_MLGlobalRegistry" && {!isNil "ALIVE_globalForcePool"}) then {
+                                        private _modules = [ALIVE_MLGlobalRegistry, "modules"] call ALIVE_fnc_hashGet;
+                                        {
+                                            private _m = [_modules, _x] call ALIVE_fnc_hashGet;
+                                            if (!isNil "_m" && {_m isEqualType objNull} && {!isNull _m}
+                                                && {((_m getVariable ["factions", []]) findIf { _x isEqualType [] && {_faction in (_x param [1, []])} }) >= 0}) then {
+                                                if (_moduleID == "") then { _moduleID = _x; _module = _m };
+                                            };
+                                        } forEach (_modules select 1);
+                                    };
+                                    if (_moduleID == "") then { _note = "no Military Logistics module pays for its faction" } else {
+                                        private _infinite = (parseNumber format ["%1", [_module, "forcePool"] call ALIVE_fnc_ML]) == 100000;
+                                        private _pool = [ALIVE_globalForcePool, _faction, 0] call ALIVE_fnc_hashGet;
+                                        if (_pool isEqualType "") then { _pool = parseNumber _pool };
+                                        private _n = if (_infinite) then { count _need } else { (count _need) min (floor (_pool max 0)) };
+                                        private _at = [_profile, "position", [0,0,0]] call ALiVE_fnc_HashGet;
+                                        for "_i" from 0 to (_n - 1) do { [_profile, "addUnit", [_need select _i, _at, 0, "PRIVATE"]] call ALIVE_fnc_profileEntity };
+                                        _added = _n;
+                                        if (_n > 0 && {!_infinite}) then {
+                                            [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [_moduleID, _pool - _n]] call ALIVE_fnc_MLGlobalRegistry;
+                                        };
+                                        if (_n < count _need) then { _note = format ["the %1 force pool had %2 left", _faction, _pool] };
+                                    };
+                                } else {
+                                    if (count _classes < _most) then {
+                                        _note = if (_profile select 2 select 1) then { "it was still spawned" } else { format ["a %1 group can't take men without seats", _kind] };
+                                    };
+                                };
+                                private _count = count ([_profile, "unitClasses", []] call ALiVE_fnc_HashGet);
+                                if (_count > _most * 0.5 && {_count > 2 || {_most <= 2}}) then {
+                                    // fit again: handed back to the commander, as a player's timed order is
+                                    [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                                    [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
+                                    ([_logic, "reliefActive", createHashMap] call ALiVE_fnc_HashGet) deleteAt _id;
+                                    [_logic, "removeObjective", _mid] call ALiVE_fnc_OPCOM;
+                                    ["OPCOM RELIEVE - %1: group %2 at %3 is back to %4 of %5 men (%6 added) and is free for the commander again",
+                                        _side, _id, _rearWhat, _count, _most, _added] call ALiVE_fnc_dump;
+                                } else {
+                                    ["OPCOM RELIEVE - %1: group %2 at %3 has %4 of %5 men (%6 added; %7) and stays there as a garrison",
+                                        _side, _id, _rearWhat, _count, _most, _added, _note] call ALiVE_fnc_dump;
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        } forEach _ids;
+
+        // forget groups that no longer exist, so the map doesn't grow for the life of the mission
+        { if !(_x in _seen) then { _state deleteAt _x } } forEach (keys _state);
     };
 
     ///////////////////////////////////////////////////

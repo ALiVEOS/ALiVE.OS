@@ -370,6 +370,20 @@ class CfgVehicles {
                                 };
                                 ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
                         };
+                        // Relieve Worn Groups (ashtray_by on Discord, 13 Nov): a worn-out group hands its place to a fresh one
+                        class relieveWorn : Combo
+                        {
+                                property = "ALiVE_mil_opcom_relieveWorn";
+                                displayName = "$STR_ALIVE_OPCOM_RELIEVE_WORN";
+                                tooltip = "$STR_ALIVE_OPCOM_RELIEVE_WORN_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                        class Yes { name = "Yes"; value = "true"; };
+                                        class No  { name = "No";  value = "false"; };
+                                };
+                                ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
+                        };
 
                         // ---- Holding Ground ----------------------------------------------
                         class HDR_HOLD : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_HOLD"; displayName = "HOLDING GROUND"; };

@@ -477,6 +477,12 @@
 <Key ID="STR_ALIVE_OPCOM_CALL_FOR_HELP_COMMENT">
     <English>Any commander that doesn't start the mission as Asymmetric (Dug In sends nobody). Yes lets a group that has lost half its men in a fight, and at least 2 in the last 2 minutes, ask the commander for help against an enemy within 500 m. The commander sends 2 free groups that can reach that enemy (the hurt group's own kind first) at full speed, never the hurt group itself, and the Military Artillery module, if placed, is asked for a fire mission on it. Each hurt group asks at most once every 2 minutes, the commander answers at most 2 calls a minute, and an enemy it is already dealing with isn't asked about again. Player groups never ask. No (the default) leaves things as they are: the commander only sends help when it spots a new enemy itself.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_RELIEVE_WORN">
+    <English>Relieve Worn Groups</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RELIEVE_WORN_COMMENT">
+    <English>Any commander that doesn't start the mission as Asymmetric (Dug In keeps everyone in place). Yes (the default) swaps a worn-out group at an objective for a fresh one and pulls it back to be filled up. Worn means no losses for 5 minutes and no known enemy within 500 m, and either under half the men it has had, 2 men or fewer, or most of its men out of ammunition. A free group of the same kind takes its place, or one from a quiet objective that keeps at least one; with none free it stays. It pulls back to the nearest Logistics Hub, else the commander's HQ, else the nearest quiet objective, never one with a known enemy within 500 m. There an infantry group gets its missing men back from the Military Logistics force pool, one point a man, and is rearmed, then returns to the commander. One that can't be filled up stays there as a garrison. At most 2 groups a minute, and a group is relieved at most once every 15 minutes. No leaves worn groups where they are.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_SHIP_START">
     <English>Start From Ship</English>
 </Key>
