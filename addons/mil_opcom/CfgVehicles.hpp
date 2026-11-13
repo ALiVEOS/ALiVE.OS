@@ -646,6 +646,15 @@ class CfgVehicles {
                                 typeName = "NUMBER";
                                 ALiVE_showWhen[] = {{"shipStart", "is", "true"}};
                         };
+                        class shipHoldRadius : Edit
+                        {
+                                property = "ALiVE_mil_opcom_shipHoldRadius";
+                                displayName = "$STR_ALIVE_OPCOM_SHIP_HOLD_RADIUS";
+                                tooltip = "$STR_ALIVE_OPCOM_SHIP_HOLD_RADIUS_COMMENT";
+                                defaultValue = """1500""";
+                                typeName = "NUMBER";
+                                ALiVE_showWhen[] = {{"shipStart", "is", "true"}};
+                        };
                         class shipLandBy : Combo
                         {
                                 property = "ALiVE_mil_opcom_shipLandBy";

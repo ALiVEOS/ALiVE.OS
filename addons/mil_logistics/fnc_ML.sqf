@@ -8171,10 +8171,14 @@ switch(_operation) do {
                 // not available, cancel the event
 
                 // a group made at sea with a player in spawn range would be put ashore by the profile system, so a
-                // ship wave waits until nobody is near the ship
+                // ship wave waits until nobody is near the ship. The commander's Hold Waves While A Player Is Within setting: how
+                // near (1500 m by default); 0 never holds
                 private _shipHold = false;
-                if (_shipLaunch && {count _shipFrom > 1}) then {
-                    _shipHold = [_shipFrom, (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500] call ALiVE_fnc_anyPlayersInRange > 0;
+                private _shipHoldRadius = [_event, "shipHoldRadius", 1500] call ALIVE_fnc_hashGet;
+                if (_shipLaunch && {count _shipFrom > 1} && {_shipHoldRadius > 0}) then {
+                    // at 1500 or more, never under the helicopter spawn distance, as before the setting
+                    if (_shipHoldRadius >= 1500) then { _shipHoldRadius = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max _shipHoldRadius };
+                    _shipHold = [_shipFrom, _shipHoldRadius] call ALiVE_fnc_anyPlayersInRange > 0;
                     if (_shipHold && {!([_event, "shipHoldLogged", false] call ALIVE_fnc_hashGet)}) then {
                         [_event, "shipHoldLogged", true] call ALIVE_fnc_hashSet;
                         ["ML - SHIP: a player is near the ship, holding the wave (event %1) until they move off", _eventID] call ALiVE_fnc_dump;

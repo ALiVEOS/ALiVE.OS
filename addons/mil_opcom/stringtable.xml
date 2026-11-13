@@ -513,6 +513,12 @@
 <Key ID="STR_ALIVE_OPCOM_SHIP_WAVE_GAP_COMMENT">
     <English>How long the commander waits between asking for one wave and the next with Start From Ship on, 200 seconds by default. 0 asks for the waves together, up to 8 infantry and 4 motorised groups at a time (or one wave, if a wave is bigger); the rest follow once those have left the ship. The waves still arrive as fast as Military Logistics can fly or sail them.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_HOLD_RADIUS">
+    <English>Hold waves while a player is within (m)</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_SHIP_HOLD_RADIUS_COMMENT">
+    <English>A wave waits on the ship while a player is this close to it, 1500 m by default. 0 sends the waves whoever is near. At your own risk: below the AI spawn distance, players near the ship can see the groups appear.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_HVT_RESPAWN">
     <English>Replace When Pause Ends</English>
 </Key>

@@ -180,6 +180,9 @@ switch (_operation) do {
         // groups per wave and seconds between waves (TheLogatron on Discord, 26 Oct); 2 and 200 were the fixed pacing
         private _shipWaveSize = floor ((parseNumber format ["%1", _logic getVariable ["shipWaveSize", 2]]) max 1);
         private _shipWaveGap = (parseNumber format ["%1", _logic getVariable ["shipWaveGap", 200]]) max 0;
+        // a wave waits while a player is this close to the ship (TheLogatron on Discord, 12 Nov); 1500 was the fixed
+        // distance, 0 sends it whoever is near
+        private _shipHoldRadius = (parseNumber format ["%1", _logic getVariable ["shipHoldRadius", 1500]]) max 0;
         // Go Ashore By (Start From Ship): "auto", by helicopter when the faction has its own, else by boat; "boats",
         // by boat first, by helicopter when there are no boats or no beach
         private _shipLandBy = toLower format ["%1", _logic getVariable ["shipLandBy", "auto"]];
@@ -529,6 +532,7 @@ switch (_operation) do {
             ["shipAboard", [_shipInf, _shipMot, 0, 0, 0, 0, 0, 0]],
             ["shipWaveSize", _shipWaveSize],
             ["shipWaveGap", _shipWaveGap],
+            ["shipHoldRadius", _shipHoldRadius],
             ["shipLandBy", _shipLandBy],
             // waves whose vehicles no helicopter could lift: three and the motorised groups are left out
             ["shipMotRefused", 0],
@@ -8094,6 +8098,7 @@ switch (_operation) do {
             [_event, "departurePosition", _from] call ALiVE_fnc_HashSet;
             [_event, "shipPads", _pads] call ALiVE_fnc_HashSet;
             [_event, "shipDestination", _position] call ALiVE_fnc_HashSet;
+            [_event, "shipHoldRadius", [_logic, "shipHoldRadius", 1500] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet;
             // Military Logistics answers by this token, into this commander's shipSent
             private _token = format ["%1-%2-%3", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet, round time, _wave];
             [_event, "shipToken", _token] call ALiVE_fnc_HashSet;
