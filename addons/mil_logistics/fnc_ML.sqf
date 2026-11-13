@@ -6190,6 +6190,10 @@ switch(_operation) do {
                                 [_heli, _crate, _dropPad, _targetVeh, true] call _fnc_cleanup;
                             };
 
+                            // The crew's group, read here each tick: this loop runs in its own spawn, which the
+                            // caller's _heliGrp never reached, so every tick logged "Undefined variable _heligrp"
+                            private _heliGrp = group (driver _heli);
+
                             // --- Phase 0: TRANSIT ---
                             if (_phase == 0) then {
                                 // Clear native waypoints every tick to prevent profile simulator override.
