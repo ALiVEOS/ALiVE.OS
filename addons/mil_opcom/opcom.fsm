@@ -421,8 +421,10 @@ class FSM
                          "            //Exit if analysis should happen" \n
                          "            if !(isnil ""_analyze"") exitwith {_busy = false};" \n
                          "" \n
-                         "            //Exit if reeinforcements need to be requested" \n
-                         "            if !(isnil ""_reinforce"") exitwith {_busy = false};" \n
+                         "            // Exit if reinforcements need to be requested, but only when the request can be made now. While" \n
+                         "            // reinforcement waves are on their way (several minutes at a time) the request waits, and so did every attack:" \n
+                         "            // a side kept under the reinforcement ratio sent none at all (Kellys Heroes on the MSI, 13 Nov)" \n
+                         "            if (!(isnil ""_reinforce"") && {!_reinforcementsInProgress}) exitwith {_busy = false};" \n
                          "" \n
                          "            //Get objectives" \n
                          "            _obj = ([_OPCOM_HANDLER,""objectives"",[]] call AliVE_fnc_HashGet);" \n
