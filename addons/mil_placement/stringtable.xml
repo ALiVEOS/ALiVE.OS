@@ -863,7 +863,7 @@
     <English>Sea Patrols</English>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACE_SEAPATROLS_COMMENT">
-    <English>The chance each harbour inside the module's area gets a sea patrol: a naval group of the faction on the nearest water, patrolling 1 km round it. None by default. With every group count above set to 0, the module can place only sea patrols, anti-air and artillery.</English>
+    <English>The chance each harbour inside the module's area gets a sea patrol: a naval group of the faction on the nearest water, patrolling the water in and around the module's TAOR: up to three stops on water inside it or within 1 km of it, each no more than 3 km from the harbour. Where there is no such water, it patrols 1 km round the harbour. None by default. With every group count above set to 0, the module can place only sea patrols, anti-air and artillery.</English>
 </Key>
 <Key ID="STR_ALIVE_MP_SEAPATROL_FACTION">
     <English>Sea Patrol Faction</English>
