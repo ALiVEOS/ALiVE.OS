@@ -82,17 +82,19 @@ private _removed = 0;
 private _deleted = [];
 {
     _x params ["_name", "_slot"];
-    private _store = profileNamespace getVariable [_name, []];
+    // from whichever file holds it (ALiVE_fnc_storeFile): the shared profile file or the mission's own
+    private _store = ["get", _name] call ALiVE_fnc_storeFile;
+    if (isNil "_store") then { _store = [] };
     if ([_store] call ALiVE_fnc_isHash && {_slot in (_store select 1)}) then {
         _store = +_store;
         private _items = [_store, _slot, []] call ALiVE_fnc_hashGet;
         if ([_items] call ALiVE_fnc_isHash) then { _removed = _removed + count (_items select 1) };
         [_store, _slot] call ALiVE_fnc_hashRem;
         if ((_store select 1) isEqualTo []) then {
-            profileNamespace setVariable [_name, nil];
+            ["delete", _name] call ALiVE_fnc_storeFile;
             _deleted pushBack _name;
         } else {
-            profileNamespace setVariable [_name, _store];
+            ["set", _name, _store] call ALiVE_fnc_storeFile;
         };
         ["[ALiVE Data] Removed the saved vehicles and buildings from %1", _name] call ALiVE_fnc_dump;
     };
@@ -103,8 +105,9 @@ if (_deleted isNotEqualTo []) then {
     private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS), []];
     if !(_allMissions isEqualType []) then { _allMissions = [] };
     profileNamespace setVariable [QMOD(SAVEDMISSIONS), _allMissions - _deleted];
+    ALiVE_storeFile_dirtyShared = true;
 };
-saveProfileNamespace;
+["flush"] call ALiVE_fnc_storeFile;
 
 // What is in the game now would be saved straight back, so Player Logistics saves
 // nothing more until the mission restarts.

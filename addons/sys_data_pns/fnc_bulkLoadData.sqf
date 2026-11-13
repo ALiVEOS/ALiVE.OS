@@ -21,6 +21,7 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -35,7 +36,7 @@ _flag = _args select 2;
 
 TRACE_3("PNS bulkLoadData", _logic, _args, _flag);
 
-_data = +(profileNamespace getvariable _missionKey);
+_data = +(["get", _missionKey] call ALiVE_fnc_storeFile);
 
 if (isnil "_data") exitwith {false};
 

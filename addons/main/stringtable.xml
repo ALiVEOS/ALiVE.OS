@@ -113,6 +113,12 @@
 <Key ID="STR_ALIVE_SETTINGS_GROUPNAME_COMMENT">
     <English>Only for a server that was set up for the old War Room with @ALiVEServer and an alive.cfg file. Saves made then are named after the group in that file; enter the same name here, exactly as it was, so they keep loading. Leave it empty on any other server: saves are then named ALiVE, as they have always been without the old set-up.</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_MISSIONFILE">
+    <English>Local saves in the mission's own file</English>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_MISSIONFILE_COMMENT">
+    <English>On: a mission's Local saves go in its own save file beside the server's profile, so each autosave writes only that mission's saves and pauses the server for less. Until a save has loaded back from that file once, it is also kept in the profile file every mission shares. Off: saves go in the shared profile file only, as before.</English>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_VD">
     <English>Starting view distance</English>
 </Key>

@@ -74,7 +74,9 @@ if (_requestedBy isNotEqualTo "") then {
 private _fnc_wipe = {
     // The saved presets are the player's own collection, not saved mission data, and the
     // list itself is cleared on its own below.
-    private _keep = ["alive_presetlibrary", toLower QMOD(SAVEDMISSIONS)];
+    // The count of wipes stays too: a mission's own save file (ALiVE_fnc_storeFile) can't be reached
+    // from here, so its saves are dropped when that mission next loads and finds them older than a wipe.
+    private _keep = ["alive_presetlibrary", toLower QMOD(SAVEDMISSIONS), "alive_storewipes"];
 
     // Every name to remove: the saves recorded by name, this mission's own names on every
     // map (built, never searched for, and only the ones that exist come back), and, where
@@ -105,7 +107,8 @@ private _fnc_wipe = {
     } forEach (_names arrayIntersect _names);
 
     profileNamespace setVariable [QMOD(SAVEDMISSIONS), nil];
-    saveProfileNamespace;
+    ["wipeAll"] call ALiVE_fnc_storeFile;
+    ["flush"] call ALiVE_fnc_storeFile;
 
     ["[ALiVE Data] Removed %1 saved-data entries", _wiped] call ALiVE_fnc_dump;
     private _report = [format [localize "STR_ALIVE_DATA_WIPE_DONE", _wiped]];

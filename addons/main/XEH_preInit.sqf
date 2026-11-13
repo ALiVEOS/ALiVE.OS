@@ -76,6 +76,8 @@ LOG(MSG_INIT);
 }] call CBA_fnc_addSetting;
 // scroll wheel or ACE for rally points, talking to soldiers and FOBs (rallyInit, C2ISTAR, fobActions)
 ["ALiVE_prefInterface", "LIST", [localize "STR_ALIVE_SETTINGS_UI", localize "STR_ALIVE_SETTINGS_UI_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_GAME"], [["MODULE", "SCROLL", "ACE", "BOTH"], [localize "STR_ALIVE_SETTINGS_MISSION", localize "STR_ALIVE_SETTINGS_UI_SCROLL", localize "STR_ALIVE_SETTINGS_UI_ACE", localize "STR_ALIVE_SETTINGS_UI_BOTH"], 0]] call CBA_fnc_addSetting;
+// Local saves in the mission's own save file rather than the profile file every mission shares (ALiVE_fnc_storeFile)
+["ALiVE_storeMissionFile", "CHECKBOX", [localize "STR_ALIVE_SETTINGS_MISSIONFILE", localize "STR_ALIVE_SETTINGS_MISSIONFILE_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_SERVER"], true, 1] call CBA_fnc_addSetting;
 // ALiVE > Server: the group name a server registered with the old War Room had in its alive.cfg. ALiVEPlugIn
 // passed it on and the saves made then are named after it; the plugin is no longer called (ALIVE_fnc_DataInit).
 ["ALiVE_dataGroupName", "EDITBOX", [localize "STR_ALIVE_SETTINGS_GROUPNAME", localize "STR_ALIVE_SETTINGS_GROUPNAME_COMMENT"], [localize "STR_ALIVE_SETTINGS_CATEGORY", localize "STR_ALIVE_SETTINGS_SERVER"], "", 1] call CBA_fnc_addSetting;

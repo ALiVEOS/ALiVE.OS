@@ -23,6 +23,7 @@ ALiVE_fnc_ProfileNameSpaceSave
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 if !(isServer) exitwith {};
@@ -34,7 +35,7 @@ private _result = false;
 // 4990aaad for the parallel fix in sys_data + sys_player.
 private _mission = format["ALiVE_%1_%2",missionName,worldName];
 
-_data = profileNamespace getVariable _mission;
+_data = ["get", _mission] call ALiVE_fnc_storeFile;
 
 _result = if (isnil "_data") then {false} else {[_data,_id,false] call ALiVE_fnc_HashGet};
 

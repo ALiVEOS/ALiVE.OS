@@ -24,6 +24,7 @@ ALiVE_fnc_ProfileNameSpaceLoad
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 if !(isServer) exitwith {};
@@ -38,19 +39,21 @@ private _mission = format["ALiVE_%1_%2",missionName,worldName];
 private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS),[]];
 
 if (isNil QMOD(PNS_STORE)) then {
-    MOD(PNS_STORE) = +(profileNamespace getVariable [_mission, [] call ALiVE_fnc_HashCreate]);
+    MOD(PNS_STORE) = +(["get", _mission] call ALiVE_fnc_storeFile);
+    if (isNil QMOD(PNS_STORE)) then { MOD(PNS_STORE) = [] call ALiVE_fnc_HashCreate };
 };
 
 [MOD(PNS_STORE),_id,_data] call ALiVE_fnc_HashSet;
 
-profileNamespace setVariable [_mission, MOD(PNS_STORE)];
+["set", _mission, MOD(PNS_STORE)] call ALiVE_fnc_storeFile;
 
 if !(_mission in _allmissions) then {
     _allMissions set [count _allmissions,_mission];
     
     profileNamespace setVariable [QMOD(SAVEDMISSIONS), _allMissions];
+    ALiVE_storeFile_dirtyShared = true;
 };    
 
-saveProfileNamespace;
+["save"] call ALiVE_fnc_storeFile;
 
 true;

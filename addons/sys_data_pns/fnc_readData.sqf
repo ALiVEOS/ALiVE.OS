@@ -21,6 +21,7 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
@@ -37,7 +38,7 @@ _uid = _args select 2;
 
 TRACE_2("PNS readData", _logic, _args);
 
-_data = +(profileNamespace getvariable _uid);
+_data = +(["get", _uid] call ALiVE_fnc_storeFile);
 
 if (isnil "_data") exitwith {"SYS_DATA_ERROR"};
 

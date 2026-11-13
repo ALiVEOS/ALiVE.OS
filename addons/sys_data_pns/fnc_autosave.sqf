@@ -238,7 +238,7 @@ private _handle = [_interval, _once] spawn {
 
 			"write" call _fnc_stage;
 			MOD(PNS_HOLD_FRAME) = -1;
-			if (MOD(PNS_HOLD_DIRTY)) then { saveProfileNamespace };
+			if (MOD(PNS_HOLD_DIRTY)) then { ["flush"] call ALiVE_fnc_storeFile };
 			"" call _fnc_stage;
 
 		} call CBA_fnc_Directcall;

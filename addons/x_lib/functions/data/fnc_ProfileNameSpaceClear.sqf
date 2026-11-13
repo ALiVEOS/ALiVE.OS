@@ -80,23 +80,24 @@ private _deleted = [];
 {
     _x params ["_name", "_to", "_mode"];
     if (_mode == "slots") then {
-        private _store = profileNamespace getVariable _name;
-        if ([_store] call ALiVE_fnc_isHash) then {
+        // from whichever file holds it (ALiVE_fnc_storeFile): the shared profile file or the mission's own
+        private _store = ["get", _name] call ALiVE_fnc_storeFile;
+        if (!isNil "_store" && {[_store] call ALiVE_fnc_isHash}) then {
             _store = +_store;
             private _had = count (_store select 1);
             { [_store, _x] call ALiVE_fnc_hashRem } forEach ["sys_data", "sys_player"];
             if (count (_store select 1) < _had) then {
                 if ((_store select 1) isEqualTo []) then {
-                    profileNamespace setVariable [_name, nil];
+                    ["delete", _name] call ALiVE_fnc_storeFile;
                     _deleted pushBack _name;
                 } else {
-                    profileNamespace setVariable [_name, _store];
+                    ["set", _name, _store] call ALiVE_fnc_storeFile;
                 };
                 ["[ALiVE Data] Removed this mission's date and player saves from %1", _name] call ALiVE_fnc_dump;
             };
         };
     } else {
-        profileNamespace setVariable [_name, nil];
+        ["delete", _name] call ALiVE_fnc_storeFile;
         _deleted pushBack _name;
         ["[ALiVE Data] Removed %1", _name] call ALiVE_fnc_dump;
     };
@@ -106,5 +107,6 @@ private _deleted = [];
 private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS), []];
 if !(_allMissions isEqualType []) then { _allMissions = [] };
 profileNamespace setVariable [QMOD(SAVEDMISSIONS), _allMissions - _deleted];
+ALiVE_storeFile_dirtyShared = true;
 
-saveProfileNamespace
+["flush"] call ALiVE_fnc_storeFile

@@ -977,6 +977,13 @@ class storeMigrate
 	ALIVE_RECOMPILE;
 };
 
+class storeFile
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_storeFile.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class ProfileNameSpaceLoad
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceLoad.sqf";

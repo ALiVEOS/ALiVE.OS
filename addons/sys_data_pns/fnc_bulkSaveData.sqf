@@ -45,11 +45,12 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 
 _result = "";
 
-MOD(PNS_STORE) = +(profileNamespace getVariable [_missionKey, [] call ALiVE_fnc_HashCreate]);
+MOD(PNS_STORE) = +(["get", _missionKey] call ALiVE_fnc_storeFile);
+if (isNil QMOD(PNS_STORE)) then { MOD(PNS_STORE) = [] call ALiVE_fnc_HashCreate };
 
 [MOD(PNS_STORE),_module,_data] call ALiVE_fnc_HashSet;
 
-profileNamespace setVariable [_missionKey, MOD(PNS_STORE)];
+["set", _missionKey, MOD(PNS_STORE)] call ALiVE_fnc_storeFile;
 
 // Recorded by name as well, so Wipe ALL can find it again: a dedicated server's
 // profile cannot list its own variables.
@@ -58,6 +59,7 @@ if !(_savedMissions isEqualType []) then { _savedMissions = [] };
 if ((_savedMissions findIf {_x isEqualType "" && {_x == _missionKey}}) < 0) then {
     _savedMissions pushBack _missionKey;
     profileNamespace setVariable [QMOD(SAVEDMISSIONS), _savedMissions];
+    ALiVE_storeFile_dirtyShared = true;
 };
 
 // Save Docs
@@ -67,7 +69,7 @@ TRACE_1("Saving Data", _data);
 if ((missionNamespace getVariable [QMOD(PNS_HOLD_FRAME), -1]) == diag_frameNo) then {
     MOD(PNS_HOLD_DIRTY) = true;
 } else {
-    saveProfileNamespace;
+    ["flush"] call ALiVE_fnc_storeFile;
 };
 
 _result;
