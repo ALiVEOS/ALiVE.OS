@@ -436,9 +436,22 @@ class FSM
                          "                        if (_danger >= 0 && {_tstate in [""capture"",""recon""]}) then {_size = _there + _sectionsamount_attack};" \n
                          "                    };" \n
                          "" \n
+                         "                    // A large idle reserve (about 200 groups at an HQ on the MSI, 13 Nov) sent only 4 groups to each attack," \n
+                         "                    // so most of it never left. An attack takes one more group for every 25 idle ones, up to 4 more, and" \n
+                         "                    // the extra groups come only from idle ones, never from groups holding another objective" \n
+                         "                    private _sizeBase = _size;" \n
+                         "                    if (_controltype != ""assault"" && {_sectionsamount_attack > 0}) then {" \n
+                         "                        private _pool = [];" \n
+                         "                        {_pool append ([_OPCOM_HANDLER,_x,[]] call ALiVE_fnc_HashGet)} forEach _attackSectionTypes;" \n
+                         "                        private _taken = +([_OPCOM_HANDLER,""pendingorders"",[]] call ALiVE_fnc_HashGet);" \n
+                         "                        _taken append (keys ([_OPCOM_HANDLER,""profileObjectiveAssignment"",createHashMap] call ALiVE_fnc_HashGet));" \n
+                         "                        _taken append ([_OPCOM_HANDLER,""ProfileIDsReserve"",[]] call ALiVE_fnc_HashGet);" \n
+                         "                        _size = _size + (4 min floor (count (_pool - _taken) / 25));" \n
+                         "                    };" \n
+                         "" \n
                          "                    switch (_danger < 0) do {" \n
-                         "                        case (true) : {_recon = [_objective,_size]};" \n
-                         "                        case (false) : {_capture = [_objective,_size]};" \n
+                         "                        case (true) : {_recon = [_objective,_size,_sizeBase]};" \n
+                         "                        case (false) : {_capture = [_objective,_size,_sizeBase]};" \n
                          "                    };" \n
                          "" \n
                          "                    if (_danger > 0 && {time < _orderDeadline}) then {" \n
@@ -1228,15 +1241,18 @@ class FSM
                          "_timestamp = time;" \n
                          "" \n
                          "//prepare data" \n
+                         "_sizeBase = -1;" \n
                          "if !(isnil ""_recon"") then {" \n
                          "    _operation = ""recon"";" \n
                          "    _objective = _recon select 0;" \n
                          "    _size = _recon select 1;" \n
+                         "    _sizeBase = _recon param [2,-1];" \n
                          "};" \n
                          "if !(isnil ""_capture"") then {" \n
                          "    _operation = ""capture"";" \n
                          "    _objective = _capture select 0;" \n
                          "    _size = _capture select 1;" \n
+                         "    _sizeBase = _capture param [2,-1];" \n
                          "};" \n
                          "if !(isnil ""_defend"") then {" \n
                          "    _operation = ""defend"";" \n
@@ -1274,7 +1290,7 @@ class FSM
                          "_section = [_objective, ""section"",[]] call ALiVE_fnc_HashGet;" \n
                          "if (!_manualOrder && {count _section < _size}) then {" \n
                          "    [_orderSearchHold] call _holdOrder;" \n
-                         "    _hdl = [_OPCOM_HANDLER,[_objective,_size,_taskTypes],_controltype == ""assault"",_operation == ""recon""] spawn {" \n
+                         "    _hdl = [_OPCOM_HANDLER,[_objective,_size,_taskTypes],_controltype == ""assault"",_operation == ""recon"",_sizeBase] spawn {" \n
                          "        private [""_objective"",""_pos"",""_taskTypes""];" \n
                          "" \n
                          "        _objective = _this select 1 select 0;" \n
@@ -1288,7 +1304,7 @@ class FSM
                          "        // otherwise take groups off the objectives the commander holds" \n
                          "        private _freeOnly = _this select 2;" \n
                          "        if (_freeOnly) then {_size = (_size - count ([_objective,""section"",[]] call ALiVE_fnc_HashGet)) max 0};" \n
-                         "        _sectionAssist = if (_size > 0) then {[_this select 0,""NearestAvailableSection"",[_pos,_size,_taskTypes,[_objective,""objectiveType"",""MIL""] call ALiVE_fnc_HashGet,_freeOnly,_this select 3]] call ALiVE_fnc_OPCOM} else {[]};" \n
+                         "        _sectionAssist = if (_size > 0) then {[_this select 0,""NearestAvailableSection"",[_pos,_size,_taskTypes,[_objective,""objectiveType"",""MIL""] call ALiVE_fnc_HashGet,_freeOnly,_this select 3,_this select 4]] call ALiVE_fnc_OPCOM} else {[]};" \n
                          "        if !([_objective,""deleted"",false] call ALiVE_fnc_HashGet) then {" \n
                          "            [_objective, ""sectionAssist"",_sectionAssist] call ALiVE_fnc_HashSet;" \n
                          "        };" \n

@@ -1591,7 +1591,8 @@ switch (_operation) do {
             ["_types", ["infantry"]],
             ["_objectiveType", ""],
             ["_freeOnly", false],
-            ["_preferSpecOps", false]
+            ["_preferSpecOps", false],
+            ["_sizeBase", -1]
         ];
 
         // Town-Only / Base-Only Factions: a civilian objective takes no base-only faction, any other objective
@@ -1612,8 +1613,10 @@ switch (_operation) do {
         _reserved = [_logic,"ProfileIDsReserve", []] call ALiVE_fnc_HashGet;
         _busy = _busy - _reserved;
 
-        // If great amount of troops is requested reroute profiles if needed (never for _freeOnly, an Assault wave)
-        _troops = if (_size >= 5 && {!_freeOnly}) then { _troops - _reserved } else { _troops - (_busy + _reserved) };
+        // If great amount of troops is requested reroute profiles if needed (never for _freeOnly, an Assault wave).
+        // An attack grown by the idle reserve asks by its size before that, so it never takes groups off other objectives
+        private _rerouteAt = if (_sizeBase < 0) then {_size} else {_sizeBase};
+        _troops = if (_rerouteAt >= 5 && {!_freeOnly}) then { _troops - _reserved } else { _troops - (_busy + _reserved) };
 
         // Read shared search settings once per section request.
         private _searchSide = [_logic,"side","EAST"] call ALiVE_fnc_HashGet;
@@ -1717,6 +1720,49 @@ switch (_operation) do {
             ((count _troopsUnsorted < _size) && {_radius < 15000});
         } do {
             _radius = _radius + 2000;
+        };
+
+        // An attack grown by a large idle reserve (TACOM's _sizeBase) takes its extra groups from where the idle groups
+        // pile up, not from those nearest the target: on the MSI (13 Nov) the ~190 groups at Loy Manara were never the
+        // nearest to any target, so the bigger attacks were filled from the front and the pile stayed. The pile is the
+        // 500 m square holding the most idle groups (25 or more) within 10 km of the target; short of that, the
+        // nearest groups fill the section as before.
+        if (_sizeBase >= 0 && {_size > _sizeBase} && {!_preferSpecOps} && {count _troopsUnsorted > _sizeBase}) then {
+            private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
+            private _cells = createHashMap;
+            {
+                private _p = _profilesById get _x;
+                if (!isNil "_p") then {
+                    private _ppos = [_p,"position",[0,0,0]] call ALiVE_fnc_HashGet;
+                    private _key = [floor ((_ppos select 0) / 500), floor ((_ppos select 1) / 500)];
+                    (_cells getOrDefault [_key, [], true]) pushBack _p;
+                };
+            } forEach _troops;
+            private _best = [];
+            private _bestKey = [];
+            {
+                private _centre = [(_x select 0) * 500 + 250, (_x select 1) * 500 + 250, 0];
+                if (count _y > count _best && {_centre distance2D _pos < 10000}) then { _best = _y; _bestKey = _x };
+            } forEach _cells;
+            if (count _best >= 25) then {
+                private _chosen = _troopsUnsorted select [0, _sizeBase];
+                private _centre = [(_bestKey select 0) * 500 + 250, (_bestKey select 1) * 500 + 250, 0];
+                private _pile = [_best, [_centre], { ([_x,"position",[0,0,0]] call ALiVE_fnc_HashGet) distance2D _Input0 }, "ASCEND"] call ALiVE_fnc_SortBy;
+                {
+                    if (count _chosen >= _size) exitWith {};
+                    private _profile = _x;
+                    private _profileID = [_profile,"profileID",""] call ALiVE_fnc_HashGet;
+                    private _ok = _checked get _profileID;
+                    if (isNil "_ok") then {
+                        _ok = call _fnc_valid;
+                        _checked set [_profileID, _ok];
+                    };
+                    if (_ok && {!(_profile in _chosen)}) then { _chosen pushBack _profile };
+                } forEach _pile;
+                // the nearest ones fill anything the pile could not
+                { if (count _chosen < _size && {!(_x in _chosen)}) then { _chosen pushBack _x } } forEach _troopsUnsorted;
+                _troopsUnsorted = _chosen;
+            };
         };
 
         //Sort by distance
