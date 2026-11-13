@@ -50,6 +50,8 @@ class FSM
                          "_group = _this select 0;" \n
                          "_fsmArgs = +_this;" \n
                          "_unit = _this select 1;" \n
+                         "// the patrol ends once its group is given other orders (releaseGarrisonHold sets this to 0)" \n
+                         "_patrolId = _unit getVariable [""ALiVE_garrisonPatrol"", -1];" \n
                          "_buildings = _this select 2;" \n
                          "_debug = _this select 3;" \n
                          "// Patrol disposition (default Safe/walking). Set up front so" \n
@@ -63,9 +65,11 @@ class FSM
                          "_iteration = 0;" \n
                          "_destroy = false;" \n
                          "" \n
-                         "dostop _unit;" \n
-                         "_unit setBehaviour _behaviour;" \n
-                         "_unit setSpeedMode _speed;" \n
+                         "if (_patrolId isNotEqualTo 0) then {" \n
+                         "    dostop _unit;" \n
+                         "    _unit setBehaviour _behaviour;" \n
+                         "    _unit setSpeedMode _speed;" \n
+                         "};" \n
                          "_startWait = time;" \n
                          "// debug ---------------------------------------" \n
                          "if(_debug) then { [""Executed FSM Command - [buildingPatrol.fsm] called _unit: %1, _waitTime: %2 mins"",_unit, _waitTime/60] call ALiVE_fnc_dump; };" \n
@@ -108,6 +112,7 @@ class FSM
                         itemno = 5;
                         init = /*%FSM<STATEINIT""">*/"" \n
                          "if !(alive _unit) then {_destroy = true;};" \n
+                         "private _p = _unit getVariable [""ALiVE_garrisonPatrol"", -1]; if (_p isEqualTo 0 || {_p isNotEqualTo _patrolId}) then {_destroy = true;};" \n
                          "// the man's group was handed to another machine: the patrol carries on there, and this copy ends (F444)" \n
                          "if (!_destroy && {!local _unit}) then { [_fsmArgs, ""\x\alive\addons\mil_command\buildingPatrol.fsm""] remoteExec [""execFSM"", _unit]; _destroy = true; };" \n
                          "_waitTime = random [60,160,360];" \n
@@ -121,7 +126,7 @@ class FSM
                          "  // debug ---------------------------------------" \n
                          "  if(_debug) then { [""Executed FSM Command - [buildingPatrol.fsm] _iteration: %4 _unit: %1, _building: %2 _randomPos: %3"",_unit, _building, _randomPos, _iteration] call ALiVE_fnc_dump; };" \n
                          "  // debug ---------------------------------------" \n
-                         "  [_unit, _randomPos] call ALiVE_fnc_doMoveRemote;" \n
+                         "  if (!_destroy) then { [_unit, _randomPos] call ALiVE_fnc_doMoveRemote; };" \n
                          "" \n
                          "_iteration = _iteration + 1;" \n
                          "_startWait = time;"/*%FSM</STATEINIT""">*/;
@@ -147,10 +152,10 @@ class FSM
                                 class DESTROY
                                 {
                                         itemno = 3;
-                                        priority = 0.000000;
+                                        priority = 1.000000;
                                         to="END";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_destroy"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_destroy || {private _p = _unit getVariable [""ALiVE_garrisonPatrol"", -1]; _p isEqualTo 0 || {_p isNotEqualTo _patrolId}}"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -205,10 +210,10 @@ class FSM
                                 class DESTROY
                                 {
                                         itemno = 3;
-                                        priority = 0.000000;
+                                        priority = 1.000000;
                                         to="END";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_destroy"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_destroy || {private _p = _unit getVariable [""ALiVE_garrisonPatrol"", -1]; _p isEqualTo 0 || {_p isNotEqualTo _patrolId}}"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/

@@ -563,6 +563,10 @@ switch(_operation) do {
     // them pinned. A garrison that has simply finished keeps them. A garrison given again holds them again.
     // Given men instead ([objNull, "releaseGarrisonHold", [men]]), it lets those go: a man leaving his
     // group for a player's, or a player joining his, must not stay pinned.
+    // Their building patrols end too (mil_command buildingPatrol.fsm): a patrol had the whole group
+    // search a building every few minutes, which kept a group given a new order in combat, its
+    // waypoints locked and its leader wandering. Let go as a group, it is also put back to its
+    // usual behaviour, with the search's leftovers cleared, where the group is local.
     case "releaseGarrisonHold": {
         private _men = [];
         if (_args isEqualType [] && {_args isNotEqualTo []}) then {
@@ -571,8 +575,10 @@ switch(_operation) do {
             private _group = if (_logic isEqualType []) then { _logic select 2 select 13 } else { grpNull };
             if (_group isEqualType grpNull && {!isNull _group}) then { _men = units _group };
         };
+            private _heldGone = 0;
             {
                 if (_x getVariable ["ALiVE_garrisonHeld", false]) then {
+                    _heldGone = _heldGone + 1;
                     _x setVariable ["ALiVE_garrisonHeld", false, true];
                     if (local _x) then {
                         _x enableAI "PATH";
@@ -585,6 +591,40 @@ switch(_operation) do {
                     };
                 };
             } forEach _men;
+
+            private _patrolled = _men select { (_x getVariable ["ALiVE_garrisonPatrol", 0]) isNotEqualTo 0 };
+            {
+                _x setVariable ["ALiVE_garrisonPatrol", 0, true];
+            } forEach _patrolled;
+
+            private _group = if (_logic isEqualType []) then { _logic select 2 select 13 } else { grpNull };
+            if ((_patrolled isNotEqualTo [] || {_heldGone > 0}) && {_group isEqualType grpNull} && {!isNull _group}) then {
+                private _fnc_unSearch = {
+                    params ["_group", "_behaviour"];
+                    // the regroup waypoint CBA's building search leaves, as buildingPatrol.fsm clears it
+                    for "_i" from (count (waypoints _group)) - 1 to 0 step -1 do {
+                        if (((waypointStatements [_group, _i]) select 0) isEqualTo "({unitReady _x || !(alive _x)} count thisList) == count thisList") then {
+                            deleteWaypoint [_group, _i];
+                        };
+                    };
+                    _group lockWP false;
+                    _group setBehaviour _behaviour;
+                    { if (alive _x) then { _x doFollow (leader _group) } } forEach (units _group);
+                    // A leader stopped on his post or at the end of a patrol leg stays stopped through doFollow,
+                    // and so does his whole group: the group sat on its new waypoints. A move to where he
+                    // stands ends the stop, and he takes the group on to its waypoints.
+                    private _leader = leader _group;
+                    if (alive _leader && {currentCommand _leader == "STOP"}) then { _leader doMove (getPosATL _leader) };
+                };
+                private _behaviour = [_logic, "aiBehaviour", "AWARE"] call ALIVE_fnc_hashGet;
+                if (!(_behaviour isEqualType "") || {_behaviour == ""}) then { _behaviour = "AWARE" };
+                private _unSearchArgs = [_group, _behaviour];
+                if (local _group) then { _unSearchArgs call _fnc_unSearch } else { [_unSearchArgs, _fnc_unSearch] remoteExecCall ["call", leader _group] };
+            } else {
+                {
+                    if (local _x) then { _x doFollow (leader _x) } else { [_x, leader _x] remoteExecCall ["doFollow", _x] };
+                } forEach _patrolled;
+            };
     };
 
     case "insertWaypoint": {

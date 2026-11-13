@@ -215,6 +215,9 @@ private _fnc_hold = {
 private _fnc_patrol = {
     params ["_args"];
     private _unit = _args select 1;
+    // Which patrol this is. The patrol runs until the group is given other orders, when
+    // releaseGarrisonHold sets it to 0; a later garrison gives a new one, ending the old patrol.
+    _unit setVariable ["ALiVE_garrisonPatrol", diag_tickTime, true];
     if (local _unit) then {
         _args execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
     } else {
