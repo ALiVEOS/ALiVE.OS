@@ -50,7 +50,8 @@ switch (_operation) do {
         _result = hasInterface
             && {isClass (configFile >> "CfgPatches" >> "ace_common")}
             && {!isNil QMOD(sys_playeroptions)}
-            && {(MOD(sys_playeroptions) getVariable ["allowAceOptions", "false"]) in ["true", true]};
+            // on unless the mission turned it off: a mission saved without the setting has no value for it
+            && {(MOD(sys_playeroptions) getVariable ["allowAceOptions", "true"]) in ["true", true]};
     };
 
     // a value the server or mission chose for this setting. Both settings used here are

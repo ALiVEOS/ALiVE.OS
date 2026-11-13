@@ -585,7 +585,7 @@ class CfgVehicles
             };
 
             // ACE: lets players lighten their own ACE fatigue and weapon sway from the Player Options menu.
-            // Off by default, so a mission saved before this setting existed plays exactly as it did.
+            // On by default (Jman, 13 Nov), and a mission saved without the setting gets it on as well.
             class ACE_OPTIONS: ALiVE_ModuleSubTitle
             {
                 property = QGVAR(__LINE__);
@@ -596,7 +596,7 @@ class CfgVehicles
                 property = MVAR(allowAceOptions);
                 displayName = "$STR_ALIVE_PLAYEROPTIONS_ALLOWACE";
                 tooltip = "$STR_ALIVE_PLAYEROPTIONS_ALLOWACE_COMMENT";
-                defaultValue = """false""";
+                defaultValue = """true""";
                 class Values
                 {
                     class No
