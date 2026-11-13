@@ -26,7 +26,13 @@ Peer Reviewed:
 ---------------------------------------------------------------------------- */
 private ["_response"];
 
-_response = "SYS_DATA_ERROR"; // what the old plugin (@ALiVEServer, removed) answered once its service was gone
+// The old plugin (@ALiVEServer, removed) answered "SYS_DATA_ERROR" once its service was gone. The group
+// is now the Data module's: the ALiVE > Server > Old War Room Group Name setting, else "ALiVE"
+_response = missionNamespace getVariable ["ALIVE_sys_data_GROUP_ID", ""];
+if !(_response isEqualType "" && {_response != ""}) then {
+    _response = missionNamespace getVariable ["ALiVE_dataGroupName", ""];
+    if !(_response isEqualType "" && {_response != ""}) then {_response = "ALiVE"};
+};
 
 TRACE_1("GET GROUP ID: ", _response);
 

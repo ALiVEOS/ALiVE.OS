@@ -661,9 +661,8 @@ if (isDedicated || (isServer && _pns)) then {
 
                         // Check to see if it's time to write to the DB
                         if (diag_tickTime > (_lastSave + AAR_DEFAULT_SAVE_INTERVAL))  then {
-                            // async write
-                            _result = [GVAR(aar_datahandler), "bulkWrite", ["sys_aar", _aar, true, _missionName], "CouchDB"] call ALIVE_fnc_Data;
-                            TRACE_1("SYS_AAR",_result);
+                            // The old CouchDB service the AAR went to is gone and the War Room doesn't take it,
+                            // so the samples aren't sent anywhere
 
                             // reset data
                             _aar = [] call ALIVE_fnc_hashCreate;

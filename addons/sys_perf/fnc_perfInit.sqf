@@ -104,10 +104,9 @@ if (isDedicated && GVAR(ENABLED)) then {
                         } else {
                             _async = true;
                         };
-                        _result = [GVAR(datahandler), "write", [_module, _data, _async], "CouchDB" ] call ALIVE_fnc_Data;
-                        if (_result == "ERROR") then {
-                            ERROR("SYS PERF FAILED TO WRITE TO DATABASE");
-                        };
+                        // The old CouchDB service these records went to is gone and the War Room doesn't take
+                        // them, so they aren't sent anywhere
+                        _result = "";
                         TRACE_2("UPDATE PERF",_data,_result);
                         _result;
 

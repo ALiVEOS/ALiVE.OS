@@ -117,10 +117,11 @@ if (isDedicated && GVAR(ENABLED)) then {
                 _async = true;
             };
 
-            // To the War Room on alivemod.com when the Data module found its link (@alive_wr), else the old CouchDB path.
-            private _source = ["CouchDB", "WarRoom"] select (missionNamespace getVariable ["ALiVE_sys_data_warRoom", false]);
-            _result = [GVAR(datahandler), "write", [_module, _data, _async], _source] call ALIVE_fnc_Data;
-            if (_result == "ERROR") then {
+            // To the War Room on alivemod.com when the Data module found its link (@alive_wr). The old CouchDB
+            // service is gone, so without the link the event isn't sent anywhere.
+            if !(missionNamespace getVariable ["ALiVE_sys_data_warRoom", false]) exitWith {};
+            _result = [GVAR(datahandler), "write", [_module, _data, _async], "WarRoom"] call ALIVE_fnc_Data;
+            if (isNil "_result" || {_result isEqualTo "ERROR"}) then {
                 ERROR("SYS STATISTICS FAILED TO WRITE TO DATABASE");
             };
             TRACE_2("UPDATE EVENTS",_data,_result);
@@ -243,24 +244,6 @@ if (isMultiplayer && hasInterface && GVAR(ENABLED)) then {
     };
 
     // Player eventhandlers
-
-    // Set up eventhandler to grab player profile from website
-    "STATS_PLAYER_PROFILE" addPublicVariableEventHandler {
-        if (STATS_PLAYER_PROFILE_DONE) exitWith {}; // If i've loaded my player profile already exit
-        private ["_data","_result"];
-
-        TRACE_1("STATS PLAYER PROFILE",_this);
-
-        // Read data from server PVEH
-        _data = _this select 1;
-
-        // Create player profile in diary record
-        _result = [_data] call ALIVE_fnc_stats_createPlayerProfile;
-
-        TRACE_1("STATS PLAYER PROFILE SUCCESS",_result);
-
-        STATS_PLAYER_PROFILE_DONE = true;
-    };
 
     // Addresses race condition at module start on client
     if (isNil QGVAR(groupTag)) then {
