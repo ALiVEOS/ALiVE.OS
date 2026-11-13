@@ -135,8 +135,12 @@ if (_stats || {_killFeed != "None"}) then {
             _killerweapon = format ["Run over (%1)", getText (configFile >> "cfgVehicles" >> (typeOf _this) >> "displayName")];
             _killerweaponType = typeOf _this;
         };
+        // A vehicle the game names as its own killer (it crashed, or was wrecked with nobody to blame) has no
+        // killer: it was read as a gunless vehicle and recorded "Run over (CH-47F)" for a helicopter that crashed
+        private _selfWrecked = !(_killed isKindOf "Man") && {_killer == _killed};
+        if (_selfWrecked) then { _killerweapon = ""; _killerweaponType = "" };
         // no killer at all (ACE kept a null last damage source): no vehicle to name, so not a run-over
-        if (!isNull _killer && {!(_killer isKindof "Man")}) then {
+        if (!isNull _killer && {!_selfWrecked} && {!(_killer isKindof "Man")}) then {
                 _killerweapon = _killerweapon + format[" (%1)", getText (configFile >> "cfgVehicles" >> (typeof (vehicle _killer)) >> "displayName")];
                 if ((currentWeapon _killer) isEqualTo "" || {(currentWeapon _killer) call _isHorn}) then { (vehicle _killer) call _runOver };
         };
@@ -162,7 +166,11 @@ if (_stats || {_killFeed != "None"}) then {
         };
 
         // the kinds the War Room draws: what did it, what the killer was in (or "man"), and what died
-        private _weaponKind = if ((_killerweapon find "Run over (") == 0) then {"runover"} else {_killerweaponType call GVAR(fnc_weaponKind)};
+        private _weaponKind = switch (true) do {
+            case _selfWrecked: {"none"};
+            case ((_killerweapon find "Run over (") == 0): {"runover"};
+            default {_killerweaponType call GVAR(fnc_weaponKind)};
+        };
         private _killerKind = (vehicle _killer) call GVAR(fnc_vehicleKind);
         private _killedKind = _killed call GVAR(fnc_vehicleKind);
 
