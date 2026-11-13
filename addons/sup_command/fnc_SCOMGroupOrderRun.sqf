@@ -24,7 +24,7 @@ nearest men, and holds until the gun is destroyed. A patrol walks its loop until
 A follow keeps within 100 m of the group it follows, sent after it again whenever that group has moved
 100 m, and is done when that group is gone. A retreat goes to its point at full speed holding fire, done
 as a move is, and its War Room stance is put back after. A defend goes to its point and garrisons it
-(ALIVE_fnc_garrison, so it does so again whenever the group spawns) until the next order. A get in puts
+(ALIVE_fnc_garrison, again whenever the group spawns there) until the next order. A get in puts
 the group's men in the vehicle's free seats, driver first, and is done once they are all aboard, or when
 the vehicle is destroyed or the group is no longer spawned; the group keeps the vehicle for its next moves.
 
@@ -134,7 +134,7 @@ switch (_op) do {
         if (!isNil "_profile") then {
             if ([_profile, "warRoomDefending", false] call ALiVE_fnc_hashGet) then {
                 [_profile, "warRoomDefending", false] call ALiVE_fnc_hashSet;
-                [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
+                [_profile, "releaseGarrisonHold"] call ALiVE_fnc_profileEntity;
             };
             if ([_profile, "warRoomRetreating", false] call ALiVE_fnc_hashGet) then {
                 [_profile, "warRoomRetreating", false] call ALiVE_fnc_hashSet;
@@ -166,7 +166,7 @@ switch (_op) do {
         // a defend's garrison holds the men on their posts, so it ends with the step
         if ([_profile, "warRoomDefending", false] call ALiVE_fnc_hashGet) then {
             [_profile, "warRoomDefending", false] call ALiVE_fnc_hashSet;
-            [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
+            [_profile, "releaseGarrisonHold"] call ALiVE_fnc_profileEntity;
         };
         // and a retreat's hold-fire with it (on the profile: the step's state starts afresh with each step)
         if ([_profile, "warRoomRetreating", false] call ALiVE_fnc_hashGet) then {
@@ -335,27 +335,33 @@ switch (_op) do {
                 };
             };
             case "defend": {
-                // holds until the next order: it only garrisons once there (or once its route to it is used up)
-                if ([_profile, "warRoomDefending", false] call ALiVE_fnc_hashGet) exitWith {
-                    // a garrison something else took off it, or one it has wandered from, is sent back to the point
-                    private _radius = if (_extra isEqualType 0 && {_extra > 0}) then {_extra} else {100};
-                    private _kept = (([_profile, "activeCommands", []] call ALiVE_fnc_hashGet) findIf { toLower (_x param [0, ""]) == "alive_fnc_garrison" }) >= 0;
-                    if (_kept && {(_here distance2D _pos) < _radius * 1.5}) exitWith {};
-                    ["ALiVE SCOM - War Room defend: %1 %2, sent back to its point", _id, ["lost its garrison", format ["is %1 m from its point", round (_here distance2D _pos)]] select _kept] call ALiVE_fnc_dump;
-                    [_profile, "warRoomDefending", false] call ALiVE_fnc_hashSet;
-                    if (_kept) then { [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity };
-                    [_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
-                    [_profile, "addWaypoint", [_profile, _pos] call _fnc_waypoint] call ALiVE_fnc_profileEntity;
-                };
+                // Holds its point until the next order. Once there (or once a group that isn't spawned has used up
+                // its route to it), a spawned group garrisons it, and so does each group it spawns as later. The
+                // profile's command list is not used for this: on a test server the garrison put there was gone
+                // again within 30 s every time.
+                private _radius = if (_extra isEqualType 0 && {_extra > 0}) then {_extra} else {100};
                 private _there = (_here distance2D _pos) < REACHED
                     || {!([_profile, "active", false] call ALiVE_fnc_hashGet)
                         && {([_profile, "waypoints", []] call ALiVE_fnc_hashGet) isEqualTo []}
                         && {([_profile, "pendingWaypointPaths", []] call ALiVE_fnc_hashGet) isEqualTo []}};
-                if (!_there) exitWith {};
-                private _radius = if (_extra isEqualType 0 && {_extra > 0}) then {_extra} else {100};
-                [_profile, "warRoomDefending", true] call ALiVE_fnc_hashSet;
-                // a spawned group garrisons now (the command router starts it), one that isn't when it spawns
-                [_profile, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", _radius]] call ALiVE_fnc_profileEntity;
+                if ([_profile, "warRoomDefending", false] call ALiVE_fnc_hashGet) then {
+                    // one that has wandered well away from it is sent back
+                    if ((_here distance2D _pos) > _radius * 1.5) exitWith {
+                        ["ALiVE SCOM - War Room defend: %1 is %2 m from its point, sent back", _id, round (_here distance2D _pos)] call ALiVE_fnc_dump;
+                        [_profile, "warRoomDefending", false] call ALiVE_fnc_hashSet;
+                        [_profile, "releaseGarrisonHold"] call ALiVE_fnc_profileEntity;
+                        _state deleteAt "garrisoned";
+                        [_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
+                        [_profile, "addWaypoint", [_profile, _pos] call _fnc_waypoint] call ALiVE_fnc_profileEntity;
+                    };
+                } else {
+                    if (_there) then { [_profile, "warRoomDefending", true] call ALiVE_fnc_hashSet };
+                };
+                if !([_profile, "warRoomDefending", false] call ALiVE_fnc_hashGet) exitWith {};
+                private _g = [_profile] call _fnc_group;
+                if (isNull _g || {(_state getOrDefault ["garrisoned", grpNull]) isEqualTo _g}) exitWith {};
+                _state set ["garrisoned", _g];
+                [_profile, _radius] spawn ALIVE_fnc_garrison;
             };
             case "getin": {
                 private _vp = [ALiVE_profileHandler, "getProfile", _extra] call ALiVE_fnc_profileHandler;
