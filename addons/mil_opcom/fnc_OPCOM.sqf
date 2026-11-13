@@ -1732,7 +1732,9 @@ switch (_operation) do {
             private _cells = createHashMap;
             {
                 private _p = _profilesById get _x;
-                if (!isNil "_p") then {
+                // groups of 1 or 2 men (sentry pairs guarding a base) are left where they are: as padding they'd take
+                // a group's place in the attack and add next to nothing to it
+                if (!isNil "_p" && {([_p,"unitCount",0] call ALiVE_fnc_HashGet) >= 3}) then {
                     private _ppos = [_p,"position",[0,0,0]] call ALiVE_fnc_HashGet;
                     private _key = [floor ((_ppos select 0) / 500), floor ((_ppos select 1) / 500)];
                     (_cells getOrDefault [_key, [], true]) pushBack _p;
