@@ -56,6 +56,16 @@ private _handle = [_interval, _once] spawn {
 	    TitleText ["ALiVE IS SAVING...","PLAIN"];
 	    sleep 1;
 
+	    // Export the profiles that aren't spawned a few at a time first, so the one-frame save below only
+	    // has to export the ones spawned or changed since
+	    private _prepStart = diag_tickTime;
+	    private _prepared = 0;
+	    // (only when this pass saves the profiles: the profile save skips itself within five minutes of the last one)
+	    if ((missionNamespace getVariable ["ALIVE_saveProfilesPersistent", false]) && {!isNil "ALIVE_profileHandler"}
+	        && {isNil "ALiVE_sysProfileLastSaveTime" || {time - ALiVE_sysProfileLastSaveTime > 300}}) then {
+	        _prepared = [ALIVE_profileHandler, "prepareExportProfileData"] call ALIVE_fnc_profileHandler;
+	    };
+	    private _prepTime = diag_tickTime - _prepStart;
 	    private _saveStart = diag_tickTime;
 	    ALiVE_diag_profileSaveSplit = nil;
 	    // the time each part of the save took, for the AUTOSAVE event: a stage runs from its label to the next one
@@ -232,13 +242,16 @@ private _handle = [_interval, _once] spawn {
 			"" call _fnc_stage;
 
 		} call CBA_fnc_Directcall;
-	    // how long the one-frame save held the server, for the War Room's Diagnostics
+	    ALiVE_profileExportCache = nil;
+	    // how long the one-frame save held the server, the file write included, for the RPT and the War Room's Diagnostics
+	    private _heldFor = (round ((diag_tickTime - _saveStart) * 100)) / 100;
 	    if (isServer && {!isNil "ALiVE_fnc_diagEvent"}) then {
-	        ["SYS_DATA", "AUTOSAVE", format ["Saved in %1 s, ms: %2%3", (round ((diag_tickTime - _saveStart) * 100)) / 100, _stages joinString ", ", missionNamespace getVariable ["ALiVE_diag_profileSaveSplit", ""]], [0,0]] call ALiVE_fnc_diagEvent;
+	        ["SYS_DATA", "AUTOSAVE", format ["Saved in %1 s, ms: %2%3%4", _heldFor, _stages joinString ", ", missionNamespace getVariable ["ALiVE_diag_profileSaveSplit", ""], if (_prepared isEqualType 0 && {_prepared > 0}) then { format ["; %1 profiles prepared over %2 s before it", _prepared, (round (_prepTime * 10)) / 10] } else {""}], [0,0]] call ALiVE_fnc_diagEvent;
 	    };
 
 	    sleep 0.2;
         ["SAVING FINISHED!"] call ALiVE_fnc_dumpMPH;
+        ["SYS DATA PNS Autosave - the save held the server for %1 s, the file write included", _heldFor] call ALiVE_fnc_dump;
 	    sleep 2;
 	    TitleText ["","PLAIN"];
 

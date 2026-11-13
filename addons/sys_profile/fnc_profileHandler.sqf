@@ -1039,7 +1039,10 @@ switch(_operation) do {
         _splitAt = diag_tickTime;
         _saveResult = [ALIVE_profileDatahandler, "bulkSave", ["sys_profile", _exportProfiles, _missionName, _async]] call ALIVE_fnc_Data;
         // read by the autosave's AUTOSAVE event: gathering the profiles against storing them
-        ALiVE_diag_profileSaveSplit = format ["; %1 profiles: gather %2, store %3", count (_exportProfiles select 1), _exportMs, round ((diag_tickTime - _splitAt) * 1000)];
+        private _reused = missionNamespace getVariable ["ALiVE_profileExportReused", []];
+        ALiVE_profileExportReused = nil;
+        ALiVE_diag_profileSaveSplit = format ["; %1 profiles: gather %2, store %3%4", count (_exportProfiles select 1), _exportMs, round ((diag_tickTime - _splitAt) * 1000),
+            if (_reused isEqualTo []) then {""} else { format [" (%1 prepared before the save, %2 exported in it)", _reused select 0, _reused select 1] }];
 
         _result set [0,_saveResult];
 
@@ -1095,6 +1098,44 @@ switch(_operation) do {
 
         _profiles = [_logic, "getProfiles"] call MAINCLASS;
         _exportProfiles = [] call ALIVE_fnc_hashCreate;
+
+        // Given a list of profiles, only those are exported (prepareExportProfileData uses this).
+        private _exportList = if (_args isEqualType []) then { _args } else { _profiles select 2 };
+
+        // Profiles prepareExportProfileData exported shortly before, a few at a time, are reused when
+        // nothing in them has changed since and they are still not spawned, so the save's one frame
+        // only exports the rest. The prepared copies are used once.
+        private _prepared = missionNamespace getVariable "ALiVE_profileExportCache";
+        ALiVE_profileExportCache = nil;
+        if (!(_args isEqualType []) && {!isNil "_prepared"}) exitWith {
+            private _entries = [];
+            private _redo = [];
+            {
+                private _one = _x;
+                private _id = _x select 2 select 4;
+                private _hit = if ([_x, "active", false] call ALIVE_fnc_hashGet) then { nil } else { _prepared get _id };
+                if (!isNil "_hit" && {(_hit select 0) isEqualTo ([_logic, "exportSignature", _x] call MAINCLASS)}) then {
+                    // where it is now, which way it faces, and when the simulator last moved it
+                    private _entry = _hit select 1;
+                    {
+                        if (_x in (_entry select 1)) then { [_entry, _x, [_one, _x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet };
+                    } forEach ["position", "direction", "timeLastSim"];
+                    _entries pushBack [_id, _entry];
+                } else {
+                    _entries pushBack [_id];
+                    _redo pushBack _x;
+                };
+            } forEach (_profiles select 2);
+            private _fresh = [_logic, "exportProfileData", _redo] call MAINCLASS;
+            {
+                _x params ["_id", "_entry"];
+                if (isNil "_entry") then { _entry = [_fresh, _id] call ALIVE_fnc_hashGet };
+                // a player's profile has no entry, as before
+                if (!isNil "_entry") then { [_exportProfiles, _id, _entry] call ALIVE_fnc_hashSet };
+            } forEach _entries;
+            missionNamespace setVariable ["ALiVE_profileExportReused", [count _entries - count _redo, count _redo]];
+            _result = _exportProfiles;
+        };
 
         _ranksMap = [] call ALIVE_fnc_hashCreate;
         [_ranksMap, "PRIVATE", 0] call ALIVE_fnc_hashSet;
@@ -1396,10 +1437,51 @@ switch(_operation) do {
 
             };
 
-        } forEach (_profiles select 2);
+        } forEach _exportList;
 
         _result = _exportProfiles;
 
+    };
+
+    case "exportSignature": {
+        // What a profile holds, as text, for prepareExportProfileData to tell whether it changed. Left out:
+        // the objective a placed group belongs to (large, and the save leaves it out too), and where the
+        // profile is, which way it faces and when the simulator last moved it, which change on every
+        // step of a virtual group's move and are written into the prepared copy at the save instead.
+        private _keys = _args select 1;
+        private _values = _args select 2;
+        private _skip = (["position", "direction", "timeLastSim", "homeCluster"] apply { _keys find _x }) select { _x >= 0 };
+        _skip sort true;
+        private _text = "";
+        private _from = 0;
+        { _text = _text + str (_values select [_from, _x - _from]); _from = _x + 1 } forEach _skip;
+        _text = _text + str (_values select [_from]);
+        _result = [_text, !isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _values select 4, false] call ALIVE_fnc_hashGet}];
+    };
+
+    case "prepareExportProfileData": {
+        // Run scheduled just before a save: exports the profiles that aren't spawned, ten at a time,
+        // each ten in one go, and keeps them with a signature of what they held, for
+        // exportProfileData to reuse the ones that haven't changed by the time the save runs.
+        private _cache = createHashMap;
+        private _all = ([_logic, "getProfiles"] call MAINCLASS) select 2;
+        private _list = _all select [0, count _all];
+        for "_i" from 0 to (count _list - 1) step 10 do {
+            private _chunk = (_list select [_i, 10]) select { !([_x, "active", false] call ALIVE_fnc_hashGet) };
+            if (count _chunk > 0) then {
+                isNil {
+                    private _signatures = _chunk apply { [_logic, "exportSignature", _x] call MAINCLASS };
+                    private _part = [_logic, "exportProfileData", _chunk] call MAINCLASS;
+                    {
+                        private _entry = [_part, _x select 2 select 4] call ALIVE_fnc_hashGet;
+                        if (!isNil "_entry") then { _cache set [_x select 2 select 4, [_signatures select _forEachIndex, _entry]] };
+                    } forEach _chunk;
+                };
+            };
+            if (canSuspend) then { sleep 0.02 };
+        };
+        ALiVE_profileExportCache = _cache;
+        _result = count _cache;
     };
 
     case "importProfileData": {

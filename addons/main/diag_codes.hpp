@@ -20,7 +20,7 @@ ALiVE_diag_snap, a ring of 120, one row every 30 s:
    spawnsSinceLast, despawnsSinceLast (profiles, since the previous row)]
 
 ALiVE_diag_events, a ring of 200:
-  [seq, serverTime (s), category, code, text (200 characters at most), [x, y] or [], repeatCount]
+  [seq, serverTime (s), category, code, text (1000 characters at most), [x, y] or [], repeatCount]
   repeatCount, the 7th element, is there only when the row stands for more than one
   occurrence: past 6 a minute for one code, the rest are counted and carried on the
   next row of that code.

@@ -15,7 +15,8 @@ that code carries the count as its 7th element.
 Parameters:
 String - category (DIAG_PATH, DIAG_ML, DIAG_SPAWN, DIAG_OPCOM, DIAG_ERROR)
 String - code
-String - text, cut to 200 characters
+String - text, cut to 1000 characters. No player names or player IDs: the War Room's
+Diagnostics can be shown publicly for a server
 Array - (optional) position
 
 Returns:
@@ -45,7 +46,7 @@ ALiVE_diag_codeTimes set [_code, _times];
 
 ALiVE_diag_seq = ALiVE_diag_seq + 1;
 private _row = [
-    ALiVE_diag_seq, round (_now * 10) / 10, _category, _code, _text select [0, 200],
+    ALiVE_diag_seq, round (_now * 10) / 10, _category, _code, _text select [0, 1000],
     if (count _pos >= 2) then { [round (_pos select 0), round (_pos select 1)] } else { [] }
 ];
 private _held = ALiVE_diag_codeHeld getOrDefault [_code, 0];
