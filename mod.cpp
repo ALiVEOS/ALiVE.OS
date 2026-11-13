@@ -2,8 +2,8 @@ dir = "@ALIVE";
 name = "Arma 3 ALiVE";
 picture = "x\alive\addons\main\logo_alive.paa";
 actionName = "$STR_MOD_LAUNCHER_ACTION";
-action = "http://alivemod.com";
-description = "Bugtracker: https://github.com/ALiVEOS/ALiVE.OS/issues<br/>Documentation: http://alivemod.com/wiki";
+action = "https://www.alivemod.com/alive3/";
+description = "Bugtracker: https://github.com/ALiVEOS/ALiVE.OS/issues<br/>Documentation: https://www.alivemod.com/alive3/";
 hideName = 1;
 hidePicture = 0;
 logo = "x\alive\addons\ui\logo_alive_crop.paa";
@@ -14,4 +14,4 @@ overview = "ALIVE is the next generation dynamic persistent mission Mod for Arma
 author = "ALiVE Mod Team";
 overviewPicture = "x\alive\addons\main\logo_alive.paa";
 overviewText = "Advanced Light Infantry Virtual Environment (ALiVE) - Bringing the Arma 3 sandbox ALiVE!";
-overviewFootnote = "<br /><br /><t color='#999999'>This content is under Attribution-NonCommercial-NoDerivs 3.0 Unported License.<br />Press <t /><t color='#19d3ff'>Left Shift + P<t /><t color='#999999'> to open the store page for more information.<t />";
+overviewFootnote = "<br /><br /><t color='#999999'>Copyright the ALiVE Mod Team. All rights reserved. Free to play; no re-uploading, porting or monetising. See LICENSE.txt.<br />Press <t /><t color='#19d3ff'>Left Shift + P<t /><t color='#999999'> to open the store page for more information.<t />";
