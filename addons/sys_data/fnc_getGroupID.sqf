@@ -20,12 +20,13 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
 private ["_response"];
 
-_response = ["GroupName"] call ALIVE_fnc_sendToPlugIn;
+_response = "SYS_DATA_ERROR"; // what the old plugin (@ALiVEServer, removed) answered once its service was gone
 
 TRACE_1("GET GROUP ID: ", _response);
 

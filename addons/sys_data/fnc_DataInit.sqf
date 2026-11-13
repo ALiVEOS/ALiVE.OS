@@ -58,6 +58,13 @@ if (isnil "_logic") then {
 // Check data source. Local is the default: the Cloud service went with the War Room, and a
 // module created by script should get what the editor offers.
 GVAR(SOURCE) = _logic getVariable ["source","pns"];
+// The Cloud source (the old War Room's CouchDB, through @ALiVEServer) is gone. A mission still set to it,
+// the missions shipped with ALiVE among them, saves locally instead.
+if (GVAR(SOURCE) != "pns") then {
+    ["[ALiVE Data] Database Source %1 is no longer available, so this mission's data is saved locally", GVAR(SOURCE)] call ALiVE_fnc_dump;
+    GVAR(SOURCE) = "pns";
+    _logic setVariable ["source", "pns", true];
+};
 
 // Parse the Save Server UID allowlist (comma separated Steam UIDs) and broadcast it (#873)
 if (isServer) then {
@@ -110,11 +117,7 @@ if (isDedicated || (isServer && _pns)) then {
     // priority than this one. The move runs unscheduled so that no load can slip in
     // halfway through it. Names only a module can build are moved when that module
     // starts (ALiVE_fnc_storeMigrate).
-    if (_pns) then {
-        isNil { [] call ALiVE_fnc_storeMigrate };
-    } else {
-        ["[ALiVE Data] Cloud saves are now named per map, so documents saved under the old names will not be found"] call ALiVE_fnc_dump;
-    };
+    isNil { [] call ALiVE_fnc_storeMigrate };
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
         ["SYS DATA - GROUP NAME: %1",GVAR(GROUP_ID)] call ALiVE_fnc_dump;
@@ -185,12 +188,6 @@ if (isDedicated || (isServer && _pns)) then {
         _config = [];
     };
 
-    if (!_pns && _exit) exitWith {
-        ["SYS DATA - EXITING DATA INIT AS CANNOT CONNECT TO COUCHDB"] call ALIVE_fnc_dump;
-        GVAR(DISABLED) = true;
-        publicVariable QGVAR(DISABLED);
-    };
-
     // Check to see if the service is off
     if (!_exit && {[_config, "On"] call ALIVE_fnc_hashGet == "false"}) then {
         ["SYS DATA - CONNECTED TO ALIVEMOD.COM, BUT CLOUD SERVICE HAS BEEN TURNED OFF"] call ALIVE_fnc_dump;
@@ -210,11 +207,6 @@ if (isDedicated || (isServer && _pns)) then {
         _config = [];
     };
 
-    if (!_pns && _exit) exitWith {
-        ["SYS DATA - EXITING DATA INIT AS CANNOT CONNECT TO COUCHDB"] call ALiVE_fnc_dump;
-        GVAR(DISABLED) = true;
-        publicVariable QGVAR(DISABLED);
-    };
 
     // Global config overrides module settings
     if (!_exit) then {
@@ -271,49 +263,7 @@ if (isDedicated || (isServer && _pns)) then {
     // Set dictionary name
     _dictionaryName = "dictionary_" + _missionBase;
 
-    if (!_pns) then {
-        // Try loading dictionary from cloud db
-        ["SYS_DATA - Loading data dictionary %1.", _dictionaryName] call ALIVE_fnc_dump;
-
-        _response = [GVAR(datahandler), "read", ["sys_data", [], _dictionaryName]] call ALIVE_fnc_Data;
-        if ( typeName _response != "STRING") then {
-            ALIVE_DataDictionary = _response;
-
-            // Capture Dictionary revision information
-            GVAR(DictionaryRevs) pushback ([ALIVE_DataDictionary, "_rev"] call CBA_fnc_hashGet);
-
-            // Try loading more dictionary entries
-            private ["_i","_newresponse","_addResponse"];
-            _i = 1;
-            while {_dictionaryName = format ["dictionary_%1_%2", _missionBase, _i]; _newresponse = [GVAR(datahandler), "read", ["sys_data", [], _dictionaryName]] call ALIVE_fnc_Data; typeName _newresponse != "STRING"} do {
-
-                _addResponse = {
-                    [ALIVE_DataDictionary, _key, _value] call CBA_fnc_hashSet;
-                };
-
-                [_newresponse, _addResponse] call CBA_fnc_hashEachPair;
-                GVAR(DictionaryRevs) pushback ([_newresponse, "_rev"] call CBA_fnc_hashGet);
-                _i = _i + 1;
-            };
-
-            GVAR(dictionaryLoaded) = true;
-
-            if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["SYS DATA - DICTIONARY LOADED: %1",ALIVE_DataDictionary] call ALiVE_fnc_dump;
-            };
-
-        } else {
-            ["SYS_DATA - No data dictionary found, might be new mission"] call ALIVE_fnc_dump;
-            if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["SYS DATA - NO DICTIONARY AVAILABLE: %1",_response] call ALiVE_fnc_dump;
-            };
-
-            // Need to cancel loading data if there is no dictionary
-            GVAR(dictionaryLoaded) = false;
-        };
-    } else {
-        GVAR(dictionaryLoaded) = true;
-    };
+    GVAR(dictionaryLoaded) = true;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
         ["SYS DATA - MISSION: %1 %2 %3",_logic, MOD(sys_data), MOD(sys_data) getVariable "saveDateTime"] call ALiVE_fnc_dump;
@@ -727,34 +677,6 @@ if (isDedicated || (isServer && _pns)) then {
                 };
                 ["SYS DATA - AAR system stopped"] call ALiVE_fnc_dump;
             };
-        };
-    };
-} else {
-    if (GVAR(SOURCE) == "CouchDB" && {isServer && {hasInterface}}) then {
-        ["SYS_DATA - Cloud access is not granted for SP/EDITOR/HOST and only dedicated servers! Disabling SYS DATA..."] call ALIVE_fnc_dump;
-
-        // Off first, so nothing can see the module below without also seeing that it's off.
-        GVAR(DISABLED) = true;
-        PublicVariable QGVAR(DISABLED);
-
-        // Publish the module even though it's off. Player Logistics, IEDs, markers, SPOTREP,
-        // SITREP and PATROLREP wait for it and its startupComplete whenever it's placed, and
-        // waited forever here. Their load functions check DISABLED and load nothing.
-        MOD(sys_data) = _logic;
-        publicVariable QMOD(sys_data);
-
-        // Nothing to send statistics to, the same as a dedicated server that can't reach the cloud.
-        MOD(sys_data) setvariable ["disableStats", "true"];
-        ALIVE_sys_statistics_ENABLED = false;
-        publicVariable "ALIVE_sys_statistics_ENABLED";
-
-        // Only a mission maker previewing from the editor can act on this. The missions shipped
-        // with ALiVE still say Cloud, and a player can't change a setting inside the mod.
-        if (is3DENPreview || {is3DENMultiplayer}) then {
-            [
-                "ALiVE Data",
-                "Database Source is set to Cloud, which isn't available here, so nothing from this mission will be saved. Set it to Local on the ALiVE Data module to keep mission data."
-            ] call ALIVE_fnc_sendHint;
         };
     };
 };

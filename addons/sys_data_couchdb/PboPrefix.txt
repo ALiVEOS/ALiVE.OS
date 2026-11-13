@@ -1,8 +1,0 @@
-x\alive\addons\sys_data_couchdb
-=======HEADER=======
-prefix=x\alive\addons\sys_data_couchdb
-Mikero=DePbo.dll
-product=Arma 3
-version=1
-Pbo Type is: Arma Addon
-==================

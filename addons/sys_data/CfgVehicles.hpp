@@ -36,7 +36,6 @@ class CfgVehicles {
                                 class Values
                                 {
                                     class pns { name = "Local"; value = "pns"; default = 1; };
-                                    class COUCHDB { name = "Cloud"; value = "CouchDB"; };
                                 };
                         };
                         class HDR_SAVING : ALiVE_ModuleSubTitle { property = "ALiVE_sys_data_HDR_SAVING"; displayName = "SAVING"; };

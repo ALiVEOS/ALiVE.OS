@@ -16,16 +16,6 @@ class cfgFunctions {
                     file = "\x\alive\addons\sys_data\fnc_writeData_WarRoom.sqf";
                     ALIVE_RECOMPILE;
                 };
-                class sendToPlugIn {
-                    description = "Sends data to an external plugin via arma2net";
-                    file = "\x\alive\addons\sys_data\fnc_sendToPlugIn.sqf";
-                    ALIVE_RECOMPILE;
-                };
-                class sendToPlugInAsync {
-                    description = "Sends data to an external plugin via arma2net using an Async function";
-                    file = "\x\alive\addons\sys_data\fnc_sendToPlugInAsync.sqf";
-                    ALIVE_RECOMPILE;
-                };
                 class getServerIP {
                     description = "Gets the servers IP address via arma2net";
                     file = "\x\alive\addons\sys_data\fnc_getServerIP.sqf";
@@ -54,11 +44,6 @@ class cfgFunctions {
                 class setData {
                     description = "Sets custom data";
                     file = "\x\alive\addons\sys_data\fnc_setData.sqf";
-                    ALIVE_RECOMPILE;
-                };
-                class startALiVEPLugIn {
-                    description = "Starts the ALiVE Plugin for arma2net";
-                    file = "\x\alive\addons\sys_data\fnc_startALiVEPlugIn.sqf";
                     ALIVE_RECOMPILE;
                 };
                 class data_OnPlayerDisconnected {

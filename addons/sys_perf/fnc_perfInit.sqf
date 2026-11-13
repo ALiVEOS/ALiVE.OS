@@ -62,9 +62,6 @@ if (isDedicated && GVAR(ENABLED)) then {
         GVAR(serverIP) = GVAR(serverName);
     };
 
-    // Try getting the actual MP hostname of server
-    //GVAR(serverhostname) = ["ServerHostName"] call ALIVE_fnc_sendToPlugIn;
-    //diag_log GVAR(serverhostname);
 
     // Setup Module Data Listener
     // Server side handler to write data to DB

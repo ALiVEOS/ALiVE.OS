@@ -20,13 +20,14 @@ Examples:
 
 Author:
 Tupolov
+Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
 private ["_response"];
 
 if (isNil QGVAR(ServerName)) then {
-    _response = ["ServerName"] call ALIVE_fnc_sendToPlugIn;
+    _response = "SYS_DATA_ERROR"; // what the old plugin (@ALiVEServer, removed) answered once its service was gone
     GVAR(ServerName) = _response;
 } else {
     _response = GVAR(ServerName);
