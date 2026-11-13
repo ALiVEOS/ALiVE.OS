@@ -57,6 +57,16 @@ private _handle = [_interval, _once] spawn {
 	    sleep 1;
 
 	    private _saveStart = diag_tickTime;
+	    ALiVE_diag_profileSaveSplit = nil;
+	    // the time each part of the save took, for the AUTOSAVE event: a stage runs from its label to the next one
+	    private _stages = [];
+	    private _stageName = "start";
+	    private _stageAt = _saveStart;
+	    private _fnc_stage = {
+	        private _ms = round ((diag_tickTime - _stageAt) * 1000);
+	        if (_stageName != "" && {_ms >= 5}) then { _stages pushBack format ["%1 %2", _stageName, _ms] };
+	        _stageName = _this; _stageAt = diag_tickTime;
+	    };
 	    {
 			// Every module saved in this frame waits, and the file is written once at the end
 			MOD(PNS_HOLD_FRAME) = diag_frameNo;
@@ -73,11 +83,13 @@ private _handle = [_interval, _once] spawn {
 			    if !(isNil "ALiVE_sys_player") then {
                     ["SYS DATA PNS Autosave - Save Player Data id: %1 name: %2 uid: %3",_id,_name,_uid] call ALiVE_fnc_dump;
 
+                    "Player Data OPD" call _fnc_stage;
                     ["SYS DATA PNS Autosave - Player Data OPD"] call ALiVE_fnc_dump;
 
 			         if (ALiVE_sys_player getvariable "saveLoadout") then {
 			                private ["_gearHash","_unit"];
 
+                            "Storing Player Gear" call _fnc_stage;
                             ["SYS DATA PNS Autosave - Storing Player Gear"] call ALiVE_fnc_dump;
 
 			                _gearHash = [ALiVE_sys_player, "setGear", [player]] call ALIVE_fnc_player;
@@ -88,6 +100,7 @@ private _handle = [_interval, _once] spawn {
 
 				if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
 
+					"Player Profile Handler OPD" call _fnc_stage;
 					["SYS DATA PNS Autosave - Player Profile Handler OPD"] call ALiVE_fnc_dump;
 					[_id, _name, _uid] call ALIVE_fnc_profile_onPlayerDisconnected;
 				};
@@ -99,17 +112,20 @@ private _handle = [_interval, _once] spawn {
     		_id = "";
 
 			if !(isNil "ALiVE_sys_data") then {
+			    "Server Data OPD" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Data OPD"] call ALiVE_fnc_dump;
 			    [_id, "__SERVER__", _uid] call ALIVE_fnc_data_onPlayerDisconnected;
 			};
 
 			if !(isNil "ALiVE_sys_player") then {
+			    "Server Player OPD" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Player OPD"] call ALiVE_fnc_dump;
 			    [_id, "__SERVER__", _uid] call ALIVE_fnc_player_onPlayerDisconnected;
 			};
 
 			private _lastProfileSave = missionNamespace getVariable ["ALiVE_sysProfileLastSaveTime", -1];
 			if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
+			    "Profiles" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save Profiles"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_profilesSaveData;
 			};
@@ -119,61 +135,73 @@ private _handle = [_interval, _once] spawn {
 			    || {(missionNamespace getVariable ["ALiVE_sysProfileLastSaveTime", -1]) != _lastProfileSave};
 
 			if (["ALiVE_mil_OPCOM"] call ALiVE_fnc_isModuleAvailable) then {
+			    "OPCOM" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save OPCOM State"] call ALiVE_fnc_dump;
 			    _results = [] call ALiVE_fnc_OPCOMSaveData;
 			};
 
 			if (["ALiVE_mil_IED"] call ALiVE_fnc_isModuleAvailable) then {
+				"IED" call _fnc_stage;
 				["ALiVE SYS DATA PNS Autosave - Server Save IED State"] call ALIVE_fnc_dump;
 				[] call ALiVE_fnc_IEDSaveData;
 			};
 
 			if (["ALiVE_mil_cqb"] call ALiVE_fnc_isModuleAvailable) then {
+			    "CQB" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save CQB State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_CQBSaveData;
 			};
 
 			if (["ALiVE_sys_logistics"] call ALiVE_fnc_isModuleAvailable) then {
+			    "Logistics" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save Logistics State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_logisticsSaveData;
 			};
 
 			if (["ALiVE_sys_marker"] call ALiVE_fnc_isModuleAvailable) then {
+			    "Markers" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save Markers State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_markerSaveData;
 			};
 
 			if (["ALiVE_sys_spotrep"] call ALiVE_fnc_isModuleAvailable) then {
+			    "SPOTREP" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save SPOTREP State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_spotrepSaveData;
 			};
 
 			if (["ALiVE_sys_sitrep"] call ALiVE_fnc_isModuleAvailable) then {
+			    "SITREP" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save SITREP State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_sitrepSaveData;
 			};
 
 			if (["ALiVE_sys_patrolrep"] call ALiVE_fnc_isModuleAvailable) then {
+			    "PATROLREP" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save PATROLREP State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_patrolrepSaveData;
 			};
 
 			if (["ALiVE_mil_logistics"] call ALiVE_fnc_isModuleAvailable) then {
+			    "ML" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save ML State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_MLSaveData;
 			};
 
 			if (["ALiVE_SUP_FOB"] call ALiVE_fnc_isModuleAvailable) then {
+			    "Player FOBs" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save Player FOBs"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_fobSaveData;
 			};
 
 			if (["ALiVE_SYS_CRATERS"] call ALiVE_fnc_isModuleAvailable) then {
+			    "Persistent Craters" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save Persistent Craters"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_cratersSaveData;
 			};
 
 			if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
+			    "Task" call _fnc_stage;
 			    ["SYS DATA PNS Autosave - Server Save Task State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_taskHandlerSaveData;
 			};
@@ -186,23 +214,27 @@ private _handle = [_interval, _once] spawn {
 			// from its own record and once from the profile the older profile save still holds.
 			if (((entities "Module_F") findIf {typeOf _x == "ALiVE_mil_ato" && {[_x, "persistent"] call ALIVE_fnc_ATOKernel}}) > -1) then {
 			    if (_profilesSaved) then {
+			        "ATO" call _fnc_stage;
 			        ["SYS DATA PNS Autosave - Server Save ATO State"] call ALiVE_fnc_dump;
 			        // A refused save says why, as Save and Exit shows it on the admin's tablet.
 			        {
 			            if ((_x find "refused") > -1) then { [_x] call ALiVE_fnc_dump };
 			        } forEach (([] call ALiVE_fnc_ATOSaveData) param [1, []]);
 			    } else {
+			        "ATO skipped" call _fnc_stage;
 			        ["SYS DATA PNS Autosave - ATO State not saved on this pass: it's saved with the profiles, and the profile save waits five minutes between saves"] call ALiVE_fnc_dump;
 			    };
 			};
 
+			"write" call _fnc_stage;
 			MOD(PNS_HOLD_FRAME) = -1;
 			if (MOD(PNS_HOLD_DIRTY)) then { saveProfileNamespace };
+			"" call _fnc_stage;
 
 		} call CBA_fnc_Directcall;
 	    // how long the one-frame save held the server, for the War Room's Diagnostics
 	    if (isServer && {!isNil "ALiVE_fnc_diagEvent"}) then {
-	        ["SYS_DATA", "AUTOSAVE", format ["Saved in %1 s", (round ((diag_tickTime - _saveStart) * 100)) / 100], [0,0]] call ALiVE_fnc_diagEvent;
+	        ["SYS_DATA", "AUTOSAVE", format ["Saved in %1 s, ms: %2%3", (round ((diag_tickTime - _saveStart) * 100)) / 100, _stages joinString ", ", missionNamespace getVariable ["ALiVE_diag_profileSaveSplit", ""]], [0,0]] call ALiVE_fnc_diagEvent;
 	    };
 
 	    sleep 0.2;

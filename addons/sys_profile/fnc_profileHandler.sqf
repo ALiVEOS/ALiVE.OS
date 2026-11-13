@@ -1014,7 +1014,9 @@ switch(_operation) do {
 
         _result = [false,[]];
 
+        private _splitAt = diag_tickTime;
         _exportProfiles = [_logic, "exportProfileData"] call MAINCLASS;
+        private _exportMs = round ((diag_tickTime - _splitAt) * 1000);
 
         if(isNil"ALIVE_profileDatahandler") then {
 
@@ -1034,7 +1036,10 @@ switch(_operation) do {
         _async = false; // Wait for response from server
         _missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
+        _splitAt = diag_tickTime;
         _saveResult = [ALIVE_profileDatahandler, "bulkSave", ["sys_profile", _exportProfiles, _missionName, _async]] call ALIVE_fnc_Data;
+        // read by the autosave's AUTOSAVE event: gathering the profiles against storing them
+        ALiVE_diag_profileSaveSplit = format ["; %1 profiles: gather %2, store %3", count (_exportProfiles select 1), _exportMs, round ((diag_tickTime - _splitAt) * 1000)];
 
         _result set [0,_saveResult];
 
