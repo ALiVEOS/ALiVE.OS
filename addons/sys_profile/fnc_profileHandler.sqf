@@ -1493,6 +1493,19 @@ switch(_operation) do {
                         };
                     } forEach ["_rev", "_id", "hasSimulated", "despawnPosition", "isSPE", "aiBehaviour", "waypoints", "waypointsCompleted", "pathfindingProcedure"];
 
+                    // A group the War Room moved, stopped or locked stays held from its commander after a load.
+                    // "busy" is not saved, as most holds are rebuilt by the code that made them, so the War Room's
+                    // own flags put it back. A Cloud save can return them as strings.
+                    {
+                        if (_x in (_profile select 1)) then {
+                            private _flag = [_profile, _x, false] call ALIVE_fnc_hashGet;
+                            if (_flag isEqualType "") then { _flag = (toLower _flag) == "true" };
+                            if !(_flag isEqualType true) then { _flag = false };
+                            [_profileEntity, _x, _flag] call ALIVE_fnc_hashSet;
+                            if (_flag) then { [_profileEntity, "busy", true] call ALIVE_fnc_hashSet };
+                        };
+                    } forEach ["warRoomOrdered", "warRoomLocked"];
+
                     // The route, saved since #756. A Cloud save comes back through JSON, where each value takes
                     // the type the data dictionary holds for its key name, so a number can come back as a string.
                     // Put back what the waypoint code reads; a Local save already has the right types. The type

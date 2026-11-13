@@ -64,11 +64,13 @@ switch (_op) do {
     case "lock": {
         [_profile, "busy", true] call ALiVE_fnc_hashSet;
         [_profile, "warRoomOrdered", false] call ALiVE_fnc_hashSet;
+        [_profile, "warRoomLocked", true] call ALiVE_fnc_hashSet;
         _text = "Group locked: the commander won't give it orders.";
     };
     case "unlock": {
         [_profile, "busy", false] call ALiVE_fnc_hashSet;
         [_profile, "warRoomOrdered", false] call ALiVE_fnc_hashSet;
+        [_profile, "warRoomLocked", false] call ALiVE_fnc_hashSet;
         _text = "Group unlocked: the commander can give it orders again.";
     };
     default {
@@ -76,6 +78,18 @@ switch (_op) do {
         // as the tablet's Apply waypoints and Clear: held from the commander, then its waypoints replaced
         [_profile, "busy", true] call ALiVE_fnc_profileEntity;
         [_profile, "warRoomOrdered", true] call ALiVE_fnc_hashSet;
+        // The commander lets go too. A group still in an objective's section was given that objective's
+        // orders again at the next cycle, which overwrote the War Room's move.
+        {
+            if (_x isEqualType []) then { [_x, "resetProfileOrders", _profileID] call ALiVE_fnc_OPCOM };
+        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+        // and the commands the commander gave it go too: a garrison holds a spawned group's men on their posts,
+        // so a moved group never left, and the reset above sets a group with no commands wandering. A stop
+        // keeps a garrison, whose men are already staying put.
+        private _commands = [_profile, "activeCommands", []] call ALiVE_fnc_hashGet;
+        if (_commands isNotEqualTo [] && {_op == "move" || {(_commands findIf { toLower (_x param [0, ""]) != "alive_fnc_garrison" }) != -1}}) then {
+            [_profile, "clearActiveCommands"] call ALiVE_fnc_profileEntity;
+        };
         [_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
         if (_op == "move") then {
             [_profile, "addWaypoint", [[_pos select 0, _pos select 1, 0]] call ALiVE_fnc_createProfileWaypoint] call ALiVE_fnc_profileEntity;
