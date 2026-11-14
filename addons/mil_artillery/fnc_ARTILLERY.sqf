@@ -422,12 +422,13 @@ switch(_operation) do {
                 [_record,"vehicleIDs",_gunsAlive] call ALiVE_fnc_hashSet;
                 _live pushBack _record;
             } else {
-                if (_debug) then {
-                    private _why = if (isNil "_entityProfile") then {"crew profile gone"} else {
-                        if (count _gunsAlive == 0) then {"all guns destroyed"} else {"side no longer served"}
-                    };
-                    ["ALiVE MIL_ARTILLERY - battery %1 lost (%2), removed from registry", _entityID, _why] call ALiVE_fnc_dump;
+                // Said always, not only with debug on: a commander's seven rocket batteries went one by one over
+                // five hours with nothing in the log (RSS7, 13 Nov), and its guns then refused every grid
+                private _why = if (isNil "_entityProfile") then {"crew profile gone"} else {
+                    if (count _gunsAlive == 0) then {"all guns destroyed"} else {"side no longer served"}
                 };
+                ["ALiVE MIL_ARTILLERY - battery %1 (%2, %3) lost: %4. %5 left", _entityID, _recSideText, [_record,"kind","gun"] call ALiVE_fnc_hashGet,
+                    _why, count _live + ((count _registry) - _forEachIndex - 1)] call ALiVE_fnc_dump;
             };
         } forEach _registry;
         _registry = _live;

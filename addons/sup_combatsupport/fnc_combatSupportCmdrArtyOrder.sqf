@@ -23,7 +23,7 @@ String - who gave the order, for the log (optional)
 Returns:
 Array - [true, "fired", battery entity id, metres] or [false, reason], the reason one of
 "badargs", "refused" (remoteExec'd), "busy" (within 5 s of the side's last order), "noguns",
-"friendlies"
+"nobattery" (the side has no batteries left at all), "friendlies"
 
 Examples:
 (begin example)
@@ -72,7 +72,7 @@ private _cmdrArtyFireAllowed = true;
 private _r = [_side, _pos, _ord, _count, false, objNull] call ALIVE_fnc_combatSupportCmdrArtyFire;
 _r params ["_fired", "_what", "_dist"];
 if (!_fired) exitWith {
-    format ["%1 asked %2 for %3 %4 at %5: %6", _by, _side, _count, _ord, _grid, ["no ready battery reaches it", "friendlies near the grid"] select (_what == "friendlies")] call _say;
+    format ["%1 asked %2 for %3 %4 at %5: %6", _by, _side, _count, _ord, _grid, switch (_what) do { case "friendlies": {"friendlies near the grid"}; case "nobattery": {"the side has no batteries left"}; default {"no ready battery reaches it"} }] call _say;
     [false, _what]
 };
 format ["%1 asked %2 for %3 %4 at %5: battery %6 (%7 m) fires", _by, _side, _count, _ord, _grid, _what, _dist] call _say;

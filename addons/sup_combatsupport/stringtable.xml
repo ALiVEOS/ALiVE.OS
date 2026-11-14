@@ -2790,6 +2790,9 @@
 <Key ID="STR_ALIVE_CS_UI_CMDR_OUT_OF_RANGE">
     <English>No commander battery reaches that grid</English>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_CMDR_NONE">
+    <English>The AI Commander has no batteries left</English>
+</Key>
 <Key ID="STR_ALIVE_CS_UI_CMDR_SENT">
     <English>Request sent, waiting for the commander's answer</English>
 </Key>
@@ -2804,6 +2807,9 @@
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_CMDR_NOGUNS">
     <English>%1, no guns available for grid %2. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_MSG_CMDR_NOBATTERY">
+    <English>%1, the commander has no batteries left. Out.</English>
 </Key>
 <Key ID="STR_ALIVE_CS_MSG_CMDR_FRIENDLIES">
     <English>%1, cannot fire on grid %2, friendlies are too close. Out.</English>

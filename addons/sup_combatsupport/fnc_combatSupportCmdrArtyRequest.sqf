@@ -90,6 +90,10 @@ if (!_fired) exitWith {
         format ["refused %1: friendlies near %2", name _caller, _grid] call _say;
         ["STR_ALIVE_CS_MSG_CMDR_FRIENDLIES"] call _fnc_reply;
     } else {
+        if (_what == "nobattery") exitWith {
+            format ["refused %1: %2 has no batteries left", name _caller, _sideText] call _say;
+            ["STR_ALIVE_CS_MSG_CMDR_NOBATTERY"] call _fnc_reply;
+        };
         format ["no ready %1 battery reaches %2 with %3 for %4", _sideText, _grid, _ord, name _caller] call _say;
         ["STR_ALIVE_CS_MSG_CMDR_NOGUNS"] call _fnc_reply;
     };

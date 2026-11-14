@@ -20,7 +20,8 @@ Boolean - mortars only
 Object - the player who asked, or objNull for an order from outside the game
 
 Returns:
-Array - [true, battery entity id, metres] when a battery fires, or [false, "noguns" / "friendlies"]
+Array - [true, battery entity id, metres] when a battery fires, or [false, "noguns" / "nobattery" / "friendlies"]
+("nobattery": the side has no batteries left at all)
 
 Author:
 Jman
@@ -80,7 +81,18 @@ private _bestDist = 1e9;
     };
 } forEach (missionNamespace getVariable ["ALIVE_MilArtilleryInstances", []]);
 
-if (_best isEqualTo []) exitWith { [false, "noguns"] };
+// none reaches it, or the side has none left at all: a commander whose batteries were all destroyed refused every
+// grid as out of reach (RSS7, 13 Nov), and the player read it as a range problem
+if (_best isEqualTo []) exitWith {
+    private _have = ((missionNamespace getVariable ["ALIVE_MilArtilleryInstances", []]) findIf {
+        ((_x getVariable ["batteryRegistry", []]) findIf {
+            private _s = [_x, "side", ""] call ALiVE_fnc_hashGet;
+            ((if (_s isEqualType west) then { toUpper str _s } else { toUpper _s }) == _sideText)
+                && {!isNil { [ALIVE_profileHandler, "getProfile", [_x, "entityID", ""] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler }}
+        }) >= 0
+    }) >= 0;
+    [false, ["nobattery", "noguns"] select _have]
+};
 
 // friendlies near the grid refuse the call before any cooldown is spent; the fire mission checks again
 if !([_bestLogic, "dangerClose"] call ALIVE_fnc_MilArtillery) then {
