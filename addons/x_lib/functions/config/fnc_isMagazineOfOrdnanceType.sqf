@@ -249,12 +249,16 @@ switch (_ordnanceType) do {
                     || {_x isKindOf ["TimeBombCore", _cfgAmmoRoot]}
                     || {"mine" in toLower _x}
             }) > -1;
-            private _isGuided = (_subs findIf { getNumber (_cfgAmmoRoot >> _x >> "laserLock") > 0 || {getNumber (_cfgAmmoRoot >> _x >> "irLock") > 0} }) > -1;
+            // a self-seeking submunition is SADARM too (autoSeekTarget): the 155mm 4Rnd guided round read as CLUSTER and,
+            // listed before the cluster magazine, was loaded for every Cluster mission (RSS7, 13 Nov)
+            private _isGuided = (_subs findIf { getNumber (_cfgAmmoRoot >> _x >> "laserLock") > 0 || {getNumber (_cfgAmmoRoot >> _x >> "irLock") > 0}
+                || {getNumber (_cfgAmmoRoot >> _x >> "autoSeekTarget") > 0} }) > -1;
             private _isSmokeOrFlare = ((_subs findIf {
                 _x isKindOf ["SmokeShell", _cfgAmmoRoot] || {_x isKindOf ["FlareCore", _cfgAmmoRoot]}
             }) > -1) || {call _fnc_hasHarmlessSmokeSub} || {call _fnc_hasFlareSub};
             (count _subs > 0) && {!_isMine} && {!_isGuided} && {!_isSmokeOrFlare}
                 && {!((call { PHOS_SUBSTRINGS }) call _fnc_nameMatchesAny)}
+                && {!((call { GUIDED_SUBSTRINGS }) call _fnc_nameMatchesAny)}
                 && {!((call { SMOKE_SUBSTRINGS }) call _fnc_nameMatchesAny)}
                 && {!((call { LASER_SUBSTRINGS }) call _fnc_nameMatchesAny)}
                 && {!((call { ILLUM_SUBSTRINGS }) call _fnc_nameMatchesAny)}
