@@ -6079,7 +6079,8 @@ switch(_operation) do {
 
                     // Recalculate timeout for air travel (faster than truck).
                     private _airSpeedMPS = 65 / 3.6;  // ~65 km/h slingloaded.
-                    private _heliTimeout = ((_distance / _airSpeedMPS) * 1.5) max SLINGLOAD_DROP_TIMEOUT;
+                    // plus the time over the spot: up to 80 s nudged over it, then the ropes paid out and the load settled
+                    private _heliTimeout = (((_distance / _airSpeedMPS) * 1.5) max SLINGLOAD_DROP_TIMEOUT) + 150;
 
                     _targetVeh setVariable ["ALIVE_resupply_eta", _heliTimeout, true];
                     _targetVeh setVariable ["ALIVE_resupply_startTime", serverTime, true];
@@ -6097,6 +6098,10 @@ switch(_operation) do {
                         private _dropPad = objNull;
                         private _lastLandAtTime = 0;
                         private _dropped = false;
+                        private _dropPos = [];
+                        private _nudge = scriptNull;
+                        private _nudgeT = -1;     // serverTime the nudge began, -1 not yet
+                        private _winchDone = -1;  // serverTime the ropes will have paid out, -1 not yet
 
                         // --- Helper: cleanup and exit ---
                         private _fnc_cleanup = {
@@ -6209,7 +6214,7 @@ switch(_operation) do {
                                     _phase = 1;
 
                                     // Find LZ near target using battle-tested search.
-                                    private _dropPos = [_logic, "findHelicopterLandingPos", [
+                                    _dropPos = [_logic, "findHelicopterLandingPos", [
                                         getPos _targetVeh, 50, 300
                                     ]] call ALIVE_fnc_ML;
 
@@ -6236,12 +6241,41 @@ switch(_operation) do {
                                     _lastLandAtTime = serverTime;
                                 };
 
-                                // Monitor slung vehicle AGL.
+                                // A loaded helicopter won't come down below about 50 m whatever it's told, and stops 50-200 m
+                                // short of its pad, so it hung there until the timeout and the delivery failed (RSS7 and the
+                                // NUC, 13 Nov). As the watchdog's sling unload does: once it has slowed within 300 m it is
+                                // nudged over the pad (80 s at most), then its ropes are paid out so the load sinks onto the
+                                // ground under its hover, and the load is let go once it is down.
                                 private _slungObj = getSlingLoad _heli;
+                                if (!isNull _slungObj && {_dropPos isNotEqualTo []}) then {
+                                    if (_nudgeT < 0 && {(_heli distance2D _dropPos) < 300} && {abs (speed _heli) < 15}) then {
+                                        _nudgeT = serverTime;
+                                        _nudge = [_heli, +_dropPos] spawn {
+                                            params ["_h", "_s"];
+                                            private _t0 = time;
+                                            while { alive _h && {!isNull getSlingLoad _h} && {(_h distance2D _s) > 8} && {(time - _t0) < 80} } do {
+                                                private _dir = _h getDir _s;
+                                                private _sp = ((_h distance2D _s) / 5) min 4;
+                                                _h setVelocity [(sin _dir) * _sp, (cos _dir) * _sp, (velocity _h) select 2];
+                                                sleep 0.1;
+                                            };
+                                        };
+                                        ["LOGCOM_RESUPPLY HELI: %1 stopped %2 m from its pad, nudging it over", _callsign, round (_heli distance2D _dropPos)] call ALiVE_fnc_dump;
+                                    };
+                                    if (_nudgeT >= 0 && {_winchDone < 0} && {scriptDone _nudge || {(serverTime - _nudgeT) > 85}}) then {
+                                        if (!scriptDone _nudge) then { terminate _nudge };
+                                        // getPos: above the surface, the sea included
+                                        private _agl = (getPos _slungObj) select 2;
+                                        private _give = (_agl + 1) min (100 - (selectMax (((ropes _heli) apply { ropeLength _x }) + [0])));
+                                        { ropeUnwind [_x, 3, (_agl + 1) min (100 - ropeLength _x), true] } forEach (ropes _heli);
+                                        _winchDone = serverTime + (ceil (_give / 3)) + 5;
+                                        ["LOGCOM_RESUPPLY HELI: %1 lowering its load %2 m, %3 m from the pad", _callsign, round _give, round (_heli distance2D _dropPos)] call ALiVE_fnc_dump;
+                                    };
+                                };
                                 if (!isNull _slungObj) then {
-                                    private _slungAGL = (getPosATL _slungObj) select 2;
+                                    private _slungAGL = (getPos _slungObj) select 2;
 
-                                    if (_slungAGL <= SLINGLOAD_DROP_HEIGHT) then {
+                                    if (_slungAGL <= ([SLINGLOAD_DROP_HEIGHT, 1] select (_winchDone >= 0)) || {_winchDone >= 0 && {serverTime > _winchDone}}) then {
                                         _phase = 2;
                                         ["LOGCOM_RESUPPLY HELI: Phase RELEASE for %1, AGL=%2m", _callsign, _slungAGL] call ALiVE_fnc_dump;
                                     };
@@ -6272,6 +6306,7 @@ switch(_operation) do {
                                 };
 
                                 if (!isNull _dropPad) then { deleteVehicle _dropPad; _dropPad = objNull; };
+                                if (!scriptDone _nudge) then { terminate _nudge };
 
                                 // Wait for crate to settle.
                                 sleep 3;
