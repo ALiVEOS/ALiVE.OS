@@ -127,6 +127,17 @@ if (_stats || {_killFeed != "None"}) then {
             };
         };
 
+        // A man on foot whose own grenade or charge went off near the dead within the last 5 s killed with that
+        // (2D: the blast is kept above sea level, the dead above the ground),
+        // not with the rifle he holds now (the blast is kept on him by the fired handler)
+        if (_killer isKindOf "Man" && {vehicle _killer == _killer}) then {
+            (_killer getVariable [QGVAR(lastBlast), []]) params [["_bType", ""], ["_bName", ""], ["_bTime", -1], ["_bPos", [0,0,0]]];
+            if (_bType != "" && {(serverTime - _bTime) < 5} && {(_killed distance2D _bPos) < 50}) then {
+                _killerweaponType = _bType;
+                _killerweapon = _bName;
+            };
+        };
+
         // A car's only "weapon" is its horn, so a kill by a vehicle with no gun (a driver running someone
         // down, or a kill the game credits to the driver) read "Horn (GAZ-233011)". Those are recorded as
         // "Run over (vehicle)" instead, and still count as kills.

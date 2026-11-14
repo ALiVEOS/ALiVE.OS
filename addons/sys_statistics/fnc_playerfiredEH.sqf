@@ -59,6 +59,21 @@ if (GVAR(ENABLED)) then {
             _player setVariable [QGVAR(lastWeapon), _lastWeapon, true];
         };
 
+        // A grenade or charge goes off later, when he may hold his rifle again, and a kill it made was recorded
+        // with that rifle. The blast is kept on him as it happens, what it was, when and where, for the kill
+        // handler to find.
+        private _proj = _this param [6, objNull];
+        if ((_this select 1) in ["Throw", "Put"] && {!isNull _proj}) then {
+            private _mag = _this param [5, ""];
+            private _magName = getText (configFile >> "CfgMagazines" >> _mag >> "displayName");
+            _proj setVariable [QGVAR(blastBy), [_player, _this select 1, [_magName, _weaponName] select (_magName == "")]];
+            _proj addEventHandler ["Explode", {
+                params ["_p", "_pos"];
+                (_p getVariable [QGVAR(blastBy), []]) params [["_u", objNull], ["_type", ""], ["_name", ""]];
+                if (!isNull _u) then { _u setVariable [QGVAR(lastBlast), [_type, _name, serverTime, _pos], true] };
+            }];
+        };
+
         // Add weapon count to array
         if (_idx == 0) then {
             _shotsfired set [_i, [_muzzle, 1, _weapon, _weaponName]];
