@@ -70,6 +70,13 @@ if (isServer && {_main}) then {
         while { true } do {
             sleep 5;
             private _lost = [];
+            // a side HQ whose building is destroyed goes with it
+            {
+                _x params ["_o", "_name", "_who"];
+                ["remove", [_o]] call ALiVE_fnc_rallyPoint;
+                ["ALiVE Rally Points: %1 (%2) went with its building", _name, _who] call ALiVE_fnc_dump;
+                ["notify", ["lost", _who, format [localize "STR_ALIVE_SITE_RALLY", _name], 0]] call ALiVE_fnc_siteClock;
+            } forEach ((missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { (_x select 3) == "hq" && {!isNull (_x select 0)} && {!alive (_x select 0)} });
             {
                 _x params ["_o", "_name", "_who", "_kind"];
                 if (alive _o && {_who != "ANY"} && {_kind != "leader"}) then {
@@ -125,6 +132,10 @@ if (isServer && {_main} && {_hqs}) then {
                         private _b = _mod getVariable [_x, objNull];
                         if (_b isEqualType objNull && {!isNull _b} && {alive _b} && {!(_b in _done)}) then {
                             _done pushBack _b;
+                            // no class, no building: the air commander falls back to the first object of its
+                            // airfield when nothing there will do as an HQ, and on Takistan that was a piece of
+                            // taxiway (RSS7, 14 Nov), a rally point on bare tarmac
+                            if (typeOf _b == "") exitWith {};
                             // the side's rally points already listed (Will501 on Discord, 19 Oct: two flags both
                             // called "The Villa HQ"): an HQ within 100 m of one adds nothing, and one whose name is
                             // taken gets a number, "The Villa HQ 2"
