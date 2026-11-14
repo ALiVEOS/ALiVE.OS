@@ -37,7 +37,8 @@ Jman
 #define GUIDED_SUBSTRINGS  ["Mo_guided"];
 #define CLUSTER_SUBSTRINGS ["Mo_Cluster"];
 #define LASER_SUBSTRINGS   ["Mo_LG", "laser"];
-#define MINE_SUBSTRINGS    ["Mo_Mine"];
+// vanilla names its round "Mo_mine" (lower case m); the old "Mo_Mine" matched nothing
+#define MINE_SUBSTRINGS    ["Mo_mine", "Mo_Mine"];
 #define AT_MINE_SUBSTRINGS ["Mo_AT_mine"];
 #define ROCKET_SUBSTRINGS  ["rockets"];
 #define ILLUM_SUBSTRINGS   ["illum", "ilum", "flare", "lume"];
@@ -149,6 +150,28 @@ private _fnc_hasHarmlessSmokeSub = {
             && {getNumber (_cfgAmmoRoot >> _x >> "indirectHit") == 0}
     }) > -1
 };
+// the mines a round lays: its submunitions, and theirs one level down. The 155mm mine rounds (vanilla, and RHS
+// ADAM / RAAMS on the same ammo) split into a dispenser that then drops the mines, so the first level holds no
+// mine at all and the MINE / AT MINE tests matched nothing (14 Nov).
+private _fnc_mineSubs = {
+    private _mines = [];
+    {
+        private _sub = _x;
+        private _next = [_sub];
+        private _e = _cfgAmmoRoot >> _sub >> "submunitionAmmo";
+        if (isText _e) then { _next pushBack (getText _e) };
+        if (isArray _e) then { { if (_x isEqualType "") then { _next pushBack _x } } forEach (getArray _e) };
+        { if (_x isKindOf ["MineBase", _cfgAmmoRoot] || {_x isKindOf ["TimeBombCore", _cfgAmmoRoot]}) then { _mines pushBackUnique _x } } forEach _next;
+    } forEach (call _fnc_submunitions);
+    _mines
+};
+// an anti-tank mine is told by its name (ATMine_Range_Ammo, or the round's AT_Mine ammo); mines carry no
+// config value that says what they are meant to stop
+private _fnc_isATMineRound = {
+    ((call { AT_MINE_SUBSTRINGS }) call _fnc_nameMatchesAny)
+        || {"at_mine" in toLower _ammo}
+        || {((call _fnc_mineSubs) findIf { private _n = toLower _x; ("atmine" in _n) || {"at_mine" in _n} }) > -1}
+};
 // illumination submunition: FlareCore-parented or flare/illum-named (same name
 // fallback the smoke helper has, for candles with no parent class). No
 // harmlessness gate - flares carry burn damage by design (RHS: hit=5).
@@ -207,12 +230,11 @@ switch (_ordnanceType) do {
         }
     };
     case "MINE": {
-        // AT mine rounds stay AT MINE only (name layer), never plain MINE
-        (call _fnc_isDispenser) && {!((call { AT_MINE_SUBSTRINGS }) call _fnc_nameMatchesAny)} && {
-            ((call _fnc_submunitions) findIf {
-                _x isKindOf ["MineBase", _cfgAmmoRoot] || {_x isKindOf ["TimeBombCore", _cfgAmmoRoot]}
-            }) > -1
-        }
+        // AT mine rounds stay AT MINE only, never plain MINE
+        (call _fnc_isDispenser) && {count (call _fnc_mineSubs) > 0} && {!(call _fnc_isATMineRound)}
+    };
+    case "AT MINE": {
+        (call _fnc_isDispenser) && {count (call _fnc_mineSubs) > 0} && {call _fnc_isATMineRound}
     };
     case "CLUSTER": {
         // a dispenser round, or a real shell that deploys submunitions on the
@@ -233,9 +255,10 @@ switch (_ordnanceType) do {
         // A dispenser whose one submunition is a bare class with no spread is a shell that goes off in a second
         // stage, not a cluster round: Spearhead's 81mm HE (M1, Mle 1932) is built that way and offered a Cluster
         // mission that fired plain HE. Only when the magazine already counts as HE, so nothing loses its only type
-        // (vanilla's MLRS HE rocket is shaped the same and counts as nothing else).
+        // A rocket is held out the same way: the MLRS and BM-21 HE rockets are built like that too and answered
+        // CLUSTER as well as ROCKETS, so a Cluster mission fired plain HE rockets (14 Nov).
         (getNumber (_ammoCfg >> "laserLock") == 0) && {
-            ((call _fnc_isDispenser) && {!(isText (_ammoCfg >> "submunitionAmmo") && {!isArray (_ammoCfg >> "submunitionConeType")} && {["HE", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType})}) || {
+            ((call _fnc_isDispenser) && {!(isText (_ammoCfg >> "submunitionAmmo") && {!isArray (_ammoCfg >> "submunitionConeType")} && {["HE", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType || {["ROCKETS", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType}})}) || {
                 (call _fnc_isShell)
                     && {!(_ammo isKindOf ["SmokeShell", _cfgAmmoRoot])}
                     && {!(_ammo isKindOf ["FlareCore", _cfgAmmoRoot])}
