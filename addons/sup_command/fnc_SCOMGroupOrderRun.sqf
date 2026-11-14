@@ -361,7 +361,18 @@ switch (_op) do {
                 private _g = [_profile] call _fnc_group;
                 if (isNull _g || {(_state getOrDefault ["garrisoned", grpNull]) isEqualTo _g}) exitWith {};
                 _state set ["garrisoned", _g];
-                [_profile, _radius] spawn ALIVE_fnc_garrison;
+                // Searched from the point itself, with no building patrol. Men the garrison could not seat were
+                // handed a 200 m ambient patrol and walked off the point (a test group on open ground was 135 m
+                // out within 4 minutes), so once it is done their patrol is replaced by the point itself.
+                private _wp = [_profile, _pos] call _fnc_waypoint;
+                [_profile, _radius, _pos, _wp, _g] spawn {
+                    params ["_profile", "_radius", "_pos", "_wp", "_g"];
+                    [_profile, [_radius, "true", [_pos select 0, _pos select 1, 0], "", 0, 0]] call ALIVE_fnc_garrison;
+                    if !([_profile, "warRoomDefending", false] call ALiVE_fnc_hashGet) exitWith {};
+                    if !(([_profile, "group", grpNull] call ALiVE_fnc_hashGet) isEqualTo _g) exitWith {};
+                    [_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
+                    [_profile, "addWaypoint", _wp] call ALiVE_fnc_profileEntity;
+                };
             };
             case "getin": {
                 private _vp = [ALiVE_profileHandler, "getProfile", _extra] call ALiVE_fnc_profileHandler;
