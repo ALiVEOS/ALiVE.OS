@@ -56,6 +56,8 @@ Jman
 // is marked as having nowhere to go rather than being asked for forever, which
 // is what the old module did.
 #define MAX_TRIES 3
+// How long a delivered helicopter that arrived in the air is given to come down before it is offered anyway.
+#define LANDING_WAIT 240
 
 // A replacement must not spawn on top of the wreck of the aircraft it replaces.
 #define WRECK_REACH 8
@@ -499,6 +501,37 @@ switch(_operation) do {
         if (count _place < 3) exitWith {
             ["ALIVE_fnc_ATOResupply - no placement, cannot take the delivery for %1", _tail] call ALiVE_fnc_dump;
             _result = false;
+        };
+
+        // A delivered helicopter arrives in the air: logistics flies it to the drop and leaves it hovering there,
+        // and placement will not take a hull that is up. It was refused once, a second one was built at the stand,
+        // and the delivered one hung over the drop for the rest of the mission (RSS7, 14 Nov: two Apaches and a
+        // drone over the Rasman hangars). So it is brought down first and taken once it is on the ground. Done
+        // while both halves are still held busy, so nothing else can claim it as it lands.
+        // A plane cannot do this and is left to the old path.
+        private _vehProf = if (isNil "ALiVE_profileHandler") then { nil } else { [ALiVE_profileHandler, "getProfile", _vehId] call ALiVE_fnc_ProfileHandler };
+        private _hull = if (!isNil "_vehProf" && {_vehProf isEqualType []}) then { [_vehProf, "vehicle", objNull] call ALIVE_fnc_hashGet } else { objNull };
+        if (_hull isEqualType objNull && {!isNull _hull} && {alive _hull} && {canSuspend} && {_hull isKindOf "Helicopter"}
+            && {((getPosATL _hull) select 2) > 5 || {!(isTouchingGround _hull) && {(abs (speed _hull)) > 5}}}) then {
+            ["ALIVE_fnc_ATOResupply - the delivery for %1 arrived in the air at %2, bringing it down before taking it on",
+                _tail, (getPosATL _hull) apply { round _x }] call ALiVE_fnc_dump;
+            // its delivery waypoints come off: a leftover one competes with the landing and wins, and one left on an
+            // aircraft that is then let go keeps it wandering and turning on the spot (RSS7 Alpha 1-6). Height and speed
+            // say it is down, not isTouchingGround, which is not reliable on a hull a headless client runs
+            private _grp = group (driver _hull);
+            if (!isNull _grp) then {
+                for "_i" from (count (waypoints _grp) - 1) to 0 step -1 do { deleteWaypoint [_grp, _i] };
+            };
+            if (local _hull) then { _hull land "LAND" } else { [_hull, "LAND"] remoteExecCall ["land", _hull] };
+            private _t0 = time;
+            waitUntil {
+                sleep 5;
+                isNull _hull || {!alive _hull} || {time - _t0 > LANDING_WAIT}
+                    || {(abs (speed _hull)) < 5 && {((getPosATL _hull) select 2) < 5}}
+            };
+            ["ALIVE_fnc_ATOResupply - the delivery for %1 %2 after %3 s", _tail,
+                if (isNull _hull || {!alive _hull}) then {"was lost coming down"} else {
+                    if (((getPosATL _hull) select 2) < 5) then {"is down"} else {"is still in the air"} }, round (time - _t0)] call ALiVE_fnc_dump;
         };
 
         // Two things have to be handed over before the pair can be taken on.
