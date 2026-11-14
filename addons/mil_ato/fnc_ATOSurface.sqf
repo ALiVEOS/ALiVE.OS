@@ -2339,6 +2339,12 @@ switch(_operation) do {
         if (isObjectHidden _obj) exitWith { _result = [false, "hidden by something else"] };
         if (!(simulationEnabled _obj) && {!(dynamicSimulationEnabled _obj)}) exitWith { _result = [false, "frozen by something else"] };
         if (count (crew _obj) > 0) exitWith { _result = [false, "crew aboard"] };
+        // Kept awake two minutes after a wake. A player flying past the air combat height has a watch distance
+        // several times longer than one below it, so the gap between the wake and sleep distances was no help:
+        // a base's parked aircraft were hidden and shown 42 times in 25 s (RSS7 Takistan, 13 Nov), and a parked
+        // Apache and a Chinook there were destroyed two minutes later with nobody to blame.
+        private _woke = _obj getVariable ["ALiVE_mil_ato_wokeAt", -1];
+        if (_woke >= 0 && {(time - _woke) < 120}) exitWith { _result = [true, "woken under two minutes ago"] };
         private _at = getPosATL _obj;
         _at set [2, 0];
         private _blocker = [_logic, "standBlocker", [_at, typeOf _obj, [_obj]]] call MAINCLASS;
@@ -2383,9 +2389,18 @@ switch(_operation) do {
         if (!isNull _blocker) exitWith {
             _result = [false, format ["stand blocked by %1%2", if (alive _blocker) then {""} else {"a wrecked "}, typeOf _blocker]];
         };
-        _obj enableSimulationGlobal true;
-        _obj hideObjectGlobal false;
+        // Shown before it is simulated, and spared damage for its first seconds back. A hidden hull has no
+        // collision, so simulated first it could settle into its hangar or a neighbour before it was shown.
         _obj setVariable ["ALiVE_mil_ato_asleep", nil, false];
+        _obj setVariable ["ALiVE_mil_ato_wokeAt", time, false];
+        _obj hideObjectGlobal false;
+        if (isDamageAllowed _obj) then {
+            _obj allowDamage false;
+            [{ params ["_v"]; if (!isNull _v && {_v getVariable ["ALiVE_mil_ato_wakeGuard", false]}) then {
+                _v setVariable ["ALiVE_mil_ato_wakeGuard", nil, false]; _v allowDamage true } }, [_obj], 5] call CBA_fnc_waitAndExecute;
+            _obj setVariable ["ALiVE_mil_ato_wakeGuard", true, false];
+        };
+        [{ params ["_v"]; if (!isNull _v && {!isObjectHidden _v}) then { _v enableSimulationGlobal true } }, [_obj]] call CBA_fnc_execNextFrame;
         _result = [true, ""];
     };
 
