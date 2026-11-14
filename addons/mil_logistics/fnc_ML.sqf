@@ -15615,8 +15615,18 @@ switch(_operation) do {
                                     // _paraDrop watched the departure area; nothing reads it after this
                                     // block so it is safe to rebase it on the destination here.
                                     _paraDrop = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
-                                    _position = _eventPosition getPos [random(200), random(360)];
-                                    if (surfaceIsWater _position) then { _position = +_eventPosition; };
+                                    // Within 60 m of the asked-for spot, on the most open ground of a few tries: up to 200 m
+                                    // off at random, plus the drift on the way down, put a crate 300 m away in a forest
+                                    // (A. Ares on Discord, 14 Nov).
+                                    private _bestTrees = 1e9;
+                                    _position = +_eventPosition;
+                                    for "_try" from 1 to 8 do {
+                                        private _p = _eventPosition getPos [10 + random 50, random 360];
+                                        if (!surfaceIsWater _p) then {
+                                            private _trees = count (nearestTerrainObjects [_p, ["TREE", "SMALL TREE", "BUSH", "HOUSE", "BUILDING", "WALL", "FENCE"], 10, false, true]);
+                                            if (_trees < _bestTrees) then { _bestTrees = _trees; _position = _p };
+                                        };
+                                    };
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];

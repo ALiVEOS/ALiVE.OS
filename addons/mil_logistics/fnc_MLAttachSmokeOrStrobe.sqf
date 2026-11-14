@@ -19,6 +19,7 @@ See Also:
 
 Author:
 Marcel
+Jman
 
 Peer Reviewed:
 nil
@@ -47,6 +48,12 @@ private _objClass = switch (_timeOfDay) do {
     };
 };
 private _objTimeToLive = getNumber (configfile >> "CfgAmmo" >> _objClass >> "timeToLive");
+// after dark a chemlight as well, for anyone without night vision to see the strobe by (A. Ares on Discord, 14 Nov)
+private _chem = objNull;
+if (_objClass == "B_IRStrobe") then {
+    _chem = "Chemlight_green" createVehicle (getPos _vehicle);
+    _chem attachTo [_vehicle, [0, 0, 0.5]];
+};
 
 while {!isNull _vehicle && !(_vehicle getVariable ["alive_ml_supplies_seen", false])} do {
     private _obj = _objClass createVehicle (getPos _vehicle);
@@ -66,5 +73,6 @@ while {!isNull _vehicle && !(_vehicle getVariable ["alive_ml_supplies_seen", fal
 };
 
 deleteVehicle _trigger;
+if (!isNull _chem) then { deleteVehicle _chem };
 
 nil;

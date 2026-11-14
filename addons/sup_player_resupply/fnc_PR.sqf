@@ -1923,6 +1923,12 @@ switch(_operation) do {
 
                     private ["_position","_isWaiting","_marker","_markers","_markerLabel"];
 
+                    // Once per request. A second delivery answer for the same request (logistics can send one as the
+                    // transport turns for home and another when it is back) made new markers under the same names,
+                    // which failed, and the 30 s clean-up was a workaround for that.
+                    if ((_logic getVariable ["PR_deliveredRequest", -1]) isEqualTo _requestID) exitWith {};
+                    _logic setVariable ["PR_deliveredRequest", _requestID];
+
                     // param (not select) so a short payload can't throw -- airdrop deliveries
                     // historically sent a 2-element payload and crashed this handler. (#944)
                     _position = _eventData param [2, []];
@@ -1977,6 +1983,7 @@ switch(_operation) do {
 
                     if(count _position > 0) then {
 
+                        { deleteMarkerLocal _x } forEach ["PR_DESTINATION_M1", "PR_DESTINATION_M2"] + (allMapMarkers select { (_x find "PR_CRATE_") == 0 });
                         _markers = [];
 
                         _marker = createMarkerLocal ["PR_DESTINATION_M1", _position];
@@ -1987,10 +1994,10 @@ switch(_operation) do {
                         _markers pushback _marker;
 
                         _marker = createMarkerLocal ["PR_DESTINATION_M2", _position];
-                        _marker setMarkerShape "Ellipse";
-                        _marker setMarkerSize [150, 150];
-                        _marker setMarkerColor "ColorYellow";
-                        _marker setMarkerAlpha 0.5;
+                        _marker setMarkerShapeLocal "Ellipse";
+                        _marker setMarkerSizeLocal [150, 150];
+                        _marker setMarkerColorLocal "ColorYellow";
+                        _marker setMarkerAlphaLocal 0.5;
                         _markers pushback _marker;
 
                         [_logic,"destinationMarker",_markers] call MAINCLASS;
@@ -2001,21 +2008,39 @@ switch(_operation) do {
 
                     [_logic,"state","RESET"] call MAINCLASS;
 
-                    // delete destination markers after 3 minutes
-
-                    [_logic,_position] spawn {
-
-                        params ["_logic","_position"];
-
-                        //Needs investigation: REQUEST_DELIVERED is called twice for some reason. Thats why those markers are not being deleted.
-                        //Workaround: reduced from 180 to 30.
-                        sleep 30;
-
-                        private _markers = [_logic,"destinationMarker"] call MAINCLASS;
-
-                        {
-                                deleteMarker _x;
-                        } foreach _markers;
+                    // The destination stays marked for 10 minutes (it went after 30 s, and a tester was still looking
+                    // for a dropped crate 15 minutes later), and each supply crate inside its circle is pinned where it
+                    // is, followed if it is moved. Only this delivery's own timer takes the markers down.
+                    if (count _position > 0) then {
+                        private _token = diag_tickTime;
+                        _logic setVariable ["PR_destinationToken", _token];
+                        [_logic, _position, _token] spawn {
+                            params ["_logic", "_position", "_token"];
+                            private _crates = [];
+                            private _until = diag_tickTime + 600;
+                            while { diag_tickTime < _until && {(_logic getVariable ["PR_destinationToken", -1]) isEqualTo _token} } do {
+                                // a crate can still be coming down when the answer arrives, so new ones are looked for each pass
+                                {
+                                    if !(_x in _crates) then {
+                                        private _m = createMarkerLocal [format ["PR_CRATE_%1", count _crates], getPos _x];
+                                        if (_m != "") then {
+                                            _m setMarkerShapeLocal "Icon";
+                                            _m setMarkerTypeLocal "mil_box";
+                                            _m setMarkerColorLocal "ColorYellow";
+                                            _m setMarkerSizeLocal [0.6, 0.6];
+                                            _m setMarkerTextLocal "Supplies";
+                                            _crates pushBack _x;
+                                        };
+                                    };
+                                } forEach ((_position nearObjects ["ReammoBox_F", 150]) + (_position nearObjects ["Slingload_base_F", 150]));
+                                { if (!isNull _x) then { (format ["PR_CRATE_%1", _forEachIndex]) setMarkerPosLocal (getPos _x) } } forEach _crates;
+                                sleep 10;
+                            };
+                            if ((_logic getVariable ["PR_destinationToken", -1]) isEqualTo _token) then {
+                                { deleteMarkerLocal _x } forEach ([_logic,"destinationMarker"] call MAINCLASS);
+                                { deleteMarkerLocal (format ["PR_CRATE_%1", _forEachIndex]) } forEach _crates;
+                            };
+                        };
                     };
 
                 };
