@@ -19,6 +19,7 @@ Any
 
 Author:
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -188,7 +189,10 @@ switch (_operation) do {
                             {!(_vehicleAssignments isEqualType [])} ||
                             {count _vehicleAssignments <= 1} ||
                             {!((_vehicleAssignments select 1) isEqualType [])} ||
-                            {(_vehicleAssignments select 1) isEqualTo []};
+                            {(_vehicleAssignments select 1) isEqualTo []} ||
+                            // every group it names is gone, so none of them will ever spawn it: the spawner drops
+                            // those links and spawns it as an empty vehicle (RSS7 static guns, 14 Nov)
+                            {((_vehicleAssignments select 1) findIf { !isNil {_profilesById get _x} }) == -1};
                     };
 
                     if (_shouldQueue) then {

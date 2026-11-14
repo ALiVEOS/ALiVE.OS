@@ -435,6 +435,23 @@ if (
             } else {
                 private _vehicleAssignments = [_profileToSpawn,"vehicleAssignments"] call ALiVE_fnc_hashGet;
 
+                // A vehicle with a group in it is spawned by that group. When every group it names is gone, nothing
+                // ever spawns it: four empty static guns stayed virtual all night with players beside them, each still
+                // tied to a dead enemy group (RSS7, 14 Nov). Links to groups that no longer exist are dropped here, so
+                // it spawns as the empty vehicle it is; a saved campaign carrying such links heals the same way.
+                if (
+                    !isNil "_vehicleAssignments" &&
+                    {!((_vehicleAssignments select 1) isEqualTo [])} &&
+                    {((_vehicleAssignments select 1) findIf { !isNil {_profilesById get _x} }) == -1}
+                ) then {
+                    ["ALiVE Profile Spawner - %1 was still tied to %2, which no longer exist: links cleared so it can spawn",
+                        _profileID, _vehicleAssignments select 1] call ALiVE_fnc_dump;
+                    [_profileToSpawn,"vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+                    [_profileToSpawn,"entitiesInCommandOf", []] call ALIVE_fnc_hashSet;
+                    [_profileToSpawn,"entitiesInCargoOf", []] call ALIVE_fnc_hashSet;
+                    _vehicleAssignments = [_profileToSpawn,"vehicleAssignments"] call ALiVE_fnc_hashGet;
+                };
+
                 if (
                     isNil "_vehicleAssignments" ||
                     {(_vehicleAssignments select 1) isEqualTo []}
