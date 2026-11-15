@@ -3353,7 +3353,10 @@ switch(_operation) do {
                             _heli setVariable ["alive_ml_transit_last", [_posASL select 2, _distToDest]];
                             private _noProgress = ((_posASL select 2) - (_lastTr select 0)) < 5 && {((_lastTr select 1) - _distToDest) < 20};
                             if (_slungNow && {!_noProgress}) then { _stuckRecoveryAttempts = 0; };
-                            if ((_heliAGLt < 30 && abs _heliSpdT < 5) || {_slungNow && {_noProgress}}) then {
+                            // One with no load that stops near its spot at any height is stuck too: one sat 98 m up and
+                            // 192 m short for the whole 15 minutes, its crate still aboard (#1120)
+                            if ((_heliAGLt < 30 && abs _heliSpdT < 5) || {_slungNow && {_noProgress}}
+                                || {!_slungNow && {_distToDest < 400} && {abs _heliSpdT < 5}}) then {
                                 _stuckTimer = _stuckTimer + 5;
                                 if (_stuckTimer > 30) then {
                                     if (_stuckRecoveryAttempts < 1) then {
@@ -3706,10 +3709,41 @@ switch(_operation) do {
                                 private _passengers = (crew _heli) select { alive _x && {group _x != group (driver _heli)} };
                                 private _troopsClear = (!_isSlingHeli) && {_passengers isEqualTo [] || {_heli getVariable ["alive_ml_troops_out", false]}};
                                 if (isTouchingGround _heli) then { _groundTimer = _groundTimer + 5; };
+                                // Supplies in its hold (a player's crate sent by Helicopter, or an AI payload): it sets down
+                                // and puts them out itself, then goes home. With nobody aboard it counted as clear the moment
+                                // it reached its spot, so it went home with the crate, or landed and sat with the engine off
+                                // until the delivery ran out and the crate was dumped, or never was (#1120). Down is judged
+                                // by height and speed too: a helicopter run on a headless client can read as not touching.
+                                private _cargoAboard = (!_isSlingHeli) && {!isNil QMOD(SYS_LOGISTICS)}
+                                    && {(_heli getVariable ["ALiVE_SYS_LOGISTICS_CARGO", []]) isNotEqualTo []};
+                                private _cargoOut = false;
+                                if (_cargoAboard) then {
+                                    private _down = isTouchingGround _heli || {_heliAGLu < 2 && {abs (speed _heli) < 3}};
+                                    private _downTicks = if (_down) then { (_heli getVariable ["alive_ml_cargo_down", 0]) + 1 } else { 0 };
+                                    _heli setVariable ["alive_ml_cargo_down", _downTicks];
+                                    if (_downTicks >= 2) then {
+                                        // settled for a tick: put it all out beside the helicopter
+                                        private _n = count (_heli getVariable ["ALiVE_SYS_LOGISTICS_CARGO", []]);
+                                        [MOD(SYS_LOGISTICS), "unloadObjects", [_heli, _heli]] call ALiVE_fnc_logistics;
+                                        _cargoAboard = (_heli getVariable ["ALiVE_SYS_LOGISTICS_CARGO", []]) isNotEqualTo [];
+                                        _cargoOut = !_cargoAboard;
+                                        ["ML - heliDeliveryWatchdog: %1 set down near %2 and put out %3 load(s) of supplies (%4 left aboard).",
+                                            _tProfID, [getPos _heli] call ALIVE_fnc_taskGetNearestLocationName, _n,
+                                            count (_heli getVariable ["ALiVE_SYS_LOGISTICS_CARGO", []])] call ALiVE_fnc_dump;
+                                    } else {
+                                        if (!_down && {!(_heli getVariable ["alive_ml_cargo_land", false])}) then {
+                                            _heli setVariable ["alive_ml_cargo_land", true];
+                                            [_heli, "LAND"] call ALiVE_fnc_landRemote;
+                                            ["ML - heliDeliveryWatchdog: %1 coming down to put its supplies out (%2 m up, %3 m from its spot).",
+                                                _tProfID, round _heliAGLu, round (_heli distance2D _destPos)] call ALiVE_fnc_dump;
+                                        };
+                                    };
+                                };
+                                if (_cargoAboard) then { _troopsClear = false; };
                                 private _nudgeFrom = _heli getVariable ["alive_ml_sling_nudge_t", -1];
                                 private _slungLimit = if (_nudgeFrom < 0) then { 150 } else { 150 max ((_nudgeFrom + 145) min 175) };
                                 private _timedOut = if (_isSlingHeli) then { _phaseTimer > ([60, _slungLimit] select _slungAttached) } else {
-                                    if (_unloadSkipped) then { _phaseTimer > 60 } else {
+                                    if (_unloadSkipped && {!_cargoAboard}) then { _phaseTimer > 60 } else {
                                         _groundTimer > 90 || {_groundTimer == 0 && {_phaseTimer > 150}} || {_phaseTimer > 330}
                                     }
                                 };
@@ -3729,7 +3763,16 @@ switch(_operation) do {
                                                 ["ML - heliDeliveryWatchdog: %1 troops disembarked (t=%2s, %3 s on the ground), RTB.", _tProfID, _phaseTimer, _groundTimer] call ALiVE_fnc_dump;
                                             };
                                         } else {
-                                            ["ML - heliDeliveryWatchdog: %1 never let its men out: %2 still aboard (t=%3s, %4 s on the ground) get out where it is, RTB.", _tProfID, count _passengers, _phaseTimer, _groundTimer] call ALiVE_fnc_dump;
+                                            if (_cargoAboard) then {
+                                                // never got down: the supplies go out where it is (each is put on the ground
+                                                // beside it), so the crate isn't flown home
+                                                [MOD(SYS_LOGISTICS), "unloadObjects", [_heli, _heli]] call ALiVE_fnc_logistics;
+                                                _cargoOut = true;
+                                                ["ML - heliDeliveryWatchdog: %1 never set down (%2 m up, t=%3s): its supplies are put on the ground where it is, RTB.", _tProfID, round _heliAGLu, _phaseTimer] call ALiVE_fnc_dump;
+                                            };
+                                            if (_passengers isNotEqualTo []) then {
+                                                ["ML - heliDeliveryWatchdog: %1 never let its men out: %2 still aboard (t=%3s, %4 s on the ground) get out where it is, RTB.", _tProfID, count _passengers, _phaseTimer, _groundTimer] call ALiVE_fnc_dump;
+                                            };
                                         };
                                     };
 
@@ -3832,6 +3875,12 @@ switch(_operation) do {
                                     // Issue direct flight commands so the physically spawned
                                     // heli actually departs rather than hovering after the
                                     // profile waypoint is set.
+                                    // One told to land to put its supplies out keeps that order and its engine off, and sat at
+                                    // the spot through the whole return (9 minutes, NUC): the landing is called off first
+                                    if (_cargoOut || {_heli getVariable ["alive_ml_cargo_land", false]}) then {
+                                        [_heli, "NONE"] call ALiVE_fnc_landRemote;
+                                        [_heli, true] remoteExecCall ["engineOn", _heli];
+                                    };
                                     _heli flyInHeight 150;
                                     (group (driver _heli)) setSpeedMode "FULL";
                                     _heli move _returnPos;
@@ -3849,7 +3898,7 @@ switch(_operation) do {
                                     // aboard RTBs undelivered (nobody wins). Troops physically
                                     // clear, or a sling heli (load force-released just above),
                                     // is a real delivery.
-                                    if (_troopsClear || _isSlingHeli || _bailed) then { "arrived" call _fnc_latchHeli; } else { "aborted" call _fnc_latchHeli; };
+                                    if (_troopsClear || _isSlingHeli || _bailed || _cargoOut) then { "arrived" call _fnc_latchHeli; } else { "aborted" call _fnc_latchHeli; };
                                     _heli setVariable ["alive_ml_watchdog_phase", _phase];
                                 } else {
                                     if (_dbg) then {
