@@ -1507,7 +1507,8 @@ class FSM
                          "            };" \n
                          "        };" \n
                          "    };" \n
-                         "} foreach _section;" \n
+                         "} foreach (_section select {!isNil {[ALiVE_profileHandler, ""getProfile"", _x] call ALIVE_fnc_profileHandler}});" \n
+                         "// (a group removed since the section was picked is passed over: looked up, it threw a dozen errors)" \n
                          "" \n
                          "//[""FSM state: %1"",""MOVE SECTION""] call ALIVE_fnc_dumpR;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
