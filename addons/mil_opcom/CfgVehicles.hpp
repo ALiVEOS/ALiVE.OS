@@ -316,6 +316,20 @@ class CfgVehicles {
                                 defaultValue = """10""";
                                 typeName = "NUMBER";
                         };
+                        // Terrain Tie-break (16 Nov 2026): objectives of equal priority are ordered by high ground and road junctions
+                        class terrainPriority : Combo
+                        {
+                                property = "ALiVE_mil_opcom_terrainPriority";
+                                displayName = "$STR_ALIVE_OPCOM_TERRAIN_PRIORITY";
+                                tooltip = "$STR_ALIVE_OPCOM_TERRAIN_PRIORITY_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                                ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
+                        };
                         class arriveTogether : Combo
                         {
                                 property = "ALiVE_mil_opcom_arriveTogether";

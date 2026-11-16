@@ -284,6 +284,8 @@ switch (_operation) do {
         // commander, which has no reinforcement request
         private _reinforceMatchEnemy = ((toLower format ["%1", _logic getVariable ["reinforceMatchEnemy", "false"]]) in ["true", "1"]) && {_type != "asymmetric"};
         private _roadblocks = (parseNumber format ["%1", _logic getvariable ["roadblocks",1]]) > 0;
+        // Terrain Tie-break (16 Nov 2026): among objectives of equal priority, high ground and road junctions come first
+        private _terrainPriority = ((toLower format ["%1", _logic getVariable ["terrainPriority", "false"]]) in ["true", "1"]) && {_type != "asymmetric"};
         // Installation Types (#1081): what an Asymmetric commander may set up, as lower-case keys
         private _insTypes = (toLower format ["%1", _logic getvariable ["asymInstallations", "factory,depot,recruit,ied,suicide,sabotage,ambush,roadblocks"]]) splitString ", ";
         // #697 Phase 2.1: AI-driven friendly destroy of enemy asymmetric
@@ -548,6 +550,7 @@ switch (_operation) do {
             ["shipLaunchBusy", false],
             ["shipBeachheadID", ""],
             ["roadblocks", _roadblocks],
+            ["terrainPriority", _terrainPriority],
             ["insTypes", _insTypes],
             ["drugLabs", _drugLabs],
             ["drugSmugglers", _drugSmugglers],
@@ -5279,6 +5282,8 @@ switch (_operation) do {
             ["_opcomID", ""]
         ];
 
+        private _terrainPriority = [_logic, "terrainPriority", false] call ALiVE_fnc_hashGet;
+
         private _unsortedObjectives = _objectives apply {
             private _target = _x;
 
@@ -5312,6 +5317,15 @@ switch (_operation) do {
             ];
 
             private _opcomState = "unassigned";
+
+            // Terrain Tie-break: up to 0.9 is added to the priority, so it only reorders objectives whose priority
+            // was equal (cluster priorities are whole numbers). Nothing changes with the option off.
+            if (_terrainPriority && {_priority isEqualType 0}) then {
+                // run in one go: about 2 ms an objective unscheduled, against 45 ms spread over frames
+                private _terrainScore = 0;
+                isNil { _terrainScore = [_pos] call ALiVE_fnc_clusterTerrainScore };
+                _priority = _priority + ((round (_terrainScore * 90)) / 100);
+            };
 
             private _createdObjective = [_logic,"addObjective", [_id,_pos,_size,_type,_priority,_opcomState,_clusterID,_opcomID]] call ALiVE_fnc_OPCOM;
 

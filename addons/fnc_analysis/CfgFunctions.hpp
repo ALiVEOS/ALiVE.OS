@@ -176,6 +176,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\fnc_analysis\fnc_unitArrayFilterInSector.sqf";
                 ALIVE_RECOMPILE;
             };
+            class clusterTerrainScore {
+                description = "clusterTerrainScore";
+                file = "\x\alive\addons\fnc_analysis\fnc_clusterTerrainScore.sqf";
+                ALIVE_RECOMPILE;
+            };
             class getClosestLand {
                 description = "getClosestLand";
                 file = "\x\alive\addons\fnc_analysis\fnc_getClosestLand.sqf";

@@ -815,6 +815,12 @@
     <Portuguese>Apenas no modo assimétrico. Permite ao comandante insurgente colocar bloqueios de estrada em rotas-chave como parte do seu repertório tático.</Portuguese>
     <Russian>Только в асимметричном режиме. Позволяет повстанческому командиру выставлять блокпосты на ключевых маршрутах в рамках своего тактического репертуара.</Russian>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_TERRAIN_PRIORITY">
+    <English>Terrain Tie-break</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_TERRAIN_PRIORITY_COMMENT">
+    <English>Any commander that doesn't start the mission as Asymmetric. Yes: objectives on high ground (up to 60 m above the land around them) or near road junctions get a small extra priority, always less than 1. So among objectives with the same priority they come first wherever the commander picks by priority, such as the next Assault target, while objectives of different priority keep their order. It reads the map index, so a map whose index has no height or road data is not affected. No (the default) leaves the order as it is.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_SIMULTAN">
     <English>Max. simultan attacks:</English>
     <Chinese>最大同時攻擊數：</Chinese>
