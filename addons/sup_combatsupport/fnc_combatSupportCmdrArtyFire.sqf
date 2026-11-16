@@ -99,8 +99,9 @@ if !([_bestLogic, "dangerClose"] call ALIVE_fnc_MilArtillery) then {
     private _prof = _bestLogic getVariable ["intensityProfile", [420,120,75,6,2,1,90]];
     private _ffRadius = (_prof select 2) + 150;
     private _blocked = false;
+    // soldiers, and vehicles only with someone aboard (#1125)
     {
-        if (!_blocked && {([_x, "type", ""] call ALiVE_fnc_hashGet) in ["entity", "vehicle"]}) then {
+        if (!_blocked && {(([_x,"type",""] call ALiVE_fnc_hashGet) == "entity" || {([_x,"type",""] call ALiVE_fnc_hashGet) == "vehicle" && {([_x,"entitiesInCommandOf",[]] call ALiVE_fnc_hashGet) isNotEqualTo [] || {([_x,"entitiesInCargoOf",[]] call ALiVE_fnc_hashGet) isNotEqualTo []}}})}) then {
             private _pSide = [_x, "side", ""] call ALiVE_fnc_hashGet;
             if (_pSide isEqualType "" && {_pSide != ""}
                 && {[([_pSide] call ALIVE_fnc_sideTextToObject), _side] call BIS_fnc_sideIsFriendly}

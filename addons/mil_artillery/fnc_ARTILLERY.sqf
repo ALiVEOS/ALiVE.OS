@@ -1345,12 +1345,14 @@ switch(_operation) do {
         private _pKill = (1 - (1 - _pRound) ^ _n) min 0.5;
 
         // real missions abort when friendlies sit inside the beaten zone -
-        // mirror that over virtual positions before any casualties are rolled
+        // mirror that over virtual positions before any casualties are rolled.
+        // Soldiers count, and vehicles only with someone aboard: an empty allied truck
+        // parked near the target stopped every mission there (#1125)
         private _ffRadius = (_dispersion max 50) + 150;
         private _sideObj = [_sideText] call ALIVE_fnc_sideTextToObject;
         private _ffBlocked = false;
         {
-            if (!_ffBlocked && {_x isEqualType []}) then {
+            if (!_ffBlocked && {_x isEqualType []} && {(([_x,"type",""] call ALiVE_fnc_hashGet) == "entity" || {([_x,"type",""] call ALiVE_fnc_hashGet) == "vehicle" && {([_x,"entitiesInCommandOf",[]] call ALiVE_fnc_hashGet) isNotEqualTo [] || {([_x,"entitiesInCargoOf",[]] call ALiVE_fnc_hashGet) isNotEqualTo []}}})}) then {
                 private _pPos = [_x,"position",[0,0,0]] call ALiVE_fnc_hashGet;
                 if (_pPos distance2D _targetPos < _ffRadius) then {
                     private _pSide = [_x,"side",""] call ALiVE_fnc_hashGet;
