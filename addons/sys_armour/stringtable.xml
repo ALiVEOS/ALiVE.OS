@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="sys_armour">
+<Key ID="STR_ALIVE_ARMOUR_CATEGORY">
+    <English>Armour</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHS">
+    <English>RHS armour and ammo values</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHS_COMMENT">
+    <English>Use ALiVE's own values for RHS vests and rifle rounds, so soldiers in RHS body armour go down to a reasonable number of hits. Needs ACE medical with its alternate armour penetration option on (ACE's default). Off: stock RHS and ACE values. Applies from the next mission start.</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAMMO">
+    <English>RHS rifle round penetration</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAMMO_COMMENT">
+    <English>With the RHS values on, also give RHS rifle rounds the armour penetration of the matching vanilla cartridge (armour-piercing rounds keep their edge). Off: only the vests change.</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAPS">
+    <English>T-14 / T-15 active protection</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAPS_COMMENT">
+    <English>With the RHS values on: how the T-14 and T-15 deal with incoming rockets and missiles. RHS stops every one, without limit.</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAPS_RHS">
+    <English>RHS default (unlimited)</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAPS_LIMITED">
+    <English>Limited charges, restored on rearm</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAPS_OFF">
+    <English>Off</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAPSCHARGES">
+    <English>T-14 / T-15 protection charges</English>
+</Key>
+<Key ID="STR_ALIVE_ARMOUR_RHSAPSCHARGES_COMMENT">
+    <English>With limited active protection: how many rockets or missiles each tank stops before it must be rearmed.</English>
+</Key>
+</Container>
+</Package>
+</Project>
