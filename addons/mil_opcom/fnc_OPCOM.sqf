@@ -5918,6 +5918,34 @@ switch (_operation) do {
                     case ("entity") : {
                         _assignments = ([_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_hashGet) select 1;
 
+                        // A virtual group riding only in the cargo of vehicles nobody drives (a dropped-off or
+                        // dismounted driver) was in no troop list: the vehicle branch only lists the crew in
+                        // command, and this branch skipped any group with a vehicle. It sat parked for hours, so
+                        // it is taken out of those vehicles and listed as infantry. Spawned groups, players, busy and
+                        // held groups, and the crews of static guns, are left as they are.
+                        if (
+                            count _assignments > 0 &&
+                            {!([_profile,"active",false] call ALIVE_fnc_hashGet)} &&
+                            {!([_profile,"busy",false] call ALIVE_fnc_hashGet)} &&
+                            {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)} &&
+                            {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _x, false] call ALIVE_fnc_hashGet})}
+                        ) then {
+                            private _vehProfiles = _assignments apply { [ALIVE_profileHandler,"getProfile",_x] call ALIVE_fnc_profileHandler };
+                            if (
+                                (_vehProfiles findIf {
+                                    isNil "_x" || {!(_x isEqualType [])} || {([_x,"entitiesInCommandOf",[]] call ALIVE_fnc_hashGet) isNotEqualTo []}
+                                    // only a vehicle someone drives: a static gun's crew is never listed in command of it
+                                    || {!(([_x,"vehicleClass",""] call ALIVE_fnc_hashGet) isKindOf "LandVehicle")}
+                                    || {([_x,"vehicleClass",""] call ALIVE_fnc_hashGet) isKindOf "StaticWeapon"}
+                                }) == -1
+                            ) then {
+                                private _wasIn = +_assignments;
+                                { [_profile, _x] call ALIVE_fnc_removeProfileVehicleAssignment } forEach _vehProfiles;
+                                ["ALiVE OPCOM - %1 was riding in driverless %2, taken out and listed as infantry", _x, _wasIn] call ALiVE_fnc_dump;
+                                _assignments = ([_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_hashGet) select 1;
+                            };
+                        };
+
                         // Groups with a pilot in them used to be left out, but a crew on foot is one whose aircraft
                         // is gone (shot down, or left on a pad): air crews flying for the air commander are aboard,
                         // or not profiles at all. Left out, they stood in a field and were saved with the campaign
