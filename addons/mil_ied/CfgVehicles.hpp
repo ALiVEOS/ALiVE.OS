@@ -79,6 +79,12 @@ class CfgVehicles {
                         class IED_Dicker_Chance : Edit { property = "ALiVE_mil_ied_IED_Dicker_Chance"; displayName = "$STR_ALIVE_IED_DICKER_CHANCE"; tooltip = "$STR_ALIVE_IED_DICKER_CHANCE_COMMENT"; defaultValue = """0"""; };
                         // A squad of the nearest hostile force comes in after a blast (ALiVE_fnc_IEDAmbush)
                         class IED_Ambush_Chance : Edit { property = "ALiVE_mil_ied_IED_Ambush_Chance"; displayName = "$STR_ALIVE_IED_AMBUSH_CHANCE"; tooltip = "$STR_ALIVE_IED_AMBUSH_CHANCE_COMMENT"; defaultValue = """0"""; };
+                        // An area whose IEDs were all cleared stays clear, or is armed again after this many in-game hours
+                        class IED_Rearm_Cleared : Combo
+                        {
+                                property = "ALiVE_mil_ied_IED_Rearm_Cleared"; displayName = "$STR_ALIVE_IED_REARM_CLEARED"; tooltip = "$STR_ALIVE_IED_REARM_CLEARED_COMMENT"; defaultValue = """0""";
+                                class Values { class Never{name="Never";value=0;default=1;}; class H6{name="After 6 hours";value=6;}; class H24{name="After 24 hours";value=24;}; class H72{name="After 3 days";value=72;}; };
+                        };
                         // ---- Suicide Bombers ------------------------------------------------
                         class HDR_BOMBER : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_BOMBER"; displayName = "SUICIDE BOMBERS"; };
                         class Bomber_Threat : Combo

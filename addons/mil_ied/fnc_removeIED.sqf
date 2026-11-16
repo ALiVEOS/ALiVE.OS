@@ -12,6 +12,8 @@ _position = _this select 0;
 _town = _this select 1;
 
 _IEDs = [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town] call ALiVE_fnc_hashGet;
+// an area where no IED could go down is not recorded
+if (isNil "_IEDs") exitWith {};
 
 
     //["REMOVE IED: %1",_IEDs] call ALIVE_fnc_dump;
@@ -36,6 +38,10 @@ _removeIED = {
 
     // If no object found at exact position, remove from store and skip. A charge left lying there by an IED
     // removed some other way (defused with ACE before the IED's own clean-up was in) goes too
+    // An IED skipped on entry because a player stood near its spot was never put down: keep it for the next visit
+    if (count _IEDObjArr == 0 && {[_value, "IEDdeferred", false] call ALiVE_fnc_hashGet}) exitWith {
+        [_value, "IEDdeferred"] call ALiVE_fnc_hashRem;
+    };
     if (count _IEDObjArr == 0) then {
         _forget pushBack _key;
         { if (isNull attachedTo _x) then { deleteVehicle _x } } forEach (_IEDpos nearObjects ["ALIVE_DemoCharge_Remote_Ammo", 2]);

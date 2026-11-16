@@ -77,6 +77,40 @@ private _exactPositions = _this param [4, [], [[]]];
 _IEDs = [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
 _IEDcount = count (_IEDs select 1);
 
+// An area that has had IEDs and has none left was cleared, and stays clear: an empty list used to read
+// as "never armed", so every visit after the last one was cleared put a fresh set down (Red Sector
+// Seven, 13 Nov: the same areas armed again 8 to 22 minutes apart). Re-arm Cleared Areas sets how many
+// in-game hours after it was found clear an area may be armed again; Never keeps it clear.
+private _stayClear = false;
+private _armed = [GVAR(STORE), "armed", []] call ALiVE_fnc_hashGet;
+if (_IEDcount == 0 && {_exactPositions isEqualTo []} && {_town in _armed} && {_town in (([GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet) select 1)}) then {
+    private _cleared = [GVAR(STORE), "cleared"] call ALiVE_fnc_hashGet;
+    if (isNil "_cleared" || {!([_cleared] call ALiVE_fnc_isHash)}) then {
+        _cleared = [] call ALiVE_fnc_hashCreate;
+        [GVAR(STORE), "cleared", _cleared] call ALiVE_fnc_hashSet;
+    };
+    // the in-game date it was found clear, kept as a date so it survives a save exactly
+    private _since = [_cleared, _town, []] call ALiVE_fnc_hashGet;
+    if (_since isEqualType "") then { _since = parseSimpleArray _since };
+    private _hours = if (_since isEqualType [] && {count _since >= 5}) then {
+        (((date select 0) - (_since select 0)) + (dateToNumber date - dateToNumber _since)) * 8760
+    } else { -1 };
+    // no date yet, or the clock has gone back past it (a restart on the editor date): start counting now
+    if (_hours < 0) then {
+        _hours = 0;
+        [_cleared, _town, +date] call ALiVE_fnc_hashSet;
+    };
+    private _rearmHours = ADDON getVariable ["IED_Rearm_Cleared", 0];
+    if (_rearmHours > 0 && {_hours >= _rearmHours}) then {
+        ["ALIVE-%1 IED: %2 was cleared %3 in-game hours ago, arming it again", time, _town, round _hours] call ALiVE_fnc_dump;
+    } else {
+        _stayClear = true;
+    };
+};
+if (_stayClear) exitWith {
+    ["ALIVE-%1 IED: %2 was cleared, left clear", time, _town] call ALiVE_fnc_dump;
+};
+
 // IF first time creating IEDs for location go work out how many IEDs
 if (_IEDcount == 0) then {
     ["ALIVE-%1 IED: creating %2 IEDs at %5 (%3) - size %4", time, _numIEDs, mapgridposition  _position, _size, _town] call ALiVE_fnc_dump;
@@ -287,7 +321,10 @@ for "_j" from 1 to _numIEDs do {
         if ({(getpos _x distance _storedPos) < 75} count ([] call BIS_fnc_listPlayers) > 0) then {
             ["ALIVE-%1 IED: store-replay skipped - player within 75m of stored pos %2", time, _storedPos] call ALiVE_fnc_dump;
             _error = true;
+            // kept when players leave: no object was put down, so finding none is not a sign it was cleared
+            [_data, "IEDdeferred", true] call ALiVE_fnc_hashSet;
         } else {
+            [_data, "IEDdeferred"] call ALiVE_fnc_hashRem;
             private _storedSkin = [_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet;
             _aliveArms = _storedSkin call _fnc_aliveArms;
             // at the integration's height, not the saved one: that is where it had sunk to
@@ -442,7 +479,14 @@ for "_j" from 1 to _numIEDs do {
     }; // End of if (!_error) - only set up IED if it was successfully created
 };
 
-// Set data
-if (_IEDcount == 0) then {
+// Set data. Only an area that got at least one IED is recorded: one where none could go down (no spot
+// found, or players on all of them) is tried again next time rather than read as cleared.
+if (_IEDcount == 0 && {count (_IEDData select 1) > 0}) then {
     [[GVAR(STORE), "IEDs"] call ALiVE_fnc_hashGet, _town, _IEDData] call ALiVE_fnc_hashSet;
+    // armed: when this set is gone the area counts as cleared, and a fresh set restarts the clearing clock
+    private _armedList = [GVAR(STORE), "armed", []] call ALiVE_fnc_hashGet;
+    _armedList pushBackUnique _town;
+    [GVAR(STORE), "armed", _armedList] call ALiVE_fnc_hashSet;
+    private _clearedRec = [GVAR(STORE), "cleared"] call ALiVE_fnc_hashGet;
+    if (!isNil "_clearedRec" && {[_clearedRec] call ALiVE_fnc_isHash}) then { [_clearedRec, _town] call ALiVE_fnc_hashRem };
 };

@@ -483,6 +483,12 @@
 <Key ID="STR_ALIVE_IED_DICKER_CHANCE_COMMENT">
     <English>How many IEDs get a civilian trigger man watching from 40 to 150 m away, from inside a house among the civilians where there is one. While he is free he sets the IED off himself when anyone comes near, so a careful approach won't save you. Kill him, detain him or make him surrender and it won't go off when approached; disarm it as usual. ALiVE IEDs only. Type a percentage, 0 to 100.</English>
 </Key>
+<Key ID="STR_ALIVE_IED_REARM_CLEARED">
+    <English>Re-arm Cleared Areas</English>
+</Key>
+<Key ID="STR_ALIVE_IED_REARM_CLEARED_COMMENT">
+    <English>Once every IED in an area has been cleared (disarmed, set off or destroyed), the area stays clear: going back there finds none. Choose a time here and an area that was found clear is armed again with new IEDs once that many in-game hours have passed. Saved with the IEDs when IED persistence is on.</English>
+</Key>
 <Key ID="STR_ALIVE_IED_AMBUSH_CHANCE">
     <English>Ambush Chance After a Blast (%)</English>
 </Key>

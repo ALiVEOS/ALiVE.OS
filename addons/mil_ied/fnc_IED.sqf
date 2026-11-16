@@ -291,6 +291,11 @@ switch(_operation) do {
                     private _dickerChance = _logic getVariable ["IED_Dicker_Chance", 0];
                     if (_dickerChance isEqualType "") then { _dickerChance = parseNumber _dickerChance };
                     ADDON setVariable ["IED_Dicker_Chance", _dickerChance];
+                    // Re-arm Cleared Areas, in-game hours (0 = never); read by createIED.
+                    private _rearmCleared = _logic getVariable ["IED_Rearm_Cleared", 0];
+                    if (_rearmCleared isEqualType "") then { _rearmCleared = parseNumber _rearmCleared };
+                    if (!(_rearmCleared isEqualType 0) || {_rearmCleared < 0}) then { _rearmCleared = 0 };
+                    ADDON setVariable ["IED_Rearm_Cleared", _rearmCleared];
                     // Bomber Wait (minutes), Bomber Wait Shared Within and Car Bomb Start Distance (metres);
                     // read by bomberDispatch and createDrivenVBIED. Blank or below zero keeps the default.
                     {
