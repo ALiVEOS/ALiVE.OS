@@ -36,9 +36,8 @@ switch (_support) do
         _crew joinSilent _grp;
         _grp addVehicle _veh;
 
-        // Exclude CS from VCOM
-        // CS only runs serverside so no PV is needed
-        (driver _veh) setvariable ["VCOM_NOAI", true];
+        // kept out of other AI mods (LAMBS, VCOM) under Guard, as the rest of ALiVE's groups are
+        ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
 
         private _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
         private _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
@@ -161,9 +160,8 @@ switch (_support) do
             _grp addVehicle _veh;
         };
 
-        // Exclude CS from VCOM
-        // CS only runs serverside so no PV is needed
-        (driver _veh) setvariable ["VCOM_NOAI", true];
+        // kept out of other AI mods (LAMBS, VCOM) under Guard, as the rest of ALiVE's groups are
+        ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
 
         private _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
         private _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
@@ -286,9 +284,8 @@ switch (_support) do
             _veh setVariable ["ALIVE_profileIgnore", true];
             if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
 
-            // Exclude CS from VCOM
-            // CS only runs serverside so no PV is needed
-            (driver _veh) setvariable ["VCOM_NOAI", true];
+            // kept out of other AI mods (LAMBS, VCOM) under Guard, as the rest of ALiVE's groups are
+            ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
 
             if (_i == 1) then {leader _grp setRank "CAPTAIN"};
 

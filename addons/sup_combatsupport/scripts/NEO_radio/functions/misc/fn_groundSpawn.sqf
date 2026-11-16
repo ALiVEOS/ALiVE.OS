@@ -73,7 +73,7 @@ if (!isNil "ALIVE_profileHandler") then {
 _veh setVariable ["ALIVE_CombatSupport", true, true];
 _veh setVariable ["ALIVE_profileIgnore", true, true];
 _grp setVariable ["ALIVE_profileIgnore", true, true];
-{ _x setVariable ["VCOM_NOAI", true] } forEach (crew _veh);
+["guard", [_grp]] call ALiVE_fnc_modConflicts;
 _veh lockDriver true;
 
 _veh setVariable ["ALIVE_logistics_enabled", _logistics, true];

@@ -140,6 +140,14 @@ switch (_operation) do {
         if (isPlayer leader _group) exitWith {};
         { _group setVariable [_x, true, true] } forEach (_guard select 0);
         { ["unit", [_x]] call ALiVE_fnc_modConflicts } forEach units _group;
+        // VCOM starts its squad script every 10 s on each group not on its active list, and the script sets the
+        // group to YELLOW before it reads Vcm_Disable and stops. That undid every hold-fire (BLUE) ALiVE gives, on
+        // artillery batteries and transport crews alike. A group on the list is never started, so it goes on it.
+        // One extra entry: a script already running for the group takes one entry off as it stops.
+        if ("Vcm_Disable" in (_guard select 0) && {!isNil "VcmAI_ActiveList"} && {!(_group getVariable ["ALiVE_vcomListed", false])}) then {
+            _group setVariable ["ALiVE_vcomListed", true];
+            VcmAI_ActiveList pushBack _group;
+        };
     };
 
     case "unit": {

@@ -26,9 +26,10 @@ class CfgALiVEModConflicts {
         patches[] = {"VCOM_AI"};
         missionVar = "Vcm_ActivateAI";
         effect = "it takes over the movement, formations and skills of ALiVE's groups";
-        handling = "VCOM is switched off for ALiVE's groups";
+        handling = "VCOM is switched off for ALiVE's groups and soldiers";
         groupVars[] = {"Vcm_Disable"};
-        unitVars[] = {};
+        // VCOM reads its calls for help off each soldier, not the group, so the soldiers carry it too
+        unitVars[] = {"Vcm_Disable"};
         unitVarsWithBehaviour[] = {};
     };
     class ASR_AI3 {

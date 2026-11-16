@@ -834,9 +834,8 @@ switch(_operation) do {
                                 _grp = group (driver _veh);
                             };
 
-                            // Exclude CS from VCOM
-                            // CS only runs serverside so no PV is needed
-                            (driver _veh) setvariable ["VCOM_NOAI", true];
+                            // kept out of other AI mods (LAMBS, VCOM) under Guard, as the rest of ALiVE's groups are
+                            ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
 
                             [_veh, _grp] call _fnc_shieldFromProfiler;
 
@@ -1003,9 +1002,8 @@ switch(_operation) do {
                                 _grp = group (driver _veh);
                             };
 
-                            // Exclude CS from VCOM
-                            // CS only runs serverside so no PV is needed
-                            (driver _veh) setvariable ["VCOM_NOAI", true];
+                            // kept out of other AI mods (LAMBS, VCOM) under Guard, as the rest of ALiVE's groups are
+                            ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
 
                             [_veh, _grp] call _fnc_shieldFromProfiler;
 
@@ -1266,9 +1264,8 @@ switch(_operation) do {
                                     // set ownership flag for other modules
                                     _veh setVariable ["ALIVE_CombatSupport", true];
 
-                                    // Exclude CS from VCOM
-                                    // CS only runs serverside so no PV is needed
-                                    (driver _veh) setvariable ["VCOM_NOAI", true];
+                                    // kept out of other AI mods (LAMBS, VCOM) under Guard, as the rest of ALiVE's groups are
+                                    ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
 
                                     [_veh, _grp] call _fnc_shieldFromProfiler;
 
@@ -1290,6 +1287,7 @@ switch(_operation) do {
                                         // headless client over these 2 on foot.
                                         { _x setVariable ["ALIVE_CombatSupport", true] } forEach (units _newgrp);
                                         (units _newgrp) joinSilent _grp;
+                                        ["guard", [_grp]] call ALiVE_fnc_modConflicts;
 
                                         _sptarr = _grp getVariable ["supportWeaponArray",[]];
                                         _sptarr pushback _veh;

@@ -120,7 +120,7 @@ if (count _veh == 0) then {
     _veh setVariable ["ALIVE_profileIgnore", true];
     if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
 
-    (driver _veh) setvariable ["VCOM_NOAI", true];
+    ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
 } else {
     _veh = _veh select 0;
     waitUntil {(_veh getVariable ["ALIVE_CombatSupport", false])};

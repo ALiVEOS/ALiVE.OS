@@ -109,9 +109,8 @@ for "_i" from 1 to _unitCount do
     _units pushback _veh;
     _artyBatteries pushback _veh;
 
-    // Exclude CS from VCOM
-    // CS only runs serverside so no PV is needed
-    (driver _veh) setvariable ["VCOM_NOAI", true];
+    // kept out of other AI mods (LAMBS, VCOM) under Guard, as the rest of ALiVE's groups are
+    ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
 
     // set ownership flag for other modules
     _veh setVariable ["ALIVE_CombatSupport", true];
