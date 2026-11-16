@@ -1693,7 +1693,20 @@ switch (_operation) do {
             } else {
                 {[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos] call ALiVE_fnc_crossesSea}
             };
-            if (_commander) then {if (_profileID in _seaProfileIDs) then {call _isSeaTravel} else {!(call _crossesStraight) && {!(call _isSeaTravel)}}} else {call _footCanGo}
+            // A boat goes where the way there is by sea, or, already on the water, to an objective on the coast: one
+            // 349 m off a beach was never sent to the town on it, as a straight run in crosses no sea (#943)
+            private _boatCanGo = {
+                (call _isSeaTravel) || {surfaceIsWater ([_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet) && {call _objectiveCoastal}}
+            };
+            if (_commander) then {if (_profileID in _seaProfileIDs) then {call _boatCanGo} else {!(call _crossesStraight) && {!(call _isSeaTravel)}}} else {call _footCanGo}
+        };
+        // whether the objective has water within 600 m, looked at once per request and only when a boat asks
+        private _coastal = -1;
+        private _objectiveCoastal = {
+            if (_coastal isEqualTo -1) then {
+                _coastal = ([0, 45, 90, 135, 180, 225, 270, 315] findIf { private _b = _x; ([300, 600] findIf { surfaceIsWater (_pos getPos [_x, _b]) }) >= 0 }) >= 0;
+            };
+            _coastal
         };
 
         _radius = 2000;
