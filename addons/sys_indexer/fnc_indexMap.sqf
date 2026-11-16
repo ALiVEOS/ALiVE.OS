@@ -5,10 +5,11 @@ SCRIPT(indexMap);
 Function: ALiVE_fnc_indexMap
 
 Description:
-Manages the indexing of a map for ALiVE. Requires ALiVEClient.dll
+Manages the indexing of a map for ALiVE. Writes its files through the alive_tools extension, under
+Documents\Arma 3\ALiVE\indexing\<map>\ (a dedicated server needs allow_server.txt in that ALiVE folder)
 
 Parameters:
-String - Addon path
+String - Addon path (no longer used: the objects are now listed in game)
 boolean -  Enables custom object categorization
 
 Returns:
@@ -59,32 +60,35 @@ private _launch = _this select 2;
 
     [">>>>>>>>>>>>>>>>>> Starting indexing for %1 map", worldName] call ALiVE_fnc_dump;
 
-    // Create parsed objects file for map
+    // List the terrain's objects (excluding the blacklist). The old ALiVEClient extension read them out of the
+    // map's WRP file with DeWrp; they are now listed in game and kept in wrp_objects as before
     [">>>>>>>>>>>>>>>>>> Creating a list of objects (excluding blacklist)"] call ALiVE_fnc_dump;
-    _result = "ALiVEClient" callExtension format["StartIndex~%1|%2|%3",_path, worldName,_launch];
-    //_result = "SUCCESS";
-
-    If (_result != "SUCCESS") exitwith {
-        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: %1", _result] call ALiVE_fnc_dump;
-        ["ALiVE Map Indexer","There was a problem, exiting indexing, check RPT"] call ALiVE_fnc_sendHint;
+    // The web indexer makes the objects file with DeWrp before the game starts, and builds the static data from
+    // that list: a run without a player keeps the file it finds, so the two always match
+    private _objectsPath = format ["indexing/%1/x/alive/addons/fnc_strategic/indexes/objects.%1.sqf", toLower worldName];
+    // DeWrp's file is full of comments, which preprocessFile used to remove: toolsRead takes them out
+    private _objectsText = if (_headless) then { [_objectsPath, true] call ALiVE_fnc_toolsRead } else { nil };
+    if (!isNil "_objectsText") then {
+        [">>>>>>>>>>>>>>>>>> Using the objects file already there (%1 characters)", count _objectsText] call ALiVE_fnc_dump;
+        call compile _objectsText;
     };
-
-    // Load in new object array
-    [">>>>>>>>>>>>>>>>>> Compiling list of objects from deWRP in wrp_objects array"] call ALiVE_fnc_dump;
-    _file = format["@ALiVE\indexing\%1\x\alive\addons\fnc_strategic\indexes\objects.%1.sqf", tolower(worldName)];
-
-    // ["FILE CHECK: %1", _file] call ALiVE_fnc_dump;
-
-    call compile (preprocessFile _file);
+    if (isNil "_objectsText" && {!([] call ALiVE_fnc_indexTerrainObjects)}) exitwith {
+        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: the objects file could not be written (see the [ALiVE tools] line above)"] call ALiVE_fnc_dump;
+        ["ALiVE Map Indexer","There was a problem, exiting indexing, check RPT"] call ALiVE_fnc_sendHint;
+        // so anything waiting on the run (the web indexer, a test) is not left waiting for good
+        ALiVE_indexMap_finished = true;
+    };
     // A new indexing run must resolve its new terrain placements afresh.
     missionNamespace setVariable ["ALIVE_objectLookupCache", nil];
 
     // Check for static data
     [">>>>>>>>>>>>>>>>>> Checking for existing static data..."] call ALiVE_fnc_dump;
-    _result = "ALiVEClient" callExtension format["checkStatic~%1", worldName];
+    private _staticPath = format ["indexing/%1/x/alive/addons/main/static/%1_staticData.sqf", toLower worldName];
+    _result = if ((("alive_tools" callExtension ["exists", [_staticPath]]) param [0, ""]) == "true") then {"SUCCESS"} else {"NO FILE"};
 
     if (_headless && {_result != "SUCCESS"}) exitwith {
         [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: no static data file for %1, and objects can only be categorised by a player", worldName] call ALiVE_fnc_dump;
+        ALiVE_indexMap_finished = true;
     };
 
     If (_result != "SUCCESS") then {
@@ -114,36 +118,59 @@ private _launch = _this select 2;
     ["ALiVE Map Indexer","Generating Sector Data"] call ALiVE_fnc_sendHint;
     [">>>>>>>>>>>>>>>>>> Generating Sector Data"] call ALiVE_fnc_dump;
 
-    _result = "ALiVEClient" callExtension format["startClusters~%1", worldName];
+    // start the sector and cluster files afresh: everything below adds to them
+    {
+        [format [_x, toLower worldName], "new", ""] call ALiVE_fnc_toolsWrite;
+    } forEach [
+        "indexing/%1/x/alive/addons/fnc_analysis/data/data.%1.sqf",
+        "indexing/%1/x/alive/addons/mil_placement/clusters/clusters.%1_mil.sqf",
+        "indexing/%1/x/alive/addons/civ_placement/clusters/clusters.%1_civ.sqf"
+    ];
 
-    _handle = [] execVM "x\alive\addons\fnc_analysis\tests\auto_runMapAnalysis.sqf";
-    waitUntil {sleep 0.3; scriptDone _handle};
+    // The steps below run here, in the indexer's own script, one after another. They used to be started as new
+    // scripts (execVM) and FSMs: on a dedicated server running a busy mission a new script could wait for its
+    // first turn indefinitely (NUC, 16 Nov: the analysis script never ran a line in 8 minutes), while this
+    // script is already running and keeps getting its turn.
+    private _staticText = [_staticPath, true] call ALiVE_fnc_toolsRead;
+    if (!isNil "_staticText") then { call compile _staticText };
+
+    private _grid = [nil, "create"] call ALIVE_fnc_sectorGrid;
+    [_grid, "init"] call ALIVE_fnc_sectorGrid;
+    [_grid, "createGrid"] call ALIVE_fnc_sectorGrid;
+    ["Sectors created: %1", count ([_grid, "sectors"] call ALIVE_fnc_sectorGrid)] call ALiVE_fnc_dump;
+    private _analysed = true;
+    try {
+        [_grid, [], true, missionNamespace getVariable ["ALIVE_indexing_debug", false]] call ALIVE_fnc_auto_gridMapAnalysis;
+    } catch {
+        _analysed = false;
+        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: the sector data could not be written (%1)", _exception] call ALiVE_fnc_dump;
+    };
+    if (!_analysed) exitWith {
+        ["ALiVE Map Indexer","There was a problem, exiting indexing, check RPT"] call ALiVE_fnc_sendHint;
+        ALiVE_indexMap_finished = true;
+    };
 
     ["ALiVE Map Indexer","Generating Clusters: Military Objectives."] call ALiVE_fnc_sendHint;
     [">>>>>>>>>>>>>>>>>> Generating Clusters:  Military Objectives."] call ALiVE_fnc_dump;
 
-    _handle = [] execVM "x\alive\addons\mil_placement\tests\auto_clusterGeneration.sqf";
-    waitUntil {sleep 0.3; scriptDone _handle};
+    [] call ALIVE_fnc_auto_milClusterGeneration;
 
     ["ALiVE Map Indexer","Generating Clusters: Civilian Objectives."] call ALiVE_fnc_sendHint;
     [">>>>>>>>>>>>>>>>>> Generating Clusters: Civilian Objectives."] call ALiVE_fnc_dump;
 
-    _handle =  [] execVM "x\alive\addons\civ_placement\tests\auto_clusterGeneration.sqf";
-    waitUntil {sleep 0.3; scriptDone _handle};
+    [] call ALIVE_fnc_auto_civClusterGeneration;
 
     // Merge sector/cluster data
 
     ["ALiVE Map Indexer","Generating Clusters: Merging Military Sector/Cluster Data."] call ALiVE_fnc_sendHint;
     [">>>>>>>>>>>>>>>>>> Generating Clusters: Merging Military Sector/Cluster Data."] call ALiVE_fnc_dump;
 
-    _handle = [] execVM "x\alive\addons\fnc_analysis\tests\auto_appendClustersMil.sqf";
-    waitUntil {sleep 0.3; scriptDone _handle};
+    [] call compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\tests\auto_appendClustersMil.sqf";
 
     ["ALiVE Map Indexer","Generating Clusters: Merging Civilian Sector/Cluster Data."] call ALiVE_fnc_sendHint;
     [">>>>>>>>>>>>>>>>>> Generating Clusters: Merging Civilian Sector/Cluster Data."] call ALiVE_fnc_dump;
 
-    _handle = [] execVM "x\alive\addons\fnc_analysis\tests\auto_appendClustersCiv.sqf";
-    waitUntil {sleep 0.3; scriptDone _handle};
+    [] call compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\tests\auto_appendClustersCiv.sqf";
 
 
     if !(_headless) then {

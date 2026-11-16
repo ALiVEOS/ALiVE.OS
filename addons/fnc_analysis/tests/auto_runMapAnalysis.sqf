@@ -44,11 +44,13 @@ _timeEnd = diag_tickTime - _timeStart; \
 
 //========================================
 
-_filetest = format["@ALiVE\indexing\%1\x\alive\addons\main\static\%1_staticData.sqf", worldName];
+_filetest = format["indexing/%1/x/alive/addons/main/static/%1_staticData.sqf", toLower worldName];
 
 ["COMPILING STATIC DATA %1", _filetest] call ALiVE_fnc_dump;
 
-call compile preprocessFileLineNumbers _filetest;
+// the static data is in Documents\Arma 3\ALiVE\indexing now (alive_tools), where preprocessFile can't reach
+private _staticText = [_filetest, true] call ALiVE_fnc_toolsRead;
+if (!isNil "_staticText") then { call compile _staticText };
 
 ["COMPILED STATIC DATA - Civ Construction: %1", ALIVE_civilianConstructionBuildingTypes] call ALiVE_fnc_dump;
 

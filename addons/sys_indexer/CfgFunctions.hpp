@@ -22,6 +22,12 @@ class cfgFunctions {
                         ext = ".sqf";
                         ALIVE_RECOMPILE;
                     };
+                    class indexTerrainObjects
+                    {
+                        file = "\x\alive\addons\sys_indexer\fnc_indexTerrainObjects.sqf";
+                        ext = ".sqf";
+                        ALIVE_RECOMPILE;
+                    };
                     class auto_staticObjects {
                         description = "ALiVE object viewer";
                         file = "\x\alive\addons\sys_indexer\fnc_auto_staticObjects.sqf";

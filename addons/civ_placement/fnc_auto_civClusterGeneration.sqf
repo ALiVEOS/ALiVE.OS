@@ -25,8 +25,9 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private _file = format["@ALiVE\indexing\%1\x\alive\addons\main\static\%1_staticData.sqf", worldName];
-call compile preprocessFileLineNumbers _file;
+// the static data is in Documents\Arma 3\ALiVE\indexing now (alive_tools), where preprocessFile can't reach
+private _staticText = [format ["indexing/%1/x/alive/addons/main/static/%1_staticData.sqf", toLower worldName], true] call ALiVE_fnc_toolsRead;
+if (!isNil "_staticText") then { call compile _staticText };
 
 // Find HQ locations
 // ------------------------------------------------------------------

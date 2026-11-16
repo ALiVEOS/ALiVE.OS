@@ -346,6 +346,58 @@ switch(_operation) do {
 
     };
 
+    // The faction's config files, as the old ALiVEClient extension wrote them to P:\x\<prefix>\addons\<faction>\:
+    // now written through the alive_tools extension to Documents\Arma 3\ALiVE\orbat\<prefix>\addons\<faction>\,
+    // to be copied into a mod's source from there. Returns "DONE", or why a file could not be written
+    case "writeExport": {
+
+        _args params ["_faction", "_patches", "_classes", "_groups", "_vehicles", "_prefix"];
+
+        private _dir = format ["orbat/%1/addons/%2/", _prefix, _faction];
+        private _upper = toUpper _faction;
+        private _files = [
+            ["config.cpp", [
+                "// #include ""script_component.hpp""",
+                "#include ""CfgPatches.hpp""",
+                "#include ""CfgFactionClasses.hpp""",
+                "#include ""CfgVehicles.hpp""",
+                "#include ""CfgGroups.hpp"""
+            ] joinString endl],
+            ["script_component.hpp", [
+                "#define COMPONENT " + _faction,
+                "#define COMPONENT_BEAUTIFIED " + _faction,
+                format ["#include ""\x\%1\addons\main\script_mod.hpp""", _prefix],
+                "",
+                "// #define DEBUG_MODE_FULL",
+                "// #define DISABLE_COMPILE_CACHE",
+                "// #define ENABLE_PERFORMANCE_COUNTERS",
+                "",
+                "#ifdef DEBUG_ENABLED_" + _upper,
+                "    #define DEBUG_MODE_FULL",
+                "#endif",
+                "",
+                "#ifdef DEBUG_SETTINGS_" + _upper,
+                "    #define DEBUG_SETTINGS DEBUG_SETTINGS_" + _upper,
+                "#endif",
+                "",
+                format ["#include ""\x\%1\addons\main\script_macros.hpp""", _prefix]
+            ] joinString endl],
+            ["CfgPatches.hpp", _patches],
+            ["CfgFactionClasses.hpp", _classes],
+            ["CfgVehicles.hpp", _vehicles],
+            ["CfgGroups.hpp", _groups]
+        ];
+
+        _result = "DONE";
+        {
+            _x params ["_name", "_text"];
+            if !([_dir + _name, "new", _text + endl] call ALiVE_fnc_toolsWrite) exitWith {
+                _result = format ["%1 could not be written (see the [ALiVE tools] line in the RPT)", _name];
+            };
+        } forEach _files;
+
+    };
+
     case "copyParent": {
 
         if (_args isEqualType true) then {
@@ -6580,12 +6632,10 @@ switch(_operation) do {
 
                 _faction = [toLower(_faction),format["%1_",_prefix],""] call CBA_fnc_replace;
 
-                _outputString = "exportConfig~" +  _faction + "|" + _patches + "|" + _classes + "|" + _groups + "|" + _vehicles + "|" + _prefix;
-
-                _result = "ALiVEClient" callExtension _outputString;
+                _result = [_logic, "writeExport", [_faction, _patches, _classes, _groups, _vehicles, _prefix]] call MAINCLASS;
 
                 if (_result == "DONE") then {
-                    systemchat "Config data copied written to file.";
+                    systemchat format ["Config data written to Documents\Arma 3\ALiVE\orbat\%1\addons\%2", _prefix, _faction];
                 } else {
                     systemchat format["Config data file write failed due to %1",_result];
                 };
@@ -6607,12 +6657,10 @@ switch(_operation) do {
 
                 _faction = [toLower(_faction),format["%1_",_prefix],""] call CBA_fnc_replace;
 
-                _outputString = "exportConfig~" +  _faction + "|" + _patches + "|" + _classes + "|" + _groups + "|" + _vehicles + "|" + _prefix;
-
-                _result = "ALiVEClient" callExtension _outputString;
+                _result = [_logic, "writeExport", [_faction, _patches, _classes, _groups, _vehicles, _prefix]] call MAINCLASS;
 
                 if (_result == "DONE") then {
-                    systemchat "Config data copied written to file. Configs include references to Editor Preview images.";
+                    systemchat format ["Config data written to Documents\Arma 3\ALiVE\orbat\%1\addons\%2. Configs include references to Editor Preview images.", _prefix, _faction];
                 } else {
                     systemchat format["Config data file write failed due to %1",_result];
                 };

@@ -10,7 +10,7 @@ Perform analysis of terrain for a grid
 Parameters:
 Grid - the grid to run the map analysis on
 Array - Optional sectors (empty selects the whole grid)
-Bool - export - exports results through ALiVEClient
+Bool - export - exports results through the alive_tools extension (ALiVE_fnc_exportWrite)
 Bool - debug - enables markers, verbose arrays and stage diagnostics
 
 Returns:
@@ -62,6 +62,12 @@ private _mapSize = [] call ALiVE_fnc_getMapBounds;
     _sector = _x;
     _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
     _sectorID = [_sector, "id"] call ALIVE_fnc_sector;
+
+    // a large terrain takes many minutes here (Altis has about 960 sectors): a line every 50 sectors shows the
+    // run is moving, for a server owner reading the RPT and for anything that stops a run gone quiet
+    if (_forEachIndex % 50 == 0) then {
+        ["Map Analysis: sector %1 of %2", _forEachIndex + 1, count _sectors] call ALiVE_fnc_dump;
+    };
 
     if (_debug) then {[_sector, "debug", true] call ALIVE_fnc_sector;};
 

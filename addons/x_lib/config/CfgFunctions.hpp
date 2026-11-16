@@ -977,6 +977,20 @@ class storeMigrate
 	ALIVE_RECOMPILE;
 };
 
+class toolsWrite
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_toolsWrite.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
+class toolsRead
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_toolsRead.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class storeFile
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_storeFile.sqf";
@@ -1746,14 +1760,6 @@ class exportCfgWeapons
 	ext = ".sqf";
 	ALIVE_RECOMPILE;
 };
-
-class exportMapWarRoom
-{
-	file = "\x\alive\addons\x_lib\functions\misc\fnc_exportMapWarRoom.sqf";
-	ext = ".sqf";
-	ALIVE_RECOMPILE;
-};
-
 
 class exportORBATEditorPreviews
 {

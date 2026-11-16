@@ -260,7 +260,6 @@ misc
 	ALiVE_fnc_exportCfgVehicles
 	ALiVE_fnc_exportCfgVehicleWeapons
 	ALiVE_fnc_exportCfgWeapons
-	ALiVE_fnc_exportMapWarRoom
 	ALiVE_fnc_factionSide
 	ALiVE_fnc_getDominantFaction
 	ALiVE_fnc_getEnvironment

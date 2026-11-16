@@ -339,21 +339,34 @@ if (_custom) then {
 // Dump arrays to extension that can write the staticData file
 [">>>>>>>>>>>>>>>>>> Writing static data to file..."] call ALiVE_fnc_dump;
 
+// Written through the alive_tools extension, under Documents\Arma 3\ALiVE\indexing\<map>\. The file starts with the
+// header the old ALiVEClient extension wrote: every list declared empty, then the lines below add to them
+private _staticPath = format ["indexing/%1/x/alive/addons/main/static/%1_staticData.sqf", toLower worldName];
+private _fnc_staticLine = { [_staticPath, "add", _this + endl] call ALiVE_fnc_toolsWrite };
+private _header = [
+    "private[""_worldName""];",
+    " _worldName = tolower(worldName);",
+    format [" [""ALiVE SETTING UP MAP: %1""] call ALIVE_fnc_dump;", toLower worldName]
+];
+{ _header pushBack format [" %1 = [];", _x] } forEach ["ALIVE_Indexing_Blacklist", "ALIVE_airBuildingTypes", "ALIVE_militaryParkingBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes", "ALIVE_militaryAirBuildingTypes", "ALIVE_civilianAirBuildingTypes", "ALiVE_HeliBuildingTypes", "ALIVE_militaryHeliBuildingTypes", "ALIVE_civilianHeliBuildingTypes", "ALIVE_militaryBuildingTypes", "ALIVE_civilianPopulationBuildingTypes", "ALIVE_civilianHQBuildingTypes", "ALIVE_civilianPowerBuildingTypes", "ALIVE_civilianCommsBuildingTypes", "ALIVE_civilianMarineBuildingTypes", "ALIVE_civilianRailBuildingTypes", "ALIVE_civilianFuelBuildingTypes", "ALIVE_civilianConstructionBuildingTypes", "ALIVE_civilianSettlementBuildingTypes"];
+_header pushBack format [" if(tolower(_worldName) == ""%1"") then {", toLower worldName];
+[_staticPath, "new", (_header joinString (endl + endl)) + endl + endl] call ALiVE_fnc_toolsWrite;
+
 // Set the mapbounds
 _mapBounds = [ALIVE_mapBounds, worldname, 0] call ALIVE_fnc_hashGet;
 if (_mapBounds != 0) then {
-    _result = "ALiVEClient" callExtension format['staticData~%1|[ALIVE_mapBounds, worldName, %2] call ALIVE_fnc_hashSet;',worldName,_mapBounds];
+    _result = format['[ALIVE_mapBounds, worldName, %1] call ALIVE_fnc_hashSet;',_mapBounds] call _fnc_staticLine;
 };
 
 // Set the composition environment selected on the indexer module
 if (!isNil "ALiVE_mapCompositionType") then {
-    _result = "ALiVEClient" callExtension format['staticData~%1|ALiVE_mapCompositionType = "%2";',worldName,ALiVE_mapCompositionType];
+    _result = format['ALiVE_mapCompositionType = "%1";',ALiVE_mapCompositionType] call _fnc_staticLine;
 };
 
-// The file header the extension writes declares every list except the fieldworks one, and the
+// The file header written above declares every list except the fieldworks one, and the
 // lines below add to each list, so declare it here, empty, the same way the header declares the
 // others. Always written, whatever the map bounds.
-_result = "ALiVEClient" callExtension format['staticData~%1|ALIVE_militaryFieldworkBuildingTypes = [];',worldName];
+_result = 'ALIVE_militaryFieldworkBuildingTypes = [];' call _fnc_staticLine;
 
 {
     private ["_array","_arrayActual","_result"];
@@ -368,14 +381,14 @@ _result = "ALiVEClient" callExtension format['staticData~%1|ALIVE_militaryFieldw
         while {_windowStart < count _category} do {
             _partialArray = _category select [_windowStart,_windowLength min (count _category - _windowStart)];
             ['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray] call ALiVE_fnc_dump;
-            _result = "ALiVEClient" callExtension format['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray];
+            _result = format['%1 = %1 + %2;',_array, _partialArray] call _fnc_staticLine;
             _windowStart = _windowStart + _windowLength;
         };
 	};
     //diag_log str(_result);
 } foreach _categories;
 
-_result = "ALiVEClient" callExtension format['staticData~%1|};',worldName];
+_result = '};' call _fnc_staticLine;
 // diag_log str(_result);
 [">>>>>>>>>>>>>>>>>> Completed static data..."] call ALiVE_fnc_dump;
 true

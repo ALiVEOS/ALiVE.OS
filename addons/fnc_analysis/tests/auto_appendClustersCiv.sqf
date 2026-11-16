@@ -46,8 +46,9 @@ _timeEnd = diag_tickTime - _timeStart; \
 //========================================
 
 if(isNil "ALIVE_civilianHQBuildingTypes") then {
-    _file = format["@ALiVE\indexing\%1\x\alive\addons\main\static\%1_staticData.sqf", worldName];
-    call compile preprocessFileLineNumbers _file;
+    // the static data is in Documents\Arma 3\ALiVE\indexing now (alive_tools), where preprocessFile can't reach
+    private _staticText = [format ["indexing/%1/x/alive/addons/main/static/%1_staticData.sqf", toLower worldName], true] call ALiVE_fnc_toolsRead;
+    if (!isNil "_staticText") then { call compile _staticText };
 };
 
 
@@ -77,10 +78,15 @@ DEBUGON
 private ["_worldName","_file","_exportString","_gridData","_cluster","_clusterCenter","_clusterID","_sectorID","_sectorData","_consolidated"];
 
 
-if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
-    _worldName = toLower(worldName);
-    _file = format["@ALiVE\indexing\%1\x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
-    call compile preprocessFileLineNumbers _file;
+// Always the clusters this run has just written (Documents\Arma 3\ALiVE\indexing, through alive_tools), never
+// ones a mission loaded earlier. The file's #include only supplies CLUSTERBUILD, so that line is dropped and
+// the macro written out before the text is compiled
+_worldName = toLower(worldName);
+private _clusterText = [format ["indexing/%1/x/alive/addons/civ_placement/clusters/clusters.%1_civ.sqf", _worldName], true] call ALiVE_fnc_toolsRead;
+if (!isNil "_clusterText") then {
+    _clusterText = ((_clusterText splitString toString [13, 10]) select { (trim _x) select [0, 8] != "#include" }) joinString endl;
+    _clusterText = _clusterText regexReplace ["\[CLUSTER" + "BUILD\]", str [CLUSTERBUILD]];
+    call compile _clusterText;
     ALIVE_loadedCivClusters = true;
 };
 
