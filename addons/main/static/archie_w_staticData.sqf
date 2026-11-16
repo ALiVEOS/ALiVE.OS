@@ -1,0 +1,542 @@
+// ALiVE 3 index v3.1, made 2026-11-16 by the ALiVE web indexer, building positions measured
+private["_worldName"];
+
+_worldName = tolower(worldName);
+
+["SETTING UP MAP: archie_w (ALiVE 3 index v3.1, 2026-11-16)"] call ALiVE_fnc_dump;
+
+ALiVE_indexVersion = ["3.1", "2026-11-16", "web", true];
+
+ALIVE_Indexing_Blacklist = [];
+ALIVE_militaryBuildingTypes = [];
+ALIVE_militaryParkingBuildingTypes = [];
+ALIVE_militarySupplyBuildingTypes = [];
+ALIVE_militaryHQBuildingTypes = [];
+ALIVE_militaryFieldworkBuildingTypes = [];
+ALIVE_airBuildingTypes = [];
+ALIVE_militaryAirBuildingTypes = [];
+ALIVE_civilianAirBuildingTypes = [];
+ALiVE_HeliBuildingTypes = [];
+ALIVE_militaryHeliBuildingTypes = [];
+ALIVE_civilianHeliBuildingTypes = [];
+ALIVE_civilianSettlementBuildingTypes = [];
+ALIVE_civilianHQBuildingTypes = [];
+ALIVE_civilianPopulationBuildingTypes = [];
+ALIVE_civilianPowerBuildingTypes = [];
+ALIVE_civilianCommsBuildingTypes = [];
+ALIVE_civilianMarineBuildingTypes = [];
+ALIVE_civilianRailBuildingTypes = [];
+ALIVE_civilianFuelBuildingTypes = [];
+ALIVE_civilianConstructionBuildingTypes = [];
+
+ALiVE_mapCompositionType = "Woodland";
+
+ if (tolower(_worldName) == "archie_w") then {
+    ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [
+        "a3\props_f_aow\items\decorative\coffin_02_f.p3d",
+        "a3\props_f_decade\objectives\ruggedterminal_01_communications_hub_f.p3d",
+        "a3\props_f_enoch\military\camps\portablelight_02_double_f.p3d",
+        "a3\props_f_enoch\military\camps\portablelight_02_folded_f.p3d",
+        "a3\props_f_enoch\military\camps\portablelight_02_single_f.p3d",
+        "a3\props_f_enoch\military\camps\tentlamp_01_standing_f.p3d",
+        "a3\props_f_enoch\military\camps\tentsolar_01_f.p3d",
+        "a3\props_f_enoch\military\camps\tentsolar_01_folded_f.p3d",
+        "a3\props_f_enoch\military\decontamination\layflathose_01_curvelong_f.p3d",
+        "a3\props_f_enoch\military\decontamination\layflathose_01_straightlong_f.p3d",
+        "a3\props_f_enoch\military\decontamination\powercable_01_corner_f.p3d",
+        "a3\props_f_orange\humanitarian\camps\airconditioner_01_f.p3d",
+        "a3\props_f_orange\humanitarian\camps\emergencyblanket_02_stack_f.p3d",
+        "a3\props_f_orange\items\decorative\photoframe_01_f.p3d",
+        "a3\props_f_tank\military\tankacc\torquewrench_01_f.p3d",
+        "a3\structures_f_enoch\industrial\power\powerstation_01_ruins_f.p3d",
+        "a3\structures_f_kart\civ\sportsgrounds\plasticbarrier_02_f.p3d",
+        "a3\structures_f_mark\items\military\shottimer_01_f.p3d"
+    ];
+
+    ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
+        "a3\props_f_enoch\military\camps\tentsolar_01_folded_f.p3d",
+        "a3\props_f_exp\military\camps\irmaskingcover_02_f.p3d",
+        "a3\structures_f\ind\airport\airport_tower_f.p3d",
+        "a3\structures_f\mil\bagbunker\bagbunker_small_f.p3d",
+        "a3\structures_f\mil\barracks\i_barracks_v1_f.p3d",
+        "a3\structures_f\mil\barracks\i_barracks_v2_f.p3d",
+        "a3\structures_f\mil\barracks\u_barracks_v2_f.p3d",
+        "a3\structures_f\mil\bunker\bunker_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_house_v1_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_house_v2_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_patrol_v1_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_patrol_v2_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_tower_v1_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_tower_v2_f.p3d",
+        "a3\structures_f\mil\fortification\hbarriertower_f.p3d",
+        "a3\structures_f\mil\offices\miloffices_v1_f.p3d",
+        "a3\structures_f_argo\military\bunkers\bunker_01_big_f.p3d",
+        "a3\structures_f_argo\military\bunkers\bunker_01_hq_f.p3d",
+        "a3\structures_f_argo\military\bunkers\bunker_01_small_f.p3d",
+        "a3\structures_f_argo\military\bunkers\bunker_01_tall_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_ruins_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_04_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_04_ruins_f.p3d",
+        "a3\structures_f_enoch\industrial\garages\garageoffice_01_f.p3d",
+        "a3\structures_f_enoch\industrial\sawmills\sawmill_01_illuminati_tower_f.p3d",
+        "a3\structures_f_enoch\military\airfield\controltower_02_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_02_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_03_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_04_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_05_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_05_ruins_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_06_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_06_ruins_f.p3d",
+        "a3\structures_f_enoch\military\barracks\controltower_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardbox_01_brown_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardbox_01_smooth_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardhouse_02_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardhouse_02_grey_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardhouse_03_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardhouse_03_ruins_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardtower_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardtower_02_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_double_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_left_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_right_f.p3d",
+        "a3\structures_f_enoch\military\radar\mobileradar_01_radar_f.p3d",
+        "a3\structures_f_enoch\military\radar\radar_01_cooler_f.p3d",
+        "a3\structures_f_enoch\military\radar\radar_01_hq_f.p3d",
+        "a3\structures_f_enoch\military\radar\radar_01_hq_ruins_f.p3d",
+        "a3\structures_f_enoch\military\radar\radar_01_kitchen_f.p3d",
+        "a3\structures_f_exp\industrial\port\guardhouse_01_f.p3d",
+        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shed_unfinished_f.p3d",
+        "a3\structures_f_exp\infrastructure\airports\airport_01_terminal_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_camo_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_dilapidated_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_grey_f.p3d",
+        "a3\structures_f_exp\military\containerbases\cargo_house_v4_f.p3d",
+        "a3\structures_f_exp\military\emplacements\emplacementgun_01_d_mossy_f.p3d",
+        "a3\structures_f_exp\military\fortifications\bagbunker_01_large_green_f.p3d",
+        "a3\structures_f_exp\military\fortifications\bagbunker_01_small_green_f.p3d",
+        "a3\structures_f_exp\military\fortifications\hbarrier_01_big_tower_green_f.p3d",
+        "a3\structures_f_exp\military\pillboxes\pillboxbunker_01_big_f.p3d",
+        "a3\structures_f_exp\military\pillboxes\pillboxbunker_01_hex_f.p3d",
+        "a3\structures_f_exp\military\pillboxes\pillboxbunker_01_rectangle_f.p3d",
+        "a3\structures_f_heli\furniture\officecabinet_01_f.p3d"
+    ];
+
+    ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + [
+        "a3\structures_f\mil\barracks\i_barracks_v1_f.p3d",
+        "a3\structures_f\mil\barracks\i_barracks_v2_f.p3d",
+        "a3\structures_f\mil\barracks\u_barracks_v2_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_tower_v1_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_tower_v2_f.p3d",
+        "a3\structures_f\mil\offices\miloffices_v1_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_04_f.p3d",
+        "a3\structures_f_enoch\industrial\garages\garageoffice_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_02_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_05_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_06_f.p3d",
+        "a3\structures_f_enoch\military\radar\radar_01_hq_f.p3d",
+        "a3\structures_f_exp\infrastructure\airports\airport_01_terminal_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_camo_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_dilapidated_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_grey_f.p3d"
+    ];
+
+    ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + [
+        "a3\structures_f\mil\barracks\i_barracks_v1_f.p3d",
+        "a3\structures_f\mil\barracks\i_barracks_v2_f.p3d",
+        "a3\structures_f\mil\barracks\u_barracks_v2_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_tower_v1_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_tower_v2_f.p3d",
+        "a3\structures_f\mil\offices\miloffices_v1_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_04_f.p3d",
+        "a3\structures_f_enoch\industrial\garages\garageoffice_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_02_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_05_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_06_f.p3d",
+        "a3\structures_f_enoch\military\radar\radar_01_hq_f.p3d",
+        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shed_unfinished_f.p3d",
+        "a3\structures_f_exp\infrastructure\airports\airport_01_terminal_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_camo_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_dilapidated_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_grey_f.p3d",
+        "a3\structures_f_exp\military\fortifications\bagbunker_01_small_green_f.p3d"
+    ];
+
+    ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + [
+        "a3\structures_f\mil\barracks\i_barracks_v1_f.p3d",
+        "a3\structures_f\mil\barracks\i_barracks_v2_f.p3d",
+        "a3\structures_f\mil\barracks\u_barracks_v2_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_tower_v1_f.p3d",
+        "a3\structures_f\mil\cargo\cargo_tower_v2_f.p3d",
+        "a3\structures_f\mil\offices\miloffices_v1_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\barracks_06_f.p3d",
+        "a3\structures_f_enoch\military\radar\radar_01_hq_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_camo_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_dilapidated_f.p3d",
+        "a3\structures_f_exp\military\barracks_01\barracks_01_grey_f.p3d"
+    ];
+
+    ALIVE_militaryFieldworkBuildingTypes = ALIVE_militaryFieldworkBuildingTypes + [
+        "a3\structures_f_argo\military\bunkers\bunker_01_big_f.p3d",
+        "a3\structures_f_argo\military\bunkers\bunker_01_hq_f.p3d",
+        "a3\structures_f_argo\military\bunkers\bunker_01_small_f.p3d",
+        "a3\structures_f_argo\military\bunkers\bunker_01_tall_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardtower_01_f.p3d",
+        "a3\structures_f_enoch\military\barracks\guardtower_02_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_double_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_left_f.p3d",
+        "a3\structures_f_enoch\military\bunkers\bunker_02_right_f.p3d",
+        "a3\structures_f_exp\military\fortifications\bagbunker_01_large_green_f.p3d",
+        "a3\structures_f_exp\military\fortifications\bagbunker_01_small_green_f.p3d",
+        "a3\structures_f_exp\military\pillboxes\pillboxbunker_01_big_f.p3d",
+        "a3\structures_f_exp\military\pillboxes\pillboxbunker_01_hex_f.p3d",
+        "a3\structures_f_exp\military\pillboxes\pillboxbunker_01_rectangle_f.p3d"
+    ];
+
+    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
+        "a3\structures_f\ind\airport\hangar_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
+        "a3\structures_f_exp\infrastructure\airports\airport_01_hangar_f.p3d"
+    ];
+
+    ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [
+        "a3\structures_f\ind\airport\hangar_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_l_f.p3d",
+        "a3\structures_f_enoch\military\airfield\servicehangar_01_r_f.p3d",
+        "a3\structures_f_exp\infrastructure\airports\airport_01_hangar_f.p3d"
+    ];
+
+    ALiVE_HeliBuildingTypes = ALiVE_HeliBuildingTypes + [
+        "a3\structures_f\mil\helipads\helipadempty_f.p3d",
+        "a3\structures_f\mil\helipads\helipadsquare_f.p3d"
+    ];
+
+    ALIVE_militaryHeliBuildingTypes = ALIVE_militaryHeliBuildingTypes + [
+        "a3\structures_f\mil\helipads\helipadempty_f.p3d",
+        "a3\structures_f\mil\helipads\helipadsquare_f.p3d"
+    ];
+
+    ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
+        "a3\props_f_enoch\civilian\forest\deerstand_01_f.p3d",
+        "a3\props_f_enoch\civilian\forest\deerstand_02_f.p3d",
+        "a3\props_f_enoch\civilian\forest\feedshack_01_f.p3d",
+        "a3\structures_f\civ\offices\offices_01_v1_f.p3d",
+        "a3\structures_f\households\addons\i_garage_v2_f.p3d",
+        "a3\structures_f\households\slum\cargo_house_slum_f.p3d",
+        "a3\structures_f\households\slum\slum_house01_f.p3d",
+        "a3\structures_f\households\slum\slum_house03_f.p3d",
+        "a3\structures_f\households\stone_small\i_stone_housesmall_v1_f.p3d",
+        "a3\structures_f\households\wip\unfinished_building_01_f.p3d",
+        "a3\structures_f\households\wip\unfinished_building_02_f.p3d",
+        "a3\structures_f\ind\carservice\carservice_f.p3d",
+        "a3\structures_f\ind\reservoirtank\reservoirtower_f.p3d",
+        "a3\structures_f\ind\shed\i_shed_ind_f.p3d",
+        "a3\structures_f\ind\shed\u_shed_ind_f.p3d",
+        "a3\structures_f_argo\civilian\house_big01\i_house_big_01_b_white_f.p3d",
+        "a3\structures_f_argo\civilian\house_small01\i_house_small_01_b_whiteblue_f.p3d",
+        "a3\structures_f_argo\civilian\house_small02\i_house_small_02_b_whiteblue_f.p3d",
+        "a3\structures_f_argo\civilian\stone_shed_01\i_stone_shed_01_c_raw_f.p3d",
+        "a3\structures_f_argo\commercial\supermarket_01\supermarket_01_malden_f.p3d",
+        "a3\structures_f_argo\industrial\agriculture\barn_01_grey_f.p3d",
+        "a3\structures_f_argo\industrial\agriculture\barn_01_grey_ruins_f.p3d",
+        "a3\structures_f_argo\industrial\agriculture\shed_08_grey_f.p3d",
+        "a3\structures_f_enoch\civilian\camps\camp_house_01_brown_f.p3d",
+        "a3\structures_f_enoch\civilian\camps\camp_house_01_brown_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\camps\caravan_01_rust_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1b01_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1b01_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w01_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w02_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w03_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w04_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w04_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w05_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w05_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w06_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w06_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w07_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w07_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w08_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w08_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w09_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w09_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w10_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w11_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w12_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w13_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b01_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b01_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b02_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b03_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b04_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w01_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w02_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w03_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w04_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w04_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w05_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w05_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\medical\healthcenter_01_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_09_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_09_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_10_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_10_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_11_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_12_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_12_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_13_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_13_ruins_f.p3d",
+        "a3\structures_f_enoch\civilian\sheds\shed_14_f.p3d",
+        "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_shop_f.p3d",
+        "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_shop_ruins_f.p3d",
+        "a3\structures_f_enoch\commercial\villagestore_01\villagestore_01_f.p3d",
+        "a3\structures_f_enoch\commercial\villagestore_01\villagestore_01_ruins_f.p3d",
+        "a3\structures_f_enoch\cultural\castleruins\castleruins_01_bastion_f.p3d",
+        "a3\structures_f_enoch\cultural\chapel_02\chapel_02_white_ruins_f.p3d",
+        "a3\structures_f_enoch\cultural\church_04\church_04_white_f.p3d",
+        "a3\structures_f_enoch\cultural\church_04\church_04_white_red_f.p3d",
+        "a3\structures_f_enoch\industrial\cementworks\cementworks_01_brick_f.p3d",
+        "a3\structures_f_enoch\industrial\cementworks\cementworks_01_grey_f.p3d",
+        "a3\structures_f_enoch\industrial\coalplant_01\coalplant_01_loadinghouse_f.p3d",
+        "a3\structures_f_enoch\industrial\coalplant_01\coalplant_01_mainbuilding_f.p3d",
+        "a3\structures_f_enoch\industrial\dieselpowerplant_01\dp_bigtank_old_f.p3d",
+        "a3\structures_f_enoch\industrial\dieselpowerplant_01\dpp_01_mainfactory_old_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_02_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_03_large_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_03_small_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_04_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_04_ruins_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\cowshed_01_a_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\cowshed_01_b_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\cowshed_01_c_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\greenhouse_01_damaged_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\greenhouse_01_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\greenhouse_01_ruins_f.p3d",
+        "a3\structures_f_enoch\industrial\garages\garageoffice_01_f.p3d",
+        "a3\structures_f_enoch\industrial\garages\garagerow_01_large_f.p3d",
+        "a3\structures_f_enoch\industrial\garages\garagerow_01_small_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\factory_02_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_01_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_01_grey_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_02_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_02_grey_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_03_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_03_grey_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_04_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_04_grey_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_04_ruins_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_05_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\workshop_05_grey_f.p3d",
+        "a3\structures_f_enoch\industrial\mines\mine_01_warehouse_f.p3d",
+        "a3\structures_f_enoch\industrial\sawmills\sawmill_01_f.p3d",
+        "a3\structures_f_enoch\industrial\sheds\i_shed_ind_old_f.p3d",
+        "a3\structures_f_enoch\industrial\sheds\industrialshed_01_f.p3d",
+        "a3\structures_f_enoch\industrial\smokestacks\smokestack_01_factory_f.p3d",
+        "a3\structures_f_enoch\infrastructure\railways\rail_station_big_f.p3d",
+        "a3\structures_f_enoch\infrastructure\railways\rail_warehouse_small_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_big_01_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_big_01_half_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_big_02_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_big_02_half_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_big_03_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_big_03_half_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_small_01_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_small_01_half_f.p3d",
+        "a3\structures_f_enoch\ruins\houseruin_small_02_f.p3d",
+        "a3\structures_f_exp\civilian\garages\garageshelter_01_f.p3d",
+        "a3\structures_f_exp\civilian\house_small_02\house_small_02_f.p3d",
+        "a3\structures_f_exp\civilian\school_01\school_01_f.p3d",
+        "a3\structures_f_exp\civilian\sheds\shed_01_f.p3d",
+        "a3\structures_f_exp\civilian\sheds\shed_02_f.p3d",
+        "a3\structures_f_exp\civilian\sheds\shed_03_f.p3d",
+        "a3\structures_f_exp\civilian\sheds\shed_05_f.p3d",
+        "a3\structures_f_exp\civilian\sheds\shed_07_f.p3d",
+        "a3\structures_f_exp\commercial\addons\addon_04_f.p3d",
+        "a3\structures_f_exp\commercial\addons\addon_05_f.p3d",
+        "a3\structures_f_exp\commercial\fuelstation_01\fuelstation_01_workshop_f.p3d",
+        "a3\structures_f_exp\commercial\fuelstation_02\fuelstation_02_workshop_f.p3d",
+        "a3\structures_f_exp\commercial\multistorybuilding_01\multistorybuilding_01_f.p3d",
+        "a3\structures_f_exp\commercial\warehouses\warehouse_03_f.p3d",
+        "a3\structures_f_exp\cultural\church_03\church_03_f.p3d",
+        "a3\structures_f_exp\industrial\port\warehouse_01_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_generalbuilding_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_warehouse_f.p3d",
+        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shed_f.p3d",
+        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shed_unfinished_f.p3d",
+        "a3\structures_f_exp\infrastructure\airports\airport_01_terminal_f.p3d"
+    ];
+
+    ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + [
+        "a3\structures_f\civ\offices\offices_01_v1_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b02_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b03_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b04_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w03_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w04_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w05_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_f.p3d",
+        "a3\structures_f_exp\infrastructure\airports\airport_01_terminal_f.p3d"
+    ];
+
+    ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianPopulationBuildingTypes + [
+        "a3\structures_f\civ\offices\offices_01_v1_f.p3d",
+        "a3\structures_f\households\slum\cargo_house_slum_f.p3d",
+        "a3\structures_f\households\slum\slum_house01_f.p3d",
+        "a3\structures_f\households\slum\slum_house03_f.p3d",
+        "a3\structures_f\households\stone_small\i_stone_housesmall_v1_f.p3d",
+        "a3\structures_f\households\wip\unfinished_building_01_f.p3d",
+        "a3\structures_f\ind\carservice\carservice_f.p3d",
+        "a3\structures_f_argo\civilian\house_big01\i_house_big_01_b_white_f.p3d",
+        "a3\structures_f_argo\civilian\house_small01\i_house_small_01_b_whiteblue_f.p3d",
+        "a3\structures_f_argo\civilian\house_small02\i_house_small_02_b_whiteblue_f.p3d",
+        "a3\structures_f_argo\civilian\stone_shed_01\i_stone_shed_01_c_raw_f.p3d",
+        "a3\structures_f_argo\commercial\supermarket_01\supermarket_01_malden_f.p3d",
+        "a3\structures_f_argo\industrial\agriculture\barn_01_grey_f.p3d",
+        "a3\structures_f_enoch\civilian\camps\camp_house_01_brown_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1b01_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w01_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w02_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w03_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w04_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w05_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w06_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w07_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w08_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w09_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w10_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w11_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w12_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_1w13_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b01_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b02_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b03_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2b04_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w01_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w02_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w03_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w04_f.p3d",
+        "a3\structures_f_enoch\civilian\houses\house_2w05_f.p3d",
+        "a3\structures_f_enoch\civilian\medical\healthcenter_01_f.p3d",
+        "a3\structures_f_enoch\civilian\police\policestation_01_f.p3d",
+        "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_shop_f.p3d",
+        "a3\structures_f_enoch\commercial\villagestore_01\villagestore_01_f.p3d",
+        "a3\structures_f_enoch\cultural\church_04\church_04_white_f.p3d",
+        "a3\structures_f_enoch\cultural\church_04\church_04_white_red_f.p3d",
+        "a3\structures_f_enoch\industrial\cementworks\cementworks_01_grey_f.p3d",
+        "a3\structures_f_enoch\industrial\garages\garageoffice_01_f.p3d",
+        "a3\structures_f_enoch\industrial\garages\garagerow_01_large_f.p3d",
+        "a3\structures_f_enoch\industrial\sawmills\sawmill_01_f.p3d",
+        "a3\structures_f_enoch\infrastructure\railways\rail_station_big_f.p3d",
+        "a3\structures_f_exp\civilian\house_small_02\house_small_02_f.p3d",
+        "a3\structures_f_exp\civilian\school_01\school_01_f.p3d",
+        "a3\structures_f_exp\commercial\addons\addon_04_f.p3d",
+        "a3\structures_f_exp\commercial\fuelstation_01\fuelstation_01_workshop_f.p3d",
+        "a3\structures_f_exp\commercial\fuelstation_02\fuelstation_02_workshop_f.p3d",
+        "a3\structures_f_exp\commercial\multistorybuilding_01\multistorybuilding_01_f.p3d",
+        "a3\structures_f_exp\commercial\warehouses\warehouse_03_f.p3d",
+        "a3\structures_f_exp\cultural\church_03\church_03_f.p3d",
+        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shed_f.p3d"
+    ];
+
+    ALIVE_civilianPowerBuildingTypes = ALIVE_civilianPowerBuildingTypes + [
+        "a3\structures_f\ind\dieselpowerplant\dp_smallfactory_f.p3d",
+        "a3\structures_f\ind\dieselpowerplant\dp_transformer_f.p3d",
+        "a3\structures_f\ind\solarpowerplant\spp_transformer_f.p3d",
+        "a3\structures_f_enoch\industrial\houses\waterstation_01_f.p3d",
+        "a3\structures_f_enoch\industrial\power\powerstation_01_f.p3d",
+        "a3\structures_f_enoch\industrial\power\substation_01_f.p3d",
+        "a3\structures_f_enoch\industrial\smokestacks\smokestack_01_f.p3d",
+        "a3\structures_f_enoch\military\radar\mobileradar_01_generator_f.p3d",
+        "a3\structures_f_exp\industrial\dieselpowerplant_01\dpp_01_transformer_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_chimney_f.p3d"
+    ];
+
+    ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + [
+        "a3\structures_f\ind\transmitter_tower\communication_f.p3d",
+        "a3\structures_f\ind\transmitter_tower\tbox_f.p3d",
+        "a3\structures_f\ind\transmitter_tower\ttowerbig_1_f.p3d",
+        "a3\structures_f\ind\transmitter_tower\ttowerbig_2_f.p3d",
+        "a3\structures_f\ind\transmitter_tower\ttowersmall_1_f.p3d",
+        "a3\structures_f\ind\transmitter_tower\ttowersmall_2_f.p3d"
+    ];
+
+    ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + [
+        "a3\structures_f\dominants\lighthouse\lighthouse_f.p3d",
+        "a3\structures_f\dominants\lighthouse\lighthouse_small_f.p3d",
+        "a3\structures_f\naval\piers\pier_f.p3d",
+        "a3\structures_f\naval\piers\pier_small_f.p3d",
+        "a3\structures_f_argo\infrastructure\seaports\lighthouse_03_red_f.p3d",
+        "a3\structures_f_exp\industrial\port\containercrane_01_arm_f.p3d",
+        "a3\structures_f_exp\industrial\port\containercrane_01_arm_lowered_f.p3d",
+        "a3\structures_f_exp\industrial\port\containercrane_01_f.p3d",
+        "a3\structures_f_exp\industrial\port\containerline_01_f.p3d",
+        "a3\structures_f_exp\industrial\port\containerline_02_f.p3d",
+        "a3\structures_f_exp\industrial\port\containerline_03_f.p3d",
+        "a3\structures_f_exp\industrial\port\gantrycrane_01_f.p3d",
+        "a3\structures_f_exp\industrial\port\mobilecrane_01_f.p3d",
+        "a3\structures_f_exp\industrial\port\mobilecrane_01_hook_f.p3d",
+        "a3\structures_f_exp\industrial\port\warehouse_02_f.p3d",
+        "a3\structures_f_exp\naval\piers\pierwooden_01_10m_norails_f.p3d",
+        "a3\structures_f_exp\naval\piers\pierwooden_01_16m_f.p3d",
+        "a3\structures_f_exp\naval\piers\pierwooden_01_dock_f.p3d",
+        "a3\structures_f_exp\naval\piers\pierwooden_01_hut_f.p3d",
+        "a3\structures_f_exp\naval\piers\pierwooden_01_platform_f.p3d",
+        "a3\structures_f_exp\naval\piers\pierwooden_02_16m_f.p3d"
+    ];
+
+    ALIVE_civilianRailBuildingTypes = ALIVE_civilianRailBuildingTypes + [
+        "a3\structures_f_enoch\infrastructure\railways\rail_station_big_f.p3d",
+        "a3\structures_f_enoch\infrastructure\railways\rail_station_small_f.p3d"
+    ];
+
+    ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + [
+        "a3\structures_f\ind\dieselpowerplant\dp_bigtank_f.p3d",
+        "a3\structures_f\ind\dieselpowerplant\dp_smalltank_f.p3d",
+        "a3\structures_f\ind\fuelstation\fuelstation_feed_f.p3d",
+        "a3\structures_f\ind\fuelstation_small\fs_feed_f.p3d",
+        "a3\structures_f\ind\fuelstation_small\fs_roof_f.p3d",
+        "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_roof_f.p3d",
+        "a3\structures_f_enoch\commercial\fuelstation_03\fuelstation_03_shop_f.p3d",
+        "a3\structures_f_enoch\industrial\dieselpowerplant_01\dp_bigtank_old_f.p3d",
+        "a3\structures_f_enoch\industrial\dieselpowerplant_01\dp_smalltank_old_f.p3d",
+        "a3\structures_f_exp\industrial\port\storagetank_01_large_f.p3d",
+        "a3\structures_f_exp\industrial\port\storagetank_01_small_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_crystallizertowers_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_storagebin_big_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_storagebin_medium_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_storagebin_small_f.p3d"
+    ];
+
+    ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + [
+        "a3\structures_f\dominants\wip\wip_f.p3d",
+        "a3\structures_f\ind\crane\crane_f.p3d",
+        "a3\structures_f\ind\dieselpowerplant\dp_mainfactory_f.p3d",
+        "a3\structures_f\ind\factory\factory_main_f.p3d",
+        "a3\structures_f_enoch\industrial\cementworks\cementworks_01_grey_f.p3d",
+        "a3\structures_f_enoch\industrial\coalplant_01\coalplant_01_mainbuilding_f.p3d",
+        "a3\structures_f_enoch\industrial\dieselpowerplant_01\dpp_01_mainfactory_old_f.p3d",
+        "a3\structures_f_enoch\industrial\farms\barn_04_f.p3d",
+        "a3\structures_f_enoch\industrial\sawmills\sawmill_01_f.p3d",
+        "a3\structures_f_enoch\industrial\smokestacks\smokestack_01_factory_f.p3d",
+        "a3\structures_f_enoch\infrastructure\bridges\bridge_metal_01_25m_f.p3d",
+        "a3\structures_f_exp\industrial\dieselpowerplant_01\dpp_01_smallfactory_f.p3d",
+        "a3\structures_f_exp\industrial\stockyard_01\sy_01_conveyor_end_f.p3d",
+        "a3\structures_f_exp\industrial\stockyard_01\sy_01_reclaimer_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_clarifier_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_condenser_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_crystallizer_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_feeder_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_heap_bagasse_f.p3d",
+        "a3\structures_f_exp\industrial\sugarcanefactory_01\scf_01_washer_f.p3d",
+        "a3\structures_f_exp\industrial\surfacemine_01\sm_01_shed_unfinished_f.p3d"
+    ];
+
+};

@@ -1,5 +1,5 @@
-// Generated 2026-11-16 from 180 terrain indexes in addons/main/static: every model at least two indexes list and
-// all of them categorise the same way (4120 models: 2605 categorised, 1515 blacklist only). The in-game indexer
+// Generated 2026-11-16 from 181 terrain indexes in addons/main/static: every model at least two indexes list and
+// all of them categorise the same way (4129 models: 2607 categorised, 1522 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
     ["a3\air_f_orange\uav_06\box_uav_06_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -49,6 +49,7 @@
     ["a3\props_f_enoch\military\camps\portablecabinet_01_7drawers_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\camps\portablecabinet_01_bookcase_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\camps\portablecabinet_01_closed_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_enoch\military\camps\portablelight_02_double_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\camps\tentlamp_01_standing_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\camps\tentsolar_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\camps\tentsolar_01_folded_f.p3d", ["ALIVE_Indexing_Blacklist", "ALIVE_militaryBuildingTypes"]],
@@ -57,9 +58,12 @@
     ["a3\props_f_enoch\military\decontamination\cbrncontainer_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\drainagedeck_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\hazmatbag_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_enoch\military\decontamination\layflathose_01_curvelong_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\layflathose_01_roll_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_enoch\military\decontamination\layflathose_01_straightlong_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\liquidspraysystem_01_extended_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\liquidspraysystem_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_enoch\military\decontamination\powercable_01_corner_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\powercable_01_roll_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\sponge_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_enoch\military\decontamination\tarp_01_large_black_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -118,6 +122,7 @@
     ["a3\props_f_orange\humanitarian\camps\emergencyblanket_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\camps\emergencyblanket_01_stack_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\camps\emergencyblanket_02_discarded_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_orange\humanitarian\camps\emergencyblanket_02_stack_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\camps\firstaidkit_01_closed_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\camps\firstaidkit_01_open_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\camps\intravenstand_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -146,11 +151,13 @@
     ["a3\props_f_orange\humanitarian\supplies\waterbottle_01_full_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\supplies\waterbottle_01_pack_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\humanitarian\supplies\waterbottle_01_stack_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_orange\items\decorative\photoframe_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_orange\items\tools\crowbar_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_tank\military\tankacc\refuelinghose_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_tank\military\tankacc\tanksprocketwheels_01_single_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_tank\military\tankacc\tanktracks_01_long_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_tank\military\tankacc\tanktracks_01_short_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\props_f_tank\military\tankacc\torquewrench_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\props_f_tank\military\wrecks\wreck_mbt_04_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\roads_f\decals\decal_white_line_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\roads_f\roads\path_w7_a10_695_r75.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -693,6 +700,7 @@
     ["a3\structures_f_enoch\civilian\sheds\shed_11_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\civilian\sheds\shed_11_ruins_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\civilian\sheds\shed_12_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
+    ["a3\structures_f_enoch\civilian\sheds\shed_12_ruins_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\civilian\sheds\shed_13_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\civilian\sheds\shed_13_ruins_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\civilian\sheds\shed_14_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
@@ -885,6 +893,7 @@
     ["a3\structures_f_enoch\industrial\houses\workshop_03_ruins_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\industrial\houses\workshop_04_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\industrial\houses\workshop_04_grey_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
+    ["a3\structures_f_enoch\industrial\houses\workshop_04_ruins_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\industrial\houses\workshop_05_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\industrial\houses\workshop_05_grey_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["a3\structures_f_enoch\industrial\houses\workshop_05_ruins_f.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
