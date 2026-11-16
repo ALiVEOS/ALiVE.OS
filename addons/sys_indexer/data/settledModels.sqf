@@ -1,5 +1,5 @@
-// Generated 2026-11-16 from 181 terrain indexes in addons/main/static: every model at least two indexes list and
-// all of them categorise the same way (4129 models: 2607 categorised, 1522 blacklist only). The in-game indexer
+// Generated 2026-11-16 from 182 terrain indexes in addons/main/static: every model at least two indexes list and
+// all of them categorise the same way (4135 models: 2607 categorised, 1528 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
     ["a3\air_f_orange\uav_06\box_uav_06_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -648,6 +648,8 @@
     ["a3\structures_f_argo\wrecks\tankwreck_01_turret_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_bootcamp\ind\cargo\cargo20_vr_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_bootcamp\items\food\foodcontainer_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f_bootcamp\training\target_popup_01_figure_f.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["a3\structures_f_bootcamp\training\target_popup_01_mechanism_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\civilian\accessories\chickencoop_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\civilian\accessories\hutch_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["a3\structures_f_enoch\civilian\accessories\stonewell_01_f.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -1930,18 +1932,14 @@
     ["ca\buildings\misc\zed_podplaz_civil.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\misc\zed_podplaz_desert.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\molo_beton.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
-    ["ca\buildings\molo_krychle.p3d", ["ALIVE_Indexing_Blacklist"]],
-    ["ca\buildings\molo_krychle2.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\nabrezi.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\nabrezi_najezd.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\orlhot.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["ca\buildings\podesta_10.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\podesta_1_cornl.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
-    ["ca\buildings\podesta_1_cornp.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\podesta_1_cube.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\podesta_1_cube_long.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\podesta_1_mid.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
-    ["ca\buildings\podesta_1_mid_cornl.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\buildings\podesta_1_mid_cornp.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["ca\buildings\podesta_1_stairs2.p3d", ["ALIVE_civilianSettlementBuildingTypes"]],
     ["ca\buildings\podesta_1_stairs3.p3d", ["ALIVE_civilianSettlementBuildingTypes", "ALIVE_civilianPopulationBuildingTypes"]],
@@ -2101,6 +2099,8 @@
     ["ca\misc\sidewalks\sidewalk6shortend.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\sidewalks\sidewalk6turn10deg.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\sidewalks\sidewalk6turn5deg.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["ca\misc\sidewalks\sidewalkclear.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["ca\misc\sidewalks\sidewalksturn5deg.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\sloupyeli.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\smallobj_dog_tags.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\misc\snow.p3d", ["ALIVE_Indexing_Blacklist"]],
@@ -2180,6 +2180,12 @@
     ["ca\roads\runway_poj_end27.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\roads\runway_poj_end9.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\roads\runway_poj_tcross.p3d", ["ALIVE_airBuildingTypes", "ALIVE_militaryAirBuildingTypes"]],
+    ["ca\roads\sil10 100.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["ca\roads\sil10 25.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["ca\roads\sil10 50.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["ca\roads\sil12.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["ca\roads\sil6.p3d", ["ALIVE_Indexing_Blacklist"]],
+    ["ca\roads\sil6_prechod.p3d", ["ALIVE_Indexing_Blacklist"]],
     ["ca\roads_e\runway\runway_end00_ep1.p3d", ["ALIVE_airBuildingTypes", "ALIVE_militaryAirBuildingTypes"]],
     ["ca\roads_e\runway\runway_end04_ep1.p3d", ["ALIVE_airBuildingTypes", "ALIVE_militaryAirBuildingTypes"]],
     ["ca\roads_e\runway\runway_end06_ep1.p3d", ["ALIVE_airBuildingTypes", "ALIVE_militaryAirBuildingTypes"]],
