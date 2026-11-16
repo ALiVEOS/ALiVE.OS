@@ -48,6 +48,17 @@ DEFAULT_PARAM(5,_whitezone,[]);
 _strathouses = [];
 _nonstrathouses = [];
 
+// The density test asks whether a kept house already stands within _density of this one. It used to walk
+// every kept house for every house on the map, and on Lythium (10,802 houses, #1108) that ran for longer
+// than a server would wait. Kept houses now go into a grid of _density-sized squares, so only the nine
+// squares around a house are looked at. Which houses qualify, and the one roll a house gets when one does,
+// are unchanged.
+private _cellSize = _density max 1;
+private _gridStrat = createHashMap;
+private _gridNonStrat = createHashMap;
+// a house listed twice was only ever kept once
+_spawnhouses = _spawnhouses arrayIntersect _spawnhouses;
+
 { // forEach
     private ["_obj", "_isStrategic", "_houses"];
     _obj = _x;
@@ -70,6 +81,7 @@ _nonstrathouses = [];
     };
     _isStrategic = (typeOf _obj) in _BuildingTypeStrategic;
     _houses = if (_isStrategic) then {_strathouses} else {_nonstrathouses};
+    private _grid = if (_isStrategic) then {_gridStrat} else {_gridNonStrat};
 
     // Ask the engine the one question this needs, rather than building a list to measure it.
     //
@@ -88,7 +100,7 @@ _nonstrathouses = [];
     // Asking for position zero directly is the same question in one call. Kept as a test
     // rather than removed, so this still behaves if it is ever handed a list that has not
     // already been filtered.
-    if (!_absorbedCBApos && {!((_obj buildingPos 0) isEqualTo [0,0,0])} && {!(_obj in _houses)}) then {
+    if (!_absorbedCBApos && {!((_obj buildingPos 0) isEqualTo [0,0,0])}) then {
         private ["_pos", "_collect"];
 
         _pos = getPosATL _obj;
@@ -105,16 +117,25 @@ _nonstrathouses = [];
 
         if (_collect) then {
 
-            { // forEach
-                private ["_dis"];
-                _dis = _pos distance (getposATL _x);
-                if ((_dis < _density) && {!_isStrategic || {_dis < 60}}) exitWith {
-                    _collect = (random 1) < _CQB_spawn;
-                };
-            } forEach _houses;
+            private _cx = floor ((_pos select 0) / _cellSize);
+            private _cy = floor ((_pos select 1) / _cellSize);
+            private _near = false;
+            {
+                private _dx = _x;
+                {
+                    {
+                        private _dis = _pos distance (getposATL _x);
+                        if ((_dis < _density) && {!_isStrategic || {_dis < 60}}) exitWith { _near = true };
+                    } forEach (_grid getOrDefault [[_cx + _dx, _cy + _x], []]);
+                    if (_near) exitWith {};
+                } forEach [-1, 0, 1];
+                if (_near) exitWith {};
+            } forEach [-1, 0, 1];
+            if (_near) then { _collect = (random 1) < _CQB_spawn };
 
             if (_collect) then {
                 _houses pushback _obj;
+                (_grid getOrDefault [[_cx, _cy], [], true]) pushBack _obj;
             };
         };
     };
