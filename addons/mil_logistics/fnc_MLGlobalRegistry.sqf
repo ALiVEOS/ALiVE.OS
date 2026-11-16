@@ -29,6 +29,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -110,7 +111,27 @@ switch(_operation) do {
         _persistent = [_module, "persistent"] call ALIVE_fnc_ML;
         _forcePool = [_module, "forcePool"] call ALIVE_fnc_ML;
 
-        [_logic,"updateGlobalForcePool",[_moduleID,_forcePool]] call MAINCLASS;
+        // A module that starts after the saved pool was loaded seeds only the factions the save
+        // doesn't hold: seeding them all put a faction shared with the first module back to its
+        // starting pool on every load, so the pool never seemed to be saved (#1128)
+        private _loadedFactions = [_logic, "persistenceLoadedFactions", []] call ALIVE_fnc_hashGet;
+        if (_loadedFactions isEqualTo []) then {
+            [_logic,"updateGlobalForcePool",[_moduleID,_forcePool]] call MAINCLASS;
+        } else {
+            private _seed = if (_forcePool isEqualType "") then { parseNumber _forcePool } else { _forcePool };
+            private _kept = [];
+            {
+                {
+                    if (_x in _loadedFactions) then { _kept pushBackUnique _x } else {
+                        [ALIVE_globalForcePool, _x, _seed] call ALIVE_fnc_hashSet;
+                        [ALiVE_eventLog, "addEvent", ['FORCEPOOL_UPDATED', [_x, _seed], "Logistics"] call ALiVE_fnc_event] call ALiVE_fnc_eventLog;
+                    };
+                } forEach (_x select 1);
+            } forEach (_module getVariable ["factions", []]);
+            if (_kept isNotEqualTo []) then {
+                ["ML Global register module: %1 keeps the saved force pool for %2", _moduleID, _kept] call ALIVE_fnc_dump;
+            };
+        };
 
         if(_persistent) then {
             if!([_logic,"persistenceLoaded"] call ALIVE_fnc_hashGet) then {
@@ -134,6 +155,7 @@ switch(_operation) do {
                     // allowance at all and every request for it was turned down, on that run and on every
                     // run after. Saved figures still win where the save knows the faction, which is the
                     // point of saving them; the seeds only survive where it does not.
+                    if (count _data >= 3) then { [_logic, "persistenceLoadedFactions", +(_data select 1)] call ALIVE_fnc_hashSet };
                     if (isNil "ALIVE_globalForcePool" || {count _data < 3}) then {
                         ALIVE_globalForcePool = _data;
                     } else {
