@@ -1372,6 +1372,24 @@ switch(_operation) do {
             _p min (if (_hard) then {0.10} else {0.40})
         };
 
+        // a crew wiped out by a virtual volley lets go of its guns before it comes off the register. A static gun's
+        // crew is linked through vehicleAssignments only (no command or cargo seats), so clearVehicleAssignments alone
+        // left the gun naming a crew that no longer existed (16 Nov soak: a battery's crew went, its gun kept the ID)
+        private _fnc_freeCrewVehicles = {
+            params ["_entity"];
+            private _vAssign = [_entity,"vehicleAssignments",[]] call ALiVE_fnc_hashGet;
+            private _vehIDs = if (_vAssign isEqualType [] && {count _vAssign > 1} && {(_vAssign select 1) isEqualType []}) then { +(_vAssign select 1) } else { [] };
+            _vehIDs append ([_entity,"vehiclesInCommandOf",[]] call ALiVE_fnc_hashGet);
+            _vehIDs append ([_entity,"vehiclesInCargoOf",[]] call ALiVE_fnc_hashGet);
+            {
+                private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                if (!isNil "_vp") then { [_entity, _vp] call ALIVE_fnc_removeProfileVehicleAssignment };
+            } forEach (_vehIDs arrayIntersect _vehIDs);
+            [_entity,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+            [_entity,"vehiclesInCommandOf",[]] call ALiVE_fnc_hashSet;
+            [_entity,"vehiclesInCargoOf",[]] call ALiVE_fnc_hashSet;
+        };
+
         // destroying a vehicle profile takes its crew with it and, when it was
         // the commanding entity's last vehicle (or crew and vehicles are both
         // gone), the entity too. Returns true when an entity was lost
@@ -1520,6 +1538,7 @@ switch(_operation) do {
                 if (count _unitClasses == 0) then {
                     // a zero-unit profile would soak fire missions forever -
                     // the profile simulator treats these as killed on contact
+                    [_targetProfile] call _fnc_freeCrewVehicles;
                     [ALIVE_profileHandler,"unregisterProfile",_targetProfile] call ALIVE_fnc_profileHandler;
                     if (_debug) then {
                         ["ALiVE MIL_ARTILLERY - virtual mission: empty target profile %1 removed", _targetID] call ALiVE_fnc_dump;
@@ -1575,6 +1594,7 @@ switch(_operation) do {
                                 [_targetProfile,"objectType"] call ALiVE_fnc_hashGet
                             ], "MilArtillery"] call ALIVE_fnc_event;
                             [ALIVE_eventLog,"addEvent",_event] call ALIVE_fnc_eventLog;
+                            [_targetProfile] call _fnc_freeCrewVehicles;
                             [ALIVE_profileHandler,"unregisterProfile",_targetProfile] call ALIVE_fnc_profileHandler;
                             _resultText = format ["squad of %1 wiped out", _squadSize];
                         } else {
