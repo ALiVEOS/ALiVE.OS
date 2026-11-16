@@ -23,6 +23,7 @@ _near = _grid call ["findInRange", [[0,0,0], 500, true, true, true]];
 
 Author:
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 if (isNil "ALiVE_spacialGridClass") then {
@@ -42,6 +43,12 @@ if (isNil "ALiVE_spacialGridClass") then {
             _this params ["_origin","_gridSize","_sectorSize"];
 
             private _gridSectorLength = ceil (_gridSize / _sectorSize);
+            // An array holds under 10M entries: a grid past that failed on every cell, millions of errors.
+            // Cut it to fit, once, and say so; positions past the edge read as off the grid.
+            if ((_gridSectorLength + 1) ^ 2 > 9000000) then {
+                diag_log format ["ALiVE spacialGrid - a %1 m grid in %2 m cells is too large, cut to %3 cells a side", round _gridSize, _sectorSize, 2999];
+                _gridSectorLength = 2998;
+            };
             private _sectors = [];
 
             for "_i" from 0 to _gridSectorLength do {

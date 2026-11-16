@@ -44,9 +44,19 @@ private _minX = 0;
 private _minY = 0;
 private _maxX = 0;
 private _maxY = 0;
+// Objects far off the map (a terrain mod's spare worlds, about 470 km out on Australia) made the grid so
+// large it could not be built, and the RPT filled with millions of "Max array size" errors. Anything more
+// than 2 km off the map is left out.
+private _mapMin = -2000;
+private _mapMax = worldSize + 2000;
+private _offMap = 0;
 {
     if (!isNull _x) then {
         private _position = getPosWorld _x;
+        if ((_position select 0) < _mapMin || {(_position select 0) > _mapMax} || {(_position select 1) < _mapMin} || {(_position select 1) > _mapMax}) then {
+            _offMap = _offMap + 1;
+            continue;
+        };
         _rawPoints pushBack [_position, _x];
         _minX = _minX min (_position select 0);
         _minY = _minY min (_position select 1);
@@ -54,6 +64,9 @@ private _maxY = 0;
         _maxY = _maxY max (_position select 1);
     };
 } forEach _obj_array;
+if (_offMap > 0) then {
+    ["ALiVE findClusters - %1 of %2 objects are more than 2 km off the map, left out", _offMap, count _obj_array] call ALiVE_fnc_dump;
+};
 // Align the shared grid with the previous 150 m lattice. A non-positive
 // origin also accommodates its existing abs(origin) coordinate convention.
 private _origin = [floor (_minX / _cellSize) * _cellSize, floor (_minY / _cellSize) * _cellSize];
