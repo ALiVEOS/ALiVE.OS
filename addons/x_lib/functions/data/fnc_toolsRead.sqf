@@ -43,7 +43,8 @@ while {_offset >= 0} do {
     // lands a few bytes off and drops them (Altis civilian clusters, 2.3 MB, NUC 16 Nov)
     private _reply = ("alive_tools" callExtension ["read", [_path, _offset toFixed 0]]) param [0, ""];
     private _parsed = if (_reply select [0, 1] == "[") then { parseSimpleArray _reply } else { [] };
-    if (count _parsed != 2) exitWith {
+    // a failed read comes back as ["error: <why>", -1], which is otherwise a well-formed last piece
+    if (count _parsed != 2 || {(_parsed select 1) == -1 && {((_parsed select 0) select [0, 7]) == "error: "}}) exitWith {
         _failed = true;
         ["[ALiVE tools] Could not read %1 at %2: %3", _path, _offset, _reply select [0, 200]] call ALiVE_fnc_dump;
     };

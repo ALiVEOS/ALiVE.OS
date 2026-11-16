@@ -50,6 +50,20 @@ private _launch = _this select 2;
     private _headless = !hasInterface;
     ALiVE_indexMap_finished = false;
 
+    // Every way out of a failed run: a player's map and key handlers are taken off again, and anything waiting on
+    // the run (the web indexer, a test) is told it is over
+    private _fnc_stop = {
+        params ["_why"];
+        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: %1", _why] call ALiVE_fnc_dump;
+        ["ALiVE Map Indexer","There was a problem, exiting indexing, check RPT"] call ALiVE_fnc_sendHint;
+        if !(_headless) then {
+            forceMap false;
+            if (!isNil "ALiVE_keypress_id_map") then { (findDisplay 12) displayRemoveEventHandler ["KeyDown", ALiVE_keypress_id_map]; ALiVE_keypress_id_map = nil };
+            if (!isNil "ALiVE_keypress_id") then { (findDisplay 46) displayRemoveEventHandler ["KeyDown", ALiVE_keypress_id]; ALiVE_keypress_id = nil };
+        };
+        ALiVE_indexMap_finished = true;
+    };
+
     if !(_headless) then {
         waitUntil{!isNull player};
 
@@ -73,10 +87,7 @@ private _launch = _this select 2;
         call compile _objectsText;
     };
     if (isNil "_objectsText" && {!([] call ALiVE_fnc_indexTerrainObjects)}) exitwith {
-        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: the objects file could not be written (see the [ALiVE tools] line above)"] call ALiVE_fnc_dump;
-        ["ALiVE Map Indexer","There was a problem, exiting indexing, check RPT"] call ALiVE_fnc_sendHint;
-        // so anything waiting on the run (the web indexer, a test) is not left waiting for good
-        ALiVE_indexMap_finished = true;
+        ["the objects file could not be written (see the [ALiVE tools] line above)"] call _fnc_stop;
     };
     // A new indexing run must resolve its new terrain placements afresh.
     missionNamespace setVariable ["ALIVE_objectLookupCache", nil];
@@ -87,17 +98,21 @@ private _launch = _this select 2;
     _result = if ((("alive_tools" callExtension ["exists", [_staticPath]]) param [0, ""]) == "true") then {"SUCCESS"} else {"NO FILE"};
 
     if (_headless && {_result != "SUCCESS"}) exitwith {
-        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: no static data file for %1, and objects can only be categorised by a player", worldName] call ALiVE_fnc_dump;
-        ALiVE_indexMap_finished = true;
+        [format ["no static data file for %1, and objects can only be categorised by a player", worldName]] call _fnc_stop;
     };
 
+    private _staticWritten = true;
     If (_result != "SUCCESS") then {
         [">>>>>>>>>>>>>>>>>> No static data found"] call ALiVE_fnc_dump;
         ["ALiVE Map Indexer","Starting Object Categorization"] call ALiVE_fnc_sendHint;
         [">>>>>>>>>>>>>>>>>> Starting Object Categorization"] call ALiVE_fnc_dump;
 
-        [_custom, _known] call ALiVE_fnc_auto_staticObjects;
+        _staticWritten = [_custom, _known] call ALiVE_fnc_auto_staticObjects;
 
+    };
+    // a half-written static data file would be compiled below and leave the building lists short
+    if (!_staticWritten) exitWith {
+        ["the static data file could not be written (see the [ALiVE tools] line above)"] call _fnc_stop;
     };
 
     if !(_headless) then {
@@ -138,39 +153,38 @@ private _launch = _this select 2;
     [_grid, "init"] call ALIVE_fnc_sectorGrid;
     [_grid, "createGrid"] call ALIVE_fnc_sectorGrid;
     ["Sectors created: %1", count ([_grid, "sectors"] call ALIVE_fnc_sectorGrid)] call ALiVE_fnc_dump;
-    private _analysed = true;
+    // Each step below throws when one of its files can't be written; caught here, so the run stops cleanly
+    private _failed = "";
     try {
         [_grid, [], true, missionNamespace getVariable ["ALIVE_indexing_debug", false]] call ALIVE_fnc_auto_gridMapAnalysis;
+
+        ["ALiVE Map Indexer","Generating Clusters: Military Objectives."] call ALiVE_fnc_sendHint;
+        [">>>>>>>>>>>>>>>>>> Generating Clusters:  Military Objectives."] call ALiVE_fnc_dump;
+
+        [] call ALIVE_fnc_auto_milClusterGeneration;
+
+        ["ALiVE Map Indexer","Generating Clusters: Civilian Objectives."] call ALiVE_fnc_sendHint;
+        [">>>>>>>>>>>>>>>>>> Generating Clusters: Civilian Objectives."] call ALiVE_fnc_dump;
+
+        [] call ALIVE_fnc_auto_civClusterGeneration;
+
+        // Merge sector/cluster data
+
+        ["ALiVE Map Indexer","Generating Clusters: Merging Military Sector/Cluster Data."] call ALiVE_fnc_sendHint;
+        [">>>>>>>>>>>>>>>>>> Generating Clusters: Merging Military Sector/Cluster Data."] call ALiVE_fnc_dump;
+
+        [] call compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\tests\auto_appendClustersMil.sqf";
+
+        ["ALiVE Map Indexer","Generating Clusters: Merging Civilian Sector/Cluster Data."] call ALiVE_fnc_sendHint;
+        [">>>>>>>>>>>>>>>>>> Generating Clusters: Merging Civilian Sector/Cluster Data."] call ALiVE_fnc_dump;
+
+        [] call compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\tests\auto_appendClustersCiv.sqf";
     } catch {
-        _analysed = false;
-        [">>>>>>>>>>>>>>>>>> There was a problem, exiting indexing: the sector data could not be written (%1)", _exception] call ALiVE_fnc_dump;
+        _failed = str _exception;
     };
-    if (!_analysed) exitWith {
-        ["ALiVE Map Indexer","There was a problem, exiting indexing, check RPT"] call ALiVE_fnc_sendHint;
-        ALiVE_indexMap_finished = true;
+    if (_failed != "") exitWith {
+        [format ["a sector or cluster file could not be written (%1)", _failed]] call _fnc_stop;
     };
-
-    ["ALiVE Map Indexer","Generating Clusters: Military Objectives."] call ALiVE_fnc_sendHint;
-    [">>>>>>>>>>>>>>>>>> Generating Clusters:  Military Objectives."] call ALiVE_fnc_dump;
-
-    [] call ALIVE_fnc_auto_milClusterGeneration;
-
-    ["ALiVE Map Indexer","Generating Clusters: Civilian Objectives."] call ALiVE_fnc_sendHint;
-    [">>>>>>>>>>>>>>>>>> Generating Clusters: Civilian Objectives."] call ALiVE_fnc_dump;
-
-    [] call ALIVE_fnc_auto_civClusterGeneration;
-
-    // Merge sector/cluster data
-
-    ["ALiVE Map Indexer","Generating Clusters: Merging Military Sector/Cluster Data."] call ALiVE_fnc_sendHint;
-    [">>>>>>>>>>>>>>>>>> Generating Clusters: Merging Military Sector/Cluster Data."] call ALiVE_fnc_dump;
-
-    [] call compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\tests\auto_appendClustersMil.sqf";
-
-    ["ALiVE Map Indexer","Generating Clusters: Merging Civilian Sector/Cluster Data."] call ALiVE_fnc_sendHint;
-    [">>>>>>>>>>>>>>>>>> Generating Clusters: Merging Civilian Sector/Cluster Data."] call ALiVE_fnc_dump;
-
-    [] call compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\tests\auto_appendClustersCiv.sqf";
 
 
     if !(_headless) then {

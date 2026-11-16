@@ -44,8 +44,10 @@ private _skipped = 0;
 private _tile = 1000;
 private _tiles = ceil (worldSize / _tile);
 
-for "_tx" from 0 to (_tiles - 1) do {
-    for "_ty" from 0 to (_tiles - 1) do {
+// one ring of squares past each edge as well: some terrains place objects just outside 0..worldSize, and the
+// old WRP listing kept them
+for "_tx" from -1 to _tiles do {
+    for "_ty" from -1 to _tiles do {
         private _x0 = _tx * _tile;
         private _y0 = _ty * _tile;
         private _centre = [_x0 + _tile / 2, _y0 + _tile / 2, 0];
@@ -81,8 +83,16 @@ for "_tx" from 0 to (_tiles - 1) do {
     };
 };
 
+// in a fixed order, models by path and each model's objects south to north, then west to east, near the order the
+// WRP file keeps them in: the clusters are built from this list and come out a little different when the same
+// objects arrive in another order (Stratis civilian clusters went from 96 to 95 when the squares were scanned
+// in a different order)
 wrp_objects = [];
-{ wrp_objects pushBack [_x, _y] } forEach _byModel;
+{
+    private _sorted = [_y, [], { (_x select 1 select 1) * 100000 + (_x select 1 select 0) }, "ASCEND"] call BIS_fnc_sortBy;
+    wrp_objects pushBack [_x, _sorted];
+} forEach _byModel;
+wrp_objects sort true;
 
 ["[ALiVE Map Indexer] %1: %2 terrain objects, %3 on the blacklist, %4 kept, of %5 models", _world, _seen, _skipped, _seen - _skipped, count wrp_objects] call ALiVE_fnc_dump;
 

@@ -342,7 +342,9 @@ if (_custom) then {
 // Written through the alive_tools extension, under Documents\Arma 3\ALiVE\indexing\<map>\. The file starts with the
 // header the old ALiVEClient extension wrote: every list declared empty, then the lines below add to them
 private _staticPath = format ["indexing/%1/x/alive/addons/main/static/%1_staticData.sqf", toLower worldName];
-private _fnc_staticLine = { [_staticPath, "add", _this + endl] call ALiVE_fnc_toolsWrite };
+// once a write fails, nothing more is written and the run reports false, so a half-written file is never used
+private _written = true;
+private _fnc_staticLine = { if (_written) then { _written = [_staticPath, "add", _this + endl] call ALiVE_fnc_toolsWrite }; _written };
 private _header = [
     "private[""_worldName""];",
     " _worldName = tolower(worldName);",
@@ -350,7 +352,7 @@ private _header = [
 ];
 { _header pushBack format [" %1 = [];", _x] } forEach ["ALIVE_Indexing_Blacklist", "ALIVE_airBuildingTypes", "ALIVE_militaryParkingBuildingTypes", "ALIVE_militarySupplyBuildingTypes", "ALIVE_militaryHQBuildingTypes", "ALIVE_militaryAirBuildingTypes", "ALIVE_civilianAirBuildingTypes", "ALiVE_HeliBuildingTypes", "ALIVE_militaryHeliBuildingTypes", "ALIVE_civilianHeliBuildingTypes", "ALIVE_militaryBuildingTypes", "ALIVE_civilianPopulationBuildingTypes", "ALIVE_civilianHQBuildingTypes", "ALIVE_civilianPowerBuildingTypes", "ALIVE_civilianCommsBuildingTypes", "ALIVE_civilianMarineBuildingTypes", "ALIVE_civilianRailBuildingTypes", "ALIVE_civilianFuelBuildingTypes", "ALIVE_civilianConstructionBuildingTypes", "ALIVE_civilianSettlementBuildingTypes"];
 _header pushBack format [" if(tolower(_worldName) == ""%1"") then {", toLower worldName];
-[_staticPath, "new", (_header joinString (endl + endl)) + endl + endl] call ALiVE_fnc_toolsWrite;
+_written = [_staticPath, "new", (_header joinString (endl + endl)) + endl + endl] call ALiVE_fnc_toolsWrite;
 
 // Set the mapbounds
 _mapBounds = [ALIVE_mapBounds, worldname, 0] call ALIVE_fnc_hashGet;
@@ -391,4 +393,4 @@ _result = 'ALIVE_militaryFieldworkBuildingTypes = [];' call _fnc_staticLine;
 _result = '};' call _fnc_staticLine;
 // diag_log str(_result);
 [">>>>>>>>>>>>>>>>>> Completed static data..."] call ALiVE_fnc_dump;
-true
+_written

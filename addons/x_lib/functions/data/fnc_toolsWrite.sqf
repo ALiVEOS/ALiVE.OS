@@ -35,19 +35,18 @@ Jman
 
 params [["_path", "", [""]], ["_mode", "add", [""]], ["_text", "", [""]]];
 
-// 8 KB a call: ASCII text goes 8000 characters at a time, anything else 2700 (at most 3 bytes a character)
-private _step = if (_text regexMatch "^[\x00-\x7F]*$") then {8000} else {2700};
+// 8 KB a call. ASCII text goes 8000 characters at a time. Anything else is cut by whole characters, 2000 at a
+// time (at most 4 bytes each): select and count on a string work in bytes, so cutting the text itself could
+// split a character between two calls and both halves would be written as a replacement character
+private _ascii = _text regexMatch "^[\x00-\x7F]*$";
+private _chars = if (_ascii) then { [] } else { toArray _text };
+private _step = if (_ascii) then {8000} else {2000};
 private _ok = true;
 private _at = 0;
-private _len = count _text;
+private _len = if (_ascii) then { count _text } else { count _chars };
 
 while {_ok && {_at < _len || {_at == 0}}} do {
-    private _piece = _text select [_at, _step];
-    // a piece never ends half way through a surrogate pair
-    if (_at + _step < _len && {count _piece > 0}) then {
-        private _last = (toArray _piece) select (count _piece - 1);
-        if (_last >= 55296 && {_last <= 56319}) then { _piece = _piece select [0, count _piece - 1] };
-    };
+    private _piece = if (_ascii) then { _text select [_at, _step] } else { toString (_chars select [_at, _step]) };
     private _reply = "alive_tools" callExtension ["write", [_path, _mode, _piece]];
     private _answer = _reply param [0, ""];
     if (_answer != "ok") then {
@@ -55,7 +54,7 @@ while {_ok && {_at < _len || {_at == 0}}} do {
         ["[ALiVE tools] Could not write %1: %2", _path, if (_answer == "") then {"the alive_tools extension is not loaded"} else {_answer}] call ALiVE_fnc_dump;
     };
     _mode = "add";
-    _at = _at + ((count _piece) max 1);
+    _at = _at + _step;
 };
 
 _ok
