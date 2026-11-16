@@ -7893,7 +7893,21 @@ switch(_operation) do {
 
                     }else{
 
-                        // OPCOM controls no objectives
+                        // OPCOM controls no objectives. Reinforcements come in at this module first, if it stands on
+                        // land with no enemy within 800 m: the airdrop and sea choices below started from a random
+                        // objective anywhere on the map, enemy ground included, and a landlocked map with helicopter
+                        // reinforcement off had no way in at all (RSS7, Takistan, 16 Nov).
+                        private _home = getPosATL _logic;
+                        private _homeEnemies = ([[_logic, "side"] call MAINCLASS] call ALiVE_fnc_getSideAllegiances) param [0, []];
+                        if (!surfaceIsWater _home && {(_homeEnemies findIf { ([_home, 800, [_x, "entity"]] call ALIVE_fnc_getNearProfiles) isNotEqualTo [] }) < 0}) then {
+                            _primaryReinforcementObjective = [] call ALIVE_fnc_hashCreate;
+                            [_primaryReinforcementObjective, "center", _home] call ALIVE_fnc_hashSet;
+                            [_primaryReinforcementObjective, "objectiveID", "module"] call ALIVE_fnc_hashSet;
+                            // final type decided in "requested", as for a held objective
+                            _reinforcementType = "HELI";
+                            if (_debug) then { ["ML - onDemandAnalysis: no objective held, reinforcements come in at the module (%1)", _home apply { round _x }] call ALiVE_fnc_dump };
+                        } else {
+
                         // reinforcements must be delivered
                         // via paradrops and or marine landings
                         // near to location of any existing troops
@@ -7943,6 +7957,7 @@ switch(_operation) do {
 
                             };
 
+                        };
                         };
 
                     };
