@@ -413,6 +413,19 @@ class FSM
                                          "_posCircle = (_posCas getPos [_radiusCas, _dirCas]);" \n
                                          "[_veh, _posCircle] call ALiVE_fnc_doMoveRemote;" \n
                                          "" \n
+                                         "// The enemies in the area are shown to the crew in full every 10 s while this task lasts. A plane with no sensors" \n
+                                         "// (the WW2 ones) otherwise never learns enough about a target to attack it, and flew its circles without a shot." \n
+                                         "[_veh, _grp, _posCas, _radiusCas] spawn {" \n
+                                         "    params [""_veh"", ""_grp"", ""_posCas"", ""_radiusCas""];" \n
+                                         "    private _task = _veh getVariable [""NEO_radioCurrentTask"", []];" \n
+                                         "    while {alive _veh && {(_veh getVariable [""NEO_radioCurrentTask"", []]) isEqualTo _task}} do {" \n
+                                         "        {" \n
+                                         "            if (alive _x && {((side _grp) getFriend (side group _x)) < 0.6}) then { _grp reveal [_x, 4] };" \n
+                                         "        } forEach (_posCas nearEntities [[""Man"",""Air"",""Car"",""Motorcycle"",""Tank"", ""Wheeled_apc""], _radiusCas]);" \n
+                                         "        sleep 10;" \n
+                                         "    };" \n
+                                         "};" \n
+                                         "" \n
                                          "[_veh,_callsign,_pos, _audio, _player] spawn" \n
                                          "{" \n
                                          "private [""_veh"", ""_callsign"",""_pos""];" \n
