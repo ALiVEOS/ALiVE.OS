@@ -48,6 +48,48 @@ ALiVE_diag_despawns = 0;
 ALiVE_diag_fpsMin = 1000;
 ALiVE_diag_next = time + 30;
 ALiVE_diag_active = false;
+ALiVE_diag_snapCount = 0;
+ALiVE_diag_modsSent = false;
+// script errors anywhere on the server (any mod or the mission), counted by the engine's ScriptError event
+ALiVE_diag_errors = 0;
+addMissionEventHandler ["ScriptError", { ALiVE_diag_errors = ALiVE_diag_errors + 1 }];
+
+// Every 5 min (each 10th row): the scripts running, by where their file comes from, and the mission FSMs
+ALiVE_diag_fnc_scripts = {
+    private _groups = createHashMap;
+    {
+        private _f = toLower (_x select 1);
+        if (_f select [0, 1] == "\") then { _f = _f select [1] };
+        private _parts = _f splitString "\";
+        private _key = switch (true) do {
+            case (_f == ""): { "no file" };
+            case (_f select [0, 8] == "x\alive\"): { "ALiVE" };
+            case (_f select [0, 6] == "x\cba\"): { "CBA" };
+            case (_f select [0, 6] == "z\ace\"): { "ACE" };
+            case ("mpmissions\" in _f || {"__cur_mp" in _f} || {count _parts < 3}): { "mission" };
+            default { (_parts select 0) + "\" + (_parts select 1) };
+        };
+        _groups set [_key, (_groups getOrDefault [_key, 0]) + 1];
+    } forEach diag_activeSQFScripts;
+    private _rows = (keys _groups) apply { [_groups get _x, _x] };
+    _rows sort false;
+    private _text = format ["%1; FSMs %2", (_rows apply { format ["%1 %2", _x select 1, _x select 0] }) joinString ", ", count diag_activeMissionFSMs];
+    ["SERVER", "SERVER_SCRIPTS", _text] call ALiVE_fnc_diagEvent;
+};
+
+// Once a run: the loaded mods by name, split over several events past 1000 characters
+ALiVE_diag_fnc_mods = {
+    private _names = getLoadedModsInfo apply { _x select 0 };
+    private _chunk = "";
+    {
+        if (count _chunk + count _x + 2 > 990) then {
+            ["SERVER", "SERVER_MODS", _chunk] call ALiVE_fnc_diagEvent;
+            _chunk = "";
+        };
+        _chunk = if (_chunk == "") then { _x } else { _chunk + ", " + _x };
+    } forEach _names;
+    if (_chunk != "") then { ["SERVER", "SERVER_MODS", _chunk] call ALiVE_fnc_diagEvent };
+};
 
 // Once a second: whether it is on, and the lowest frame rate since the last row
 ALiVE_diag_pfh = [{
@@ -57,7 +99,7 @@ ALiVE_diag_pfh = [{
         ALiVE_WR_diagOn isEqualTo true
     };
     ALiVE_diag_active = _on;
-    if (!_on) exitWith { ALiVE_diag_fpsMin = 1000; ALiVE_diag_next = time + 30 };
+    if (!_on) exitWith { ALiVE_diag_fpsMin = 1000; ALiVE_diag_errors = 0; ALiVE_diag_next = time + 30 };
     ALiVE_diag_fpsMin = ALiVE_diag_fpsMin min diag_fpsMin;
     if (time < ALiVE_diag_next) exitWith {};
     ALiVE_diag_next = time + 30;
@@ -88,14 +130,24 @@ ALiVE_diag_pfh = [{
 
     private _jobs = if (isNil "alive_pathfinder") then { -1 } else { count (alive_pathfinder getOrDefault ["pathJobs", []]) };
 
+    // what else costs frame rate: AI with no ALiVE profile (ALiVE marks every unit it spawns or takes over with
+    // the "profileID" variable; CQB and mission-placed AI count here), vehicles, dead bodies and wrecks, agents
+    private _aiOther = { !isPlayer _x && {isNil { _x getVariable "profileID" }} } count allUnits;
+
     ALiVE_diag_seq = ALiVE_diag_seq + 1;
     ALiVE_diag_snap pushBack [
         ALiVE_diag_seq, round (time * 10) / 10, round (diag_fps * 10) / 10, round (ALiVE_diag_fpsMin * 10) / 10,
         diag_activeScripts, _profiles, _active, _groups, _opcoms, _mls, _jobs,
-        ALiVE_diag_spawns, ALiVE_diag_despawns
+        ALiVE_diag_spawns, ALiVE_diag_despawns,
+        _aiOther, count vehicles, count allDead, count agents, ALiVE_diag_errors
     ];
     if (count ALiVE_diag_snap > 120) then { ALiVE_diag_snap deleteAt 0 };
     ALiVE_diag_spawns = 0;
     ALiVE_diag_despawns = 0;
+    ALiVE_diag_errors = 0;
     ALiVE_diag_fpsMin = 1000;
+
+    if (!ALiVE_diag_modsSent) then { ALiVE_diag_modsSent = true; call ALiVE_diag_fnc_mods };
+    ALiVE_diag_snapCount = ALiVE_diag_snapCount + 1;
+    if (ALiVE_diag_snapCount % 10 == 0) then { call ALiVE_diag_fnc_scripts };
 }, 1] call CBA_fnc_addPerFrameHandler;

@@ -13,7 +13,7 @@ At most 6 rows a minute for one code: the rest are counted, and the next row of
 that code carries the count as its 7th element.
 
 Parameters:
-String - category (DIAG_PATH, DIAG_ML, DIAG_SPAWN, DIAG_OPCOM, DIAG_ERROR)
+String - category (DIAG_PATH, DIAG_ML, DIAG_SPAWN, DIAG_OPCOM, DIAG_ERROR, DIAG_SERVER)
 String - code
 String - text, cut to 1000 characters. No player names or player IDs: the War Room's
 Diagnostics can be shown publicly for a server
