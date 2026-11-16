@@ -4731,10 +4731,17 @@ switch (_operation) do {
                 };
                 _save = true;
             };
-            if (isnil "_save") exitwith {["OPCOM - SAVE DATA Please wait at least 5 minutes before saving again!"] call ALiVE_fnc_dump;};
-            if (count (GVAR(OBJECTIVES_DB_SAVE) select 0) == 0) exitwith {["SAVE OPCOM DATA Dataset is empty, not saving...!"] call ALiVE_fnc_dump;};
+            // the 5 minute gate covers the shared objective save only; every commander's own records
+            // (starting forces, HVT, operation state, ship) are written below on every save (#1124)
+            private _saveObjectives = !isNil "_save";
+            if (_saveObjectives && {count (GVAR(OBJECTIVES_DB_SAVE) select 0) == 0}) then {
+                ["SAVE OPCOM DATA Dataset is empty, not saving objectives...!"] call ALiVE_fnc_dump;
+                _saveObjectives = false;
+            };
+            if (isNil "_save") then {
+                ["OPCOM - SAVE DATA objectives already saved in the last 5 minutes, saving %1's own records only", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
+            };
 
-            //If I didnt send you to hell - go and save, the feck!
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
                 ["OPCOM - SAVE DATA - SYS DATA EXISTS"] call ALiVE_fnc_dump;
             };
@@ -4749,56 +4756,57 @@ switch (_operation) do {
                 [GVAR(DATAHANDLER),"storeType",true] call ALIVE_fnc_Data;
                 };
 
-            _exportObjectives = [] call ALIVE_fnc_hashCreate;
-
-            // each commander's type goes with its objectives, so a load can tell the type was changed in Eden since
-            private _typeByID = OPCOM_INSTANCES apply { [[_x,"opcomID",""] call ALiVE_fnc_HashGet, [_x,"controltype",""] call ALiVE_fnc_HashGet] };
-
-            {
-                _objective = _x;
-                _objectiveID = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
-
-                _exportObjective = [_objective, [], []] call ALIVE_fnc_hashCopy;
-
-                if([_exportObjective, "_rev"] call ALIVE_fnc_hashGet == "") then {
-                    [_exportObjective, "_rev"] call ALIVE_fnc_hashRem;
-                };
-
-                {[_exportObjective, _x] call ALIVE_fnc_hashRem} foreach _blacklist;
-
-                private _ownerID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
-                private _owner = _typeByID findIf { (_x select 0) == _ownerID };
-                if (_owner >= 0) then { [_exportObjective, "savedType", (_typeByID select _owner) select 1] call ALIVE_fnc_hashSet };
-
-                [_exportObjectives, _objectiveID, _exportObjective] call ALIVE_fnc_hashSet;
-
-                if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["OPCOM - EXPORT READY OBJECTIVE:"] call ALiVE_fnc_dump;
-                    _exportObjective call ALIVE_fnc_inspectHash;
-                };
-
-
-            } forEach (GVAR(OBJECTIVES_DB_SAVE) select 0);
-
-
-            _message = format["ALiVE OPCOM - Preparing to save %1 objectives..",count(_exportObjectives select 1)];
-            _messages = _result select 1;
-            _messages pushback _message;
-
-
             _async = false; // Wait for response from server
             _missionName = ([""] call ALiVE_fnc_storeKeys) select 0; // group, mission and map
 
-            if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
+            if (_saveObjectives) then {
+                _exportObjectives = [] call ALIVE_fnc_hashCreate;
+
+                // each commander's type goes with its objectives, so a load can tell the type was changed in Eden since
+                private _typeByID = OPCOM_INSTANCES apply { [[_x,"opcomID",""] call ALiVE_fnc_HashGet, [_x,"controltype",""] call ALiVE_fnc_HashGet] };
+
+                {
+                    _objective = _x;
+                    _objectiveID = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
+
+                    _exportObjective = [_objective, [], []] call ALIVE_fnc_hashCopy;
+
+                    if([_exportObjective, "_rev"] call ALIVE_fnc_hashGet == "") then {
+                        [_exportObjective, "_rev"] call ALIVE_fnc_hashRem;
+                    };
+
+                    {[_exportObjective, _x] call ALIVE_fnc_hashRem} foreach _blacklist;
+
+                    private _ownerID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
+                    private _owner = _typeByID findIf { (_x select 0) == _ownerID };
+                    if (_owner >= 0) then { [_exportObjective, "savedType", (_typeByID select _owner) select 1] call ALIVE_fnc_hashSet };
+
+                    [_exportObjectives, _objectiveID, _exportObjective] call ALIVE_fnc_hashSet;
+
+                    if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                        ["OPCOM - EXPORT READY OBJECTIVE:"] call ALiVE_fnc_dump;
+                        _exportObjective call ALIVE_fnc_inspectHash;
+                    };
+
+
+                } forEach (GVAR(OBJECTIVES_DB_SAVE) select 0);
+
+
+                _message = format["ALiVE OPCOM - Preparing to save %1 objectives..",count(_exportObjectives select 1)];
+                _messages = _result select 1;
+                _messages pushback _message;
+
+                if(ALiVE_SYS_DATA_DEBUG_ON) then {
+                    ["OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
+                };
+
+                _saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_opcom", _exportObjectives, _missionName, _async]] call ALIVE_fnc_Data;
+                _result set [0,_saveResult];
+
+                _message = format["ALiVE OPCOM - Save Result: %1",_saveResult];
+                _messages = _result select 1;
+                _messages pushback _message;
             };
-
-            _saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_opcom", _exportObjectives, _missionName, _async]] call ALIVE_fnc_Data;
-            _result set [0,_saveResult];
-
-            _message = format["ALiVE OPCOM - Save Result: %1",_saveResult];
-            _messages = _result select 1;
-            _messages pushback _message;
 
             // Save starting forces (every session to allow users to modify the array and persist it)
             if (!isnil {[_logic,"startForceStrength"] call ALiVE_fnc_HashGet}) then {
