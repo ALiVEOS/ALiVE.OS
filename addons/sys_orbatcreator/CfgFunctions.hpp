@@ -38,6 +38,8 @@ class CfgFunctions {
                 ALIVE_RECOMPILE;
             };
 
+#include "CfgFunctionsStudio.hpp"
+
         };
     };
 };
