@@ -167,7 +167,10 @@ switch (_op) do {
             };
             if (_loaded isNotEqualTo []) then { missionProfileNamespace setVariable [VERIFIED, _verified + _loaded] };
 
-            if (saveMissionProfileNamespace) then {
+            private _w = diag_tickTime;
+            private _ok = saveMissionProfileNamespace;
+            ALiVE_storeFile_writeSplit = format ["own file %1 ms", round ((diag_tickTime - _w) * 1000)];
+            if (_ok) then {
                 {
                     if (!isNil {profileNamespace getVariable _x}) then {
                         profileNamespace setVariable [_x, nil];
@@ -193,7 +196,11 @@ switch (_op) do {
         };
         if (missionNamespace getVariable ["ALiVE_storeFile_dirtyShared", false]) then {
             ALiVE_storeFile_dirtyShared = false;
+            private _w = diag_tickTime;
             saveProfileNamespace;
+            // how long each file took, for the autosave's AUTOSAVE event
+            private _prev = missionNamespace getVariable ["ALiVE_storeFile_writeSplit", ""];
+            ALiVE_storeFile_writeSplit = (if (_prev == "") then { "" } else { _prev + ", " }) + format ["shared profile file %1 ms", round ((diag_tickTime - _w) * 1000)];
         };
     };
 };

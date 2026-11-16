@@ -67,6 +67,7 @@ private _handle = [_interval, _once] spawn {
 	    };
 	    private _prepTime = diag_tickTime - _prepStart;
 	    private _saveStart = diag_tickTime;
+	    private _writeDue = false;
 	    ALiVE_diag_profileSaveSplit = nil;
 	    // the time each part of the save took, for the AUTOSAVE event: a stage runs from its label to the next one
 	    private _stages = [];
@@ -236,22 +237,33 @@ private _handle = [_interval, _once] spawn {
 			    };
 			};
 
-			"write" call _fnc_stage;
 			MOD(PNS_HOLD_FRAME) = -1;
-			if (MOD(PNS_HOLD_DIRTY)) then { ["flush"] call ALiVE_fnc_storeFile };
+			_writeDue = MOD(PNS_HOLD_DIRTY);
 			"" call _fnc_stage;
 
 		} call CBA_fnc_Directcall;
 	    ALiVE_profileExportCache = nil;
-	    // how long the one-frame save held the server, the file write included, for the RPT and the War Room's Diagnostics
+	    // how long the one-frame save held the server, for the RPT and the War Room's Diagnostics
 	    private _heldFor = (round ((diag_tickTime - _saveStart) * 100)) / 100;
+	    // The files are written on a frame of their own: the write was the biggest part of the stall (about 2 s on a
+	    // big mission) and came on top of every module's save. Everything it writes was put in place in the frame above.
+	    private _writeText = "";
+	    if (_writeDue) then {
+	        sleep 0.01;
+	        ALiVE_storeFile_writeSplit = nil;
+	        isNil {
+	            private _w = diag_tickTime;
+	            ["flush"] call ALiVE_fnc_storeFile;
+	            _writeText = format ["; file write %1 ms on its own frame (%2)", round ((diag_tickTime - _w) * 1000), missionNamespace getVariable ["ALiVE_storeFile_writeSplit", ""]];
+	        };
+	    };
 	    if (isServer && {!isNil "ALiVE_fnc_diagEvent"}) then {
-	        ["SYS_DATA", "AUTOSAVE", format ["Saved in %1 s, ms: %2%3%4", _heldFor, _stages joinString ", ", missionNamespace getVariable ["ALiVE_diag_profileSaveSplit", ""], if (_prepared isEqualType 0 && {_prepared > 0}) then { format ["; %1 profiles prepared over %2 s before it", _prepared, (round (_prepTime * 10)) / 10] } else {""}], [0,0]] call ALiVE_fnc_diagEvent;
+	        ["SYS_DATA", "AUTOSAVE", format ["Saved in %1 s, ms: %2%3%4%5", _heldFor, _stages joinString ", ", missionNamespace getVariable ["ALiVE_diag_profileSaveSplit", ""], if (_prepared isEqualType 0 && {_prepared > 0}) then { format ["; %1 profiles prepared over %2 s before it", _prepared, (round (_prepTime * 10)) / 10] } else {""}, _writeText], [0,0]] call ALiVE_fnc_diagEvent;
 	    };
 
 	    sleep 0.2;
         ["SAVING FINISHED!"] call ALiVE_fnc_dumpMPH;
-        ["SYS DATA PNS Autosave - the save held the server for %1 s, the file write included", _heldFor] call ALiVE_fnc_dump;
+        ["SYS DATA PNS Autosave - the save held the server for %1 s%2", _heldFor, _writeText] call ALiVE_fnc_dump;
 	    sleep 2;
 	    TitleText ["","PLAIN"];
 
