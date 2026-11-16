@@ -3614,7 +3614,7 @@ switch(_operation) do {
         // update list
 
         private _factionList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
-        [_logic,"loadFactionToList", _factionList] call MAINCLASS:
+        [_logic,"loadFactionToList", _factionList] call MAINCLASS;
         lbSort [_factionList, "ASC"];
         _factionList lbSetCurSel 0;
 
@@ -3748,7 +3748,7 @@ switch(_operation) do {
         // update list
 
         private _listFactions = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
-        [_logic,"loadFactionToList", _listFactions] call MAINCLASS:
+        [_logic,"loadFactionToList", _listFactions] call MAINCLASS;
 
         lbSort [_listFactions, "ASC"];
         [_listFactions,_className] call ALiVE_fnc_listSelectData;
@@ -3841,7 +3841,7 @@ switch(_operation) do {
         // update lists
 
         private _factionList = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
-        [_logic,"loadFactionToList", _factionList] call MAINCLASS:
+        [_logic,"loadFactionToList", _factionList] call MAINCLASS;
         lbSort [_factionList, "ASC"];
         _factionList lbSetCurSel 0;
         [_factionList,_newClassname] call ALiVE_fnc_listSelectData;
@@ -3996,7 +3996,7 @@ switch(_operation) do {
         // update list
 
         private _listFactions = OC_getControl( OC_DISPLAY_FACTIONEDITOR , OC_FACTIONEDITOR_FACTIONS_LIST );
-        [_logic,"loadFactionToList", _listFactions] call MAINCLASS:
+        [_logic,"loadFactionToList", _listFactions] call MAINCLASS;
 
         lbSort [_listFactions, "ASC"];
         [_listFactions,_className] call ALiVE_fnc_listSelectData;
@@ -6588,7 +6588,8 @@ switch(_operation) do {
                 private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
                 private _factionSideText = [_factionSide] call ALiVE_fnc_sideNumberToText;
 
-                if (_factionSideText == "GUER") then {_factionSideText == "INDEP"};
+                // "GUER" stays as it is: it is what ALiVE_fnc_sideNumberToText gives for side 2, and every reader of
+                // the mapping accepts it (configGetFactionGroups and configGetRandomGroup turn it into Indep).
 
                 private _groupCategoriesRootName = [_factionData,"groupCategoriesRootName"] call ALiVE_fnc_hashGet;
 
@@ -7091,7 +7092,7 @@ switch(_operation) do {
         };
         _initEventHandler = _initEventHandler + "if (local (_this select 0)) then {";
         _initEventHandler = _initEventHandler + "_onSpawn = {_this = _this select 0;";
-        _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); waituntil {sleep 0.2; backpack _this == _backpack};";
+        _initEventHandler = _initEventHandler + "sleep 0.2; _backpack = gettext(configfile >> 'cfgvehicles' >> (typeof _this) >> 'backpack'); _waitEnd = diag_tickTime + 10; waituntil {sleep 0.2; backpack _this == _backpack || {diag_tickTime > _waitEnd}};";
         _initEventHandler = _initEventHandler + "if !(_this getVariable ['ALiVE_OverrideLoadout',false]) then {_loadout = getArray(configFile >> 'CfgVehicles' >> (typeOf _this) >> 'ALiVE_orbatCreator_loadout'); _this setunitloadout _loadout;";
 
         // insignia can only be added via SQF (after loadout has been applied)
@@ -7103,7 +7104,10 @@ switch(_operation) do {
 
         _initEventHandler = _initEventHandler + "};};"; // _onSpawn close
         _initEventHandler = _initEventHandler + "_this spawn _onSpawn;";
-        _initEventHandler = _initEventHandler + "(_this select 0) addMPEventHandler ['MPRespawn', _onSpawn];";
+        // MPRespawn runs unscheduled, so the sleeping loadout code is spawned from it on the machine the new body is local to,
+        // and handed on to the new body so the next respawn finds it too
+        _initEventHandler = _initEventHandler + "(_this select 0) setVariable ['ALiVE_orbatCreator_onSpawn', _onSpawn];";
+        _initEventHandler = _initEventHandler + "(_this select 0) addMPEventHandler ['MPRespawn', {if (local (_this select 0)) then {_c = (_this select 1) getVariable ['ALiVE_orbatCreator_onSpawn', {}]; (_this select 0) setVariable ['ALiVE_orbatCreator_onSpawn', _c]; _this spawn _c}}];";
         _initEventHandler = _initEventHandler + "};"; // if (local _unit) close
 
         [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
@@ -7179,8 +7183,6 @@ switch(_operation) do {
         };
         _result = _result + _newLine + _indent + _indent + _indent + "};" + _newLine;
         _result = _result + _newLine + _indent + _indent + "};" + _newLine;
-
-        [_logic,"deleteUnit", _tmpUnit] call MAINCLASS;
     };
 
     case "exportCustomUnitVehicle": {
