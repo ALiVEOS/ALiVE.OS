@@ -190,6 +190,7 @@ if (_debug) then {
         };
     } else {
         private _blockers = [_p, _s, "Infantry", _f] call ALiVE_fnc_randomGroupByType;
+        ["guard", [_blockers]] call ALiVE_fnc_modConflicts;
         sleep 1;
         [_blockers, _p, 100, true, false, 1, nil, _guardPatrolPercentage] call ALIVE_fnc_groupGarrison;
         if (_d) then {

@@ -77,6 +77,8 @@ _grp setVariable ["ALIVE_profileIgnore", true, true];
 { _grp createUnit [_x, _spot, [], 5, "FORM"] } forEach _classes;
 private _units = units _grp;
 { _x setVariable ["ALIVE_profileIgnore", true, true] } forEach _units;
+// kept out of other AI mods under Guard, like the rest of ALiVE's groups
+["guard", [_grp]] call ALiVE_fnc_modConflicts;
 // in fast to the blast, then search and destroy round it; told nothing about the players, so it
 // closes in rather than starting a long-range firefight from where it appears
 _grp setCombatMode "RED";

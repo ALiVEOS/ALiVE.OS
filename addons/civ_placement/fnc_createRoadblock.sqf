@@ -475,6 +475,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
             // Spawn group and get them to defend
             _blockers = [_roadpos, _side, "Infantry", _fac] call ALiVE_fnc_randomGroupByType;
+            ["guard", [_blockers]] call ALiVE_fnc_modConflicts;
             if !(isNull _vehicle) then {
                 _blockers addVehicle _vehicle;
             };
