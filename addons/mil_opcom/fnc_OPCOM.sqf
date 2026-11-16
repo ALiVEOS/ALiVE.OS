@@ -5119,6 +5119,10 @@ switch (_operation) do {
                     [_logic,"sortObjectives",_sortType] call MAINCLASS;
                     [_logic,"asym_occupation",_occupation] call ALiVE_fnc_HashSet;
                     ["AI Commander %1 was saved as %2 and starts as %3: its %4 saved objectives are put in the new order", [_logic,"name",""] call ALiVE_fnc_HashGet, _savedTypes joinString "/", _loadType, count _objectives] call ALiVE_fnc_dump;
+                    // Saved while Dug In and started as something else: the vehicles Dug In parked are let go, as a
+                    // switch out of Dug In during the mission does. They came back pinned with the profiles and
+                    // nothing else releases them, so they stood where they were parked for the rest of the campaign.
+                    if ("dugin" in _savedTypes && {_loadType != "dugin"}) then { [_logic, "dugInUnpin"] call MAINCLASS };
                 };
                 _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
 
