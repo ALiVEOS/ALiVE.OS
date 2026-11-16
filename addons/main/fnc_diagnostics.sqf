@@ -54,7 +54,7 @@ ALiVE_diag_modsSent = false;
 ALiVE_diag_errors = 0;
 addMissionEventHandler ["ScriptError", { ALiVE_diag_errors = ALiVE_diag_errors + 1 }];
 
-// Every 5 min (each 10th row): the scripts running, by where their file comes from, and the mission FSMs
+// Every minute (each 2nd row): the scripts running, by where their file comes from, and the mission FSMs
 ALiVE_diag_fnc_scripts = {
     private _groups = createHashMap;
     {
@@ -132,14 +132,16 @@ ALiVE_diag_pfh = [{
 
     // what else costs frame rate: AI with no ALiVE profile (ALiVE marks every unit it spawns or takes over with
     // the "profileID" variable; CQB and mission-placed AI count here), vehicles, dead bodies and wrecks, agents
-    private _aiOther = { !isPlayer _x && {isNil { _x getVariable "profileID" }} } count allUnits;
+    private _ai = allUnits select { !isPlayer _x };
+    private _aiOther = { isNil { _x getVariable "profileID" } } count _ai;
 
     ALiVE_diag_seq = ALiVE_diag_seq + 1;
     ALiVE_diag_snap pushBack [
         ALiVE_diag_seq, round (time * 10) / 10, round (diag_fps * 10) / 10, round (ALiVE_diag_fpsMin * 10) / 10,
         diag_activeScripts, _profiles, _active, _groups, _opcoms, _mls, _jobs,
         ALiVE_diag_spawns, ALiVE_diag_despawns,
-        _aiOther, count vehicles, count allDead, count agents, ALiVE_diag_errors
+        _aiOther, count vehicles, count allDead, count agents, ALiVE_diag_errors,
+        count _ai - _aiOther
     ];
     if (count ALiVE_diag_snap > 120) then { ALiVE_diag_snap deleteAt 0 };
     ALiVE_diag_spawns = 0;
@@ -149,5 +151,5 @@ ALiVE_diag_pfh = [{
 
     if (!ALiVE_diag_modsSent) then { ALiVE_diag_modsSent = true; call ALiVE_diag_fnc_mods };
     ALiVE_diag_snapCount = ALiVE_diag_snapCount + 1;
-    if (ALiVE_diag_snapCount % 10 == 0) then { call ALiVE_diag_fnc_scripts };
+    if (ALiVE_diag_snapCount % 2 == 0) then { call ALiVE_diag_fnc_scripts };
 }, 1] call CBA_fnc_addPerFrameHandler;

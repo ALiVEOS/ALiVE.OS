@@ -20,9 +20,10 @@ ALiVE_diag_snap, a ring of 120, one row every 30 s:
    spawnsSinceLast, despawnsSinceLast (profiles, since the previous row),
    aiOther (AI units with no ALiVE profile: mission-placed, CQB, other mods; units ALiVE spawns or takes
    over carry the "profileID" variable), vehicles (count vehicles), dead (count allDead), agents (count agents),
-   scriptErrorsSinceLast (every script error on the server, any mod or the mission, from the engine's ScriptError event)]
+   scriptErrorsSinceLast (every script error on the server, any mod or the mission, from the engine's ScriptError event),
+   aliveUnits (AI units ALiVE spawned or took over, the ones carrying "profileID")]
   Indexes: 0 seq, 1 time, 2 fps, 3 fpsMin, 4 scripts, 5 profiles, 6 activeProfiles, 7 groups, 8 commanders,
-  9 logistics, 10 pathfinderQueue, 11 spawns, 12 despawns, 13 aiOther, 14 vehicles, 15 dead, 16 agents, 17 scriptErrors.
+  9 logistics, 10 pathfinderQueue, 11 spawns, 12 despawns, 13 aiOther, 14 vehicles, 15 dead, 16 agents, 17 scriptErrors, 18 aliveUnits.
   Rows written before 16 Nov 2026 end at 12.
 
 ALiVE_diag_events, a ring of 200:
@@ -53,7 +54,7 @@ No player names or UIDs go in either ring.
 #define DIAG_SPAWN_COMPOSITION     "SPAWN_COMPOSITION"
 // no spawn position found for a vehicle; the caller fell back
 #define DIAG_SPAWN_VEHICLE         "SPAWN_VEHICLE"
-// every 5 min: the scripts running, counted by where their file comes from (ALiVE, CBA, ACE, mission, other
+// every minute (each 2nd row): the scripts running, counted by where their file comes from (ALiVE, CBA, ACE, mission, other
 // mods by their first two path segments, "no file"), then "; FSMs <n>" for the mission FSMs
 #define DIAG_SERVER_SCRIPTS        "SERVER_SCRIPTS"
 // once a run: the loaded mods by name, several rows when the list is longer than 1000 characters
