@@ -70,6 +70,8 @@ if (!_contested && {_near}) then { _left = _left - _step };
 
 if (_now >= ([_params, "holdNext", 0] call ALIVE_fnc_hashGet) && {_left > 0}) then {
     [_params, "holdNext", _now + 30] call ALIVE_fnc_hashSet;
+    // the hold's state in the RPT every 30 s, so a hold that never ends can be read from a report (#1121)
+    ["C2ISTAR - hold at %1 for %2: %3 s left, players near %4, side online %5, away %6 s, enemies near %7", mapGridPosition _pos, _side, round _left, _near, _sideOnline, round _away, _contested] call ALiVE_fnc_dump;
     [if (_contested) then { "Enemies close by: clear them to carry on." } else { format ["Hold position: %1:%2 left.", floor (_left / 60), [floor (_left mod 60), 2] call CBA_fnc_formatNumber] }, true] call _say;
 };
 
