@@ -3919,6 +3919,35 @@ switch (_operation) do {
                     _result = _FOB select 0;
                 };
             };
+
+            // A commander holding nothing asked for no reinforcements at all, so once it lost or never took an
+            // objective it was stuck with what it had (RSS7, 16 Nov: 4 groups against 286, its force pool untouched
+            // all evening). It falls back to its Military Logistics module, else its own module, as long as that
+            // spot is on land and no enemy stands within 800 m of it.
+            if (isNil "_result") then {
+                private _factions = [_logic, "factions", []] call ALiVE_fnc_HashGet;
+                private _spots = [];
+                if (!isNil "ALIVE_MLGlobalRegistry") then {
+                    private _modules = [ALIVE_MLGlobalRegistry, "modules", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet;
+                    {
+                        private _mlFactions = [];
+                        { _mlFactions append (_x param [1, []]) } forEach (_x getVariable ["factions", []]);
+                        if (!isNull _x && {(_mlFactions arrayIntersect _factions) isNotEqualTo []}) then { _spots pushBack getPosATL _x };
+                    } forEach (_modules select 2);
+                };
+                private _module = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
+                if (!isNull _module) then { _spots pushBack getPosATL _module };
+                private _sidesEnemy = [_logic, "sidesenemy", []] call ALiVE_fnc_HashGet;
+                {
+                    private _spot = _x;
+                    if (!surfaceIsWater _spot && {(_sidesEnemy findIf { ([_spot, 800, [_x, "entity"]] call ALIVE_fnc_getNearProfiles) isNotEqualTo [] }) < 0}) exitWith {
+                        _result = [] call ALiVE_fnc_hashCreate;
+                        [_result, "center", _spot] call ALiVE_fnc_hashSet;
+                        [_result, "objectiveID", "fallback"] call ALiVE_fnc_hashSet;
+                        ["OPCOM - %1 holds no objective; reinforcements come in at %2", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet, _spot apply { round _x }] call ALiVE_fnc_dump;
+                    };
+                } forEach _spots;
+            };
     };
 
     // A player's search-and-destroy or ambush order (NeisAEL on Discord, 17 Oct): the given groups are taken off the
