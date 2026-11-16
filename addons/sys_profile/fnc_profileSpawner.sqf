@@ -11,7 +11,10 @@ coordinator.
 
 Notes:
     - Processes at most one pending despawn per frame
-    - Spawns at most one profile per configured smooth-spawn interval
+    - Paces spawns server-wide: after each profile, waits one smooth-spawn
+      interval per unit and vehicle it brings out
+    - Holds a profile it spawned for ALiVE_despawnHold seconds (90) before it
+      may be despawned
     - Validates queue entries immediately before executing them
     - A profile that cannot get an Active Limiter slot stays queued and virtual;
       freed slots go to the queued profile nearest a spawn source
@@ -83,6 +86,18 @@ private _pendingSpawns = _coordinator getOrDefault ["pendingSpawns",createHashMa
 //          Despawn Profiles
 ///////////////////////////////////////
 
+// When each profile this spawner dispatched went out, for the despawn hold below. A group killed while
+// active never comes back through the despawn queue, so expired entries are cleared every half minute.
+private _spawnedAtByID = _coordinator getOrDefault ["spawnedAt",createHashMap,true];
+private _despawnHold = missionNamespace getVariable ["ALiVE_despawnHold", 90];
+
+if (time > (_coordinator getOrDefault ["spawnedAtPrunedAt",0]) + 30) then {
+    _coordinator set ["spawnedAtPrunedAt",time];
+    {
+        if (time - (_spawnedAtByID get _x) >= _despawnHold) then { _spawnedAtByID deleteAt _x };
+    } forEach (keys _spawnedAtByID);
+};
+
 private _despawnQueue = _coordinator get "despawnQueue";
 
 if !(_despawnQueue isEqualTo []) then {
@@ -110,7 +125,19 @@ if !(_despawnQueue isEqualTo []) then {
     if (_allActivatorsAdvanced) then {
         _despawnQueue deleteAt 0;
 
-        if (isNil {_claimCounts get _profileID}) then {
+        // Despawn hold: a group put away seconds after it spawned was paid for twice, and a player moving
+        // along the edge of the spawn ring (a helicopter circling a town, the worst case on KH 13 Nov) had
+        // the same groups spawning and despawning together. Anything spawned less than the hold time ago
+        // stays out; the next round of claims offers it again once the hold has run.
+        private _spawnedAt = _spawnedAtByID get _profileID;
+        // Not while the Active Limiter is turning groups away: a held group nobody is near would keep a
+        // slot from one next to a player.
+        private _held = !isNil "_spawnedAt" &&
+            {time - _spawnedAt < _despawnHold} &&
+            {(_coordinator getOrDefault ["limiterFullSince",0]) == 0};
+
+        if (!_held && {isNil {_claimCounts get _profileID}}) then {
+            _spawnedAtByID deleteAt _profileID;
             private _profile = _profilesById get _profileID;
 
             if (!isNil "_profile") then {
@@ -211,9 +238,14 @@ private _lastProfileSpawnedTime = _coordinator get "lastSpawnTime";
 // frame every frame. The floor is on the SELECTION only, so a deliberate 0 keeps its
 // instant per-man spawn and just stops rebuilding the queue dozens of times a second.
 // At 0.05 s that is one frame at 20 fps, so nobody watching can tell.
+//
+// The gap after a dispatch is one Smooth Spawn interval per man in the group (and per vehicle it brings),
+// so the server makes one unit per interval whatever is queued. It used to be one interval per GROUP while
+// each group spawned its own men an interval apart, so ten queued groups made ten men every interval: the
+// 25-35 AI bursts behind the KH frame drops (13 Nov). A short floor keeps a deliberate 0 working as above.
 if (
     _spawnQueue isNotEqualTo [] &&
-    {time - _lastProfileSpawnedTime > (ALiVE_smoothSpawn max 0.05)}
+    {time - _lastProfileSpawnedTime > ((ALiVE_smoothSpawn max 0.05) max (_coordinator getOrDefault ["spawnGap",0]))}
 ) then {
     // The limit counts active groups only. Vehicle profiles never enter
     // entitiesActive, so they neither count toward it nor free a slot.
@@ -269,7 +301,10 @@ if (
         private _profileToSpawn = nil;
         private _spawnIndex = 0;
 
-        if (_contended) then {
+        // Nearest first too whenever more than a few are waiting. With spawns paced one unit at a time,
+        // 25 squads claimed together take about a minute to come in, and arrival order (the spatial grid's
+        // order, not distance) could leave the squad 100 m away until last.
+        if (_contended || {count _spawnQueue > 3}) then {
             ///////////////////////////////////////
             //   Pick the Nearest Queued Profile
             ///////////////////////////////////////
@@ -419,9 +454,16 @@ if (
             _spawnQueueMembership deleteAt _profileID;
 
             private _profileData = _profileToSpawn select 2;
+            private _spawnCost = 1;
 
             if ((_profileData select 5) == "entity") then {
                 [_profileToSpawn,"spawn"] spawn ALiVE_fnc_profileEntity;
+
+                // The men, plus each vehicle the group brings out with it.
+                _spawnCost =
+                    (count (_profileData select 11)) +
+                    (count (_profileData select 8)) +
+                    (count (_profileData select 9));
 
                 // One interval per man, plus a margin for the rest of the
                 // spawn, so a big group on a slow setting is still counted
@@ -461,6 +503,10 @@ if (
             };
 
             _coordinator set ["lastSpawnTime",time];
+            // Capped, as Smooth Spawn is free text: a 1 s setting and a mechanised group would otherwise
+            // stall every other spawn for 15 s.
+            _coordinator set ["spawnGap",((_spawnCost max 1) * ALiVE_smoothSpawn / ((missionNamespace getVariable ["ALiVE_spawnStreams",1]) max 1)) min 5];
+            _spawnedAtByID set [_profileID,time];
         };
     };
     // Limiter full: everything queued stays queued and virtual. lastSpawnTime

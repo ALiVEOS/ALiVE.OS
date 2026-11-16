@@ -92,8 +92,25 @@ switch (_operation) do {
             private _radius = ALIVE_spawnRadius;
             private _spawnSourceVehicle = vehicle _spawnSource;
 
+            // Fast Helicopter Spawn Radius: a helicopter crossing the map at speed woke every area it passed,
+            // 25-35 AI in a few seconds each time, and the server dropped from 45 to 25 FPS as players flew over
+            // town after take-off (KH, Red Sector Seven, 13 Nov). While one is airborne and above 150 km/h it only
+            // wakes what lies within this shorter radius, plus anti-air. What is already spawned is still held out to
+            // the full helicopter radius, so speeding up never puts anything away. 0 or blank (the default) is off.
+            private _claimRadius = -1;
+
             if (_spawnSourceVehicle isKindOf "Helicopter") then {
                 _radius = ALIVE_spawnRadiusHeli;
+
+                private _fastRadius = missionNamespace getVariable ["ALIVE_spawnRadiusHeliFast", 0];
+                if (
+                    _fastRadius > 0 &&
+                    {_fastRadius < _radius} &&
+                    {speed _spawnSourceVehicle > 150} &&
+                    {((getPos _spawnSourceVehicle) select 2) > 10}
+                ) then {
+                    _claimRadius = _fastRadius;
+                };
             } else {
                 if (_spawnSourceVehicle isKindOf "Plane") then {
                     _radius = ALIVE_spawnRadiusJet;
@@ -109,7 +126,8 @@ switch (_operation) do {
 
             // A source that brings its own radius, a kill box (#541) for one, uses it for everything.
             private _sourceRadius = _spawnSource getVariable ["ALiVE_spawnSourceRadius", 0];
-            if (_sourceRadius > 0) then { _radius = _sourceRadius };
+            if (_sourceRadius > 0) then { _radius = _sourceRadius; _claimRadius = -1 };
+            if (unitIsUAV _spawnSource) then { _claimRadius = -1 };
 
             // Vehicle Spawn Distance (#422): around someone on the ground, vehicles and the groups in
             // them spawn this far out, so they're seen driving in rather than appearing. Blank or 0,
@@ -126,6 +144,18 @@ switch (_operation) do {
                 || {!(([_profile, "vehiclesInCargoOf", []] call ALiVE_fnc_hashGet) isEqualTo [])}
             };
 
+            // Anti-air keeps the full helicopter radius under the fast one: for a player's aircraft nothing else
+            // wakes it (the Air Defence activator only follows AI Commander aircraft). The test is cached per class.
+            private _fnc_isAntiAir = {
+                params ["_data"];
+                if ((_data select 5) == "vehicle") exitWith { [_data select 11] call ALiVE_fnc_isAntiAirCapable };
+                private _profilesById = [MOD(profileHandler),"profilesById"] call ALiVE_fnc_hashGet;
+                ((_data select 8) findIf {
+                    private _vehicleProfile = _profilesById get _x;
+                    !isNil "_vehicleProfile" && {[(_vehicleProfile select 2) select 11] call ALiVE_fnc_isAntiAirCapable}
+                }) > -1
+            };
+
             private _profilesInDeactivationRange = [_center,(_radius max _vehicleRadius) * 1.2,["all","all"],true] call ALiVE_fnc_getNearProfiles;
 
             {
@@ -134,7 +164,11 @@ switch (_operation) do {
 
                 if ((_profileData select 5) != "entity" || {!(_profileData select 30)}) then {
                     if !(_profileData select 1) then {
-                        if ((_profileData select 2) distance _center <= _ownRadius) then {
+                        private _claimDistance = (_profileData select 2) distance _center;
+                        if (
+                            _claimDistance <= _ownRadius &&
+                            {_claimRadius < 0 || {_claimDistance <= _claimRadius} || {[_profileData] call _fnc_isAntiAir}}
+                        ) then {
                             private _isShip = false;
                             private _isWater = false;
 

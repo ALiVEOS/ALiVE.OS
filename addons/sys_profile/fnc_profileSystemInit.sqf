@@ -78,6 +78,8 @@ if(isServer) then {
     private _spawnTypeUAVRadius = parseNumber (_logic getVariable ["spawnRadiusUAV", "-1"]);
     // Vehicle Spawn Distance (#422): blank or 0 keeps vehicles at the normal spawn distance.
     ALIVE_spawnRadiusVehicle = parseNumber (_logic getVariable ["spawnRadiusVehicle", "0"]);
+    // Fast Helicopter Spawn Radius: a helicopter airborne above 150 km/h only spawns AI this close. 0 or blank is off.
+    ALIVE_spawnRadiusHeliFast = parseNumber (_logic getVariable ["spawnTypeHeliFastRadius", "0"]);
     private _proximitySpawning = true;
     private _airCombatSpawning = false;
     private _airCombatPlaneVehicleRadius = 7000;

@@ -197,6 +197,12 @@
     <Chinesesimp>玩家在直升机上生成人工智能的半径。设置为0可在直升机中禁用生成</Chinesesimp>
     <Spanish>Radio alrededor del jugador en helicóptero en el que aparece la IA. Ponlo a 0 para desactivar la aparición mientras se vuela en helicóptero</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_FAST_RADIUS">
+    <English>Fast Helicopter Spawn Radius (m):</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_FAST_RADIUS_COMMENT">
+    <English>While a player's helicopter is in the air and flying faster than 150 km/h, Virtual AI System groups only spawn this close to it, so a fast flight doesn't wake every area it passes and stall the server. Anti-air still spawns out to the helicopter radius, and AI already spawned are kept as long as they would be at normal speed. Civilians and roadblocks keep their own distances. Try 1000 with a helicopter radius of 1500. Leave blank or set to 0 to always use the helicopter radius.</English>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_VEHICLE_RADIUS">
     <English>Vehicle Spawn Radius (m):</English>
 </Key>
