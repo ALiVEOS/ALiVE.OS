@@ -69,7 +69,7 @@ Jman
 // do nothing at all, so they are refused and reported instead. releaseHold is not
 // here on purpose: it sets the tank wherever the hull lives, so a player who took
 // the aircraft is never left with it empty.
-#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","revealAir","releaseTargets","catapult","tailhook","deckRecover","landOnRunway","holdOnStand","sleep"]
+#define LOCAL_ONLY ["engineOn","engineOff","airborneStart","forceLaunch","virtualLaunch","taxiOut","placeOnSlot","forceLanded","spawnAtHome","seatCrew","recrewInPlace","standDownCrew","issueOrders","clearOrders","land","taxiTo","revealTargets","revealAir","revealGround","releaseTargets","catapult","tailhook","deckRecover","landOnRunway","holdOnStand","sleep"]
 
 // Refused on a hull this module has put out of sight on its stand, whoever
 // asks: a crew made in it or a launch from it would happen where nobody can see
@@ -194,7 +194,7 @@ switch(_operation) do {
     case "vocabulary": {
         _result = ["spawnAtHome","airborneStart","mintCrew","mintDroneCrew","seatCrew","recrewInPlace",
                    "standDownCrew","takeOwnership","engineOn","engineOff","issueOrders","clearOrders",
-                   "revealTargets","revealAir","releaseTargets","landAtPad","releaseApproach",
+                   "revealTargets","revealAir","revealGround","releaseTargets","landAtPad","releaseApproach",
                    "taxiTo","taxiOut","land","forceLaunch","forceLanded","placeOnSlot","shield",
                    "broadcast","broadcastStart","broadcastOnStation","broadcastReturn",
                    "broadcastLost","retryLanding","emergencyLanding","turnaround",
@@ -931,6 +931,28 @@ switch(_operation) do {
                 if (_new isEqualTo []) exitWith { _matched = true; _detail = "nothing new" };
                 { _grp reveal [_x, 4] } forEach _new;
                 _grp setVariable ["ALiVE_mil_ato_airPicture", _held + _new, false];
+                _detail = str (count _new);
+            };
+
+            // Close air support on station: the enemy near its target that it hasn't been told about yet is
+            // revealed, and everything it holds is told again every 30 s so its knowledge doesn't fade. Only a
+            // planned target turning up new is pointed at; otherwise the crew chooses, so a death or a man
+            // walking into the circle doesn't swing the aircraft off its run. Held in the same list as
+            // revealTargets, so releaseTargets takes it all back on the way home.
+            case "revealGround": {
+                private _targets = (_extra param [0, [], [[]]]) select { !isNull _x && {alive _x} };
+                private _planned = _extra param [1, [], [[]]];
+                private _grp = group (driver _obj);
+                if (isNull _grp) exitWith { _status = "refused"; _detail = "no group" };
+                private _held = (_grp getVariable ["ALiVE_mil_ato_revealed", []]) select { !isNull _x && {alive _x} };
+                private _new = _targets - _held;
+                private _refresh = time >= (_grp getVariable ["ALiVE_mil_ato_revealAgainAt", 0]);
+                if (_new isEqualTo [] && {!_refresh}) exitWith { _matched = true; _detail = "nothing new" };
+                { _grp reveal [_x, 4] } forEach ([_new, _held + _new] select _refresh);
+                if (_refresh) then { _grp setVariable ["ALiVE_mil_ato_revealAgainAt", time + 30, false] };
+                private _aim = _new findIf { _x in _planned };
+                if (_aim >= 0) then { (units _grp) doTarget (_new select _aim) };
+                _grp setVariable ["ALiVE_mil_ato_revealed", _held + _new, false];
                 _detail = str (count _new);
             };
 

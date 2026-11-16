@@ -3641,6 +3641,29 @@ switch(_operation) do {
                             };
                         };
                     };
+                    // Close air support over its target is shown the enemy on the ground within 400 m of it, every
+                    // pass. A player's request names no targets, and one from a commander names a group that may
+                    // not have been on the map when the aircraft arrived, so it was told about nothing and, without
+                    // targeting sensors (WW2 aircraft), flew its circles without a shot (#1123). Taken back on the
+                    // way home, as before.
+                    if (_to isEqualTo "ON_STATION" && {local _obj}) then {
+                        private _casTuple = [_row2] call _fnc_tupleOf;
+                        if (count _casTuple > 5 && {(_casTuple select 0) isEqualTo "CAS"} && {(_casTuple select 1) isEqualType []} && {count (_casTuple select 1) >= 2}) then {
+                            private _ourSide = [_airborneSide] call ALIVE_fnc_sideTextToObject;
+                            private _planned = if ((_casTuple select 5) isEqualType []) then { [_casTuple select 5] call _fnc_objectsOf } else { [] };
+                            private _ground = ((_casTuple select 1) nearEntities [["Man","LandVehicle","StaticWeapon"], 400]) select {
+                                // side of the object, not its group: an empty vehicle reads as civilian and is left alone
+                                alive _x && {side _x != civilian} && {(_ourSide getFriend side _x) < 0.6}
+                            };
+                            private _shown = (_planned + _ground) arrayIntersect (_planned + _ground);
+                            if (_shown isNotEqualTo []) then {
+                                private _casEffect = [_logic, "effect"] call _fnc_piece;
+                                if !(_casEffect isEqualTo []) then {
+                                    [_casEffect, "apply", ["revealGround", _obj, _home, [_shown, _planned]]] call ALIVE_fnc_ATOEffect;
+                                };
+                            };
+                        };
+                    };
                 };
             };
         } forEach _stepped;
