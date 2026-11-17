@@ -121,6 +121,13 @@ class ALiVE_FS_RscButton : RscButtonMenu {
     colorBackground[] = COLOR_GREY_HARD;
     colorBackgroundFocused[] = COLOR_GREY_LIGHT(1);
     colorBackground2[] = COLOR_GREY_LIGHT(1);
+    // the stock RscButtonMenu puts its text on the left; studio buttons centre it
+    class Attributes {
+        font = "PuristaLight";
+        color = "#E5E5E5";
+        align = "center";
+        shadow = "false";
+    };
 };
 
 class ALiVE_FS_RscCheckBox : RscCheckBox {

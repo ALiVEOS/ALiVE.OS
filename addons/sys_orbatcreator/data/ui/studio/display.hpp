@@ -130,8 +130,9 @@ class ALiVE_FS_Studio {
         // class and name of what is on the stage
         class Caption : ALiVE_FS_RscText {
             idc = FS_IDC_CAPTION;
-            style = 1;
-            x = (safezoneX + safezoneW - FS_W(15.5));
+            // top left of the view, beside the panel: the top right is the weapon HUD's
+            style = 0;
+            x = FS_X(17.5);
             y = FS_Y(0.2);
             w = FS_W(15);
             h = FS_H(0.9);
