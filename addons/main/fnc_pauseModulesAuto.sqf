@@ -46,7 +46,8 @@ MOD(PAUSEMODULES_PAUSE) = {
         "ALIVE_MIL_OPCOM",
         "ALiVE_MIL_CQB",
         "ALiVE_SUP_FOB",
-        "ALIVE_AMB_CIV_POPULATION"
+        "ALIVE_AMB_CIV_POPULATION",
+        "ALiVE_MIL_ATO"
     ] call ALiVE_fnc_pauseModule;
 };
 
@@ -64,7 +65,8 @@ MOD(PAUSEMODULES_RESUME) = {
         "ALIVE_MIL_OPCOM",
         "ALiVE_MIL_CQB",
         "ALiVE_SUP_FOB",
-        "ALIVE_AMB_CIV_POPULATION"
+        "ALIVE_AMB_CIV_POPULATION",
+        "ALiVE_MIL_ATO"
     ] call ALiVE_fnc_unPauseModule;
 
     // task clock stays stopped until a player is actually in the world (cap 900 s)
@@ -90,13 +92,37 @@ MOD(PAUSEMODULES_RESUME) = {
     };
 };
 
+// Connected players, headless clients left out: an HC sits in a playable slot and reads as a player, so with one
+// connected an empty server never paused, and the HC joining started the modules again (Jman, 17 Nov, RSS7).
+// Counted from the connected users, so a player still in the lobby counts too.
+MOD(PAUSEMODULES_PLAYERS) = {
+    // a dedicated server is never a player (owner 2); on a hosted game owner 2 is the host, who is
+    { private _i = getUserInfo _x; count _i > 7 && {!(_i select 7)} && {!(isDedicated && {(_i select 1) == 2})} } count allUsers
+};
+
 MOD(PAUSEMODULES_EH_DISCONNECTED) = addMissionEventHandler ["PlayerDisconnected", {
     [] spawn {
         sleep 30;
-        if (({isPlayer _x} count playableUnits) == 0) then { call MOD(PAUSEMODULES_PAUSE) };
+        if ((call MOD(PAUSEMODULES_PLAYERS)) == 0) then { call MOD(PAUSEMODULES_PAUSE) };
     };
 }];
 
 MOD(PAUSEMODULES_EH_CONNECTED) = addMissionEventHandler ["PlayerConnected", {
+    params ["", ["_uid", ""], "", "", "", ["_idstr", ""]];
+    private _info = getUserInfo _idstr;
+    private _isHC = (count _info > 7 && {_info select 7}) || {(_uid select [0, 2]) isEqualTo "HC"};
+    if (_isHC) exitWith {};
     [true] call MOD(PAUSEMODULES_RESUME);
 }];
+
+// A server that starts with nobody on it pauses as well: the pause above only ever ran when someone left. Checked
+// once the mission has been going two minutes, so the modules have started, and again 30 s later before pausing.
+[] spawn {
+    waitUntil { sleep 5; time > 120 };
+    if ((call MOD(PAUSEMODULES_PLAYERS)) > 0) exitWith {};
+    sleep 30;
+    if ((call MOD(PAUSEMODULES_PLAYERS)) == 0) then {
+        ["- No players on the server since it started, so the modules pause"] call ALiVE_fnc_dumpR;
+        call MOD(PAUSEMODULES_PAUSE);
+    };
+};
