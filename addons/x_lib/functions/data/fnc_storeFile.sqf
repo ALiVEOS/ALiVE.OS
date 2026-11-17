@@ -25,8 +25,11 @@ String - what to do:
     "flush" - write the files now
     "delete" - remove a name from both files (written at the next "save")
     "wipeAll" - mark every mission's own file as wiped (Wipe ALL cannot reach other missions' files)
-String - the name (for get, set, delete)
-Any - the store (for set)
+    "hold" - stop later "set"s for a name until the mission restarts, so a save that was just cleared
+             is not written straight back by the next autosave, a player leaving or the mission ending.
+             With slot names, only those slots are left out of what is written; with none, nothing is.
+String - the name (for get, set, delete, hold)
+Any - the store (for set), or an array of slot names (for hold, optional)
 
 Returns:
 The store for "get", nothing otherwise
@@ -108,7 +111,31 @@ switch (_op) do {
         };
     };
 
+    case "hold": {
+        private _held = missionNamespace getVariable ["ALiVE_storeFile_held", createHashMap];
+        private _slots = if (isNil "_value" || {!(_value isEqualType [])}) then { [] } else { _value };
+        private _was = _held getOrDefault [_key, nil];
+        // the whole name held stays held; otherwise the slots add up
+        if (isNil "_was" || {_slots isEqualTo []}) then {
+            _held set [_key, +_slots];
+        } else {
+            if (_was isNotEqualTo []) then { _held set [_key, _was + (_slots - _was)] };
+        };
+        missionNamespace setVariable ["ALiVE_storeFile_held", _held];
+    };
+
     case "set": {
+        // held since a clear (see "hold"): nothing, or the store without the held slots
+        private _held = (missionNamespace getVariable ["ALiVE_storeFile_held", createHashMap]) getOrDefault [_key, nil];
+        if (!isNil "_held") then {
+            if (_held isEqualTo []) then { _value = nil } else {
+                if ([_value] call ALiVE_fnc_isHash) then {
+                    _value = +_value;
+                    { [_value, _x] call ALiVE_fnc_hashRem } forEach _held;
+                };
+            };
+        };
+        if (isNil "_value") exitWith {};
         private _stamp = systemTimeUTC;
         private _sharedToo = true;
         if (_useMission) then {

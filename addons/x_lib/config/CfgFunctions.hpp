@@ -949,6 +949,13 @@ class ProfileNameSpaceClearLogistics
 	ALIVE_RECOMPILE;
 };
 
+class ProfileNameSpaceClearParts
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceClearParts.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class ProfileNameSpaceClear
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_ProfileNameSpaceClear.sqf";
