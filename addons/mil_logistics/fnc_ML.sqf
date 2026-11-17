@@ -7402,7 +7402,9 @@ switch(_operation) do {
                         // monitorEvent by deducting the true count and refunding the
                         // reservation difference.
                         // -----------------------------------------------------------------
-                        private _reservationAmount = _forceMakeupTotal;
+                        // only what the pool holds is set aside, so a request let in on the last few
+                        // never takes it below nothing, and a refund gives back no more than was taken (#1128)
+                        private _reservationAmount = _forceMakeupTotal min (_forcePool max 0);
                         if(_eventType != "PR_STANDARD" && _eventType != "PR_AIRDROP" && _eventType != "PR_HELI_INSERT" && !_shipLaunch) then {
                             private _registryID = [_logic, "registryID"] call MAINCLASS;
                             _forcePool = _forcePool - _reservationAmount;

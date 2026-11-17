@@ -163,6 +163,11 @@ switch(_operation) do {
                             [ALIVE_globalForcePool, _x, (_data select 2) select _forEachIndex] call ALIVE_fnc_hashSet;
                         } forEach (_data select 1);
                     };
+                    // a save written before the pool had a floor can hold a figure below nothing (#1128)
+                    {
+                        private _v = [ALIVE_globalForcePool, _x, 0] call ALIVE_fnc_hashGet;
+                        if (_v isEqualType 0 && {_v < 0}) then { [ALIVE_globalForcePool, _x, 0] call ALIVE_fnc_hashSet };
+                    } forEach (ALIVE_globalForcePool select 1);
 
 
                     // DEBUG -------------------------------------------------------------------------------------
@@ -186,6 +191,10 @@ switch(_operation) do {
         if(typeName _forcePool == "STRING") then {
             _forcePool = parseNumber(_forcePool);
         };
+        // The pool never goes below nothing (#1128). A request is let in while the pool has anything left and
+        // then pays its full size, so the last request of a run could take it to -1 or lower, and with the pool
+        // now saved that figure came back on every restart.
+        if (_forcePool isEqualType 0) then { _forcePool = _forcePool max 0 };
 
         _modules = [_logic, "modules"] call ALIVE_fnc_hashGet;
         _moduleIndex = _modules select 1;
