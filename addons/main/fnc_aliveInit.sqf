@@ -778,9 +778,6 @@ if (hasInterface) then {
 
 ALiVE_lastFrameCheckTime = time;
 
-// NewsFeed
-[] spawn ALiVE_fnc_newsFeedInit;
-
 // Admin Actions
 if !(_logic getVariable ["ALIVE_DISABLEADMINACTIONS", false]) then {
     [] spawn ALiVE_fnc_adminActionsInit;

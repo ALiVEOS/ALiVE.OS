@@ -52,7 +52,6 @@ waituntil {
         !isnil "ALiVE_SYS_LOGISTICS" &&
         {!isnil "ALiVE_SYS_GC"} &&
         {!isnil "ALiVE_SYS_MARKER"} &&
-        {!isnil "ALiVE_SYS_NEWSFEED"} &&
         {!isnil "ALiVE_SYS_ADMINACTIONS"} &&
         {!isnil "ALiVE_SYS_SPOTREP"} &&
         {!isnil "ALiVE_Require"}
@@ -86,7 +85,6 @@ STAT("Destroying created module instances");
 } foreach [
     [ALiVE_SYS_LOGISTICS, ALiVE_fnc_Logistics],
     [ALiVE_SYS_GC, ALiVE_fnc_GC],
-    [ALiVE_SYS_NEWSFEED, ALiVE_fnc_NewsFeed],
     [ALiVE_SYS_ADMINACTIONS, ALiVE_fnc_AdminActions],
     [ALiVE_SYS_SPOTREP, ALiVE_fnc_SpotRep],
     [ALiVE_SYS_MARKER, ALiVE_fnc_Marker]
@@ -94,7 +92,6 @@ STAT("Destroying created module instances");
 
 ALiVE_SYS_LOGISTICS = nil;
 ALiVE_SYS_GC = nil;
-ALiVE_SYS_NEWSFEED = nil;
 ALiVE_SYS_ADMINACTIONS = nil;
 ALiVE_SYS_SPOTREP = nil;
 ALiVE_SYS_MARKER = nil;

@@ -13,4 +13,3 @@ class CfgPatches {
         authorUrl = "http://alivemod.com/";
     };
 };
-#include "\x\alive\addons\sys_newsfeed\newsfeed\newsfeed.hpp"
