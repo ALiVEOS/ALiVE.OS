@@ -80,6 +80,13 @@ if (_stats || {_killFeed != "None"}) then {
         };
     };
 
+    // A vehicle with no killer that was hit in the last 60 s was brought down by whoever hit it (a missile
+    // that sent a helicopter into the ground), not wrecked by itself. No recent hit: a real crash, left as one.
+    if (_killer == _killed && {!(_killed isKindOf "Man")}) then {
+        (_killed getVariable [QGVAR(lastHitBy), []]) params [["_hitBy", objNull], ["_hitTime", -1]];
+        if (!isNull _hitBy && {time - _hitTime <= 60}) then { _killer = _hitBy };
+    };
+
     // if killed is a player or a vehicle then record, if killer is player or player in a vehicle
     if ( (_killed == player) || !(_killed iskindof "Man") || (isPlayer _killer) ) then {
 

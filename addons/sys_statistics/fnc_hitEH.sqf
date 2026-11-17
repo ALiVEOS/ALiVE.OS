@@ -38,6 +38,16 @@ Jman
 #define DEBUG_MODE_FULL
 
 #include "script_component.hpp"
+
+// A vehicle remembers who last hit it. A helicopter hit by a missile usually dies when it hits the ground
+// a few seconds later, and the game then names no killer, so it was recorded as a crash. The killed
+// handler uses this for up to 60 s. Kept whether or not statistics are on, as the kill feed reads it too.
+if !((_this select 0) isKindOf "Man") then {
+    private _by = _this param [3, objNull];
+    if (isNull _by) then { _by = _this select 1 };
+    if (!isNull _by && {_by != (_this select 0)}) then { (_this select 0) setVariable [QGVAR(lastHitBy), [_by, time]] };
+};
+
 if (GVAR(ENABLED)) then {
     private ["_msg","_sidehit","_sidesource","_hittype","_sourceweapon","_sourcetype","_distance","_datetime","_factionsource","_factionhit","_data","_hitPos","_sourcePos","_server","_realtime","_source","_hit","_hitVehicleClass","_sourceVehicleClass"];
 
