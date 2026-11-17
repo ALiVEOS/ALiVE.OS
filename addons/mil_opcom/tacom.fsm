@@ -184,7 +184,14 @@ class FSM
                          "    		_vehiclesInCommandOf = [_profile,""vehiclesInCommandOf"",[]] call ALiVE_fnc_HashGet;" \n
                          "		_activeCommands = [_profile, ""activeCommands"", []] call ALIVE_fnc_HashGet;" \n
                          "" \n
-                         "    		if (count _vehiclesInCommandOf > 0 && {count _activeCommands == 0}) then {" \n
+                         "    		// A group someone else holds keeps no orders on purpose: a busy one (logistics, a locked reserve)," \n
+                         "    		// one pinned to its post, or the crew of a static placed vehicle (SPE). Given a patrol here, a" \n
+                         "    		// reloaded campaign sent them driving off on the roads." \n
+                         "    		_held = ([_profile,""busy"",false] call ALiVE_fnc_HashGet) isEqualTo true" \n
+                         "    			|| {([_profile,""isSPE"",false] call ALiVE_fnc_HashGet) isEqualTo true}" \n
+                         "    			|| {!isNil ""ALIVE_profileStationary"" && {[ALIVE_profileStationary, _x, false] call ALIVE_fnc_HashGet}}" \n
+                         "    			|| {(_vehiclesInCommandOf findIf { _v = _profilesByID get _x; !isNil ""_v"" && {([_v,""isSPE"",false] call ALiVE_fnc_HashGet) isEqualTo true} }) > -1};" \n
+                         "    		if (count _vehiclesInCommandOf > 0 && {count _activeCommands == 0} && {!_held}) then {" \n
                          "        		[_profile, ""setActiveCommand"", [""ALIVE_fnc_ambientMovement"",""spawn"",[1000,""SAFE"",[0,0,0]]]] call ALIVE_fnc_profileEntity;" \n
                          "    		};" \n
                          "	} else {" \n
