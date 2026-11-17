@@ -1108,12 +1108,56 @@ switch (_operation) do {
             //only taken when a player gets out of a crew seat, so every save kept its old one and a load put it
             //back there (AshTray on Discord, 4 Nov). Take the spot of each one already in the store now.
             //Aircraft are left as they are, so none is saved in the air.
+            //Every other object was the same: only taken when a player used one of ALiVE's own actions or got
+            //out, so a Zeus move, ACE carry, drag or cargo, or a crate pushed into a hangar loaded back where it
+            //had been before (kawi on Discord, 17 Nov). So every object already in the store is taken as it is
+            //now, apart from an aircraft in the air and anything hidden or fixed to something else (stowed,
+            //carried or in a vehicle's cargo). A crate in a vehicle's ACE cargo is saved beside that vehicle,
+            //so it isn't lost at the spot it was loaded from. Dropped items a player has picked up since
+            //leave the store, or the load put them back.
             if (isnil "_args" && {isServer} && {!isnil QGVAR(STORE)}) then {
                 private _ids = GVAR(STORE) select 1;
-                private _support = vehicles select {
-                    alive _x && {_x isKindOf "LandVehicle"} && {_x getVariable ["ALIVE_CombatSupport", false]} && {(_x getVariable [QGVAR(ID), ""]) in _ids}
-                };
-                if (_support isNotEqualTo []) then { [_logic, "updateObject", _support] call ALiVE_fnc_logistics };
+                private _live = createHashMap;
+                private _fresh = [];
+                private _inAceCargo = [];
+                {
+                    private _id = _x getVariable [QGVAR(ID), ""];
+                    if (_id != "" && {_id in _ids}) then {
+                        _live set [_id, true];
+                        private _carrier = attachedTo _x;
+                        switch (true) do {
+                            case (!alive _x && {_x isKindOf "AllVehicles"}): {};
+                            case (_x isKindOf "Air" && {((getPosATL _x) select 2) > 2}): {};
+                            case (!isNull _carrier && {_x in (_carrier getVariable ["ace_cargo_loaded", []])}): { _inAceCargo pushBack [_x, _carrier] };
+                            case (isObjectHidden _x || {!isNull _carrier}): {};
+                            default {
+                                // only what has moved: taking every object's cargo and damage again would lengthen each save
+                                private _rec = [GVAR(STORE), _id] call ALiVE_fnc_HashGet;
+                                private _was = if (isNil "_rec") then { [] } else { [_rec, QGVAR(POSITION), []] call ALiVE_fnc_HashGet };
+                                if (!(_was isEqualType []) || {count _was < 3} || {(_was distance (getPosATL _x)) > 0.5}) then { _fresh pushBack _x };
+                            };
+                        };
+                    };
+                } forEach (entities [["ReammoBox", "ReammoBox_F", "WeaponHolder", "ThingX", "LandVehicle", "Air", "Ship", "StaticWeapon"], [], false, false]);
+                if (_fresh isNotEqualTo []) then { [_logic, "updateObject", _fresh] call ALiVE_fnc_logistics };
+                {
+                    _x params ["_obj", "_carrier"];
+                    [_logic, "updateObject", [_obj]] call ALiVE_fnc_logistics;
+                    private _rec = [GVAR(STORE), _obj getVariable [QGVAR(ID), ""]] call ALiVE_fnc_HashGet;
+                    if (!isNil "_rec") then {
+                        private _at = _carrier getPos [(((boundingBoxReal _carrier) select 1) select 1) + 3, getDir _carrier + 180];
+                        _at set [2, 0];
+                        [_rec, QGVAR(POSITION), _at] call ALiVE_fnc_HashSet;
+                        [_rec, QGVAR(VECDIRANDUP), [vectorDir _carrier, [0, 0, 1]]] call ALiVE_fnc_HashSet;
+                    };
+                } forEach _inAceCargo;
+                {
+                    private _rec = [GVAR(STORE), _x] call ALiVE_fnc_HashGet;
+                    private _type = if (isNil "_rec") then { "" } else { [_rec, QGVAR(TYPE), ""] call ALiVE_fnc_HashGet };
+                    if (_type isEqualType "" && {_type isKindOf "WeaponHolder"} && {!(_x in _live)}) then {
+                        [_logic, "removeObject", _x] call ALiVE_fnc_logistics;
+                    };
+                } forEach +_ids;
             };
             if ((isnil "_args") || {!isServer}) exitwith {_result = GVAR(STORE)};
 
