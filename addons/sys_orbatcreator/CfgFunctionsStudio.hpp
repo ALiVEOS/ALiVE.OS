@@ -180,3 +180,51 @@
                 file = "\x\alive\addons\sys_orbatcreator\import\fnc_fsImportMerge.sqf";
                 ALIVE_RECOMPILE;
             };
+
+            class fsEditorChoice {
+                description = "Says which editor an ORBAT Creator module opens";
+                file = "\x\alive\addons\sys_orbatcreator\studio\fnc_fsEditorChoice.sqf";
+                ALIVE_RECOMPILE;
+            };
+
+            class fsStudioStart {
+                description = "Starts the studio once per mission";
+                file = "\x\alive\addons\sys_orbatcreator\studio\fnc_fsStudioStart.sqf";
+                ALIVE_RECOMPILE;
+            };
+
+            class fsStudioReopen {
+                description = "Brings the studio back on an existing session";
+                file = "\x\alive\addons\sys_orbatcreator\studio\fnc_fsStudioReopen.sqf";
+                ALIVE_RECOMPILE;
+            };
+
+            class fsStudioOpen {
+                description = "Creates the studio display";
+                file = "\x\alive\addons\sys_orbatcreator\studio\fnc_fsStudioOpen.sqf";
+                ALIVE_RECOMPILE;
+            };
+
+            class fsStudioClose {
+                description = "Closes, suspends or tears down the studio";
+                file = "\x\alive\addons\sys_orbatcreator\studio\fnc_fsStudioClose.sqf";
+                ALIVE_RECOMPILE;
+            };
+
+            class fsStudioKeys {
+                description = "Key handler of the studio display";
+                file = "\x\alive\addons\sys_orbatcreator\studio\fnc_fsStudioKeys.sqf";
+                ALIVE_RECOMPILE;
+            };
+
+            class fsStudioTab {
+                description = "Shows one tab of the studio";
+                file = "\x\alive\addons\sys_orbatcreator\studio\fnc_fsStudioTab.sqf";
+                ALIVE_RECOMPILE;
+            };
+
+            class fsStudioStatus {
+                description = "Status line of the studio";
+                file = "\x\alive\addons\sys_orbatcreator\studio\fnc_fsStudioStatus.sqf";
+                ALIVE_RECOMPILE;
+            };

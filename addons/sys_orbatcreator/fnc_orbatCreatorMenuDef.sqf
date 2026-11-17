@@ -73,7 +73,13 @@ _menus =
         ["main", "ALiVE", _menuRsc],
         [
             [localize "STR_ALIVE_ORBATCREATOR",
-                {0 = [] spawn {["openInterface", "Faction_Editor"] call ALiVE_fnc_orbatCreatorOnAction};},
+                {0 = [] spawn {
+                    if (!isNil "ALiVE_fnc_fsEditorChoice" && {([MOD(orbatCreator)] call ALiVE_fnc_fsEditorChoice) == "studio"}) then {
+                        [] call ALiVE_fnc_fsStudioReopen;
+                    } else {
+                        ["openInterface", "Faction_Editor"] call ALiVE_fnc_orbatCreatorOnAction;
+                    };
+                };},
                 "",
                 localize "STR_ALIVE_ORBATCREATOR_COMMENT",
                  "",
