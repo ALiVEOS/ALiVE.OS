@@ -45,7 +45,11 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 
 _result = "";
 
-MOD(PNS_STORE) = +(["get", _missionKey] call ALiVE_fnc_storeFile);
+// Only the store's own key and value lists are copied, not every module's data in it: one module's save
+// used to copy the whole store, so an autosave of N modules copied it N times. Each module's entry is
+// replaced whole (from the copy above), never changed in place, so sharing the others is safe.
+private _was = ["get", _missionKey] call ALiVE_fnc_storeFile;
+MOD(PNS_STORE) = if (isNil "_was") then { nil } else { [_was select 0, +(_was select 1), +(_was select 2), _was select 3] };
 if (isNil QMOD(PNS_STORE)) then { MOD(PNS_STORE) = [] call ALiVE_fnc_HashCreate };
 
 [MOD(PNS_STORE),_module,_data] call ALiVE_fnc_HashSet;
