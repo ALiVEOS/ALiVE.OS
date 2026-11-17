@@ -1,9 +1,10 @@
 #include "script_component.hpp"
 /*
     sys_armour preInit: the ALiVE Addon Options for the armour sets.
-    A set's options appear only when its mod is loaded. Every set is off by
-    default; a server forces them for all players. Changes apply on the next
-    mission start, because ACE keeps the values for the whole mission.
+    A set's options appear only when its mod is loaded, and a set is on by
+    default once they do; a server forces them for all players. Changes apply
+    on the next mission start, because ACE keeps the values for the whole
+    mission.
 
     Author: Jman
 */
@@ -16,7 +17,7 @@ if ((["rhs_main", "rhsusf_main", "rhsgref_main", "rhssaf_main"] findIf {isClass 
     [
         "ALiVE_armour_rhs", "CHECKBOX",
         [localize "STR_ALIVE_ARMOUR_RHS", localize "STR_ALIVE_ARMOUR_RHS_COMMENT"],
-        _category, false, 1, {}, true
+        _category, true, 1, {}, true
     ] call CBA_fnc_addSetting;
 
     [

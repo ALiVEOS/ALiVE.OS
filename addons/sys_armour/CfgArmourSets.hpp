@@ -2,7 +2,7 @@
     ALiVE armour sets: ALiVE's own vest and bullet values for other mods' kit.
 
     Each set applies only when any patch in anyPatches[] is loaded and
-    its switch (setting) is on in the ALiVE Addon Options. The values feed ACE
+    its switch (setting, on by default) is on in the ALiVE Addon Options. The values feed ACE
     medical's armour-penetration wounds (ACE's default) at mission start; no
     other mod's class is redefined here, and engine damage stays as the mod
     ships it.

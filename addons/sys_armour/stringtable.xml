@@ -9,7 +9,7 @@
     <English>RHS armour and ammo values</English>
 </Key>
 <Key ID="STR_ALIVE_ARMOUR_RHS_COMMENT">
-    <English>Use ALiVE's own values for RHS vests and rifle rounds, so soldiers in RHS body armour go down to a reasonable number of hits. Needs ACE medical with its alternate armour penetration option on (ACE's default). Off: stock RHS and ACE values. Applies from the next mission start.</English>
+    <English>Use ALiVE's own values for RHS vests and rifle rounds, so soldiers in RHS body armour go down to a reasonable number of hits. On by default when an RHS mod is loaded. Needs ACE medical with its alternate armour penetration option on (ACE's default); without ACE nothing changes. Off: stock RHS and ACE values. Applies from the next mission start.</English>
 </Key>
 <Key ID="STR_ALIVE_ARMOUR_RHSAMMO">
     <English>RHS rifle round penetration</English>
