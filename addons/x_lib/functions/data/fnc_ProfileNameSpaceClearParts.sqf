@@ -78,6 +78,17 @@ private _fnc_endsWith = {
     count _s >= _n && {(toUpper (_s select [count _s - _n])) isEqualTo _end}
 };
 
+// an air commander's save: this map's name followed by _ATO, or by _ATO_ and the commander's key. An old
+// name is judged by the name it moves to, so a mission whose own name holds "_ato" is not taken for one.
+private _fnc_isAto = {
+    params ["_s"];
+    private _u = toUpper _s;
+    private _b = toUpper _base;
+    if !((_u select [0, count _b]) isEqualTo _b) exitWith { false };
+    private _rest = _u select [count _b];
+    _rest isEqualTo "_ATO" || {(_rest select [0, 5]) isEqualTo "_ATO_"}
+};
+
 private _cleared = [];
 private _deleted = [];
 
@@ -124,7 +135,8 @@ private _base = (["", worldName] call ALiVE_fnc_storeKeys) select 0;
         };
         case (_all): { [_name] call _fnc_drop };
         case ("forcepool" in _parts && {[_name, "_FORCE_POOL"] call _fnc_endsWith}): { [_name] call _fnc_drop };
-        case ("ato" in _parts && {[_name, "_ATO"] call _fnc_endsWith}): { [_name] call _fnc_drop };
+        // each air commander saves under its own name, _ATO_<its key>, as well as the shared _ATO
+        case ("ato" in _parts && {[[_to, _name] select (_to isEqualTo "")] call _fnc_isAto}): { [_name] call _fnc_drop };
         // players are a slot of the mission date name, under this map's name or an old one moving to it
         case ("players" in _parts && {(_name == _base + "_DATA") || {_to == _base + "_DATA"} || {(_mode == "move") && {_to == _base}}}): {
             [_name, ["sys_player"]] call _fnc_strip;
@@ -134,7 +146,10 @@ private _base = (["", worldName] call ALiVE_fnc_storeKeys) select 0;
 
 // Held even when nothing was saved yet, so a part cleared before its first save stays clear too.
 if ("forcepool" in _parts) then { ["hold", _base + "_FORCE_POOL"] call ALiVE_fnc_storeFile };
-if ("ato" in _parts) then { ["hold", _base + "_ATO"] call ALiVE_fnc_storeFile };
+if ("ato" in _parts) then {
+    // and every running air commander's own name, which it gave ALiVE_fnc_storeMigrate as it started
+    { if ([_base + _x] call _fnc_isAto) then { ["hold", _base + _x] call ALiVE_fnc_storeFile } } forEach (["_ATO"] + (missionNamespace getVariable ["ALiVE_storeSuffixes", []]));
+};
 if ("players" in _parts) then { ["hold", _base + "_DATA", ["sys_player"]] call ALiVE_fnc_storeFile };
 if (_all) then {
     { ["hold", _base + _x] call ALiVE_fnc_storeFile } forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_TASK_OPTOUT", "_FORCE_POOL", "_ATO", "_FOB", "_INTEL", "_HUB", "_CRATERS", "_RALLY"] + (missionNamespace getVariable ["ALiVE_storeSuffixes", []]));
