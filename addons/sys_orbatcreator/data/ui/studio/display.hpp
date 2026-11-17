@@ -68,38 +68,45 @@ class ALiVE_FS_Studio {
             onButtonClick = "['exit'] call ALiVE_fnc_fsStudioClose";
         };
 
-        // tab buttons
+        // tab buttons: widths follow the word (Vehicles is the longest), with a
+        // smaller text than other buttons so all five fit the 16-cell row
         class TabFaction : ALiVE_FS_RscButton {
             idc = FS_IDC_TAB_FACTION;
             text = "$STR_ALIVE_FS_TAB_FACTION";
             x = FS_X(0.5);
             y = FS_Y(2.0);
-            w = FS_W(3.1);
+            w = FS_W(3.35);
             h = FS_H(1);
+            size = (FS_GH * 0.7);
+            sizeEx = (FS_GH * 0.7);
             onButtonClick = "['faction'] call ALiVE_fnc_fsStudioTab";
         };
         class TabUnits : TabFaction {
             idc = FS_IDC_TAB_UNITS;
             text = "$STR_ALIVE_FS_TAB_UNITS";
-            x = FS_X(3.7);
+            x = FS_X(3.95);
+            w = FS_W(2.55);
             onButtonClick = "['units'] call ALiVE_fnc_fsStudioTab";
         };
         class TabVehicles : TabFaction {
             idc = FS_IDC_TAB_VEHICLES;
             text = "$STR_ALIVE_FS_TAB_VEHICLES";
-            x = FS_X(6.9);
+            x = FS_X(6.6);
+            w = FS_W(3.8);
             onButtonClick = "['vehicles'] call ALiVE_fnc_fsStudioTab";
         };
         class TabGroups : TabFaction {
             idc = FS_IDC_TAB_GROUPS;
             text = "$STR_ALIVE_FS_TAB_GROUPS";
-            x = FS_X(10.1);
+            x = FS_X(10.5);
+            w = FS_W(2.95);
             onButtonClick = "['groups'] call ALiVE_fnc_fsStudioTab";
         };
         class TabExport : TabFaction {
             idc = FS_IDC_TAB_EXPORT;
             text = "$STR_ALIVE_FS_TAB_EXPORT";
-            x = FS_X(13.3);
+            x = FS_X(13.55);
+            w = FS_W(2.95);
             onButtonClick = "['export'] call ALiVE_fnc_fsStudioTab";
         };
 

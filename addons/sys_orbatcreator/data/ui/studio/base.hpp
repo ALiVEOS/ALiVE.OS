@@ -23,6 +23,22 @@
 // one row of the panel
 #define FS_ROW_H            (0.9 * FS_GH)
 
+// columns of a tab (16 cells wide, relative to the tab group); every tab uses
+// the same label column and field x, so fields line up across the tabs
+#define FS_LABEL_W          FS_W(5.9)
+#define FS_FIELD_X          FS_W(6)
+#define FS_FIELD_W          FS_W(10)
+// a field that shares its row with the side column (checkbox, Pick, value)
+#define FS_NARROW_W         FS_W(6.9)
+#define FS_SIDE_X           FS_W(13)
+#define FS_SIDE_W           FS_W(3)
+
+// button rows: 2 or 3 equal buttons across the tab's 16 cells, 0.1 apart
+#define FS_B2_W             FS_W(7.95)
+#define FS_B2_X(i)          FS_W((i) * 8.05)
+#define FS_B3_W             FS_W(15.8 / 3)
+#define FS_B3_X(i)          FS_W((i) * (15.8 / 3 + 0.1))
+
 // RscText, RscEdit and RscListBox are already declared by common.hpp;
 // declaring them twice makes the config packer warn
 class RscCombo;
@@ -51,7 +67,7 @@ class ALiVE_FS_RscEdit : RscEdit {
     text = "";
     x = 0;
     y = 0;
-    w = FS_W(11);
+    w = FS_FIELD_W;
     h = FS_ROW_H;
     sizeEx = FS_TEXT;
     colorBackground[] = COLOR_BLACK(0.5);
@@ -66,7 +82,7 @@ class ALiVE_FS_RscCombo : RscCombo {
     idc = -1;
     x = 0;
     y = 0;
-    w = FS_W(11);
+    w = FS_FIELD_W;
     h = FS_ROW_H;
     sizeEx = FS_TEXT;
     colorBackground[] = COLOR_GREY_DARK_HARD;
@@ -162,5 +178,6 @@ class ALiVE_FS_RscTitle : ALiVE_FS_RscText {
 };
 
 class ALiVE_FS_RscLabel : ALiVE_FS_RscText {
+    w = FS_LABEL_W;
     colorText[] = COLOR_GREY_TITLE_HARD;
 };

@@ -221,17 +221,32 @@
 <Key ID="STR_ALIVE_FS_LIB_RESTORE">
     <English>Restore previous</English>
 </Key>
+<Key ID="STR_ALIVE_FS_LIB_RESTORE_SHORT">
+    <English>Restore</English>
+</Key>
 <Key ID="STR_ALIVE_FS_IMPORT_BTN">
     <English>Import faction</English>
 </Key>
 <Key ID="STR_ALIVE_FS_SHARE_COPY">
     <English>Copy share text</English>
 </Key>
+<Key ID="STR_ALIVE_FS_SHARE_COPY_SHORT">
+    <English>Copy share</English>
+</Key>
 <Key ID="STR_ALIVE_FS_SHARE_PASTE">
     <English>Paste share text</English>
 </Key>
+<Key ID="STR_ALIVE_FS_SHARE_PASTE_SHORT">
+    <English>Paste share</English>
+</Key>
 <Key ID="STR_ALIVE_FS_FILE_LOAD">
     <English>Load from file</English>
+</Key>
+<Key ID="STR_ALIVE_FS_L_IMPORT_FILE">
+    <English>File name</English>
+</Key>
+<Key ID="STR_ALIVE_FS_L_IMPORT_FILE_TIP">
+    <English>A file in Documents\Arma 3\ALiVE\orbat\import, for Load from file</English>
 </Key>
 <Key ID="STR_ALIVE_FS_COUNTS">
     <English>%1 units, %2 vehicles, %3 groups</English>
@@ -245,6 +260,9 @@
 <Key ID="STR_ALIVE_FS_L_AUTO">
     <English>Automatic</English>
 </Key>
+<Key ID="STR_ALIVE_FS_L_AUTO_SHORT">
+    <English>Auto</English>
+</Key>
 <Key ID="STR_ALIVE_FS_L_BASE">
     <English>Based on</English>
 </Key>
@@ -256,6 +274,9 @@
 </Key>
 <Key ID="STR_ALIVE_FS_BTN_UNDO_ARSENAL">
     <English>Undo last Arsenal</English>
+</Key>
+<Key ID="STR_ALIVE_FS_BTN_UNDO_ARSENAL_SHORT">
+    <English>Undo Arsenal</English>
 </Key>
 <Key ID="STR_ALIVE_FS_L_ARSENAL">
     <English>Arsenal</English>
@@ -353,14 +374,23 @@
 <Key ID="STR_ALIVE_FS_PK_NEW">
     <English>Start a new faction from it</English>
 </Key>
+<Key ID="STR_ALIVE_FS_PK_NEW_SHORT">
+    <English>Start new faction</English>
+</Key>
 <Key ID="STR_ALIVE_FS_PK_MERGE">
     <English>Merge into this faction</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PK_MERGE_SHORT">
+    <English>Merge into current</English>
 </Key>
 <Key ID="STR_ALIVE_FS_PK_ROW">
     <English>%1 (%2 units, %3 vehicles, %4 groups)</English>
 </Key>
 <Key ID="STR_ALIVE_FS_EX_NORANDOM">
     <English>Stop Arma randomising headgear and facewear</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EX_NORANDOM_SHORT">
+    <English>Stop random headgear and facewear</English>
 </Key>
 <Key ID="STR_ALIVE_FS_EX_FORCE">
     <English>Always apply the loadout, even when something changed the unit first</English>
@@ -380,6 +410,12 @@
 <Key ID="STR_ALIVE_FS_EX_PATH">
     <English>Copy folder path</English>
 </Key>
+<Key ID="STR_ALIVE_FS_EX_PATH_SHORT">
+    <English>Copy path</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EX_PATH_NONE">
+    <English>No mod folder yet. Set one on the Faction tab.</English>
+</Key>
 <Key ID="STR_ALIVE_FS_EX_ADVANCED">
     <English>Advanced</English>
 </Key>
@@ -390,7 +426,7 @@
     <English>Needs: %1</English>
 </Key>
 <Key ID="STR_ALIVE_FS_Q_REPLACE">
-    <English>This replaces the faction you are working on. It is kept under Restore previous. Go on?</English>
+    <English>This replaces the faction you are working on. Restore brings it back. Go on?</English>
 </Key>
 <Key ID="STR_ALIVE_FS_Q_DELETE">
     <English>Delete %1?</English>
@@ -403,6 +439,9 @@
 </Key>
 <Key ID="STR_ALIVE_FS_S_READY">
     <English>%1 ready: %2.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_READY_NEW">
+    <English>%1 ready: a new, empty faction.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_SAVED">
     <English>Saved (%1 KB).</English>
@@ -417,7 +456,7 @@
     <English>Not added: your saved factions would take %1 KB together, over the %2 KB limit. Delete one first.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_LOAD_REFUSED">
-    <English>Your last faction could not be loaded: %1. It has not been changed or deleted. Pick New faction or Restore previous to go on.</English>
+    <English>Your last faction could not be loaded: %1. It has not been changed or deleted. Pick New faction or Restore to go on.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_BUSY_EXPORT">
     <English>An export is still being written. Try again when it has finished.</English>
@@ -429,7 +468,7 @@
     <English>Saved to your factions as %1.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_LIB_LOADED">
-    <English>Loaded %1. What you had before is under Restore previous.</English>
+    <English>Loaded %1. Restore brings back what you had before.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_LIB_DELETED">
     <English>Deleted %1 from your saved factions.</English>
@@ -447,7 +486,7 @@
     <English>Copied as %1.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_NAME_TAKEN">
-    <English>Class name %1 is already used by %2. Pick another, or tick Automatic.</English>
+    <English>Class name %1 is already used by %2. Pick another, or tick Auto.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_NAME_BAD">
     <English>Class names use letters, digits and _ only, and start with a letter.</English>

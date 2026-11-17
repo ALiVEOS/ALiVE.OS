@@ -17,7 +17,7 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
         };
         class Name : ALiVE_FS_RscEdit {
             idc = FS_IDC_F_NAME;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(0);
             onKillFocus = "['name', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
@@ -31,7 +31,7 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
             idc = FS_IDC_F_TAG;
             tooltip = "$STR_ALIVE_FS_L_TAG_TIP";
             maxChars = 8;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(1);
             onKillFocus = "['tag', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
@@ -42,7 +42,7 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
         };
         class FactionClass : ALiVE_FS_RscEdit {
             idc = FS_IDC_F_CLASS;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(2);
             onKillFocus = "['class', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
@@ -53,7 +53,7 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
         };
         class Side : ALiVE_FS_RscCombo {
             idc = FS_IDC_F_SIDE;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(3);
             onLBSelChanged = "['side', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
@@ -64,7 +64,7 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
         };
         class Flag : ALiVE_FS_RscCombo {
             idc = FS_IDC_F_FLAG;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(4);
             onLBSelChanged = "['flag', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
@@ -75,7 +75,7 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
         };
         class FlagPath : ALiVE_FS_RscEdit {
             idc = FS_IDC_F_FLAGPATH;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(5);
             onKillFocus = "['flagPath', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
@@ -86,7 +86,7 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
         };
         class Author : ALiVE_FS_RscEdit {
             idc = FS_IDC_F_AUTHOR;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(6);
             onKillFocus = "['author', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
@@ -97,7 +97,7 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
         };
         class ModName : ALiVE_FS_RscEdit {
             idc = FS_IDC_F_MODNAME;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(7);
             onKillFocus = "['modName', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
@@ -124,72 +124,80 @@ class ALiVE_FS_TabFaction : ALiVE_FS_RscGroup {
         class LibSave : ALiVE_FS_RscButton {
             idc = FS_IDC_F_LIBSAVE;
             text = "$STR_ALIVE_FS_LIB_SAVE";
-            x = FS_W(0);
+            x = FS_B3_X(0);
             y = FS_H(14);
-            w = FS_W(5.25);
+            w = FS_B3_W;
             onButtonClick = "['libSave', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
         class LibLoad : LibSave {
             idc = FS_IDC_F_LIBLOAD;
             text = "$STR_ALIVE_FS_LIB_LOAD";
-            x = FS_W(5.375);
+            x = FS_B3_X(1);
             onButtonClick = "['libLoad', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
         class LibDelete : LibSave {
             idc = FS_IDC_F_LIBDELETE;
             text = "$STR_ALIVE_FS_BTN_DELETE";
-            x = FS_W(10.75);
+            x = FS_B3_X(2);
             onButtonClick = "['libDelete', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
         class NewFaction : LibSave {
             idc = FS_IDC_F_NEW;
             text = "$STR_ALIVE_FS_LIB_NEW";
-            x = FS_W(0);
+            x = FS_B2_X(0);
             y = FS_H(15);
-            w = FS_W(7.95);
+            w = FS_B2_W;
             onButtonClick = "['new', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
         class Restore : NewFaction {
             idc = FS_IDC_F_RESTORE;
-            text = "$STR_ALIVE_FS_LIB_RESTORE";
-            x = FS_W(8.05);
+            text = "$STR_ALIVE_FS_LIB_RESTORE_SHORT";
+            tooltip = "$STR_ALIVE_FS_LIB_RESTORE";
+            x = FS_B2_X(1);
             onButtonClick = "['restore', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
 
+        // file in Documents\Arma 3\ALiVE\orbat\import
+        class FileLabel : ALiVE_FS_RscLabel {
+            text = "$STR_ALIVE_FS_L_IMPORT_FILE";
+            tooltip = "$STR_ALIVE_FS_L_IMPORT_FILE_TIP";
+            y = FS_H(16);
+        };
+        class FileName : ALiVE_FS_RscEdit {
+            idc = FS_IDC_F_FILENAME;
+            tooltip = "$STR_ALIVE_FS_L_IMPORT_FILE_TIP";
+            x = FS_FIELD_X;
+            y = FS_H(16);
+        };
+
         // import and share text
-        class Import : LibSave {
+        class Import : NewFaction {
             idc = FS_IDC_F_IMPORT;
             text = "$STR_ALIVE_FS_IMPORT_BTN";
-            x = FS_W(0);
-            y = FS_H(16);
+            x = FS_B2_X(0);
+            y = FS_H(17);
             onButtonClick = "['import', _this] call ALiVE_fnc_fsStudioTabFaction";
+        };
+        class FileLoad : Import {
+            idc = FS_IDC_F_FILELOAD;
+            text = "$STR_ALIVE_FS_FILE_LOAD";
+            x = FS_B2_X(1);
+            onButtonClick = "['file', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
         class ShareCopy : Import {
             idc = FS_IDC_F_COPY;
-            text = "$STR_ALIVE_FS_SHARE_COPY";
-            x = FS_W(5.375);
+            text = "$STR_ALIVE_FS_SHARE_COPY_SHORT";
+            tooltip = "$STR_ALIVE_FS_SHARE_COPY";
+            x = FS_B2_X(0);
+            y = FS_H(18);
             onButtonClick = "['copy', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
-        class SharePaste : Import {
+        class SharePaste : ShareCopy {
             idc = FS_IDC_F_PASTE;
-            text = "$STR_ALIVE_FS_SHARE_PASTE";
-            x = FS_W(10.75);
+            text = "$STR_ALIVE_FS_SHARE_PASTE_SHORT";
+            tooltip = "$STR_ALIVE_FS_SHARE_PASTE";
+            x = FS_B2_X(1);
             onButtonClick = "['paste', _this] call ALiVE_fnc_fsStudioTabFaction";
-        };
-
-        // file in Documents\Arma 3\ALiVE\orbat\import
-        class FileName : ALiVE_FS_RscEdit {
-            idc = FS_IDC_F_FILENAME;
-            x = FS_W(0);
-            y = FS_H(17);
-            w = FS_W(10.6);
-        };
-        class FileLoad : LibSave {
-            idc = FS_IDC_F_FILELOAD;
-            text = "$STR_ALIVE_FS_FILE_LOAD";
-            x = FS_W(10.75);
-            y = FS_H(17);
-            onButtonClick = "['file', _this] call ALiVE_fnc_fsStudioTabFaction";
         };
     };
 };

@@ -141,7 +141,8 @@ if (_status isEqualTo []) then {
     private _f = missionNamespace getVariable ["ALiVE_FS_faction", createHashMap];
     private _n = _f getOrDefault ["name", ""];
     if (_n isEqualTo "") then { _n = _f getOrDefault ["tag", ""] };
-    _status = [0, "S_READY", [FS_NAME, _n]];
+    // a faction with neither name nor tag yet says so, not "ready: ."
+    _status = if (_n isEqualTo "") then { [0, "S_READY_NEW", [FS_NAME]] } else { [0, "S_READY", [FS_NAME, _n]] };
 };
 _status call ALiVE_fnc_fsStudioStatus;
 if (_aceMissing) then { [1, "S_ACE_MISSING", []] call ALiVE_fnc_fsStudioStatus };

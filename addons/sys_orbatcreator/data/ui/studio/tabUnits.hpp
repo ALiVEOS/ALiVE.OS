@@ -16,39 +16,43 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
         class List : ALiVE_FS_RscListBox {
             idc = FS_IDC_U_LIST;
             y = FS_H(0);
-            h = FS_H(5.9);
+            h = FS_H(4.9);
             onLBSelChanged = "['select', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
         class Add : ALiVE_FS_RscButton {
             idc = FS_IDC_U_ADD;
             text = "$STR_ALIVE_FS_BTN_ADD";
-            x = FS_W(0);
-            y = FS_H(6);
-            w = FS_W(3.12);
+            x = FS_B3_X(0);
+            y = FS_H(5);
+            w = FS_B3_W;
             onButtonClick = "['add', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
         class Duplicate : Add {
             idc = FS_IDC_U_DUPLICATE;
             text = "$STR_ALIVE_FS_BTN_DUPLICATE";
-            x = FS_W(3.22);
+            x = FS_B3_X(1);
             onButtonClick = "['duplicate', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
         class Delete : Add {
             idc = FS_IDC_U_DELETE;
             text = "$STR_ALIVE_FS_BTN_DELETE";
-            x = FS_W(6.44);
+            x = FS_B3_X(2);
             onButtonClick = "['delete', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
         class Up : Add {
             idc = FS_IDC_U_UP;
             text = "$STR_ALIVE_FS_BTN_UP";
-            x = FS_W(9.66);
+            x = FS_B2_X(0);
+            y = FS_H(6);
+            w = FS_B2_W;
             onButtonClick = "['up', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
         class Down : Add {
             idc = FS_IDC_U_DOWN;
             text = "$STR_ALIVE_FS_BTN_DOWN";
-            x = FS_W(12.88);
+            x = FS_B2_X(1);
+            y = FS_H(6);
+            w = FS_B2_W;
             onButtonClick = "['down', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
 
@@ -58,7 +62,7 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
         };
         class Name : ALiVE_FS_RscEdit {
             idc = FS_IDC_U_NAME;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(7);
             onKillFocus = "['name', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
@@ -69,22 +73,24 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
         };
         class ClassName : ALiVE_FS_RscEdit {
             idc = FS_IDC_U_CLASS;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(8);
-            w = FS_W(7);
+            w = FS_NARROW_W;
             onKillFocus = "['class', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
         class ClassAuto : ALiVE_FS_RscCheckBox {
             idc = FS_IDC_U_CLASSAUTO;
-            x = FS_W(12.2);
+            tooltip = "$STR_ALIVE_FS_L_AUTO";
+            x = FS_SIDE_X;
             y = FS_H(8);
             onCheckedChanged = "['classAuto', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
         class ClassAutoLabel : ALiVE_FS_RscLabel {
-            text = "$STR_ALIVE_FS_L_AUTO";
-            x = FS_W(13.2);
+            text = "$STR_ALIVE_FS_L_AUTO_SHORT";
+            tooltip = "$STR_ALIVE_FS_L_AUTO";
+            x = (FS_SIDE_X + FS_W(0.9));
             y = FS_H(8);
-            w = FS_W(2.8);
+            w = FS_W(2.1);
         };
 
         class BaseLabel : ALiVE_FS_RscLabel {
@@ -93,16 +99,16 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
         };
         class Base : ALiVE_FS_RscText {
             idc = FS_IDC_U_BASE;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(9);
-            w = FS_W(8);
+            w = FS_NARROW_W;
         };
         class BaseChange : ALiVE_FS_RscButton {
             idc = FS_IDC_U_BASECHANGE;
             text = "$STR_ALIVE_FS_BTN_CHANGE";
-            x = FS_W(13.2);
+            x = FS_SIDE_X;
             y = FS_H(9);
-            w = FS_W(2.8);
+            w = FS_SIDE_W;
             onButtonClick = "['base', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
 
@@ -112,7 +118,7 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
         };
         class Category : ALiVE_FS_RscCombo {
             idc = FS_IDC_U_CATEGORY;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(10);
             onLBSelChanged = "['category', _this] call ALiVE_fnc_fsStudioTabUnits";
         };
@@ -121,15 +127,16 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
         class Loadout : ALiVE_FS_RscButton {
             idc = FS_IDC_U_LOADOUT;
             text = "$STR_ALIVE_FS_BTN_LOADOUT";
-            x = FS_W(0);
+            x = FS_B2_X(0);
             y = FS_H(11);
-            w = FS_W(7.95);
+            w = FS_B2_W;
             onButtonClick = "['open'] call ALiVE_fnc_fsStudioArsenal";
         };
         class Undo : Loadout {
             idc = FS_IDC_U_UNDO;
-            text = "$STR_ALIVE_FS_BTN_UNDO_ARSENAL";
-            x = FS_W(8.05);
+            text = "$STR_ALIVE_FS_BTN_UNDO_ARSENAL_SHORT";
+            tooltip = "$STR_ALIVE_FS_BTN_UNDO_ARSENAL";
+            x = FS_B2_X(1);
             onButtonClick = "['undo'] call ALiVE_fnc_fsStudioArsenal";
         };
 
@@ -139,7 +146,7 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
         };
         class Arsenal : ALiVE_FS_RscCombo {
             idc = FS_IDC_U_ARSENAL;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(12);
             onLBSelChanged = "['arsenal', _this] call ALiVE_fnc_fsStudioTabUnits";
         };

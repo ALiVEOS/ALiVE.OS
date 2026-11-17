@@ -19,7 +19,7 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
         };
         class Category : ALiVE_FS_RscCombo {
             idc = FS_IDC_G_CATEGORY;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(0);
             onLBSelChanged = "['category', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
@@ -33,21 +33,21 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
         class New : ALiVE_FS_RscButton {
             idc = FS_IDC_G_NEW;
             text = "$STR_ALIVE_FS_BTN_NEW";
-            x = FS_W(0);
+            x = FS_B3_X(0);
             y = FS_H(4);
-            w = FS_W(5.25);
+            w = FS_B3_W;
             onButtonClick = "['new', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
         class Duplicate : New {
             idc = FS_IDC_G_DUPLICATE;
             text = "$STR_ALIVE_FS_BTN_DUPLICATE";
-            x = FS_W(5.375);
+            x = FS_B3_X(1);
             onButtonClick = "['duplicate', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
         class Delete : New {
             idc = FS_IDC_G_DELETE;
             text = "$STR_ALIVE_FS_BTN_DELETE";
-            x = FS_W(10.75);
+            x = FS_B3_X(2);
             onButtonClick = "['delete', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
 
@@ -57,7 +57,7 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
         };
         class Name : ALiVE_FS_RscEdit {
             idc = FS_IDC_G_NAME;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(5);
             onKillFocus = "['name', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
@@ -68,22 +68,24 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
         };
         class ClassName : ALiVE_FS_RscEdit {
             idc = FS_IDC_G_CLASS;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(6);
-            w = FS_W(7);
+            w = FS_NARROW_W;
             onKillFocus = "['class', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
         class ClassAuto : ALiVE_FS_RscCheckBox {
             idc = FS_IDC_G_CLASSAUTO;
-            x = FS_W(12.2);
+            tooltip = "$STR_ALIVE_FS_L_AUTO";
+            x = FS_SIDE_X;
             y = FS_H(6);
             onCheckedChanged = "['classAuto', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
         class ClassAutoLabel : ALiVE_FS_RscLabel {
-            text = "$STR_ALIVE_FS_L_AUTO";
-            x = FS_W(13.2);
+            text = "$STR_ALIVE_FS_L_AUTO_SHORT";
+            tooltip = "$STR_ALIVE_FS_L_AUTO";
+            x = (FS_SIDE_X + FS_W(0.9));
             y = FS_H(6);
-            w = FS_W(2.8);
+            w = FS_W(2.1);
         };
 
         // How often, 0..1, and its value
@@ -94,17 +96,17 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
         };
         class Rarity : ALiVE_FS_RscSlider {
             idc = FS_IDC_G_RARITY;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(7);
-            w = FS_W(8.9);
+            w = FS_NARROW_W;
             onSliderPosChanged = "['rarity', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
         class RarityValue : ALiVE_FS_RscText {
             idc = FS_IDC_G_RARITYVALUE;
             style = 1;
-            x = FS_W(14);
+            x = FS_SIDE_X;
             y = FS_H(7);
-            w = FS_W(2);
+            w = FS_SIDE_W;
         };
 
         class IconLabel : ALiVE_FS_RscLabel {
@@ -113,7 +115,7 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
         };
         class Icon : ALiVE_FS_RscCombo {
             idc = FS_IDC_G_ICON;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(8);
             onLBSelChanged = "['icon', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
@@ -132,35 +134,36 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
         };
         class MemberPick : ALiVE_FS_RscCombo {
             idc = FS_IDC_G_MEMBERPICK;
-            x = FS_W(0);
+            x = FS_B2_X(0);
             y = FS_H(14);
-            w = FS_W(10.6);
+            w = FS_B2_W;
         };
         class MemberAdd : ALiVE_FS_RscButton {
             idc = FS_IDC_G_MEMBERADD;
             text = "$STR_ALIVE_FS_BTN_ADD_MEMBER";
-            x = FS_W(10.75);
+            x = FS_B2_X(1);
             y = FS_H(14);
-            w = FS_W(5.25);
+            w = FS_B2_W;
             onButtonClick = "['memberAdd', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
         class MemberRemove : MemberAdd {
             idc = FS_IDC_G_MEMBERREMOVE;
             text = "$STR_ALIVE_FS_BTN_REMOVE";
-            x = FS_W(0);
+            x = FS_B3_X(0);
             y = FS_H(15);
+            w = FS_B3_W;
             onButtonClick = "['memberRemove', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
         class MemberUp : MemberRemove {
             idc = FS_IDC_G_MEMBERUP;
             text = "$STR_ALIVE_FS_BTN_UP";
-            x = FS_W(5.375);
+            x = FS_B3_X(1);
             onButtonClick = "['memberUp', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
         class MemberDown : MemberRemove {
             idc = FS_IDC_G_MEMBERDOWN;
             text = "$STR_ALIVE_FS_BTN_DOWN";
-            x = FS_W(10.75);
+            x = FS_B3_X(2);
             onButtonClick = "['memberDown', _this] call ALiVE_fnc_fsStudioTabGroups";
         };
 
@@ -170,7 +173,7 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
         };
         class Rank : ALiVE_FS_RscCombo {
             idc = FS_IDC_G_RANK;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(16);
             onLBSelChanged = "['rank', _this] call ALiVE_fnc_fsStudioTabGroups";
         };

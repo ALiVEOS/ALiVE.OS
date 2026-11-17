@@ -16,39 +16,43 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
         class List : ALiVE_FS_RscListBox {
             idc = FS_IDC_V_LIST;
             y = FS_H(0);
-            h = FS_H(4.9);
+            h = FS_H(3.9);
             onLBSelChanged = "['select', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
         class Add : ALiVE_FS_RscButton {
             idc = FS_IDC_V_ADD;
             text = "$STR_ALIVE_FS_BTN_ADD";
-            x = FS_W(0);
-            y = FS_H(5);
-            w = FS_W(3.12);
+            x = FS_B3_X(0);
+            y = FS_H(4);
+            w = FS_B3_W;
             onButtonClick = "['add', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
         class Duplicate : Add {
             idc = FS_IDC_V_DUPLICATE;
             text = "$STR_ALIVE_FS_BTN_DUPLICATE";
-            x = FS_W(3.22);
+            x = FS_B3_X(1);
             onButtonClick = "['duplicate', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
         class Delete : Add {
             idc = FS_IDC_V_DELETE;
             text = "$STR_ALIVE_FS_BTN_DELETE";
-            x = FS_W(6.44);
+            x = FS_B3_X(2);
             onButtonClick = "['delete', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
         class Up : Add {
             idc = FS_IDC_V_UP;
             text = "$STR_ALIVE_FS_BTN_UP";
-            x = FS_W(9.66);
+            x = FS_B2_X(0);
+            y = FS_H(5);
+            w = FS_B2_W;
             onButtonClick = "['up', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
         class Down : Add {
             idc = FS_IDC_V_DOWN;
             text = "$STR_ALIVE_FS_BTN_DOWN";
-            x = FS_W(12.88);
+            x = FS_B2_X(1);
+            y = FS_H(5);
+            w = FS_B2_W;
             onButtonClick = "['down', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
 
@@ -58,7 +62,7 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
         };
         class Name : ALiVE_FS_RscEdit {
             idc = FS_IDC_V_NAME;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(6);
             onKillFocus = "['name', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
@@ -69,22 +73,24 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
         };
         class ClassName : ALiVE_FS_RscEdit {
             idc = FS_IDC_V_CLASS;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(7);
-            w = FS_W(7);
+            w = FS_NARROW_W;
             onKillFocus = "['class', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
         class ClassAuto : ALiVE_FS_RscCheckBox {
             idc = FS_IDC_V_CLASSAUTO;
-            x = FS_W(12.2);
+            tooltip = "$STR_ALIVE_FS_L_AUTO";
+            x = FS_SIDE_X;
             y = FS_H(7);
             onCheckedChanged = "['classAuto', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
         class ClassAutoLabel : ALiVE_FS_RscLabel {
-            text = "$STR_ALIVE_FS_L_AUTO";
-            x = FS_W(13.2);
+            text = "$STR_ALIVE_FS_L_AUTO_SHORT";
+            tooltip = "$STR_ALIVE_FS_L_AUTO";
+            x = (FS_SIDE_X + FS_W(0.9));
             y = FS_H(7);
-            w = FS_W(2.8);
+            w = FS_W(2.1);
         };
 
         class BaseLabel : ALiVE_FS_RscLabel {
@@ -93,16 +99,16 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
         };
         class Base : ALiVE_FS_RscText {
             idc = FS_IDC_V_BASE;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(8);
-            w = FS_W(8);
+            w = FS_NARROW_W;
         };
         class BaseChange : ALiVE_FS_RscButton {
             idc = FS_IDC_V_BASECHANGE;
             text = "$STR_ALIVE_FS_BTN_CHANGE";
-            x = FS_W(13.2);
+            x = FS_SIDE_X;
             y = FS_H(8);
-            w = FS_W(2.8);
+            w = FS_SIDE_W;
             onButtonClick = "['base', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
 
@@ -112,7 +118,7 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
         };
         class Category : ALiVE_FS_RscCombo {
             idc = FS_IDC_V_CATEGORY;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(9);
             onLBSelChanged = "['category', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
@@ -124,7 +130,7 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
         };
         class Crew : ALiVE_FS_RscCombo {
             idc = FS_IDC_V_CREW;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(10);
             onLBSelChanged = "['crew', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
@@ -148,7 +154,7 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
         };
         class Gunner : ALiVE_FS_RscCombo {
             idc = FS_IDC_V_GUNNER;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(15);
             onLBSelChanged = "['gunner', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
@@ -160,7 +166,7 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
         };
         class Texture : ALiVE_FS_RscCombo {
             idc = FS_IDC_V_TEXTURE;
-            x = FS_W(5);
+            x = FS_FIELD_X;
             y = FS_H(16);
             onLBSelChanged = "['texture', _this] call ALiVE_fnc_fsStudioTabVehicles";
         };
