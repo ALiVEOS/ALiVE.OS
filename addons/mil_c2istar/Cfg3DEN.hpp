@@ -8,5 +8,10 @@ class Cfg3DEN {
             attributeLoad = "[_this, 'copDisplaySides', '$STR_ALIVE_C2ISTAR_COP_DISPLAY_SIDES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'copDisplaySides'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
         };
+        // Who can take the Commander seat: the Who Can list FOBs, hubs and rally points use, with no owner row
+        class ALiVE_C2ISTARSeatWhoChoice: ALiVE_SideChoiceMulti {
+            attributeLoad = "[_this, _value, 'STR_ALIVE_C2ISTAR_SEAT_WHO', 'LEADER,ITEM', 'STR_ALIVE_C2ISTAR_SEAT_WHO_', ''] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenLoad.sqf'";
+            attributeSave = "[_this, 'LEADER,ITEM'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_siteWhoEdenSave.sqf'";
+        };
     };
 };

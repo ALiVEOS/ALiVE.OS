@@ -639,6 +639,37 @@ class CfgVehicles {
                             ALiVE_showWhen[] = {{"commanderPicture", "is", "orders"}};
                     };
 
+                    // ---- Commander seat: one player per side directs the AI Commander ----
+                    class HDR_COMMANDER_SEAT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_COMMANDER_SEAT"; displayName = "COMMANDER SEAT"; };
+                    class commanderSeat : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_commanderSeat";
+                            displayName = "$STR_ALIVE_C2ISTAR_SEAT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SEAT_COMMENT";
+                            defaultValue = """OFF""";
+                            class Values
+                            {
+                                    class Off  { name = "$STR_ALIVE_C2ISTAR_SEAT_OFF";  value = "OFF"; default = 1; };
+                                    class Side { name = "$STR_ALIVE_C2ISTAR_SEAT_SIDE"; value = "SIDE"; };
+                            };
+                    };
+                    class commanderSeatWho { property = "ALiVE_MIL_C2ISTAR_commanderSeatWho"; displayName = "$STR_ALIVE_C2ISTAR_SEAT_WHO"; tooltip = "$STR_ALIVE_C2ISTAR_SEAT_WHO_COMMENT"; control = "ALiVE_C2ISTARSeatWhoChoice"; typeName = "STRING"; defaultValue = """LEADER,ITEM"""; ALiVE_showWhen[] = {{"commanderSeat", "is", "side"}}; };
+                    class commanderSeatList : Edit { property = "ALiVE_MIL_C2ISTAR_commanderSeatList"; displayName = "$STR_ALIVE_C2ISTAR_SEAT_LIST"; tooltip = "$STR_ALIVE_C2ISTAR_SEAT_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; ALiVE_showWhen[] = {{"commanderSeat", "is", "side"}, {"commanderSeatWho", "has", "LIST"}}; };
+                    class commanderSeatEmpty : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_commanderSeatEmpty";
+                            displayName = "$STR_ALIVE_C2ISTAR_SEAT_EMPTY";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SEAT_EMPTY_COMMENT";
+                            defaultValue = """ANYONE""";
+                            class Values
+                            {
+                                    class Anyone { name = "$STR_ALIVE_C2ISTAR_SEAT_EMPTY_ANYONE"; value = "ANYONE"; default = 1; };
+                                    class Nobody { name = "$STR_ALIVE_C2ISTAR_SEAT_EMPTY_NOBODY"; value = "NOBODY"; };
+                            };
+                            ALiVE_showWhen[] = {{"commanderSeat", "is", "side"}};
+                    };
+                    class commanderSeatRelease : Edit { property = "ALiVE_MIL_C2ISTAR_commanderSeatRelease"; displayName = "$STR_ALIVE_C2ISTAR_SEAT_RELEASE"; tooltip = "$STR_ALIVE_C2ISTAR_SEAT_RELEASE_COMMENT"; typeName = "STRING"; defaultValue = """3"""; ALiVE_showWhen[] = {{"commanderSeat", "is", "side"}}; };
+
                     // ---- Operations tablet -------------------------------------------
                     class SPACER_ROLE_OPS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_OPS"; displayName = "OPERATIONS TABLET"; };
                     class gmLimit : Combo

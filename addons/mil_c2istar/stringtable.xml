@@ -494,6 +494,72 @@
 <Key ID="STR_ALIVE_C2ISTAR_COMMANDER_CONTROLS_COMMENT">
     <English>Who may pause and resume the AI Commander, change its stance, and set its Intel Wait and how sure it must be, from the Commander &gt; button on the tablet's Commander's Picture page. Only with Commander's Picture at Read and orders, and only for players the Ops limit admits. Admins only (the default): a logged-in admin, the host of a hosted game, or the player in singleplayer. Anyone allowed to give orders: every player the Ops limit admits. A stance change also needs the OPCOM stance control setting on. Changes last until the mission is loaded from a save.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT">
+    <English>Commander Seat</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_COMMENT">
+    <English>One player per side can take command of the side's AI Commanders from the tablet. While someone holds the seat, only they (and admins, Zeus and the War Room) can give the commander objectives, picture orders and controls. The holder can also pause it and change its stance, even with Commander Controls set to Admins only. Off (the default): no seat, and the Ops limit, Commander's Picture and Commander Controls decide as before.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_OFF">
+    <English>Off</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_SIDE">
+    <English>One per side</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO">
+    <English>Who Can Take Command</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_COMMENT">
+    <English>Who on a side may take its Commander seat. Any ticked row lets a player in. Admins always can.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_SIDE">
+    <English>Anyone on the side</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_SIDE_COMMENT">
+    <English>Every player of the side.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_LEADER">
+    <English>Group leaders</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_LEADER_COMMENT">
+    <English>A player leading a group with another player in it.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_ITEM">
+    <English>Carrying a tablet</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_ITEM_COMMENT">
+    <English>A player carrying the ALiVE tablet or a C2ISTAR access item.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_LIST">
+    <English>Named players</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_WHO_LIST_COMMENT">
+    <English>Players named in the list below.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_LIST">
+    <English>Commander Names</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_LIST_COMMENT">
+    <English>Who may take command, comma separated: player IDs, unit classes or slot variable names, for example: hq_commander, B_officer_F</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_EMPTY">
+    <English>While Nobody Holds It</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_EMPTY_COMMENT">
+    <English>Who can direct the commander while the seat is empty. Anyone allowed (the default): the players the Ops limit, Commander's Picture and Commander Controls already allow. Nobody: only admins, Zeus and the War Room until someone takes command.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_EMPTY_ANYONE">
+    <English>Anyone allowed</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_EMPTY_NOBODY">
+    <English>Nobody</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_RELEASE">
+    <English>Free The Seat After (min)</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_RELEASE_COMMENT">
+    <English>Minutes a commander can be disconnected before the seat is free again. Rejoining in time keeps it. Dying does not free it.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_COMMANDER_PICTURE">
     <English>Commander's Picture</English>
 </Key>

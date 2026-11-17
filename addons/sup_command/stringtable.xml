@@ -901,4 +901,82 @@
 <Key ID="STR_ALIVE_SCOM_CMD_ROWS">
     <English>%1 objectives. Pick one to see it on the map.</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_BUTTON">
+    <English>Command &gt;</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_BUTTON_COMMENT">
+    <English>Who holds command of your side, and taking it, handing it over or standing down.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_TITLE">
+    <English>Commander Seat</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_OFF">
+    <English>The mission maker hasn't turned the Commander seat on.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_YOURS">
+    <English>You hold command of your side.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_EMPTY">
+    <English>Nobody holds command of your side.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_HELD">
+    <English>%1 holds command of your side.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_MAY_ORDER">
+    <English>You can give the AI Commander orders.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_MAY_NOT_TAKE">
+    <English>The mission maker hasn't let you take command.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_OFFERED">
+    <English>%1 offers you command of your side.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_HAND_ROW">
+    <English>Hand command to %1</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_ANSWER_HINT">
+    <English>Accept or decline within a minute.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_HAND_HINT">
+    <English>Pick a player to hand command to, or stand down.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_TAKE">
+    <English>Take command</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_TAKE_COMMENT">
+    <English>Become your side's commander. While you hold command, only you (and admins) give the AI Commander objectives and orders.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_STAND_DOWN">
+    <English>Stand down</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_STAND_DOWN_COMMENT">
+    <English>Give up command, so someone else can take it.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_RELIEVE">
+    <English>Relieve</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_RELIEVE_COMMENT">
+    <English>Admins: take command away from the current commander.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_HAND_OVER">
+    <English>Hand over</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_HAND_OVER_COMMENT">
+    <English>Offer command to the picked player. They have a minute to accept.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_ACCEPT">
+    <English>Accept</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_ACCEPT_COMMENT">
+    <English>Take command of your side.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DECLINE">
+    <English>Decline</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DECLINE_COMMENT">
+    <English>Turn the offer down.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SET_READONLY_SEAT">
+    <English>Read only: another player holds command of your side (see Command).</English>
+</Key>
 </Container></Package></Project>

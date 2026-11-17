@@ -31,7 +31,8 @@ On refusal: [false, reason] or, for a cooldown, [false, "cooldown", seconds left
 "refused" (remoteExec'd or not the server), "badargs", "disabled" (no Player Command module or
 Player Objectives off), "nocommander", "quota", "cooldown", "dugin", "asym", "busy" (two orders
 already out), "nogroup", "notready" (the commander couldn't take the order just then), "gone" (no
-such objective), "notplayer" (an objective the commander set itself)
+such objective), "notplayer" (an objective the commander set itself), "notyours" (cancel: an
+objective Zeus set)
 
 Examples:
 (begin example)
@@ -107,10 +108,13 @@ if (_op == "add") exitWith {
 
     // in one go, as the map markers do, so two orders at once can't both pass the cooldown and the cap
     private _r = [];
-    isNil { _r = [_h, "opsAddObjectiveFor", [_opcoms select 0, _pos, _intent, "WARROOM_" + _sideText]] call ALiVE_fnc_commandHandler };
+    isNil { _r = [_h, "opsAddObjectiveFor", [_opcoms select 0, _pos, _intent, "WARROOM_" + _sideText, "warroom"]] call ALiVE_fnc_commandHandler };
     _r params ["_ok", "_code", "_text", ["_extra", ""]];
     format ["%1 asked %2 to %3 %4: %5", _by, _sideText, _intent, _grid, _text] call _say;
     if (!_ok) exitWith { if (_code == "cooldown") then { [false, _code, _extra] } else { [false, _code] } };
+    // with the Commander seat on, the side hears of it as it does of its commander's own orders
+    [_h, "cmdSideNotify", [_sideText, format ["%1: %2 at grid %3.", _by,
+        switch (_intent) do { case "sad": {"search and destroy"}; default {_intent} }, _grid], _pos]] call ALiVE_fnc_commandHandler;
     [true, _text, _extra]
 };
 
@@ -128,12 +132,19 @@ if !([_objective, "playerCreated", false] call ALiVE_fnc_hashGet) exitWith {
     format ["%1 asked %2 to %3 %4: the commander set that one itself", _by, _sideText, _op, _objectiveID] call _say;
     [false, "notplayer"]
 };
+// Zeus's own objectives are cancelled only by Zeus
+if (_op == "cancel" && {([_objective, "issuedBy", "player"] call ALiVE_fnc_hashGet) == "zeus"}) exitWith {
+    format ["%1 asked %2 to cancel %3: Zeus set that one", _by, _sideText, _objectiveID] call _say;
+    [false, "notyours"]
+};
 
 private _text = "";
 isNil {
     if (_op == "cancel") then {
         [_opcom, "removeObjective", _objectiveID] call ALiVE_fnc_OPCOM;
         _text = "Objective cancelled";
+        private _at = [_objective, "center", [0, 0, 0]] call ALiVE_fnc_hashGet;
+        [_h, "cmdSideNotify", [_sideText, format ["%1: objective at grid %2 cancelled.", _by, mapGridPosition _at], _at]] call ALiVE_fnc_commandHandler;
     } else {
         // the index read here, as the tablet does: the commander reorders the list as it works
         private _objectives = [_opcom, "objectives", []] call ALiVE_fnc_hashGet;

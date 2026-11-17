@@ -364,6 +364,9 @@ switch (_operation) do {
                 [ALIVE_commandHandler, "opsWatchMarkers"] call ALIVE_fnc_commandHandler;
             };
 
+            // the Commander seat (C2ISTAR's Commander Seat setting): who holds each side's, and the disconnect watch
+            [ALIVE_commandHandler, "cmdSeatWatch"] call ALIVE_fnc_commandHandler;
+
             // mirror the tab limits onto the server handler so caller-side authorization
             // reads the authoritative Eden value, never a client-supplied one
             [ALIVE_commandHandler, "opsLimit", [_logic,"opsLimit"] call MAINCLASS] call ALiVE_fnc_hashSet;
@@ -798,6 +801,12 @@ switch (_operation) do {
                 case "INTEL_SETTINGS": {
 
                     [_logic,"enableCommanderSettings", _data] call MAINCLASS;
+
+                };
+
+                case "CMD_SEAT": {
+
+                    [_logic,"enableCommanderSeat", _data] call MAINCLASS;
 
                 };
 
@@ -1465,6 +1474,7 @@ switch (_operation) do {
                     private _tab = [_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet;
                     if (_tab == "SETTINGS") exitWith { ["INTEL_GET_SETTINGS", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2] };
                     if (_tab == "AIR") exitWith { ["INTEL_AIR_MINE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2] };
+                    if (_tab == "SEAT") exitWith { ["CMD_SEAT_STATUS", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2] };
                     if (_tab != "COMMANDER") exitWith {};
                     ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
@@ -1514,6 +1524,16 @@ switch (_operation) do {
                         [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_WAITING"]] call MAINCLASS;
                         ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
                     } else {
+                        // the Commander seat: who holds command of the side, and taking, handing over or standing down
+                        if (_tab == "SEAT") exitWith {
+                            _editMap ctrlShow false;
+                            _detail ctrlShow false;
+                            [_logic,"cmdListWidth","WIDE"] call MAINCLASS;
+                            _title ctrlSetText localize "STR_ALIVE_SCOM_SEAT_TITLE";
+                            _editList ctrlSetEventHandler ["LBSelChanged", "['INTEL_SEAT_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                            [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_WAITING"]] call MAINCLASS;
+                            ["CMD_SEAT_STATUS", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+                        };
                         // the commander's settings: pause, stance, Intel Wait and how sure it must be
                         if (_tab == "SETTINGS") exitWith {
                             _editMap ctrlShow false;
@@ -1597,6 +1617,49 @@ switch (_operation) do {
                     } foreach [SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
                     [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_ORDER_SENT"]] call MAINCLASS;
                     ["INTEL_ORDER", [getPlayerUID player, _kind, _sel]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
+                case "INTEL_SEAT_SELECT": {
+
+                    // a Commander seat row picked: a player's row lets the commander hand command to them
+
+                    (_args select 0) params ["_selectedList","_selectedIndex"];
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _rows = [_commandState,"cmdSeatRows",[]] call ALIVE_fnc_hashGet;
+                    private _pick = "";
+                    if (_selectedIndex >= 0 && {_selectedIndex < count _rows}) then {
+                        private _key = (_rows select _selectedIndex) select 0;
+                        if ((_key find "PLAYER|") == 0) then { _pick = _key select [7] };
+                    };
+                    [_commandState,"cmdSeatPick",_pick] call ALIVE_fnc_hashSet;
+                    [_logic,"commandState",_commandState] call MAINCLASS;
+                    [_logic,"cmdSeatButtons"] call MAINCLASS;
+
+                };
+
+                case "INTEL_SEAT_ACTION": {
+
+                    // take, stand down, relieve, hand over, accept or decline; the server checks and answers
+
+                    private _kind = _args param [0, ""];
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _uid = getPlayerUID player;
+                    private _ev = switch (_kind) do {
+                        case "TAKE": { ["CMD_SEAT_TAKE", [_uid]] };
+                        case "RELEASE": { ["CMD_SEAT_RELEASE", [_uid]] };
+                        case "RELIEVE": { ["CMD_SEAT_RELEASE", [_uid, ([_commandState,"cmdSeatInfo",[]] call ALIVE_fnc_hashGet) param [1, ""]]] };
+                        case "OFFER": { ["CMD_SEAT_OFFER", [_uid, [_commandState,"cmdSeatPick",""] call ALIVE_fnc_hashGet]] };
+                        case "ACCEPT": { ["CMD_SEAT_ANSWER", [_uid, true]] };
+                        case "DECLINE": { ["CMD_SEAT_ANSWER", [_uid, false]] };
+                        default { [] };
+                    };
+                    if (_ev isEqualTo []) exitWith {};
+                    {
+                        (SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x)) ctrlEnable false;
+                    } foreach [SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR3];
+                    [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_ORDER_SENT"]] call MAINCLASS;
+                    _ev remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
 
@@ -4547,7 +4610,9 @@ switch (_operation) do {
         private _cmdTabOn = _row isEqualTo [] && {([_commandState,"cmdMode","READ"] call ALIVE_fnc_hashGet) != "OFF"}
             && {([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) == "COMMANDER"};
         private _warGo = _cmdTabOn && {missionNamespace getVariable ["ALiVE_OPCOM_held", false]} && {!isMultiplayer || {isServer} || {(call BIS_fnc_admin) > 0}};
-        _go ctrlShow ((_orders && _looking) || _warGo);
+        // and, with the Commander seat on, the Command page
+        private _seatGo = _cmdTabOn && {!_warGo} && {(missionNamespace getVariable ["ALiVE_c2istar_commanderSeat", "OFF"]) == "SIDE"};
+        _go ctrlShow ((_orders && _looking) || _warGo || _seatGo);
         _go ctrlEnable true;
         _look ctrlShow ((_orders && _looking && {(_row param [23, 0]) < 2}) || _cmdTabOn);
         _look ctrlEnable true;
@@ -4580,6 +4645,11 @@ switch (_operation) do {
             _look ctrlSetTooltip localize "STR_ALIVE_SCOM_SET_BUTTON_COMMENT";
             _look ctrlSetEventHandler ["MouseButtonClick", "['INTEL_CMD_TAB',['SETTINGS']] call ALIVE_fnc_SCOMTabletOnAction"];
         };
+        if (_seatGo) then {
+            _go ctrlSetText localize "STR_ALIVE_SCOM_SEAT_BUTTON";
+            _go ctrlSetTooltip localize "STR_ALIVE_SCOM_SEAT_BUTTON_COMMENT";
+            _go ctrlSetEventHandler ["MouseButtonClick", "['INTEL_CMD_TAB',['SEAT']] call ALIVE_fnc_SCOMTabletOnAction"];
+        };
         if (_warGo) then {
             _go ctrlSetText localize "STR_ALIVE_SCOM_CMD_WARGO";
             _go ctrlSetTooltip localize "STR_ALIVE_SCOM_CMD_WARGO_COMMENT";
@@ -4601,6 +4671,12 @@ switch (_operation) do {
             [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _text]] call MAINCLASS;
             ["INTEL_AIR_MINE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
         };
+        if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) == "SEAT") exitwith {
+            [_commandState,"cmdSeatAck",[_text, diag_tickTime]] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+            [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _text]] call MAINCLASS;
+            ["CMD_SEAT_STATUS", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+        };
         if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) == "SETTINGS") exitwith {
             [_commandState,"cmdSetAck",[_text, diag_tickTime]] call ALIVE_fnc_hashSet;
             [_logic,"commandState",_commandState] call MAINCLASS;
@@ -4612,6 +4688,104 @@ switch (_operation) do {
         [_logic,"commandState",_commandState] call MAINCLASS;
         [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, _text]] call MAINCLASS;
         ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+    };
+
+    case "enableCommanderSeat": {
+
+        // the Commander seat page: [uid, [seat on, side text, holder's name or "", you hold it, you may take it, you may
+        // give orders, why not, offered to you by]]. Rows say who holds command and whether you can give orders; the
+        // holder also gets a row per player of the side to hand command to
+
+        if (_args isEqualType []) then {
+
+            private _commandState = [_logic,"commandState"] call MAINCLASS;
+            if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
+            if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "SEAT") exitwith {};
+
+            _args params ["_uid", ["_seat",[]]];
+            _seat params [["_on",false], ["_side",""], ["_holder",""], ["_mine",false], ["_mayTake",false], ["_mayOrder",false], ["_why",""], ["_offeredBy",""]];
+            [_commandState,"cmdSeatInfo",[_on,_side,_holder,_mine,_mayTake,_offeredBy]] call ALIVE_fnc_hashSet;
+
+            // rows: [key, text]
+            private _rows = [];
+            _rows pushBack ["HOLDER", switch (true) do {
+                case (!_on): { localize "STR_ALIVE_SCOM_SEAT_OFF" };
+                case (_mine): { localize "STR_ALIVE_SCOM_SEAT_YOURS" };
+                case (_holder == ""): { localize "STR_ALIVE_SCOM_SEAT_EMPTY" };
+                default { format [localize "STR_ALIVE_SCOM_SEAT_HELD", _holder] };
+            }];
+            if (_on) then {
+                _rows pushBack ["ORDERS", if (_mayOrder) then { localize "STR_ALIVE_SCOM_SEAT_MAY_ORDER" } else { _why }];
+                if (!_mine && {!_mayTake} && {_offeredBy == ""}) then { _rows pushBack ["TAKE", localize "STR_ALIVE_SCOM_SEAT_MAY_NOT_TAKE"] };
+            };
+            if (_offeredBy != "") then { _rows pushBack ["OFFER", format [localize "STR_ALIVE_SCOM_SEAT_OFFERED", _offeredBy]] };
+            if (_mine) then {
+                {
+                    _rows pushBack ["PLAYER|" + getPlayerUID _x, format [localize "STR_ALIVE_SCOM_SEAT_HAND_ROW", name _x]];
+                } forEach (allPlayers select { isPlayer _x && {_x != player} && {side group _x == side group player} });
+            };
+
+            private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+            lbClear _editList;
+            {
+                private _i = _editList lbAdd (_x select 1);
+                _editList lbSetTooltip [_i, _x select 1];
+                _editList lbSetSelectColor [_i, [1,1,1,1]];
+            } forEach _rows;
+            [_commandState,"cmdSeatRows",_rows] call ALIVE_fnc_hashSet;
+            [_commandState,"cmdSeatPick",""] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+
+            [_logic,"cmdSeatButtons"] call MAINCLASS;
+
+            ([_commandState,"cmdSeatAck",["",-1]] call ALIVE_fnc_hashGet) params ["_ack","_ackAt"];
+            [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, switch (true) do {
+                case (_ack != "" && {diag_tickTime - _ackAt < 20}): { _ack };
+                case (_offeredBy != ""): { localize "STR_ALIVE_SCOM_SEAT_ANSWER_HINT" };
+                case (_mine): { localize "STR_ALIVE_SCOM_SEAT_HAND_HINT" };
+                default { "" };
+            }]] call MAINCLASS;
+
+        };
+
+    };
+
+    case "cmdSeatButtons": {
+
+        // the Commander seat page's buttons. BR1: Accept an offer, Stand down, Take command, or (an admin) Relieve the
+        // commander. BR3: Decline an offer, or Hand over once a player is picked
+
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        ([_commandState,"cmdSeatInfo",[]] call ALIVE_fnc_hashGet) params [["_on",false], ["_side",""], ["_holder",""], ["_mine",false], ["_mayTake",false], ["_offeredBy",""]];
+        private _pick = [_commandState,"cmdSeatPick",""] call ALIVE_fnc_hashGet;
+        private _admin = !isMultiplayer || {isServer} || {(call BIS_fnc_admin) > 0};
+        private _b1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+        private _b3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+        private _one = switch (true) do {
+            case (!_on): { [] };
+            case (_offeredBy != ""): { ["STR_ALIVE_SCOM_SEAT_ACCEPT", "ACCEPT"] };
+            case (_mine): { ["STR_ALIVE_SCOM_SEAT_STAND_DOWN", "RELEASE"] };
+            case (_mayTake && {_holder == "" || _admin}): { ["STR_ALIVE_SCOM_SEAT_TAKE", "TAKE"] };
+            case (_admin && {_holder != ""}): { ["STR_ALIVE_SCOM_SEAT_RELIEVE", "RELIEVE"] };
+            default { [] };
+        };
+        private _three = switch (true) do {
+            case (!_on): { [] };
+            case (_offeredBy != ""): { ["STR_ALIVE_SCOM_SEAT_DECLINE", "DECLINE"] };
+            case (_mine && {_pick != ""}): { ["STR_ALIVE_SCOM_SEAT_HAND_OVER", "OFFER"] };
+            default { [] };
+        };
+        {
+            _x params ["_b", "_what"];
+            _b ctrlEnable true;
+            if (_what isEqualTo []) then { _b ctrlShow false } else {
+                _b ctrlShow true;
+                _b ctrlSetText localize (_what select 0);
+                _b ctrlSetTooltip localize ((_what select 0) + "_COMMENT");
+                _b ctrlSetEventHandler ["MouseButtonClick", format ["['INTEL_SEAT_ACTION',['%1']] call ALIVE_fnc_SCOMTabletOnAction", _what select 1]];
+            };
+        } forEach [[_b1, _one], [_b3, _three]];
 
     };
 
@@ -4683,6 +4857,7 @@ switch (_operation) do {
                     case "PICTURE": { "STR_ALIVE_SCOM_SET_READONLY_PICTURE" };
                     case "OPS": { "STR_ALIVE_SCOM_SET_READONLY_OPS" };
                     case "CONTROLS": { "STR_ALIVE_SCOM_SET_READONLY_CONTROLS" };
+                    case "SEAT": { "STR_ALIVE_SCOM_SET_READONLY_SEAT" };
                     default { "STR_ALIVE_SCOM_SET_READONLY" };
                 }) };
                 default { localize "STR_ALIVE_SCOM_SET_PICK" };
@@ -5101,7 +5276,7 @@ switch (_operation) do {
         private _selectedID = [_commandState,"opsObjectivesSelectedID"] call ALIVE_fnc_hashGet;
 
         if (_meta isEqualTo []) then {_meta = [false,0,false,""]};
-        _meta params ["_playerObjectivesEnabled","_cooldownRemaining","_maxReached","_statusText"];
+        _meta params ["_playerObjectivesEnabled","_cooldownRemaining","_maxReached","_statusText",["_seatWhy",""]];
 
         // markers
 
@@ -5110,7 +5285,7 @@ switch (_operation) do {
         private _objMarkers = [];
 
         {
-            _x params ["_objectiveID","_center","_size","_opcom_state","_objectiveType","_playerCreated"];
+            _x params ["_objectiveID","_center","_size","_opcom_state","_objectiveType","_playerCreated",["_issuedBy","player"]];
 
             private _opcomColor = switch (_opcom_state) do {
                 case "unassigned": {"ColorWhite"};
@@ -5137,7 +5312,7 @@ switch (_operation) do {
             _icon setMarkerShapeLocal "ICON";
             ["pin", [_icon, "mil_objective_noShadow", "objective", if (_playerCreated) then {"ColorOrange"} else {_opcomColor}]] call ALiVE_fnc_mapPins;
             _icon setMarkerSizeLocal [0.7,0.7];
-            _icon setMarkerTextLocal (format["%1%2", _forEachIndex + 1, if (_playerCreated) then {" P"} else {""}]);
+            _icon setMarkerTextLocal (format["%1%2", _forEachIndex + 1, if (_playerCreated) then {switch (_issuedBy) do { case "zeus": {" Z"}; case "warroom": {" W"}; default {" P"} }} else {""}]);
 
             _objMarkers pushback _icon;
 
@@ -5151,9 +5326,9 @@ switch (_operation) do {
         lbClear _editList;
 
         {
-            _x params ["_objectiveID","_center","_size","_opcom_state","_objectiveType","_playerCreated"];
+            _x params ["_objectiveID","_center","_size","_opcom_state","_objectiveType","_playerCreated",["_issuedBy","player"]];
 
-            _editList lbAdd format["%1. %2 [%3]%4", _forEachIndex + 1, _objectiveType, toUpper _opcom_state, if (_playerCreated) then {" *PLAYER*"} else {""}];
+            _editList lbAdd format["%1. %2 [%3]%4", _forEachIndex + 1, _objectiveType, toUpper _opcom_state, if (_playerCreated) then {switch (_issuedBy) do { case "zeus": {" *ZEUS*"}; case "warroom": {" *WAR ROOM*"}; default {" *PLAYER*"} }} else {""}];
         } foreach _objectiveData;
 
         _editList ctrlSetEventHandler ["LBSelChanged", "['OPS_OBJECTIVE_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
@@ -5170,7 +5345,8 @@ switch (_operation) do {
         _buttonR1 ctrlShow true;
         _buttonR1 ctrlSetText localize "STR_ALIVE_SCOM_UI_DESIGNATE";
         _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_DESIGNATE',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
-        _buttonR1 ctrlEnable (_playerObjectivesEnabled && {!_maxReached} && {_cooldownRemaining <= 0});
+        // and the Commander seat lets this player give the commander objectives
+        _buttonR1 ctrlEnable (_playerObjectivesEnabled && {!_maxReached} && {_cooldownRemaining <= 0} && {_seatWhy == ""});
 
         private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
         _buttonR2 ctrlShow true;
@@ -5191,6 +5367,9 @@ switch (_operation) do {
         // status - explicit server message wins, otherwise show why
         // designation is unavailable
 
+        if (_statusText == "") then {
+            if (_seatWhy != "") then { _statusText = _seatWhy };
+        };
         if (_statusText == "") then {
             if (_cooldownRemaining > 0) then {
                 _statusText = format["Objective cooldown: %1s", ceil _cooldownRemaining];
@@ -5234,7 +5413,9 @@ switch (_operation) do {
             } foreach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3];
         };
 
-        private _playerCreated = (_objectiveData select _selectedIndex) select 5;
+        // only a player's own can be cancelled here: Zeus's and the War Room's are cancelled where they were set
+        private _playerCreated = ((_objectiveData select _selectedIndex) select 5)
+            && {((_objectiveData select _selectedIndex) param [6, "player"]) == "player"};
 
         private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
         _buttonL1 ctrlShow true;

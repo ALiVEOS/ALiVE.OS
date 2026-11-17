@@ -1525,6 +1525,18 @@ switch(_operation) do {
             // who may pause the commander or change its settings from the page
             private _cc = toUpper format ["%1", _logic getVariable ["commanderControls", "ADMIN"]];
             missionNamespace setVariable ["ALiVE_c2istar_commanderControls", ["ADMIN", _cc] select (_cc in ["ADMIN","OPS"]), true];
+            // the Commander seat: OFF, or SIDE (one player per side directs its commanders). Its rules stay on the server
+            private _seat = toUpper format ["%1", _logic getVariable ["commanderSeat", "OFF"]];
+            missionNamespace setVariable ["ALiVE_c2istar_commanderSeat", ["OFF", _seat] select (_seat in ["OFF","SIDE"]), true];
+            missionNamespace setVariable ["ALiVE_c2istar_commanderSeatWho", ["filter", [format ["%1", _logic getVariable ["commanderSeatWho", "LEADER,ITEM"]], ["SIDE","LEADER","ITEM","LIST"]]] call ALiVE_fnc_siteWho];
+            missionNamespace setVariable ["ALiVE_c2istar_commanderSeatList", ["cleanNames", [format ["%1", _logic getVariable ["commanderSeatList", ""]]]] call ALiVE_fnc_siteWho];
+            private _empty = toUpper format ["%1", _logic getVariable ["commanderSeatEmpty", "ANYONE"]];
+            missionNamespace setVariable ["ALiVE_c2istar_commanderSeatEmpty", ["ANYONE", _empty] select (_empty in ["ANYONE","NOBODY"])];
+            // minutes a commander may be gone before the seat is free again
+            private _release = _logic getVariable ["commanderSeatRelease", "3"];
+            if (_release isEqualType "") then { _release = parseNumber _release };
+            if !(_release isEqualType 0 && {finite _release}) then { _release = 3 };
+            missionNamespace setVariable ["ALiVE_c2istar_commanderSeatRelease", ((_release max 0.5) min 60) * 60];
         };
         ALiVE_c2istar_fnc_atPrison = {
             params ["_pos"];

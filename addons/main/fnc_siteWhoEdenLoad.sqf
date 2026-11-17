@@ -14,6 +14,7 @@ Storage: one string, the ticked rows' tokens comma separated: SIDE, LEADER, the 
 (DEPLOYER on FOBs, OWNER elsewhere), ITEM, LIST.
 
 Each row's text is <prefix><token> in the module's stringtable, its tooltip <prefix><token>_COMMENT.
+An empty owner token leaves the owner row out, for a setting with no site to own (the Commander seat).
 
 Parameters:
     [_display, _value, _titleKey, _default, _prefix, _ownerToken]
@@ -39,7 +40,7 @@ lbClear _list;
     _list lbSetData [_i, _x];
     _list lbSetTooltip [_i, localize (_key + "_COMMENT")];
     if (_x in _picked) then { _list lbSetSelected [_i, true] };
-} forEach ["SIDE", "LEADER", _ownerToken, "ITEM", "LIST"];
+} forEach (["SIDE", "LEADER", _ownerToken, "ITEM", "LIST"] select { _x != "" });
 
 // a plain click ticks or unticks just that row, and ticked rows read [+], as on ALiVE's other lists
 [_list] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenListToggle.sqf';

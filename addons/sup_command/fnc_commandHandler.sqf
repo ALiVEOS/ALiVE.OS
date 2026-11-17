@@ -357,6 +357,36 @@ switch(_operation) do {
 
                 };
 
+                case "CMD_SEAT_STATUS": {
+
+                    [_logic,"cmdSeatStatus", _data select [0, 1]] call MAINCLASS;
+
+                };
+
+                case "CMD_SEAT_TAKE": {
+
+                    [_logic,"cmdSeatTake", _data select [0, 1]] call MAINCLASS;
+
+                };
+
+                case "CMD_SEAT_RELEASE": {
+
+                    [_logic,"cmdSeatRelease", _data select [0, 2]] call MAINCLASS;
+
+                };
+
+                case "CMD_SEAT_OFFER": {
+
+                    [_logic,"cmdSeatOffer", _data select [0, 2]] call MAINCLASS;
+
+                };
+
+                case "CMD_SEAT_ANSWER": {
+
+                    [_logic,"cmdSeatAnswer", _data select [0, 2]] call MAINCLASS;
+
+                };
+
                 case "OPS_ADD_OBJECTIVE": {
 
                     // a marker is only ever linked by the server's own marker watch
@@ -2554,7 +2584,9 @@ switch(_operation) do {
                             [_x,"size",150] call ALiVE_fnc_hashGet,
                             [_x,"opcom_state","unassigned"] call ALiVE_fnc_hashGet,
                             [_x,"objectiveType","unknown"] call ALiVE_fnc_hashGet,
-                            [_x,"playerCreated",false] call ALiVE_fnc_hashGet
+                            [_x,"playerCreated",false] call ALiVE_fnc_hashGet,
+                            // who set it: "player", "warroom" or "zeus"
+                            [_x,"issuedBy","player"] call ALiVE_fnc_hashGet
                         ];
                     } foreach ([_opcom,"objectives",[]] call ALiVE_fnc_HashGet);
                 };
@@ -2577,8 +2609,14 @@ switch(_operation) do {
                 _maxReached = ([_logic,"opsCountPlayerObjectives", _selOpcom select 2] call MAINCLASS) >= _maxObjectives;
             };
 
+            // the Commander seat's refusal, if it stops this player: the tablet greys Designate and says why
+            private _seatWhy = "";
+            if (!isnil "_opcom" && {!([_logic,"cmdMayDirect",[_playerID,_selOpcom select 2]] call MAINCLASS)}) then {
+                _seatWhy = [_logic,"cmdWhyNot",[_playerID,_selOpcom select 2]] call MAINCLASS;
+            };
+
             private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
-            ["OPS_OBJECTIVES", [_playerID,[_selOpcom,_objectiveData,[_enabled,_cooldownRemaining,_maxReached,_statusText]]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+            ["OPS_OBJECTIVES", [_playerID,[_selOpcom,_objectiveData,[_enabled,_cooldownRemaining,_maxReached,_statusText,_seatWhy]]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
 
         };
 
@@ -2587,7 +2625,7 @@ switch(_operation) do {
     case "opsCountPlayerObjectives": {
 
         // player-designated objectives currently active across all commanders
-        // of the given side
+        // of the given side; Zeus's own are outside the players' cap
 
         private _side = _args;
         private _count = 0;
@@ -2595,7 +2633,7 @@ switch(_operation) do {
         if (!isnil "OPCOM_instances") then {
             {
                 if (([_x,"side",""] call ALiVE_fnc_hashGet) == _side) then {
-                    _count = _count + ({[_x,"playerCreated",false] call ALiVE_fnc_hashGet} count ([_x,"objectives",[]] call ALiVE_fnc_HashGet));
+                    _count = _count + ({[_x,"playerCreated",false] call ALiVE_fnc_hashGet && {([_x,"issuedBy","player"] call ALiVE_fnc_hashGet) != "zeus"}} count ([_x,"objectives",[]] call ALiVE_fnc_HashGet));
                 };
             } foreach OPCOM_instances;
         };
@@ -2731,11 +2769,15 @@ switch(_operation) do {
         // Ops limit, and the C2ISTAR Commander Controls setting (admins only, the default, or anyone the Ops limit
         // admits). The host and singleplayer count as an admin. [player, uid, commander]
 
+        // With the Commander seat on, its holder may too, and anyone else only while the seat lets them give orders.
         _args params ["_player","_playerID","_opcom"];
+        private _opcomSide = [_opcom,"side",""] call ALiVE_fnc_hashGet;
         _result = (missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) == "ORDERS"
             && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS}
-            && {(missionNamespace getVariable ["ALiVE_c2istar_commanderControls", "ADMIN"]) == "OPS"
-                || {!isMultiplayer} || {owner _player == 2} || {(admin owner _player) > 0}};
+            && {!isMultiplayer || {owner _player == 2} || {(admin owner _player) > 0}
+                || {[_logic,"cmdIsHolder",[_playerID,_opcomSide]] call MAINCLASS}
+                || {(missionNamespace getVariable ["ALiVE_c2istar_commanderControls", "ADMIN"]) == "OPS"
+                    && {[_logic,"cmdMayDirect",[_playerID,_opcomSide]] call MAINCLASS}}};
 
     };
 
@@ -2766,6 +2808,8 @@ switch(_operation) do {
         _result = switch (true) do {
             case ((missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "ORDERS"): { "PICTURE" };
             case (!([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS)): { "OPS" };
+            // someone else holds the Commander seat, or nobody does and the seat lets nobody else give orders
+            case (!([_logic,"cmdMayDirect",[_playerID,[_opcom,"side",""] call ALiVE_fnc_hashGet]] call MAINCLASS)): { "SEAT" };
             default { "CONTROLS" };
         };
 
@@ -2786,7 +2830,9 @@ switch(_operation) do {
             private _out = [];
             if ((missionNamespace getVariable ["ALiVE_c2istar_commanderPicture", "READ"]) != "OFF" && {!isNil "OPCOM_instances"}) then {
                 private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
-                private _mayStance = [_logic,"intelMayStance",[_player]] call MAINCLASS;
+                // the C2ISTAR menu's stance rule, and the Commander seat's
+                private _mayStance = [_logic,"intelMayStance",[_player]] call MAINCLASS
+                    && {[_logic,"cmdMayDirect",[_playerID,_side]] call MAINCLASS};
                 {
                     private _opcom = _x;
                     if (([_opcom,"side",""] call ALiVE_fnc_hashGet) == _side
@@ -2839,10 +2885,11 @@ switch(_operation) do {
             private _opcom = OPCOM_instances select _i;
             // a stance change also goes through on the C2ISTAR menu's own rule (intelMayStance)
             if (!([_logic,"intelMayControl",[_player,_playerID,_opcom]] call MAINCLASS)
-                && {!(_kind == "STANCE" && {[_logic,"intelMayStance",[_player]] call MAINCLASS})}) exitWith {
+                && {!(_kind == "STANCE" && {[_logic,"intelMayStance",[_player]] call MAINCLASS} && {[_logic,"cmdMayDirect",[_playerID,_side]] call MAINCLASS})}) exitWith {
                 (switch ([_logic,"intelWhyReadOnly",[_playerID,_opcom]] call MAINCLASS) do {
                     case "PICTURE": { "Commander's Picture on the C2ISTAR module is Read only, so the tablet can't change the commander." };
                     case "OPS": { "The Ops limit on the C2ISTAR module doesn't let you change this commander." };
+                    case "SEAT": { [_logic,"cmdWhyNot",[_playerID,_side]] call MAINCLASS };
                     default { "Only admins can change the commander from the tablet (Commander Controls on the C2ISTAR module)." };
                 }) call _reply;
             };
@@ -2997,6 +3044,10 @@ switch(_operation) do {
             if !(_kind in ["GO","LOOK","STRIKE"]) exitWith {};
 
             private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+            // the Commander seat: while someone holds command, only they (and admins) give picture orders
+            if !([_logic,"cmdMayDirect",[_playerID,_side]] call MAINCLASS) exitWith {
+                ([_logic,"cmdWhyNot",[_playerID,_side]] call MAINCLASS) call _reply;
+            };
             private _opcoms = (missionNamespace getVariable ["OPCOM_instances", []]) select {
                 ([_x,"side",""] call ALiVE_fnc_hashGet) == _side
                 && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_x,"opsLimit"]] call MAINCLASS}
@@ -3161,9 +3212,22 @@ switch(_operation) do {
                 if (_marker != "") then { ["You can't direct that commander"] call _fnc_reply };
             };
 
+            // the Commander seat: while someone holds command, only they (and admins) give the commander objectives
+            private _opcomSide = if (isnil "_opcom") then {""} else {[_opcom,"side",""] call ALiVE_fnc_hashGet};
+            if (_opcomSide != "" && {!([_logic,"cmdMayDirect",[_playerID,_opcomSide]] call MAINCLASS)}) exitwith {
+                [[_logic,"cmdWhyNot",[_playerID,_opcomSide]] call MAINCLASS] call _fnc_reply;
+            };
+
             // the checks and the order itself are shared with the War Room's entry (ALiVE_fnc_SCOMCmdrObjectiveOrder)
             private _r = [_logic,"opsAddObjectiveFor",[_opcom,_pos,_intent,_playerID]] call MAINCLASS;
             _r params ["_ok","_code","_text",["_objectiveID",""]];
+
+            if (_ok) then {
+                private _who = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                [_logic,"cmdSideNotify",[_opcomSide, format ["Commander (%1): %2 at grid %3.", if (isNull _who) then {"?"} else {name _who},
+                    switch (_intent) do { case "take": {"take"}; case "hold": {"hold"}; case "recon": {"recon"}; case "sad": {"search and destroy"}; case "ambush": {"ambush"}; default {"objective"} },
+                    mapGridPosition _pos], _pos]] call MAINCLASS;
+            };
 
             // a marker that made it: deleting the marker takes the objective away again
             if (_ok && {_marker != ""} && {_objectiveID isEqualType ""} && {_objectiveID != ""}) then {
@@ -3184,9 +3248,11 @@ switch(_operation) do {
         // check the tablet makes. _cooldownKey is whose cooldown it counts against: a player's UID, or the War Room's
         // key for a side. Returns [ok, code, text, objective id or seconds left]; the code is "" on success, else
         // nocommander / cooldown / asym / dugin / busy / nogroup / notready / quota. Unscheduled callers only: the
-        // cooldown and the cap are read and written in one go.
+        // cooldown and the cap are read and written in one go. _source is who set it ("player", "warroom" or "zeus"),
+        // kept on the objective as issuedBy: a Zeus objective is outside the players' cap, and only its source cancels it.
 
-        _args params ["_opcom",["_pos",[],[[]]],["_intent","",[""]],["_cooldownKey","",[""]]];
+        _args params ["_opcom",["_pos",[],[[]]],["_intent","",[""]],["_cooldownKey","",[""]],["_source","player",[""]]];
+        if !(_source in ["player","warroom","zeus"]) then { _source = "player" };
 
         _result = [false,"nocommander","No commander to take it"];
 
@@ -3301,6 +3367,7 @@ switch(_operation) do {
         private _objective = [_opcom,"addObjective",[_objectiveID,_pos,100,"custom",100,_state,"none",_opcomID,true,true]] call ALiVE_fnc_OPCOM;
         if (isNil "_objective") exitwith { _result = [false,"notready","The commander can't take orders just now"] };
         if (_intent != "") then { [_objective,"playerIntent",_intent] call ALiVE_fnc_hashSet };
+        [_objective,"issuedBy",_source] call ALiVE_fnc_hashSet;
         [_cooldowns,_cooldownKey,time] call ALiVE_fnc_hashSet;
 
         _result = [true,"",switch (_intent) do { case "take": {"Objective designated: take it"}; case "hold": {"Objective designated: hold it"}; default {"Objective designated"} },_objectiveID];
@@ -3374,9 +3441,14 @@ switch(_operation) do {
             private _opcom = [ALIVE_commandHandler,"opsFindOPCOM", _sel select 0] call ALiVE_fnc_commandHandler;
             if (isNil "_opcom") exitWith {};
             private _objective = [_opcom,"getObjectiveByID",_objectiveID] call ALiVE_fnc_OPCOM;
-            if (!isNil "_objective" && {[_objective,"playerCreated",false] call ALiVE_fnc_hashGet}) then {
-                [_opcom,"removeObjective",_objectiveID] call ALiVE_fnc_OPCOM;
-            };
+            if (isNil "_objective" || {!([_objective,"playerCreated",false] call ALiVE_fnc_hashGet)}) exitWith {};
+            // with the Commander seat on, only a player who may still give orders takes it away; anyone else's
+            // marker just stops pointing at it
+            private _side = [_opcom,"side",""] call ALiVE_fnc_hashGet;
+            if !([ALIVE_commandHandler,"cmdMayDirect",[_uid,_side]] call ALiVE_fnc_commandHandler) exitWith {};
+            private _center = [_objective,"center",[0,0,0]] call ALiVE_fnc_hashGet;
+            [_opcom,"removeObjective",_objectiveID] call ALiVE_fnc_OPCOM;
+            [ALIVE_commandHandler,"cmdSideNotify",[_side, format ["Commander: objective at grid %1 cancelled.", mapGridPosition _center], _center]] call ALiVE_fnc_commandHandler;
         }];
 
     };
@@ -3406,6 +3478,11 @@ switch(_operation) do {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
             };
 
+            private _opcomSide = [_opcom,"side",""] call ALiVE_fnc_hashGet;
+            if !([_logic,"cmdMayDirect",[_playerID,_opcomSide]] call MAINCLASS) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,[_logic,"cmdWhyNot",[_playerID,_opcomSide]] call MAINCLASS]] call MAINCLASS;
+            };
+
             private _objective = [_opcom,"getObjectiveByID",_objectiveID] call ALiVE_fnc_OPCOM;
 
             if (isnil "_objective") exitwith {
@@ -3418,7 +3495,17 @@ switch(_operation) do {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Only player-designated objectives can be cancelled"]] call MAINCLASS;
             };
 
+            // one set by Zeus or the War Room is cancelled only there
+            private _source = [_objective,"issuedBy","player"] call ALiVE_fnc_hashGet;
+            if (_source != "player") exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,["The War Room set that objective, so only the War Room can cancel it","Zeus set that objective, so only Zeus can cancel it"] select (_source == "zeus")]] call MAINCLASS;
+            };
+
             [_opcom,"removeObjective",_objectiveID] call ALiVE_fnc_OPCOM;
+
+            private _who = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            private _at = [_objective,"center",[0,0,0]] call ALiVE_fnc_hashGet;
+            [_logic,"cmdSideNotify",[_opcomSide, format ["Commander (%1): objective at grid %2 cancelled.", if (isNull _who) then {"?"} else {name _who}, mapGridPosition _at], _at]] call MAINCLASS;
 
             [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objective cancelled"]] call MAINCLASS;
 
@@ -3451,6 +3538,11 @@ switch(_operation) do {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
             };
 
+            private _opcomSide = [_opcom,"side",""] call ALiVE_fnc_hashGet;
+            if !([_logic,"cmdMayDirect",[_playerID,_opcomSide]] call MAINCLASS) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,[_logic,"cmdWhyNot",[_playerID,_opcomSide]] call MAINCLASS]] call MAINCLASS;
+            };
+
             // recompute the index server-side - the FSM churns the array, a
             // client-held index may be stale by the time the event arrives
 
@@ -3465,6 +3557,315 @@ switch(_operation) do {
 
             [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
 
+        };
+
+    };
+
+    // ---- The Commander seat (C2ISTAR's Commander Seat setting): one player per side directs its AI Commanders ----
+    // Seats live on the server in ALiVE_SCOM_commandSeats: side text -> [uid, name, taken at, gone since (-1 while
+    // connected)]. ALiVE_SCOM_seatHolders, [[side text, name], ...], is public so every machine can show who holds them.
+
+    case "cmdSeatOn": {
+        _result = (missionNamespace getVariable ["ALiVE_c2istar_commanderSeat", "OFF"]) == "SIDE";
+    };
+
+    case "cmdSeatHolder": {
+
+        // the side's seat: [uid, name, taken at, gone since], or [] when nobody holds it. [side text]
+
+        private _seats = missionNamespace getVariable ["ALiVE_SCOM_commandSeats", createHashMap];
+        _result = +(_seats getOrDefault [_args, []]);
+
+    };
+
+    case "cmdIsHolder": {
+
+        // does this player hold his side's seat: [uid, side text]
+
+        _args params [["_playerID","",[""]],["_side","",[""]]];
+        private _holder = [_logic,"cmdSeatHolder",_side] call MAINCLASS;
+        _result = [_logic,"cmdSeatOn"] call MAINCLASS && {_holder isNotEqualTo []} && {(_holder select 0) == _playerID};
+
+    };
+
+    case "cmdMayDirect": {
+
+        // the seat's own check, made on top of the Ops limit and the other settings: [uid, side text]. True with the
+        // seat off, for an admin, for the side's seat holder, and with the seat empty when the mission maker lets
+        // anyone allowed give orders then
+
+        _args params [["_playerID","",[""]],["_side","",[""]]];
+        _result = true;
+        if !([_logic,"cmdSeatOn"] call MAINCLASS) exitWith {};
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (!isNull _player && {["isAdmin", [_player]] call ALiVE_fnc_siteWho}) exitWith {};
+        private _holder = [_logic,"cmdSeatHolder",_side] call MAINCLASS;
+        _result = if (_holder isEqualTo []) then {
+            (missionNamespace getVariable ["ALiVE_c2istar_commanderSeatEmpty", "ANYONE"]) == "ANYONE"
+        } else {
+            (_holder select 0) == _playerID
+        };
+
+    };
+
+    case "cmdWhyNot": {
+
+        // the tablet's words for a refusal by cmdMayDirect: [uid, side text]
+
+        _args params [["_playerID","",[""]],["_side","",[""]]];
+        private _holder = [_logic,"cmdSeatHolder",_side] call MAINCLASS;
+        _result = if (_holder isEqualTo []) then {
+            "Nobody holds command of your side. Take command to give the commander orders."
+        } else {
+            format ["%1 holds command of your side, so only they can give the commander orders.", _holder select 1]
+        };
+
+    };
+
+    case "cmdMayTake": {
+
+        // may this player take his side's seat: the Who Can rules on the C2ISTAR module, and admins always. [player]
+
+        private _player = _args;
+        _result = false;
+        if (isNull _player) exitWith {};
+        if (["isAdmin", [_player]] call ALiVE_fnc_siteWho) exitWith { _result = true };
+        _result = ["mayWho", [
+            _player,
+            missionNamespace getVariable ["ALiVE_c2istar_commanderSeatWho", "LEADER,ITEM"],
+            missionNamespace getVariable ["ALiVE_c2istar_commanderSeatList", ""],
+            ""
+        ]] call ALiVE_fnc_siteWho;
+
+    };
+
+    case "cmdSidePlayers": {
+
+        // the players of a side, as the tablet works sides out. [side text]
+
+        private _side = _args;
+        _result = allPlayers select { isPlayer _x && {([_logic,"opsPlayerSideText",_x] call MAINCLASS) == _side} };
+
+    };
+
+    case "cmdSideNotify": {
+
+        // tell a side what its commander was ordered or who holds command: a chat line for each of its players and,
+        // with C2ISTAR's Intel Log on, a line there that late joiners can read. Only while the seat is on, so a
+        // mission without it is told nothing new. [side text, text, position or []]
+
+        _args params [["_side","",[""]],["_text","",[""]],["_pos",[],[[]]]];
+        if (_side == "" || {_text == ""} || {!([_logic,"cmdSeatOn"] call MAINCLASS)}) exitWith {};
+        private _players = [_logic,"cmdSidePlayers",_side] call MAINCLASS;
+        if (_players isNotEqualTo []) then { [format ["ALiVE: %1", _text]] remoteExecCall ["systemChat", _players] };
+        if (count _pos >= 2 && {!isNil "ALIVE_fnc_intelLog"}) then {
+            ["add", [_side, "", "order", _pos, _text, "", "commander"]] call ALIVE_fnc_intelLog;
+        };
+
+    };
+
+    case "cmdSeatPublish": {
+
+        // refresh the public list of who holds each seat
+
+        private _seats = missionNamespace getVariable ["ALiVE_SCOM_commandSeats", createHashMap];
+        private _list = [];
+        { _list pushBack [_x, _y select 1] } forEach _seats;
+        missionNamespace setVariable ["ALiVE_SCOM_seatHolders", _list, true];
+
+    };
+
+    case "cmdSeatSet": {
+
+        // put a player in a side's seat, or empty it: [side text, player or objNull, the side's notification]
+
+        _args params [["_side","",[""]],["_player",objNull,[objNull]],["_text","",[""]]];
+        if (_side == "") exitWith {};
+        private _seats = missionNamespace getVariable ["ALiVE_SCOM_commandSeats", createHashMap];
+        if (isNull _player) then {
+            _seats deleteAt _side;
+        } else {
+            _seats set [_side, [getPlayerUID _player, name _player, time, -1]];
+        };
+        ALiVE_SCOM_commandSeats = _seats;
+        // a hand-over offered by the last commander no longer stands
+        (missionNamespace getVariable ["ALiVE_SCOM_seatOffers", createHashMap]) deleteAt _side;
+        [_logic,"cmdSeatPublish"] call MAINCLASS;
+        ["SCOM Commander seat: %1 - %2", _side, _text] call ALiVE_fnc_dump;
+        [_logic,"cmdSideNotify",[_side,_text,[]]] call MAINCLASS;
+        // every tablet of the side redraws its seat line
+        {
+            [_logic,"cmdSeatStatus",[getPlayerUID _x]] call MAINCLASS;
+        } forEach ([_logic,"cmdSidePlayers",_side] call MAINCLASS);
+
+    };
+
+    case "cmdSeatStatus": {
+
+        // the seat as the tablet shows it: [uid]. Reply CMD_SEAT: [uid, [seat on, side text, holder's name or "",
+        // you hold it, you may take it, you may give orders, why not ("" when you may), offered to you by ("" for none)]]
+
+        _args params [["_playerID","",[""]]];
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _player) exitWith {};
+        private _on = [_logic,"cmdSeatOn"] call MAINCLASS;
+        private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+        private _holder = [_logic,"cmdSeatHolder",_side] call MAINCLASS;
+        private _mine = _holder isNotEqualTo [] && {(_holder select 0) == _playerID};
+        private _may = [_logic,"cmdMayDirect",[_playerID,_side]] call MAINCLASS;
+        private _offer = (missionNamespace getVariable ["ALiVE_SCOM_seatOffers", createHashMap]) getOrDefault [_side, []];
+        private _offeredBy = "";
+        if (_offer isNotEqualTo [] && {(_offer select 1) == _playerID} && {time - (_offer select 2) < 60}) then {
+            _offeredBy = _holder param [1, ""];
+        };
+        ["CMD_SEAT", [_playerID, [
+            _on,
+            _side,
+            _holder param [1, ""],
+            _mine,
+            _on && {!_mine} && {[_logic,"cmdMayTake",_player] call MAINCLASS},
+            _may,
+            ["", [_logic,"cmdWhyNot",[_playerID,_side]] call MAINCLASS] select !_may,
+            _offeredBy
+        ]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+    };
+
+    case "cmdSeatTake": {
+
+        // take command of the caller's side: [uid]. With the seat on, under the Who Can rules (admins always), and only
+        // while nobody else holds it. An admin takes it even from someone else
+
+        _args params [["_playerID","",[""]]];
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _player || {!([_logic,"cmdSeatOn"] call MAINCLASS)}) exitWith {};
+        private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+        private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+        if !(_side in ["WEST","EAST","GUER"]) exitWith { "Your side has no commander to take." call _reply };
+        private _holder = [_logic,"cmdSeatHolder",_side] call MAINCLASS;
+        if (_holder isNotEqualTo [] && {(_holder select 0) == _playerID}) exitWith { "You already hold command." call _reply };
+        private _admin = ["isAdmin", [_player]] call ALiVE_fnc_siteWho;
+        if (_holder isNotEqualTo [] && {!_admin}) exitWith { (format ["%1 already holds command.", _holder select 1]) call _reply };
+        if !([_logic,"cmdMayTake",_player] call MAINCLASS) exitWith { "The mission maker hasn't let you take command." call _reply };
+        [_logic,"cmdSeatSet",[_side,_player,format ["%1 has taken command.", name _player]]] call MAINCLASS;
+        "You hold command of your side." call _reply;
+
+    };
+
+    case "cmdSeatRelease": {
+
+        // stand down: [uid] for the caller's own seat. An admin may name a side to relieve its commander: [uid, side text]
+
+        _args params [["_playerID","",[""]],["_sideAsked","",[""]]];
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _player) exitWith {};
+        private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+        private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+        private _admin = ["isAdmin", [_player]] call ALiVE_fnc_siteWho;
+        if (_admin && {_sideAsked in ["WEST","EAST","GUER"]}) then { _side = _sideAsked };
+        private _holder = [_logic,"cmdSeatHolder",_side] call MAINCLASS;
+        if (_holder isEqualTo []) exitWith { "Nobody holds command." call _reply };
+        private _mine = (_holder select 0) == _playerID;
+        if (!_mine && {!_admin}) exitWith { "Only the commander or an admin can do that." call _reply };
+        [_logic,"cmdSeatSet",[_side,objNull,[format ["%1 has been relieved of command by an admin.", _holder select 1], format ["%1 has stood down from command.", _holder select 1]] select _mine]] call MAINCLASS;
+        (["Commander relieved.", "You have stood down."] select _mine) call _reply;
+
+    };
+
+    case "cmdSeatOffer": {
+
+        // hand command to another player of the side: [uid, the other player's uid]. They have a minute to accept
+
+        _args params [["_playerID","",[""]],["_toID","",[""]]];
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _player) exitWith {};
+        private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+        private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+        if !([_logic,"cmdIsHolder",[_playerID,_side]] call MAINCLASS) exitWith { "Only the commander can hand over command." call _reply };
+        private _to = [_toID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _to || {_toID == _playerID} || {([_logic,"opsPlayerSideText",_to] call MAINCLASS) != _side}) exitWith { "Hand command to another player of your side." call _reply };
+        if !([_logic,"cmdMayTake",_to] call MAINCLASS) exitWith { (format ["%1 isn't allowed to take command.", name _to]) call _reply };
+        private _offers = missionNamespace getVariable ["ALiVE_SCOM_seatOffers", createHashMap];
+        _offers set [_side, [_playerID, _toID, time]];
+        ALiVE_SCOM_seatOffers = _offers;
+        (format ["Command offered to %1. They have a minute to accept.", name _to]) call _reply;
+        [_logic,"cmdSeatStatus",[_toID]] call MAINCLASS;
+        [format ["ALiVE: %1 offers you command of your side. Open the tablet's Command page to accept.", name _player]] remoteExecCall ["systemChat", _to];
+
+    };
+
+    case "cmdSeatAnswer": {
+
+        // the answer to a hand-over: [uid, accepted]. The offer must be theirs, under a minute old, from the commander
+        // who still holds the seat, and they must still be allowed to take it
+
+        _args params [["_playerID","",[""]],["_yes",false,[false]]];
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _player) exitWith {};
+        private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+        private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+        private _offers = missionNamespace getVariable ["ALiVE_SCOM_seatOffers", createHashMap];
+        private _offer = _offers getOrDefault [_side, []];
+        if (_offer isEqualTo [] || {(_offer select 1) != _playerID}) exitWith { "There is no offer of command for you." call _reply };
+        _offers deleteAt _side;
+        private _from = [_offer select 0] call ALiVE_fnc_getPlayerByUID;
+        if (time - (_offer select 2) >= 60 || {!([_logic,"cmdIsHolder",[_offer select 0,_side]] call MAINCLASS)}) exitWith { "That offer has run out." call _reply };
+        if (!_yes) exitWith {
+            "Offer declined." call _reply;
+            if (!isNull _from) then { [format ["ALiVE: %1 declined command.", name _player]] remoteExecCall ["systemChat", _from] };
+        };
+        if !([_logic,"cmdMayTake",_player] call MAINCLASS) exitWith { "The mission maker hasn't let you take command." call _reply };
+        [_logic,"cmdSeatSet",[_side,_player,format ["%1 has handed command to %2.", [name _from, "The commander"] select (isNull _from), name _player]]] call MAINCLASS;
+        "You hold command of your side." call _reply;
+
+    };
+
+    case "cmdSeatWatch": {
+
+        // server, once: a commander who disconnects keeps the seat for the Free The Seat After time and gets it back on
+        // rejoining; one who changes side loses it. Checked every 20 seconds
+
+        if (!isServer || {!isNil "ALiVE_SCOM_seatWatch"}) exitWith {};
+        ALiVE_SCOM_seatWatch = true;
+        if (isNil "ALiVE_SCOM_commandSeats") then { ALiVE_SCOM_commandSeats = createHashMap };
+        [_logic,"cmdSeatPublish"] call MAINCLASS;
+
+        [_logic] spawn {
+            params ["_logic"];
+            while {true} do {
+                sleep 20;
+                private _seats = missionNamespace getVariable ["ALiVE_SCOM_commandSeats", createHashMap];
+                private _release = missionNamespace getVariable ["ALiVE_c2istar_commanderSeatRelease", 180];
+                {
+                    // each seat checked and freed in one go, so a take, hand-over or return in between can't be undone
+                    isNil {
+                    // the stored entry itself, so marking it away or back sticks
+                    private _y = _seats getOrDefault [_x, []];
+                    if (_y isEqualTo []) exitWith {};
+                    _y params ["_uid", "_name", "", "_goneSince"];
+                    private _player = [_uid] call ALiVE_fnc_getPlayerByUID;
+                    private _why = "";
+                    if (isNull _player) then {
+                        if (_goneSince < 0) then {
+                            _y set [3, time];
+                            ["SCOM Commander seat: %1's commander %2 is away", _x, _name] call ALiVE_fnc_dump;
+                        } else {
+                            if (time - _goneSince >= _release) then { _why = format ["%1 has been away too long, so the seat is free.", _name] };
+                        };
+                    } else {
+                        if (_goneSince >= 0) then {
+                            _y set [3, -1];
+                            ["SCOM Commander seat: %1's commander %2 is back", _x, _name] call ALiVE_fnc_dump;
+                        };
+                        // a dead player waiting to respawn has no group, so their side reads wrong until they're back
+                        if (alive _player && {([_logic,"opsPlayerSideText",_player] call ALiVE_fnc_commandHandler) != _x}) then {
+                            _why = format ["%1 has changed side, so the seat is free.", _name];
+                        };
+                    };
+                    if (_why != "") then { [_logic,"cmdSeatSet",[_x,objNull,_why]] call ALiVE_fnc_commandHandler };
+                    };
+                } forEach (keys _seats);
+            };
         };
 
     };
