@@ -48,6 +48,22 @@ if (_profileType == "vehicle") then {
     [_profile,"speedPerSecond","Man" call ALIVE_fnc_vehicleGetSpeedPerSecond] call ALIVE_fnc_hashSet;
 };
 
+// Men riding only in the back of a vehicle another, pinned group crews (a Military Placement vehicle, a
+// pinned post) are not linked to it. Linked, their whole group counted as its cargo: a patrol that had
+// one man sitting in a placed M113 when it despawned took the M113 along on its patrol once virtual,
+// and after a reload the M113's crew came back with the patrol's orders (RSS7, 16 Nov).
+private _ridesOnAPost = {
+    params ["_vehicle", "_group", "_assignment"];
+    if (isNil "ALIVE_profileStationary") exitWith { false };
+    if ((_assignment select [0, 4]) findIf { _x isNotEqualTo [] } >= 0 || {(_assignment param [5, []]) isNotEqualTo []}) exitWith { false };
+    ((_vehicle call ALIVE_fnc_vehicleGetGroupsWithin) findIf {
+        _x != _group && {
+            private _id = (leader _x) getVariable ["profileID", ""];
+            _id != "" && {[ALIVE_profileStationary, _id, false] call ALIVE_fnc_hashGet}
+        }
+    }) >= 0
+};
+
 if(_profileType == "vehicle") then {
 
     _vehicle = _profile select 2 select 10; //[_profile,"vehicle"] call ALIVE_fnc_hashGet;
@@ -70,12 +86,19 @@ if(_profileType == "vehicle") then {
                 _entityProfileActive = _entityProfile select 2 select 1; //[_entityProfile,"active"] call ALIVE_fnc_hashGet;
 
                 _assignment = [_vehicle, _group] call ALIVE_fnc_vehicleAssignmentToProfileVehicleAssignment;
-                _vehicleAssignments = [_profileID,_entityID,_assignment];
 
-                [_profile, "addVehicleAssignment", _vehicleAssignments] call ALIVE_fnc_profileVehicle;
+                if ([_vehicle, _group, _assignment] call _ridesOnAPost) then {
+                    // they get out and their group stays spawned; it despawns on its own
+                    { if (vehicle _x == _vehicle) then { moveOut _x } } forEach units _group;
+                    ["ALiVE profiles - %1 left out of %2: only riding in a pinned group's vehicle", _entityID, _profileID] call ALIVE_fnc_dump;
+                } else {
+                    _vehicleAssignments = [_profileID,_entityID,_assignment];
 
-                if(_entityProfileActive) then {
-                    [_entityProfile,"despawn"] call ALIVE_fnc_profileEntity;
+                    [_profile, "addVehicleAssignment", _vehicleAssignments] call ALIVE_fnc_profileVehicle;
+
+                    if(_entityProfileActive) then {
+                        [_entityProfile,"despawn"] call ALIVE_fnc_profileEntity;
+                    };
                 };
             };
         };
@@ -113,12 +136,18 @@ if(_profileType == "vehicle") then {
                 _vehicleProfileActive = _vehicleProfile select 2 select 1; //[_vehicleProfile,"active"] call ALIVE_fnc_hashGet;
 
                 _assignment = [_vehicle, _group] call ALIVE_fnc_vehicleAssignmentToProfileVehicleAssignment;
-                _vehicleAssignments = [_vehicleID,_profileID,_assignment];
 
-                [_profile, "addVehicleAssignment", _vehicleAssignments] call ALIVE_fnc_profileEntity;
+                if ([_vehicle, _group, _assignment] call _ridesOnAPost) then {
+                    // left out: the men despawn with their group and come back on foot
+                    ["ALiVE profiles - %1 left out of %2: only riding in a pinned group's vehicle", _profileID, _vehicleID] call ALIVE_fnc_dump;
+                } else {
+                    _vehicleAssignments = [_vehicleID,_profileID,_assignment];
 
-                if(_vehicleProfileActive) then {
-                    [_vehicleProfile,"despawn"] call ALIVE_fnc_profileVehicle;
+                    [_profile, "addVehicleAssignment", _vehicleAssignments] call ALIVE_fnc_profileEntity;
+
+                    if(_vehicleProfileActive) then {
+                        [_vehicleProfile,"despawn"] call ALIVE_fnc_profileVehicle;
+                    };
                 };
             };
        };
