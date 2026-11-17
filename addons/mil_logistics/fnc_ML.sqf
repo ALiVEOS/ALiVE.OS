@@ -5120,9 +5120,12 @@ switch(_operation) do {
                 _modulesFactions pushback [_moduleSide,_moduleFactions];
                 _modulesObjectives pushback _objectives;
 
-                // set the faction force pools
+                // give each faction a force pool entry, 0 until the module registers and seeds it. A faction
+                // already in the pool keeps its figure: the saved pool a first module loaded, or a second
+                // module's share, was set back to 0 here and never refilled, so a second commander's side
+                // had no reinforcements after every load
                 {
-                    [ALIVE_globalForcePool,_x,0] call ALIVE_fnc_hashSet;
+                    if !(_x in (ALIVE_globalForcePool select 1)) then { [ALIVE_globalForcePool,_x,0] call ALIVE_fnc_hashSet };
                 } forEach _moduleFactions;
 
             } forEach _modules;
