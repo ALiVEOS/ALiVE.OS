@@ -718,6 +718,32 @@ switch(_operation) do {
                 _resolvedBuildings
             };
 
+            // #1108: with hundreds of scripts running at startup the scheduler gave the placement loops a sliver
+            // of each frame, and one server took 10 min over 94 towns of parked cars and as long again for
+            // civilians. A town's buildings are now worked through unscheduled, up to 20 ms at a time, then the
+            // frame is handed back, so placement runs at full speed without freezing the server. The longest
+            // block and the lowest server fps are kept for the summary line.
+            private _blockLongest = [0, ""];
+            private _fpsLowest = 1000;
+            private _fnc_timeBoxed = {
+                params ["_items", "_fnc", "_town"];
+                private _i = 0;
+                private _n = count _items;
+                while { _i < _n } do {
+                    isNil {
+                        private _start = diag_tickTime;
+                        while { _i < _n && {diag_tickTime - _start < 0.02} } do {
+                            (_items select _i) call _fnc;
+                            _i = _i + 1;
+                        };
+                        private _took = diag_tickTime - _start;
+                        if (_took > (_blockLongest select 0)) then { _blockLongest = [_took, format ["%1, town %2", (_logic getVariable ["startupStage", [""]]) select 0, _town]] };
+                    };
+                    // the loading frames read 1-2 fps on any start, so they are left out
+                    if (time > 1) then { _fpsLowest = _fpsLowest min diag_fps };
+                };
+            };
+
             // Place ambient vehicles
 
             private ["_vehicleClass"];
@@ -770,10 +796,10 @@ switch(_operation) do {
 
                         private _usedPositions = [];
 
-                        {
+                        private _fnc_parkOne = {
                             if(random 1 < _parkingChance) then {
 
-                                private _building = _x;
+                                private _building = _this;
 
                                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
                                 //["LAND CLASSES: %1",_landClasses] call ALIVE_fnc_dump;
@@ -806,8 +832,8 @@ switch(_operation) do {
                                     };
                                 };
                             };
-
-                        } forEach _buildings;
+                        };
+                        [_buildings, _fnc_parkOne, _forEachIndex + 1] call _fnc_timeBoxed;
 
                     } forEach _clusters;
                 };
@@ -1115,9 +1141,9 @@ switch(_operation) do {
 
                     private _buildings = _ambChosen select _forEachIndex;
 
-                    {
+                    private _fnc_civOne = {
 
-                        private _building = _x;
+                        private _building = _this;
 
                         private _unitClass = selectRandom _civClasses;
                         private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
@@ -1207,7 +1233,8 @@ switch(_operation) do {
 
                         _countCivilianUnits = _countCivilianUnits + 1;
 
-                    } forEach _buildings;
+                    };
+                    [_buildings, _fnc_civOne, _forEachIndex + 1] call _fnc_timeBoxed;
 
                     // Publish completed agents per cluster; IDs were allocated during creation.
                     if (count _clusterAgents > 0) then {
@@ -1219,6 +1246,8 @@ switch(_operation) do {
 
             ["AMBCP %1 - Ambient land vehicles placed: %2",_ambientVehicleFactions,_countLandUnits] call ALiVE_fnc_dump;
             ["AMBCP %1 - Ambient civilian units placed: %2",_factions,_countCivilianUnits] call ALiVE_fnc_dump;
+            ["AMBCP %1 - Placement worked in blocks of at most %2 ms (longest: %3); lowest server fps while placing %4",
+                _factions, round ((_blockLongest select 0) * 1000), _blockLongest select 1, round _fpsLowest] call ALiVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
