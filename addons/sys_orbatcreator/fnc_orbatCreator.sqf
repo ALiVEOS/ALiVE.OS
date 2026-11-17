@@ -144,13 +144,6 @@ switch(_operation) do {
 
         [_logic,"arsenalType", _arsenalType] call MAINCLASS;
 
-        // the new studio keeps its own data: none of the classic state below is built for it
-        if (!isNil "ALiVE_fnc_fsEditorChoice" && {([_logic] call ALiVE_fnc_fsEditorChoice) == "studio"}) exitWith {
-            MOD(orbatCreator) = _logic;
-            _logic setVariable ["startupComplete", true];
-            ["module", _logic] spawn ALiVE_fnc_fsStudioStart;
-        };
-
         // data init
 
         // load static data
@@ -289,21 +282,17 @@ switch(_operation) do {
             ["Preload"] call BIS_fnc_arsenal;
         };
 
-        // initialise main menu, once per logic: the studio's start adds the same row
-        // behind the same flag, and CBA's own duplicate check never matches
+        // initialise main menu
 
-        if !(_logic getVariable ["ALiVE_FS_menuAdded", false]) then {
+        [
+            "player",
+            [] call ALiVE_fnc_menuKeys,
+            -9500,
             [
-                "player",
-                [] call ALiVE_fnc_menuKeys,
-                -9500,
-                [
-                    "call ALiVE_fnc_orbatCreatorMenuDef",
-                    ["main", "alive_flexiMenu_rscPopup"]
-                ]
-            ] call CBA_fnc_flexiMenu_Add;
-            _logic setVariable ["ALiVE_FS_menuAdded", true];
-        };
+                "call ALiVE_fnc_orbatCreatorMenuDef",
+                ["main", "alive_flexiMenu_rscPopup"]
+            ]
+        ] call CBA_fnc_flexiMenu_Add;
 
         // set module as startup complete
 
