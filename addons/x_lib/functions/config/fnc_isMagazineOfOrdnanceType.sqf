@@ -130,28 +130,6 @@ private _fnc_nameMatchesAny = {
     (_this findIf { _x in _magazineClassName }) > -1
 };
 
-// the round itself is a rocket: parentage first, then simulation type - mod rocket ammo (e.g. RHS Grad) often has
-// its own class tree but always simulates as a rocket
-private _fnc_isRocketRound = {
-    (_ammo isKindOf ["RocketBase", _cfgAmmoRoot])
-        || {(toLower getText (_ammoCfg >> "simulation")) in ["shotrocket","shotmissile"]}
-        // the vanilla MLRS rocket flies as a submunition carrier; it counts by its magazine's name, but
-        // a mod round built on it (RHS and 3CB M31/M26) does not, so the 3CB M270 HE read as CLUSTER only
-        || {_ammo isKindOf ["R_230mm_HE", _cfgAmmoRoot]}
-};
-
-// a salvo fired as one shot that releases rockets: Spearhead's Calliope fires its 60 M8 rockets that way, so the
-// round is a dispenser and answered CLUSTER only, and a mission stocking Number of ROCKET Rounds for it got no
-// round to offer (#1129). Every submunition must be a rocket; cluster bomblets never are.
-private _fnc_isRocketSalvo = {
-    (call _fnc_isDispenser) && {
-        private _subs = call _fnc_submunitions;
-        (count _subs > 0) && {(_subs findIf {
-            !((_x isKindOf ["RocketBase", _cfgAmmoRoot]) || {(toLower getText (_cfgAmmoRoot >> _x >> "simulation")) in ["shotrocket","shotmissile"]})
-        }) < 0}
-    }
-};
-
 // plain-shell test shared by HE and the CLUSTER carrier arm - shell
 // simulation is the mod-proof fallback when the ammo has its own class tree
 private _fnc_isShell = {
@@ -280,9 +258,7 @@ switch (_ordnanceType) do {
         // A rocket is held out the same way: the MLRS and BM-21 HE rockets are built like that too and answered
         // CLUSTER as well as ROCKETS, so a Cluster mission fired plain HE rockets (14 Nov).
         (getNumber (_ammoCfg >> "laserLock") == 0) && {
-            // the rocket test here is the round itself, not a salvo of rockets: the Calliope answers ROCKETS as a salvo
-            // and keeps CLUSTER, so a mission stocking its Cluster count still fires it (#1129)
-            ((call _fnc_isDispenser) && {!(isText (_ammoCfg >> "submunitionAmmo") && {!isArray (_ammoCfg >> "submunitionConeType")} && {["HE", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType || {((call { ROCKET_SUBSTRINGS }) call _fnc_nameMatchesAny) || {call _fnc_isRocketRound}}})}) || {
+            ((call _fnc_isDispenser) && {!(isText (_ammoCfg >> "submunitionAmmo") && {!isArray (_ammoCfg >> "submunitionConeType")} && {["HE", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType || {["ROCKETS", _magazineClassName] call ALIVE_fnc_isMagazineOfOrdnanceType}})}) || {
                 (call _fnc_isShell)
                     && {!(_ammo isKindOf ["SmokeShell", _cfgAmmoRoot])}
                     && {!(_ammo isKindOf ["FlareCore", _cfgAmmoRoot])}
@@ -315,11 +291,13 @@ switch (_ordnanceType) do {
         }
     };
     case "ROCKETS": {
-        (call _fnc_isRocketRound) || {call _fnc_isRocketSalvo}
-    };
-    case "ROCKET SALVO": {
-        // not a type a module stocks: isRocketArtillery asks it to tell a salvo launcher from rocket artillery
-        call _fnc_isRocketSalvo
+        // parentage first, then simulation type - mod rocket ammo (e.g. RHS
+        // Grad) often has its own class tree but always simulates as a rocket
+        (_ammo isKindOf ["RocketBase", _cfgAmmoRoot])
+            || {(toLower getText (_ammoCfg >> "simulation")) in ["shotrocket","shotmissile"]}
+            // the vanilla MLRS rocket flies as a submunition carrier; it counts by its magazine's name, but
+            // a mod round built on it (RHS and 3CB M31/M26) does not, so the 3CB M270 HE read as CLUSTER only
+            || {_ammo isKindOf ["R_230mm_HE", _cfgAmmoRoot]}
     };
     case "HE": {
         // plain shell only - anything smoke / flare / guided / dispenser /
