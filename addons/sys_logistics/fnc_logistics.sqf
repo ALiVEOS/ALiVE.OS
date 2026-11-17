@@ -1229,6 +1229,16 @@ switch (_operation) do {
                     continue
                 };
 
+                //A vehicle or crate destroyed in an earlier session is dropped from the store here. It used to be
+                //made again only to be deleted below, and its record stayed in the save, so every load repeated it.
+                //An editor-placed object keeps its record: that is what removes it again at the next load.
+                private _savedDamage = [_args,QGVAR(DAMAGE),0] call ALiVE_fnc_HashGet;
+                if (_savedDamage isEqualType 0 && {_savedDamage == 1} && {!(_type isKindOf "House")}) then {
+                    if ((!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable ["DEBUG",false]}) || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then {["SYS LOGISTICS - dropped saved object %1 (%2): it was destroyed in a previous session",_x,_type] call ALiVE_fnc_dump;};
+                    [_logic,"removeObject",_x] call ALiVE_fnc_logistics;
+                    continue
+                };
+
                 if (({_type iskindOf _x} count _blacklist) == 0) then {
 
                     //Get 2D position without altering original data
