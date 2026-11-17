@@ -1488,8 +1488,10 @@ switch(_operation) do {
             // what this player's tablet ended up offering, for the mission maker (one line in this machine's RPT)
             private _nVeh = 0; { _nVeh = _nVeh + count _x } forEach (_sortedVehicles select 2);
             private _nGrp = 0; { { _nGrp = _nGrp + count (_x select 1) } forEach (_x select 2) } forEach (_sortedGroups select 2);
+            // RPT only; it reaches the player's chat only with the module's debug on
             ["ALiVE Lists: the resupply tablet offers %1 vehicles, crates and soldiers and %2 groups to side %3 (%4 factions)%5", _nVeh, _nGrp, _sideText, count (_sortedGroups select 1),
-                ["", ". It offers nothing: check the List, the Factions and the Restriction Type"] select (_nVeh == 0 && {_nGrp == 0})] call ALiVE_fnc_dumpR;
+                ["", ". It offers nothing: check the List, the Factions and the Restriction Type"] select (_nVeh == 0 && {_nGrp == 0})]
+                call ([ALiVE_fnc_dump, ALiVE_fnc_dumpR] select (missionNamespace getVariable ["ALiVE_sup_player_resupply_debug", false]));
 
             [_logic,"sortedVehicles",_sortedVehicles] call MAINCLASS;
 
