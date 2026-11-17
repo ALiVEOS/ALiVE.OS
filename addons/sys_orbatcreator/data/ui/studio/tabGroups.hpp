@@ -88,7 +88,7 @@ class ALiVE_FS_TabGroups : ALiVE_FS_RscGroup {
 
         // How often, 0..1, and its value
         class RarityLabel : ALiVE_FS_RscLabel {
-            text = "$STR_ALIVE_FS_L_RARITY";
+            text = "$STR_ALIVE_FS_L_RARITY_SHORT";
             tooltip = "$STR_ALIVE_FS_L_RARITY";
             y = FS_H(7);
         };

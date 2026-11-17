@@ -41,7 +41,7 @@ class ALiVE_FS_TabExport : ALiVE_FS_RscGroup {
             onCheckedChanged = "['force', _this] call ALiVE_fnc_fsStudioTabExport";
         };
         class ForceLabel : ALiVE_FS_RscLabel {
-            text = "$STR_ALIVE_FS_EX_FORCE";
+            text = "$STR_ALIVE_FS_EX_FORCE_SHORT";
             tooltip = "$STR_ALIVE_FS_EX_FORCE";
             x = FS_W(1);
             y = FS_H(3);

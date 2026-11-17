@@ -147,7 +147,7 @@
     <English>Add</English>
 </Key>
 <Key ID="STR_ALIVE_FS_BTN_DUPLICATE">
-    <English>Duplicate</English>
+    <English>Copy</English>
 </Key>
 <Key ID="STR_ALIVE_FS_BTN_DELETE">
     <English>Delete</English>
@@ -174,7 +174,7 @@
     <English>Remove</English>
 </Key>
 <Key ID="STR_ALIVE_FS_BTN_CHANGE">
-    <English>Change</English>
+    <English>Pick</English>
 </Key>
 <Key ID="STR_ALIVE_FS_BTN_NEW">
     <English>New</English>
@@ -195,7 +195,7 @@
     <English>Flag</English>
 </Key>
 <Key ID="STR_ALIVE_FS_L_FLAG_CUSTOM">
-    <English>Custom flag (.paa path)</English>
+    <English>Flag file</English>
 </Key>
 <Key ID="STR_ALIVE_FS_L_AUTHOR">
     <English>Author</English>
@@ -290,6 +290,9 @@
 <Key ID="STR_ALIVE_FS_L_RARITY">
     <English>How often (0 never, 1 always)</English>
 </Key>
+<Key ID="STR_ALIVE_FS_L_RARITY_SHORT">
+    <English>How often</English>
+</Key>
 <Key ID="STR_ALIVE_FS_L_ICON">
     <English>Map icon</English>
 </Key>
@@ -361,6 +364,9 @@
 </Key>
 <Key ID="STR_ALIVE_FS_EX_FORCE">
     <English>Always apply the loadout, even when something changed the unit first</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EX_FORCE_SHORT">
+    <English>Always apply the loadout</English>
 </Key>
 <Key ID="STR_ALIVE_FS_EX_CHECK">
     <English>Check</English>

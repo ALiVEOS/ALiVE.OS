@@ -82,6 +82,22 @@ class CfgVehicles {
                                 class ACE { name = "$STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_ACE"; value = "ACE"; };
                             };
                     };
+                    // Which editor the module opens. "auto" follows FS_DEFAULT_EDITOR (fs_defines.hpp),
+                    // read by ALiVE_fnc_fsEditorChoice, so missions saved before this existed follow it too.
+                    class studio : Combo
+                    {
+                            property = "ALiVE_sys_orbatcreator_studio";
+                            displayName = "$STR_ALIVE_FS_MODULE_STUDIO";
+                            tooltip = "$STR_ALIVE_FS_MODULE_STUDIO_COMMENT";
+                            typeName = "STRING";
+                            defaultValue = """auto""";
+                            class Values
+                            {
+                                class auto { name = "$STR_ALIVE_FS_MODULE_AUTO"; value = "auto"; default = 1; };
+                                class studio { name = "$STR_ALIVE_FS_NAME"; value = "studio"; };
+                                class classic { name = "$STR_ALIVE_FS_MODULE_CLASSIC"; value = "classic"; };
+                            };
+                    };
                     class ModuleDescription : ModuleDescription {};
                 };
         };
