@@ -144,6 +144,9 @@ _grp setVariable ["supportWeaponCount", count _units];
 //the first spawn does. NEO_fnc_artyUnitAvailableRounds only knows the vanilla classes, so a
 //modded battery came back from a respawn with nothing on its tablet.
 _roundsUnit = (if (count _artyBatteries > 0) then {_artyBatteries select 0} else {_type}) call ALiVE_fnc_GetArtyRounds;
+// #1129 - a gun whose sole round is a salvo of rockets that each become a shell (Spearhead's Calliope)
+// takes Number of ROCKET Rounds too, as on its first spawn
+if (_roundsUnit isEqualTo ["CLUSTER"] && {((if (count _artyBatteries > 0) then {typeOf (_artyBatteries select 0)} else {_type}) call ALIVE_fnc_getArtyMagazines) findIf { ["ROCKET SALVO", _x] call ALIVE_fnc_isMagazineOfOrdnanceType } > -1}) then { _roundsUnit = ["CLUSTER", "ROCKETS"] };
 {
     if ((_x select 0) in _roundsUnit) then
     {

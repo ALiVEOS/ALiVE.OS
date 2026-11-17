@@ -299,6 +299,22 @@ switch (_ordnanceType) do {
             // a mod round built on it (RHS and 3CB M31/M26) does not, so the 3CB M270 HE read as CLUSTER only
             || {_ammo isKindOf ["R_230mm_HE", _cfgAmmoRoot]}
     };
+    case "ROCKET SALVO": {
+        // Not a type any gun lists, and no module stocks it. Combat Support asks it of a gun that answers
+        // CLUSTER and nothing else. Spearhead's Calliope fires each of its 60 M8 rockets as a carrier that
+        // turns into one exploding shell (SPE_R_M8_A3 -> SPE_R_M8_fly). That is no cluster, but nothing
+        // else either, so Combat Support counts those salvos against Number of ROCKET Rounds as well (#1129).
+        // Only one bare submunition with no spread, and it must be an exploding shell.
+        (call _fnc_isDispenser)
+            && {isText (_ammoCfg >> "submunitionAmmo")}
+            && {!isArray (_ammoCfg >> "submunitionConeType")}
+            && {
+                private _sub = getText (_ammoCfg >> "submunitionAmmo");
+                isClass (_cfgAmmoRoot >> _sub)
+                    && {(_sub isKindOf ["ShellBase", _cfgAmmoRoot]) || {(toLower getText (_cfgAmmoRoot >> _sub >> "simulation")) == "shotshell"}}
+                    && {getNumber (_cfgAmmoRoot >> _sub >> "indirectHit") > 0}
+            }
+    };
     case "HE": {
         // plain shell only - anything smoke / flare / guided / dispenser /
         // rocket parented belongs to its own type. Shell simulation is the

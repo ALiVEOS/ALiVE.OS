@@ -1386,6 +1386,18 @@ switch(_operation) do {
                                 };
                             };
 
+                            // #1129 - Spearhead's Calliope answers CLUSTER only: each M8 rocket is a carrier that
+                            // becomes one shell. Missions stock it with Number of ROCKET Rounds, which then offered
+                            // nothing, so a gun whose sole round is such a salvo takes that count too (fired from
+                            // the same magazine by ALIVE_fnc_getArtyMagazineType).
+                            if (_roundsUnit isEqualTo ["CLUSTER"]) then {
+                                private _salvoMags = (([_class, typeOf _probeGun] select (!isNull _probeGun)) call ALIVE_fnc_getArtyMagazines) select { ["ROCKET SALVO", _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
+                                if (_salvoMags isNotEqualTo []) then {
+                                    _roundsUnit = ["CLUSTER", "ROCKETS"];
+                                    ["CS - _roundsUnit (rocket salvo, #1129): %1",_roundsUnit] call ALiVE_fnc_dump;
+                                };
+                            };
+
                             //Validate rounds
                             {
                                 if ((_x select 0) in _roundsUnit) then

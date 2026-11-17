@@ -350,6 +350,9 @@ switch (_support) do
             if (!isNil "_tempclass") then { _tempclass } else { _class }
         };
         private _roundsUnit = _roundsProbe call ALiVE_fnc_GetArtyRounds;
+        // #1129 - a gun whose sole round is a salvo of rockets that each become a shell (Spearhead's Calliope)
+        // takes Number of ROCKET Rounds too, as fnc_combatSupport does
+        if (_roundsUnit isEqualTo ["CLUSTER"] && {((if (_roundsProbe isEqualType objNull) then {typeOf _roundsProbe} else {_roundsProbe}) call ALIVE_fnc_getArtyMagazines) findIf { ["ROCKET SALVO", _x] call ALIVE_fnc_isMagazineOfOrdnanceType } > -1}) then { _roundsUnit = ["CLUSTER", "ROCKETS"] };
         private _roundsAvailable = _rounds select { (_x select 0) in _roundsUnit };
         // a missile launcher (the MK41 VLS, 23 Oct): its count capped and its launchers locked against UAV terminals
         _roundsAvailable = [_roundsProbe, _artyBatteries, _roundsAvailable] call NEO_fnc_artyLauncherSetup;

@@ -79,6 +79,15 @@ if (_ord == "" && {_class isEqualType objNull}) then {
     } forEach _liveMags;
 };
 
+// #1129 - Combat Support offers Number of ROCKET Rounds for a gun whose only round is a salvo of rockets
+// that each turn into a shell (Spearhead's Calliope). Asked for ROCKETS, such a gun has no rocket magazine,
+// so its salvo is fired instead. No gun lists ROCKETS without a rocket magazine, so no other answer changes.
+if (_ord == "" && {_type == "ROCKETS"}) then {
+    private _pool = if (_liveMags isEqualTo []) then { _mags } else { _mags select { _x in _liveMags } };
+    if (_pool isEqualTo [] && {_class isEqualType objNull}) then { _pool = _liveMags };
+    { if (_ord == "" && {["ROCKET SALVO", _x] call ALIVE_fnc_isMagazineOfOrdnanceType}) then { _ord = _x } } forEach _pool;
+};
+
 // "" (not nil) when the gun has nothing of this type - callers pass the
 // result into the fire-mission task array and the range checks
 _ord;
