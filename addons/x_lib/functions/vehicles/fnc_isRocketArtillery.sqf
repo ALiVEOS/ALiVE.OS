@@ -40,7 +40,14 @@ switch (typeName _class) do {
 if !([_class] call ALIVE_fnc_isArtillery) exitWith { false };
 
 private _ordnance = _class call ALiVE_fnc_GetArtyRounds;
-if ("ROCKETS" in _ordnance && {!("HE" in _ordnance)}) exitWith { true };
+// a salvo launcher whose rockets come out of one dispenser shot (Spearhead's Calliope, #1129) answers ROCKETS too,
+// but it is a short-range gun with no minimum range, so placement must not hold it back on small maps: its vote
+// counts only when some ROCKETS magazine is a rocket of its own
+private _salvoOnly = {
+    private _rocketMags = (_class call ALIVE_fnc_getArtyMagazines) select { ["ROCKETS", _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
+    (count _rocketMags > 0) && {(_rocketMags findIf { !(["ROCKET SALVO", _x] call ALIVE_fnc_isMagazineOfOrdnanceType) }) < 0}
+};
+if ("ROCKETS" in _ordnance && {!("HE" in _ordnance)} && {!(call _salvoOnly)}) exitWith { true };
 
 // the ordnance vote above only catches launchers whose rounds classify as
 // ROCKETS with no HE among them; plenty do not. Recognise those by the common
