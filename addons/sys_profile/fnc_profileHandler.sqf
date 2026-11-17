@@ -1171,6 +1171,7 @@ switch(_operation) do {
                         "group",
                         "cargo",
                         "busy",
+                        "busyReason",
                         "companyID",
                         "groupID",
                         "waypoints",
@@ -1584,7 +1585,7 @@ switch(_operation) do {
                             if (_flag isEqualType "") then { _flag = (toLower _flag) == "true" };
                             if !(_flag isEqualType true) then { _flag = false };
                             [_profileEntity, _x, _flag] call ALIVE_fnc_hashSet;
-                            if (_flag) then { [_profileEntity, "busy", true] call ALIVE_fnc_hashSet };
+                            if (_flag) then { [_profileEntity, "busy", true] call ALIVE_fnc_hashSet; [_profileEntity, "busyReason", "war room"] call ALIVE_fnc_hashSet };
                         };
                     } forEach ["warRoomOrdered", "warRoomLocked"];
 
@@ -1682,6 +1683,8 @@ switch(_operation) do {
                         if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
                         [ALIVE_profileStationary, [_profileEntity, "profileID"] call ALIVE_fnc_hashGet, true] call ALIVE_fnc_hashSet;
                         [_profileEntity, "busy", true] call ALIVE_fnc_hashSet;
+                        // like busy, the reason isn't saved: a post brought back pinned is held as a post
+                        [_profileEntity, "busyReason", "post"] call ALIVE_fnc_hashSet;
                     };
 
                     [_profileEntity, "objectType", [_profile,"objectType"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;

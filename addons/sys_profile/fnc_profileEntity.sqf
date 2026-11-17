@@ -401,6 +401,8 @@ switch(_operation) do {
     case "busy": {
         if (_args isEqualType true) then {
             [_logic,"busy", _args] call ALIVE_fnc_hashSet;
+            // why it's held, shown by the War Room, goes with the hold
+            if (!_args) then { [_logic,"busyReason", ""] call ALIVE_fnc_hashSet };
         } else {
             _result = [_logic,"busy"] call ALIVE_fnc_hashGet;
         };

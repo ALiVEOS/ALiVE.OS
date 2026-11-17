@@ -344,7 +344,7 @@ private _fnc_escortRemove = {
             { if (vehicle _x == _veh) then { deleteVehicle _x; }; } forEach (crew _veh);
         };
         if (!isNil "_ep") then {
-            if (_wreck && {_ep select 2 select 1}) then { [_ep, "busy", false] call ALIVE_fnc_hashSet; } else { [_ep, "destroy"] call ALIVE_fnc_profileEntity; };
+            if (_wreck && {_ep select 2 select 1}) then { [_ep, "busy", false] call ALIVE_fnc_hashSet; [_ep, "busyReason", ""] call ALIVE_fnc_hashSet; } else { [_ep, "destroy"] call ALIVE_fnc_profileEntity; };
         };
         if (!isNil "_vp" && {!_wreck}) then {
             [_vp, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
@@ -1460,7 +1460,7 @@ switch(_operation) do {
             if (isNil "_v" || {isNil "_e"} || {_wreck}) then {
                 // what's left of it: a virtual remnant goes, a spawned driver is free for the commander, a wreck stays
                 if (!isNil "_e") then {
-                    if (_e select 2 select 1) then { [_e, "busy", false] call ALIVE_fnc_hashSet; } else { [_e, "destroy"] call ALIVE_fnc_profileEntity; };
+                    if (_e select 2 select 1) then { [_e, "busy", false] call ALIVE_fnc_hashSet; [_e, "busyReason", ""] call ALIVE_fnc_hashSet; } else { [_e, "destroy"] call ALIVE_fnc_profileEntity; };
                 };
                 if (!isNil "_v" && {!_wreck}) then {
                     if (_v select 2 select 1) then {
@@ -7586,7 +7586,7 @@ switch(_operation) do {
                         };
                     };
                 } else {
-                    private _profiles = [_group, _pos, random 360, false, _gFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                    private _profiles = [_group, _pos, random 360, false, _gFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig; { [_x, "busyReason", "logistics"] call ALIVE_fnc_hashSet } forEach _profiles;
                     [_profiles] call _holdAtHub;
                     _made = _made + 1;
                 };
@@ -9265,7 +9265,7 @@ switch(_operation) do {
 
                             if(!(surfaceIsWater _position) || _shipLaunch) then {
 
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig; { [_x, "busyReason", "logistics"] call ALIVE_fnc_hashSet } forEach _profiles;
 
                                 _profileIDs = [];
                                 {
@@ -9675,7 +9675,7 @@ switch(_operation) do {
                             // Start From Ship: the groups are made at the helipad, out at sea, and board straight away
                             if(!(surfaceIsWater _position) || _shipLaunch) then {
 
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig; { [_x, "busyReason", "logistics"] call ALIVE_fnc_hashSet } forEach _profiles;
 
                                 _profileIDs = [];
                                 {
@@ -10179,7 +10179,7 @@ switch(_operation) do {
 
                             if!(surfaceIsWater _position) then {
 
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig; { [_x, "busyReason", "logistics"] call ALIVE_fnc_hashSet } forEach _profiles;
 
                                 _profileIDs = [];
                                 {
@@ -10236,7 +10236,7 @@ switch(_operation) do {
 
                             if!(surfaceIsWater _position) then {
 
-                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                                _profiles = [_group, _position, random(360), false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig; { [_x, "busyReason", "logistics"] call ALIVE_fnc_hashSet } forEach _profiles;
 
                                 _profileIDs = [];
                                 {
@@ -10631,7 +10631,7 @@ switch(_operation) do {
                                             ["ML - PROFILE CREATED [riding - not busy] id=%1 event=%2", _x, _eventID] call ALiVE_fnc_dump;
                                         };
                                     } else {
-                                        [_p, "busy", true] call ALIVE_fnc_hashSet;
+                                        [_p, "busy", true] call ALIVE_fnc_hashSet; [_p, "busyReason", "logistics"] call ALIVE_fnc_hashSet;
                                         if (_debug) then {
                                             private _pPos  = _p select 2 select 2;
                                             private _pName = if (count _pPos > 0) then { [_pPos] call ALIVE_fnc_taskGetNearestLocationName } else { "unknown" };
@@ -10869,7 +10869,7 @@ switch(_operation) do {
                             private _land = _myStop param [2, []];
                             if (count _land < 2 || {surfaceIsWater _land}) then { _land = +_shore };
                             private _dest = _eventData select 0;
-                            private _made = [_vg, _land, _land getDir _dest, false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                            private _made = [_vg, _land, _land getDir _dest, false, _eventFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig; { [_x, "busyReason", "logistics"] call ALIVE_fnc_hashSet } forEach _made;
                             private _ids = _made apply { _x select 2 select 4 };
                             {
                                 if ((_x select 2 select 5) == "entity") then {
@@ -14923,7 +14923,7 @@ switch(_operation) do {
                                         };
                                     };
 
-                                    private _profiles = [_group, _position, random(360), false, _groupFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig;
+                                    private _profiles = [_group, _position, random(360), false, _groupFaction, true, false, "STEALTH"] + (call _fnc_hookArgs) call ALIVE_fnc_createProfilesFromGroupConfig; { [_x, "busyReason", "logistics"] call ALIVE_fnc_hashSet } forEach _profiles;
                                     private _profileIDs = [];
                                     private _containsVehicles = 0;
 
@@ -18030,12 +18030,12 @@ switch(_operation) do {
                                     [_p, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_holdAt, count _entries]]] call ALIVE_fnc_profileEntity;
                                 };
                             };
-                            [_p, "busy", true] call ALIVE_fnc_hashSet;
+                            [_p, "busy", true] call ALIVE_fnc_hashSet; [_p, "busyReason", "logistics"] call ALIVE_fnc_hashSet;
                             if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
                             [ALIVE_profileStationary, _p select 2 select 4, true] call ALIVE_fnc_hashSet;
                         } else {
                             // only the men count for the commander; a vehicle is left free as before
-                            if !(_p select 2 select 1) then { [_p, "busy", false] call ALIVE_fnc_hashSet; };
+                            if !(_p select 2 select 1) then { [_p, "busy", false] call ALIVE_fnc_hashSet; [_p, "busyReason", ""] call ALIVE_fnc_hashSet; };
                         };
                     };
                 } forEach _entry;
@@ -18058,7 +18058,7 @@ switch(_operation) do {
             {
                 _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                 if!(isNil "_profile") then {
-                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                    [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
 
                     // Clear any vehicle assignment left over from heli transport.
                     // Infantry assigned to helis have vehicleAssignments set at creation
@@ -18093,7 +18093,7 @@ switch(_operation) do {
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
-                        [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                        [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
                     };
                 } forEach _x;
 
@@ -18103,7 +18103,7 @@ switch(_operation) do {
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
-                        [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                        [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
                     };
                 } forEach _x;
 
@@ -18113,7 +18113,7 @@ switch(_operation) do {
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
-                        [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                        [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
                     };
                 } forEach _x;
 
@@ -18131,7 +18131,7 @@ switch(_operation) do {
                     {
                         _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                         if!(isNil "_profile") then {
-                            [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                            [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
                         };
                     } forEach _x;
 
@@ -18141,7 +18141,7 @@ switch(_operation) do {
                     {
                         _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                         if!(isNil "_profile") then {
-                            [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                            [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
                         };
                     } forEach _x;
 
@@ -18294,7 +18294,7 @@ switch(_operation) do {
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
-                        [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                        [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
 
                         // Clear any vehicle assignment left over from heli transport.
                         // Player-requested reinforcements inserted via PR_HELI_INSERT
@@ -18336,7 +18336,7 @@ switch(_operation) do {
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
-                        [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                        [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
                         private _vAssign = [_profile, "vehicleAssignments"] call ALIVE_fnc_hashGet;
                         if (([_profile, "type", ""] call ALIVE_fnc_hashGet) == "entity" && {!isNil "_vAssign"} && {_vAssign isEqualType []} && {count _vAssign >= 2}) then {
                             private _inCargo = [_profile, "vehiclesInCargoOf", []] call ALIVE_fnc_hashGet;
@@ -18423,7 +18423,7 @@ switch(_operation) do {
                                     [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
                                 }else{
 
-                                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                                    [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
 
                                 };
 
@@ -18431,7 +18431,7 @@ switch(_operation) do {
 
                                 if!(_active) then {
 
-                                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                                    [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
 
                                 };
 
@@ -18465,7 +18465,7 @@ switch(_operation) do {
                                     [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
                                 }else{
 
-                                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                                    [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
 
                                 };
 
@@ -18473,7 +18473,7 @@ switch(_operation) do {
 
                                 if!(_active) then {
 
-                                    [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                                    [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
 
                                 };
 
@@ -18749,7 +18749,7 @@ switch(_operation) do {
                     {
                         _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                         if!(isNil "_profile") then {
-                            [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                            [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
                         };
                     } forEach _x;
 
@@ -18759,7 +18759,7 @@ switch(_operation) do {
                     {
                         _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                         if!(isNil "_profile") then {
-                            [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                            [_profile,"busy",false] call ALIVE_fnc_hashSet; [_profile, "busyReason", ""] call ALIVE_fnc_hashSet;
                         };
                     } forEach _x;
 

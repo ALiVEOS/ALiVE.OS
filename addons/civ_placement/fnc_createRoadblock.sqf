@@ -448,7 +448,7 @@ for "_j" from 1 to (count _roadpoints) do {
                 // The [0,0,0] centre is the same argument: the checkpoint is what these men
                 // hold, not the objective around it, so the 30 m stays drawn on them (#1016).
                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, _guardPatrolPercentage, "SAFE", "LIMITED", ""]]] call ALIVE_fnc_profileEntity;
-                [_x,"busy",true] call ALIVE_fnc_hashSet;
+                [_x,"busy",true] call ALIVE_fnc_hashSet; [_x, "busyReason", "roadblock"] call ALIVE_fnc_hashSet;
                 // Hold the roadblock: register the guard "stationary" so
                 // OPCOM/TACOM never drains it (busy alone doesn't cover the QRF path).
                 // Saved with the profile, so a persistent reload pins it again.

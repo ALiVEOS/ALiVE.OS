@@ -169,7 +169,7 @@ if (_debug) then {
                         // the 30 m stays drawn on them rather than on an objective (#1016).
                         ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, _guardPatrolPercentage, "SAFE", "LIMITED", ""]]
                     ] call ALIVE_fnc_profileEntity;
-                    [_x, "busy", true] call ALIVE_fnc_hashSet;
+                    [_x, "busy", true] call ALIVE_fnc_hashSet; [_x, "busyReason", "roadblock"] call ALIVE_fnc_hashSet;
                     // Hold the captured block: register the guard "stationary" so
                     // OPCOM/TACOM never drains it (busy alone doesn't cover the QRF path).
                     // Saved with the profile, so a persistent reload pins it again.
