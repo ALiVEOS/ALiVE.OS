@@ -752,6 +752,7 @@ switch(_operation) do {
                 // set busy
 
                 [_profile,"busy",true] call ALiVE_fnc_profileEntity;
+                [_profile,"busyReason","tablet"] call ALIVE_fnc_hashSet;
 
                 // clear waypoints
 
@@ -2119,6 +2120,7 @@ switch(_operation) do {
             };
 
             [_profile,"busy", _lock] call ALiVE_fnc_hashSet;
+            [_profile,"busyReason", ["", "tablet"] select _lock] call ALIVE_fnc_hashSet;
 
             private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
             ["OPS_GROUP_LOCK_UPDATED", [_playerID,[_profileID,_lock]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
