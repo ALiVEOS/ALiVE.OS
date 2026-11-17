@@ -2853,6 +2853,27 @@ switch(_operation) do {
             [_logic, _type, _targetPos, _requester, "type not enabled on this commander"] call _fnc_denyOnRadio;
         };
 
+        // ---- the airspace blacklist -------------------------------------
+        // An area the mission maker has blacklisted for this commander is never attacked or overflown on purpose:
+        // an attack, a strike or a reconnaissance there is refused. RSS7: the OPFOR commander sent three CAS at once
+        // at BLUFOR's main base, and no setting could keep it off (Jman, 17 Nov). Patrols and interceptions are left
+        // to the Watch, which already reads the blacklist.
+        private _black = _logic getVariable ["airspaceBlacklist", []];
+        if !(_black isEqualType []) then {
+            private _b = [_logic, "base"] call _fnc_piece;
+            _black = if (_b isEqualTo []) then { [] } else { [_b, "airspaceBlacklist", []] call ALIVE_fnc_hashGet };
+        };
+        if !(_black isEqualType []) then { _black = [] };
+        private _inBlack = "";
+        if (_type in ["CAS","Strike","OCA","SEAD","Recce"] && {count _targetPos >= 2}) then {
+            private _i = _black findIf { _x isEqualType "" && {!((markerShape _x) isEqualTo "")} && {_targetPos inArea _x} };
+            if (_i > -1) then { _inBlack = _black select _i };
+        };
+        if !(_inBlack isEqualTo "") exitWith {
+            ["ALIVE_fnc_ATOKernel - %1 request from %2 refused: the target at %3 is inside the airspace blacklist marker %4", _type, _from, mapGridPosition _targetPos, _inBlack] call ALiVE_fnc_dump;
+            [_logic, _type, _targetPos, _requester, "target inside a blacklisted area"] call _fnc_denyOnRadio;
+        };
+
         // ---- players near the target (#1093) ----------------------------
         // Keep Commander CAS Away From Players: the commander's own CAS is turned
         // down while a friendly player is within that distance of the target, so a

@@ -522,6 +522,17 @@ switch(_operation) do {
             { _x setMarkerAlpha 0 } forEach _black;
             [_logic, "airspaceBlacklist", _black] call ALIVE_fnc_hashSet;
             _module setVariable ["airspaceBlacklist", +_black];
+            // and as the side's no-fly zones, which every sortie of that side is routed round wherever its aircraft
+            // is flown from (ATOEffect issueOrders), so the list goes to every machine
+            if (count _black > 0) then {
+                private _bSide = (_module getVariable ["faction", ""]) call ALiVE_fnc_factionSide;
+                if (_bSide isEqualType west) then {
+                    private _nfKey = format ["ALiVE_ATO_noFly_%1", _bSide];
+                    private _nf = +(missionNamespace getVariable [_nfKey, []]);
+                    { _nf pushBackUnique _x } forEach _black;
+                    missionNamespace setVariable [_nfKey, _nf, true];
+                };
+            };
 
             // Where to fly from when there is no airfield to fly from.
             //

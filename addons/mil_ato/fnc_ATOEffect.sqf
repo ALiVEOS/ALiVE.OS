@@ -810,6 +810,65 @@ switch(_operation) do {
                     };
                 };
 
+                // The side's no-fly zones, its air commanders' Airspace Blacklists (published by ATOBase). A point of
+                // the orders inside one is moved out past its edge, and a leg that crosses one goes round it by a
+                // turning point off its far side, so no route, patrol orbit or way in or out passes over it (Jman,
+                // 17 Nov: "that's what the MACC blacklists are meant to be - no fly zones").
+                private _noFly = (missionNamespace getVariable [format ["ALiVE_ATO_noFly_%1", side _grp], []]) select { _x isEqualType "" && {(markerShape _x) in ["RECTANGLE","ELLIPSE"]} };
+                if (count _noFly > 0) then {
+                    private _fnc_zoneAt = { params ["_p"]; private _i = _noFly findIf { _p inArea _x }; if (_i < 0) then { "" } else { _noFly select _i } };
+                    private _fnc_reach = {
+                        params ["_m"];
+                        (getMarkerSize _m) params ["_a", "_b"];
+                        (if ((markerShape _m) isEqualTo "RECTANGLE") then { sqrt (_a * _a + _b * _b) } else { _a max _b }) * 1.25 + 300
+                    };
+                    // a point inside a zone, or a hold whose circle would reach into one, is moved out from the zone's centre
+                    private _fnc_outside = {
+                        params ["_p", ["_circle", 0]];
+                        private _i = _noFly findIf { (_p inArea _x) || {_circle > 0 && {(_p distance2D (getMarkerPos _x)) < (([_x] call _fnc_reach) + _circle)}} };
+                        if (_i < 0) exitWith { _p };
+                        private _m = _noFly select _i;
+                        private _c = getMarkerPos _m;
+                        private _dir = if ((_c distance2D _p) < 1) then { 0 } else { _c getDir _p };
+                        private _out = _c getPos [([_m] call _fnc_reach) + _circle, _dir];
+                        [_out select 0, _out select 1, _p param [2, 0]]
+                    };
+                    // the turning points that take the leg from _a to _b round every zone it crosses, three deep at most
+                    private _fnc_detour = {
+                        params ["_a", "_b", "_depth"];
+                        private _d = _a distance2D _b;
+                        if (_d < 50 || {_depth > 3}) exitWith { [] };
+                        private _steps = ceil (_d / 150) min 150;
+                        private _hit = "";
+                        for "_k" from 1 to (_steps - 1) do {
+                            if (_hit isEqualTo "") then { _hit = [_a vectorAdd ((_b vectorDiff _a) vectorMultiply (_k / _steps))] call _fnc_zoneAt };
+                        };
+                        if (_hit isEqualTo "") exitWith { [] };
+                        private _c = getMarkerPos _hit;
+                        private _dirAB = _a getDir _b;
+                        // round the side the zone's centre is NOT on
+                        private _cross = ((_b select 0) - (_a select 0)) * ((_c select 1) - (_a select 1)) - ((_b select 1) - (_a select 1)) * ((_c select 0) - (_a select 0));
+                        private _turn = _c getPos [[_hit] call _fnc_reach, _dirAB + ([-90, 90] select (_cross > 0))];
+                        _turn = [_turn select 0, _turn select 1, (_a param [2, 0]) max (_b param [2, 0])];
+                        ([_a, _turn, _depth + 1] call _fnc_detour) + [_turn] + ([_turn, _b, _depth + 1] call _fnc_detour)
+                    };
+                    private _routed = [];
+                    private _from = getPosATL _obj;
+                    private _moved = 0;
+                    {
+                        _x params [["_type","MOVE",[""]], ["_pos",[0,0,0],[[]]]];
+                        private _safe = [_pos, [0, [200, 2500] select (_patrolHeight > 0)] select (_type isEqualTo "LOITER")] call _fnc_outside;
+                        if !(_safe isEqualTo _pos) then { _moved = _moved + 1 };
+                        { _routed pushBack ["MOVE", _x] } forEach ([_from, _safe, 0] call _fnc_detour);
+                        _routed pushBack [_type, _safe];
+                        _from = _safe;
+                    } forEach _chain;
+                    if (count _routed > count _chain || {_moved > 0}) then {
+                        ["ALIVE_fnc_ATOEffect - %1 routed round the no-fly zones %2: %3 turning point(s) added, %4 order point(s) moved out", typeOf _obj, _noFly, count _routed - count _chain, _moved] call ALiVE_fnc_dump;
+                    };
+                    _chain = _routed;
+                };
+
                 private _wps = waypoints _grp;
                 for "_i" from (count _wps - 1) to 0 step -1 do { deleteWaypoint [_grp, _i] };
                 {

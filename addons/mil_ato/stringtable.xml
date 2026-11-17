@@ -195,7 +195,7 @@
     <English>Airspace Blacklist:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE_BLACKLIST_COMMENT">
-    <English>Area marker names taken out of this module's airspace, comma-separated, e.g. marker1,marker2. Nothing inside them is used: no airfield to fly from, no aircraft adopted, and no enemy aircraft or air defence there is this commander's concern. With the Airspace Markers left blank, this gives the whole map except these areas. A name that matches no area marker is skipped with a warning in the RPT.</English>
+    <English>Area marker names taken out of this module's airspace, comma-separated, e.g. marker1,marker2. Nothing inside them is used: no airfield to fly from, no aircraft adopted, no enemy aircraft or air defence there is this commander's concern, and nothing there is attacked: a close air support, strike, airfield attack, air defence suppression or reconnaissance request with its target inside is refused. Draw one over the other side's main base to keep this commander's aircraft off it. With the Airspace Markers left blank, this gives the whole map except these areas. A name that matches no area marker is skipped with a warning in the RPT.</English>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">
