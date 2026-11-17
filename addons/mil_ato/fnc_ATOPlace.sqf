@@ -2192,6 +2192,7 @@ switch(_operation) do {
         private _view = [_ledger, "view"] call ALIVE_fnc_ATOLedger;
         private _values = _view select 2;
         private _armed = 0;
+        private _haveFighter = false;
         private _haveDrone = false;
         {
             private _rec = _values select _forEachIndex;
@@ -2207,12 +2208,18 @@ switch(_operation) do {
                 } else {
                     if (_status isEqualTo "present" && {[_cls] call ALiVE_fnc_isArmed}) then {
                         _armed = _armed + 1;
+                        if ("Fighter" in ([_cls] call ALiVE_fnc_getAircraftRoles)) then { _haveFighter = true };
                     };
                 };
             };
         } forEach (_view select 1);
 
-        private _wantCrewed = (_placeAir || {_virtual}) && {_armed < 2};
+        // A base stocked with aircraft none of which is a fighter flies no air patrol or interception (ATOTask takes
+        // a fighter and nothing else for those), and every such request was turned down for good. With Place Air
+        // Assets on, it is given a pair of the faction's fighters below; the rest of the fleet is left as it is.
+        // RSS7: the KDF adopted six Mi-24s, Su-25s and Ka-137s, none of them a fighter.
+        private _fighterGap = _placeAir && {_armed >= 2} && {!_haveFighter};
+        private _wantCrewed = ((_placeAir || {_virtual}) && {_armed < 2}) || {_fighterGap};
         private _wantDrone = _droneOn && {!_haveDrone};
         if (!_wantCrewed && {!_wantDrone}) exitWith { _result = [] };
 
@@ -2329,6 +2336,36 @@ switch(_operation) do {
         private _slots = [_base, "virtualSlots", 6] call ALIVE_fnc_hashGet;
         if !(_slots isEqualType 0) then { _slots = 6 };
         _slots = (round _slots) max 1;
+
+        // ---- fighters for a fleet that has none ----------------------------
+        if (_fighterGap) then {
+            _wantCrewed = false;
+            private _fighters = ((["Plane"] call _fnc_kindPool) select _fnc_flyable) select { "Fighter" in ([_x] call ALiVE_fnc_getAircraftRoles) };
+            if (count _fighters == 0) exitWith {
+                ["ALIVE_fnc_ATOPlace - %1 has %2 armed aircraft but no fighter, and the faction has none to add, so it will fly no air patrol or interception", _faction, _armed] call ALiVE_fnc_dumpR;
+            };
+            private _anchors = [];
+            if (!_virtual && {!isNil "ALIVE_airBuildingTypes"} && {!isNil "ALIVE_militaryAirBuildingTypes"} && {count _nodes > 0}) then {
+                _anchors = [_nodes, ALIVE_airBuildingTypes + ALIVE_militaryAirBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                if !(_anchors isEqualType []) then { _anchors = [] };
+            };
+            if (count _anchors == 0 && {!isNull _hq}) then { _anchors = [_hq] };
+            private _spots = if (count _anchors > 0) then { _anchors apply { [position _x, getDir _x] } } else { [[_center, 0]] };
+            private _added = 0;
+            {
+                if (_added >= 2) exitWith {};
+                _x params ["_pos", "_dir"];
+                // two tries at each spot, so a fighter too big for one stand does not leave the base without
+                for "_try" from 1 to 2 do {
+                    if (_added < 2) then {
+                        private _tail = [_logic, selectRandom _fighters, _pos, _dir, _airspaceName] call _fnc_placeNew;
+                        if !(_tail isEqualTo "") then { _tails pushBack _tail; _added = _added + 1 };
+                    };
+                };
+            } forEach _spots;
+            _planes = _fighters;
+            ["ALIVE_fnc_ATOPlace - %1 had %2 armed aircraft and no fighter, so %3 of its fighters were added for air patrols and interceptions", _faction, _armed, _added] call ALiVE_fnc_dumpR;
+        };
 
         // Everything from here to the end of the airfield rungs makes CREWED
         // aircraft, so a base that wants only a drone skips all of it. Left at

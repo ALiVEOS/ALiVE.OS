@@ -1586,6 +1586,8 @@ private _fnc_drain = {
                 if ((_now - ([_s, "receivedAt", _now] call ALIVE_fnc_hashGet)) > _wait) then {
                     private _reason = _plan param [1, "no candidate airframe"];
                     [_task, "deny", [_sid, _reason, _now]] call ALIVE_fnc_ATOTask;
+                    // in the server log too, naming the side: a refusal of the module's own patrols was nowhere to be seen
+                    ["ALiVE ATO %1 - %2 request %3 denied: %4", [_logic, "side"] call MAINCLASS, _type, _sid, _reason] call ALiVE_fnc_dump;
                     // The module's own requests are not read out on the
                     // radio; a patrol that could not go up is not news.
                     if !(_kind isEqualTo "ATO") then {
