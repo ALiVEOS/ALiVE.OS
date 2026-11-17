@@ -38,7 +38,6 @@ _profileActive = _profile select 2 select 1; //[_profile,"active"] call ALIVE_fn
 // pair. Run on a group, this used to clear the vehicle's pair instead, so a vehicle its men had got out
 // of stayed in the group's lists, and the simulator doesn't move a virtual group listed in one. A group
 // on foot is back at walking pace; one still in a vehicle gets its lists and pace back from it below.
-private _wasInIDs = +(([_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_hashGet) select 1);
 [_profile,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
 if (_profileType == "vehicle") then {
     [_profile,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;
@@ -153,21 +152,4 @@ if(_profileType == "vehicle") then {
             };
        };
     } forEach _vehiclesUnitsIn;
-
-    // A vehicle the men have all got out of still named this group, as each side clears only its own half.
-    // A static gun so left was never despawned and, once virtual, never spawned again for a player (RSS7, 13
-    // Nov), so the group is taken off every vehicle it is no longer in.
-    private _nowInIDs = _vehiclesUnitsIn apply { _x getVariable ["profileID","none"] };
-    {
-        private _oldVehicle = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-        if (!isNil "_oldVehicle" && {!(_x in _nowInIDs)}) then {
-            [[_oldVehicle,"vehicleAssignments"] call ALIVE_fnc_hashGet, _profileID] call ALIVE_fnc_hashRem;
-            private _inCommand = [_oldVehicle,"entitiesInCommandOf",[]] call ALIVE_fnc_hashGet;
-            private _inCargo = [_oldVehicle,"entitiesInCargoOf",[]] call ALIVE_fnc_hashGet;
-            private _i = _inCommand find _profileID;
-            if (_i >= 0) then { _inCommand deleteAt _i };
-            _i = _inCargo find _profileID;
-            if (_i >= 0) then { _inCargo deleteAt _i };
-        };
-    } forEach _wasInIDs;
 };
