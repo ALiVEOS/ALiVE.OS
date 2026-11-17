@@ -5193,6 +5193,18 @@ switch(_operation) do {
 		        // as text, and every test here compares text: with Inc. or Dec. Force Strength on, an insurgent capture stopped
 		        // this handler with a script error. A Side is taken as its text (WEST, EAST, GUER).
 		        if (_side isEqualType sideUnknown) then { _side = str _side; _eventFaction = _side; };
+		        // A commander's original starting strength: what a capture adds or takes is a share of this, rather than of
+		        // the strength already raised or cut, which compounded (RSS7, 17 Nov: the winner's infantry at 15067 from a
+		        // couple of thousand, the loser's at nothing). Kept with the starting strength in the save (fnc_OPCOM).
+		        private _fnc_base = {
+		            params ["_inst"];
+		            private _b = [_inst, "startForceStrengthBase", []] call ALiVE_fnc_HashGet;
+		            if !(_b isEqualType [] && {count _b == 8}) then {
+		                _b = +([_inst, "startForceStrength", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet);
+		                [_inst, "startForceStrengthBase", _b] call ALiVE_fnc_HashSet;
+		            };
+		            _b
+		        };
 		        // Whether this module's side held the place just taken. Its commander's copy of it (every copy shares the
 		        // place's center; cluster ids repeat between military and civilian places) counts when either of the
 		        // commander's last two looks at the field listed it as its own or contested, or a section is holding or
@@ -5245,10 +5257,12 @@ switch(_operation) do {
 		             _objectivePos = [_objective,"center"] call ALiVE_fnc_hashGet;
 		             // Nothing to add to or take from when no commander of that side exists.
 		             _thisInstanceSFS = [];
+		             private _base = [];
 		            {
 		            	 _thissideTarget = [_x, "side", ""] call ALIVE_fnc_hashGet;  
 		            	if (_thissideTarget == _side) then {   
 		            	 _thisInstanceSFS =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;
+		            	 _base = [_x] call _fnc_base;
 		        		// DEBUG -------------------------------------------------------------------------------------
                 if (_debug) then {
                  ["ML - Force Strength 'OPCOM_CAPTURE' -> _thisInstanceSFS: %1", _thisInstanceSFS] call ALiVE_fnc_dump;
@@ -5259,10 +5273,10 @@ switch(_operation) do {
 		            _instanceProfilesCount = 0; 
 		            { 
 		            	_instanceProfilesCount = _instanceProfilesCount + _x;
-		            } forEach _thisInstanceSFS;
-		             _countToAdd = ceil((_instanceProfilesCount * _startForceStrengthIncrementFactor)/100);
+		            } forEach _base;
+		             _countToAdd = if (_instanceProfilesCount > 0) then { ceil((_instanceProfilesCount * _startForceStrengthIncrementFactor)/100) } else { 0 };
 		            for "_i" from 0 to (_countToAdd -1) do {
-		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Air","Sea","Artillery","AAA"], _thisInstanceSFS] call BIS_fnc_selectRandomWeighted;
+		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Air","Sea","Artillery","AAA"], _base] call BIS_fnc_selectRandomWeighted;
                   [_side, _randomWeightedElement, 1] call ALIVE_fnc_OPCOMIncrementStartForceStrength;    
 		            };
 		          };
@@ -5279,10 +5293,12 @@ switch(_operation) do {
 		             _objectivePos = [_objective,"center"] call ALiVE_fnc_hashGet;
 		             // Nothing to add to or take from when no commander of that side exists.
 		             _thisInstanceSFS = [];
+		             private _base = [];
 		            {
 		            	 _thissideTarget = [_x, "side", ""] call ALIVE_fnc_hashGet;  
 		            	if (_thissideTarget == (_factions select 0 select 0)) then {   
 		            	 _thisInstanceSFS =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;
+		            	 _base = [_x] call _fnc_base;
 		        		// DEBUG -------------------------------------------------------------------------------------
                 if (_debug) then {
                  ["ML - Force Strength 'OPCOM_CAPTURE' -> _thisInstanceSFS: %1", _thisInstanceSFS] call ALiVE_fnc_dump;
@@ -5293,10 +5309,18 @@ switch(_operation) do {
 		            _instanceProfilesCount = 0; 
 		            { 
 		            	_instanceProfilesCount = _instanceProfilesCount + _x;
-		            } forEach _thisInstanceSFS;
-		             _countToRemove = ceil((_instanceProfilesCount * _startForceStrengthDecrementFactor)/100);
+		            } forEach _base;
+		             _countToRemove = if (_instanceProfilesCount > 0) then { ceil((_instanceProfilesCount * _startForceStrengthDecrementFactor)/100) } else { 0 };
+		             // never below half the original of a kind: at the strength it had left, a side that kept losing places
+		             // counted itself at full strength and asked for no reinforcements again (RSS7, 17 Nov: BLUFOR down to
+		             // [0,0,0,1,0,0,0,1] with 200 left in its force pool)
+		             private _floor = _base apply { floor (_x / 2) };
 		            for "_i" from 0 to (_countToRemove -1) do {
-		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Air","Sea","Artillery","AAA"], _thisInstanceSFS] call BIS_fnc_selectRandomWeighted;
+		            	private _weights = []; { _weights pushBack (if ((_thisInstanceSFS param [_forEachIndex, 0]) > (_floor select _forEachIndex)) then { _x } else { 0 }) } forEach _base;
+		            	if ((_weights findIf { _x > 0 }) < 0) exitWith {
+		            	    if (_debug) then { ["ML - Force Strength 'OPCOM_CAPTURE' (Decrement) -> %1 is at half its original strength %2, no further cut", _factions select 0 select 0, _base] call ALiVE_fnc_dump };
+		            	};
+		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Air","Sea","Artillery","AAA"], _weights] call BIS_fnc_selectRandomWeighted;
                   [(_factions select 0 select 0), _randomWeightedElement, 1] call ALIVE_fnc_OPCOMdecrementStartForceStrength;    
 		            };
 		        	};

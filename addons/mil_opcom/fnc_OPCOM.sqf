@@ -953,6 +953,11 @@ switch (_operation) do {
             if (_result isEqualType []) then {
                 private _startingForces = [_result,"data"] call CBA_fnc_hashGet;
                 [_handler,"startForceStrength", _startingForces] call CBA_fnc_hashSet;
+                // the original starting strength, which a capture's rise or cut is counted from (fnc_ML OPCOM_CAPTURE);
+                // a save from before it was kept starts from the strength saved
+                private _base = [_result, "base"] call CBA_fnc_hashGet;
+                if (isNil "_base" || {!(_base isEqualType [])} || {count _base != 8}) then { _base = +_startingForces };
+                [_handler, "startForceStrengthBase", _base] call CBA_fnc_hashSet;
             };
 
             // The high value target, so a saved mission doesn't place a second one
@@ -3960,6 +3965,30 @@ switch (_operation) do {
                         ["OPCOM - %1 holds no objective; reinforcements come in at %2", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet, _spot apply { round _x }] call ALiVE_fnc_dump;
                     };
                 } forEach _spots;
+
+                // Both overrun, the base taken: the nearest open ground to them, 1 to 6 km out, with no enemy within
+                // 800 m. With only the spots themselves, a commander whose base had fallen never asked again (RSS7,
+                // 17 Nov: six enemy groups within 800 m of BLUFOR's modules at Rasman, its force pool full).
+                if (isNil "_result" && {_spots isNotEqualTo []}) then {
+                    private _fnc_clear = { params ["_p"]; !surfaceIsWater _p && {(_sidesEnemy findIf { ([_p, 800, [_x, "entity"]] call ALIVE_fnc_getNearProfiles) isNotEqualTo [] }) < 0} };
+                    private _found = [];
+                    for "_r" from 1000 to 6000 step 1000 do {
+                        {
+                            private _from = _x;
+                            { private _p = _from getPos [_r, _x]; if ([_p] call _fnc_clear) exitWith { _found = _p } } forEach [0, 45, 90, 135, 180, 225, 270, 315];
+                            if (_found isNotEqualTo []) exitWith {};
+                        } forEach _spots;
+                        if (_found isNotEqualTo []) exitWith {};
+                    };
+                    if (_found isNotEqualTo []) then {
+                        _result = [] call ALiVE_fnc_hashCreate;
+                        [_result, "center", _found] call ALiVE_fnc_hashSet;
+                        [_result, "objectiveID", "fallback"] call ALiVE_fnc_hashSet;
+                        ["OPCOM - %1 holds no objective and its base is overrun; reinforcements come in at %2, %3 m from it", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet, mapGridPosition _found, round (_found distance2D (_spots select 0))] call ALiVE_fnc_dump;
+                    } else {
+                        ["OPCOM - %1 holds no objective and has no open ground within 6 km of its base; no reinforcements can be called", [_logic, "opcomID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dumpR;
+                    };
+                };
             };
     };
 
@@ -4857,6 +4886,8 @@ switch (_operation) do {
 
                 private _startForceStrength = [_logic,"startForceStrength"] call ALiVE_fnc_HashGet;
                 private _data = [[["data", _startForceStrength]]] call CBA_fnc_hashCreate;
+                private _base = [_logic, "startForceStrengthBase", []] call ALiVE_fnc_HashGet;
+                if (_base isEqualType [] && {count _base == 8}) then { [_data, "base", _base] call CBA_fnc_hashSet };
 
                 if (_prev isEqualType []) then {
                     private _rev = [_prev, "_rev"] call CBA_fnc_hashGet;
@@ -6045,7 +6076,8 @@ switch (_operation) do {
                 private _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
                 { _start set [_forEachIndex, _x + (_aboard select _forEachIndex)] } forEach _count;
             };
-            [_logic,"startForceStrength", _start] call ALiVE_fnc_HashSet
+            [_logic,"startForceStrength", _start] call ALiVE_fnc_HashSet;
+            [_logic,"startForceStrengthBase", +_start] call ALiVE_fnc_HashSet
         };
         _currentForceStrength = [_logic,"currentForceStrength",_count] call ALiVE_fnc_HashSet;
 
