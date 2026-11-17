@@ -531,6 +531,7 @@ switch(_operation) do {
                     private _nf = +(missionNamespace getVariable [_nfKey, []]);
                     { _nf pushBackUnique _x } forEach _black;
                     missionNamespace setVariable [_nfKey, _nf, true];
+                    ["ALIVE_fnc_ATOBase - %1 aircraft are kept out of the no-fly zones %2 (this commander's blacklist %3)", _bSide, _nf, _black] call ALiVE_fnc_dump;
                 };
             };
 

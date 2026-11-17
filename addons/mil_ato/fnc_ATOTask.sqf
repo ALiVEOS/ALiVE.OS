@@ -343,6 +343,24 @@ switch(_operation) do {
         // interception, whenever the right aircraft were busy.
         if (count _fit == 0) then { _fit = _withRoles select { (_x select 4) isEqualTo [] } };
 
+        // With no free fighter, a patrol or an interception goes to a plane that carries air-to-air missiles
+        // without the radar that makes it a fighter: the A-10 with its AIM-9s, the Su-25 with its R-60s. A side
+        // with attack jets alone otherwise flew no patrol at all (Jman, 17 Nov, RSS7). Said once per faction.
+        if (_type in ["CAP","DCA"] && {count _fit == 0}) then {
+            _fit = _withRoles select {
+                private _caps = [_x select 2, "capabilities", []] call ALIVE_fnc_hashGet;
+                if (!(_caps isEqualType []) || {_caps isEqualTo []}) then {
+                    _caps = if (isNil "ALiVE_fnc_getAircraftCapabilities") then { [] } else { [_x select 1] call ALiVE_fnc_getAircraftCapabilities };
+                };
+                ((_x select 1) isKindOf "Plane") && {_caps isEqualType []} && {"aa" in _caps}
+            };
+            private _said = format ["ALiVE_ATO_aaFallback_%1", _faction];
+            if (count _fit > 0 && {!(missionNamespace getVariable [_said, false])}) then {
+                missionNamespace setVariable [_said, true];
+                ["ALIVE_fnc_ATOTask - %1 has no free fighter, so its %2 goes to an attack jet with air-to-air missiles (%3); said once", _faction, _type, (_fit select 0) select 1] call ALiVE_fnc_dump;
+            };
+        };
+
         // #1029: suppression is decided by what an aircraft carries, not by its role.
         // Only anti-radar missiles take on an air defence site, so nothing else is sent,
         // however near. The watch raises SEAD only when one of these is ready, and an

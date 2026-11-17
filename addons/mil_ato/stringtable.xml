@@ -193,9 +193,12 @@
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE_BLACKLIST">
     <English>Airspace Blacklist:</English>
+    <Spanish>Lista negra del espacio aéreo:</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ATO_AIRSPACE_BLACKLIST_COMMENT">
     <English>Area marker names taken out of this module's airspace, comma-separated, e.g. marker1,marker2. Nothing inside them is used: no airfield to fly from, no aircraft adopted, no enemy aircraft or air defence there is this commander's concern, and nothing there is attacked: a close air support, strike, airfield attack, air defence suppression or reconnaissance request with its target inside is refused. Draw one over the other side's main base to keep this commander's aircraft off it. With the Airspace Markers left blank, this gives the whole map except these areas. A name that matches no area marker is skipped with a warning in the RPT.</English>
+    <Spanish>Nombres de marcadores de área que se excluyen del espacio aéreo de este módulo, separados por comas, p. ej. marker1,marker2. No se usa nada de lo que hay dentro: ningún aeródromo desde el que despegar, ninguna aeronave adoptada, y ninguna aeronave enemiga ni defensa antiaérea de esa zona concierne a este comandante; tampoco se ataca nada allí: se rechaza cualquier petición de apoyo aéreo cercano, ataque, ataque a aeródromo, supresión de defensas antiaéreas o reconocimiento cuyo objetivo esté dentro. Dibuja uno sobre la base principal del otro bando para mantener alejadas de ella las aeronaves de este comandante. Con los marcadores de espacio aéreo en blanco, esto abarca todo el mapa salvo estas zonas. Un nombre que no corresponde a ningún marcador de área se omite con un aviso en el RPT.</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">

@@ -2338,11 +2338,41 @@ switch(_operation) do {
         _slots = (round _slots) max 1;
 
         // ---- fighters for a fleet that has none ----------------------------
-        if (_fighterGap) then {
-            _wantCrewed = false;
-            private _fighters = ((["Plane"] call _fnc_kindPool) select _fnc_flyable) select { "Fighter" in ([_x] call ALiVE_fnc_getAircraftRoles) };
+        private _ownFighters = ((["Plane"] call _fnc_kindPool) select _fnc_flyable) select { "Fighter" in ([_x] call ALiVE_fnc_getAircraftRoles) };
+        // A first stocking from a faction with no fighter at all borrows two as well, and then stocks its own aircraft
+        // as usual below; otherwise the base only got its fighters on a restart, once it held two armed aircraft.
+        private _firstNoFighter = _placeAir && {!_fighterGap} && {_wantCrewed} && {!_haveFighter} && {count _ownFighters == 0} && {count _onlyTypes == 0};
+        if (_fighterGap || {_firstNoFighter}) then {
+            if (_fighterGap) then { _wantCrewed = false };
+            private _fighters = +_ownFighters;
+            // A faction with no fighter of its own borrows from another on its side (Jman, 17 Nov: RHS USAF for RHS
+            // US Army): the synced commanders' factions first, then one from the same mod, then any other, in name
+            // order. One pass over the vehicle classes, grouped by faction. An aircraft whitelist on the module
+            // means only those types, so nothing is borrowed then.
+            private _lentBy = "";
+            if (count _fighters == 0 && {count _onlyTypes == 0}) then {
+                private _sideNum = ["EAST","WEST","GUER"] find ([_logic, "side", ""] call ALIVE_fnc_hashGet);
+                if (_sideNum < 0) then { _sideNum = getNumber (configFile >> "CfgFactionClasses" >> _faction >> "side") };
+                private _byFac = createHashMap;
+                {
+                    private _c = configName _x;
+                    private _f = getText (_x >> "faction");
+                    if (!(_f isEqualTo _faction) && {_c isKindOf "Plane"} && {!(_c in _blacklist)}) then {
+                        (_byFac getOrDefault [_f, [], true]) pushBack _c;
+                    };
+                } forEach (format ["getNumber (_x >> 'scope') == 2 && {getNumber (_x >> 'side') == %1}", _sideNum] configClasses (configFile >> "CfgVehicles"));
+                private _ownMod = configSourceMod (configFile >> "CfgFactionClasses" >> _faction);
+                private _others = keys _byFac;
+                _others sort true;
+                private _synced = ([_logic, "factions", []] call ALIVE_fnc_hashGet) select { _x in _others };
+                private _sameMod = _others select { !(_x in _synced) && {configSourceMod (configFile >> "CfgFactionClasses" >> _x) isEqualTo _ownMod} };
+                {
+                    private _got = ((_byFac get _x) select _fnc_flyable) select { "Fighter" in ([_x] call ALiVE_fnc_getAircraftRoles) };
+                    if (count _got > 0) exitWith { _fighters = _got; _lentBy = _x };
+                } forEach (_synced + _sameMod + (_others - _synced - _sameMod));
+            };
             if (count _fighters == 0) exitWith {
-                ["ALIVE_fnc_ATOPlace - %1 has %2 armed aircraft but no fighter, and the faction has none to add, so it will fly no air patrol or interception", _faction, _armed] call ALiVE_fnc_dumpR;
+                ["ALIVE_fnc_ATOPlace - %1 has %2 armed aircraft but no fighter, and no faction on its side has one to lend, so its air patrols and interceptions go to planes with air-to-air missiles, if any", _faction, _armed] call ALiVE_fnc_dumpR;
             };
             private _anchors = [];
             if (!_virtual && {!isNil "ALIVE_airBuildingTypes"} && {!isNil "ALIVE_militaryAirBuildingTypes"} && {count _nodes > 0}) then {
@@ -2364,7 +2394,11 @@ switch(_operation) do {
                 };
             } forEach _spots;
             _planes = _fighters;
-            ["ALIVE_fnc_ATOPlace - %1 had %2 armed aircraft and no fighter, so %3 of its fighters were added for air patrols and interceptions", _faction, _armed, _added] call ALiVE_fnc_dumpR;
+            if (_lentBy isEqualTo "") then {
+                ["ALIVE_fnc_ATOPlace - %1 had %2 armed aircraft and no fighter, so %3 of its fighters were added for air patrols and interceptions", _faction, _armed, _added] call ALiVE_fnc_dumpR;
+            } else {
+                ["ALIVE_fnc_ATOPlace - %1 had %2 armed aircraft and no fighter of its own, so %3 fighters were borrowed from %4 for air patrols and interceptions (%5)", _faction, _armed, _added, _lentBy, _fighters] call ALiVE_fnc_dumpR;
+            };
         };
 
         // Everything from here to the end of the airfield rungs makes CREWED
