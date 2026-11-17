@@ -153,6 +153,34 @@ class CfgVehicles {
         picture = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
     };
 
+    class ALiVE_ModuleZeusCancelObjective : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_CANCELOBJECTIVE";
+        ALiVE_zeusAction = "cancelObjective";
+        icon = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+        picture = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+    };
+
+    class ALiVE_ModuleZeusCommanderSeat : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        curatorCanAttach = 1;
+        displayName = "$STR_ALIVE_ZEUS_COMMANDERSEAT";
+        ALiVE_zeusAction = "commanderSeat";
+        icon = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+        picture = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+    };
+
+    class ALiVE_ModuleZeusCommanderControl : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_COMMANDERCONTROL";
+        ALiVE_zeusAction = "commanderControl";
+        icon = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+        picture = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+    };
+
     class ALiVE_ModuleZeusRevealInstallations : ALiVE_ModuleZeusBase
     {
         scopeCurator = 2;

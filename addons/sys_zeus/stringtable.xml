@@ -561,5 +561,83 @@
 <Key ID="STR_ALIVE_ZEUS_RALLY_REMOVED">
     <English>ALiVE: Rally point %1 is gone.</English>
 </Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_RECON_LABEL">
+    <English>Send a group to recon it</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_SAD_LABEL">
+    <English>Search and destroy (10 min)</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_OBJECTIVE_AMBUSH_LABEL">
+    <English>Ambush (10 min)</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_ORDER_DONE">
+    <English>ALiVE: %1 AI Commander: %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_ORDER_REFUSED">
+    <English>ALiVE: the %1 AI Commander didn't take the order: %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CANCELOBJECTIVE">
+    <English>Cancel AI Commander Objective</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CANCEL_NONE">
+    <English>ALiVE: no objective set by Zeus within %1 m. Objectives set by players or the War Room are cancelled where they were set.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CANCEL_DONE">
+    <English>ALiVE: the %1 AI Commander's objective at grid %2 is cancelled.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_COMMANDERSEAT">
+    <English>Commander Seat</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SEAT_FREE_FOR">
+    <English>Free the seat of</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_NEED_SEAT">
+    <English>ALiVE: needs Commander Seat set to One per side on the C2ISTAR module.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SEAT_GIVEN">
+    <English>ALiVE: %1 now holds command of %2.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SEAT_EMPTY">
+    <English>ALiVE: nobody holds command of %1.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_SEAT_FREED">
+    <English>ALiVE: %1's command seat is free again (%2 has been relieved).</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_COMMANDERCONTROL">
+    <English>AI Commander Control</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_WHAT">
+    <English>Order</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_PAUSE">
+    <English>Pause</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_RESUME">
+    <English>Resume</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_GO">
+    <English>Go (start a war held until Go)</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_INVASION">
+    <English>Stance: Invasion</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_OCCUPATION">
+    <English>Stance: Occupation</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_ASYMMETRIC">
+    <English>Stance: Asymmetric</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_DUGIN">
+    <English>Stance: Dug In</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_ASSAULT">
+    <English>Stance: Assault</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_DONE">
+    <English>ALiVE: %1 AI Commander: %2</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_CONTROL_REFUSED">
+    <English>ALiVE: the %1 AI Commander didn't take %2 (%3).</English>
+</Key>
 </Package>
 </Project>

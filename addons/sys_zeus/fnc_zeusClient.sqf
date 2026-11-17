@@ -13,7 +13,7 @@ Parameters:
 String - the module: "save", "debug", "soloTest", "spotReport", "handGroup", "bomber", "convertBomber",
     "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "createTask",
     "closeTask", "airStrike", "resupply", "townMood", "tipOff", "angryCrowd", "createHub", "removeHub",
-    "createFob", "removeFob", "createRally" or "removeRally"
+    "createFob", "removeFob", "createRally", "removeRally", "cancelObjective", "commanderSeat" or "commanderControl"
 Array - position (ATL)
 Object - the unit the module was placed on, or objNull
 Bool - true when Zeus Enhanced is loaded, so its option dialogs can be used
@@ -303,12 +303,14 @@ switch (_action) do {
                 localize "STR_ALIVE_ZEUS_OBJECTIVE",
                 [
                     ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
-                    ["TOOLBOX", localize "STR_ALIVE_ZEUS_OBJECTIVE_HOW", [0, 1, 2, [localize "STR_ALIVE_ZEUS_OBJECTIVE_TAKE_LABEL", localize "STR_ALIVE_ZEUS_OBJECTIVE_HOLD_LABEL"]]]
+                    ["COMBO", localize "STR_ALIVE_ZEUS_OBJECTIVE_HOW", [["take", "hold", "recon", "sad", "ambush"],
+                        [localize "STR_ALIVE_ZEUS_OBJECTIVE_TAKE_LABEL", localize "STR_ALIVE_ZEUS_OBJECTIVE_HOLD_LABEL", localize "STR_ALIVE_ZEUS_OBJECTIVE_RECON_LABEL",
+                            localize "STR_ALIVE_ZEUS_OBJECTIVE_SAD_LABEL", localize "STR_ALIVE_ZEUS_OBJECTIVE_AMBUSH_LABEL"], 0]]
                 ],
                 {
                     params ["_values", "_args"];
                     _args params ["_position", "_send"];
-                    ["objective", [_position, _values select 0, ["take", "hold"] select (_values select 1)]] call _send;
+                    ["objective", [_position, _values select 0, _values select 1]] call _send;
                 },
                 {},
                 [_position, _send]
@@ -609,6 +611,65 @@ switch (_action) do {
 
     case "removeRally": {
         ["removeRally", [_position, _attached]] call _send;
+    };
+
+    // the nearest objective Zeus set for an AI Commander, within 300 m
+    case "cancelObjective": {
+        ["cancelObjective", [_position]] call _send;
+    };
+
+    // dropped on a player: they take command of their side. Anywhere else the seat is freed, for the side chosen
+    // with Zeus Enhanced or the nearest player's
+    case "commanderSeat": {
+        // placed on a vehicle: the player commanding it
+        if (!isNull _attached && {!(_attached isKindOf "CAManBase")}) then { _attached = effectiveCommander _attached };
+        if (!isNull _attached && {isPlayer _attached}) exitWith {
+            ["commanderSeat", [_position, _attached, ""]] call _send;
+        };
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_COMMANDERSEAT",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_SEAT_FREE_FOR", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    ["commanderSeat", [_position, objNull, _values select 0]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["commanderSeat", [_position, objNull, ""]] call _send;
+        };
+    };
+
+    // pause or resume the side's AI Commanders, change their stance, or start the war; without Zeus Enhanced it
+    // pauses a running commander of the nearest player's side, or resumes a paused one
+    case "commanderControl": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_COMMANDERCONTROL",
+                [
+                    ["COMBO", localize "STR_ALIVE_ZEUS_FOR_SIDE", [["", "WEST", "EAST", "GUER"], [localize "STR_ALIVE_ZEUS_SIDE_NEAREST", localize "STR_ALIVE_ZEUS_SIDE_WEST", localize "STR_ALIVE_ZEUS_SIDE_EAST", localize "STR_ALIVE_ZEUS_SIDE_GUER"], 0]],
+                    ["COMBO", localize "STR_ALIVE_ZEUS_CONTROL_WHAT", [
+                        ["pause", "resume", "go", "invasion", "occupation", "asymmetric", "dugin", "assault"],
+                        ["STR_ALIVE_ZEUS_CONTROL_PAUSE", "STR_ALIVE_ZEUS_CONTROL_RESUME", "STR_ALIVE_ZEUS_CONTROL_GO", "STR_ALIVE_ZEUS_CONTROL_INVASION",
+                            "STR_ALIVE_ZEUS_CONTROL_OCCUPATION", "STR_ALIVE_ZEUS_CONTROL_ASYMMETRIC", "STR_ALIVE_ZEUS_CONTROL_DUGIN", "STR_ALIVE_ZEUS_CONTROL_ASSAULT"] apply { localize _x },
+                        0]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    ["commanderControl", [_position, _values select 0, _values select 1]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["commanderControl", [_position, "", "toggle"]] call _send;
+        };
     };
 };
 

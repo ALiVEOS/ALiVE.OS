@@ -371,7 +371,8 @@ switch (_action) do {
     case "objective": {
         _args params [["_position", [], [[]]], ["_side", "", [""]], ["_intent", "take", [""]]];
         if (count _position < 2) exitWith {};
-        _intent = ["take", "hold"] select ((["take", "hold"] findIf { _x == _intent }) max 0);
+        _intent = toLower _intent;
+        if !(_intent in ["take", "hold", "recon", "sad", "ambush"]) then { _intent = "take" };
         if (_side == "") then { _side = [_position] call _playerSideNear };
         if (_side == "") exitWith {
             ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply;
@@ -386,21 +387,51 @@ switch (_action) do {
         if (_opcoms isEqualTo []) exitWith {
             ["STR_ALIVE_ZEUS_OBJECTIVE_ASYM"] call _reply;
         };
+        // recon, search and destroy or an ambush: one group sent by the first of the side's commanders that has one
+        // free, with the tablet's own checks but no cooldown (a handler of Zeus's own keeps its times)
+        if (_intent in ["recon", "sad", "ambush"]) exitWith {
+            // zeusRequest has checked this Zeus, so the command handler takes the call (its creation included)
+            private _ALiVE_scomTabletCaller = _caller;
+            if (isNil "ALiVE_zeus_cmdHandler") then {
+                ALiVE_zeus_cmdHandler = [nil, "create"] call ALIVE_fnc_commandHandler;
+                // no "init": it waits for the profile system, and this runs unscheduled (as the picture order's handler)
+                [ALiVE_zeus_cmdHandler, "playerObjectiveCooldown", 0] call ALiVE_fnc_hashSet;
+                [ALiVE_zeus_cmdHandler, "playerObjectiveCooldowns", [] call ALIVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+            };
+            private _r = [false, "nocommander", "No commander to take it"];
+            {
+                _r = [ALiVE_zeus_cmdHandler, "opsAddObjectiveFor", [_x, _position, _intent, "ZEUS_" + _side, "zeus"]] call ALiVE_fnc_commandHandler;
+                if (_r select 0) exitWith {};
+            } forEach _opcoms;
+            ["ALiVE Zeus - %1 asked %2 for %3 at %4: %5", name _caller, _side, _intent, mapGridPosition _position, _r select 2] call ALiVE_fnc_dump;
+            if !(_r select 0) exitWith { ["STR_ALIVE_ZEUS_ORDER_REFUSED", [_side call _sideName, _r select 2]] call _reply };
+            if (!isNil "ALIVE_commandHandler") then {
+                [ALIVE_commandHandler, "cmdSideNotify", [_side, format ["Zeus: %1 at grid %2.", ["recon", "search and destroy", "ambush"] select (["recon", "sad", "ambush"] find _intent), mapGridPosition _position], _position]] call ALiVE_fnc_commandHandler;
+            };
+            ["STR_ALIVE_ZEUS_ORDER_DONE", [_side call _sideName, _r select 2]] call _reply;
+        };
         ALiVE_zeus_objectiveCount = (missionNamespace getVariable ["ALiVE_zeus_objectiveCount", 0]) + 1;
         private _sides = [];
         {
             private _opcomID = [_x, "opcomID", ""] call ALiVE_fnc_HashGet;
-            // Saved with the commander's objectives, so the time keeps it apart from the last session's
+            // The time keeps the id apart from one set in an earlier session of the same mission
             private _id = format ["%1_zeus_obj_%2_%3", _opcomID, round serverTime, ALiVE_zeus_objectiveCount];
             private _objective = [_x, "addObjective", [_id, _position, 100, "custom", 100, ["unassigned", "attack"] select (_intent == "take"), "none", _opcomID, true, true]] call ALiVE_fnc_OPCOM;
             if (!isNil "_objective") then {
                 [_objective, "playerIntent", _intent] call ALiVE_fnc_hashSet;
+                // Zeus's own: outside the players' cap, and only Zeus cancels it
+                [_objective, "issuedBy", "zeus"] call ALiVE_fnc_hashSet;
                 private _s = ([_x, "side", ""] call ALiVE_fnc_HashGet) call _sideText;
                 if !(_s in _sides) then { _sides pushBack _s };
             };
         } forEach _opcoms;
         if (_sides isEqualTo []) exitWith {
             ["STR_ALIVE_ZEUS_OBJECTIVE_FAILED"] call _reply;
+        };
+        if (!isNil "ALIVE_commandHandler") then {
+            // zeusRequest has checked this Zeus, so the command handler takes the call
+            private _ALiVE_scomTabletCaller = _caller;
+            { [ALIVE_commandHandler, "cmdSideNotify", [_x, format ["Zeus: %1 at grid %2.", _intent, mapGridPosition _position], _position]] call ALiVE_fnc_commandHandler } forEach _sides;
         };
         [["STR_ALIVE_ZEUS_OBJECTIVE_HOLD", "STR_ALIVE_ZEUS_OBJECTIVE_TAKE"] select (_intent == "take"), [(_sides apply { _x call _sideName }) joinString ", ", mapGridPosition _position]] call _reply;
     };
@@ -1065,5 +1096,98 @@ switch (_action) do {
         if (_kind in ["zeus", "leader"]) then { deleteVehicle _obj };
         ["ALiVE Zeus - %1 removed the rally point %2", name _caller, _name] call ALiVE_fnc_dump;
         ["STR_ALIVE_ZEUS_RALLY_REMOVED", [_name]] call _reply;
+    };
+
+    // A Zeus objective of this mission's AI Commanders cancelled: the nearest one Zeus set within 300 m. Objectives
+    // set by players or the War Room are cancelled where they were set
+    case "cancelObjective": {
+        _args params [["_position", [], [[]]]];
+        if (count _position < 2) exitWith {};
+        private _best = [];
+        private _bestD = 300;
+        {
+            private _opcom = _x;
+            {
+                if ([_x, "playerCreated", false] call ALiVE_fnc_HashGet
+                    && {([_x, "issuedBy", "player"] call ALiVE_fnc_HashGet) == "zeus"}
+                    && {!([_x, "deleted", false] call ALiVE_fnc_HashGet)}) then {
+                    private _d = ([_x, "center", [0, 0, 0]] call ALiVE_fnc_HashGet) distance2D _position;
+                    if (_d < _bestD) then { _bestD = _d; _best = [_opcom, _x] };
+                };
+            } forEach ([_opcom, "objectives", []] call ALiVE_fnc_HashGet);
+        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+        if (_best isEqualTo []) exitWith { ["STR_ALIVE_ZEUS_CANCEL_NONE", [300]] call _reply };
+        _best params ["_opcom", "_objective"];
+        private _id = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
+        private _center = [_objective, "center", [0, 0, 0]] call ALiVE_fnc_HashGet;
+        [_opcom, "removeObjective", _id] call ALiVE_fnc_OPCOM;
+        private _s = ([_opcom, "side", ""] call ALiVE_fnc_HashGet) call _sideText;
+        ["ALiVE Zeus - %1 cancelled the %2 objective %3 at %4", name _caller, _s, _id, mapGridPosition _center] call ALiVE_fnc_dump;
+        if (!isNil "ALIVE_commandHandler") then {
+            // zeusRequest has checked this Zeus, so the command handler takes the call
+            private _ALiVE_scomTabletCaller = _caller;
+            [ALIVE_commandHandler, "cmdSideNotify", [_s, format ["Zeus: objective at grid %1 cancelled.", mapGridPosition _center], _center]] call ALiVE_fnc_commandHandler;
+        };
+        ["STR_ALIVE_ZEUS_CANCEL_DONE", [_s call _sideName, mapGridPosition _center]] call _reply;
+    };
+
+    // The Commander seat (C2ISTAR's Commander Seat setting): dropped on a player, that player takes command of
+    // their side; anywhere else, the seat of the side chosen (or the nearest player's) is freed
+    case "commanderSeat": {
+        _args params [["_position", [], [[]]], ["_on", objNull, [objNull]], ["_side", "", [""]]];
+        if (count _position < 2) exitWith {};
+        if (isNil "ALIVE_commandHandler" || {(missionNamespace getVariable ["ALiVE_c2istar_commanderSeat", "OFF"]) != "SIDE"}) exitWith {
+            ["STR_ALIVE_ZEUS_NEED_SEAT"] call _reply;
+        };
+        // zeusRequest has checked this Zeus, so the command handler takes the call
+        private _ALiVE_scomTabletCaller = _caller;
+        private _h = ALIVE_commandHandler;
+        private _unit = if (!isNull _on && {isPlayer _on}) then { _on } else { objNull };
+        if (!isNull _unit) exitWith {
+            private _s = [_h, "opsPlayerSideText", _unit] call ALiVE_fnc_commandHandler;
+            if !(_s in ["WEST", "EAST", "GUER"]) exitWith { ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply };
+            [_h, "cmdSeatSet", [_s, _unit, format ["Zeus has given command to %1.", name _unit]]] call ALiVE_fnc_commandHandler;
+            ["ALiVE Zeus - %1 gave %2's command to %3", name _caller, _s, name _unit] call ALiVE_fnc_dump;
+            ["STR_ALIVE_ZEUS_SEAT_GIVEN", [name _unit, _s call _sideName]] call _reply;
+        };
+        if (_side == "") then { _side = [_position] call _playerSideNear };
+        if (_side == "") exitWith { ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply };
+        private _holder = [_h, "cmdSeatHolder", _side] call ALiVE_fnc_commandHandler;
+        if (_holder isEqualTo []) exitWith { ["STR_ALIVE_ZEUS_SEAT_EMPTY", [_side call _sideName]] call _reply };
+        [_h, "cmdSeatSet", [_side, objNull, format ["Zeus has relieved %1 of command.", _holder select 1]]] call ALiVE_fnc_commandHandler;
+        ["ALiVE Zeus - %1 freed %2's command seat (was %3)", name _caller, _side, _holder select 1] call ALiVE_fnc_dump;
+        ["STR_ALIVE_ZEUS_SEAT_FREED", [_side call _sideName, _holder select 1]] call _reply;
+    };
+
+    // The side's AI Commanders paused or resumed, given a stance, or the war started (Go): the War Room's commander
+    // controls, with the same checks. "toggle" pauses a running commander and resumes a paused one
+    case "commanderControl": {
+        _args params [["_position", [], [[]]], ["_side", "", [""]], ["_op", "toggle", [""]]];
+        if (count _position < 2) exitWith {};
+        if (_side == "") then { _side = [_position] call _playerSideNear };
+        if (_side == "" && {_op != "go"}) exitWith { ["STR_ALIVE_ZEUS_NEED_SIDE"] call _reply };
+        if (_side == "") then { _side = "WEST" };
+        private _opcoms = (missionNamespace getVariable ["OPCOM_instances", []]) select { (([_x, "side", ""] call ALiVE_fnc_HashGet) call _sideText) == _side };
+        if (_op == "toggle") then {
+            _op = ["pause", "resume"] select ((_opcoms findIf { [_x, "pause", false] call ALiVE_fnc_HashGet }) >= 0);
+        };
+        private _call = switch (_op) do {
+            case "pause": { [_side, "pause", true] };
+            case "resume": { [_side, "pause", false] };
+            case "go": { [_side, "go", nil] };
+            default { [_side, "stance", _op] };
+        };
+        _call pushBack format ["Zeus (%1)", name _caller];
+        // ALIVE_fnc_SCOMCmdrControlOrder refuses any call that came by remoteExec, as this one did (from the Zeus's
+        // machine, checked by zeusRequest); a script of the server's own runs it
+        [_call, _caller, _sideName, _op] spawn {
+            params ["_call", "_caller", "_sideName", "_op"];
+            private _r = _call call ALIVE_fnc_SCOMCmdrControlOrder;
+            if (_r select 0) then {
+                ["STR_ALIVE_ZEUS_CONTROL_DONE", [(_call select 0) call _sideName, _r select 1]] remoteExecCall ["ALiVE_fnc_zeusFeedback", _caller];
+            } else {
+                ["STR_ALIVE_ZEUS_CONTROL_REFUSED", [(_call select 0) call _sideName, _op, _r select 1]] remoteExecCall ["ALiVE_fnc_zeusFeedback", _caller];
+            };
+        };
     };
 };
