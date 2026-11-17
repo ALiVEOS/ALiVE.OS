@@ -145,6 +145,83 @@ NEO_fnc_casHoldWhenParked = {
     };
 };
 
+// A CAS plane tasked while on the ground taxis out by itself, but only from a spot the game's AI can join the
+// airfield's take-off route from: one parked in a row on an apron (RSS7's A-10 between two other airframes) sat with its
+// engine running and never moved. Watched from the task: no 40 m of movement in 75 s, or not airborne in 4 min, and it is
+// put at the start of the nearest runway lined up for take-off. With anything on the take-off roll (a vehicle, a wreck)
+// it is put in the air over the far end of the runway instead. Either way it then carries on with its task (Jman, 17 Nov:
+// "If it cannot taxi then teleport it").
+NEO_fnc_casTakeoffWatch = {
+    params ["_veh", "_callsign"];
+    if (!(_veh isKindOf "Plane") || {unitIsUAV _veh} || {_veh getVariable ["NEO_casTakeoffWatch", false]}) exitWith {};
+    _veh setVariable ["NEO_casTakeoffWatch", true];
+    private _from = getPosATL _veh;
+    private _task = _veh getVariable ["NEO_radioCurrentTask", []];
+    private _t0 = time;
+    private _same = { (_veh getVariable ["NEO_radioCurrentTask", []]) isEqualTo _task };
+    private _up = { ((getPosATL _veh) select 2) > 10 && {!isTouchingGround _veh} };
+    waitUntil {
+        sleep 2;
+        !alive _veh || {call _up} || {!(call _same)}
+            || {(time - _t0) > 75 && {(_veh distance2D _from) < 40}} || {(time - _t0) > 240}
+    };
+    _veh setVariable ["NEO_casTakeoffWatch", nil];
+    if (!alive _veh || {call _up} || {!(call _same)} || {_task isEqualTo []} || {(_task param [0, ""]) == "RTB"}) exitWith {};
+
+    // the nearest runway: the world's main airfield or one of its secondary ones
+    private _cfg = configFile >> "CfgWorlds" >> worldName;
+    private _best = configNull;
+    private _bestD = 1e10;
+    {
+        private _p = getArray (_x >> "ilsPosition");
+        if (count _p >= 2 && {count getArray (_x >> "ilsDirection") >= 3}) then {
+            private _d = _veh distance2D [_p select 0, _p select 1];
+            if (_d < _bestD) then { _bestD = _d; _best = _x };
+        };
+    } forEach ([_cfg] + configProperties [_cfg >> "SecondaryAirports", "isClass _x", true]);
+    if (isNull _best || {_bestD > 3000}) exitWith {
+        ["COMBAT SUPPORT - %1 (%2) has not taken off %3 s after its task and there is no runway within 3 km to put it on", _callsign, typeOf _veh, round (time - _t0)] call ALiVE_fnc_dump;
+    };
+    private _ils = getArray (_best >> "ilsPosition");
+    private _dirV = getArray (_best >> "ilsDirection");
+    // ilsDirection points back out along the approach, so the take-off run is the other way
+    private _hdg = (-(_dirV select 0)) atan2 (-(_dirV select 2));
+    private _start = [_ils select 0, _ils select 1, 0];
+
+    // the take-off roll, 800 m from the threshold: anything on it, a wreck included, and the ground start is no good
+    private _blocker = objNull;
+    for "_m" from 0 to 800 step 40 do {
+        private _pt = _start getPos [_m, _hdg];
+        private _near = (nearestObjects [_pt, ["Air", "LandVehicle", "Ship", "Wreck_base", "Wreck_base_F"], 25]) - [_veh];
+        if (count _near > 0) exitWith { _blocker = _near select 0 };
+    };
+
+    private _moved = round (_veh distance2D _from);
+    private _waited = round (time - _t0);
+    _veh allowDamage false;
+    _veh setVelocity [0, 0, 0];
+    if (isNull _blocker) then {
+        _veh setDir _hdg;
+        _veh setPosATL _start;
+        _veh setVectorUp (surfaceNormal _start);
+        _veh setVelocity [0, 0, 0];
+        _veh engineOn true;
+        ["COMBAT SUPPORT - %1 (%2) did not get airborne (%3 s, %4 m moved), so it was put at the start of the runway at %5, lined up for take-off",
+            _callsign, typeOf _veh, _waited, _moved, mapGridPosition _start] call ALiVE_fnc_dump;
+    } else {
+        private _air = _start getPos [2000, _hdg];
+        _air set [2, 300];
+        private _speed = ((getNumber (configFile >> "CfgVehicles" >> typeOf _veh >> "maxSpeed")) / 3.6 * 0.5) max 70;
+        _veh setDir _hdg;
+        _veh setPosATL _air;
+        _veh engineOn true;
+        _veh setVelocityModelSpace [0, _speed, 0];
+        ["COMBAT SUPPORT - %1 (%2) did not get airborne (%3 s, %4 m moved) and the runway's take-off roll is blocked by %5 at %6, so it was put in the air over the far end of the runway",
+            _callsign, typeOf _veh, _waited, _moved, typeOf _blocker, mapGridPosition _blocker] call ALiVE_fnc_dump;
+    };
+    [_veh] spawn { sleep 5; (_this select 0) allowDamage true };
+};
+
 //----------------------
 //UI
 //----------------------

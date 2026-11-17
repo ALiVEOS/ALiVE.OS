@@ -257,7 +257,9 @@ class FSM
                          "};" \n
                          "if !(isnil ""_parking"") then {_veh setFuel 1; _parking = nil};" \n
                          "if (!isnil ""_h"") then {deleteVehicle _h};" \n
-                         "_veh setVariable [""ALIVE_cas_parked"", false];"/*%FSM</STATEINIT""">*/;
+                         "_veh setVariable [""ALIVE_cas_parked"", false];" \n
+                         "// a plane tasked on the ground that cannot taxi out is put on the runway, or in the air (NEO_fnc_casTakeoffWatch)" \n
+                         "if (_veh isKindOf ""Plane"" && {isTouchingGround _veh}) then { [_veh, _callsign] spawn NEO_fnc_casTakeoffWatch };"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
