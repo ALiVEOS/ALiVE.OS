@@ -5,7 +5,8 @@ SCRIPT(storeKeysOwned);
 Function: ALiVE_fnc_storeKeysOwned
 
 Description:
-Every saved-data variable in profileNamespace that belongs to this mission on
+Every saved-data variable, in profileNamespace or the mission's own save file
+(missionProfileNamespace), that belongs to this mission on
 this map, and what the move to per-map saves and Clear Current Mission's Data
 each do with it. Both use this one list, so they always agree.
 
@@ -66,7 +67,9 @@ private _seen = [];
 private _fnc_add = {
     params ["_name", "_to", "_mode"];
     if ((toLower _name) in _seen) exitWith {};
-    if (isNil {profileNamespace getVariable _name}) exitWith {};
+    // In either file (ALiVE_fnc_storeFile): once a save has loaded back from the mission's own file, its copy
+    // in the shared profile file is removed, so from the second session on Clear found nothing to clear.
+    if (isNil {profileNamespace getVariable _name} && {isNil {missionProfileNamespace getVariable _name}}) exitWith {};
     _seen pushBack (toLower _name);
     _result pushBack [_name, _to, _mode];
 };
