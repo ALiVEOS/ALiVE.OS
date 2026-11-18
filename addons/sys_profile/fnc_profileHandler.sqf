@@ -1225,6 +1225,9 @@ switch(_operation) do {
                         };
                     } forEach _ranks;
 
+                    // Privates at the end of the list are left out to keep the save small: the load fills the
+                    // list back up to one rank a man, with private for each one missing.
+                    while {_exportRanks isNotEqualTo [] && {(_exportRanks select -1) isEqualTo 0}} do { _exportRanks deleteAt (count _exportRanks - 1) };
                     [_exportProfile, "ranks", _exportRanks] call ALIVE_fnc_hashSet;
 
                     _classes = _profile select 2 select 11;
@@ -1251,6 +1254,8 @@ switch(_operation) do {
                     } forEach _classes;
 
                     [_exportProfile, "unitClasses", _exportClasses] call ALIVE_fnc_hashSet;
+                    // the men at the end of the list who are unhurt are left out, as the load reads a missing one as unhurt
+                    while {_exportDamages isNotEqualTo [] && {(_exportDamages select -1) isEqualTo 0}} do { _exportDamages deleteAt (count _exportDamages - 1) };
                     [_exportProfile, "damages", _exportDamages] call ALIVE_fnc_hashSet;
 
                     _side = _profile select 2 select 3;
@@ -1289,6 +1294,14 @@ switch(_operation) do {
                         [_copy, "type"] call ALIVE_fnc_hashRem;
                         [_copy, "waypointType", _waypointType] call ALIVE_fnc_hashSet;
                         { [_copy, _x, ""] call ALIVE_fnc_hashSet } forEach ["statements", "description", "attachVehicle"];
+                        // A setting still at its default is left out, as the load puts each default back: the
+                        // route was about a tenth of a large mission's save, most of it these same defaults.
+                        {
+                            _x params ["_wpKey", "_wpDefault"];
+                            if (([_copy, _wpKey] call ALIVE_fnc_hashGet) isEqualTo _wpDefault) then { [_copy, _wpKey] call ALIVE_fnc_hashRem };
+                        } forEach [["waypointType", "MOVE"], ["speed", "UNCHANGED"], ["formation", "NO CHANGE"], ["combatMode", "NO CHANGE"],
+                            ["behaviour", "UNCHANGED"], ["description", ""], ["attachVehicle", ""], ["statements", ""], ["name", ""],
+                            ["radius", 0], ["completionRadius", -1], ["timeout", []]];
                         _copy
                     };
 
@@ -1673,6 +1686,11 @@ switch(_operation) do {
                             if (isNil "_value" || {!(_value isEqualType "")}) then { [_importWaypoint, _wpKey, _wpDefault] call ALIVE_fnc_hashSet };
                         } forEach [["type", "MOVE"], ["speed", "UNCHANGED"], ["formation", "NO CHANGE"], ["combatMode", "NO CHANGE"],
                             ["behaviour", "UNCHANGED"], ["description", ""], ["attachVehicle", ""], ["statements", ""], ["name", ""]];
+                        // left out of the save at their defaults
+                        {
+                            _x params ["_wpKey", "_wpDefault"];
+                            if (isNil {[_importWaypoint, _wpKey] call ALIVE_fnc_hashGet}) then { [_importWaypoint, _wpKey, _wpDefault] call ALIVE_fnc_hashSet };
+                        } forEach [["radius", 0], ["completionRadius", -1], ["timeout", []]];
                     } forEach _waypointsToRestore;
 
                     // isCycling is never cleared once set, so it is not saved; a route that loops holds a CYCLE.
@@ -1726,6 +1744,9 @@ switch(_operation) do {
                     {
                         _importRanks pushback ([_ranksMap, _x] call ALIVE_fnc_hashGet);
                     } forEach _ranks;
+                    // privates at the end were left out of the save: one rank a man again
+                    private _menCount = count (([_profile, "unitClasses", []] call ALIVE_fnc_hashGet) select { !isNil "_x" });
+                    while {count _importRanks < _menCount} do { _importRanks pushBack "PRIVATE" };
 
                     [_profileEntity, "ranks", _importRanks] call ALIVE_fnc_hashSet;
 
