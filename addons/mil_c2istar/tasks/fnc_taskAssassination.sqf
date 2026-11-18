@@ -514,9 +514,14 @@ switch (_taskState) do {
                         _table setdir 0;
                         if !(_indoor isEqualTo []) then {
                             _indoor params ["_seatA", "_seatB"];
-                            // on the floor between the two men, its base level with their feet
-                            _table setPosASL [((_seatA select 0) + (_seatB select 0)) / 2, ((_seatA select 1) + (_seatB select 1)) / 2,
-                                ((AGLToASL _seatA) select 2) - (((boundingBoxReal _table) select 0) select 2)];
+                            // on the floor between the two men. The height is worked out from the model's centre, which is what
+                            // setPosWorld places: setPosASL places the model's base, so the table hung half its own height in the air (#1126)
+                            private _tableX = ((_seatA select 0) + (_seatB select 0)) / 2;
+                            private _tableY = ((_seatA select 1) + (_seatB select 1)) / 2;
+                            private _seatZ = (AGLToASL _seatA) select 2;
+                            private _floorHit = lineIntersectsSurfaces [[_tableX, _tableY, _seatZ + 0.6], [_tableX, _tableY, _seatZ - 2], _table, objNull, true, 1, "ROADWAY", "GEOM"];
+                            private _floorZ = if (_floorHit isEqualTo []) then { _seatZ } else { ((_floorHit select 0) select 0) select 2 };
+                            _table setPosWorld [_tableX, _tableY, _floorZ - (((boundingBoxReal _table) select 0) select 2)];
                             _table setDir ((_seatA getDir _seatB) + 90);
                         };
                         _table enableSimulation false;
