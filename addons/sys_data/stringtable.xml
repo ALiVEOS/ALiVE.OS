@@ -202,7 +202,7 @@
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_CLEAR_MISSION_COMMENT">
-                <English>Removes only the current mission's saved ALiVE data. Cannot be undone.</English>
+                <English>Removes only the current mission's saved ALiVE data. Nothing more is saved until the mission restarts. Cannot be undone.</English>
                 <Chinese>僅刪除當前任務的ALiVE存檔資料。無法撤銷。</Chinese>
                 <Chinesesimp>仅删除当前任务的ALiVE存档数据。无法撤销。</Chinesesimp>
                 <French>Supprime uniquement les données sauvegardées d'ALiVE pour la mission actuelle. Action irréversible.</French>
@@ -302,7 +302,7 @@
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_CLEAR_CONFIRM_YES_COMMENT">
-                <English>Permanently clears the current mission's saved data. Cannot be undone.</English>
+                <English>Permanently clears the current mission's saved data. Nothing more is saved until the mission restarts. Cannot be undone.</English>
                 <Chinese>永久清除當前任務的存檔資料。無法撤銷。</Chinese>
                 <Chinesesimp>永久清除当前任务的存档数据。无法撤销。</Chinesesimp>
                 <French>Efface définitivement les données sauvegardées de la mission actuelle. Action irréversible.</French>
@@ -362,7 +362,7 @@
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_CLEAR_DONE">
-                <English>ALiVE: Current mission's data cleared</English>
+                <English>ALiVE: Current mission's data cleared. Nothing more is saved until the mission restarts.</English>
                 <Chinese>ALiVE:當前任務資料已清除</Chinese>
                 <Chinesesimp>ALiVE:当前任务数据已清除</Chinesesimp>
                 <French>ALiVE: données de la mission actuelle effacées</French>

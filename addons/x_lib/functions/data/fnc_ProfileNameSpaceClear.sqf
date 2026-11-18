@@ -12,6 +12,9 @@ save under a name nothing running builds, such as that of an air commander since
 removed from the mission, is left. From the old name with the map after an
 underscore only this mission's mission date and player saves are taken out.
 The names it removes come off the list Wipe ALL reads (ALiVE_SAVEDMISSIONS).
+Nothing of this mission is saved again until it restarts, so what is still in the
+game is not written straight back by the next autosave, a player leaving or the
+mission ending.
 Only the machines the admin menu offers this to may ask for it.
 
 Parameters:
@@ -96,12 +99,21 @@ private _deleted = [];
                 ["[ALiVE Data] Removed this mission's date and player saves from %1", _name] call ALiVE_fnc_dump;
             };
         };
+        ["hold", _name, ["sys_data", "sys_player"]] call ALiVE_fnc_storeFile;
     } else {
         ["delete", _name] call ALiVE_fnc_storeFile;
+        ["hold", _name] call ALiVE_fnc_storeFile;
         _deleted pushBack _name;
         ["[ALiVE Data] Removed %1", _name] call ALiVE_fnc_dump;
     };
 } forEach ([] call ALiVE_fnc_storeKeysOwned);
+
+// Held even when nothing was saved under them yet. The modules keep running after a clear: Player FOBs saved
+// again within 30 seconds, so the cleared FOBs were back on the next start (A. Ares, #1126).
+private _base = (["", worldName] call ALiVE_fnc_storeKeys) select 0;
+{ ["hold", _base + _x] call ALiVE_fnc_storeFile } forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_TASK_OPTOUT", "_FORCE_POOL", "_ATO", "_FOB", "_INTEL", "_HUB", "_CRATERS", "_RALLY"] + (missionNamespace getVariable ["ALiVE_storeSuffixes", []]));
+// Player Logistics writes its own way as well, so it is told to stop too
+if !(isNil QMOD(SYS_LOGISTICS)) then { MOD(SYS_LOGISTICS) setVariable ["DISABLEPERSISTENCE", true, true] };
 
 // The names removed come off the list Wipe ALL reads, so it stays a list of saves that exist.
 private _allMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS), []];
