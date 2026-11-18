@@ -39,6 +39,21 @@ _object setposATL ([_state,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
 _object setVectorDirAndUp ([_state,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
 [_object,([_state,QGVAR(CARGO)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectCargo;
+// Put the saved inventory back once more after ACE has given out its ropes (#1131). With its Add Rope To
+// Vehicle Inventory setting on, ACE adds a rope to every vehicle once its settings are in force, a few
+// seconds into the mission, so a vehicle restored before that got the saved rope and a new one, and every
+// load gave one more. Only the weapon, magazine and item lists are put back; what is stowed, towed or lifted
+// is left as the line above set it. Without ACE's towing, nothing is added and this doesn't run.
+private _cargoAgain = [_state,QGVAR(CARGO)] call ALiVE_fnc_HashGet;
+if (!isNil "ace_towing_fnc_addRopeToVehicle" && {!isNil "_cargoAgain"} && {_cargoAgain isEqualType []} && {count _cargoAgain > 4}) then {
+    [_object, [[], [], [], _cargoAgain select 3, _cargoAgain select 4]] spawn {
+        params ["_v", "_cargo"];
+        // its settings in force means the rope is on its way; the setting off, it never is, and 30 s ends the wait
+        waitUntil { sleep 1; !isNil "ace_towing_addRopeToVehicleInventory_initialized" || {time > 30} };
+        sleep 2;
+        if (!isNull _v && {alive _v}) then { [_v, _cargo] call ALiVE_fnc_setObjectCargo };
+    };
+};
 [_object,([_state,QGVAR(FUEL)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectFuel;
 
 // ACE fuel and ammo cargo as saved (#869), through ACE's own setters so it updates what it shows.
