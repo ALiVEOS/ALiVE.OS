@@ -24,7 +24,7 @@ can Dismiss it, and what it cost goes back to the pool (#1078; Allow Dismiss tur
 
 With Offer Synced Units and Vehicles on, the men and vehicles synced to the module are the
 offer instead of recruitment points: the server notes each one as placed (his loadout, its
-paint), removes it, and publishes the list and the remaining recruitment points on the module.
+paint and inventory), removes it, and publishes the list and the remaining recruitment points on the module.
 
 Parameters:
 _this select 0: OBJECT - the module
@@ -79,7 +79,7 @@ private _rawT = _logic getVariable ["syncedTemplates", "false"];
 private _synced = if (_rawT isEqualType "") then { toLower _rawT == "true" } else { _rawT isEqualTo true };
 
 // The synced men and vehicles become the offer, each kept as it was placed: a man as [class, name,
-// loadout, rank, skill], a vehicle as [class, name, textures]. Done on the server, which removes the
+// loadout, rank, skill], a vehicle as [class, name, textures, inventory]. Done on the server, which removes the
 // placed ones and publishes the offer and the remaining recruitment points on the module, because a
 // player's machine can't see a deleted object through synchronizedObjects; a late joiner reads the
 // module's variables. The profile system leaves these alone (fnc_createProfilesFromUnits), whichever
@@ -129,7 +129,9 @@ if (isServer && {_synced}) then {
         [typeOf _x, _desc, getUnitLoadout _x, rank _x, skill _x]
     }) call _fnc_number;
     private _vehT = (_vehs apply {
-        [typeOf _x, getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName"), getObjectTextures _x]
+        // its inventory as set in Eden's Equipment Storage, which a vehicle made from the class lacked (#1130)
+        [typeOf _x, getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName"), getObjectTextures _x,
+            [getWeaponCargo _x, getMagazineCargo _x, getItemCargo _x, getBackpackCargo _x]]
     }) call _fnc_number;
     // Removed as the Faction Compiler removes its templates; a group mate who wasn't synced stays
     private _groups = [];
@@ -161,6 +163,23 @@ ALiVE_fnc_recruitApplyTemplate = {
         if (_skill >= 0) then { _thing setSkill _skill };
     } else {
         { if (_x != "") then { _thing setObjectTextureGlobal [_forEachIndex, _x] } } forEach (_template param [2, []]);
+        // the synced vehicle's inventory in place of the class's own (a template from before it was kept has none)
+        private _inv = _template param [3, []];
+        if (_inv isEqualType [] && {count _inv == 4}) then {
+            _inv params ["_weapons", "_magazines", "_items", "_backpacks"];
+            clearWeaponCargoGlobal _thing;
+            clearMagazineCargoGlobal _thing;
+            clearItemCargoGlobal _thing;
+            clearBackpackCargoGlobal _thing;
+            _weapons params [["_wc", []], ["_wn", []]];
+            { _thing addWeaponCargoGlobal [_x, _wn select _forEachIndex] } forEach _wc;
+            _magazines params [["_mc", []], ["_mn", []]];
+            { _thing addMagazineCargoGlobal [_x, _mn select _forEachIndex] } forEach _mc;
+            _items params [["_ic", []], ["_in", []]];
+            { _thing addItemCargoGlobal [_x, _in select _forEachIndex] } forEach _ic;
+            _backpacks params [["_bc", []], ["_bn", []]];
+            { _thing addBackpackCargoGlobal [_x, _bn select _forEachIndex] } forEach _bc;
+        };
     };
 };
 
