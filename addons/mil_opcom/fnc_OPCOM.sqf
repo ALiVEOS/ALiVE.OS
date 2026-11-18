@@ -8566,6 +8566,7 @@ switch (_operation) do {
         if (_byBoat && {_boats isEqualTo []}) then { _boats = call _fnc_sideBoats };
         if (_boats isEqualTo [] && {(_heli select { _x isKindOf "Helicopter" }) isEqualTo []} && {!isNil "ALIVE_sideDefaultAirTransport"}) then {
             _heli = +([ALIVE_sideDefaultAirTransport, _side, []] call ALIVE_fnc_hashGet);
+            { ["AI Commander", _x, "air transport", _side] call ALiVE_fnc_reportVanillaFallback } forEach _factions;
         };
         // nothing can leave the ship: the force aboard is gone, so it leaves the starting strength too
         private _dropAll = {

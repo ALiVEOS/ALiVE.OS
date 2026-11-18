@@ -18,6 +18,7 @@ for "_j" from 1 to _intensity do {
                 _intensity = _logic getvariable ["conv_intensity_setting",1];
                 _safeArea = _logic getvariable ["conv_safearea_setting",2000];
                 _factionsConvoy = _logic getvariable ["conv_factions_setting","OPF_F"];
+                if (_factionsConvoy isEqualTo "OPF_F" && {((synchronizedObjects _logic) findIf { typeOf _x == "ALiVE_mil_OPCOM" }) == -1}) then { ["Military Convoy", "OPF_F", "its Factions setting was not changed"] call ALiVE_fnc_reportDefaultFaction };
                 _debug = _logic getvariable ["conv_debug_setting",false];
 
                 if (typename _factionsConvoy == "ARRAY") then {

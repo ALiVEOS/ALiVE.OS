@@ -550,6 +550,48 @@ class substituteFactionUnit
 	ALIVE_RECOMPILE;
 };
 
+class factionIsVanilla
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_factionIsVanilla.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
+class factionOwnTroopTrucks
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_factionOwnTroopTrucks.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
+class reportVanillaFallback
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_reportVanillaFallback.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
+class reportDefaultFaction
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_reportDefaultFaction.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
+class listMissionFactions
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_listMissionFactions.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
+class listVanillaFallbacks
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_listVanillaFallbacks.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class substituteFactionVehicle
 {
 	file = "\x\alive\addons\x_lib\functions\config\fnc_substituteFactionVehicle.sqf";

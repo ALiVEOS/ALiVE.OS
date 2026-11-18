@@ -421,6 +421,7 @@ switch(_operation) do {
             };
         };
         _result = if (_found isEqualTo []) then { ["OPF_F", "BLU_F"] select (_own == east) } else { _found joinString "," };
+        if (_found isEqualTo []) then { ["C2ISTAR task enemies", _result, "no hostile AI Commander is running"] call ALiVE_fnc_reportDefaultFaction };
     };
     case "gmLimit": {
         _result = [_logic,_operation,_args,DEFAULT_GM_LIMIT,["SIDE","FACTION"]] call ALIVE_fnc_OOsimpleOperation;

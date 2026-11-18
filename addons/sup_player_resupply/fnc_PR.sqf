@@ -183,6 +183,7 @@ switch(_operation) do {
                 // if no options found for the faction use side options
                 if(count _staticOptions == 0) then {
                     _staticOptions = [ALIVE_sideDefaultResupplyVehicleOptions,_side] call ALIVE_fnc_hashGet;
+                    ["Player Resupply", _faction, "resupply vehicle options", _side] call ALiVE_fnc_reportVanillaFallback;
                 };
 
                 // Collect at a hub offers what a convoy would bring (Jman, 29 Oct: the
@@ -1358,6 +1359,7 @@ switch(_operation) do {
             // Works out maximum helicopter load (anywhere from 2000 to 12000 kg)
             _heliLiftCapacity = 2000;
             _heliLiftClasses = [ALIVE_factionDefaultAirTransport,_playerFaction, [ALIVE_sideDefaultAirTransport,_sideText] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashGet;
+            if (([ALIVE_factionDefaultAirTransport, _playerFaction, []] call ALIVE_fnc_hashGet) isEqualTo []) then { ["Player Resupply", _playerFaction, "air transport", _sideText] call ALiVE_fnc_reportVanillaFallback };
 
             if (count _heliLiftClasses > 0) then {
                 {
@@ -3195,6 +3197,7 @@ switch(_operation) do {
                                     // if no options found for the faction use side options
                                     if(count _staticOptions == 0) then {
                                         _staticOptions = [ALIVE_sideDefaultResupplyGroupOptions,_side] call ALIVE_fnc_hashGet;
+                                        ["Player Resupply", _faction, "resupply group options", _side] call ALiVE_fnc_reportVanillaFallback;
                                     };
 
                                     // Collect at a hub takes the convoy's list: the table has no entry for it, and the missing list

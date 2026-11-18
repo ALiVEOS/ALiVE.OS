@@ -80,6 +80,7 @@ switch (_support) do
 
             if (count _containers == 0) then {
                 _containers = [ALIVE_sideDefaultContainers,str(_side),[]] call ALIVE_fnc_hashGet;
+                ["Combat Support", _faction, "containers", str _side] call ALiVE_fnc_reportVanillaFallback;
             };
 
             if (count _containers > 0) then {

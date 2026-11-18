@@ -440,6 +440,7 @@ switch(_operation) do {
             // Kernel's bus, or by Eden, and this piece only reads them.
             private _faction = _module getVariable ["faction", "OPF_F"];
             if (!(_faction isEqualType "") || {_faction isEqualTo ""}) then { _faction = "OPF_F" };
+            if (_faction isEqualTo "OPF_F") then { ["Military Air Component Commander", _faction, "its Faction setting was not changed"] call ALiVE_fnc_reportDefaultFaction };
             // A faction built by the faction compiler is stored under the
             // name the compiler gave it and resolves to the faction it
             // actually stands for. The old accessor resolved it on every

@@ -1682,6 +1682,7 @@ switch(_operation) do {
                 // if no supplies found for the faction use side supplies
                 if(count _supplyClasses == 0) then {
                     _supplyClasses = [ALIVE_sideDefaultSupplies,_side] call ALIVE_fnc_hashGet;
+                    ["Military Placement", _staticFaction, "supplies", _side] call ALiVE_fnc_reportVanillaFallback;
                 };
 
                 _supplyClasses = _supplyClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
@@ -2125,6 +2126,7 @@ switch(_operation) do {
                 // if no supports found for the faction use side supplies
                 if(count _supportClasses == 0) then {
                     _supportClasses = [ALIVE_sideDefaultSupports,_side] call ALIVE_fnc_hashGet;
+                    ["Military Placement", _staticFaction, "supports", _side] call ALiVE_fnc_reportVanillaFallback;
                 };
 
                 if(count _landClasses == 0) then {

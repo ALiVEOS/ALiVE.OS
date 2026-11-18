@@ -283,6 +283,7 @@ switch(_operation) do {
                     _merged pushBack _x;
                 };
             } forEach (_factionsArr + _manualArr);
+            _logic setVariable ["CQB_noFactionsPicked", count _merged == 0];
             if (count _merged == 0) then { _merged = DEFAULT_FACTIONS; };
             _factions = [_logic, "factions", _merged] call ALiVE_fnc_CQB;
 
@@ -606,6 +607,9 @@ switch(_operation) do {
 				_logic setVariable ["staticWeaponsClassnames",_staticWeaponsClassnames,true];
                 _logic setVariable ["cleared", []];
                 [_logic, "houses",_result] call ALiVE_fnc_CQB;
+                if ((_logic getVariable ["CQB_noFactionsPicked", false]) && {!(_logic getVariable ["CQB_UseDominantFaction", false])} && {_factions isEqualTo DEFAULT_FACTIONS}) then {
+                    ["Military CQB", DEFAULT_FACTIONS select 0, "it is set to Static with no factions picked"] call ALiVE_fnc_reportDefaultFaction;
+                };
                 [_logic, "factions",_factions] call ALiVE_fnc_CQB;
                 [_logic, "spawnDistance",_spawn] call ALiVE_fnc_CQB;
                 [_logic, "spawnDistanceStatic", _spawnStatic] call ALiVE_fnc_CQB;

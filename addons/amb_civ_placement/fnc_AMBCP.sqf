@@ -764,6 +764,7 @@ switch(_operation) do {
                 // if no supports found for the faction use side supplies
                 if(count _supportClasses == 0) then {
                     _supportClasses = [ALIVE_sideDefaultSupports,_side] call ALIVE_fnc_hashGet;
+                    ["Civilian Placement", _faction, "supports", _side] call ALiVE_fnc_reportVanillaFallback;
                 };
 
                 if(count _landClasses == 0) then {

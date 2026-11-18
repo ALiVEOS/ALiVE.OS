@@ -715,23 +715,14 @@ switch(_operation) do {
     case "groundTransportFallback": {
         _args params [["_faction", "", [""]], ["_sideText", "", [""]]];
 
-        if (isNil "ALiVE_ML_ownTroopTrucks") then { ALiVE_ML_ownTroopTrucks = createHashMap };
+        private _own = [_faction] call ALiVE_fnc_factionOwnTroopTrucks;
 
-        private _own = ALiVE_ML_ownTroopTrucks get _faction;
-        if (isNil "_own") then {
-            private _filter = format [
-                "getText (_x >> 'faction') == '%1' && {getNumber (_x >> 'scope') == 2} && {getNumber (_x >> 'transportSoldier') >= 6} && {getNumber (_x >> 'transportAmmo') == 0} && {getNumber (_x >> 'transportFuel') == 0} && {getNumber (_x >> 'transportRepair') == 0} && {((configName _x) isKindOf 'Truck_F') || {(configName _x) isKindOf 'Truck'}}",
-                _faction
-            ];
-            _own = if (_faction == "") then { [] } else { (_filter configClasses (configFile >> "CfgVehicles")) apply { configName _x } };
-            ALiVE_ML_ownTroopTrucks set [_faction, _own];
-
-            if (_own isNotEqualTo []) then {
-                ["ML - %1 has no ground transport listed, using its own trucks: %2", _faction, _own] call ALiVE_fnc_dump;
-            };
+        if (_own isEqualTo []) then {
+            ["Military Logistics", _faction, "ground transport", _sideText] call ALiVE_fnc_reportVanillaFallback;
+            _result = [ALIVE_sideDefaultTransport, _sideText, []] call ALIVE_fnc_hashGet;
+        } else {
+            _result = _own;
         };
-
-        _result = if (_own isEqualTo []) then { [ALIVE_sideDefaultTransport, _sideText, []] call ALIVE_fnc_hashGet } else { _own };
     };
     // Supplies dropped by parachute or set down by a helicopter's sling pop red smoke (an IR strobe
     // at night) until a player comes to them. Yes by default.
@@ -8393,6 +8384,7 @@ switch(_operation) do {
                             _airTrans = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
                             if(count _airTrans == 0 && !_limitTransportToFaction) then {
                                  _airTrans = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                                 ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                             };
                             // Check helicopters can slingload
                             {
@@ -9374,6 +9366,7 @@ switch(_operation) do {
                             private _slingFailedF = missionNamespace getVariable ["ALIVE_ML_slingFailedClasses", []];
                             if ({_x isKindOf "Helicopter" && {!(_x in _slingFailedF)}} count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = +([ALIVE_sideDefaultAirTransport,_side,[]] call ALIVE_fnc_hashGet);
+                                ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                             };
 
                             // HELI_INSERT requires LANDING at the destination LZ. Filter
@@ -9769,6 +9762,7 @@ switch(_operation) do {
 
                             if(count _transportGroups == 0) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                                ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                             };
 
                             // HELI_INSERT (infantry transport) requires LANDING at the
@@ -9975,6 +9969,7 @@ switch(_operation) do {
 
                             if(count _transportGroups == 0) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                                ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                             };
 
                             if(count _transportGroups > 0) then {
@@ -10317,6 +10312,7 @@ switch(_operation) do {
                             // faction's list is the registry's own, and appending wrote the side's into it.
                             if ({!(_x in (missionNamespace getVariable ["ALIVE_ML_slingFailedClasses", []]))} count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = +([ALIVE_sideDefaultAirTransport,_side,[]] call ALIVE_fnc_hashGet);
+                                ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                             };
 
                             // Filter out classes that have failed sling-validation in this
@@ -14538,6 +14534,7 @@ switch(_operation) do {
                             // the ordered vehicles to the destination when the pool stays empty
                             if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                                ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                             };
 
                             // #909: skip heli classes that failed sling-validation this session
@@ -15231,6 +15228,7 @@ switch(_operation) do {
                             // not faction-limited (same rule as the analysis path)
                             if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                                ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                             };
 
                             if(count _transportGroups > 0) then {
@@ -15344,6 +15342,7 @@ switch(_operation) do {
                             // not faction-limited (same rule as the analysis path)
                             if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                                ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                             };
 
                             if(count _transportGroups > 0) then {
@@ -15591,6 +15590,7 @@ switch(_operation) do {
                                 // through to the carrierless container drop below
                                 if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                     _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                                    ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                                 };
 
                                 if(count _transportGroups > 0) then {
@@ -15645,6 +15645,7 @@ switch(_operation) do {
 
                                         if(count _containers == 0) then {
                                             _containers = [ALIVE_sideDefaultContainers,_side] call ALIVE_fnc_hashGet;
+                                            ["Military Logistics", _eventFaction, "containers", _side] call ALiVE_fnc_reportVanillaFallback;
                                         };
 
                                         if(count _containers > 0) then {
@@ -15723,6 +15724,7 @@ switch(_operation) do {
 
                                 if(count _containers == 0) then {
                                     _containers = [ALIVE_sideDefaultContainers,_side] call ALIVE_fnc_hashGet;
+                                    ["Military Logistics", _eventFaction, "containers", _side] call ALiVE_fnc_reportVanillaFallback;
                                 };
 
                                 if(count _containers > 0) then {
@@ -15947,6 +15949,7 @@ switch(_operation) do {
                                     private _slingFailedAD = missionNamespace getVariable ["ALIVE_ML_slingFailedClasses", []];
                                     if ({_x isKindOf "Helicopter" && {!(_x in _slingFailedAD)}} count _airdropTransportGroups == 0 && !_limitTransportToFaction) then {
                                         _airdropTransportGroups append ([ALIVE_sideDefaultAirTransport,_side,[]] call ALIVE_fnc_hashGet);
+                                        ["Military Logistics", _eventFaction, "air transport", _side] call ALiVE_fnc_reportVanillaFallback;
                                     };
 
                                     if (_debug) then {
