@@ -709,6 +709,30 @@ switch(_operation) do {
 
         _result = _args;
     };
+    // Trucks for a faction with no ground transport listed. A mod faction with its own groups went straight to the
+    // side's list, so its convoys arrived in vanilla CSAT or NATO trucks driven by vanilla soldiers, even when the
+    // faction owned suitable trucks. Its own troop trucks now come first, and the side's list is the last resort.
+    case "groundTransportFallback": {
+        _args params [["_faction", "", [""]], ["_sideText", "", [""]]];
+
+        if (isNil "ALiVE_ML_ownTroopTrucks") then { ALiVE_ML_ownTroopTrucks = createHashMap };
+
+        private _own = ALiVE_ML_ownTroopTrucks get _faction;
+        if (isNil "_own") then {
+            private _filter = format [
+                "getText (_x >> 'faction') == '%1' && {getNumber (_x >> 'scope') == 2} && {getNumber (_x >> 'transportSoldier') >= 6} && {getNumber (_x >> 'transportAmmo') == 0} && {getNumber (_x >> 'transportFuel') == 0} && {getNumber (_x >> 'transportRepair') == 0} && {((configName _x) isKindOf 'Truck_F') || {(configName _x) isKindOf 'Truck'}}",
+                _faction
+            ];
+            _own = if (_faction == "") then { [] } else { (_filter configClasses (configFile >> "CfgVehicles")) apply { configName _x } };
+            ALiVE_ML_ownTroopTrucks set [_faction, _own];
+
+            if (_own isNotEqualTo []) then {
+                ["ML - %1 has no ground transport listed, using its own trucks: %2", _faction, _own] call ALiVE_fnc_dump;
+            };
+        };
+
+        _result = if (_own isEqualTo []) then { [ALIVE_sideDefaultTransport, _sideText, []] call ALIVE_fnc_hashGet } else { _own };
+    };
     // Supplies dropped by parachute or set down by a helicopter's sling pop red smoke (an IR strobe
     // at night) until a player comes to them. Yes by default.
     case "markSupplyDrops": {
@@ -10091,7 +10115,7 @@ switch(_operation) do {
                             _transportVehicleProfiles = [];
 
                             if(count _transportGroups == 0) then {
-                                _transportGroups = [ALIVE_sideDefaultTransport,_side] call ALIVE_fnc_hashGet;
+                                _transportGroups = [_logic, "groundTransportFallback", [_eventFaction, _side]] call MAINCLASS;
                             };
 
                             // Both pools empty means the block below is skipped and NOTHING is created,
@@ -15147,7 +15171,7 @@ switch(_operation) do {
                             _transportVehicleProfiles = [];
 
                             if(count _transportGroups == 0) then {
-                                _transportGroups = [ALIVE_sideDefaultTransport,_side] call ALIVE_fnc_hashGet;
+                                _transportGroups = [_logic, "groundTransportFallback", [_eventFaction, _side]] call MAINCLASS;
                             };
 
                             // Both pools empty means the block below is skipped and NOTHING is created,
@@ -15503,7 +15527,7 @@ switch(_operation) do {
                                 _transportVehicleProfiles = [];
 
                                 if(count _transportGroups == 0) then {
-                                    _transportGroups = [ALIVE_sideDefaultTransport,_side] call ALIVE_fnc_hashGet;
+                                    _transportGroups = [_logic, "groundTransportFallback", [_eventFaction, _side]] call MAINCLASS;
                                 };
 
                                 // Both pools empty means the block below is skipped and NOTHING is created,
