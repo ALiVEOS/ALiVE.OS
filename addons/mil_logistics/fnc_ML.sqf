@@ -18061,7 +18061,7 @@ switch(_operation) do {
                             };
                             [_p, "busy", true] call ALIVE_fnc_hashSet; [_p, "busyReason", "logistics"] call ALIVE_fnc_hashSet;
                             if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
-                            [ALIVE_profileStationary, _p select 2 select 4, true] call ALIVE_fnc_hashSet;
+                            [ALIVE_profileStationary, _p select 2 select 4, true] call ALIVE_fnc_hashSet; if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profileStationaryBy, _p select 2 select 4, "logistics"] call ALIVE_fnc_hashSet;
                         } else {
                             // only the men count for the commander; a vehicle is left free as before
                             if !(_p select 2 select 1) then { [_p, "busy", false] call ALIVE_fnc_hashSet; [_p, "busyReason", ""] call ALIVE_fnc_hashSet; };

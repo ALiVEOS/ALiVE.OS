@@ -285,7 +285,7 @@ switch (_operation) do {
         if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate };
         private _hvt = [_classes, _sideText, _faction, _pos, random 360, _faction, true] call ALIVE_fnc_createProfileEntity;
         private _hvtID = [_hvt, "profileID", ""] call ALiVE_fnc_HashGet;
-        [ALIVE_profileStationary, _hvtID, true] call ALIVE_fnc_hashSet;
+        [ALIVE_profileStationary, _hvtID, true] call ALIVE_fnc_hashSet; if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profileStationaryBy, _hvtID, "hvt"] call ALIVE_fnc_hashSet;
         if (_kitHook != "") then { [_hvt, "onEachSpawn", _kitHook] call ALIVE_fnc_profileEntity };
         [_hvt, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 0, "SAFE", "LIMITED", "", true]]] call ALIVE_fnc_profileEntity;
 
@@ -329,7 +329,7 @@ switch (_operation) do {
                 if (([_x, "type", ""] call ALiVE_fnc_HashGet) == "entity") then {
                     private _gid = [_x, "profileID", ""] call ALiVE_fnc_HashGet;
                     _guardIDs pushBack _gid;
-                    [ALIVE_profileStationary, _gid, true] call ALIVE_fnc_hashSet;
+                    [ALIVE_profileStationary, _gid, true] call ALIVE_fnc_hashSet; if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profileStationaryBy, _gid, "hvt"] call ALIVE_fnc_hashSet;
                     [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [40, "false", [0,0,0], "", 1, 0.3, "SAFE", "LIMITED", "", true]]] call ALIVE_fnc_profileEntity;
                 };
             } forEach _guards;

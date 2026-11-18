@@ -7463,7 +7463,7 @@ switch (_operation) do {
             if (_ground && {isNil "_aa"} && {!_moving}) then {
                 [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
                 [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
-                [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+                [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet; if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profileStationaryBy, _pid, "dugin"] call ALIVE_fnc_hashSet;
                 _parked pushBack _pid;
                 [_objective, "dugInPinned", _parked] call ALiVE_fnc_HashSet;
                 _pinned = _pinned + 1;
@@ -7506,7 +7506,7 @@ switch (_operation) do {
         {
             private _objective = _x;
             {
-                if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem };
+                if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem; if (!isNil "ALIVE_profileStationaryBy") then { [ALIVE_profileStationaryBy, _x] call ALIVE_fnc_hashRem } };
                 private _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                 if (!isNil "_profile") then { [_profile, "busy", false] call ALiVE_fnc_HashSet };
                 _freed = _freed + 1;

@@ -1427,6 +1427,9 @@ switch(_operation) do {
                 // the commander. Written only for one that is, to keep saves small.
                 if (!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet}) then {
                     [_exportProfile, "stationary", true] call ALIVE_fnc_hashSet;
+                    // and what pinned it, for the War Room to show
+                    private _pinnedBy = if (isNil "ALIVE_profileStationaryBy") then { "" } else { [ALIVE_profileStationaryBy, _profileID, ""] call ALIVE_fnc_hashGet };
+                    if (_pinnedBy isEqualType "" && {_pinnedBy != ""}) then { [_exportProfile, "stationaryBy", _pinnedBy] call ALIVE_fnc_hashSet };
                 };
 
                 [_exportProfiles, _profileID, _exportProfile] call ALIVE_fnc_hashSet;
@@ -1457,7 +1460,7 @@ switch(_operation) do {
         private _from = 0;
         { _text = _text + str (_values select [_from, _x - _from]); _from = _x + 1 } forEach _skip;
         _text = _text + str (_values select [_from]);
-        _result = [_text, !isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _values select 4, false] call ALIVE_fnc_hashGet}];
+        _result = [_text, !isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _values select 4, false] call ALIVE_fnc_hashGet}, if (isNil "ALIVE_profileStationaryBy") then { "" } else { [ALIVE_profileStationaryBy, _values select 4, ""] call ALIVE_fnc_hashGet }];
     };
 
     case "prepareExportProfileData": {
@@ -1682,6 +1685,11 @@ switch(_operation) do {
                     if (_importStationary isEqualTo true) then {
                         if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
                         [ALIVE_profileStationary, [_profileEntity, "profileID"] call ALIVE_fnc_hashGet, true] call ALIVE_fnc_hashSet;
+                        private _importPinnedBy = [_profile, "stationaryBy", ""] call ALIVE_fnc_hashGet;
+                        if (_importPinnedBy isEqualType "" && {_importPinnedBy != ""}) then {
+                            if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate; };
+                            [ALIVE_profileStationaryBy, [_profileEntity, "profileID"] call ALIVE_fnc_hashGet, _importPinnedBy] call ALIVE_fnc_hashSet;
+                        };
                         [_profileEntity, "busy", true] call ALIVE_fnc_hashSet;
                         // like busy, the reason isn't saved: a post brought back pinned is held as a post
                         [_profileEntity, "busyReason", "post"] call ALIVE_fnc_hashSet;
@@ -1807,6 +1815,11 @@ switch(_operation) do {
                     if (_importStationary isEqualTo true) then {
                         if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
                         [ALIVE_profileStationary, [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet, true] call ALIVE_fnc_hashSet;
+                        private _importPinnedBy = [_profile, "stationaryBy", ""] call ALIVE_fnc_hashGet;
+                        if (_importPinnedBy isEqualType "" && {_importPinnedBy != ""}) then {
+                            if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate; };
+                            [ALIVE_profileStationaryBy, [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet, _importPinnedBy] call ALIVE_fnc_hashSet;
+                        };
                         [_profileVehicle, "busy", true] call ALIVE_fnc_hashSet;
                     };
                     private _importLocked = [_profile, "ALiVE_reserveLocked", false] call ALIVE_fnc_hashGet;

@@ -1200,7 +1200,7 @@ switch (_op) do {
             private _objects = [_entry, "objects", []] call ALIVE_fnc_hashGet;
             {
                 if ((_x param [0, ""]) isEqualTo "static" && {!isNil "ALIVE_profileStationary"}) then {
-                    { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem } forEach [_x param [3, ""], _x param [4, ""]];
+                    { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem; if (!isNil "ALIVE_profileStationaryBy") then { [ALIVE_profileStationaryBy, _x] call ALIVE_fnc_hashRem } } forEach [_x param [3, ""], _x param [4, ""]];
                 };
             } forEach _objects;
             [_entry, "objects", _objects select { !((_x param [0, ""]) in ["static", "vehicle"]) }] call ALIVE_fnc_hashSet;
@@ -1505,7 +1505,7 @@ switch (_op) do {
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
         if (isNil "_entry") exitWith { _result = false };
         {
-            if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem };
+            if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem; if (!isNil "ALIVE_profileStationaryBy") then { [ALIVE_profileStationaryBy, _x] call ALIVE_fnc_hashRem } };
             private _pr = if (isNil "ALiVE_ProfileHandler") then { nil } else { [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler };
             if (!isNil "_pr") then { [_pr, "busy", false] call ALIVE_fnc_hashSet };
         } forEach ([_entry, "garrison", []] call ALIVE_fnc_hashGet);
@@ -1638,7 +1638,7 @@ switch (_op) do {
         if (isNil "_entry") exitWith {};
         {
             {
-                if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem };
+                if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem; if (!isNil "ALIVE_profileStationaryBy") then { [ALIVE_profileStationaryBy, _x] call ALIVE_fnc_hashRem } };
                 private _pr = if (isNil "ALiVE_ProfileHandler") then { nil } else { [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler };
                 if (!isNil "_pr") then { [_pr, "destroy"] call ALIVE_fnc_profileEntity; _result = _result + 1 };
             } forEach (_x param [3, []]);
@@ -1728,7 +1728,8 @@ switch (_op) do {
 
     case "pinStatic": {
         if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate };
-        { if (_x != "") then { [ALIVE_profileStationary, _x, true] call ALIVE_fnc_hashSet } } forEach _args;
+        if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate };
+        { if (_x != "") then { [ALIVE_profileStationary, _x, true] call ALIVE_fnc_hashSet; [ALIVE_profileStationaryBy, _x, "fob"] call ALIVE_fnc_hashSet } } forEach _args;
         _result = true;
     };
 
@@ -1744,7 +1745,7 @@ switch (_op) do {
                 if (([_pr, "type", ""] call ALIVE_fnc_hashGet) == "entity") then { [_pr, "destroy"] call ALIVE_fnc_profileEntity } else { [_pr, "destroy"] call ALIVE_fnc_profileVehicle };
                 _result = true;
             };
-            if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem };
+            if (!isNil "ALIVE_profileStationary") then { [ALIVE_profileStationary, _x] call ALIVE_fnc_hashRem; if (!isNil "ALIVE_profileStationaryBy") then { [ALIVE_profileStationaryBy, _x] call ALIVE_fnc_hashRem } };
         } forEach [_eid, _vid];
     };
 

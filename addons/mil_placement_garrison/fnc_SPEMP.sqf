@@ -448,7 +448,7 @@ switch(_operation) do {
 	     					    private _pid = [_profiledCrewed select 0, "profileID", ""] call ALiVE_fnc_HashGet;
 	     					    if (_pid != "") then {
 	     					        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
-	     					        [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+	     					        [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet; if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profileStationaryBy, _pid, "garrison"] call ALIVE_fnc_hashSet;
 	     					    };
 	     					};
 	              _countCrewed = _countCrewed +1; 
@@ -478,7 +478,7 @@ switch(_operation) do {
 	     					    private _pid = [_profiledUnCrewed select 0, "profileID", ""] call ALiVE_fnc_HashGet;
 	     					    if (_pid != "") then {
 	     					        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
-	     					        [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+	     					        [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet; if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profileStationaryBy, _pid, "garrison"] call ALIVE_fnc_hashSet;
 	     					    };
 	     					};
 	              _countUnCrewed = _countUnCrewed +1; 
@@ -593,7 +593,7 @@ switch(_operation) do {
 	                            private _pid = [_x, "profileID", ""] call ALiVE_fnc_HashGet;
 	                            if (_pid != "") then {
 	                                if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
-	                                [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+	                                [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet; if (isNil "ALIVE_profileStationaryBy") then { ALIVE_profileStationaryBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profileStationaryBy, _pid, "garrison"] call ALIVE_fnc_hashSet;
 	                            };
 	                        };
 	                    } forEach _guards;
