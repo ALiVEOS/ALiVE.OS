@@ -549,6 +549,22 @@ switch (_taskState) do {
 
                             (_electronic select 0) enableSimulation false;
                             (_document select 0) enableSimulation false;
+
+                            // The table and what is on it go once the task is over, however it ended, and no player is there to see it
+                            [_taskID, [_table, _electronic select 0, _document select 0]] spawn {
+                                params ["_id", "_props"];
+                                waitUntil {
+                                    sleep 30;
+                                    private _state = [ALIVE_taskHandler, "getTask", _id] call ALIVE_fnc_taskHandler;
+                                    isNil "_state" || {(_state select 8) in ["Succeeded", "Failed", "Canceled"]}
+                                };
+                                private _at = getPosATL (_props select 0);
+                                waitUntil {
+                                    sleep 30;
+                                    ((allPlayers - entities "HeadlessClient_F") findIf { alive _x && {(_x distance2D _at) < 500} }) < 0
+                                };
+                                { deleteVehicle _x } forEach _props;
+                            };
                         };
 
                         // create the profiles
