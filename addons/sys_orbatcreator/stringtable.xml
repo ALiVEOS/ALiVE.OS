@@ -107,11 +107,44 @@
 <Key ID="STR_ALIVE_FS_NAME">
     <English>ORBAT Creator</English>
 </Key>
+<Key ID="STR_ALIVE_FS_FACTION_LABEL">
+    <English>Faction: %1</English>
+</Key>
 <Key ID="STR_ALIVE_FS_MAINMENU_TIP">
     <English>Build a faction mod: units, loadouts, vehicles and groups.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_MAINMENU_OPEN">
     <English>Open</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_ALIVE">
+    <English>ALiVE</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_ALIVE_TIP">
+    <English>The ORBAT Creator and the ALiVE web tools.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_WARROOM">
+    <English>War Room</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_WARROOM_TIP">
+    <English>Open the ALiVE War Room in your web browser.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_BUILDER">
+    <English>Mission Builder</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_BUILDER_TIP">
+    <English>Open the ALiVE Mission Builder in your web browser.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_TERRAIN">
+    <English>Terrain Indexer</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_TERRAIN_TIP">
+    <English>Open the ALiVE Terrain Indexer in your web browser.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_SERVERS">
+    <English>Server Browser</English>
+</Key>
+<Key ID="STR_ALIVE_FS_MAINMENU_SERVERS_TIP">
+    <English>Find an ALiVE server to join, in your web browser.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_MODULE_STUDIO">
     <English>Editor:</English>
@@ -302,6 +335,12 @@
 <Key ID="STR_ALIVE_FS_L_TEXTURE">
     <English>Paint</English>
 </Key>
+<Key ID="STR_ALIVE_FS_L_PARTS">
+    <English>Parts</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PARTS_NONE">
+    <English>No parts to choose for this vehicle</English>
+</Key>
 <Key ID="STR_ALIVE_FS_TEXTURE_DEFAULT">
     <English>Default</English>
 </Key>
@@ -353,6 +392,117 @@
 <Key ID="STR_ALIVE_FS_BR_COUNT">
     <English>%1 shown of %2</English>
 </Key>
+<Key ID="STR_ALIVE_FS_HELP_BTN">
+    <English>?</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_BTN_TIP">
+    <English>Help for this tab</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_TITLE">
+    <English>Help: %1</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_NOSHOW">
+    <English>Don't show help automatically</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_DOCS">
+    <English>Full guide: the ORBAT Creator page (sys_orbatcreator.htm) in the ALiVE documentation.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_FACTION_1">
+    <English>Give the faction a Name and a Tag of 2 to 8 letters or digits. Every class in the exported mod starts with the tag, so pick one nobody else uses.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_FACTION_2">
+    <English>Pick the Side and a Flag. Mod folder is the name of the folder Export writes.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_FACTION_3">
+    <English>Save keeps the faction in your Saved factions. Load, Delete and New faction work on that list, and Restore previous brings back what you had before a Load or a New faction.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_FACTION_4">
+    <English>Import faction starts from a faction already in the game, or merges one into this faction.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_FACTION_5">
+    <English>Copy share text and Paste share text pass a faction between players. Load from file reads a .alivefaction.txt file from Documents\Arma 3\ALiVE\orbat\import (type its name without the ending).</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_UNITS_1">
+    <English>Add opens the class browser: pick soldiers and press Add selected.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_UNITS_2">
+    <English>Copy, Delete, Up and Down work on the selected unit.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_UNITS_3">
+    <English>Name is what players see. Class name follows it while Automatic is ticked.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_UNITS_4">
+    <English>Pick changes the class the unit is based on: keep its loadout, or take the new class's loadout.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_UNITS_5">
+    <English>Edit loadout opens the Arsenal on the unit, and closing the Arsenal saves the loadout. Undo Arsenal puts the last loadout back.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_UNITS_6">
+    <English>Keep this face and voice writes the unit's current face and voice into the mod.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_VEHICLES_1">
+    <English>Add opens the class browser on vehicles. Copy, Delete, Up, Down, Name and Pick work as on the Units tab.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_VEHICLES_2">
+    <English>Crew is the soldier who drives and fills the seats. Gunner seats lists the turrets: pick a seat, then its Gunner.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_VEHICLES_3">
+    <English>ALiVE crews every seat from Crew alone, so set Crew to the gunner you picked if ALiVE places this vehicle.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_VEHICLES_4">
+    <English>Paint, Pylons (the base vehicle's presets) and Parts (slat armour, camo nets and the like) show on the preview and go into the mod.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_VEHICLES_5">
+    <English>Cargo, Edit sets what the vehicle carries: as the base vehicle, empty, or your own list, filled from a unit's gear or the base vehicle's cargo.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_GROUPS_1">
+    <English>Pick an ALiVE category, then New adds a group to it. Copy and Delete work on the selected group.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_GROUPS_2">
+    <English>Pick a unit or vehicle beside Add to group and press it. The first member leads the group.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_GROUPS_3">
+    <English>Rank, Remove, Up and Down work on the selected member.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_GROUPS_4">
+    <English>How often sets how often ALiVE picks the group (0 never, 1 always). Map icon is its marker.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_GROUPS_5">
+    <English>ALiVE does not place Support or Mechanized (MTP) groups; the note under the list says so.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_EXPORT_1">
+    <English>Check lists what must be fixed (red) and warnings (amber), and writes nothing.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_EXPORT_2">
+    <English>Export mod writes the faction to Documents\Arma 3\ALiVE\orbat, in its Mod folder.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_EXPORT_3">
+    <English>In that folder, rename rebuild.bat.txt to rebuild.bat and run it to pack the mod. It needs Arma 3 Tools from Steam.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_EXPORT_4">
+    <English>Copy config puts the config.cpp on the clipboard. Copy path puts the folder's path there.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_EXPORT_5">
+    <English>The mod needs CBA_A3 and the mods listed under Needs. ALiVE is not needed to play with it.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_EXPORT_6">
+    <English>Export mod needs ALiVE Tools. If this tab shows a red warning, it says why ALiVE Tools isn't available and what to do.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EX_TOOLS_BE">
+    <English>ALiVE Tools isn't available, so the mod can't be exported. BattlEye blocks it: in the Arma 3 Launcher, open the BattlEye page, untick Enable BattlEye anti-cheat software and restart the game.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EX_TOOLS_MISSING">
+    <English>ALiVE Tools isn't available (error 404), so the mod can't be exported. The alive_tools files are missing from the ALiVE mod folder: reinstall or update ALiVE, and check that antivirus hasn't removed them.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EX_TOOLS_OTHER">
+    <English>ALiVE Tools isn't available (error %1), so the mod can't be exported. Check that antivirus hasn't blocked the alive_tools files in the ALiVE mod folder, and reinstall or update ALiVE if the error stays.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_UNSAVED">
+    <English>unsaved changes</English>
+</Key>
+<Key ID="STR_ALIVE_FS_BR_MORE">
+    <English>%1 shown of %2. Type in Search or pick a faction to see the rest.</English>
+</Key>
 <Key ID="STR_ALIVE_FS_BR_ADD">
     <English>Add selected</English>
 </Key>
@@ -393,7 +543,7 @@
     <English>Stop random headgear and facewear</English>
 </Key>
 <Key ID="STR_ALIVE_FS_EX_FORCE">
-    <English>Always apply the loadout, even when something changed the unit first</English>
+    <English>Always apply the loadout, even when something changed the unit first. Without it, a mission keeps the gear it gives a soldier, unless it changed only his headgear or facewear (the game picks those at random).</English>
 </Key>
 <Key ID="STR_ALIVE_FS_EX_FORCE_SHORT">
     <English>Always apply the loadout</English>
@@ -434,6 +584,12 @@
 <Key ID="STR_ALIVE_FS_Q_TAG">
     <English>Tag for this faction (2 to 8 letters or digits):</English>
 </Key>
+<Key ID="STR_ALIVE_FS_Q_PASTE">
+    <English>Paste the share text here (Ctrl+V), then OK. It replaces the faction you are working on; Restore brings it back.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_Q_SAVE">
+    <English>Save this faction as:</English>
+</Key>
 <Key ID="STR_ALIVE_FS_Q_CLASSIC">
     <English>Close %1 and open the classic ORBAT Creator? Your faction here is saved first.</English>
 </Key>
@@ -472,6 +628,9 @@
 </Key>
 <Key ID="STR_ALIVE_FS_S_LIB_DELETED">
     <English>Deleted %1 from your saved factions.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_RESTORE_NONE">
+    <English>There is no earlier faction to bring back.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_RESTORED">
     <English>Your previous faction is back.</English>
@@ -563,6 +722,15 @@
 <Key ID="STR_ALIVE_FS_S_EXPORT_START">
     <English>Writing %1 files...</English>
 </Key>
+<Key ID="STR_ALIVE_FS_PREVIEW_HINT">
+    <English>Left drag: move   Right drag: rotate   Wheel: zoom   Double-click: reset</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_PREVIEW">
+    <English>The 3D preview: hold the left mouse button and drag to move the view, hold the right button and drag to turn around the unit, and use the mouse wheel to zoom in and out. The view stays where you put it while you change the same unit or vehicle; double-click the preview to frame it again.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EX_FILES">
+    <English>Files written in the mod folder:</English>
+</Key>
 <Key ID="STR_ALIVE_FS_S_EXPORT_DONE">
     <English>Mod written to %1. Run the rebuild file there to pack it.</English>
 </Key>
@@ -576,7 +744,7 @@
     <English>The export was stopped because the editor was closed. Export again to finish it.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_EXPORT_NOTOOLS">
-    <English>The alive_tools extension is not loaded (BattlEye blocks it). Use Copy config instead.</English>
+    <English>ALiVE Tools isn't available, so the mod can't be exported. See the Export tab.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_S_EXPORT_BLOCKED">
     <English>Not exported: %1 problem(s) to fix first. They are listed below.</English>
@@ -620,9 +788,6 @@
 <Key ID="STR_ALIVE_FS_W_GEAR_MISSING">
     <English>%1 carries %2, which is not loaded.</English>
 </Key>
-<Key ID="STR_ALIVE_FS_W_NESTED_TURRET">
-    <English>%1: the gunner chosen for %2 is not written (a seat inside another turret).</English>
-</Key>
 <Key ID="STR_ALIVE_FS_W_SAME_TAG">
     <English>Another loaded mod already uses the tag %1.</English>
 </Key>
@@ -637,5 +802,638 @@
 </Key>
 <Key ID="STR_ALIVE_FS_W_BAT_TXT">
     <English>The rebuild file was written as rebuild.bat.txt. Rename it to rebuild.bat to run it.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_L_CARGO">
+    <English>Cargo</English>
+</Key>
+<Key ID="STR_ALIVE_FS_BTN_EDIT">
+    <English>Edit</English>
+</Key>
+<Key ID="STR_ALIVE_FS_BTN_SET">
+    <English>Set</English>
+</Key>
+<Key ID="STR_ALIVE_FS_BTN_CLEAR">
+    <English>Clear</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_TITLE">
+    <English>Cargo: %1</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_MODE_BASE">
+    <English>As the base vehicle</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_MODE_EMPTY">
+    <English>Empty</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_MODE_LIST">
+    <English>This list</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_K0">
+    <English>Weapon</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_K1">
+    <English>Magazine</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_K2">
+    <English>Item</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_K3">
+    <English>Backpack</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_L_MODE">
+    <English>What it carries</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_L_COUNT">
+    <English>How many</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_L_UNIT">
+    <English>Add the gear of</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_ADDUNIT">
+    <English>Add</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_ADDUNIT_TIP">
+    <English>Adds the unit's weapons, magazines, items and backpack, once each as worn</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_BASE">
+    <English>Add the base vehicle's cargo</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_SUM_BASE">
+    <English>As the base vehicle</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_SUM_EMPTY">
+    <English>Empty</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CG_SUM_LIST">
+    <English>%1 kinds, %2 in all</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_CARGO_FULL">
+    <English>The cargo list holds 64 kinds at most: %1 more were left out.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_CARGO_COUNT">
+    <English>Type a count from 1 to 999.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_CARGO_BASE_NONE">
+    <English>The base vehicle carries nothing of its own to add.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_L_PYLONS">
+    <English>Pylons</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PYLONS_NONE">
+    <English>No pylons on this vehicle</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PYLONS_CUSTOM">
+    <English>Custom (from an import)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_L_POOLS">
+    <English>Gear pools</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_NONE">
+    <English>None</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_TITLE">
+    <English>Gear pools: %1</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_L_SLOT">
+    <English>Slot</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_RENAME">
+    <English>Rename</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_NEW">
+    <English>New</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_NEW_TIP">
+    <English>A new pool for the slot below, named from the box</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_USE">
+    <English>Use</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_UNUSE">
+    <English>Stop using</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_USE_TIP">
+    <English>This unit wears the picked pool, in place of his other pool for that slot, or stops wearing it</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_WEIGHT_TIP">
+    <English>Weight, 1 to 100: an item of weight 3 comes up three times as often as one of weight 1</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_ADD">
+    <English>Add</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_ADD_TIP">
+    <English>Adds this unit's item in the pool's slot (a weapon with its attachments and magazine)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_ROLL">
+    <English>Roll</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_ROLL_TIP">
+    <English>Shows a random pick from each pool he wears on the preview, as in a mission</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_UNROLL">
+    <English>Reset</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_UNROLL_TIP">
+    <English>Shows him in his own loadout again</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_S0">
+    <English>Primary weapon</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_S1">
+    <English>Handgun</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_S2">
+    <English>Launcher</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_S3">
+    <English>Uniform</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_S4">
+    <English>Vest</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_S5">
+    <English>Backpack</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_S6">
+    <English>Headgear</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_S7">
+    <English>Facewear</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_USERS">
+    <English>Used by %1: %2</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_USERS_NONE">
+    <English>Not used by any unit yet</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_EMPTY">
+    <English>No pool yet: name one, pick its slot and press New</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PL_DEFAULT">
+    <English>Pool %1</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_POOL_FULL">
+    <English>No room: a faction has up to 32 pools, each with up to 32 items.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_POOL_DELETED">
+    <English>Pool deleted; %1 unit(s) no longer wear it.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_POOL_SLOT">
+    <English>Slot changed, and the pool's items were cleared: they were for the old slot.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_POOL_WEIGHT">
+    <English>A weight is a whole number from 1 to 100.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_POOL_NOITEM">
+    <English>That unit has nothing in the %1 slot.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_POOL_ROLL_NONE">
+    <English>He wears no pool with items in it, so there is nothing to roll.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_POOL_ROLLED">
+    <English>Rolled: the preview shows one random pick. His stored loadout is unchanged.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_UNITS_7">
+    <English>Gear pools give a unit a random weapon, uniform, vest, backpack, headgear or facewear each time he spawns. One pool can be worn by many units; Roll shows a pick on the preview.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_AUTO_CIV">
+    <English>A civilian faction has no groups, so AUTO GROUPS made none.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_AUTO_CAP">
+    <English>AUTO GROUPS stopped at %1 groups: the faction has no room for more.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_FIRETEAM">
+    <English>Fireteam</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_SQUAD">
+    <English>Rifle Squad</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_WEAPONS">
+    <English>Weapons Squad</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_SENTRY">
+    <English>Sentry</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_RECON">
+    <English>Recon Team</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_MOTOR">
+    <English>Motor Patrol (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_MECH">
+    <English>Mechanized Squad (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_ARMOUR">
+    <English>Armour (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_ARMOUR2">
+    <English>Armour Section (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_BATTERY">
+    <English>Battery (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_AIR">
+    <English>Air (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_BOAT">
+    <English>Boat Patrol (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_AG_SUPPORT">
+    <English>Support (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CR_AMMO">
+    <English>%1 ammunition</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CR_WEAPONS">
+    <English>%1 weapons</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CR_LAUNCHERS">
+    <English>%1 launchers</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CR_SUPPORT">
+    <English>%1 support gear</English>
+</Key>
+<Key ID="STR_ALIVE_FS_CR_UNIFORMS">
+    <English>%1 uniforms</English>
+</Key>
+<Key ID="STR_ALIVE_FS_N_CRATE_CUT">
+    <English>The %1 crate holds the most-used gear only: %2 kind(s) left out.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_W_ALIVE_EMPTY">
+    <English>ALiVE will field no %1 groups for this faction. AUTO GROUPS on the Groups tab can make them.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_W_ALIVE_ADDED">
+    <English>This export adds supply crates and declares the faction to ALiVE; the loaded earlier export did not.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_W_ALIVE_REDIRECT">
+    <English>The %1 redirect was left out: %2 has no groups.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_W_ALIVE_OFF">
+    <English>The faction is not declared to ALiVE, so ALiVE gives it its side's supplies and transport.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_G_AUTO">
+    <English>AUTO GROUPS</English>
+</Key>
+<Key ID="STR_ALIVE_FS_G_AUTO_TIP">
+    <English>Makes the groups ALiVE draws from (fireteams, squads, motor patrols, armour, batteries, aircraft, boats) out of the faction's men and vehicles. Only missing ones are added; your own groups are never touched.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_G_REBUILD">
+    <English>Rebuild</English>
+</Key>
+<Key ID="STR_ALIVE_FS_G_REBUILD_TIP">
+    <English>Replaces every group AUTO GROUPS made, for example after adding men or vehicles. Your own groups are kept.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_G_REBUILD_ASK">
+    <English>Replace the %1 groups AUTO GROUPS made? Groups you made yourself are kept.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_G_AUTO_MARK">
+    <English>auto</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_AUTO_DONE">
+    <English>AUTO GROUPS added %1, kept %2.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_AUTO_REBUILT">
+    <English>AUTO GROUPS removed %1 and made %2.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_ROLE">
+    <English>Role</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_ROLE_AUTO">
+    <English>Automatic (%1)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_LEADER">
+    <English>Leader</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_RIFLEMAN">
+    <English>Rifleman</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_MG">
+    <English>Machine gunner</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_AT">
+    <English>Anti-tank</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_AA">
+    <English>Anti-air</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_MEDIC">
+    <English>Medic</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_MARKSMAN">
+    <English>Marksman</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_CREW">
+    <English>Crew</English>
+</Key>
+<Key ID="STR_ALIVE_FS_ROLE_PILOT">
+    <English>Pilot</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_SPECOPS">
+    <English>SF</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_SPECOPS_TIP">
+    <English>Special forces: AUTO GROUPS puts him in recon teams (ALiVE's SpecOps groups), not in the regular infantry.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_INFANTRY">
+    <English>Every ALiVE placement needs infantry groups.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_SPECOPS">
+    <English>ALiVE places no special forces groups for this faction.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_MOTORIZED">
+    <English>ALiVE places no motorized groups, and logistics convoys bring none.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_MOTORIZED_MTP">
+    <English>ALiVE uses this only when Motorized has no groups.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_MECHANIZED">
+    <English>ALiVE places no mechanized groups for this faction.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_ARMORED">
+    <English>ALiVE places no armour for this faction.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_ARTILLERY">
+    <English>ALiVE builds batteries only from loose artillery vehicles.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_AIR">
+    <English>ALiVE places no air groups; the air commander still finds the faction's aircraft.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_NAVAL">
+    <English>Sea patrols are borrowed from another faction of the side, or left out.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_FILLABLE">
+    <English>Press AUTO GROUPS to make them from the faction's men and vehicles.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_EC_REDIRECT">
+    <English>Empty: ALiVE draws these from %1.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_TAB_ALIVE">
+    <English>ALiVE</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_SECTION">
+    <English>Section</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_SEC_PREVIEW">
+    <English>What ALiVE will see</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_SEC_CRATES">
+    <English>Supplies and crates</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_SEC_PICKS">
+    <English>Logistics picks</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_SEC_REDIRECTS">
+    <English>Category redirects</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_HOOK">
+    <English>Declare to ALiVE</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_HOOK_TIP">
+    <English>The export tells ALiVE about its groups, supplies and transports by config, so no mission script or ALiVE entry is needed. Off writes the mod as before, with no crates.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_RARITY">
+    <English>Weight by rarity</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_RARITY_TIP">
+    <English>ALiVE picks each group as often as its How often value on the Groups tab. Off, every group of a category is as likely as the others.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_COPY">
+    <English>Copy ALiVE block</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_COPY_TIP">
+    <English>Puts the CfgALiVEFactions block on the clipboard, for adding it to another mod by hand.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIVE">
+    <English>Check loaded mod</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIVE_TIP">
+    <English>Shows beside each row what ALiVE read from this faction's export loaded in this game. Amber means the loaded export is older than the studio's faction.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIVE_OFF">
+    <English>Needs this faction's own export loaded in this game, with ALiVE's faction data read.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_EDIT">
+    <English>Edit contents</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_AUTO_BACK">
+    <English>Back to automatic</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_AUTOMATIC">
+    <English>(automatic)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_ROWS">
+    <English>%1 rows</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_AUTO">
+    <English>These crates are made from the gear your men carry, and change when their gear does. Edit contents keeps them as they are now, so you can change them.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_SET">
+    <English>You have set these crates yourself. Back to automatic makes them from your men's gear again.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_CIV">
+    <English>A civilian faction gets no supply crates.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST">
+    <English>List</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_SOURCE">
+    <English>Add</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_ADD">
+    <English>Add</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_REMOVE">
+    <English>Remove</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_TRANSPORT">
+    <English>Transport</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_AIR">
+    <English>Air transport</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_SUPPORTS">
+    <English>Supports</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_AA">
+    <English>Anti-air</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_CONTAINERS">
+    <English>Containers</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_OTHER">
+    <English>Other class...</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_ASK">
+    <English>The class name of the vehicle or box to add:</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_AUTO_NOTE">
+    <English>Picked from your vehicles. Adding or removing one keeps this list as you set it.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_SET_NOTE">
+    <English>You have set this list yourself.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LIST_CONTAINERS_NOTE">
+    <English>Boxes ALiVE logistics may bring besides your supply crates. Empty uses the side's.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_REDIR_TO">
+    <English>Draw from</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_REDIR_NONE">
+    <English>None</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_REDIR_NOTE">
+    <English>ALiVE draws this empty category from the one you pick. ALiVE then registers a mapping for the faction.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_REDIR_HAS">
+    <English>This category has groups of its own.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PREVIEW_OFF">
+    <English>Not declared to ALiVE: the mod has no ALiVE block and no crates, and ALiVE uses the side's supplies.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_LOADED">
+    <English>loaded:</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_GROUPS">
+    <English>Groups ALiVE draws</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_N">
+    <English>%1 groups</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_REDIRECT">
+    <English>drawn from %1</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_FILLABLE">
+    <English>none, AUTO GROUPS can fill it</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_NONE">
+    <English>none</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_LISTS">
+    <English>Lists</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_SIDE">
+    <English>the side's</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_MAPPING">
+    <English>Mapping</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_MAPPING_ROW">
+    <English>Mapping</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_MAP_NONE">
+    <English>none needed, its own groups</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_MAP_SOME">
+    <English>registered, with %1 redirects</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_MAP_NONE">
+    <English>none</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_MAP_CURATED">
+    <English>an ALiVE entry</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_MAP_DECLARED">
+    <English>from the ALiVE block</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_MAP_INFERRED">
+    <English>worked out by ALiVE</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_MAP_COMPILED">
+    <English>from the faction compiler</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_BORROW">
+    <English>No groups: ALiVE will borrow the side's stock groups.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_PV_BLOCK">
+    <English>The ALiVE block</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_SET">
+    <English>ALiVE setting changed.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_AUTO">
+    <English>Back to automatic.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_ON">
+    <English>The faction is declared to ALiVE.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_OFF">
+    <English>The faction is no longer declared to ALiVE.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_COPIED">
+    <English>ALiVE block copied (%1 characters).</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_LIVE">
+    <English>Checked against the loaded export.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_LIVE_NONE">
+    <English>ALiVE has nothing for this faction in this game.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_BAD">
+    <English>%1 is not a usable entry.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_HAVE">
+    <English>%1 is already in the list.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_FULL">
+    <English>The list is full.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_NOCLASS">
+    <English>%1 is not a vehicle or box class in this game.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_ALIVE_1">
+    <English>Section picks what to look at: what ALiVE will see, the supply crates, the logistics lists, or category redirects.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_ALIVE_2">
+    <English>Declare to ALiVE writes a block that tells ALiVE about the faction, so a mission needs no script. The mod still runs without ALiVE.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_ALIVE_3">
+    <English>Crates and lists are worked out from your men and vehicles. Changing one keeps it as you set it; Back to automatic undoes that.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_ALIVE_4">
+    <English>A redirect lets ALiVE draw an empty category from another one that has groups.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_HELP_ALIVE_5">
+    <English>Check loaded mod compares the preview with what ALiVE read from your export in this game.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_PK_CMP_ROW">
+    <English>%1  (compiled in this mission: %2, %3 groups)</English>
+</Key>
+<Key ID="STR_ALIVE_FS_N_CMP_CREW">
+    <English>%1 is crewed by different men in different compiled groups; the first group's crew is used.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_N_CMP_PARTIAL">
+    <English>%1 replaces only some categories of an existing faction, so only those were imported.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_OPTIONAL">
+    <English>Optional</English>
+</Key>
+<Key ID="STR_ALIVE_FS_OPT_TIP">
+    <English>Optional: exported in its own part, which loads only when the mods it needs are loaded. Without them the game leaves it out, with no message, and the rest of the faction still loads. A vehicle he crews and a group he is in go with him.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_OPT_ROW">
+    <English>opt</English>
+</Key>
+<Key ID="STR_ALIVE_FS_N_OPT_NOTHING">
+    <English>%1 is ticked Optional, but it needs no mod the rest of the faction does not, so it is written in the main part.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_N_OPT_PULLED">
+    <English>%1 has an optional unit in a seat, so it goes in his optional part (needs %2).</English>
+</Key>
+<Key ID="STR_ALIVE_FS_N_OPT_SHARED">
+    <English>%1 is used only by optional entries in %2 different optional parts, so each part writes its own copy.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_N_OPT_PATCH">
+    <English>Optional part %1 (needs %2): %3 units, %4 vehicles, %5 groups.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_W_OPT_CRATE">
+    <English>Crate %1: %2 was left out, because only an optional part loads the mod it comes from.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_W_OPT_REDIRECT">
+    <English>The %1 redirect draws on %2, which has groups only when an optional part is loaded.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_W_OPT_ONLY">
+    <English>These categories have groups only when an optional part is loaded: %1.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_E_OPT_SETS">
+    <English>The optional entries need %1 different sets of mods, and an export can have at most %2 optional parts. Untick some, or give them the same mods.</English>
 </Key>
 </Container></Package></Project>

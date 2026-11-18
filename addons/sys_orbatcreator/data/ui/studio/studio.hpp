@@ -9,6 +9,7 @@
 #include "tabUnits.hpp"
 #include "tabVehicles.hpp"
 #include "tabGroups.hpp"
+#include "tabAlive.hpp"
 #include "tabExport.hpp"
 
 #include "display.hpp"

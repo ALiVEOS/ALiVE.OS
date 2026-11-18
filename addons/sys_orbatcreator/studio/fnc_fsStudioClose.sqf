@@ -91,6 +91,7 @@ switch (_op) do {
             _result = false;
         } else {
             _session set ["exiting", true];
+            ["close"] call ALiVE_fnc_fsStudioHelp;
             private _display = findDisplay FS_IDD_STUDIO;
             if (!isNull _display) then { _display closeDisplay 2 };
             if ((_session getOrDefault ["mode", "scene"]) == "scene") then { endMission "END1" };
@@ -100,6 +101,7 @@ switch (_op) do {
     case "suspend": {
         _session set ["suspended", true];
         if (!isNil "ALiVE_fnc_fsStudioCamera") then { ["destroy"] call ALiVE_fnc_fsStudioCamera };
+        ["close"] call ALiVE_fnc_fsStudioHelp;
         private _display = findDisplay FS_IDD_STUDIO;
         if (!isNull _display) then { _display closeDisplay 2 };
     };

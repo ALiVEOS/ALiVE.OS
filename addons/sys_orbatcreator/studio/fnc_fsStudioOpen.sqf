@@ -57,6 +57,63 @@ if (isNull _display) exitWith {
 };
 _session set ["display", _display];
 
+// the header picture at its own shape: 8:1, so its width is 8 heights on screen (pixelW / pixelH turns a
+// height into the same width); a narrow screen gets a lower header rather than one into the ? and Exit buttons
+private _square = pixelW / pixelH;
+private _logo = _display displayCtrl FS_IDC_LOGO;
+(ctrlPosition _logo) params ["_lx", "_ly", "_lmax", "_lh"];
+private _lw = 8 * _lh * _square;
+// the artwork takes the left 6.515 of its 8 heights; the clear rest may lie under the buttons
+private _art = _lw * 6.515 / 8;
+if (_art > _lmax) then { _lh = _lh * _lmax / _art; _lw = _lw * _lmax / _art };
+_logo ctrlSetPosition [_lx, _ly, _lw, _lh];
+// the picture drawn nearest its size on screen: the interface shrinks a big texture without smoothing, so the
+// tag's small letters break up. The smallest height at least as tall as the header, or the one below it when
+// that is over 1.7 times the header
+private _px = _lh / pixelH;
+private _sizes = [32, 64, 128, 256];
+private _i = _sizes findIf { _x >= _px };
+if (_i < 0) then { _i = 3 };
+if (_i > 0 && {(_sizes select _i) > 1.7 * _px}) then { _i = _i - 1 };
+private _t = _sizes select _i;
+_logo ctrlSetText format ["\x\alive\addons\sys_orbatcreator\data\images\fs_header%1_ca.paa", _t];
+[format ["ORBAT Creator studio: header %1 px tall, picture %2 px", round _px, _t]] call ALiVE_fnc_dump;
+_logo ctrlCommit 0;
+
+// the six tab buttons laid out from their words: each as wide as its word on screen plus a margin, the row's
+// spare width shared out evenly. When the words are too wide for the row together (a translation), their
+// text is made smaller until they fit
+private _gw = ((safezoneW / safezoneH) min 1.2) / 40;
+private _textH = ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85;
+private _tabButtons = [FS_IDC_TAB_FACTION, FS_IDC_TAB_UNITS, FS_IDC_TAB_VEHICLES, FS_IDC_TAB_GROUPS, FS_IDC_TAB_ALIVE, FS_IDC_TAB_EXPORT] apply { _display displayCtrl _x };
+private _tabWords = ["FACTION", "UNITS", "VEHICLES", "GROUPS", "ALIVE", "EXPORT"] apply { localize ("STR_ALIVE_FS_TAB_" + _x) };
+private _ruler = _display ctrlCreate ["RscText", -1];
+_ruler ctrlSetPosition [-10, -10, 10, 0.1];
+_ruler ctrlShow false;
+_ruler ctrlCommit 0;
+_ruler ctrlSetFont "PuristaMedium";
+_ruler ctrlSetFontHeight _textH;
+private _widths = _tabWords apply { _ruler ctrlSetText _x; ctrlTextWidth _ruler };
+ctrlDelete _ruler;
+private _row = 16 * _gw;
+private _gap = 0.1 * _gw;
+private _margin = 0.45 * _gw;
+private _sum = 0;
+{ _sum = _sum + _x } forEach _widths;
+private _room = _row - 5 * _gap - 6 * _margin;
+private _scale = if (_sum > _room && {_sum > 0}) then { _room / _sum } else { 1 };
+private _spare = ((_room - _sum * _scale) / 6) max 0;
+private _tx = safezoneX + 0.5 * _gw;
+{
+    private _w = (_widths select _forEachIndex) * _scale + _margin + _spare;
+    (ctrlPosition _x) params ["", "_ty", "", "_th"];
+    _x ctrlSetPosition [_tx, _ty, _w, _th];
+    if (_scale < 1) then { _x ctrlSetFontHeight (_textH * _scale) };
+    _x ctrlCommit 0;
+    _tx = _tx + _w + _gap;
+} forEach _tabButtons;
+[format ["ORBAT Creator studio: tab words %1 of %2 cells, text scale %3", ((_sum / _gw) toFixed 2), ((_room / _gw) toFixed 2), (_scale toFixed 2)]] call ALiVE_fnc_dump;
+
 // true when _ctrl sits anywhere inside the controls group _group
 private _inside = {
     params ["_ctrl", "_group"];

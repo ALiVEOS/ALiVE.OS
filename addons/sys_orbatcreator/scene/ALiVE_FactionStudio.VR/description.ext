@@ -1,0 +1,6 @@
+// ALiVE ORBAT Creator studio scene: started by path (playMission) or from Showcases
+author = "ALiVE Mod Team";
+onLoadName = $STR_ALIVE_FS_NAME;
+briefing = 0;
+debriefing = 0;
+saving = 0;

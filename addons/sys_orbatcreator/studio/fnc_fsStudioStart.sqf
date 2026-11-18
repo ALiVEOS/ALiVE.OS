@@ -78,7 +78,7 @@ waitUntil { time > 0 && {!isNull player} && {!isNull (findDisplay 46)} };
 
 // the last tab used, when it is still a tab
 private _tab = ["prefGet", ["tab", "faction"]] call ALiVE_fnc_fsDataStore;
-if (_tab isEqualType "" && {_tab in ["faction", "units", "vehicles", "groups", "export"]}) then { _session set ["tab", _tab] };
+if (_tab isEqualType "" && {_tab in ["faction", "units", "vehicles", "groups", "alive", "export"]}) then { _session set ["tab", _tab] };
 
 // 3. Arsenal
 private _arsenal = if (_mode == "module") then {
@@ -146,6 +146,14 @@ if (_status isEqualTo []) then {
 };
 _status call ALiVE_fnc_fsStudioStatus;
 if (_aceMissing) then { [1, "S_ACE_MISSING", []] call ALiVE_fnc_fsStudioStatus };
+// said now, so nobody builds a faction and finds out at Export; the Export tab keeps the full warning on show
+(call ALiVE_fnc_fsExportToolsInfo) params ["_toolsOk", "", "", "_toolsError"];
+_session set ["toolsOk", _toolsOk];
+_session set ["toolsError", _toolsError];
+if (!_toolsOk) then {
+    ["ORBAT Creator studio: alive_tools is not available, error code %1", _toolsError] call ALiVE_fnc_dump;
+    [2, "S_EXPORT_NOTOOLS", []] call ALiVE_fnc_fsStudioStatus;
+};
 
 // 5. stage, camera, display
 if (!isNil "ALiVE_fnc_fsStudioStage") then { ["create"] call ALiVE_fnc_fsStudioStage };

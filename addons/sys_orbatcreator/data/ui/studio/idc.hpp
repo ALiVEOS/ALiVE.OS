@@ -7,8 +7,11 @@
 #define FS_IDD_STUDIO               14000
 #define FS_IDD_BROWSER              14800
 #define FS_IDD_PICKER               14820
+#define FS_IDD_CARGO                14830
 #define FS_IDD_TEXTBOX              14850
 #define FS_IDD_PROMPT               14870
+#define FS_IDD_HELP                 14890
+#define FS_IDD_POOLS                14910
 
 // ---------------------------------------------------------------- frame
 #define FS_IDC_PANEL                14001
@@ -16,6 +19,7 @@
 #define FS_IDC_FACTION              14003
 #define FS_IDC_STATUS               14005
 #define FS_IDC_EXIT                 14006
+#define FS_IDC_HELP                 14007
 #define FS_IDC_MOUSE                14008
 #define FS_IDC_CAPTION              14009
 #define FS_IDC_TAB_FACTION          14010
@@ -23,12 +27,15 @@
 #define FS_IDC_TAB_VEHICLES         14012
 #define FS_IDC_TAB_GROUPS           14013
 #define FS_IDC_TAB_EXPORT           14014
+#define FS_IDC_LOGO                 14015
+#define FS_IDC_TAB_ALIVE            14016
 
 // tab groups
 #define FS_IDC_GRP_FACTION          14100
 #define FS_IDC_GRP_UNITS            14200
 #define FS_IDC_GRP_VEHICLES         14300
 #define FS_IDC_GRP_GROUPS           14400
+#define FS_IDC_GRP_ALIVE            14500
 #define FS_IDC_GRP_EXPORT           14700
 
 // ---------------------------------------------------------------- Faction tab
@@ -72,6 +79,17 @@
 #define FS_IDC_U_FIXED              14219
 #define FS_IDC_U_IDENTITY           14220
 #define FS_IDC_U_SUMMARY            14221
+#define FS_IDC_U_POOLSLABEL         14222
+#define FS_IDC_U_POOLS              14223
+#define FS_IDC_U_POOLSEDIT          14224
+#define FS_IDC_U_ROLL               14225
+#define FS_IDC_U_UNROLL             14226
+#define FS_IDC_U_SPECOPS            14227
+#define FS_IDC_U_ROLE               14228
+#define FS_IDC_U_ROLELABEL          14229
+#define FS_IDC_U_SPECOPSLABEL       14230
+#define FS_IDC_U_OPTIONAL           14231
+#define FS_IDC_U_OPTIONALLABEL      14232
 
 // ---------------------------------------------------------------- Vehicles tab
 #define FS_IDC_V_LIST               14301
@@ -91,6 +109,13 @@
 #define FS_IDC_V_GUNNER             14318
 #define FS_IDC_V_TEXTURE            14319
 #define FS_IDC_V_NOTE               14321
+#define FS_IDC_V_PARTS              14322
+#define FS_IDC_V_CARGOLABEL         14323
+#define FS_IDC_V_CARGO              14324
+#define FS_IDC_V_CARGOEDIT          14325
+#define FS_IDC_V_PYLONS             14326
+#define FS_IDC_V_OPTIONAL           14327
+#define FS_IDC_V_OPTIONALLABEL      14328
 
 // ---------------------------------------------------------------- Groups tab
 #define FS_IDC_G_CATEGORY           14401
@@ -98,6 +123,8 @@
 #define FS_IDC_G_NEW                14403
 #define FS_IDC_G_DUPLICATE          14404
 #define FS_IDC_G_DELETE             14405
+#define FS_IDC_G_AUTO               14406
+#define FS_IDC_G_AUTOREBUILD        14407
 #define FS_IDC_G_NAME               14410
 #define FS_IDC_G_CLASS              14411
 #define FS_IDC_G_CLASSAUTO          14412
@@ -112,6 +139,34 @@
 #define FS_IDC_G_MEMBERDOWN         14425
 #define FS_IDC_G_RANK               14426
 #define FS_IDC_G_NOTE               14430
+
+// ---------------------------------------------------------------- ALiVE tab
+#define FS_IDC_A_SECTION            14501
+#define FS_IDC_A_SECTIONLABEL       14502
+#define FS_IDC_A_PREVIEW            14510
+#define FS_IDC_A_HOOK               14511
+#define FS_IDC_A_RARITY             14512
+#define FS_IDC_A_LIVE               14513
+#define FS_IDC_A_HOOKLABEL          14514
+#define FS_IDC_A_RARITYLABEL        14515
+#define FS_IDC_A_COPY               14516
+#define FS_IDC_A_CRATELIST          14520
+#define FS_IDC_A_CRATEEDIT          14521
+#define FS_IDC_A_CRATEAUTO          14522
+#define FS_IDC_A_CRATENOTE          14523
+#define FS_IDC_A_LISTPICK           14530
+#define FS_IDC_A_LIST               14531
+#define FS_IDC_A_LISTSOURCE         14532
+#define FS_IDC_A_LISTADD            14533
+#define FS_IDC_A_LISTREMOVE         14534
+#define FS_IDC_A_LISTAUTO           14535
+#define FS_IDC_A_LISTPICKLABEL      14536
+#define FS_IDC_A_LISTSOURCELABEL    14537
+#define FS_IDC_A_LISTNOTE           14538
+#define FS_IDC_A_REDIRFROM          14540
+#define FS_IDC_A_REDIRTO            14541
+#define FS_IDC_A_REDIRNOTE          14542
+#define FS_IDC_A_REDIRTOLABEL       14543
 
 // ---------------------------------------------------------------- Export tab
 #define FS_IDC_E_PATH               14701
@@ -137,6 +192,13 @@
 #define FS_IDC_BR_KEEP              14809
 #define FS_IDC_BR_CLOSE             14810
 #define FS_IDC_BR_TAKE              14811
+#define FS_IDC_BR_TITLE             14812
+#define FS_IDC_BR_PARENT_LABEL      14813
+// the four areas of open view around a popup (popups.hpp)
+#define FS_IDC_POPUP_TOP            14990
+#define FS_IDC_POPUP_BOTTOM         14991
+#define FS_IDC_POPUP_LEFT           14992
+#define FS_IDC_POPUP_RIGHT          14993
 
 // ---------------------------------------------------------------- Faction picker popup
 #define FS_IDC_PK_LIST              14821
@@ -145,6 +207,19 @@
 #define FS_IDC_PK_CLOSE             14825
 
 // ---------------------------------------------------------------- Text box popup
+// cargo (14830)
+#define FS_IDC_CG_TITLE             14831
+#define FS_IDC_CG_MODE              14832
+#define FS_IDC_CG_LIST              14833
+#define FS_IDC_CG_COUNT             14834
+#define FS_IDC_CG_SETCOUNT          14835
+#define FS_IDC_CG_REMOVE            14836
+#define FS_IDC_CG_CLEAR             14837
+#define FS_IDC_CG_UNIT              14838
+#define FS_IDC_CG_ADDUNIT           14839
+#define FS_IDC_CG_BASE              14840
+#define FS_IDC_CG_CLOSE             14841
+
 #define FS_IDC_TB_TITLE             14851
 #define FS_IDC_TB_TEXT              14852
 #define FS_IDC_TB_COPY              14853
@@ -155,3 +230,33 @@
 #define FS_IDC_PR_EDIT              14872
 #define FS_IDC_PR_OK                14873
 #define FS_IDC_PR_CANCEL            14874
+
+// help (14890)
+#define FS_IDC_HL_TITLE             14891
+#define FS_IDC_HL_GROUP             14892
+#define FS_IDC_HL_TEXT              14893
+#define FS_IDC_HL_NOSHOW            14894
+#define FS_IDC_HL_CLOSE             14895
+#define FS_IDC_HL_DRAG              14896
+#define FS_IDC_HL_BACK              14897
+#define FS_IDC_HL_LABEL             14898
+// the preview's mouse area behind every popup
+
+// gear pools (14910)
+#define FS_IDC_PL_TITLE             14911
+#define FS_IDC_PL_LIST              14912
+#define FS_IDC_PL_NAME              14913
+#define FS_IDC_PL_RENAME            14914
+#define FS_IDC_PL_NEW               14915
+#define FS_IDC_PL_DELETE            14916
+#define FS_IDC_PL_USE               14917
+#define FS_IDC_PL_SLOT              14918
+#define FS_IDC_PL_ENTRIES           14919
+#define FS_IDC_PL_WEIGHT            14920
+#define FS_IDC_PL_SETWEIGHT         14921
+#define FS_IDC_PL_REMOVE            14922
+#define FS_IDC_PL_UNIT              14923
+#define FS_IDC_PL_ADDUNIT           14924
+#define FS_IDC_PL_ROLL              14925
+#define FS_IDC_PL_CLOSE             14926
+#define FS_IDC_PL_USERS             14927

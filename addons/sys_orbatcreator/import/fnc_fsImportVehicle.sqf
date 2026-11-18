@@ -97,10 +97,10 @@ private _walk = {
             ];
             if (_depth < 3) then { [_x >> "Turrets", _path, _depth + 1] call _walk };
         };
-    } forEach configProperties [_turretsCfg, "isClass _x", true];
+    } forEach ("true" configClasses _turretsCfg);
 };
 [_cfg >> "Turrets", "", 1] call _walk;
-if ((count (configProperties [_cfg >> "Turrets", "isClass _x", true])) > 16) then {
+if ((count ("true" configClasses (_cfg >> "Turrets"))) > 16) then {
     _notes pushBack format ["%1: only the first 16 seats were read.", _class];
 };
 

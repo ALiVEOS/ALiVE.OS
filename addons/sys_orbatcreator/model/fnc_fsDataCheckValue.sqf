@@ -140,6 +140,19 @@ switch (_name) do {
         };
         if (_ok) then { "" } else { "S_TEXT_BAD" }
     };
+    case "role": {
+        if (_value isEqualType "" && {_value in FS_ROLES}) then { "" } else { "S_NAME_BAD" }
+    };
+    case "aliveCat": {
+        if (_value isEqualType "" && {_value in FS_ALIVE_CATEGORIES}) then { "" } else { "S_NAME_BAD" }
+    };
+    case "listName": {
+        if (_value isEqualType "" && {_value in FS_ALIVE_LISTS}) then { "" } else { "S_NAME_BAD" }
+    };
+    case "poolWeapon": {
+        // [] for an item that is not a weapon, else one weapon entry of a loadout, checked as a primary weapon
+        if (_value isEqualTo [] || {_value isEqualType [] && {count _value == 7} && {([[_value, [], [], [], [], [], "", "", [], ["", "", "", "", "", ""]]] call ALiVE_fnc_fsDataLoadoutCheck) select 0}}) then { "" } else { "S_TEXT_BAD" }
+    };
     case "loadout": {
         if (([_value] call ALiVE_fnc_fsDataLoadoutCheck) select 0) then { "" } else { "E_BAD_LOADOUT" }
     };

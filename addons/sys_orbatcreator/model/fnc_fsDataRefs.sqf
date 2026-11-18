@@ -6,7 +6,8 @@ Function: ALiVE_fnc_fsDataRefs
 
 Description:
 Where a unit or vehicle id is used in a studio faction: as a group member, as a
-vehicle's crew, or as a turret's gunner. "clean" also removes those uses (members
+vehicle's crew, as a turret's gunner, or in one of the ALiVE lists (transport,
+air transport, supports, AA). "clean" also removes those uses (members
 dropped, crew and gunner set back to "", meaning as the base vehicle), which is
 what a delete does so no reference to the deleted entry remains.
 
@@ -16,8 +17,9 @@ Parameters:
     _faction - HASHMAP - optional, default missionNamespace ALiVE_FS_faction
 
 Returns:
-    ARRAY - [groups, seats] as found before any clean: the number of groups that
-            have it as a member, and the number of crew and gunner seats set to it
+    ARRAY - [groups, seats, lists] as found before any clean: the number of groups
+            that have it as a member, the number of crew and gunner seats set to it,
+            and the number of ALiVE lists naming it
 
 Examples:
     (begin example)
@@ -36,7 +38,7 @@ Author:
 params [["_op", "count", [""]], ["_id", "", [""]], ["_faction", objNull]];
 
 if !(_faction isEqualType createHashMap) then { _faction = missionNamespace getVariable ["ALiVE_FS_faction", createHashMap] };
-if (_id isEqualTo "") exitWith { [0, 0] };
+if (_id isEqualTo "") exitWith { [0, 0, 0] };
 
 private _clean = _op isEqualTo "clean";
 private _groups = 0;
@@ -66,4 +68,14 @@ private _seats = 0;
     } forEach (_veh getOrDefault ["turrets", []]);
 } forEach (_faction getOrDefault ["vehicles", createHashMap]);
 
-[_groups, _seats]
+private _lists = 0;
+private _alive = _faction getOrDefault ["alive", createHashMap];
+{
+    private _list = _alive getOrDefault [_x, []];
+    if (_id in _list) then {
+        _lists = _lists + 1;
+        if (_clean) then { _alive set [_x, _list - [_id]] };
+    };
+} forEach FS_ALIVE_REFLISTS;
+
+[_groups, _seats, _lists]

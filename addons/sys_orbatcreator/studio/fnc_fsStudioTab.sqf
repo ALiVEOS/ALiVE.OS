@@ -10,7 +10,7 @@ and the prefs, marks the tab's button, then calls the tab's "refresh" when its
 handler function is loaded. An unknown tab name falls back to "faction".
 
 Parameters:
-    _tab - STRING - "faction", "units", "vehicles", "groups" or "export"
+    _tab - STRING - "faction", "units", "vehicles", "groups", "alive" or "export"
 
 Returns:
     STRING - the tab shown
@@ -42,6 +42,7 @@ private _tabs = [
     ["units",    FS_IDC_GRP_UNITS,    FS_IDC_TAB_UNITS,    "ALiVE_fnc_fsStudioTabUnits"],
     ["vehicles", FS_IDC_GRP_VEHICLES, FS_IDC_TAB_VEHICLES, "ALiVE_fnc_fsStudioTabVehicles"],
     ["groups",   FS_IDC_GRP_GROUPS,   FS_IDC_TAB_GROUPS,   "ALiVE_fnc_fsStudioTabGroups"],
+    ["alive",    FS_IDC_GRP_ALIVE,    FS_IDC_TAB_ALIVE,    "ALiVE_fnc_fsStudioTabAlive"],
     ["export",   FS_IDC_GRP_EXPORT,   FS_IDC_TAB_EXPORT,   "ALiVE_fnc_fsStudioTabExport"]
 ];
 
@@ -64,5 +65,8 @@ if (isNull _display) exitWith { _tab };
 
 private _handler = missionNamespace getVariable ((_tabs select _at) select 3);
 if (!isNil "_handler") then { ["refresh", []] call _handler };
+
+// an open help window follows the tab, and a tab this player has not seen opens its help
+["tabShown"] call ALiVE_fnc_fsStudioHelp;
 
 _tab

@@ -20,9 +20,17 @@ does it; a probe spawns ALiVE_fnc_staticDataHandler itself).
          name configSourceAddonList gives for the owned classes (at most 8);
        - otherwise tag and class are left empty for the caller;
     3. men first (ALiVE_fnc_fsImportMan), then the other classes
-       (ALiVE_fnc_fsImportVehicle), so vehicles can point at imported crew;
+       (ALiVE_fnc_fsImportVehicle), so vehicles can point at imported crew; in
+       a studio export, a class from one of its optional parts
+       (ALiVE_FS_<TAG>_O_..., the first of configSourceAddonList) is ticked
+       Optional. An optional part whose mods are not loaded here is not in the
+       config, so its entries are not imported (load the export's data file for
+       them);
     4. ALiVE_fnc_fsImportGroups;
-    5. meta.source = "config:<faction>".
+    5. meta.source = "config:<faction>";
+    6. for a studio export, its CfgALiVEFactions block and supply crates: rarity,
+       redirects, outside supplies and containers, and the crates and lists that
+       differ from what the studio works out (the others stay automatic).
 The class index is built first when it does not exist yet.
 
 Parameters:
@@ -111,10 +119,16 @@ _meta set ["source", [_source, "config"] select !([_source, "text60"] call _ok)]
 
 // 3. Men, then everything else.
 private _classToId = createHashMap;
+private _optPrefix = if (_studioTag isEqualTo "") then { "" } else { toLower ("ALiVE_FS_" + _studioTag + "_O_") };
+private _fromOptional = {
+    !(_optPrefix isEqualTo "") && {((toLower ((configSourceAddonList (configFile >> "CfgVehicles" >> _this)) param [0, ""])) select [0, count _optPrefix]) isEqualTo _optPrefix}
+};
+private _optCount = 0;
 {
     _x params ["_rowClass", "", "", "", "", "_kind"];
     if (_kind == 0) then {
         private _entry = [_rowClass, _incoming, _notes] call ALiVE_fnc_fsImportMan;
+        if (_rowClass call _fromOptional) then { _entry set ["optional", true]; _optCount = _optCount + 1 };
         private _id = ["add", [_entry], _incoming] call ALiVE_fnc_fsDataUnit;
         if (_id isEqualTo "") then { _notes pushBack format ["%1: the faction is full, so it was left out.", _rowClass] } else { _classToId set [toLower _rowClass, _id] };
     };
@@ -123,15 +137,76 @@ private _classToId = createHashMap;
     _x params ["_rowClass", "", "", "", "", "_kind"];
     if (_kind != 0) then {
         private _entry = [_rowClass, _classToId, _incoming, _notes] call ALiVE_fnc_fsImportVehicle;
+        if (_rowClass call _fromOptional) then { _entry set ["optional", true]; _optCount = _optCount + 1 };
         private _id = ["add", [_entry], _incoming] call ALiVE_fnc_fsDataVehicle;
         if (_id isEqualTo "") then { _notes pushBack format ["%1: the faction is full, so it was left out.", _rowClass] } else { _classToId set [toLower _rowClass, _id] };
     };
 } forEach _mine;
+
+if (_optCount > 0) then { _notes pushBack format ["%1: %2 units and vehicles came from optional parts and are ticked Optional. An optional part whose mods are not loaded here was not imported; load the export's data file to keep its entries.", _factionClass, _optCount toFixed 0] };
 
 // 4. Groups.
 {
     private _id = ["add", [_x], _incoming] call ALiVE_fnc_fsDataGroup;
     if (_id isEqualTo "") then { _notes pushBack format ["%1: the faction is full, so a group was left out.", _factionClass] };
 } forEach ([_factionClass, _classToId, _ownedFaction, _notes] call ALiVE_fnc_fsImportGroups);
+
+// 5. A studio export's ALiVE block and crates, so exporting it again writes the same block. A list or the
+// crates that match what the studio works out by itself stay automatic, so new gear and vehicles still reach them.
+private _block = configFile >> "CfgALiVEFactions" >> _factionClass;
+if (!(_studioTag isEqualTo "") && {isClass _block}) then {
+    private _alive = _incoming get "alive";
+    private _auto = +(_alive get "auto");
+    _alive set ["rarity", getNumber (_block >> "rarity") == 1];
+    // crates: the faction's boxes, with their four Transport classes
+    private _crates = [];
+    {
+        private _c = _x;
+        private _cargo = [];
+        {
+            _x params ["_root", "_key", "_kind"];
+            {
+                private _item = getText (_x >> _key);
+                if !(_item isEqualTo "") then { _cargo pushBack createHashMapFromArray [["class", _item], ["kind", _kind], ["count", ((getNumber (_x >> "count")) max 1) min 999]] };
+            } forEach ("true" configClasses (_c >> _root));
+        } forEach [["TransportWeapons", "weapon", 0], ["TransportMagazines", "magazine", 1], ["TransportItems", "name", 2], ["TransportBackpacks", "backpack", 3]];
+        _crates pushBack createHashMapFromArray [
+            ["key", getText (_c >> "ALiVE_FS_crate")],
+            ["name", (getText (_c >> "displayName")) select [0, 60]],
+            ["class", configName _c],
+            ["classAuto", true],
+            ["base", configName (inheritsFrom _c)],
+            ["cargo", _cargo select [0, FS_MAX_CRATE_ROWS]]
+        ];
+    } forEach ((format ["getText (_x >> 'ALiVE_FS_tag') == '%1' && {isText (_x >> 'ALiVE_FS_crate')}", _studioTag]) configClasses (configFile >> "CfgVehicles"));
+    _crates = _crates select [0, FS_MAX_CRATES];
+    // compared without order: the config keeps the four Transport classes apart and the boxes in config order
+    private _plain = { params ["_list"]; private _out = _list apply {
+        private _rows = (_x get "cargo") apply { [toLower (_x get "class"), _x get "kind", _x get "count"] };
+        _rows sort true;
+        [_x get "key", toLower (_x get "class"), toLower (_x get "base"), _rows]
+    }; _out sort true; str _out };
+    if !(([_crates] call _plain) isEqualTo ([([_incoming] call ALiVE_fnc_fsAliveCrates) select 0] call _plain)) then {
+        _alive set ["crates", _crates];
+        _auto = _auto - ["crates"];
+    };
+    _alive set ["auto", _auto];
+    // the lists: one of the faction's own vehicles by its id, anything else as an outside class
+    private _picks = [_incoming] call ALiVE_fnc_fsAlivePicks;
+    private _crateClasses = _crates apply { toLower (_x get "class") };
+    {
+        private _name = _x;
+        private _refs = (getArray (_block >> _name)) apply { private _id = _classToId getOrDefault [toLower _x, ""]; if (_id isEqualTo "") then { "#" + _x } else { _id } };
+        if !((_refs apply { toLower _x }) isEqualTo ((_picks getOrDefault [_name, []]) apply { toLower _x })) then {
+            _alive set [_name, _refs select { ([_x, "ref"] call ALiVE_fnc_fsDataCheckValue) isEqualTo "" }];
+            _auto = _auto - [_name];
+        };
+    } forEach FS_ALIVE_REFLISTS;
+    _alive set ["auto", _auto];
+    _alive set ["suppliesExtra", ((getArray (_block >> "supplies")) select { !((toLower _x) in _crateClasses) && {([_x, "gear"] call _ok)} }) select [0, 32]];
+    _alive set ["containers", ((getArray (_block >> "containers")) select { [_x, "gear"] call _ok }) select [0, 16]];
+    // redirects: an empty ALiVE category drawn from another of the faction's categories
+    _alive set ["redirects", (((configProperties [_block >> "GroupTypes", "isText _x", true]) select { (configName _x) in FS_ALIVE_CATEGORIES }) apply { createHashMapFromArray [["from", configName _x], ["to", getText _x]] }) select [0, 11]];
+};
 
 [_incoming, _notes]

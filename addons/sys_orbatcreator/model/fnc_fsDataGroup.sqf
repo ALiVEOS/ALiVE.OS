@@ -187,6 +187,8 @@ switch (_op) do {
             private _grp = [_source, "group"] call _build;
             private _newId = [_faction, "g"] call ALiVE_fnc_fsDataId;
             _grp set ["id", _newId];
+            // a copy is the player's own: AUTO GROUPS never replaces it
+            _grp set ["auto", ""];
             [_grp] call _autoClass;
             _dict set [_newId, _grp];
             private _i = _order find _id;

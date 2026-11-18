@@ -9,7 +9,7 @@ KeyDown handler of the studio display.
     - Esc: in scene mode swallowed, with the status S_ESC (Exit is the way out);
       in module mode it closes the studio as usual;
     - Ctrl+S: saves the working faction to the saved factions under its name;
-    - Ctrl+1 to Ctrl+5: Faction, Units, Vehicles, Groups, Export.
+    - Ctrl+1 to Ctrl+6: Faction, Units, Vehicles, Groups, ALiVE, Export.
 
 Parameters:
     _display - DISPLAY
@@ -38,7 +38,7 @@ Author:
 
 #define FS_DIK_ESCAPE   1
 #define FS_DIK_1        2
-#define FS_DIK_5        6
+#define FS_DIK_6        7
 #define FS_DIK_S        31
 
 if (!hasInterface) exitWith { false };
@@ -72,9 +72,9 @@ switch (true) do {
         };
     };
 
-    case (_ctrl && {!_alt} && {_key >= FS_DIK_1} && {_key <= FS_DIK_5}): {
+    case (_ctrl && {!_alt} && {_key >= FS_DIK_1} && {_key <= FS_DIK_6}): {
         _handled = true;
-        [["faction", "units", "vehicles", "groups", "export"] select (_key - FS_DIK_1)] call ALiVE_fnc_fsStudioTab;
+        [["faction", "units", "vehicles", "groups", "alive", "export"] select (_key - FS_DIK_1)] call ALiVE_fnc_fsStudioTab;
     };
 };
 

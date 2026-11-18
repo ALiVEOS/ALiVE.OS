@@ -166,6 +166,7 @@ private _categories = _faction get "categories";
 private _units = _faction get "units";
 private _vehicles = _faction get "vehicles";
 private _groups = _faction get "groups";
+private _pools = _faction getOrDefault ["pools", createHashMap];
 private _meta = _faction get "meta";
 
 // The id counter must stay above every id in use, or the next new entry would
@@ -174,7 +175,7 @@ private _meta = _faction get "meta";
 private _top = 0;
 {
     { _top = _top max (parseNumber (_x select [1])) } forEach (keys _x);
-} forEach [_categories, _units, _vehicles, _groups];
+} forEach [_categories, _units, _vehicles, _groups, _pools];
 if (_top > 999999) exitWith { [false, createHashMap, [["S_PASTE_BAD", "faction: an id number is over 999999"]], []] };
 if ((_meta get "counter") < _top) then {
     _meta set ["counter", _top];
@@ -198,7 +199,27 @@ private _firstCat = (_faction get "categoryOrder") param [0, ""];
         _unit set ["category", _firstCat];
         _notes pushBack format ["%1 was moved to the first editor category.", _unit get "id"];
     };
+    // gear pools that are gone, and a second pool for a slot already taken
+    private _kept = [];
+    private _slots = [];
+    {
+        private _slot = (_pools getOrDefault [_x, createHashMap]) getOrDefault ["slot", -1];
+        if (_slot >= 0 && {!(_slot in _slots)}) then { _kept pushBack _x; _slots pushBack _slot };
+    } forEach (_unit getOrDefault ["pools", []]);
+    if ((count _kept) != (count (_unit getOrDefault ["pools", []]))) then {
+        _notes pushBack format ["%1: gear pools that do not exist, or a second one for a slot, were dropped.", _unit get "id"];
+        _unit set ["pools", _kept];
+    };
 } forEach _units;
+// a pool's items must suit its slot: a weapon entry for a weapon slot, none for the others
+{
+    private _weaponSlot = (_y get "slot") in [0, 1, 2];
+    private _ok = (_y get "entries") select { _weaponSlot isEqualTo !((_x get "weapon") isEqualTo []) };
+    if ((count _ok) != (count (_y get "entries"))) then {
+        _notes pushBack format ["%1: items that do not suit the pool's slot were dropped.", _x];
+        _y set ["entries", _ok];
+    };
+} forEach _pools;
 
 {
     private _veh = _y;
@@ -230,6 +251,36 @@ private _firstCat = (_faction get "categoryOrder") param [0, ""];
     };
 } forEach _groups;
 
+// ALiVE lists: refs to vehicles that are gone, list names this build does not
+// know, and redirects to themselves or repeating an earlier one are dropped.
+private _alive = _faction getOrDefault ["alive", createHashMap];
+{
+    private _list = _alive getOrDefault [_x, []];
+    private _ok = _list select { ((_x select [0, 1]) isEqualTo "#") || {_x in _vehicles} };
+    if ((count _ok) != (count _list)) then {
+        _notes pushBack format ["ALiVE list %1: %2 entry(s) naming something that does not exist were dropped.", _x, ((count _list) - (count _ok)) toFixed 0];
+        _alive set [_x, _ok];
+    };
+} forEach FS_ALIVE_REFLISTS;
+private _autoLists = _alive getOrDefault ["auto", []];
+private _autoOk = [];
+{ if (_x in FS_ALIVE_LISTS) then { _autoOk pushBackUnique _x } } forEach _autoLists;
+if ((count _autoOk) != (count _autoLists)) then {
+    _notes pushBack format ["ALiVE list %1: %2 entry(s) naming something that does not exist were dropped.", "auto", ((count _autoLists) - (count _autoOk)) toFixed 0];
+    _alive set ["auto", _autoOk];
+};
+private _redirects = _alive getOrDefault ["redirects", []];
+private _froms = [];
+private _redirOk = _redirects select {
+    private _keep = !((toLower (_x get "from")) isEqualTo (toLower (_x get "to"))) && {!((_x get "from") in _froms)};
+    _froms pushBack (_x get "from");
+    _keep
+};
+if ((count _redirOk) != (count _redirects)) then {
+    _notes pushBack format ["%1 category redirect(s) pointing at themselves, or repeating another, were dropped.", ((count _redirects) - (count _redirOk)) toFixed 0];
+    _alive set ["redirects", _redirOk];
+};
+
 // Class names that are not loaded here: kept, listed once each.
 private _names = createHashMap;
 private _gather = {
@@ -257,6 +308,13 @@ private _gather = {
         if ((_ref select [0, 1]) isEqualTo "#") then { _names set [toLower (_ref select [1]), _ref select [1]] };
     } forEach (_y get "members");
 } forEach _groups;
+{
+    { _names set [toLower (_x get "class"), _x get "class"]; [_x get "weapon"] call _gather } forEach (_y get "entries");
+} forEach _pools;
+{
+    _names set [toLower (_x get "base"), _x get "base"];
+    { _names set [toLower (_x get "class"), _x get "class"] } forEach (_x get "cargo");
+} forEach (_alive getOrDefault ["crates", []]);
 _names deleteAt "";
 {
     private _c = _y;

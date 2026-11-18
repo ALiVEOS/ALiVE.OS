@@ -67,12 +67,44 @@ private _schema = createHashMapFromArray [
         ["units", "D:unit", [], "", FS_MAX_UNITS, "unitOrder", "u"],
         ["vehicles", "D:vehicle", [], "", FS_MAX_VEHICLES, "vehicleOrder", "v"],
         ["groups", "D:group", [], "", FS_MAX_GROUPS, "groupOrder", "g"],
+        ["pools", "D:pool", [], "", FS_MAX_POOLS, "poolOrder", "p"],
+        // how the faction is declared to ALiVE (CfgALiVEFactions, supply crates)
+        ["alive", "M:alive", [], ""],
         ["meta", "M:meta", [], ""]
     ]],
     ["options", [
         ["noRandom", "B", true, ""],
         ["force", "B", false, ""],
         ["copyParent", "B", false, ""]
+    ]],
+    // auto: the lists still worked out by the studio; a hand edit takes a name out.
+    // List refs are a vehicle id ("v3") or an outside class ("#Class").
+    ["alive", [
+        ["hook", "B", true, ""],
+        ["rarity", "B", true, ""],
+        ["auto", "LS", FS_ALIVE_LISTS, "gear", 8],
+        ["crates", "L:crate", [], "", FS_MAX_CRATES],
+        ["suppliesExtra", "LS", [], "gear", 32],
+        ["transport", "LS", [], "ref", 32],
+        ["airTransport", "LS", [], "ref", 16],
+        ["supports", "LS", [], "ref", 32],
+        ["aa", "LS", [], "ref", 8],
+        ["containers", "LS", [], "gear", 16],
+        ["redirects", "L:redirect", [], "", 11]
+    ]],
+    // a supply crate: key ammo, weapons, launchers, support, uniforms or a made-up one
+    ["crate", [
+        ["key", "S", "", "gear"],
+        ["name", "S", "", "text60"],
+        ["class", "S", "", "class?"],
+        ["classAuto", "B", true, ""],
+        ["base", "S", "", "class"],
+        ["cargo", "L:cargo", [], "", FS_MAX_CRATE_ROWS]
+    ]],
+    // an empty ALiVE category drawn from another category of the faction
+    ["redirect", [
+        ["from", "S", "", "aliveCat"],
+        ["to", "S", "", "class"]
     ]],
     ["meta", [
         ["counter", "N", 0, [0, 999999]],
@@ -95,7 +127,14 @@ private _schema = createHashMapFromArray [
         ["src", "S", "", "gear"],
         ["category", "S", "", "id?"],
         ["loadout", "A", _emptyLoadout, "loadout"],
-        ["identity", "M:identity", [], ""]
+        ["identity", "M:identity", [], ""],
+        // the shared gear pools he wears, one per slot (ALiVE_fnc_fsDataPool)
+        ["pools", "LS", [], "id", 8],
+        // his part in AUTO GROUPS: "" = worked out (ALiVE_fnc_fsAutoRole)
+        ["role", "S", "", "role?"],
+        ["specOps", "B", false, ""],
+        // written in its own optional part, which loads only when the mods it needs are loaded
+        ["optional", "B", false, ""]
     ]],
     ["identity", [
         ["types", "LS", [], "gear", 32],
@@ -117,7 +156,23 @@ private _schema = createHashMapFromArray [
         ["crewClass", "S", "", "gear"],
         ["turrets", "L:turret", [], "", 16],
         ["texture", "S", "", "gear"],
-        ["textures", "LS", [], "path", 16]
+        ["textures", "LS", [], "path", 16],
+        ["components", "L:component", [], "", 32],
+        // 0 as the base vehicle, 1 empty, 2 the cargo list
+        ["pylons", "LS", [], "gear", 64],
+        ["cargoMode", "N", 0, [0, 2]],
+        ["cargo", "L:cargo", [], "", 64],
+        ["optional", "B", false, ""]
+    ]],
+    // kind: 0 weapon, 1 magazine, 2 item, 3 backpack (the four Transport classes)
+    ["cargo", [
+        ["class", "S", "", "gear"],
+        ["kind", "N", 2, [0, 3]],
+        ["count", "N", 1, [1, 999]]
+    ]],
+    ["component", [
+        ["source", "S", "", "class"],
+        ["value", "N", 0, [0, 1]]
     ]],
     ["turret", [
         ["path", "A", [], "turretPath"],
@@ -125,6 +180,19 @@ private _schema = createHashMapFromArray [
         ["name", "S", "", "text60"],
         ["gunnerUnit", "S", "", "id?"],
         ["gunnerClass", "S", "", "gear"]
+    ]],
+    // a shared gear pool: slot 0 primary, 1 handgun, 2 launcher, 3 uniform, 4 vest, 5 backpack, 6 headgear, 7 facewear
+    ["pool", [
+        ["id", "S", "", "id"],
+        ["name", "S", "", "text60"],
+        ["slot", "N", 0, [0, 7]],
+        ["entries", "L:poolEntry", [], "", 32]
+    ]],
+    // an item and its weight; a weapon carries its whole loadout entry (attachments, loaded magazines)
+    ["poolEntry", [
+        ["class", "S", "", "gear"],
+        ["weight", "N", 1, [1, 100]],
+        ["weapon", "A", [], "poolWeapon"]
     ]],
     ["group", [
         ["id", "S", "", "id"],
@@ -135,7 +203,9 @@ private _schema = createHashMapFromArray [
         ["category", "S", "Infantry", "class"],
         ["icon", "S", "", "path"],
         ["rarity", "N", 0.5, [0, 1]],
-        ["members", "L:member", [], "", FS_MAX_MEMBERS]
+        ["members", "L:member", [], "", FS_MAX_MEMBERS],
+        // the AUTO GROUPS recipe that made it ("inf_squad", "mot_v3"); "" = made by hand
+        ["auto", "S", "", "gear"]
     ]],
     ["member", [
         ["ref", "S", "", "ref"],

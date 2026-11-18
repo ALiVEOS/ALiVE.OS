@@ -73,7 +73,18 @@ if (!isNull _display) then {
     };
 
     private _colour = ["#93C47D", "#E6B422", "#E06666"] select ((_level max 0) min 2);
-    (_display displayCtrl FS_IDC_STATUS) ctrlSetStructuredText parseText format ["<t color='%1'>%2</t>", _colour, _text call _safe];
+    // a long message is cut to what the box holds, with the whole text as the tooltip
+    private _status = _display displayCtrl FS_IDC_STATUS;
+    private _boxH = (ctrlPosition _status) select 3;
+    private _shown = _text;
+    _status ctrlSetStructuredText parseText format ["<t color='%1'>%2</t>", _colour, _shown call _safe];
+    private _cuts = 0;
+    while { ctrlTextHeight _status > _boxH && {count _shown > 12} && {_cuts < 30} } do {
+        _shown = _shown select [0, floor ((count _shown) * 0.9)];
+        _status ctrlSetStructuredText parseText format ["<t color='%1'>%2...</t>", _colour, _shown call _safe];
+        _cuts = _cuts + 1;
+    };
+    _status ctrlSetTooltip (if (_cuts > 0) then { _text } else { "" });
 
     private _faction = missionNamespace getVariable "ALiVE_FS_faction";
     private _name = "";
@@ -81,8 +92,13 @@ if (!isNull _display) then {
         _name = _faction getOrDefault ["name", ""];
         if (_name isEqualTo "") then { _name = _faction getOrDefault ["tag", ""] };
     };
-    if (missionNamespace getVariable ["ALiVE_FS_dirty", false]) then { _name = _name + " *" };
-    (_display displayCtrl FS_IDC_FACTION) ctrlSetText _name;
+    // labelled, so it never reads as stray text; the unsaved mark in words, in the accent colour
+    private _safe = { ((_this regexReplace ["&", "&amp;"]) regexReplace ["<", "&lt;"]) regexReplace [">", "&gt;"] };
+    private _line = if (_name isEqualTo "") then { "" } else { format [localize "STR_ALIVE_FS_FACTION_LABEL", _name call _safe] };
+    if (missionNamespace getVariable ["ALiVE_FS_dirty", false]) then {
+        _line = _line + format [["<t color='#F2A541'>(%1)</t>", " <t color='#F2A541'>(%1)</t>"] select !(_line isEqualTo ""), localize "STR_ALIVE_FS_UNSAVED"];
+    };
+    (_display displayCtrl FS_IDC_FACTION) ctrlSetStructuredText parseText format ["<t color='#B4B4B4'>%1</t>", _line];
 };
 
 _text

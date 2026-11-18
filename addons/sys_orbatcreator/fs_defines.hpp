@@ -15,6 +15,12 @@
 #define FS_MAX_GROUPS       600
 #define FS_MAX_MEMBERS      40
 #define FS_MAX_CATEGORIES   40
+#define FS_MAX_POOLS        32
+#define FS_MAX_CRATES       8
+#define FS_MAX_CRATE_ROWS   96
+// optional parts of an export, one per set of mods (ALiVE_fnc_fsGenPlan)
+#define FS_MAX_OPT_PATCHES  8
+#define FS_MAX_AUTO_GROUPS  80
 #define FS_MAX_LIBRARY      30
 #define FS_SIZE_WARN        400000
 #define FS_SIZE_MAX         2000000
@@ -22,4 +28,9 @@
 #define FS_AUTOSAVE_GAP     60
 #define FS_ALIVE_CATEGORIES ["Infantry","SpecOps","Motorized","Motorized_MTP","Mechanized","Mechanized_MTP","Armored","Artillery","Air","Naval","Support"]
 #define FS_ALIVE_DRAWN      ["Infantry","SpecOps","Motorized","Motorized_MTP","Mechanized","Armored","Artillery","Air","Naval"]
+// the ALiVE lists still worked out by the studio (faction alive.auto); "crates" also stands for supplies
+#define FS_ALIVE_LISTS      ["crates","transport","airTransport","supports","aa"]
+#define FS_ALIVE_REFLISTS   ["transport","airTransport","supports","aa"]
+#define FS_ALIVE_HOOK_VER   1
+#define FS_ROLES            ["leader","rifleman","mg","at","aa","medic","marksman","crew","pilot"]
 #define FS_NAME             (localize "STR_ALIVE_FS_NAME")
