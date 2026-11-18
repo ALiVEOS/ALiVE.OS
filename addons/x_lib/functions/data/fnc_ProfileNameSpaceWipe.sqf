@@ -6,7 +6,8 @@ Function: ALiVE_fnc_ProfileNameSpaceWipe
 
 Description:
 Deletes every mission's saved ALiVE data from profileNamespace. The player's
-saved presets are kept.
+saved presets are kept. Nothing of the running mission is saved again until it
+restarts, so what is still in the game is not written straight back.
 
 A dedicated server's profile cannot list its own variables (allVariables returns
 nothing for profileNamespace there), so saves are found by name: the list every
@@ -108,6 +109,16 @@ private _fnc_wipe = {
 
     profileNamespace setVariable [QMOD(SAVEDMISSIONS), nil];
     ["wipeAll"] call ALiVE_fnc_storeFile;
+
+    // The modules keep running after a wipe, and the next save put this mission's data straight back.
+    if (!isNil "ALIVE_sys_data_GROUP_ID") then {
+        private _base = (["", worldName] call ALiVE_fnc_storeKeys) select 0;
+        { ["hold", _base + _x] call ALiVE_fnc_storeFile } forEach (["", "_DATA", "_COMPOSITIONS", "_TASK", "_TASK_OPTOUT", "_FORCE_POOL", "_ATO", "_FOB", "_INTEL", "_HUB", "_CRATERS", "_RALLY"] + (missionNamespace getVariable ["ALiVE_storeSuffixes", []]));
+        { ["hold", _x] call ALiVE_fnc_storeFile } forEach (_names arrayIntersect _names);
+        // Player Logistics writes its own way as well, so it is told to stop too
+        if !(isNil QMOD(SYS_LOGISTICS)) then { MOD(SYS_LOGISTICS) setVariable ["DISABLEPERSISTENCE", true, true] };
+    };
+
     ["flush"] call ALiVE_fnc_storeFile;
 
     ["[ALiVE Data] Removed %1 saved-data entries", _wiped] call ALiVE_fnc_dump;

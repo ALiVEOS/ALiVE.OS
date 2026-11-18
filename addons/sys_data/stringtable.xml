@@ -332,7 +332,7 @@
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_WIPE_CONFIRM_YES_COMMENT">
-                <English>Permanently wipes all ALiVE saved data across every mission. Your saved presets are kept. Cannot be undone.</English>
+                <English>Permanently wipes all ALiVE saved data across every mission. Your saved presets are kept. Nothing more is saved for this mission until it restarts. Cannot be undone.</English>
                 <Chinese>永久清除所有任務的全部ALiVE存檔資料。你儲存的預設會保留。無法撤銷。</Chinese>
                 <Chinesesimp>永久清除所有任务的全部ALiVE存档数据。你保存的预设会保留。无法撤销。</Chinesesimp>
                 <French>Efface définitivement toutes les données sauvegardées d'ALiVE pour toutes les missions. Vos préréglages enregistrés sont conservés. Action irréversible.</French>
@@ -372,7 +372,7 @@
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_WIPE_DONE">
-                <English>ALiVE: Wiped %1 saved-data entries. Your saved presets are kept. This mission saves itself again unless you restart it without saving.</English>
+                <English>ALiVE: Wiped %1 saved-data entries. Your saved presets are kept. Nothing more is saved for this mission until it restarts.</English>
                 <Chinese>ALiVE:已清除 %1 筆存檔資料。你儲存的預設會保留。除非你不存檔直接重新啟動,否則這個任務會再次自行存檔。</Chinese>
                 <Chinesesimp>ALiVE:已清除 %1 条存档数据。你保存的预设会保留。除非你不存档直接重新启动,否则这个任务会再次自行存档。</Chinesesimp>
                 <French>ALiVE: %1 entrées de sauvegarde effacées. Vos préréglages enregistrés sont conservés. Cette mission s'enregistre de nouveau, sauf si vous la redémarrez sans enregistrer.</French>
