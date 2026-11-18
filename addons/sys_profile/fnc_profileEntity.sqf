@@ -1518,6 +1518,15 @@ switch(_operation) do {
                 };
             } forEach _unitClasses;
 
+            // Destroyed while its men were being made (the pause between each lets that happen): destroy
+            // empties the profile, and carrying on wrote a few values back into it, leaving a 7-value stub
+            // that later failed on its faction ("7 elements provided, 30 expected"). The men made so far go.
+            if ((_logic select 1) find "profileID" < 0) exitWith {
+                { deleteVehicle _x } forEach (_units select { !isNull _x });
+                if (!isNull _group) then { _group call ALiVE_fnc_DeleteGroupRemote };
+                ["ALiVE profileEntity spawn: profile %1 was destroyed while spawning, so its %2 men were removed", _profileID, count _units] call ALiVE_fnc_dump;
+            };
+
             if (_isSPE) then {
                 [_logic,"clearWaypoints"] call MAINCLASS;
                 [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
