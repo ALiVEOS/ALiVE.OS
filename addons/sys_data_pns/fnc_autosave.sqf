@@ -48,7 +48,9 @@ private _handle = [_interval, _once] spawn {
 
         if (!_once) then { sleep _interval };
 
-	    sleep 5;
+        // a save asked for now (a trigger, a script, a War Room order) only waits for the two notices below;
+        // the timed one gives the five seconds' warning first, as players expect it
+	    if (!_once) then { sleep 5 };
 	    TitleText ["ALiVE IS PREPARING TO SAVE...","PLAIN"];
 	    sleep 1;
         ["IS SAVING..."] call ALiVE_fnc_dumpMPH;
