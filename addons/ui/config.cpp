@@ -113,7 +113,9 @@ class RscDisplayMain: RscStandardDisplay
             text = "\x\alive\addons\UI\logo_alive_white.paa";
             tooltip = "$STR_ALIVE_UI_TOOLTIP_LOGO_ABOUT";
             x = "safezoneX + safezoneW -        6.5 *   (pixelW * pixelGrid * 2) -  (4 * pixelH)";
-            y = "safezoneY + safezoneH - (3 *       2 +     1) *    (pixelH * pixelGrid * 2) - 4.5 *    (4 * pixelH)";
+            // sits just above the mod news panel (ACE's logo and version); that panel is 2 grid rows higher on a development branch
+            y = "safezoneY + safezoneH - (3 * 2 + 1) * (pixelH * pixelGrid * 2) - 4 * (4 * pixelH) - (4 * pixelH) - 1.5 * (((safezoneW / safezoneH) min 1.2) / 1.2) / 25";
+            onLoad = "params ['_ctrl']; if ((productVersion param [8, '']) != '') then {_ctrl ctrlSetPositionY ((ctrlPosition _ctrl select 1) - 2 * (pixelH * pixelGrid * 2)); _ctrl ctrlCommit 0}";
             w = "3 *            (           ((safezoneW / safezoneH) min 1.2) / 40)";           
             h = "1.5 *          (           (           ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";    
         };

@@ -86,7 +86,9 @@ class RscDisplayMain: RscStandardDisplay
             text = "\x\alive\addons\intro\data\johari_small.paa";    
             tooltip = "$STR_ALIVE_UI_TOOLTIP_JOHARI_ABOUT";
             x = "safezoneX + safezoneW -        2 *     (pixelW * pixelGrid * 2) -  (4 * pixelH)";
-            y = "safezoneY + safezoneH - (3 *       2 +     1) *    (pixelH * pixelGrid * 2) - 4 *  (4 * pixelH)";
+            // sits just above the mod news panel (ACE's logo and version); that panel is 2 grid rows higher on a development branch
+            y = "safezoneY + safezoneH - (3 * 2 + 1) * (pixelH * pixelGrid * 2) - 4 * (4 * pixelH) - (4 * pixelH) - 1.28 * (((safezoneW / safezoneH) min 1.2) / 1.2) / 25";
+            onLoad = "params ['_ctrl']; if ((productVersion param [8, '']) != '') then {_ctrl ctrlSetPositionY ((ctrlPosition _ctrl select 1) - 2 * (pixelH * pixelGrid * 2)); _ctrl ctrlCommit 0}";
             w = "1.28 *             (           ((safezoneW / safezoneH) min 1.2) / 40)";
             h = "1.28 *             (           (           ((safezoneW / safezoneH) min 1.2) / 1.2) / 25)";               
         };        
