@@ -348,7 +348,7 @@
     <English>ALiVE category</English>
 </Key>
 <Key ID="STR_ALIVE_FS_L_RARITY">
-    <English>How often (0 never, 1 always)</English>
+    <English>How often ALiVE picks this group compared with the others in its category, from 0.05 (rarely) to 1 (most often). Needs Weight by rarity on the ALiVE tab.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_L_RARITY_SHORT">
     <English>How often</English>
@@ -465,7 +465,7 @@
     <English>Rank, Remove, Up and Down work on the selected member.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_HELP_GROUPS_4">
-    <English>How often sets how often ALiVE picks the group (0 never, 1 always). Map icon is its marker.</English>
+    <English>How often sets how often ALiVE picks the group compared with the others in its category, from 0.05 (rarely) to 1 (most often), while Weight by rarity is on in the ALiVE tab. Map icon is its marker.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_HELP_GROUPS_5">
     <English>ALiVE does not place Support or Mechanized (MTP) groups; the note under the list says so.</English>
