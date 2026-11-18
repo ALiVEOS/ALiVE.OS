@@ -92,9 +92,8 @@ MOD(PAUSEMODULES_RESUME) = {
     };
 };
 
-// Connected players, headless clients left out: an HC sits in a playable slot and reads as a player, so with one
-// connected an empty server never paused, and the HC joining started the modules again (Jman, 17 Nov, RSS7).
-// Counted from the connected users, so a player still in the lobby counts too.
+// Connected players, headless clients left out, so an HC joining never starts the modules again (Jman, 17 Nov,
+// RSS7). Counted from the connected users, so a player still in the lobby counts too.
 MOD(PAUSEMODULES_PLAYERS) = {
     // a dedicated server is never a player (owner 2); on a hosted game owner 2 is the host, who is
     { private _i = getUserInfo _x; count _i > 7 && {!(_i select 7)} && {!(isDedicated && {(_i select 1) == 2})} } count allUsers

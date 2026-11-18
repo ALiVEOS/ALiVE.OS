@@ -20,6 +20,7 @@ ALiVE_fnc_pauseModule
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_modules"];
@@ -37,6 +38,9 @@ if !(isServer) exitwith {
     _mod = _x;
 
     if (tolower(typeOf _mod) in _modules) then {
+
+        // calls off a pause still waiting for this module to start (see ALiVE_fnc_pauseModule)
+        _mod setVariable ["ALiVE_pauseModule_wanted", -1];
 
         _handler = _mod getvariable ["handler",["",[],[],nil]];
         _mainclass = _mod getvariable ["class",([_handler,"class"] call ALiVE_fnc_HashGet)];

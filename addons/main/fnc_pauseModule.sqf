@@ -38,6 +38,18 @@ if (!canSuspend) exitWith {
     _modules spawn ALiVE_fnc_pauseModule;
 };
 
+// This call can wait minutes for a module to start, and a player can join in that time. Each call takes a ticket
+// and ALiVE_fnc_unPauseModule sets it to -1, so a pause that has been called off never lands after the resume.
+ALiVE_pauseModule_ticket = (missionNamespace getVariable ["ALiVE_pauseModule_ticket", 0]) + 1;
+private _ticket = ALiVE_pauseModule_ticket;
+{
+    if (toLower (typeOf _x) in _modules) then { _x setVariable ["ALiVE_pauseModule_wanted", _ticket] };
+} forEach (entities "Module_F");
+private _wanted = {
+    params ["_mod"];
+    (_mod getVariable ["ALiVE_pauseModule_wanted", _ticket]) == _ticket
+};
+
 // a module can only be paused once it has started: its class is set, and for the modules that pause
 // through a handler (AI Commander, profiles, civilian population) the handler too
 private _ready = {
@@ -52,8 +64,8 @@ private _ready = {
     private _mod = _x;
     if (toLower (typeOf _mod) in _modules && {!(_mod call _ready)}) then {
         private _t0 = diag_tickTime;
-        waitUntil { sleep 1; (_mod call _ready) || {diag_tickTime - _t0 > 600} };
-        if !(_mod call _ready) then {
+        waitUntil { sleep 1; (_mod call _ready) || {!(_mod call _wanted)} || {diag_tickTime - _t0 > 600} };
+        if ((_mod call _wanted) && {!(_mod call _ready)}) then {
             ["ALiVE pauseModule: %1 had not started after 10 minutes, so it isn't paused", typeOf _mod] call ALiVE_fnc_dump;
         };
     };
@@ -64,7 +76,7 @@ private _ready = {
 
     _mod = _x;
 
-    if (tolower(typeOf _mod) in _modules) then {
+    if (tolower(typeOf _mod) in _modules && {_mod call _wanted}) then {
 
         _handler = _mod getvariable ["handler",["",[],[],nil]];
         _mainclass = _mod getvariable ["class",([_handler,"class"] call ALiVE_fnc_HashGet)];
@@ -79,10 +91,14 @@ private _ready = {
 
             //Default: Call "pause" operation of the module main class
             default {
-                if (count (_handler select 1) > 0) then {
-                    [_handler,"pause",true] call _mainclass;
-                } else {
-                    [_mod,"pause",true] call _mainclass;
+                private _target = if (count (_handler select 1) > 0) then {_handler} else {_mod};
+                [_target,"pause",true] call _mainclass;
+
+                // A resume that arrived while that pause was still running has been overwritten by it, and the
+                // module now reads as running while parts of it are held. Finish the pause, then release it whole.
+                if ((_mod getVariable ["ALiVE_pauseModule_wanted", _ticket]) == -1) then {
+                    [_target,"pause",true] call _mainclass;
+                    [_target,"pause",false] call _mainclass;
                 };
             };
         };

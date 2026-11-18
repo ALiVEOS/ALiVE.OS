@@ -4155,6 +4155,10 @@ switch (_operation) do {
                     ["OPCOM %1 is holding until Go: resume ignored", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
                 };
 
+                // Nothing to release on a commander that is not paused. A player joining resumes the modules from an
+                // event handler, which cannot wait for a commander still starting up.
+                if (!_args && {!([_logic,"pause",objNull,false] call ALIVE_fnc_OOsimpleOperation)}) exitWith {};
+
                 waituntil {[_logic,"startupComplete",false] call ALiVE_fnc_HashGet && {([_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet) > -1} && {!isNil {([_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet) getFSMVariable "_pause"}}};
 
                 private ["_state"];
