@@ -296,6 +296,14 @@ GVAR(HEALTH_DATA) = [
         if (!isNil "ace_medical_fnc_deserializeState" && {_state isEqualType ""} && {_state != ""}) then {
             [_this select 0, _state] call ace_medical_fnc_deserializeState;
         };
+    }],
+    // ACE thirst and hunger (0 to 100), kept on the player by ACE Field Rations, which sends them to the server
+    // every few seconds; -1 when it is not loaded, and then nothing is put back (AshTray, #1132)
+    ["aceThirst",{ (_this select 0) getVariable ["acex_field_rations_thirst", -1] }, {
+        if ((_this select 1) isEqualType 0 && {(_this select 1) >= 0}) then { (_this select 0) setVariable ["acex_field_rations_thirst", _this select 1, true] };
+    }],
+    ["aceHunger",{ (_this select 0) getVariable ["acex_field_rations_hunger", -1] }, {
+        if ((_this select 1) isEqualType 0 && {(_this select 1) >= 0}) then { (_this select 0) setVariable ["acex_field_rations_hunger", _this select 1, true] };
     }]
 ];
 
