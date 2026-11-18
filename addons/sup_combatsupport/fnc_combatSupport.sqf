@@ -314,6 +314,7 @@ switch(_operation) do {
                                         _direction =  getDir _entry;
 
                                         _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
+                                        _entry setVariable ["ALiVE_CS_placedFor_CAS", toUpper _callsign];
                                         _casArrays pushback _casArray;
                                     };
 
@@ -342,6 +343,7 @@ switch(_operation) do {
                                         };
 
                                         _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading,_containers];
+                                        _entry setVariable ["ALiVE_CS_placedFor_TRANS", toUpper _callsign];
                                         _transportArrays pushback _transportArray;
                                     };
                                     case ("hybrid"): {
@@ -369,9 +371,11 @@ switch(_operation) do {
                                         };
 
                                         _transportArray = [_position,_direction,_type, _callsign,_tasks,_code,_height,_slingloading,_containers];
+                                        _entry setVariable ["ALiVE_CS_placedFor_TRANS", toUpper _callsign];
                                         _transportArrays pushback _transportArray;
 
                                         _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
+                                        _entry setVariable ["ALiVE_CS_placedFor_CAS", toUpper _callsign];
                                         _casArrays pushback _casArray;
                                     };
                                 };
@@ -804,6 +808,12 @@ switch(_operation) do {
                             private ["_veh","_grp","_crew"];
 
                             _veh = vehicles select { alive _x && {(_x getVariable ["ALiVE_CS_syncedFor", ""]) == "TRANS|" + _callsign} };
+                            // one synced straight to the module may have rolled away since its position was read, or another of its type
+                            // may have rolled onto that spot: the aircraft registered under this callsign is the one to use
+                            if (_veh isEqualTo []) then {
+                                _veh = vehicles select { alive _x && {(_x getVariable ["ALiVE_CS_placedFor_TRANS", ""]) == _callsign} };
+                                if (count _veh > 1) then { _veh = [_veh, [_pos], { _x distance2D _input0 }, "ASCEND"] call BIS_fnc_sortBy };
+                            };
                             if (_veh isEqualTo []) then { _veh = nearestObjects [ASLToAGL ATLToASL _pos, [_type], 5] };
 
                             if (count _veh == 0) then {
@@ -968,6 +978,12 @@ switch(_operation) do {
                             private ["_veh","_grp","_crew"];
 
                             _veh = vehicles select { alive _x && {(_x getVariable ["ALiVE_CS_syncedFor", ""]) == "CAS|" + _callsign} };
+                            // one synced straight to the module may have rolled away since its position was read, or another of its type
+                            // may have rolled onto that spot: the aircraft registered under this callsign is the one to use
+                            if (_veh isEqualTo []) then {
+                                _veh = vehicles select { alive _x && {(_x getVariable ["ALiVE_CS_placedFor_CAS", ""]) == _callsign} };
+                                if (count _veh > 1) then { _veh = [_veh, [_pos], { _x distance2D _input0 }, "ASCEND"] call BIS_fnc_sortBy };
+                            };
                             if (_veh isEqualTo []) then { _veh = nearestObjects [ASLToAGL ATLToASL _pos, [_type], 5] };
 
                             if (count _veh == 0) then {
