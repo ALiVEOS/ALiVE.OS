@@ -510,27 +510,32 @@ switch (_taskState) do {
                             };
                         };
 
-                        _table = _tableClass createVehicle _pos;
-                        _table setdir 0;
-                        if !(_indoor isEqualTo []) then {
-                            _indoor params ["_seatA", "_seatB"];
-                            // on the floor between the two men. The height is worked out from the model's centre, which is what
-                            // setPosWorld places: setPosASL places the model's base, so the table hung half its own height in the air (#1126)
-                            private _tableX = ((_seatA select 0) + (_seatB select 0)) / 2;
-                            private _tableY = ((_seatA select 1) + (_seatB select 1)) / 2;
-                            private _seatZ = (AGLToASL _seatA) select 2;
-                            private _floorHit = lineIntersectsSurfaces [[_tableX, _tableY, _seatZ + 0.6], [_tableX, _tableY, _seatZ - 2], _table, objNull, true, 1, "ROADWAY", "GEOM"];
-                            private _floorZ = if (_floorHit isEqualTo []) then { _seatZ } else { ((_floorHit select 0) select 0) select 2 };
-                            _table setPosWorld [_tableX, _tableY, _floorZ - (((boundingBoxReal _table) select 0) select 2)];
-                            _table setDir ((_seatA getDir _seatB) + 90);
+                        // A recruiter meeting held indoors gets no table of its own: the two men have the building's floor
+                        // spots and face each other (#1126). Every other meeting keeps the table as its scene.
+                        private _noTable = !(_indoor isEqualTo []) && {(_taskID find "_recruiter_") > -1};
+                        if (!_noTable) then {
+                            _table = _tableClass createVehicle _pos;
+                            _table setdir 0;
+                            if !(_indoor isEqualTo []) then {
+                                _indoor params ["_seatA", "_seatB"];
+                                // on the floor between the two men. The height is worked out from the model's centre, which is what
+                                // setPosWorld places: setPosASL places the model's base, so the table hung half its own height in the air (#1126)
+                                private _tableX = ((_seatA select 0) + (_seatB select 0)) / 2;
+                                private _tableY = ((_seatA select 1) + (_seatB select 1)) / 2;
+                                private _seatZ = (AGLToASL _seatA) select 2;
+                                private _floorHit = lineIntersectsSurfaces [[_tableX, _tableY, _seatZ + 0.6], [_tableX, _tableY, _seatZ - 2], _table, objNull, true, 1, "ROADWAY", "GEOM"];
+                                private _floorZ = if (_floorHit isEqualTo []) then { _seatZ } else { ((_floorHit select 0) select 0) select 2 };
+                                _table setPosWorld [_tableX, _tableY, _floorZ - (((boundingBoxReal _table) select 0) select 2)];
+                                _table setDir ((_seatA getDir _seatB) + 90);
+                            };
+                            _table enableSimulation false;
+
+                            _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
+                            _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
+
+                            (_electronic select 0) enableSimulation false;
+                            (_document select 0) enableSimulation false;
                         };
-                        _table enableSimulation false;
-
-                        _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
-                        _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
-
-                        (_electronic select 0) enableSimulation false;
-                        (_document select 0) enableSimulation false;
 
                         // create the profiles
 
@@ -560,7 +565,7 @@ switch (_taskState) do {
                         } else {
                             _HVT setPosATL (_indoor select 0);
                         };
-                        _HVT setdir ([_HVT, _table] call BIS_fnc_dirTo);
+                        _HVT setdir (if (_noTable) then { (_indoor select 0) getDir (_indoor select 1) } else { [_HVT, _table] call BIS_fnc_dirTo });
                         _HVT setName [format["%1 %2",(_unitDetails select 1), (_unitDetails select 2)], (_unitDetails select 1), (_unitDetails select 2)];
                         _HVT setRank toUpper(_unitDetails select 3);
 
@@ -571,7 +576,7 @@ switch (_taskState) do {
                         } else {
                             _HVT2 setPosATL (_indoor select 1);
                         };
-                        _HVT2 setdir ([_HVT2, _table] call BIS_fnc_dirTo);
+                        _HVT2 setdir (if (_noTable) then { (_indoor select 1) getDir (_indoor select 0) } else { [_HVT2, _table] call BIS_fnc_dirTo });
 
                         _HVT disableAI "MOVE";
                         _HVT2 disableAI "MOVE";
