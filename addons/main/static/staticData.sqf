@@ -19,6 +19,10 @@
 
 #include "CustomFactions.hpp"
 
+// What faction mods declare about themselves (CfgALiVEFactions): after the curated entries, so those win,
+// and before inference, so a faction declared here is never inferred
+if (!isNil "ALiVE_fnc_configFactionsRegister") then { [["mappings", "tables"]] call ALiVE_fnc_configFactionsRegister };
+
 // Phase 3c.1: redirect-only inference for unmapped factions.
 // CustomFactions.hpp populates ALiVE_factionCustomMappings with curated
 // entries (RHS USAF/USMC/AFRF/GREF/SAF and the BLU_G_F example). The

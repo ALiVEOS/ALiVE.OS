@@ -8,6 +8,7 @@
 #include "Eventhandlers.hpp"
 #include "CfgHints.hpp"
 #include "Cfg3rdPartyFactions.hpp"
+#include "CfgALiVEFactions.hpp"
 #include "Cfg3rdPartyObjectiveObjects.hpp"
 #include "CfgALiVEHumanitarianItems.hpp"
 #include "CfgALiVEAmbientAnimals.hpp"

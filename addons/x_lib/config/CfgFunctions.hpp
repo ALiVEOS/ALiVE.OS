@@ -529,6 +529,13 @@ class inferFactionMappingsAll
 	ALIVE_RECOMPILE;
 };
 
+class configFactionsRegister
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_configFactionsRegister.sqf";
+	ext = ".sqf";
+	ALIVE_RECOMPILE;
+};
+
 class inferUnitRole
 {
 	file = "\x\alive\addons\x_lib\functions\config\fnc_inferUnitRole.sqf";

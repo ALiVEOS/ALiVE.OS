@@ -93,6 +93,8 @@ if (isNil "ALIVE_factionDefaultTransport" || {isNil "ALIVE_factionDefaultContain
     // referencing entries.
     call compile preprocessFileLineNumbers "\x\alive\addons\main\static\Placement.hpp";
     call compile preprocessFileLineNumbers "\x\alive\addons\main\static\Logistics.hpp";
+    // and the lists faction mods declare about themselves, so the pickers offer those too
+    if (!isNil "ALiVE_fnc_configFactionsRegister") then { [["tables"]] call ALiVE_fnc_configFactionsRegister };
 };
 
 private _factionLookup = createHashMap;
