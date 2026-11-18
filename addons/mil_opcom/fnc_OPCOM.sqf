@@ -5916,6 +5916,38 @@ switch (_operation) do {
 
         private _profilesById = [ALiVE_profileHandler,"profilesById"] call ALiVE_fnc_hashGet;
 
+        // A crew of this commander driving a vehicle of a faction it does not command (an allied boat or truck placed
+        // in Eden) was in no troop list: the vehicle is not among this commander's profiles, and the entity branch below
+        // skips any group with a vehicle. Such a vehicle is read with the rest, unless another commander owns its faction.
+        private _otherFactions = [];
+        {
+            _otherFactions append ([_x,"factions",[]] call ALiVE_fnc_hashGet);
+        } forEach (missionNamespace getVariable ["OPCOM_instances",[]]);
+        _otherFactions = _otherFactions - _factions;
+
+        {
+            private _crewID = _x;
+            private _crew = _profilesById get _crewID;
+
+            if (!isNil "_crew" && {([_crew,"type",""] call ALIVE_fnc_hashGet) == "entity"}) then {
+                {
+                    private _vehicle = _profilesById get _x;
+
+                    if (!isNil "_vehicle") then {
+                        private _vehicleFaction = [_vehicle,"faction",""] call ALIVE_fnc_hashGet;
+
+                        if (
+                            !(_vehicleFaction in _factions) &&
+                            {!(_vehicleFaction in _otherFactions)} &&
+                            {_crewID in ([_vehicle,"entitiesInCommandOf",[]] call ALIVE_fnc_hashGet)}
+                        ) then {
+                            _profileIDs pushBackUnique _x;
+                        };
+                    };
+                } forEach (([_crew,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_hashGet) select 1);
+            };
+        } forEach +_profileIDs;
+
         private _playerProfileIDs = allPlayers apply { _x getVariable ["profileID", ""] };
         private _vehicleRoleCache = createHashMap;
         {
