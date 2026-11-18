@@ -3703,7 +3703,8 @@ switch(_operation) do {
                                         && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
 
                                         _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
-                                        _groups = [_customMappings, "Groups"] call ALIVE_fnc_hashGet;
+                                        // a mapping need not list its groups by name, and with no default the loop below threw a script error
+                                        _groups = [_customMappings, "Groups", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet;
 
                                         //_groups call ALIVE_fnc_inspectHash;
 
