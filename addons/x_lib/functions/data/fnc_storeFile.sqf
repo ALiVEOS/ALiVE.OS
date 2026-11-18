@@ -56,6 +56,7 @@ if (!isServer) exitWith {};
 #define WIPED(k) (k + "|wipes")
 #define WIPE_COUNT "ALiVE_storeWipes"
 #define VERIFIED "ALiVE_storeLoadedBack"
+#define WORKS "ALiVE_storeOwnFileWorks"
 
 private _useMission = (missionNamespace getVariable ["ALiVE_storeMissionFile", true]) isEqualTo true && {!is3DEN};
 
@@ -146,7 +147,10 @@ switch (_op) do {
             private _written = missionNamespace getVariable ["ALiVE_storeFile_written", createHashMap];
             _written set [_key, true];
             missionNamespace setVariable ["ALiVE_storeFile_written", _written];
-            _sharedToo = !(_key in (missionProfileNamespace getVariable [VERIFIED, []]));
+            // Once this mission's own file has loaded back in an earlier session, it is known to work here, so a
+            // name saved for the first time (after a fresh start or a clear) goes to it alone: the copy in the
+            // shared file cost about half a second more on each first save of a large mission.
+            _sharedToo = !(_key in (missionProfileNamespace getVariable [VERIFIED, []])) && {!(missionProfileNamespace getVariable [WORKS, false])};
         };
         if (_sharedToo) then {
             profileNamespace setVariable [_key, _value];
@@ -170,7 +174,8 @@ switch (_op) do {
         profileNamespace setVariable [WIPE_COUNT, (profileNamespace getVariable [WIPE_COUNT, 0]) + 1];
         ALiVE_storeFile_dirtyShared = true;
         if (_useMission) then {
-            { missionProfileNamespace setVariable [_x, nil] } forEach ((allVariables missionProfileNamespace) select { "alive" in toLower _x });
+            // whether the file works here is kept: cleared saves are still saved to it alone
+            { missionProfileNamespace setVariable [_x, nil] } forEach ((allVariables missionProfileNamespace) select { "alive" in toLower _x && {_x != toLower WORKS} });
             ALiVE_storeFile_dirtyOwn = true;
         };
     };
@@ -192,7 +197,10 @@ switch (_op) do {
             private _loaded = (keys (missionNamespace getVariable ["ALiVE_storeFile_loaded", createHashMap])) select {
                 !(_x in _verified) && {!isNil {missionProfileNamespace getVariable _x}}
             };
-            if (_loaded isNotEqualTo []) then { missionProfileNamespace setVariable [VERIFIED, _verified + _loaded] };
+            if (_loaded isNotEqualTo []) then {
+                missionProfileNamespace setVariable [VERIFIED, _verified + _loaded];
+                missionProfileNamespace setVariable [WORKS, true];
+            };
 
             private _w = diag_tickTime;
             private _ok = saveMissionProfileNamespace;
