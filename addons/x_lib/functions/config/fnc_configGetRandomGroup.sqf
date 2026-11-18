@@ -36,6 +36,9 @@ params [
     ["_side","EAST"]
 ];
 
+// the faction as asked for: a mapping below swaps _faction for the faction whose groups it borrows
+private _askedFaction = _faction;
+
 // ["Side: %1 Type: %2 Faction: %3",_side,_type,_faction] call ALIVE_fnc_dump;
 
 _customGroup = false;
@@ -178,7 +181,16 @@ if!(_customGroup) then {
 
 
 		if(count _groups > 0) then {
-		 _group = _groups select floor(random count _groups);
+		 // A faction that declares rarity = 1 under CfgALiVEFactions has its groups drawn by their
+		 // rarityGroup (0.05 to 1, half when unset), so a rare group turns up rarely; every other
+		 // faction is drawn evenly, as always.
+		 private _weighted = !isNil "ALiVE_factionConfigDeclared" && {_askedFaction isEqualType ""}
+		 	&& {((ALiVE_factionConfigDeclared getOrDefault [toLower _askedFaction, createHashMap]) getOrDefault ["rarity", false])};
+		 _group = if (_weighted) then {
+		 	_groups selectRandomWeighted (_groups apply { if (isNumber (_x >> "rarityGroup")) then { (getNumber (_x >> "rarityGroup")) max 0.05 min 1 } else { 0.5 } })
+		 } else {
+		 	_groups select floor(random count _groups)
+		 };
 		 _groupName = configName _group;
 
 		 // A name this faction also uses in another category goes out as category>name, so
