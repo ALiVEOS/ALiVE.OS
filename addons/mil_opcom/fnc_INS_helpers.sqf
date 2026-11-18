@@ -1857,6 +1857,8 @@ ALiVE_fnc_INS_recruit = {
                                         if (_open) then { false } else { missionNamespace setVariable [_openKey, [_recruiterTaskId, time]]; nil }
                                     }};
                                     if (_claimed) then {
+                                        // read by the task itself, which closes when this HQ is gone
+                                        missionNamespace setVariable [format ["ALiVE_INS_recruiterTaskHQ_%1", _recruiterTaskId + "_c1"], _HQ];
                                         private _taskData = [_recruiterTaskId, "OPCOM", _hSideText, faction _pObj,
                                             "Assassination", "NULL", getPosATL _HQ, [_hp select 1, _hp select 0], _faction, "Y", "Side"];
                                         private _tEvent = ["TASK_GENERATE", _taskData, "OPCOM"] call ALIVE_fnc_event;

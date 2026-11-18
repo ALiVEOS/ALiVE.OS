@@ -384,6 +384,20 @@ switch (_taskState) do {
         _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
+        // A recruiter task ends with the Recruitment HQ it was raised at: destroyed or dismantled, there is nobody
+        // left to go after, and his two men must not turn up when a player next comes near
+        private _recruiterHQKey = format ["ALiVE_INS_recruiterTaskHQ_%1", _taskID];
+        private _recruiterHQ = missionNamespace getVariable _recruiterHQKey;
+        if (!isNil "_recruiterHQ" && {isNull _recruiterHQ || {!alive _recruiterHQ} || {_recruiterHQ getVariable ["ALiVE_MIL_OPCOM_HQ_DISABLED", false]}}) exitWith {
+            missionNamespace setVariable [_recruiterHQKey, nil];
+            [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+            _task set [8,"Canceled"];
+            _task set [10,"N"];
+            _result = _task;
+            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+            ["ALiVE C2ISTAR: recruiter task %1 cancelled, its Recruitment HQ is gone", _taskID] call ALiVE_fnc_dump;
+        };
+
         _HVTSpawned = [_params,"HVTSpawned"] call ALIVE_fnc_hashGet;
         _HVTSpawnType = [_taskParams,"HVTSpawnType"] call ALIVE_fnc_hashGet;
 
