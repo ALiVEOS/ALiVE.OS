@@ -14,7 +14,7 @@ Description:
       2. ALiVE_runway / ALiVE_taxiway setVariable tagged objects in radius.
          Convention for custom-runway addons.
       3. Indexed BI substring matches on object string - runway_main /
-         runway_secondary / runway_beton / taxiway. Floor for vanilla maps.
+         runway_secondary / runway_beton / runwayold_NN_main / taxiway. Floor for vanilla maps.
 
     Each segment is a [startPos, endPos, halfWidth] tuple. halfWidth is
     used by the validator to compute the wing-clearance exclusion radius.
@@ -243,7 +243,7 @@ if (count _retainedSurvey > 0) then {
     {
         private _obj = _taggedObjs select (_x select 0);
         private _pos = position _obj;
-        if (_x select 1) then { _runways pushBack [_pos, _pos, 12, (count ((str _obj) regexFind ["runway_(?:main|secondary)/i"])) == 0] };
+        if (_x select 1) then { _runways pushBack [_pos, _pos, 12, (count ((str _obj) regexFind ["runway_(?:main|secondary)|runwayold_[0-9]+_main/i"])) == 0] };
         if (_x select 2) then { _taxiways pushBack [_pos, _pos, 4] };
         if (_x param [3, false]) then { _paving pushBack [_pos, _pos, 12] };
     } forEach _orderedMatches;
@@ -260,7 +260,9 @@ if (count _retainedSurvey > 0) then {
             // Tanoa pave their aprons with the same pieces, so counting them as runway left no apron
             // spot for aircraft (Stratis: 4 UAV spots down to none). They come back as their own
             // list, paving, which composition placement reads to keep a Field HQ off a dirt strip.
-            private _matches = (str _x) regexFind ["runway_(?:main|secondary|beton)|invisibleroadway|taxiway/gi"];
+            // runwayold_40_main is the older Arma 2 runway piece (roads2), which has no underscore after
+            // "runway": Ivanivokova lays both its long strips from it and ALiVE found no runway there (19 Nov).
+            private _matches = (str _x) regexFind ["runway_(?:main|secondary|beton)|runwayold_[0-9]+_main|invisibleroadway|taxiway/gi"];
             private _isRunway = false;
             private _isTaxiway = false;
             private _isPaving = false;
@@ -279,7 +281,7 @@ if (count _retainedSurvey > 0) then {
             if (_isRunway) then {
                 if (_retainSurvey) then { _retainedTerrain pushBack [_x, true, _isTaxiway] };
                 private _pos = position _x;
-                _runways pushBack [_pos, _pos, 12, (_matches findIf { toLower ((_x select 0) select 0) in ["runway_main", "runway_secondary"] }) < 0];
+                _runways pushBack [_pos, _pos, 12, (_matches findIf { private _m = toLower ((_x select 0) select 0); _m in ["runway_main", "runway_secondary"] || {(_m find "runwayold") == 0} }) < 0];
             };
             if (_isTaxiway) then {
                 if (_retainSurvey && {!_isRunway}) then { _retainedTerrain pushBack [_x, false, true] };

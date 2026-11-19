@@ -102,7 +102,7 @@ if (isNil "ALIVE_gridData") then {
 // ALiVE_indexViabilityTier as globals, prints the score block to
 // RPT via ALIVE_fnc_dump (so the Eden RPT carries the same
 // breakdown the runtime would).
-[] call ALIVE_fnc_assessIndexViability;
+[true] call ALIVE_fnc_assessIndexViability;
 
 if (isNil "ALiVE_indexViabilityScore") exitWith {
     ["ALiVE Eden Viability check: assessor returned no score, exiting silently."] call ALiVE_fnc_dump;

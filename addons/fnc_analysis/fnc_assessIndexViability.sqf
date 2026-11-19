@@ -57,7 +57,10 @@ Side effects:
     (Continue / Continue+silence / Abort)
 
 Parameters:
-  None (reads global state)
+  0: BOOL - when the config declares no runway, look for one on the
+     ground as well (default false). That takes a few seconds per
+     airfield, so only the Eden check asks for it; mission start keeps
+     the config-only check.
 
 Returns:
   Number - aggregate score 0-100.
@@ -65,11 +68,14 @@ Returns:
 Examples:
 (begin example)
 private _score = [] call ALIVE_fnc_assessIndexViability;
+private _score = [true] call ALIVE_fnc_assessIndexViability; // also looks for a runway on the ground
 (end)
 
 Author:
 Jman
 ---------------------------------------------------------------------------- */
+
+params [["_groundRunway", false, [false]]];
 
 private _source = if (isNil "ALIVE_gridDataSource") then { "none" } else { ALIVE_gridDataSource };
 private _haveIndex = !(isNil "ALIVE_gridData") && {_source != "none"};
@@ -105,8 +111,50 @@ private _hasPrimaryRunway = (count _ilsPos >= 2) &&
 private _secondaryAirports = configFile >> "CfgWorlds" >> worldName >> "secondaryAirports";
 private _hasSecondary = isClass _secondaryAirports && {count _secondaryAirports > 0};
 private _hasRunway = _hasPrimaryRunway || _hasSecondary;
-private _runwayPenalty = if (_hasRunway) then { 0 } else { 15 };
 private _runwayLabel = if (_hasRunway) then { "Present" } else { "Absent" };
+
+// A terrain can build a real runway from runway pieces and still declare no airport in its
+// config: Ivanivokova lays a 2.5 km strip that way and air operations fly from it, yet the
+// score took 15 off for "no runway" (19 Nov). On request, a runway centreline is fitted at the
+// air installations the bundled index found, most buildings first; one of 800 m or more counts. The
+// positions are read from the index file's text, so nothing is loaded and no map-wide search
+// runs (a search for hangars across Ivanivokova took 28 s); three fits at most.
+if (!_hasRunway && {_groundRunway} && {!isNil "ALiVE_fnc_getRunwayCentreline"}) then {
+    private _clusterFile = format ["\x\alive\addons\mil_placement\clusters\clusters.%1_mil.sqf", toLower worldName];
+    if !(fileExists _clusterFile) exitWith {};
+    private _text = loadFile _clusterFile;
+    private _from = _text find "ALIVE_clustersMilAir =";
+    if (_from < 0) exitWith {};
+    _text = _text select [_from + 22];
+    // up to the next cluster set; every cluster's own hashSet line names ALIVE_clustersMilAir too
+    private _to = _text find "= [] call ALIVE_fnc_hashCreate";
+    if (_to >= 0) then { _text = _text select [0, _to] };
+    // each cluster lists its buildings ("_nodes set" lines) and then its "center" line
+    private _fields = [];
+    private _at = _text find """center"",";
+    while { _at >= 0 } do {
+        private _buildings = count ((_text select [0, _at]) regexFind ["_nodes set/g"]);
+        _text = _text select [_at + 9];
+        private _centre = parseSimpleArray (_text select [0, (_text find "]") + 1]);
+        if (_centre isEqualType [] && {count _centre >= 2}) then { _fields pushBack [_buildings, [_centre select 0, _centre select 1, 0]] };
+        _at = _text find """center"",";
+    };
+    _fields sort false;
+    private _tried = [];
+    {
+        private _p = _x select 1;
+        if ((_tried findIf { (_x distance2D _p) < 1500 }) < 0) then {
+            _tried pushBack _p;
+            private _line = [_p, 1500] call ALiVE_fnc_getRunwayCentreline;
+            if (count _line > 1 && {((_line select 0) distance2D (_line select 1)) >= 800}) then {
+                _hasRunway = true;
+                _runwayLabel = format ["Found on the ground (%1 m)", round ((_line select 0) distance2D (_line select 1))];
+            };
+        };
+        if (_hasRunway || {count _tried >= 3}) exitWith {};
+    } forEach _fields;
+};
+private _runwayPenalty = if (_hasRunway) then { 0 } else { 15 };
 
 // -------------------------------------------------------------------
 // Index version (diagnostic only -- not folded into score)
