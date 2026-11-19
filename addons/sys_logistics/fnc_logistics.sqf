@@ -1120,6 +1120,7 @@ switch (_operation) do {
                 private _live = createHashMap;
                 private _fresh = [];
                 private _inAceCargo = [];
+                private _kinds = ["ReammoBox", "ReammoBox_F", "WeaponHolder", "ThingX", "LandVehicle", "Air", "Ship", "StaticWeapon"];
                 {
                     private _id = _x getVariable [QGVAR(ID), ""];
                     if (_id != "" && {_id in _ids}) then {
@@ -1138,7 +1139,7 @@ switch (_operation) do {
                             };
                         };
                     };
-                } forEach (entities [["ReammoBox", "ReammoBox_F", "WeaponHolder", "ThingX", "LandVehicle", "Air", "Ship", "StaticWeapon"], [], false, false]);
+                } forEach (entities [_kinds, [], false, false]);
                 if (_fresh isNotEqualTo []) then { [_logic, "updateObject", _fresh] call ALiVE_fnc_logistics };
                 {
                     _x params ["_obj", "_carrier"];
@@ -1151,13 +1152,32 @@ switch (_operation) do {
                         [_rec, QGVAR(VECDIRANDUP), [vectorDir _carrier, [0, 0, 1]]] call ALiVE_fnc_HashSet;
                     };
                 } forEach _inAceCargo;
+                //What is in the store but gone from the mission was deleted (by Zeus, a script, or a dropped item
+                //picked up), and the load brought it back (kawi on Discord, 18 Nov). Its record goes. One placed in
+                //Eden comes back with the mission itself, so its record stays, marked destroyed as if it had been
+                //blown up, and the load takes the mission's copy away again. Stowed, carried, slung or in ACE
+                //cargo, an object still exists and is counted above; a wreck keeps the record its Killed event wrote.
+                private _gone = 0;
                 {
-                    private _rec = [GVAR(STORE), _x] call ALiVE_fnc_HashGet;
-                    private _type = if (isNil "_rec") then { "" } else { [_rec, QGVAR(TYPE), ""] call ALiVE_fnc_HashGet };
-                    if (_type isEqualType "" && {_type isKindOf "WeaponHolder"} && {!(_x in _live)}) then {
-                        [_logic, "removeObject", _x] call ALiVE_fnc_logistics;
+                    private _storeID = _x;
+                    if !(_storeID in _live) then {
+                        private _rec = [GVAR(STORE), _storeID] call ALiVE_fnc_HashGet;
+                        private _type = if (isNil "_rec") then { "" } else { [_rec, QGVAR(TYPE), ""] call ALiVE_fnc_HashGet };
+                        private _damage = if (isNil "_rec") then { 0 } else { [_rec, QGVAR(DAMAGE), 0] call ALiVE_fnc_HashGet };
+                        if (_type isEqualType "" && {_type != ""} && {(_kinds findIf { _type isKindOf _x }) > -1} && {!(_damage isEqualTo 1)}) then {
+                            private _fromEden = [_rec, QGVAR(EDITOR), false] call ALiVE_fnc_HashGet;
+                            if (_fromEden isEqualType "") then { _fromEden = (toLower _fromEden) in ["true", "1"] };
+                            if (_fromEden isEqualType 0) then { _fromEden = _fromEden != 0 };
+                            if (_fromEden isEqualTo true) then {
+                                [_rec, QGVAR(DAMAGE), 1] call ALiVE_fnc_HashSet;
+                            } else {
+                                [_logic, "removeObject", _storeID] call ALiVE_fnc_logistics;
+                            };
+                            _gone = _gone + 1;
+                        };
                     };
                 } forEach +_ids;
+                if (_gone > 0) then { ["SYS LOGISTICS - %1 deleted objects taken out of the save", _gone] call ALiVE_fnc_dump };
             };
             if ((isnil "_args") || {!isServer}) exitwith {_result = GVAR(STORE)};
 
