@@ -1484,7 +1484,9 @@ switch(_operation) do {
         private _all = ([_logic, "getProfiles"] call MAINCLASS) select 2;
         private _list = _all select [0, count _all];
         for "_i" from 0 to (count _list - 1) step 10 do {
-            private _chunk = (_list select [_i, 10]) select { !([_x, "active", false] call ALIVE_fnc_hashGet) };
+            // a profile destroyed since the list was taken (a group killed while this runs) is emptied, and is
+            // left out: it gave 5 "0 elements provided" errors here and in the export (RSS7, 18 Nov)
+            private _chunk = (_list select [_i, 10]) select { (_x select 2) isNotEqualTo [] && {!([_x, "active", false] call ALIVE_fnc_hashGet)} };
             if (count _chunk > 0) then {
                 isNil {
                     private _signatures = _chunk apply { [_logic, "exportSignature", _x] call MAINCLASS };
