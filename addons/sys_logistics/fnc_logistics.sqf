@@ -1049,6 +1049,9 @@ switch (_operation) do {
             private ["_position","_radius","_list","_objects"];
 
             _position = _args param [0, getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition")];
+            // a terrain with no centerPosition in its config gave [] here, and every distance test below
+            // failed: 11 "0 elements provided, 3 expected" errors at each start (an older Ivanivokova, 19 Nov)
+            if !(_position isEqualType [] && {count _position >= 2}) then { _position = [worldSize / 2, worldSize / 2, 0] };
             _radius = _args param [1, 30000];
             // "Ship" too: without it an Eden boat got no key at start, only when a player left it,
             // keyed by where it was left. Nothing claimed that key on the next load, so the boat
