@@ -24,6 +24,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_result","_err"];
@@ -32,6 +33,7 @@ _result = getNumber(configFile >> "CfgWorlds" >> worldName >> "MapSize");
 
 if(_result == 0) then {
     _result = getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition");
+    if (count _result < 2) then { _result = [worldSize / 2, worldSize / 2] }; // a terrain with no centerPosition in its config
     _result = sqrt((_result select 0) ^ 2 + (_result select 1) ^ 2) / 0.68;
 };
 _err = format["get map bounds config entry not vaild - %1",_result];

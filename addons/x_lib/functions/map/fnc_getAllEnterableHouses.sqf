@@ -23,6 +23,7 @@ See Also:
 
 Author:
 Wolffy.au
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_center","_allhouses"];
@@ -32,6 +33,7 @@ _allhouses = GVAR(getAllEnterableHouses);
 
 if(count _allhouses == 0) then {
     _center = getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition");
+    if (count _center < 2) then { _center = [worldSize / 2, worldSize / 2, 0] }; // a terrain with no centerPosition in its config
     _allhouses = [_center, (((_center select 0) max (_center select 1)) * sqrt(2))*2] call ALIVE_fnc_getEnterableHouses;
 
     GVAR(getAllEnterableHouses) = _allhouses;

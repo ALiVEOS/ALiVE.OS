@@ -2,7 +2,7 @@
 
 fnc_findLocations = {
 private _types = _this;
-private _locations = nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"),_types,30000];
+private _locations = nearestLocations [(call { private _c = getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"); if (count _c < 2) then { _c = [worldSize / 2, worldSize / 2, 0] }; _c }),_types,30000];
 
 private _collection = [];
 {

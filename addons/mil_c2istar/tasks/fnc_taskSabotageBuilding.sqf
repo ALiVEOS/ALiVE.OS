@@ -191,7 +191,7 @@ switch (_taskState) do {
                     ["C2ISTAR - Task SabotageBuilding - Currently there are no OPCOM objectives available, using map locations!"] call ALiVE_fnc_Dump;
 
                     _taskLocation = position (selectRandom (nearestLocations [
-							getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"),
+							(call { private _c = getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"); if (count _c < 2) then { _c = [worldSize / 2, worldSize / 2, 0] }; _c }),
 							["NameVillage", "NameCity", "NameCityCapital", "NameLocal", "CityCenter", "Airport"],
 							30000
 						]));

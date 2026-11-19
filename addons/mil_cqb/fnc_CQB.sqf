@@ -398,6 +398,7 @@ switch(_operation) do {
                 private ["_collection","_center", "_radius","_objectives"];
 
                 _center = getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition");
+                if (count _center < 2) then { _center = [worldSize / 2, worldSize / 2, 0] }; // a terrain with no centerPosition in its config
                 _radius = (((_center select 0) max (_center select 1)) * sqrt(2))*2;
                 _collection = [];
                 _objectives = [];
@@ -492,6 +493,7 @@ switch(_operation) do {
                     };
 
                     _center = getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition");
+                    if (count _center < 2) then { _center = [worldSize / 2, worldSize / 2, 0] }; // a terrain with no centerPosition in its config
                     _radius = (((_center select 0) max (_center select 1)) * sqrt(2))*2;
 
                     switch (_CQB_Locations) do {

@@ -26,10 +26,12 @@ See Also:
 
 Author:
     Naught
+    Jman
 ---------------------------------------------------------------------------- */
 
 private ["_mapCenter"];
 _mapCenter = getArray(configFile >> "CfgWorlds" >> worldName >> "centerPosition");
+if (count _mapCenter < 2) then { _mapCenter = [worldSize / 2, worldSize / 2, 0] }; // a terrain with no centerPosition in its config
 _mapCenter set [2,0]; // 2d position
 
 [

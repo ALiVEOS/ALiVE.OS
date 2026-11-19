@@ -41,7 +41,7 @@ for "_j" from 1 to _intensity do {
                     };
                 };
                 if (count _convoyLocs < 4) then {
-                    _locations = nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["StrongPointArea","Strategic","CityCenter","FlatAreaCity","Airport","NameCity","NameCityCapital","NameVillage","NameMarine","BorderCrossing"],30000];
+                    _locations = nearestLocations [(call { private _c = getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"); if (count _c < 2) then { _c = [worldSize / 2, worldSize / 2, 0] }; _c }), ["StrongPointArea","Strategic","CityCenter","FlatAreaCity","Airport","NameCity","NameCityCapital","NameVillage","NameMarine","BorderCrossing"],30000];
                     _roadRadius = 500;
                     {
                        _pos = position _x;
