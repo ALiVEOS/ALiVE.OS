@@ -48,6 +48,7 @@ Goldwep
 #define L_NOGROUP            "lambs_danger_disableGroupAI"
 #define L_REINFORCE          "lambs_danger_enableGroupReinforce"
 #define L_RADIO              "lambs_danger_dangerRadio"
+#define L_NOUNIT             "lambs_danger_disableAI"
 #define L_TACTIC             "lambs_danger_isExecutingTactic"
 #define L_MEMORY             "lambs_main_groupMemory"
 #define L_CURTACTIC          "lambs_main_currentTactic"
@@ -259,7 +260,16 @@ switch (_operation) do {
             }) > -1;
         };
         if (_static) exitWith { _result = "STATIC" };
-        if (["isReserve", [_id]] call ALiVE_fnc_lambs) then { _result = "RESERVE" };
+        if (["isReserve", [_id]] call ALiVE_fnc_lambs) exitWith { _result = "RESERVE" };
+        // a garrison holds its posts under ALiVE; it is LAMBS' again once the commander moves it on
+        if (["garrisoned", [_profile]] call ALiVE_fnc_lambs) then { _result = "STATIC" };
+    };
+
+    // server: [profile] -> true when the profile's command is a garrison
+    case "garrisoned": {
+        _args params [["_profile", []]];
+        private _commands = [_profile, "activeCommands", []] call ALiVE_fnc_hashGet;
+        _result = _commands isEqualType [] && {_commands isNotEqualTo []} && {((_commands select 0) param [0, ""]) == "ALIVE_fnc_garrison"};
     };
 
     // any machine: [group, role] the LAMBS switches for a role, public and explicit so they hold on any owner
@@ -270,6 +280,11 @@ switch (_operation) do {
         _group setVariable [L_NOGROUP, _static, true];
         _group setVariable [L_REINFORCE, _role == "RESERVE", true];
         if (_role == "RESERVE") then { (leader _group) setVariable [L_RADIO, true, true] };
+        if (!_static && {!(_group getVariable ["ALiVE_lambs_run", false])}) then {
+            // a garrison moved on: LAMBS has it back
+            _group setVariable ["ALiVE_lambs_run", true, true];
+            { _x setVariable [L_NOUNIT, false, true] } forEach units _group;
+        };
         if (_static && {_group getVariable ["ALiVE_lambs_run", false]}) then {
             // not LAMBS' after all: the soldiers get what Guard gives them
             _group setVariable ["ALiVE_lambs_run", false, true];
@@ -291,6 +306,7 @@ switch (_operation) do {
         if (_info isEqualTo [] && {isServer}) then {
             private _id = if (_profile isEqualTo []) then { "" } else { [_profile, "profileID", ""] call ALiVE_fnc_hashGet };
             if (_role == "") then { _role = ["classify", [_profile]] call ALiVE_fnc_lambs };
+            if (_role == "STATIC" && {_profile isNotEqualTo []} && {["garrisoned", [_profile]] call ALiVE_fnc_lambs}) then { _group setVariable ["ALiVE_lambs_garrison", true, true] };
             ALiVE_lambs_keys = ALiVE_lambs_keys + 1;
             _info = [_role, _id, str side _group];
             _group setVariable ["ALiVE_lambs", _info, true];
@@ -372,7 +388,7 @@ switch (_operation) do {
         private _state = ALiVE_lambs_groups getOrDefault [_key, createHashMap];
         if (count _state == 0) exitWith {};
         private _handle = _state get "handle";
-        if (!isNull _handle) then { terminate _handle };
+        if (!isNull _handle && {(_state get "task") != "defend"}) then { terminate _handle };
         ALiVE_lambs_groups deleteAt _key;
     };
 
@@ -397,6 +413,8 @@ switch (_operation) do {
             if (count _kept < count _pending) then {
                 { if !(_x in _kept) then { _x set [1, "cancelled"] } } forEach _pending;
                 [_profile, "pendingWaypointPaths", _kept] call ALiVE_fnc_hashSet;
+                // the queue drains from its head; a ready head left behind a removed one is let through
+                if (_kept isNotEqualTo [] && {(_kept select 0) select 0}) then { [_profile, "advancePendingWaypoints"] call ALIVE_fnc_profileEntity };
                 TALLY("pending_scrubbed");
             };
         };
@@ -532,9 +550,11 @@ switch (_operation) do {
         private _handle = _callArgs spawn LFNC(_fnc);
         if (_task == "defend") then {
             // the hold LAMBS adds is marked, so it can be found, deleted to end the defence, and kept off the profile
-            [{ isNull _this || {((waypoints _this) findIf { waypointType _x == "HOLD" }) > -1} },
-             { if (!isNull _this) then { { if (waypointType _x == "HOLD") then { _x setWaypointName A_DEFEND_WP } } forEach waypoints _this } },
-             _group, 15] call CBA_fnc_waitUntilAndExecute;
+            // a HOLD that was not in the commander's waypoints when the defence started
+            private _isNew = { params ["_wp", "_keep"]; waypointType _wp == "HOLD" && {(_keep findIf { (_x select 0) distance2D (waypointPosition _wp) < 2 && {(_x select 1) == "HOLD"} }) < 0} };
+            [{ params ["_g", "_keep", "_isNew"]; isNull _g || {((waypoints _g) findIf { [_x, _keep] call _isNew }) > -1} },
+             { params ["_g", "_keep", "_isNew"]; if (!isNull _g) then { { if ([_x, _keep] call _isNew) exitWith { _x setWaypointName A_DEFEND_WP } } forEach waypoints _g } },
+             [_group, _group getVariable ["ALiVE_lambs_wpKeep", []], _isNew], 15] call CBA_fnc_waitUntilAndExecute;
         };
         _state set ["task", _task];
         _state set ["handle", _handle];
@@ -626,14 +646,14 @@ switch (_operation) do {
 
             if (isNull _group || {((units _group) findIf { alive _x }) < 0}) then {
                 private _handle = _state get "handle";
-                if (!isNull _handle) then { terminate _handle };
+                if (!isNull _handle && {(_state get "task") != "defend"}) then { terminate _handle };
                 ALiVE_lambs_groups deleteAt _key;
                 continue;
             };
             if (!local _group) then {
                 // it left without the release; the task thread here can no longer reach the men
                 private _handle = _state get "handle";
-                if (!isNull _handle) then { terminate _handle };
+                if (!isNull _handle && {(_state get "task") != "defend"}) then { terminate _handle };
                 ALiVE_lambs_groups deleteAt _key;
                 TALLY("lost_to_another_machine");
                 continue;
@@ -668,7 +688,7 @@ switch (_operation) do {
                     case (_task == "hunt" && {_age > HUNT_CAP}): { "time" };
                     case (_task in ["assault", "sad", "creep"] && {_age > TASK_CAP}): { "time" };
                     case (_task == "hunt" && {count _position > 1} && {_position distance2D (_state get "taskPos") > HUNT_RETARGET}): { "target moved" };
-                    case (_task == "defend" && {_age > 5} && {((waypoints _group) findIf { waypointName _x == A_DEFEND_WP }) < 0}): { "its hold is gone" };
+                    case (_task == "defend" && {_age > 20} && {((waypoints _group) findIf { waypointName _x == A_DEFEND_WP }) < 0}): { "its hold is gone" };
                     case (scriptDone (_state get "handle")): { "finished" };
                     default { "" };
                 };
@@ -1049,14 +1069,16 @@ switch (_operation) do {
             private _group = _y;
             if (isNull _group) then { ALiVE_lambs_active deleteAt _id; continue };
             private _info = _group getVariable ["ALiVE_lambs", []];
-            if (_info isEqualTo [] || {(_info select 0) == "STATIC"}) then { continue };
-            // a group a command runs (garrison, patrol) is not given its waypoint again by the owner
+            if (_info isEqualTo []) then { continue };
             private _profile = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler;
-            if (!isNil "_profile") then {
-                private _cmd = ([_profile, "activeCommands", []] call ALiVE_fnc_hashGet) isNotEqualTo [];
-                if (_cmd isNotEqualTo (_group getVariable ["ALiVE_lambs_cmd", false])) then { _group setVariable ["ALiVE_lambs_cmd", _cmd, true] };
-            };
-            private _role = ["MANEUVER", "RESERVE"] select (["isReserve", [_id]] call ALiVE_fnc_lambs);
+            if (isNil "_profile") then { continue };
+            // aircraft, boats, gun crews and SPE stay STATIC; only a garrison moves in and out of it
+            private _role = ["classify", [_profile]] call ALiVE_fnc_lambs;
+            if ((_info select 0) == "STATIC" && {_role == "STATIC" || {!(_group getVariable ["ALiVE_lambs_garrison", false])}}) then { continue };
+            if ((_role == "STATIC") isNotEqualTo (_group getVariable ["ALiVE_lambs_garrison", false])) then { _group setVariable ["ALiVE_lambs_garrison", _role == "STATIC", true] };
+            // a group a command runs (patrol and the like) is not given its waypoint again by the owner
+            private _cmd = ([_profile, "activeCommands", []] call ALiVE_fnc_hashGet) isNotEqualTo [];
+            if (_cmd isNotEqualTo (_group getVariable ["ALiVE_lambs_cmd", false])) then { _group setVariable ["ALiVE_lambs_cmd", _cmd, true] };
             if (_role != (_info select 0)) then {
                 _group setVariable ["ALiVE_lambs", [_role, _id, _info select 2], true];
                 ["roleVars", [_group, _role]] call ALiVE_fnc_lambs;

@@ -148,6 +148,15 @@ OPCOM_instances = [_opcom];
 private _rp = [] call ALiVE_fnc_hashCreate;
 [_rp, "profileID", "test_lambs_r1"] call ALiVE_fnc_hashSet;
 ["classify: a reserve profile is RESERVE", (["classify", [_rp]] call ALiVE_fnc_lambs) == "RESERVE"] call _fnc_check;
+private _gp = [] call ALiVE_fnc_hashCreate;
+[_gp, "profileID", "test_lambs_g1"] call ALiVE_fnc_hashSet;
+[_gp, "activeCommands", [["ALIVE_fnc_garrison", "spawn", [200, "true", [0, 0, 0]]]]] call ALiVE_fnc_hashSet;
+["classify: a garrisoned profile is STATIC", (["classify", [_gp]] call ALiVE_fnc_lambs) == "STATIC"] call _fnc_check;
+[_gp, "profileID", "test_lambs_r1"] call ALiVE_fnc_hashSet;
+["classify: a garrisoned reserve stays RESERVE (it answers LAMBS reinforce calls)", (["classify", [_gp]] call ALiVE_fnc_lambs) == "RESERVE"] call _fnc_check;
+[_gp, "activeCommands", []] call ALiVE_fnc_hashSet;
+[_gp, "profileID", "test_lambs_g1"] call ALiVE_fnc_hashSet;
+["classify: the garrison moved on is MANEUVER again", (["classify", [_gp]] call ALiVE_fnc_lambs) == "MANEUVER"] call _fnc_check;
 [_rp, "isSPE", true] call ALiVE_fnc_hashSet;
 ["classify: an SPE profile is STATIC", (["classify", [_rp]] call ALiVE_fnc_lambs) == "STATIC"] call _fnc_check;
 
