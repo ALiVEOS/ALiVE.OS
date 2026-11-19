@@ -908,6 +908,7 @@ switch(_operation) do {
                             // its stand off every taxi route (NEO_fnc_csClearStand), and the aircraft on it
                             if (_height <= 0) then {
                                 _pos = [_veh, _pos, _callsign] call NEO_fnc_csClearStand;
+                                _dir = _veh getVariable ["NEO_csStandDir", _dir];
                                 [_veh, _pos, _dir] call NEO_fnc_csToStand;
                             };
 
@@ -1128,6 +1129,7 @@ switch(_operation) do {
                             // and a respawn both use this stand
                             if (!_onRunwayStart && {_height <= 0}) then {
                                 _pos = [_veh, _pos, _callsign] call NEO_fnc_csClearStand;
+                                _dir = _veh getVariable ["NEO_csStandDir", _dir];
                                 [_veh, _pos, _dir] call NEO_fnc_csToStand;
                             };
 

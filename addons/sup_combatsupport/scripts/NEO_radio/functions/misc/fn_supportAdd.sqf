@@ -151,6 +151,7 @@ switch (_support) do
             _veh setPosATL _pos;
             // its stand off every taxi route, as for one placed in the mission (NEO_fnc_csClearStand)
             _pos = [_veh, _pos, _callsign] call NEO_fnc_csClearStand;
+            _dir = _veh getVariable ["NEO_csStandDir", _dir];
             [_veh, _pos, _dir] call NEO_fnc_csToStand;
         };
 

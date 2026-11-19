@@ -181,12 +181,33 @@ NEO_fnc_csOnTaxiLine = {
     } forEach _lines;
     _hit
 };
+// [lines, point] -> the nearest point to it on any of the lines, or [] when there are none
+NEO_fnc_csNearestOnLines = {
+    params ["_lines", "_p"];
+    private _q = [_p select 0, _p select 1, 0];
+    private _best = 1e9;
+    private _at = [];
+    {
+        (_x select 1) params ["_a", "_b"];
+        private _ab = _b vectorDiff _a;
+        private _l2 = _ab vectorDotProduct _ab;
+        private _t = if (_l2 < 1) then { 0 } else { ((((_q vectorDiff _a) vectorDotProduct _ab) / _l2) max 0) min 1 };
+        private _c = _a vectorAdd (_ab vectorMultiply _t);
+        private _d = _c distance2D _q;
+        if (_d < _best) then { _best = _d; _at = _c };
+    } forEach _lines;
+    _at
+};
 // [vehicle, stand, callsign] -> the stand to use: the one given when it is clear, else the nearest spot off every taxi
 // line within 180 m that is flat open ground, away from other support stands, the air commander's stands and anything
 // standing there. A stand on a deck or roof, or with no taxi line near it, is left as it is. Each stand chosen is kept
-// in NEO_csStands by callsign, so 2 support aircraft never stand on the same spot.
+// in NEO_csStands by callsign, so 2 support aircraft never stand on the same spot. A stand that is moved also needs a
+// clear way from it to the nearest taxi line, and the aircraft faces down that way: the heading set in the mission is
+// for the spot it was placed on, and on RSS7 an A-10 moved 141 m to a spot by the hangars faced a hangar wall and could
+// not taxi out (19 Nov). That heading is left on the aircraft as NEO_csStandDir for the caller to use.
 NEO_fnc_csClearStand = {
     params ["_veh", "_stand", ["_callsign", ""]];
+    _veh setVariable ["NEO_csStandDir", nil];
     if (!(_stand isEqualType []) || {count _stand < 2}) exitWith { _stand };
     if (count _stand > 2 && {(_stand select 2) >= 1.5}) exitWith { _stand };
     private _halfOf = {
@@ -236,6 +257,10 @@ NEO_fnc_csClearStand = {
             } forEach (_mods select 2);
         };
     };
+    private _blockers = ["BUILDING", "HOUSE", "TREE", "SMALL TREE", "WALL", "FENCE", "ROCK", "ROCKS", "BUNKER", "FORTRESS", "FUELSTATION", "TRANSMITTER", "POWER LINES", "CHURCH", "CHAPEL", "LIGHTHOUSE", "VIEW-TOWER"];
+    // the way out leads to the nearest taxi line, or the runway at a field with none
+    private _wayLines = if (_lines isEqualTo []) then { _runways } else { _lines };
+    private _needWay = true;
     private _fnc_clear = {
         params ["_p"];
         if (surfaceIsWater _p) exitWith { false };
@@ -245,28 +270,52 @@ NEO_fnc_csClearStand = {
         if ((_taken findIf { ((_x select 0) distance2D _p) < (_half + (_x select 1) + 5) }) >= 0) exitWith { false };
         if ((_ato findIf { (_x distance2D _p) < (_half + 20) }) >= 0) exitWith { false };
         if ((vehicles findIf { (_x isKindOf "Air" || {_x isKindOf "LandVehicle"}) && {!(_x isEqualTo _veh)} && {((getPosATL _x) select 2) < 5} && {(_x distance2D _p) < (_half + (_x call _halfOf) + 3)} }) >= 0) exitWith { false };
-        if !((nearestTerrainObjects [_p, ["BUILDING", "HOUSE", "TREE", "SMALL TREE", "WALL", "FENCE", "ROCK", "ROCKS", "BUNKER", "FORTRESS", "FUELSTATION", "TRANSMITTER", "POWER LINES", "CHURCH", "CHAPEL", "LIGHTHOUSE", "VIEW-TOWER"], _half, false, true]) isEqualTo []) exitWith { false };
+        if !((nearestTerrainObjects [_p, _blockers, _half, false, true]) isEqualTo []) exitWith { false };
+        private _wayOk = true;
         if !((nearestObjects [_p, ["House", "Wall"], _half]) isEqualTo []) exitWith { false };
-        true
+        // a clear way out: nothing built or grown across the strip a wingspan wide from the nose to the taxi line
+        if (_needWay) then {
+            private _q = [_wayLines, _p] call NEO_fnc_csNearestOnLines;
+            if (_q isEqualTo []) exitWith {};
+            private _len = _p distance2D _q;
+            private _h = _p getDir _q;
+            private _d = _half;
+            while { _d < _len && {_wayOk} } do {
+                private _s = _p getPos [_d, _h];
+                if (!((nearestTerrainObjects [_s, _blockers, _half, false, true]) isEqualTo [])
+                    || {!((nearestObjects [_s, ["House", "Wall"], _half]) isEqualTo [])}) then { _wayOk = false };
+                _d = _d + 8;
+            };
+        };
+        _wayOk
     };
     private _spot = [];
-    private _r = 15;
-    while { _spot isEqualTo [] && {_r <= 180} } do {
-        private _n = 8 max (ceil ((2 * pi * _r) / 15));
-        for "_i" from 0 to (_n - 1) do {
-            private _p = _stand getPos [_r, (360 / _n) * _i];
-            _p set [2, 0];
-            if ([_p] call _fnc_clear) exitWith { _spot = _p };
+    // first a spot with a clear way out, then any clear spot
+    {
+        _needWay = _x;
+        private _r = 15;
+        while { _spot isEqualTo [] && {_r <= 180} } do {
+            private _n = 8 max (ceil ((2 * pi * _r) / 15));
+            for "_i" from 0 to (_n - 1) do {
+                private _p = _stand getPos [_r, (360 / _n) * _i];
+                _p set [2, 0];
+                if ([_p] call _fnc_clear) exitWith { _spot = _p };
+            };
+            _r = _r + 15;
         };
-        _r = _r + 15;
-    };
+        if (_spot isNotEqualTo []) exitWith {};
+    } forEach [true, false];
     if (_spot isEqualTo []) exitWith {
         ["COMBAT SUPPORT - %1 (%2): its stand at %3 is %4, and no clear spot was found within 180 m, so it stays there and may be in the way of other aircraft",
             _callsign, typeOf _veh, mapGridPosition _stand, _why] call ALiVE_fnc_dump;
         +_stand call _fnc_record
     };
-    ["COMBAT SUPPORT - %1 (%2): its stand at %3 was %4, where it would be in the way of other aircraft, so its stand is now %5 m away at %6 (%7)",
-        _callsign, typeOf _veh, mapGridPosition _stand, _why, round (_spot distance2D _stand), mapGridPosition _spot, [round (_spot select 0), round (_spot select 1)]] call ALiVE_fnc_dump;
+    private _q = [_wayLines, _spot] call NEO_fnc_csNearestOnLines;
+    private _hdg = if (_q isEqualTo []) then { getDir _veh } else { _spot getDir _q };
+    _veh setVariable ["NEO_csStandDir", _hdg];
+    ["COMBAT SUPPORT - %1 (%2): its stand at %3 was %4, where it would be in the way of other aircraft, so its stand is now %5 m away at %6 (%7), facing %8 towards the taxi route%9",
+        _callsign, typeOf _veh, mapGridPosition _stand, _why, round (_spot distance2D _stand), mapGridPosition _spot, [round (_spot select 0), round (_spot select 1)],
+        round _hdg, if (_needWay) then { "" } else { " (no spot nearby had a clear way to it)" }] call ALiVE_fnc_dump;
     _spot call _fnc_record
 };
 // [vehicle, stand, direction] puts an aircraft standing on the ground somewhere else onto its stand: after a load it
