@@ -183,7 +183,10 @@ switch (_operation) do {
                     };
                 };
 
-                GVAR(STORE) call ALIVE_fnc_inspectHash;
+                // the whole saved store, a line per value: thousands of lines on a long campaign, so only with debug on
+                private _storeDebug = MOD(SYS_LOGISTICS) getVariable ["DEBUG", false];
+                if (_storeDebug isEqualType "") then { _storeDebug = (toLower _storeDebug) == "true" };
+                if (_storeDebug isEqualTo true || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then { GVAR(STORE) call ALIVE_fnc_inspectHash };
 
                 [_logic,"state",GVAR(STORE)] call ALiVE_fnc_logistics;
 
