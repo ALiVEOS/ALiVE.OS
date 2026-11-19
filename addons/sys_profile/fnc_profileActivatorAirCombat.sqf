@@ -19,6 +19,7 @@ Any
 
 Author:
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 #define MAINCLASS ALiVE_fnc_profileActivatorAirCombat
@@ -27,8 +28,8 @@ SpyderBlack723
 #define AIR_COMBAT_AIRBORNE_ALTITUDE 3
 #define AIR_COMBAT_VEHICLES_SCAN_BATCH_SIZE 16
 #define AIR_COMBAT_VEHICLES_AIRBORNE_ALTITUDE 3
-#define AIR_COMBAT_VEHICLES_DEFAULT_PLANE_RADIUS 7000
-#define AIR_COMBAT_VEHICLES_DEFAULT_HELICOPTER_RADIUS 5000
+#define AIR_COMBAT_VEHICLES_DEFAULT_PLANE_RADIUS 2500
+#define AIR_COMBAT_VEHICLES_DEFAULT_HELICOPTER_RADIUS 2000
 #define AIR_COMBAT_VEHICLES_QUERY_FACTOR 1.2
 #define AIR_COMBAT_VEHICLES_LAND_OBJECT_TYPES ["Car","Tank","Armored","Truck","StaticWeapon","Vehicle","Ship"]
 #define AIR_COMBAT_VEHICLES_AIR_OBJECT_TYPES ["Plane","Helicopter"]

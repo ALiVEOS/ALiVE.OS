@@ -82,8 +82,8 @@ if(isServer) then {
     ALIVE_spawnRadiusHeliFast = parseNumber (_logic getVariable ["spawnTypeHeliFastRadius", "0"]);
     private _proximitySpawning = true;
     private _airCombatSpawning = false;
-    private _airCombatPlaneVehicleRadius = 7000;
-    private _airCombatHelicopterVehicleRadius = 5000;
+    private _airCombatPlaneVehicleRadius = 2500;
+    private _airCombatHelicopterVehicleRadius = 2000;
     private _asBool = {
         params ["_value", "_default"];
         switch (typeName _value) do {

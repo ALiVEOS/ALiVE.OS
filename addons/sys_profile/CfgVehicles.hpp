@@ -86,8 +86,8 @@ class CfgVehicles {
                             expression = "_this setVariable ['airCombatSpawning', _value, true];";
                             defaultValue = "false";
                     };
-                    class airCombatPlaneVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatPlaneVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatPlaneVehicleRadius', _value, true];"; defaultValue = """7000"""; ALiVE_showWhen[] = {{"airCombatSpawning", "is", "true"}}; };
-                    class airCombatHelicopterVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatHelicopterVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatHelicopterVehicleRadius', _value, true];"; defaultValue = """5000"""; ALiVE_showWhen[] = {{"airCombatSpawning", "is", "true"}}; };
+                    class airCombatPlaneVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatPlaneVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatPlaneVehicleRadius', _value, true];"; defaultValue = """2500"""; ALiVE_showWhen[] = {{"airCombatSpawning", "is", "true"}}; };
+                    class airCombatHelicopterVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatHelicopterVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatHelicopterVehicleRadius', _value, true];"; defaultValue = """2000"""; ALiVE_showWhen[] = {{"airCombatSpawning", "is", "true"}}; };
                     // AI Commanders' (MACC) aircraft spawn the enemy's anti-air near them (sys_profile/fnc_profileActivatorAirDefence.sqf)
                     class airDefenceSpawning
                     {
