@@ -36,6 +36,15 @@ _flyInHeight = switch (sliderPosition _casFlyHeightSlider) do
     case 2 : { if (_isPlane) then { 250 } else { 100 } };
     case 3 : { if (_isPlane) then { 500 } else { 150 } };
 };
+// #1135: ESCORT ME is a loiter whose centre follows the player who asked for it. It goes as a LOITER, so the
+// loiter's duration, ROE and radio all apply, with the player in slot 8; cas.fsm moves the orbit with him.
+private _escortee = objNull;
+if (_task == "ESCORT") then {
+    _task = "LOITER";
+    _escortee = player;
+    _pos = getPosATL vehicle player;
+    _pos set [2, 0];
+};
 _coord = _pos call BIS_fnc_posToGrid;
 // #735 follow-up: resolve chosen weapon by its row DATA (classname), not by re-indexing the
 // now-filtered weapons list (row index no longer maps to weapons _veh).
@@ -54,7 +63,7 @@ if (_task == "LOITER") then {
 };
 
 //New Task
-_veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE, player, _loiterDuration], true];
+_veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE, player, _loiterDuration, _escortee], true];
 
 // for the War Room's live feed (Statistics)
 if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {

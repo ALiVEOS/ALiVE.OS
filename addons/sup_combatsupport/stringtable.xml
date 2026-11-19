@@ -498,6 +498,9 @@
     <Portuguese>A unidade irá ao local e orbitará à altitude escolhida. Com Cessar fogo apenas observa; com Fogo à vontade cobre a área e ataca os hostis que vir</Portuguese>
     <Russian>Подразделение выдвинется к месту и будет кружить на выбранной высоте. При «Не стрелять» только наблюдает; при «Огонь по готовности» прикрывает район и атакует замеченного противника</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_DESC_ESCORT">
+    <English>Flies to you and circles you as you move, on foot or in a vehicle, a little ahead of your direction of travel. Ends when you are killed, when it is given another task or when the time runs out</English>
+</Key>
 <Key ID="STR_ALIVE_CS_UI_CAS_DESC_ROE">
     <English>Engages every hostile in the area, drones included. Lase a target and the pilot hits it first. Pick a weapon below to force it</English>
     <Chinesesimp>单位攻击目标区域内所有敌人，包括无人载具。用激光标定目标即可手动指定，飞行员会优先攻击你的激光。自动模式先用最合适的武器，弹药耗尽时切换；在下方选择具体武器可强制使用</Chinesesimp>
@@ -1838,6 +1841,9 @@
     <French>ATTENTE EN VOL</French>
     <Portuguese>ESPERA EM VOO</Portuguese>
     <Russian>БАРРАЖИРОВАНИЕ</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_UI_CAS_TASK_ESCORT">
+    <English>ESCORT ME</English>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_FAM_GUN">
     <English>GUN</English>

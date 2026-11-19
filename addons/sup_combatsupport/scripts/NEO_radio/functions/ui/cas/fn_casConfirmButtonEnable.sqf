@@ -7,7 +7,8 @@ _veh = _casArray select (lbCurSel _casUnitLb) select 0;
 
 if
 (
-    !isNil { uinamespace getVariable "NEO_casMarkerCreated" }
+    // ESCORT ME needs no map position: it goes to the player (#1135)
+    (!isNil { uinamespace getVariable "NEO_casMarkerCreated" } || {(_casTaskLb lbData (lbCurSel _casTaskLb)) == "ESCORT"})
     &&
     _veh getVariable "NEO_radioCasUnitStatus" != "KILLED"
     &&

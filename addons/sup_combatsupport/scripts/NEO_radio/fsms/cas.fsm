@@ -919,6 +919,18 @@ class FSM
                         name = "__7";
                         itemno = 25;
                         init = /*%FSM<STATEINIT""">*/"private _loiterDuration = _taskArray param [7, -1];" \n
+                         "// #1135 ESCORT ME: a loiter whose centre follows the player in slot 8 of the task" \n
+                         "_escortee = _taskArray param [8, objNull];" \n
+                         "_escorting = !isNull _escortee;" \n
+                         "_escortNext = 0;" \n
+                         "_escortCentre = +_posCas;" \n
+                         "if (_escorting) then {" \n
+                         "    _posCas = getPosATL vehicle _escortee; _posCas set [2, 0];" \n
+                         "    _escortCentre = +_posCas;" \n
+                         "    // a jet cannot turn round a walking man: it circles wider" \n
+                         "    if (_veh isKindOf ""Plane"") then { _radiusCas = _radiusCas max 700 };" \n
+                         "    [_veh, _posCas] call ALiVE_fnc_doMoveRemote;" \n
+                         "};" \n
                          "// assigned at this level, not inside an if block: a variable first set inside a block lives only there," \n
                          "// and the timeout check in the loiter state then never saw an end time" \n
                          "_loiterEnd = [-1, time + _loiterDuration] select (_loiterDuration > 0);" \n
@@ -941,6 +953,8 @@ class FSM
                          "" \n
                          "        sleep 2;" \n
                          "    " \n
+                         "    // not once it has been sent home (an escort whose player was killed on the way)" \n
+                         "    if (((_veh getVariable [""NEO_radioCurrentTask"", []]) param [0, """"]) != ""LOITER"") exitWith {};" \n
                          "    [[_veh,[""STR_ALIVE_CS_MSG_05"",_callsign,_coord select 0, _coord select 1],""side""],""NEO_fnc_messageBroadcast"",true,false] spawn BIS_fnc_MP;" \n
                          "};" \n
                          ""/*%FSM</STATEINIT""">*/;
@@ -999,6 +1013,21 @@ class FSM
                                          ""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "escort_lost_enroute">*/
+                                class escort_lost_enroute
+                                {
+                                        itemno = 44;
+                                        priority = 1.000000;
+                                        to="_";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!isNil ""_escorting"" && {_escorting} && {isNull _escortee || {!alive _escortee} || {!isPlayer _escortee}}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"// #1135: the escorted player was killed or left: home" \n
+                                         "_task = ""RTB"";" \n
+                                         "_escorting = false;" \n
+                                         "_loiterEnd = -1;" \n
+                                         "_veh setVariable [""NEO_radioCurrentTask"", [""RTB"", _base, 0, 0, """", """", objNull], true];"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "at_position">*/
                                 class at_position
                                 {
@@ -1018,7 +1047,20 @@ class FSM
                 {
                         name = "loiter";
                         itemno = 27;
-                        init = /*%FSM<STATEINIT""">*/"_dirCas = _dirCas + 90;" \n
+                        init = /*%FSM<STATEINIT""">*/"// #1135 ESCORT ME: the orbit centres on the player, 20 s ahead of where he is going (600 m at most)" \n
+                         "if (!isNil ""_escorting"" && {_escorting} && {alive _escortee}) then {" \n
+                         "    private _v = vehicle _escortee;" \n
+                         "    private _lead = (velocity _v) vectorMultiply 20; _lead set [2, 0];" \n
+                         "    if (vectorMagnitude _lead > 600) then { _lead = (vectorNormalized _lead) vectorMultiply 600 };" \n
+                         "    _escortCentre = getPosATL _v;" \n
+                         "    _posCas = _escortCentre vectorAdd _lead; _posCas set [2, 0];" \n
+                         "    _escortNext = time + 8;" \n
+                         "    // enemies the player's group knows of are shown to the crew; a jet is not shown those close to him" \n
+                         "    {" \n
+                         "        if (alive _x && {side _x != civilian} && {((side _grp) getFriend (side _x)) < 0.6} && {((group _escortee) knowsAbout _x) > 1.5} && {!(_veh isKindOf ""Plane"") || {(_x distance2D _v) > 150}}) then { _grp reveal [_x, 2.5] };" \n
+                         "    } forEach (_v nearEntities [[""Man"", ""Car"", ""Tank"", ""StaticWeapon""], 600]);" \n
+                         "};" \n
+                         "_dirCas = _dirCas + 90;" \n
                          "_posCircle = (_posCas getPos [_radiusCas, _dirCas]);" \n
                          "" \n
                          "[_veh, _posCircle] call ALiVE_fnc_doMoveRemote;" \n
@@ -1080,6 +1122,33 @@ class FSM
                                          ""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "escort_lost">*/
+                                class escort_lost
+                                {
+                                        itemno = 42;
+                                        priority = 1.000000;
+                                        to="_";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!isNil ""_escorting"" && {_escorting} && {isNull _escortee || {!alive _escortee} || {!isPlayer _escortee}}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"// #1135: the escorted player was killed or left: home" \n
+                                         "_task = ""RTB"";" \n
+                                         "_escorting = false;" \n
+                                         "_loiterEnd = -1;" \n
+                                         "_veh setVariable [""NEO_radioCurrentTask"", [""RTB"", _base, 0, 0, """", """", objNull], true];"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "escort_moved">*/
+                                class escort_moved
+                                {
+                                        itemno = 43;
+                                        priority = 0.500000;
+                                        to="loiter";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!isNil ""_escorting"" && {_escorting} && {alive _escortee} && {time > _escortNext} && {((vehicle _escortee) distance2D _escortCentre) > (_radiusCas max 300)}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"// #1135: the player has moved on: the orbit follows at once, on the same bearing" \n
+                                         "_dirCas = _dirCas - 90;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "loiter_timeout">*/
                                 class loiter_timeout
                                 {
@@ -1090,6 +1159,7 @@ class FSM
                                         condition=/*%FSM<CONDITION""">*/"!isNil ""_loiterEnd"" && {_loiterEnd > 0 && {time > _loiterEnd}}"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/"_task = ""RTB"";" \n
                                          "_loiterEnd = -1;" \n
+                                         "_escorting = false;" \n
                                          "// the recorded task of the aircraft becomes the RTB too, or the rearm service takes the old loiter for a new task and leaves it to land unwatched" \n
                                          "_veh setVariable [""NEO_radioCurrentTask"", [""RTB"", _base, 0, 0, """", """", objNull], true];"/*%FSM</ACTION""">*/;
                                 };

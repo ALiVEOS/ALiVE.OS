@@ -29,6 +29,8 @@ _show = switch (toUpper (_lb lbData _index)) do
 {
     case "SAD" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_ATTACK"] };
     case "LOITER" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_LOITER"] };
+    // #1135: ESCORT ME circles the player who called it, wherever they go
+    case "ESCORT" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", (["Flies to you and circles you as you move, on foot or in a vehicle, a little ahead of your direction of travel. Ends when you are killed, when it is given another task or when the time runs out", localize "STR_ALIVE_CS_UI_CAS_DESC_ESCORT"] select (isLocalized "STR_ALIVE_CS_UI_CAS_DESC_ESCORT"))] };
     case "ATTACK" : { format ["<t color='#FFFFFF' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_CAS_DESC_ROE"] };
 };
 _veh = _casArray select (lbCurSel _casUnitLb) select 0;
@@ -39,7 +41,7 @@ _casAttackRunLB ctrlEnable false;
 { _x ctrlSetBackgroundColor [0, 0, 0, 0] } forEach [_casAttackRunLB, _casROELb];
 
 //Radius Slider
-if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOITER" || toUpper (_lb lbData _index) == "ATTACK") then
+if (toUpper (_lb lbData _index) in ["SAD", "LOITER", "ATTACK", "ESCORT"]) then
 {
     _casAttackRunLB ctrlSetBackgroundColor _listBackground;
 
@@ -119,7 +121,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
         if (lbSize _casAttackRunLB > 0) then { _casAttackRunLB lbSetCurSel 0; };
 
     } else {
-        if (toUpper (_lb lbData _index) == "LOITER") then {
+        if (toUpper (_lb lbData _index) in ["LOITER", "ESCORT"]) then {
             // loiter never delivers ordnance - reuse the freed weapon list as a
             // loiter-duration picker (lbData carries seconds; Indefinite = -1)
             _casAttackRunText ctrlSetStructuredText parseText format ["<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>", localize "STR_ALIVE_CS_UI_LOITER_DURATION"];
