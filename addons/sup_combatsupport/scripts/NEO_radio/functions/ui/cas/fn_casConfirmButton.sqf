@@ -37,7 +37,7 @@ _flyInHeight = switch (sliderPosition _casFlyHeightSlider) do
     case 3 : { if (_isPlane) then { 500 } else { 150 } };
 };
 // #1135: ESCORT ME is a loiter whose centre follows the player who asked for it. It goes as a LOITER, so the
-// loiter's duration, ROE and radio all apply, with the player in slot 8; cas.fsm moves the orbit with him.
+// loiter's duration, ROE and radio all apply, with the player in slot 8; cas.fsm moves the orbit with them.
 private _escortee = objNull;
 if (_task == "ESCORT") then {
     _task = "LOITER";

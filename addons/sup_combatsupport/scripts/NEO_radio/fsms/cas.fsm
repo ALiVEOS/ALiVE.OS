@@ -1047,7 +1047,7 @@ class FSM
                 {
                         name = "loiter";
                         itemno = 27;
-                        init = /*%FSM<STATEINIT""">*/"// #1135 ESCORT ME: the orbit centres on the player, 20 s ahead of where he is going (600 m at most)" \n
+                        init = /*%FSM<STATEINIT""">*/"// #1135 ESCORT ME: the orbit centres on the player, 20 s ahead of where they are going (600 m at most)" \n
                          "if (!isNil ""_escorting"" && {_escorting} && {alive _escortee}) then {" \n
                          "    private _v = vehicle _escortee;" \n
                          "    private _lead = (velocity _v) vectorMultiply 20; _lead set [2, 0];" \n
@@ -1055,9 +1055,9 @@ class FSM
                          "    _escortCentre = getPosATL _v;" \n
                          "    _posCas = _escortCentre vectorAdd _lead; _posCas set [2, 0];" \n
                          "    _escortNext = time + 8;" \n
-                         "    // enemies the player's group knows of are shown to the crew; a jet is not shown those close to him" \n
+                         "    // enemies the player's group knows of are shown to the crew, fully: shown less, a helicopter crew 100 m up never found infantry again after its first pass (19 Nov); a jet is not shown those close to the player" \n
                          "    {" \n
-                         "        if (alive _x && {side _x != civilian} && {((side _grp) getFriend (side _x)) < 0.6} && {((group _escortee) knowsAbout _x) > 1.5} && {!(_veh isKindOf ""Plane"") || {(_x distance2D _v) > 150}}) then { _grp reveal [_x, 2.5] };" \n
+                         "        if (alive _x && {side _x != civilian} && {((side _grp) getFriend (side _x)) < 0.6} && {((group _escortee) knowsAbout _x) > 1.5} && {!(_veh isKindOf ""Plane"") || {(_x distance2D _v) > 150}}) then { _grp reveal [_x, 4] };" \n
                          "    } forEach (_v nearEntities [[""Man"", ""Car"", ""Tank"", ""StaticWeapon""], 600]);" \n
                          "};" \n
                          "_dirCas = _dirCas + 90;" \n
