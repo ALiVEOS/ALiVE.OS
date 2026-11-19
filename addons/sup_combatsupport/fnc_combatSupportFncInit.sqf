@@ -322,9 +322,10 @@ NEO_fnc_casHoldWhenParked = {
 // "If it cannot taxi then teleport it").
 NEO_fnc_casTakeoffWatch = {
     params ["_veh", "_callsign"];
-    // A drone gets the watch too: one tasked behind a parked plane had no way out at all (19 Nov). One connected to a
-    // UAV terminal is a player's to fly, and is never moved.
-    private _flown = { unitIsUAV _veh && {isUAVConnected _veh} };
+    // A drone gets the watch too: one tasked behind a parked plane had no way out at all (19 Nov). One a player is
+    // flying from a UAV terminal is left to that player. The server sees that through UAVControl only: isUAVConnected
+    // stays false there for a remote player's terminal, and a terminal merely connected shows nothing at all.
+    private _flown = { unitIsUAV _veh && {!isNull ((UAVControl _veh) param [0, objNull])} };
     if (!(_veh isKindOf "Plane") || {call _flown} || {_veh getVariable ["NEO_casTakeoffWatch", false]}) exitWith {};
     _veh setVariable ["NEO_casTakeoffWatch", true];
     private _from = getPosATL _veh;
