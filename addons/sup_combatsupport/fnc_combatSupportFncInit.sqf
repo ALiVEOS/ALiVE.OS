@@ -97,6 +97,175 @@ NEO_fnc_casPylonsToPilot = {
         };
     } forEach getAllPylonsInfo _veh;
 };
+// A support aircraft's home stand never sits on an airfield's taxi route or at the start of its runway. A CAS plane
+// whose stand was on the first taxi leg of Takistan's main field (RSS7's A-10) started up by itself, was put back on
+// that stand by the hold above and held there, and the air commander's drone taxiing out stopped 18 m behind it for
+// good (19 Nov). The taxi lines are the ones the air commander taxis along (fnc_ATOEffect, "taxiOut"): each airport's
+// ilsTaxiIn and ilsTaxiOff from the terrain's config, or the runway found on the ground where the config has none.
+// [position] -> [[airport index, [a, b]], ...], the main airport 0 and its secondary airports from 1
+NEO_fnc_csTaxiLines = {
+    params ["_pos"];
+    private _w = configFile >> "CfgWorlds" >> worldName;
+    private _fields = [_w];
+    private _sec = _w >> "SecondaryAirports";
+    for "_i" from 0 to ((count _sec) - 1) do { _fields pushBack (_sec select _i) };
+    private _lines = [];
+    {
+        private _field = _x;
+        private _id = _forEachIndex;
+        {
+            private _pts = getArray (_field >> _x);
+            for "_i" from 0 to ((count _pts) - 4) step 2 do {
+                _lines pushBack [_id, [[_pts select _i, _pts select (_i + 1), 0], [_pts select (_i + 2), _pts select (_i + 3), 0]]];
+            };
+        } forEach ["ilsTaxiIn", "ilsTaxiOff"];
+    } forEach _fields;
+    if (_lines isEqualTo [] && {!isNil "ALiVE_fnc_getRunwayCentreline"}) then {
+        private _cl = [_pos, 1500] call ALiVE_fnc_getRunwayCentreline;
+        if (count _cl > 1) then {
+            _lines pushBack [0, [[(_cl select 0) select 0, (_cl select 0) select 1, 0], [(_cl select 1) select 0, (_cl select 1) select 1, 0]]];
+        };
+    };
+    _lines
+};
+// [point, a, b] -> metres from the point to the line from a to b, on the ground
+NEO_fnc_csDistToLine = {
+    params ["_p", "_a", "_b"];
+    private _q = [_p select 0, _p select 1, 0];
+    private _ab = _b vectorDiff _a;
+    private _l2 = _ab vectorDotProduct _ab;
+    if (_l2 < 1) exitWith { _q distance2D _a };
+    private _t = ((((_q vectorDiff _a) vectorDotProduct _ab) / _l2) max 0) min 1;
+    (_a vectorAdd (_ab vectorMultiply _t)) distance2D _q
+};
+// [lines, point, reach] -> [airport index, metres] of the nearest line closer than the reach, or [] when it is clear
+NEO_fnc_csOnTaxiLine = {
+    params ["_lines", "_p", "_reach"];
+    private _hit = [];
+    private _best = _reach;
+    {
+        _x params ["_id", "_ab"];
+        private _d = [_p, _ab select 0, _ab select 1] call NEO_fnc_csDistToLine;
+        if (_d < _best) then { _best = _d; _hit = [_id, round _d] };
+    } forEach _lines;
+    _hit
+};
+// [vehicle, stand, callsign] -> the stand to use: the one given when it is clear, else the nearest spot off every taxi
+// line within 180 m that is flat open ground, away from other support stands, the air commander's stands and anything
+// standing there. A stand on a deck or roof, or with no taxi line near it, is left as it is. Each stand chosen is kept
+// in NEO_csStands by callsign, so 2 support aircraft never stand on the same spot.
+NEO_fnc_csClearStand = {
+    params ["_veh", "_stand", ["_callsign", ""]];
+    if (!(_stand isEqualType []) || {count _stand < 2}) exitWith { _stand };
+    if (count _stand > 2 && {(_stand select 2) >= 1.5}) exitWith { _stand };
+    private _halfOf = {
+        (boundingBoxReal _this) params ["_lo", "_hi"];
+        ((abs ((_hi select 0) - (_lo select 0))) max (abs ((_hi select 1) - (_lo select 1)))) / 2
+    };
+    private _half = _veh call _halfOf;
+    // room either side of a taxi line for the aircraft that use it to pass, wingtip to wingtip
+    private _reach = _half + 20;
+    private _lines = [_stand] call NEO_fnc_csTaxiLines;
+    private _taken = missionNamespace getVariable ["NEO_csStands", []];
+    _taken = _taken select { !((_x select 2) isEqualTo toUpper _callsign) };
+    private _fnc_record = {
+        _taken pushBack [_this, _half, toUpper _callsign];
+        missionNamespace setVariable ["NEO_csStands", _taken];
+        _this
+    };
+    private _on = [_lines, _stand, _reach] call NEO_fnc_csOnTaxiLine;
+    if (_on isEqualTo []) exitWith { +_stand call _fnc_record };
+
+    // the air commander's stands, from its ledger, when it has placed them by now
+    private _ato = [];
+    if (!isNil "ALIVE_ATOGlobalRegistry") then {
+        private _mods = [ALIVE_ATOGlobalRegistry, "getModules"] call ALIVE_fnc_ATOGlobalRegistry;
+        if (!isNil "_mods" && {[_mods] call ALIVE_fnc_isHash}) then {
+            {
+                private _k = _x getVariable ["ALiVE_mil_ato_kernel", []];
+                if ([_k] call ALIVE_fnc_isHash) then {
+                    private _ledger = [_k, "ledger", []] call ALIVE_fnc_hashGet;
+                    if ([_ledger] call ALIVE_fnc_isHash) then {
+                        private _proj = [_ledger, "projection"] call ALIVE_fnc_ATOLedger;
+                        if (_proj isEqualType []) then {
+                            { private _h = _x param [3, []]; if (_h isEqualType [] && {count _h >= 2} && {(_h distance2D [0, 0]) > 1}) then { _ato pushBack _h } } forEach _proj;
+                        };
+                    };
+                };
+            } forEach (_mods select 2);
+        };
+    };
+    private _fnc_clear = {
+        params ["_p"];
+        if (surfaceIsWater _p) exitWith { false };
+        if (((surfaceNormal _p) select 2) < 0.985) exitWith { false };
+        if !(([_lines, _p, _reach] call NEO_fnc_csOnTaxiLine) isEqualTo []) exitWith { false };
+        if ((_taken findIf { ((_x select 0) distance2D _p) < (_half + (_x select 1) + 5) }) >= 0) exitWith { false };
+        if ((_ato findIf { (_x distance2D _p) < (_half + 20) }) >= 0) exitWith { false };
+        if ((vehicles findIf { (_x isKindOf "Air" || {_x isKindOf "LandVehicle"}) && {!(_x isEqualTo _veh)} && {((getPosATL _x) select 2) < 5} && {(_x distance2D _p) < (_half + (_x call _halfOf) + 3)} }) >= 0) exitWith { false };
+        if !((nearestTerrainObjects [_p, ["BUILDING", "HOUSE", "TREE", "SMALL TREE", "WALL", "FENCE", "ROCK", "ROCKS", "BUNKER", "FORTRESS", "FUELSTATION", "TRANSMITTER", "POWER LINES", "CHURCH", "CHAPEL", "LIGHTHOUSE", "VIEW-TOWER"], _half, false, true]) isEqualTo []) exitWith { false };
+        if !((nearestObjects [_p, ["House", "Wall"], _half]) isEqualTo []) exitWith { false };
+        true
+    };
+    private _spot = [];
+    private _r = 15;
+    while { _spot isEqualTo [] && {_r <= 180} } do {
+        private _n = 8 max (ceil ((2 * pi * _r) / 15));
+        for "_i" from 0 to (_n - 1) do {
+            private _p = _stand getPos [_r, (360 / _n) * _i];
+            _p set [2, 0];
+            if ([_p] call _fnc_clear) exitWith { _spot = _p };
+        };
+        _r = _r + 15;
+    };
+    if (_spot isEqualTo []) exitWith {
+        ["COMBAT SUPPORT - %1 (%2): its stand at %3 is %4 m from a taxi route of airport %5, and no clear spot was found within 180 m, so it stays there and may hold up aircraft taxiing past",
+            _callsign, typeOf _veh, mapGridPosition _stand, _on select 1, _on select 0] call ALiVE_fnc_dump;
+        +_stand call _fnc_record
+    };
+    ["COMBAT SUPPORT - %1 (%2): its stand at %3 was %4 m from a taxi route of airport %5, where it would block aircraft taxiing out, so its stand is now %6 m away at %7 (%8)",
+        _callsign, typeOf _veh, mapGridPosition _stand, _on select 1, _on select 0, round (_spot distance2D _stand), mapGridPosition _spot, [round (_spot select 0), round (_spot select 1)]] call ALiVE_fnc_dump;
+    _spot call _fnc_record
+};
+// [vehicle, stand, direction] puts an aircraft standing on the ground somewhere else onto its stand: after a load it
+// stands where it was saved, and that can be on the taxi route too
+NEO_fnc_csToStand = {
+    params ["_veh", "_stand", "_dir"];
+    if (!alive _veh || {((getPosATL _veh) select 2) > 2} || {(_veh distance2D _stand) <= 3}) exitWith {};
+    if (((crew _veh) findIf { isPlayer _x }) >= 0) exitWith {};
+    _veh allowDamage false;
+    _veh setVelocity [0, 0, 0];
+    private _fnc_put = {
+        // moved first and turned after, as the hold does: turned first, a crewed RHS A-10 ignored the move and
+        // stayed where it was (19 Nov)
+        _veh setPosATL [_stand select 0, _stand select 1, 0];
+        _veh setDir _dir;
+        _veh setVectorUp [0, 0, 1];
+        _veh setVelocity [0, 0, 0];
+    };
+    call _fnc_put;
+    // In its first seconds a freshly crewed aircraft can be set back where it stood, once, after a move: RSS7's
+    // A-10 was back on its old spot 2 s after each early move, and every later move held. Watched for 30 s and put
+    // back on its stand while it is untasked, on the ground and has no player aboard.
+    [_veh, _stand, _dir, _fnc_put] spawn {
+        params ["_veh", "_stand", "_dir", "_fnc_put"];
+        private _said = false;
+        private _until = time + 30;
+        while { time < _until && {alive _veh} } do {
+            sleep 0.5;
+            private _off = _veh distance2D _stand;
+            if (_off > 3 && {((getPosATL _veh) select 2) < 2} && {((crew _veh) findIf { isPlayer _x }) < 0}
+                && {(_veh getVariable ["NEO_radioCurrentTask", []]) isEqualTo []}) then {
+                call _fnc_put;
+                if (!_said) then {
+                    _said = true;
+                    ["COMBAT SUPPORT - %1 was set back %2 m from its stand just after it was moved there, so it was put on it again", typeOf _veh, round _off] call ALiVE_fnc_dump;
+                };
+            };
+        };
+        _veh allowDamage true;
+    };
+};
 // A CAS plane parked where the game's own AI treats it as lined up for take-off (the start of a runway, facing down it)
 // starts up and takes off by itself before it has been given anything to do: two F-100Ds parked at the start of the
 // Khe Sanh SF strip were airborne 15 s into the mission, and side by side they met on the runway. Combat Support had not

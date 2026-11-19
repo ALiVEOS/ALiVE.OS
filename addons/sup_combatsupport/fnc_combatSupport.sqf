@@ -312,6 +312,14 @@ switch(_operation) do {
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                         _type = typeOf _entry;
                                         _direction =  getDir _entry;
+                                        // after a load Player Logistics has moved it to where it was saved; its stand is where it was placed, as for one
+                                        // synced to a support module below (RSS7's A-10 took the saved spot, on the taxi route, as its stand, 19 Nov)
+                                        private _placed = _entry getVariable ["ALiVE_sys_logistics_PLACED", []];
+                                        if (_placed isEqualType [] && {count _placed > 1} && {(_placed select 0) isEqualType []} && {count (_placed select 0) > 1}) then {
+                                            _position = +(_placed select 0); if (!isTouchingGround _entry || {(_position select 2) < 1.5}) then { _position set [2, 0] };
+                                            _direction = _placed select 1;
+                                            _id = [_position] call ALiVE_fnc_getNearestAirportID;
+                                        };
 
                                         _casArray = [_position,_direction, _type, _callsign, _id,_code,_height];
                                         _entry setVariable ["ALiVE_CS_placedFor_CAS", toUpper _callsign];
@@ -333,6 +341,14 @@ switch(_operation) do {
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                         _type = typeOf _entry;
                                         _direction =  getDir _entry;
+                                        // after a load Player Logistics has moved it to where it was saved; its stand is where it was placed, as for one
+                                        // synced to a support module below (RSS7's A-10 took the saved spot, on the taxi route, as its stand, 19 Nov)
+                                        private _placed = _entry getVariable ["ALiVE_sys_logistics_PLACED", []];
+                                        if (_placed isEqualType [] && {count _placed > 1} && {(_placed select 0) isEqualType []} && {count (_placed select 0) > 1}) then {
+                                            _position = +(_placed select 0); if (!isTouchingGround _entry || {(_position select 2) < 1.5}) then { _position set [2, 0] };
+                                            _direction = _placed select 1;
+                                            _id = [_position] call ALiVE_fnc_getNearestAirportID;
+                                        };
 
                                         LOG(_slingloading);
 
@@ -361,6 +377,14 @@ switch(_operation) do {
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
                                         _type = typeOf _entry;
                                         _direction =  getDir _entry;
+                                        // after a load Player Logistics has moved it to where it was saved; its stand is where it was placed, as for one
+                                        // synced to a support module below (RSS7's A-10 took the saved spot, on the taxi route, as its stand, 19 Nov)
+                                        private _placed = _entry getVariable ["ALiVE_sys_logistics_PLACED", []];
+                                        if (_placed isEqualType [] && {count _placed > 1} && {(_placed select 0) isEqualType []} && {count (_placed select 0) > 1}) then {
+                                            _position = +(_placed select 0); if (!isTouchingGround _entry || {(_position select 2) < 1.5}) then { _position set [2, 0] };
+                                            _direction = _placed select 1;
+                                            _id = [_position] call ALiVE_fnc_getNearestAirportID;
+                                        };
 
                                         LOG(_slingloading);
 
@@ -881,6 +905,12 @@ switch(_operation) do {
                             //Set Group ID
                             [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
 
+                            // its stand off every taxi route (NEO_fnc_csClearStand), and the aircraft on it
+                            if (_height <= 0) then {
+                                _pos = [_veh, _pos, _callsign] call NEO_fnc_csClearStand;
+                                [_veh, _pos, _dir] call NEO_fnc_csToStand;
+                            };
+
                             // Check vehicle can slingload
                             private "_slingvalue";
                             _slingvalue = [(configFile >> "CfgVehicles" >> _type >> "slingLoadMaxCargoMass")] call ALiVE_fnc_getConfigValue;
@@ -1080,9 +1110,11 @@ switch(_operation) do {
                             // into whatever is in the way. It starts on the runway instead, at the end nearer its stand and
                             // facing down it; an A-10 lifted off cleanly from either end there. A plane already on the
                             // runway, or at an airfield with a real taxi route, stays where it was put.
+                            private _onRunwayStart = false;
                             if (_veh isKindOf "Plane" && {_height <= 0} && {(_pos select 2) < 1.5} && {_airport >= 0} && {_airport < 100}) then {
                                 private _start = [_pos, _airport] call _fnc_casRunwayStart;
                                 if (_start isNotEqualTo []) then {
+                                    _onRunwayStart = true;
                                     _pos = _start select 0;
                                     _dir = _start select 1;
                                     _veh setVelocity [0, 0, 0];
@@ -1090,6 +1122,13 @@ switch(_operation) do {
                                     _veh setPosATL _pos;
                                     _veh setVectorUp [0, 0, 1];
                                 };
+                            };
+
+                            // its stand off every taxi route (NEO_fnc_csClearStand), and the aircraft on it: the hold's snap-back
+                            // and a respawn both use this stand
+                            if (!_onRunwayStart && {_height <= 0}) then {
+                                _pos = [_veh, _pos, _callsign] call NEO_fnc_csClearStand;
+                                [_veh, _pos, _dir] call NEO_fnc_csToStand;
                             };
 
                             //FSM
