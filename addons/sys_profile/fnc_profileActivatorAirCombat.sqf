@@ -5,9 +5,12 @@ SCRIPT(profileActivatorAirCombat);
 Function: ALiVE_fnc_profileActivatorAirCombat
 
 Description:
-Optional air-combat profile activator. While a living player occupies a live
-plane or helicopter, it incrementally scans operational aircraft and anti-air
-vehicles globally, and ordinary vehicles around airborne player aircraft.
+Optional air-combat profile activator. While a living player flies a live
+plane or helicopter off the ground, it incrementally scans operational
+aircraft globally, anti-air vehicles within AIR_COMBAT_AAA_RADIUS of a player
+aircraft, and the nearest enemy vehicles around each airborne player aircraft
+(up to AIR_COMBAT_VEHICLES_MAX_PER_SOURCE). Claims are held for
+AIR_COMBAT_RELEASE_DELAY seconds after the last player aircraft lands.
 
 Parameters:
 HashMap - Activator instance, or nil for create
@@ -33,6 +36,12 @@ Jman
 #define AIR_COMBAT_VEHICLES_QUERY_FACTOR 1.2
 #define AIR_COMBAT_VEHICLES_LAND_OBJECT_TYPES ["Car","Tank","Armored","Truck","StaticWeapon","Vehicle","Ship"]
 #define AIR_COMBAT_VEHICLES_AIR_OBJECT_TYPES ["Plane","Helicopter"]
+// anti-air further than this from every airborne player aircraft stays virtual
+#define AIR_COMBAT_AAA_RADIUS 8000
+// nearest enemy vehicles woken around each airborne player aircraft
+#define AIR_COMBAT_VEHICLES_MAX_PER_SOURCE 20
+// seconds the claims are held after the last player aircraft lands
+#define AIR_COMBAT_RELEASE_DELAY 60
 
 
 params [
@@ -67,6 +76,10 @@ switch (_operation) do {
             ["rangeProfileIndex", 0],
             ["rangeProfilesReady", false],
             ["rangeSeenProfileIDs", createHashMap],
+            ["rangeClaimCount", 0],
+            ["lastAirborneTime", -1],
+            ["iterationClaims", createHashMap],
+            ["heldClaims", createHashMap],
             ["cargoClaimQueue", []]
         ];
     };
@@ -77,17 +90,60 @@ switch (_operation) do {
         private _previousPlayerAirVehiclePresent =
             _logic get "playerAirVehiclePresent";
 
-        private _playerAirVehiclePresent = (allPlayers findIf {
-            alive _x && {
+        // Only aircraft that are off the ground count: a jet parked on the
+        // runway woke the whole map's aircraft and anti-air (RSS7, 18 Nov).
+        // getPos is height above the surface below, so carrier decks and
+        // rooftops read as ground.
+        private _airbornePositions = [];
+        {
+            if (alive _x) then {
                 private _vehicle = vehicle _x;
 
-                alive _vehicle &&
-                {
-                    _vehicle isKindOf "Plane" ||
-                    {_vehicle isKindOf "Helicopter"}
-                }
-            }
-        }) >= 0;
+                if (
+                    alive _vehicle &&
+                    {_vehicle isKindOf "Plane" || {_vehicle isKindOf "Helicopter"}} &&
+                    // parachutes inherit from Helicopter
+                    {!(_vehicle isKindOf "ParachuteBase")} &&
+                    {((getPos _vehicle) select 2) >= AIR_COMBAT_VEHICLES_AIRBORNE_ALTITUDE}
+                ) then {
+                    _airbornePositions pushBack (getPosATL _vehicle);
+                };
+            };
+        } forEach allPlayers;
+
+        private _playerAirVehiclePresent = _airbornePositions isNotEqualTo [];
+
+        if (_playerAirVehiclePresent) then {
+            _logic set ["lastAirborneTime", time];
+        };
+
+        // Hold what is already awake for a short while after landing, so a
+        // touch-and-go or short hop does not drop and re-wake everything.
+        // Each tick still completes an iteration, re-stamping the held claims:
+        // the spawner only despawns once every activator's iteration moves on,
+        // so standing still here would stop despawns across the whole map.
+        if (
+            !_playerAirVehiclePresent &&
+            {_previousPlayerAirVehiclePresent} &&
+            {time - (_logic get "lastAirborneTime") < AIR_COMBAT_RELEASE_DELAY}
+        ) exitWith {
+            _iteration = _iteration + 1;
+            _logic set ["iteration", _iteration];
+            _logic set ["iterationActive", false];
+
+            private _heldClaims = +(_logic get "heldClaims");
+            {
+                _heldClaims set [_x, true];
+            } forEach keys (_logic get "iterationClaims");
+
+            _result = [
+                _logic get "id",
+                _iteration,
+                true,
+                keys _heldClaims,
+                false
+            ];
+        };
 
         private _releaseAirCombatClaims =
             _previousPlayerAirVehiclePresent ||
@@ -113,6 +169,9 @@ switch (_operation) do {
                 _logic set ["rangeProfileIndex", 0];
                 _logic set ["rangeProfilesReady", false];
                 _logic set ["rangeSeenProfileIDs", createHashMap];
+                _logic set ["rangeClaimCount", 0];
+                _logic set ["iterationClaims", createHashMap];
+                _logic set ["heldClaims", createHashMap];
             };
 
             _result = [
@@ -141,6 +200,7 @@ switch (_operation) do {
         private _rangeProfileIndex = _logic get "rangeProfileIndex";
         private _rangeProfilesReady = _logic get "rangeProfilesReady";
         private _rangeSeenProfileIDs = _logic get "rangeSeenProfileIDs";
+        private _rangeClaimCount = _logic get "rangeClaimCount";
         private _cargoClaimQueue = _logic get "cargoClaimQueue";
 
         if (!_iterationActive) then {
@@ -156,7 +216,9 @@ switch (_operation) do {
             _rangeProfileIndex = 0;
             _rangeProfilesReady = false;
             _rangeSeenProfileIDs = createHashMap;
+            _rangeClaimCount = 0;
             _cargoClaimQueue resize 0;
+            _logic set ["iterationClaims", createHashMap];
             _logic set ["iterationActive",true];
         };
 
@@ -231,6 +293,26 @@ switch (_operation) do {
                                         if (_isAntiAirCapable) then {
                                             private _canFire = _profileData select 18;
                                             _eligible = _canFire isEqualType true && {_canFire} && {!_active || {alive _vehicle && {canFire _vehicle}}};
+
+                                            // Only anti-air within reach of an airborne player
+                                            // aircraft; the map-wide sweep woke every gun on the map.
+                                            if (_eligible) then {
+                                                private _aaPosition = _profileData select 2;
+                                                // never shorter than the vehicle circles: the range
+                                                // scan skips anti-air, so this is its only way in
+                                                private _aaRadius = AIR_COMBAT_AAA_RADIUS max
+                                                    (_logic get "planeVehicleRadius") max
+                                                    (_logic get "helicopterVehicleRadius");
+
+                                                if (_active) then {
+                                                    _aaPosition = getPosATL _vehicle;
+                                                    _aaRadius = _aaRadius * AIR_COMBAT_VEHICLES_QUERY_FACTOR;
+                                                };
+
+                                                _eligible = (_airbornePositions findIf {
+                                                    (_x distance2D _aaPosition) <= _aaRadius
+                                                }) >= 0;
+                                            };
                                         };
                                     };
                                 };
@@ -312,17 +394,16 @@ switch (_operation) do {
                     if (_vehicle isKindOf "Plane") then {
                         _radius = _logic get "planeVehicleRadius";
                     } else {
-                        if (_vehicle isKindOf "Helicopter") then {
+                        if (_vehicle isKindOf "Helicopter" && {!(_vehicle isKindOf "ParachuteBase")}) then {
                             _radius = _logic get "helicopterVehicleRadius";
                         };
                     };
 
                     if (_radius > 0 && {_sourceVehicles find _vehicle < 0}) then {
                         _sourceVehicles pushBack _vehicle;
-                        private _position = getPosATL _vehicle;
 
-                        if ((_position select 2) >= AIR_COMBAT_VEHICLES_AIRBORNE_ALTITUDE) then {
-                            _rangeSources pushBack [_position, _radius];
+                        if (((getPos _vehicle) select 2) >= AIR_COMBAT_VEHICLES_AIRBORNE_ALTITUDE) then {
+                            _rangeSources pushBack [getPosATL _vehicle, _radius, side group _player];
                         };
                     };
                 };
@@ -403,7 +484,35 @@ switch (_operation) do {
                                                 _distance <= _sourceRadius
                                             };
 
+                                            // Enemies of the pilot only, nearest first (the list is
+                                            // sorted), up to the cap. Friendly or capped vehicles stay
+                                            // free for another pilot's circle.
                                             if (_inRange) then {
+                                                // The vehicle's own side is saved once and reads CIV
+                                                // if it was empty then; its crew's side is the truth.
+                                                private _sideText = _profileData select 3;
+                                                private _commanders = _profileData select 8;
+
+                                                if (_commanders isEqualType [] && {_commanders isNotEqualTo []}) then {
+                                                    private _commanderProfile = _profilesById get (_commanders select 0);
+
+                                                    if (!isNil "_commanderProfile") then {
+                                                        _sideText = (_commanderProfile select 2) select 3;
+                                                    };
+                                                };
+
+                                                _inRange =
+                                                    ((_source select 2) getFriend ([_sideText] call ALIVE_fnc_sideTextToObject)) < 0.6;
+                                            };
+
+                                            if (_inRange) then {
+                                                _rangeClaimCount = _rangeClaimCount + 1;
+
+                                                // cap reached: skip the rest of this source's list,
+                                                // leaving those vehicles free for another source
+                                                if (_rangeClaimCount >= AIR_COMBAT_VEHICLES_MAX_PER_SOURCE) then {
+                                                    _rangeProfileIndex = count _rangeProfiles;
+                                                };
                                                 {
                                                     private _entityProfileID = _x;
                                                     private _entityProfile = _profilesById get _entityProfileID;
@@ -441,6 +550,7 @@ switch (_operation) do {
                         _rangeProfileIndex = 0;
                         _rangeProfilesReady = false;
                         _rangeSourceIndex = _rangeSourceIndex + 1;
+                        _rangeClaimCount = 0;
                         _didVehicleWork = true;
                     };
                 } else {
@@ -454,7 +564,31 @@ switch (_operation) do {
                             false
                         ] call ALiVE_fnc_getNearProfiles;
 
-                        _rangeProfiles = _nearProfiles;
+                        // Nearest first, so the cap keeps the closest vehicles. Awake
+                        // ones count as nearer by the same margin they keep their claim
+                        // by, so the set does not churn at the edge of the cap.
+                        private _sourcePosition = _source select 0;
+                        private _sortable = [];
+                        {
+                            private _nearData = _x select 2;
+                            private _nearVehicle = _nearData select 10;
+                            private _nearDistance = if (
+                                (_nearData select 1) &&
+                                {!isNull _nearVehicle} &&
+                                {alive _nearVehicle}
+                            ) then {
+                                (_sourcePosition distance2D (getPosATL _nearVehicle)) / AIR_COMBAT_VEHICLES_QUERY_FACTOR
+                            } else {
+                                _sourcePosition distance2D (_nearData select 2)
+                            };
+
+                            // index, not the profile, as the tie-break: sort cannot
+                            // compare profile arrays
+                            _sortable pushBack [_nearDistance, _forEachIndex];
+                        } forEach _nearProfiles;
+                        _sortable sort true;
+
+                        _rangeProfiles = _sortable apply {_nearProfiles select (_x select 1)};
                         _rangeProfileIndex = 0;
                         _rangeProfilesReady = true;
                         _didVehicleWork = true;
@@ -480,6 +614,18 @@ switch (_operation) do {
 
         private _claims = keys _claimIDs;
 
+        // Remember this iteration's claims; a finished iteration's set is
+        // what the landing hold re-stamps.
+        private _iterationClaims = _logic get "iterationClaims";
+        {
+            _iterationClaims set [_x, true];
+        } forEach _claims;
+
+        if (_complete) then {
+            _logic set ["heldClaims", _iterationClaims];
+            _logic set ["iterationClaims", createHashMap];
+        };
+
         _logic set ["rangeScanStarted", _rangeScanStarted];
         _logic set ["rangeSources", _rangeSources];
         _logic set ["rangeSourceIndex", _rangeSourceIndex];
@@ -487,6 +633,7 @@ switch (_operation) do {
         _logic set ["rangeProfileIndex", _rangeProfileIndex];
         _logic set ["rangeProfilesReady", _rangeProfilesReady];
         _logic set ["rangeSeenProfileIDs", _rangeSeenProfileIDs];
+        _logic set ["rangeClaimCount", _rangeClaimCount];
         _logic set ["cargoClaimQueue", _cargoClaimQueue];
 
         _result = [
@@ -512,6 +659,10 @@ switch (_operation) do {
         _logic set ["rangeProfileIndex",0];
         _logic set ["rangeProfilesReady",false];
         _logic set ["rangeSeenProfileIDs",createHashMap];
+        _logic set ["rangeClaimCount",0];
+        _logic set ["lastAirborneTime",-1];
+        _logic set ["iterationClaims",createHashMap];
+        _logic set ["heldClaims",createHashMap];
         _logic set ["iteration",0];
         _result = true;
     };
