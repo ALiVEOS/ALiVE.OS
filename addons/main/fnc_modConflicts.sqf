@@ -29,6 +29,7 @@ Examples:
 
 Author:
 Jman
+Goldwep
 ---------------------------------------------------------------------------- */
 
 params [["_operation", ""], ["_args", []]];
@@ -65,7 +66,7 @@ switch (_operation) do {
                     switch (true) do {
                         case (_mode == "OFF"): { "The ALiVE (Required) module's mod setting is Off, so nothing is done about it." };
                         case (_mode == "WARN"): { "The setting is Warn, so ALiVE's AI is left to it." };
-                        case (_mode == "INTEGRATE" && {getNumber (_cfg >> "integrates") == 1}): { "Integrate: " + getText (_cfg >> "integrateHandling") + "." };
+                        case (_mode == "INTEGRATE" && {getNumber (_cfg >> "integrates") == 1} && {missionNamespace getVariable [QMOD(lambs_on), false]}): { "Integrate: " + getText (_cfg >> "integrateHandling") + "." };
                         case (_handling == ""): { "The mod gives no way to leave ALiVE's AI out, so this is a warning only." };
                         default { "Guard: " + _handling + "." };
                     }] call ALiVE_fnc_dump;
@@ -133,7 +134,14 @@ switch (_operation) do {
                 private _text = "Mods on the server that change ALiVE's AI:" + ((_serverFound apply { _x call _fnc_line }) joinString "")
                     + (switch (_mode) do {
                         case "GUARD": { "<br/>The mission's mod setting is Guard: ALiVE keeps its own AI out of them where the mod allows it." };
-                        case "INTEGRATE": { "<br/>The mission's mod setting is Integrate: LAMBS Danger fights ALiVE's ground groups under ALiVE's orders; ALiVE keeps its AI out of the others where the mod allows it." };
+                        case "INTEGRATE": {
+                            // only said when LAMBS is really running ALiVE's groups (set by ALiVE_fnc_lambs on the server)
+                            if (missionNamespace getVariable [QMOD(lambs_on), false]) then {
+                                "<br/>The mission's mod setting is Integrate: LAMBS Danger fights ALiVE's ground groups under ALiVE's orders; ALiVE keeps its AI out of the others where the mod allows it."
+                            } else {
+                                "<br/>The mission's mod setting is Integrate, but LAMBS Danger is not running on the server, so it works as Guard: ALiVE keeps its own AI out of them where the mod allows it."
+                            }
+                        };
                         default { "<br/>The mission's mod setting is Warn: ALiVE's AI is left to them." };
                     });
                 ["ALiVE", _text] call ALIVE_fnc_sendHint;

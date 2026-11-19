@@ -81,6 +81,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_lambs.sqf";
                 ALIVE_RECOMPILE;
             };
+            class lambsRemote {
+                description = "Integrate setting: the calls between a group's owner and the server, checked against their sender";
+                file = "\x\alive\addons\main\fnc_lambsRemote.sqf";
+                ALIVE_RECOMPILE;
+            };
             class isModuleInitialised {
                 description = "Checks if given modules are initialised";
                 file = "\x\alive\addons\main\fnc_isModuleInitialised.sqf";

@@ -133,6 +133,7 @@ See Also:
 Author:
 ARJay
 Jman
+Goldwep
 
 Peer reviewed:
 nil
@@ -745,6 +746,8 @@ switch(_operation) do {
         {_x set [1,"cancelled"]} forEach _pending;
         [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashSet;
         [ALiVE_Pathfinder,"cancelProfilePaths",[_logic,"profileID"] call ALiVE_fnc_hashGet] call ALiVE_fnc_pathfinder;
+        // Integrate: the same orders are laid again, so the LAMBS task serving them goes on
+        ["sameOrders", [_logic]] call ALiVE_fnc_lambs;
         [_logic,"clearWaypoints"] call MAINCLASS;
 
         // Repair the spawn connection first; the remaining applied nodes stay ready.
@@ -1004,9 +1007,10 @@ switch(_operation) do {
                     };
                 };
             };
-            // Integrate: new orders end the LAMBS task that served the old ones
-            ["reordered", [_logic]] call ALiVE_fnc_lambs;
         };
+        // Integrate: new orders end the LAMBS task that served the old ones; on a virtual profile the
+        // stored order goes, so it does not come back on the next spawn
+        ["reordered", [_logic]] call ALiVE_fnc_lambs;
     };
 
     case "setActiveCommand": {
@@ -1049,7 +1053,7 @@ switch(_operation) do {
                 [_logic,"activeCommands",[]] call ALIVE_fnc_hashSet;
             };
             // Integrate: new orders end the LAMBS task that served the old ones
-            if (_logic select 2 select 1) then { ["reordered", [_logic]] call ALiVE_fnc_lambs };
+            ["reordered", [_logic]] call ALiVE_fnc_lambs;
         };
     };
 
@@ -1935,10 +1939,10 @@ switch(_operation) do {
                     };
                 };
                 [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
-                // Integrate: waypoints LAMBS made do not come back as the commander's orders
-                if (_group getVariable ["ALiVE_lambs", []] isNotEqualTo []) then { ["scrub", [_logic]] call ALiVE_fnc_lambs };
 
                 [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
+                // Integrate: waypoints LAMBS made, and a vehicle it took, do not come back as the profile's
+                if (_group getVariable ["ALiVE_lambs", []] isNotEqualTo []) then { ["scrub", [_logic]] call ALiVE_fnc_lambs };
 
                 private _position = getPosATL _leader;
 

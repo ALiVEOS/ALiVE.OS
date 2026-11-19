@@ -335,6 +335,56 @@
     <Chinesesimp>在版本不匹配时输出错误报告或将玩家踢出。</Chinesesimp>
     <Spanish>Muestra un aviso o expulsa a los jugadores si la versión no coincide.</Spanish>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MODCONFLICTS_INTEGRATE">
+    <English>Integrate (LAMBS Danger)</English>
+    <Chinesesimp>整合 (LAMBS Danger)</Chinesesimp>
+    <Chinese>整合 (LAMBS Danger)</Chinese>
+    <Spanish>Integrar (LAMBS Danger)</Spanish>
+    <French>Intégrer (LAMBS Danger)</French>
+    <Portuguese>Integrar (LAMBS Danger)</Portuguese>
+    <Russian>Интеграция (LAMBS Danger)</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LAMBS_ARTILLERY_POOL">
+    <English>Integrate: ALiVE artillery for LAMBS</English>
+    <Chinesesimp>整合:供 LAMBS 使用的 ALiVE 炮兵</Chinesesimp>
+    <Chinese>整合:供 LAMBS 使用的 ALiVE 砲兵</Chinese>
+    <Spanish>Integrar: artillería de ALiVE para LAMBS</Spanish>
+    <French>Intégrer : artillerie ALiVE pour LAMBS</French>
+    <Portuguese>Integrar: artilharia do ALiVE para o LAMBS</Portuguese>
+    <Russian>Интеграция: артиллерия ALiVE для LAMBS</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LAMBS_ARTILLERY_POOL_COMMENT">
+    <English>With Other AI mods on Integrate. No (default): LAMBS calls for fire go to ALiVE's Military Artillery under ALiVE's own rules.\nYes: as well, ALiVE's idle batteries with rounds are offered to LAMBS to fire itself. Rounds LAMBS fires come off the battery's count and the battery cools down after.</English>
+    <Chinesesimp>“其他 AI 模组”设为“整合”时有效。否(默认):LAMBS 的火力请求按 ALiVE 自己的规则交给 ALiVE 军事炮兵。\n是:此外,ALiVE 空闲且有弹药的炮兵连也提供给 LAMBS 自行射击。LAMBS 打出的炮弹从该连的弹药数中扣除,之后该连进入冷却。</Chinesesimp>
+    <Chinese>「其他 AI 模組」設為「整合」時有效。否(預設):LAMBS 的火力請求依 ALiVE 自己的規則交給 ALiVE 軍事砲兵。\n是:此外,ALiVE 閒置且有彈藥的砲兵連也提供給 LAMBS 自行射擊。LAMBS 打出的砲彈從該連的彈藥數中扣除,之後該連進入冷卻。</Chinese>
+    <Spanish>Con Otros mods de IA en Integrar. No (por defecto): las peticiones de fuego de LAMBS van a la Artillería Militar de ALiVE con las reglas de ALiVE.\nSí: además, las baterías de ALiVE libres y con munición se ofrecen a LAMBS para que dispare él mismo. Los proyectiles que dispara LAMBS se descuentan de la batería, que después se enfría.</Spanish>
+    <French>Avec Autres mods d'IA sur Intégrer. Non (par défaut) : les demandes de tir de LAMBS vont à l'Artillerie militaire d'ALiVE selon les règles d'ALiVE.\nOui : en plus, les batteries ALiVE libres et approvisionnées sont proposées à LAMBS pour qu'il tire lui-même. Les obus tirés par LAMBS sont décomptés de la batterie, qui refroidit ensuite.</French>
+    <Portuguese>Com Outros mods de IA em Integrar. Não (padrão): os pedidos de fogo do LAMBS vão para a Artilharia Militar do ALiVE segundo as regras do ALiVE.\nSim: além disso, as baterias do ALiVE livres e com munição são oferecidas ao LAMBS para disparar por conta própria. Os projéteis que o LAMBS dispara são descontados da bateria, que depois arrefece.</Portuguese>
+    <Russian>Когда «Другие моды ИИ» в режиме «Интеграция». Нет (по умолчанию): запросы огня от LAMBS идут в Военную артиллерию ALiVE по правилам ALiVE.\nДа: кроме того, свободные батареи ALiVE с боезапасом предлагаются LAMBS, чтобы он вёл огонь сам. Выпущенные LAMBS снаряды списываются с батареи, после чего она остывает.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LAMBS_DEBUG">
+    <English>Integrate: debug</English>
+    <Chinesesimp>整合:调试</Chinesesimp>
+    <Chinese>整合:除錯</Chinese>
+    <Spanish>Integrar: depuración</Spanish>
+    <French>Intégrer : débogage</French>
+    <Portuguese>Integrar: depuração</Portuguese>
+    <Russian>Интеграция: отладка</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LAMBS_DEBUG_COMMENT">
+    <English>With Other AI mods on Integrate, log what ALiVE does with LAMBS Danger to the RPT (lines start ALiVE LAMBS:). [&quot;stats&quot;] call ALiVE_fnc_lambs logs the counters.</English>
+    <Chinesesimp>“其他 AI 模组”设为“整合”时,把 ALiVE 对 LAMBS Danger 所做的事记录到 RPT(行首为 ALiVE LAMBS:)。[&quot;stats&quot;] call ALiVE_fnc_lambs 记录计数器。</Chinesesimp>
+    <Chinese>「其他 AI 模組」設為「整合」時,把 ALiVE 對 LAMBS Danger 所做的事記錄到 RPT(行首為 ALiVE LAMBS:)。[&quot;stats&quot;] call ALiVE_fnc_lambs 記錄計數器。</Chinese>
+    <Spanish>Con Otros mods de IA en Integrar, registra en el RPT lo que ALiVE hace con LAMBS Danger (las líneas empiezan por ALiVE LAMBS:). [&quot;stats&quot;] call ALiVE_fnc_lambs registra los contadores.</Spanish>
+    <French>Avec Autres mods d'IA sur Intégrer, consigne dans le RPT ce qu'ALiVE fait avec LAMBS Danger (les lignes commencent par ALiVE LAMBS:). [&quot;stats&quot;] call ALiVE_fnc_lambs consigne les compteurs.</French>
+    <Portuguese>Com Outros mods de IA em Integrar, regista no RPT o que o ALiVE faz com o LAMBS Danger (as linhas começam por ALiVE LAMBS:). [&quot;stats&quot;] call ALiVE_fnc_lambs regista os contadores.</Portuguese>
+    <Russian>Когда «Другие моды ИИ» в режиме «Интеграция», записывает в RPT, что ALiVE делает с LAMBS Danger (строки начинаются с ALiVE LAMBS:). [&quot;stats&quot;] call ALiVE_fnc_lambs записывает счётчики.</Russian>
+</Key>
 <Key ID="STR_ALIVE_DISABLESAVE">
     <English>Disable Default SP Save:</English>
     <Chinesesimp>禁用默认SP(偏好设定?)保存:</Chinesesimp>

@@ -2434,7 +2434,7 @@ class CfgVehicles {
                             };
                             class integrate
                             {
-                                    name = "Integrate (LAMBS Danger)";
+                                    name = "$STR_ALIVE_MODCONFLICTS_INTEGRATE";
                                     value = "INTEGRATE";
                             };
                             class warn
@@ -2452,9 +2452,10 @@ class CfgVehicles {
             class ALiVE_LambsArtilleryPool: Combo
             {
                     property =  MVAR(ALiVE_LambsArtilleryPool);
-                    displayName = "Integrate: ALiVE artillery for LAMBS";
-                    tooltip = "With Other AI mods on Integrate. No (default): LAMBS calls for fire go to ALiVE's Military Artillery under ALiVE's own rules.\nYes: as well, ALiVE's idle batteries with rounds are offered to LAMBS to fire itself. Rounds LAMBS fires come off the battery's count and the battery cools down after.";
+                    displayName = "$STR_ALIVE_LAMBS_ARTILLERY_POOL";
+                    tooltip = "$STR_ALIVE_LAMBS_ARTILLERY_POOL_COMMENT";
                     defaultValue = """false""";
+                    ALiVE_showWhen[] = {{"ALiVE_ModConflicts","is","INTEGRATE"}};
                     class Values
                     {
                             class No
@@ -2472,9 +2473,10 @@ class CfgVehicles {
             class ALiVE_LambsDebug: Combo
             {
                     property =  MVAR(ALiVE_LambsDebug);
-                    displayName = "Integrate: debug";
-                    tooltip = "With Other AI mods on Integrate, log what ALiVE does with LAMBS Danger to the RPT (lines start ALiVE LAMBS:). [""stats""] call ALiVE_fnc_lambs logs the counters.";
+                    displayName = "$STR_ALIVE_LAMBS_DEBUG";
+                    tooltip = "$STR_ALIVE_LAMBS_DEBUG_COMMENT";
                     defaultValue = """false""";
+                    ALiVE_showWhen[] = {{"ALiVE_ModConflicts","is","INTEGRATE"}};
                     class Values
                     {
                             class No

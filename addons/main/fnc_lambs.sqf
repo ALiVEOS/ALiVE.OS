@@ -21,16 +21,24 @@ Operations (callers outside this file):
 "active"                             - true when Integrate is on and LAMBS is loaded here and on the server
 "attach"    [group, profile]         - server, when a profile spawns; any machine, when a group becomes local
 "detach"    [group, profile]         - server, when a profile despawns, before its waypoints are saved
-"scrub"     [profile]                - server, after the waypoints are saved: LAMBS' own waypoints are taken out
+"scrub"     [profile]                - server, after the despawn has saved the waypoints and vehicles: LAMBS' own
+                                       waypoints are taken out, and a reserve out reinforcing is sent home
 "reordered" [profile]                - server, when a profile's waypoints or commands are cleared for new orders
+"sameOrders" [profile]               - server, before a clear that lays the same orders again (a route rebuild)
 "order"     [profileID, kind, position, reference, expiry] - server, what the commander just ordered
 "release"   [group]                  - owner, before the group moves to another machine
 "creep"     [group, position]        - server, the IED ambush squad; true when LAMBS takes it
 "stop"      [group, reason]          - owner, end the group's LAMBS task
+"mayMove"   [group, owner id]        - server, false when the group is LAMBS' and that machine has not said it runs LAMBS
 "stats"                              - log this machine's counters
 
-A mission that limits remoteExec through CfgRemoteExec must allow ALiVE_fnc_lambs: the machine that owns a
-group reports to the server through it, and the server answers the same way.
+Nothing here is called over the network. The machine that owns a group and the server talk through
+ALiVE_fnc_lambsRemote, which checks who sent each call; a report sent straight to this function is refused.
+
+LAMBS versions: everything under "LAMBS Danger names" is in the 2.6.2 release. The three names under
+"LAMBS pull requests" are from two pull requests LAMBS has not merged or released (#501, #487). Each
+is looked for before it is used and does nothing on 2.6.2, so the file works on the release as it is
+and picks those changes up if they ship under the same names.
 
 Examples:
 (begin example)
@@ -68,17 +76,29 @@ Goldwep
 #define L_FNC_FRIENDLIES     "lambs_main_fnc_findNearbyFriendlies"
 #define L_FNC_HASARTY        "lambs_wp_fnc_sideHasArtillery"
 #define L_FNC_ARTYREGISTER   "lambs_wp_fnc_taskArtilleryRegister"
+// CBA event names are not case sensitive: LAMBS raises the first as lambs_danger_onContact
+#define L_EVENTS             [["lambs_danger_OnContact", "contact"], ["lambs_danger_OnAssess", "assess"], ["lambs_danger_OnReinforce", "reinforce"], ["lambs_danger_OnArtilleryCalled", "artycalled"], ["lambs_main_OnPanic", "panic"], ["lambs_main_OnFleeing", "fleeing"]]
+
+// LAMBS pull requests, not merged or released at 2.6.2. Nothing below exists in the release: the function
+// is looked for before use and the waypoint names match nothing, so on 2.6.2 these do nothing.
+// #487 per-side reinforcement setting
 #define L_FNC_SIDEREINFORCE  "lambs_danger_fnc_applySideReinforcementSetting"
+// #501 named reinforce waypoints
 #define L_WP_NAMES           ["LAMBS_Reinforce_SAD", "LAMBS_Reinforce_GUARD"]
-#define L_EVENTS             [["lambs_danger_OnContact", "contact"], ["lambs_danger_onContact", "contact"], ["lambs_danger_OnAssess", "assess"], ["lambs_danger_OnReinforce", "reinforce"], ["lambs_danger_OnArtilleryCalled", "artycalled"], ["lambs_main_OnPanic", "panic"], ["lambs_main_OnFleeing", "fleeing"]]
 
 // ALiVE's own names
 #define A_DEFEND_WP          "ALiVE_lambs_defend"
-#define A_REMOTE_OPS         ["report", "attach", "release", "detachLocal", "share", "unassign"]
+// ACE's headless transfer, which moves groups itself: see "aceHold"
+#define A_ACE_ON             "acex_headless_enabled"
+#define A_ACE_BLACKLIST      "acex_headless_blacklist"
+#define A_ACE_HELD           "ALiVE_lambs_aceHeld"
 
 // Tuning. Distances in metres, times in seconds, budgets in counts.
+// The owner's loop sees at least TICK_GROUPS groups a pass, and more when it owns so many that a
+// group would otherwise wait longer than TICK_ROUND for its turn
 #define TICK_SLEEP           5
 #define TICK_GROUPS          10
+#define TICK_ROUND           15
 #define SERVERTICK_SLEEP     30
 #define ASSAULT_DIST         300
 #define ASSAULT_ENEMY        250
@@ -132,12 +152,16 @@ Goldwep
 params [["_operation", ""], ["_args", []]];
 private _result = nil;
 
-// only the reports and answers between a group's owner and the server come in over the network
-// isRemoteExecuted holds for calls made inside a remote call too, so only the outermost call is gated
-if (isRemoteExecuted && {isNil "_lambsInner"} && {!(_operation in A_REMOTE_OPS)}) exitWith {};
-private _lambsInner = true;
+// The two operations a group's owner sends the server are only taken through ALiVE_fnc_lambsRemote, which
+// sets _lambsDoor and names the sender. Neither is ever called from inside another remote call, so this
+// turns away nothing but a direct network call. Every other operation is left open on purpose: they run on
+// the server inside a client's remote call (a Zeus module, a commander tablet order).
+if (_operation in ["report", "with"] && {isNil "_lambsDoor"} && {isRemoteExecuted} && {isMultiplayer}) exitWith {};
 
 if (isNil "ALiVE_lambs_stats") then {
+    ALiVE_lambs_urgent = [];                // keys of groups this machine sees to before their turn
+    ALiVE_lambs_with = [];                  // server: owner ids of the other machines that run LAMBS
+    ALiVE_lambs_sameOrders = "";            // server: the profile whose waypoints are about to be cleared and laid again
     ALiVE_lambs_stats = createHashMap;
     ALiVE_lambs_groups = createHashMap;     // key -> state of a group this machine owns
     ALiVE_lambs_active = createHashMap;     // server: profileID -> group
@@ -145,7 +169,7 @@ if (isNil "ALiVE_lambs_stats") then {
     ALiVE_lambs_intel = createHashMap;      // server: profileID -> [time, [[enemy profileID, position], ...]]
     ALiVE_lambs_reinforcing = createHashMap; // server: profileID -> [time, position, objective centre, had a garrison]
     ALiVE_lambs_times = createHashMap;      // server: throttle key -> time
-    ALiVE_lambs_firing = createHashMap;     // server: gun netId -> battery record
+    ALiVE_lambs_firing = createHashMap;     // server: gun netId -> [battery record, time, gun]
     ALiVE_lambs_keys = 0;
     ALiVE_lambs_next = 0;
 };
@@ -198,10 +222,12 @@ switch (_operation) do {
         };
 
         if (ACTIVE && {!_loaded}) exitWith {
-            ["ALiVE LAMBS: the server runs LAMBS Danger and this machine does not, so groups it owns get no LAMBS tasks."] call ALiVE_fnc_dump;
+            ["ALiVE LAMBS: the server runs LAMBS Danger and this machine does not, so the groups LAMBS runs are kept off it."] call ALiVE_fnc_dump;
         };
         if (!ACTIVE || {!isNil "ALiVE_lambs_started"}) exitWith {};
         ALiVE_lambs_started = true;
+        // the server moves the groups LAMBS runs only to machines that have said they run LAMBS
+        if (!isServer) then { ["with", []] remoteExecCall ["ALiVE_fnc_lambsRemote", 2] };
 
         // LAMBS raises its events on the machine that owns the unit
         {
@@ -219,7 +245,20 @@ switch (_operation) do {
             }] call LFNC(L_FNC_SHAREHANDLER);
         };
 
-        [] spawn { while { true } do { sleep TICK_SLEEP; ["tick"] call ALiVE_fnc_lambs } };
+        // a pass every TICK_SLEEP; a group the server flags (new orders) is seen to within a second
+        [] spawn {
+            private _n = 0;
+            while { true } do {
+                sleep 1;
+                _n = _n + 1;
+                if (ALiVE_lambs_urgent isNotEqualTo []) then {
+                    private _urgent = ALiVE_lambs_urgent;
+                    ALiVE_lambs_urgent = [];
+                    { ["tick", [_x]] call ALiVE_fnc_lambs } forEach _urgent;
+                };
+                if (_n >= TICK_SLEEP) then { _n = 0; ["tick"] call ALiVE_fnc_lambs };
+            };
+        };
         if (isServer) then {
             [] spawn { while { true } do { sleep SERVERTICK_SLEEP; ["serverTick"] call ALiVE_fnc_lambs } };
         };
@@ -241,6 +280,19 @@ switch (_operation) do {
         _result = "MANEUVER";
         if (_profile isEqualTo []) exitWith {};
         private _id = [_profile, "profileID", ""] call ALiVE_fnc_hashGet;
+        if (["fixed", [_profile]] call ALiVE_fnc_lambs) exitWith { _result = "STATIC" };
+        if (["isReserve", [_id]] call ALiVE_fnc_lambs) exitWith { _result = "RESERVE" };
+        // a garrison holds its posts under ALiVE; it is LAMBS' again once the commander moves it on
+        if (["garrisoned", [_profile]] call ALiVE_fnc_lambs) then { _result = "STATIC" };
+    };
+
+    // server: [profile] -> true when the profile is ALiVE's alone for good (SPE, an artillery battery's crew,
+    // aircraft, boats), as against a garrison, which is only ALiVE's until the commander moves it on
+    case "fixed": {
+        _args params [["_profile", []]];
+        _result = false;
+        if (_profile isEqualTo []) exitWith {};
+        private _id = [_profile, "profileID", ""] call ALiVE_fnc_hashGet;
         private _static = [_profile, "isSPE", false] call ALiVE_fnc_hashGet;
         if (isNil "_static" || {!(_static isEqualType true)}) then { _static = false };
         // an artillery battery's crew stays under ALiVE's fire control
@@ -259,10 +311,7 @@ switch (_operation) do {
                 }
             }) > -1;
         };
-        if (_static) exitWith { _result = "STATIC" };
-        if (["isReserve", [_id]] call ALiVE_fnc_lambs) exitWith { _result = "RESERVE" };
-        // a garrison holds its posts under ALiVE; it is LAMBS' again once the commander moves it on
-        if (["garrisoned", [_profile]] call ALiVE_fnc_lambs) then { _result = "STATIC" };
+        _result = _static;
     };
 
     // server: [profile] -> true when the profile's command is a garrison
@@ -299,20 +348,23 @@ switch (_operation) do {
     case "attach": {
         _args params [["_group", grpNull], ["_profile", []], ["_role", ""]];
         if (!ACTIVE || {isNull _group} || {isPlayer leader _group}) exitWith {};
-        if (isRemoteExecuted && {remoteExecutedOwner != 2}) exitWith {};
         private _info = _group getVariable ["ALiVE_lambs", []];
 
         // the server decides the role once; a new owner reads it
         if (_info isEqualTo [] && {isServer}) then {
             private _id = if (_profile isEqualTo []) then { "" } else { [_profile, "profileID", ""] call ALiVE_fnc_hashGet };
             if (_role == "") then { _role = ["classify", [_profile]] call ALiVE_fnc_lambs };
-            if (_role == "STATIC" && {_profile isNotEqualTo []} && {["garrisoned", [_profile]] call ALiVE_fnc_lambs}) then { _group setVariable ["ALiVE_lambs_garrison", true, true] };
+            // the garrison flag is for a group that is STATIC only because it is garrisoned
+            if (_role == "STATIC" && {_profile isNotEqualTo []} && {["garrisoned", [_profile]] call ALiVE_fnc_lambs} && {!(["fixed", [_profile]] call ALiVE_fnc_lambs)}) then { _group setVariable ["ALiVE_lambs_garrison", true, true] };
             ALiVE_lambs_keys = ALiVE_lambs_keys + 1;
             _info = [_role, _id, str side _group];
             _group setVariable ["ALiVE_lambs", _info, true];
             _group setVariable ["ALiVE_lambs_key", format ["g%1", ALiVE_lambs_keys], true];
             _group setVariable ["ALiVE_lambs_stamp", 0, true];
             ["roleVars", [_group, _role]] call ALiVE_fnc_lambs;
+            // under ACE's own transfer the group is held on the server from the start unless every headless
+            // client runs LAMBS; "serverTick" lets it go once they all do
+            ["aceHold", [_group]] call ALiVE_fnc_lambs;
             // LAMBS' per-side reinforcement setting (its PR #487) writes the flag a second after the group is made
             if (LHAS(L_FNC_SIDEREINFORCE)) then {
                 [{ ["roleVars", [_this, (_this getVariable ["ALiVE_lambs", ["MANEUVER"]]) select 0]] call ALiVE_fnc_lambs }, _group, 2] call CBA_fnc_waitAndExecute;
@@ -339,10 +391,12 @@ switch (_operation) do {
 
         private _key = _group getVariable ["ALiVE_lambs_key", ""];
         if (_key == "" || {_key in ALiVE_lambs_groups}) exitWith {};
+        // a group that changed machine on its way to reinforce is still on its way
+        private _reinforcing = _group getVariable ["ALiVE_lambs_reinf", false];
         ALiVE_lambs_groups set [_key, createHashMapFromArray [
             ["group", _group], ["task", ""], ["handle", scriptNull], ["stamp", _group getVariable ["ALiVE_lambs_stamp", 0]],
-            ["started", 0], ["snap", []], ["starts", []], ["taskPos", []], ["lastEvent", -1e6], ["tacticSince", -1],
-            ["lastRestore", -1e6], ["reinforcing", -1], ["sent", createHashMap], ["overwatch", []]
+            ["started", 0], ["snap", []], ["starts", []], ["taskPos", []], ["lastEvent", [-1e6, time] select _reinforcing], ["tacticSince", -1],
+            ["lastRestore", -1e6], ["reinforcing", [-1, time] select _reinforcing], ["sent", createHashMap], ["overwatch", []]
         ]];
         if (DEBUGON) then { ["ALiVE LAMBS: %1 is run from this machine.", _group] call ALiVE_fnc_dump };
     };
@@ -350,7 +404,6 @@ switch (_operation) do {
     // owner, before the group goes to another machine: put back what a task changed while the men can be reached
     case "release": {
         _args params [["_group", grpNull]];
-        if (isRemoteExecuted && {remoteExecutedOwner != 2}) exitWith {};
         private _key = _group getVariable ["ALiVE_lambs_key", ""];
         if (_key == "" || {!(_key in ALiVE_lambs_groups)}) exitWith {};
         ["taskStop", [_key, "moving to another machine"]] call ALiVE_fnc_lambs;
@@ -361,22 +414,24 @@ switch (_operation) do {
     // server, at despawn
     case "detach": {
         _args params [["_group", grpNull], ["_profile", []]];
-        if (!isServer || {isNull _group} || {(_group getVariable ["ALiVE_lambs", []]) isEqualTo []}) exitWith {};
+        if (!isServer || {!ACTIVE}) exitWith {};
+        // the despawn clears the profile's waypoints next, to save them again from the group
+        ["sameOrders", [_profile]] call ALiVE_fnc_lambs;
+        if (isNull _group || {(_group getVariable ["ALiVE_lambs", []]) isEqualTo []}) exitWith {};
         private _key = _group getVariable ["ALiVE_lambs_key", ""];
         private _id = (_group getVariable ["ALiVE_lambs", ["", ""]]) select 1;
         // the profile keeps only the commander's waypoints: see "scrub"
         if (_profile isNotEqualTo []) then {
             [_profile, "lambsKeep", _group getVariable ["ALiVE_lambs_wpKeep", []]] call ALiVE_fnc_hashSet;
+            // a reserve out reinforcing may be riding a vehicle LAMBS took: its own vehicles are noted, so
+            // "scrub" can tell which links the despawn made are not its own
+            if (_id in ALiVE_lambs_reinforcing) then {
+                [_profile, "lambsOwn", ([_profile, "vehiclesInCommandOf", []] call ALiVE_fnc_hashGet) + ([_profile, "vehiclesInCargoOf", []] call ALiVE_fnc_hashGet)] call ALiVE_fnc_hashSet;
+            };
         };
-        if (local _group) then {
-            ["detachLocal", [_key]] call ALiVE_fnc_lambs;
-        } else {
-            ["detachLocal", [_key]] remoteExecCall ["ALiVE_fnc_lambs", groupOwner _group];
-        };
-        if (_id != "") then {
-            ALiVE_lambs_active deleteAt _id;
-            ALiVE_lambs_reinforcing deleteAt _id;
-        };
+        ["toOwner", [_group, "detachLocal", [_key]]] call ALiVE_fnc_lambs;
+        // a reserve still out reinforcing keeps its record: "scrub" puts its garrison back on the profile
+        if (_id != "") then { ALiVE_lambs_active deleteAt _id };
         TALLY("detached");
         if (DEBUGON) then { ["ALiVE LAMBS: %1 (%2) despawned.", _group, _id] call ALiVE_fnc_dump };
     };
@@ -384,12 +439,109 @@ switch (_operation) do {
     // owner: the men are being deleted, so only the task thread and this machine's record go
     case "detachLocal": {
         _args params [["_key", ""]];
-        if (isRemoteExecuted && {remoteExecutedOwner != 2}) exitWith {};
         private _state = ALiVE_lambs_groups getOrDefault [_key, createHashMap];
         if (count _state == 0) exitWith {};
         private _handle = _state get "handle";
         if (!isNull _handle && {(_state get "task") != "defend"}) then { terminate _handle };
         ALiVE_lambs_groups deleteAt _key;
+    };
+
+    // any machine: [group, operation, arguments] run an operation on the machine that owns the group
+    case "toOwner": {
+        _args params [["_group", grpNull], ["_op", ""], ["_opArgs", []]];
+        if (isNull _group) exitWith {};
+        if (local _group) then {
+            [_op, _opArgs] call ALiVE_fnc_lambs;
+        } else {
+            [_op, _opArgs] remoteExecCall ["ALiVE_fnc_lambsRemote", groupOwner _group];
+        };
+    };
+
+    // owner: [key] the server changed the group's orders, so it is seen to before its turn in the loop
+    case "nudge": {
+        _args params [["_key", ""]];
+        if (_key in ALiVE_lambs_groups) then { ALiVE_lambs_urgent pushBackUnique _key };
+    };
+
+    // server: [owner id] a machine that runs LAMBS said so. A machine that has not (no LAMBS, or not ready
+    // yet) is given none of the groups LAMBS runs.
+    case "with": {
+        _args params [["_owner", -1]];
+        if (!isServer || {_owner < 0}) exitWith {};
+        ALiVE_lambs_with pushBackUnique _owner;
+        ["ALiVE LAMBS: machine %1 runs LAMBS Danger, so the groups LAMBS runs can be moved to it.", _owner] call ALiVE_fnc_dump;
+    };
+
+    // server: [group] with ACE's headless transfer on, ACE picks the machine a group goes to, so a group LAMBS
+    // runs is put on ACE's blacklist while any headless client has not said it runs LAMBS, and taken off it
+    // when they all have. Only a mark this set is ever lifted: one a mission or ALiVE's distributor set stays.
+    case "aceHold": {
+        _args params [["_group", grpNull]];
+        if (!isServer || {isNull _group} || {!((missionNamespace getVariable [A_ACE_ON, false]) isEqualTo true)}) exitWith {};
+        private _hold = !(["mayMove", [_group]] call ALiVE_fnc_lambs);
+        {
+            if (_hold) then {
+                if !(_x getVariable [A_ACE_BLACKLIST, false]) then {
+                    _x setVariable [A_ACE_BLACKLIST, true, true];
+                    _x setVariable [A_ACE_HELD, true];
+                };
+            } else {
+                // a man ALiVE itself keeps on the server for now (ALiVE_ignore_HC: a garrison walking to its
+                // posts) stays held; he is looked at again on the next pass
+                if (_x getVariable [A_ACE_HELD, false] && {!((_x getVariable ["ALiVE_ignore_HC", false]) isEqualTo true)}) then {
+                    _x setVariable [A_ACE_BLACKLIST, nil, true];
+                    _x setVariable [A_ACE_HELD, nil];
+                };
+            };
+        } forEach units _group;
+    };
+
+    // server: [profile] at despawn, a reserve out reinforcing may be riding a vehicle LAMBS took, and the despawn
+    // has just linked whatever the men ride to the profile. A link the profile did not have before ("lambsOwn",
+    // noted by "detach") goes. Done on the profile data, so it holds whichever machine owns the men.
+    case "unride": {
+        _args params [["_profile", []]];
+        if (_profile isEqualTo []) exitWith {};
+        private _own = [_profile, "lambsOwn", false] call ALiVE_fnc_hashGet;
+        [_profile, "lambsOwn", false] call ALiVE_fnc_hashSet;
+        // no note, nothing to tell apart: every link stays
+        if (isNil "_own" || {!(_own isEqualType [])}) exitWith {};
+        private _inCommand = [_profile, "vehiclesInCommandOf", []] call ALiVE_fnc_hashGet;
+        private _inCargo = [_profile, "vehiclesInCargoOf", []] call ALiVE_fnc_hashGet;
+        private _assignments = [_profile, "vehicleAssignments", []] call ALiVE_fnc_hashGet;
+        {
+            private _vehicleID = _x;
+            // both sides, where the vehicle's side is linked
+            if (!isNil "ALIVE_profileHandler") then {
+                private _vehicleProfile = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+                if (!isNil "_vehicleProfile") then { [_profile, _vehicleProfile] call ALIVE_fnc_removeProfileVehicleAssignment };
+            };
+            // the group's own side, which the despawn writes whether or not the vehicle despawned with it
+            if (_assignments isEqualType [] && {count _assignments > 1} && {_vehicleID in (_assignments select 1)}) then {
+                [_assignments, _vehicleID, nil] call ALiVE_fnc_hashSet;
+            };
+            {
+                private _index = _x find _vehicleID;
+                if (_index > -1) then { _x deleteAt _index };
+            } forEach [_inCommand, _inCargo];
+            TALLY("vehicle_returned");
+        } forEach ((_inCommand + _inCargo) - _own);
+        // on foot again, the virtual group moves at walking pace
+        if ((_inCommand + _inCargo) isEqualTo []) then { [_profile, "speedPerSecond", "Man" call ALIVE_fnc_vehicleGetSpeedPerSecond] call ALiVE_fnc_hashSet };
+    };
+
+    // server: [group, owner id] -> false when LAMBS runs the group and that machine has not said it runs LAMBS.
+    // Such a group has no Soldier Behaviour either, so there it would be left with neither.
+    // [group] with no machine named (ACE's transfer picks it): true only when there is a headless client and
+    // every one of them runs LAMBS, so a group is never free to go before the machines are known.
+    case "mayMove": {
+        _args params [["_group", grpNull], ["_owner", -1]];
+        _result = true;
+        // a garrison is ALiVE's for now and LAMBS' again once the commander moves it on, so it counts too
+        if !(_group getVariable ["ALiVE_lambs_run", false] || {_group getVariable ["ALiVE_lambs_garrison", false]}) exitWith {};
+        private _owners = if (_owner > -1) then { [_owner] } else { (allPlayers select { typeOf _x == "HeadlessClient_F" }) apply { owner _x } };
+        _result = _owners isNotEqualTo [] && {(_owners findIf { !(_x in ALiVE_lambs_with) }) < 0};
+        if (!_result && {_owner > -1}) then { TALLY("kept_off_machine_without_lambs") };
     };
 
     // server, after the despawn has saved the group's waypoints to the profile: a waypoint LAMBS made (its hunt
@@ -426,11 +578,26 @@ switch (_operation) do {
             TALLY("waypoints_scrubbed");
             if (DEBUGON) then { ["ALiVE LAMBS: %1 LAMBS waypoint(s) left off profile %2.", _before - count _clean, [_profile, "profileID", ""] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump };
         };
+        // a reserve that despawned while out reinforcing gets its garrison, or its way home, on the profile
+        private _id = [_profile, "profileID", ""] call ALiVE_fnc_hashGet;
+        if (_id isEqualType "" && {_id in ALiVE_lambs_reinforcing}) then {
+            ["unride", [_profile]] call ALiVE_fnc_lambs;
+            ["reinforceBack", [_id, grpNull]] call ALiVE_fnc_lambs;
+        };
     };
 
     // ---------------------------------------------------------------------------------------------
     // Orders
     // ---------------------------------------------------------------------------------------------
+
+    // server: [profile] the profile's waypoints are about to be cleared and the same orders laid again (a
+    // despawn saving them from the group, a route being rebuilt): the next "reordered" for it is not new orders
+    case "sameOrders": {
+        _args params [["_profile", []]];
+        if (!ACTIVE || {!isServer} || {_profile isEqualTo []}) exitWith {};
+        private _id = [_profile, "profileID", ""] call ALiVE_fnc_hashGet;
+        if (_id isEqualType "") then { ALiVE_lambs_sameOrders = _id };
+    };
 
     // server: new orders are being written, so whatever LAMBS task served the old ones ends
     case "reordered": {
@@ -438,11 +605,18 @@ switch (_operation) do {
         if (!ACTIVE || {!isServer} || {_profile isEqualTo []}) exitWith {};
         private _id = [_profile, "profileID", ""] call ALiVE_fnc_hashGet;
         if !(_id isEqualType "") exitWith {};
+        // a clear that lays the same orders again (see "sameOrders"): the order stands
+        if (_id != "" && {_id == ALiVE_lambs_sameOrders}) exitWith { ALiVE_lambs_sameOrders = "" };
+        // spawned or virtual: an order left here would come back on the next spawn
         ALiVE_lambs_orders deleteAt _id;
         private _group = ALiVE_lambs_active getOrDefault [_id, grpNull];
         if (isNull _group) exitWith {};
         _group setVariable ["ALiVE_lambs_stamp", (_group getVariable ["ALiVE_lambs_stamp", 0]) + 1, true];
         _group setVariable ["ALiVE_lambs_order", [], true];
+        // the note of the old waypoints goes with them, or a despawn before the owner's next pass would
+        // take the new ones off the profile
+        _group setVariable ["ALiVE_lambs_wpKeep", nil, true];
+        ["toOwner", [_group, "nudge", [_group getVariable ["ALiVE_lambs_key", ""]]]] call ALiVE_fnc_lambs;
     };
 
     // server: what the commander just ordered, so the owner can pick the LAMBS task that fits it
@@ -461,7 +635,11 @@ switch (_operation) do {
         };
         private _group = ALiVE_lambs_active getOrDefault [_id, grpNull];
         // a new order is a new stamp, so a task serving the last one ends even where no waypoints were cleared
-        if (!isNull _group) then { _group setVariable ["ALiVE_lambs_stamp", (_group getVariable ["ALiVE_lambs_stamp", 0]) + 1, true] };
+        if (!isNull _group) then {
+            _group setVariable ["ALiVE_lambs_stamp", (_group getVariable ["ALiVE_lambs_stamp", 0]) + 1, true];
+            _group setVariable ["ALiVE_lambs_wpKeep", nil, true];
+            ["toOwner", [_group, "nudge", [_group getVariable ["ALiVE_lambs_key", ""]]]] call ALiVE_fnc_lambs;
+        };
         private _order = [_kind, _position, _reference, [0, _group getVariable ["ALiVE_lambs_stamp", 0]] select (!isNull _group), _expiry, _objectivePos];
         ALiVE_lambs_orders set [_id, _order];
         if (!isNull _group) then {
@@ -632,14 +810,25 @@ switch (_operation) do {
     // The owner's loop: a count of groups per pass, never a time budget
     // ---------------------------------------------------------------------------------------------
 
+    // [] a pass over the next groups in turn; [key] that one group now
     case "tick": {
+        _args params [["_only", ""]];
         private _keys = keys ALiVE_lambs_groups;
         private _total = count _keys;
         if (_total == 0) exitWith {};
-        _keys sort true;
-        for "_n" from 1 to (TICK_GROUPS min _total) do {
-            ALiVE_lambs_next = (ALiVE_lambs_next + 1) mod _total;
-            private _key = _keys select ALiVE_lambs_next;
+        private _visit = [];
+        if (_only != "") then {
+            if (_only in ALiVE_lambs_groups) then { _visit = [_only] };
+        } else {
+            _keys sort true;
+            // with many groups the pass grows, so each still gets its turn inside TICK_ROUND
+            for "_n" from 1 to ((TICK_GROUPS max ceil (_total * TICK_SLEEP / TICK_ROUND)) min _total) do {
+                ALiVE_lambs_next = (ALiVE_lambs_next + 1) mod _total;
+                _visit pushBack (_keys select ALiVE_lambs_next);
+            };
+        };
+        {
+            private _key = _x;
             private _state = ALiVE_lambs_groups getOrDefault [_key, createHashMap];
             if (count _state == 0) then { continue };
             private _group = _state get "group";
@@ -704,10 +893,11 @@ switch (_operation) do {
             if (_reinforcing > 0) then {
                 if (time - _reinforcing > REINFORCE_CAP || {time - (_state get "lastEvent") > REINFORCE_QUIET && {!(_group getVariable [L_TACTIC, false])}}) then {
                     _state set ["reinforcing", -1];
+                    _group setVariable ["ALiVE_lambs_reinf", false, true];
                     private _wps = waypoints _group;
                     for "_i" from (count _wps - 1) to 0 step -1 do { if (waypointName (_wps select _i) in L_WP_NAMES) then { deleteWaypoint (_wps select _i) } };
                     (_group getVariable ["ALiVE_lambs", ["", "", ""]]) params ["", "_id", "_sideText"];
-                    ["report", ["reinforceDone", _id, _sideText, getPosATL _leader, []]] remoteExecCall ["ALiVE_fnc_lambs", 2];
+                    ["report", ["reinforceDone", _id, _sideText, getPosATL _leader, []]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
                 continue;
             };
@@ -766,7 +956,7 @@ switch (_operation) do {
                     if (DEBUGON) then { ["ALiVE LAMBS: %1 is given its waypoint %2 again after a LAMBS tactic.", _group, _cw] call ALiVE_fnc_dump };
                 };
             };
-        };
+        } forEach _visit;
     };
 
     // ---------------------------------------------------------------------------------------------
@@ -786,7 +976,7 @@ switch (_operation) do {
             private _gun = _third;
             if !(_gun isEqualType objNull) exitWith {};
             if (isNull _gun) exitWith {};
-            ["report", ["artycalled", "", str side _group, _fourth, [_gun]]] remoteExecCall ["ALiVE_fnc_lambs", 2];
+            ["report", ["artycalled", "", str side _group, _fourth, [_gun]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
             [_gun, str side _group] spawn {
                 params ["_gun", "_sideText"];
                 _gun setVariable ["ALiVE_lambs_fired", 0];
@@ -795,7 +985,7 @@ switch (_operation) do {
                 sleep 20;
                 waitUntil { sleep 5; !alive _gun || {time > _until} || {((group gunner _gun) getVariable [L_CURTACTIC, ""]) != "taskArtillery"} };
                 _gun removeEventHandler ["Fired", _eh];
-                ["report", ["artydone", "", _sideText, getPosATL _gun, [_gun, _gun getVariable ["ALiVE_lambs_fired", 0]]]] remoteExecCall ["ALiVE_fnc_lambs", 2];
+                ["report", ["artydone", "", _sideText, getPosATL _gun, [_gun, _gun getVariable ["ALiVE_lambs_fired", 0]]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
             };
         };
 
@@ -820,7 +1010,7 @@ switch (_operation) do {
                 _state set ["lastEvent", time];
                 if (["contact", SEND_CONTACT] call _due) then {
                     TALLY("contact_seen");
-                    ["report", ["contact", _id, _sideText, getPosATL _unit, [[_third] select { _x isEqualType objNull && {!isNull _x} }, 1]]] remoteExecCall ["ALiVE_fnc_lambs", 2];
+                    ["report", ["contact", _id, _sideText, getPosATL _unit, [[_third] select { _x isEqualType objNull && {!isNull _x} }, 1]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
             };
             case "assess": {
@@ -828,27 +1018,33 @@ switch (_operation) do {
                 private _enemies = if (_third isEqualType []) then { _third select { _x isEqualType objNull && {alive _x} } } else { [] };
                 if (_enemies isEqualTo []) exitWith {};
                 if (["assess", SEND_ASSESS] call _due) then {
-                    ["report", ["assess", _id, _sideText, getPosATL _unit, [_enemies select [0, ASSESS_ENEMIES], count _enemies, { alive _x } count units _group]]] remoteExecCall ["ALiVE_fnc_lambs", 2];
+                    ["report", ["assess", _id, _sideText, getPosATL _unit, [_enemies select [0, ASSESS_ENEMIES], count _enemies, { alive _x } count units _group]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
                 // LAMBS' own rule for calling fire, sent to ALiVE's batteries when LAMBS has no gun of its own to call
                 if (LHAS(L_FNC_FRIENDLIES) && {!(LHAS(L_FNC_HASARTY) && {[side _group] call LFNC(L_FNC_HASARTY)})}) then {
                     private _index = _enemies findIf { _unit distance2D _x > ARTY_MIN_RANGE && {([_unit, getPosATL _x, ARTY_FRIENDLY] call LFNC(L_FNC_FRIENDLIES)) isEqualTo []} };
                     if (_index > -1 && {["arty", SEND_ARTY] call _due}) then {
                         private _target = _enemies select _index;
-                        ["report", ["arty", _id, _sideText, getPosATL _target, [_target, count _enemies]]] remoteExecCall ["ALiVE_fnc_lambs", 2];
+                        ["report", ["arty", _id, _sideText, getPosATL _target, [_target, count _enemies]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                     };
                 };
             };
             case "panic";
             case "fleeing": {
                 if (["morale", SEND_MORALE] call _due) then {
-                    ["report", [_kind, _id, _sideText, getPosATL _unit, []]] remoteExecCall ["ALiVE_fnc_lambs", 2];
+                    ["report", [_kind, _id, _sideText, getPosATL _unit, []]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
             };
             case "reinforce": {
-                _state set ["reinforcing", time];
                 _state set ["lastEvent", time];
-                ["report", ["reinforce", _id, _sideText, if (_third isEqualType [] && {count _third > 1}) then { _third } else { getPosATL _unit }, []]] remoteExecCall ["ALiVE_fnc_lambs", 2];
+                // one reinforcement runs from its first call; the flag is public so it follows the group to another machine
+                if ((_state get "reinforcing") < 0) then {
+                    _state set ["reinforcing", time];
+                    _group setVariable ["ALiVE_lambs_reinf", true, true];
+                };
+                if (["reinforce", SEND_MORALE] call _due) then {
+                    ["report", ["reinforce", _id, _sideText, if (_third isEqualType [] && {count _third > 1}) then { _third } else { getPosATL _unit }, []]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+                };
             };
         };
     };
@@ -858,11 +1054,20 @@ switch (_operation) do {
     // ---------------------------------------------------------------------------------------------
 
     case "report": {
-        _args params [["_kind", ""], ["_id", ""], ["_sideText", ""], ["_position", []], ["_payload", []]];
+        // the last is the machine it came from, set by ALiVE_fnc_lambsRemote (-1: this machine)
+        _args params [["_kind", ""], ["_id", ""], ["_sideText", ""], ["_position", []], ["_payload", []], ["_sender", -1]];
         if (!isServer || {!ACTIVE}) exitWith {};
         private _group = ALiVE_lambs_active getOrDefault [_id, grpNull];
-        // a report on a group comes from the machine that owns it
-        if (isRemoteExecuted && {!(_kind in ["artycalled", "artydone"])} && {isNull _group || {groupOwner _group != remoteExecutedOwner}}) exitWith { TALLY("report_refused") };
+        // a report on a group comes from the machine that owns it, one on a gun from the machine that owns the gun
+        private _refused = _sender > -1 && {
+            if (_kind in ["artycalled", "artydone"]) then {
+                private _gun = _payload param [0, objNull];
+                !(_gun isEqualType objNull) || {isNull _gun} || {owner _gun != _sender}
+            } else {
+                isNull _group || {groupOwner _group != _sender}
+            }
+        };
+        if (_refused) exitWith { TALLY("report_refused") };
         TALLY("report_" + _kind);
         private _opcoms = OPCOMS select { ([_x, "side", ""] call ALiVE_fnc_hashGet) == _sideText };
 
@@ -896,6 +1101,9 @@ switch (_operation) do {
 
             // a reserve group went to help on LAMBS' call: its garrison is let go, and noted so it can be put back
             case "reinforce": {
+                // a second call for the same reinforcement: by now the garrison is released, so the first note stands
+                private _running = ALiVE_lambs_reinforcing getOrDefault [_id, []];
+                if (_running isNotEqualTo []) exitWith { _running set [0, time]; _running set [1, _position] };
                 private _profile = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler;
                 if (isNil "_profile") exitWith {};
                 private _commands = [_profile, "activeCommands", []] call ALiVE_fnc_hashGet;
@@ -918,34 +1126,7 @@ switch (_operation) do {
                 if (DEBUGON) then { ["ALiVE LAMBS: reserve %1 %2 goes to reinforce at %3 (garrison released: %4).", _sideText, _id, _position, _hadGarrison] call ALiVE_fnc_dump };
             };
 
-            case "reinforceDone": {
-                private _record = ALiVE_lambs_reinforcing getOrDefault [_id, []];
-                ALiVE_lambs_reinforcing deleteAt _id;
-                private _profile = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler;
-                if (_record isEqualTo [] || {isNil "_profile"}) exitWith {};
-                _record params ["", "", "_centre", "_hadGarrison"];
-                // LAMBS takes an empty vehicle within 75 m for a group that has none; one that is not the profile's goes back
-                if (!isNull _group) then {
-                    private _own = ([_profile, "vehiclesInCommandOf", []] call ALiVE_fnc_hashGet) apply {
-                        private _vehicle = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                        if (isNil "_vehicle") then { objNull } else { [_vehicle, "vehicle", objNull] call ALiVE_fnc_hashGet }
-                    };
-                    {
-                        if !(_x in _own) then {
-                            ["unassign", [_group, _x]] remoteExecCall ["ALiVE_fnc_lambs", groupOwner _group];
-                            TALLY("vehicle_returned");
-                        };
-                    } forEach (assignedVehicles _group);
-                };
-                if (count _centre > 1) then {
-                    if (_hadGarrison) then {
-                        [_profile, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [200, "true", _centre]]] call ALIVE_fnc_profileEntity;
-                    } else {
-                        [_profile, "addWaypoint", [_centre, 15] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
-                    };
-                };
-                if (DEBUGON) then { ["ALiVE LAMBS: reserve %1 %2 is sent back to %3 (garrison: %4).", _sideText, _id, _centre, _hadGarrison] call ALiVE_fnc_dump };
-            };
+            case "reinforceDone": { ["reinforceBack", [_id, _group]] call ALiVE_fnc_lambs };
 
             // a LAMBS-style call for fire, asked of ALiVE's artillery under ALiVE's own rules
             case "arty": {
@@ -977,13 +1158,13 @@ switch (_operation) do {
                 private _record = ["batteryOf", [_gun]] call ALiVE_fnc_lambs;
                 if (_record isEqualTo []) exitWith {};
                 [_record, "state", "FIRING"] call ALiVE_fnc_hashSet;
-                ALiVE_lambs_firing set [netId _gun, _record];
+                ALiVE_lambs_firing set [netId _gun, [_record, time, _gun]];
                 if (DEBUGON) then { ["ALiVE LAMBS: LAMBS fires battery %1.", [_record, "entityID", ""] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump };
             };
 
             case "artydone": {
                 _payload params [["_gun", objNull], ["_fired", 0]];
-                private _record = ALiVE_lambs_firing getOrDefault [netId _gun, []];
+                private _record = (ALiVE_lambs_firing getOrDefault [netId _gun, []]) param [0, []];
                 ALiVE_lambs_firing deleteAt (netId _gun);
                 if (_record isEqualTo []) exitWith {};
                 private _rounds = (([_record, "rounds", 0] call ALiVE_fnc_hashGet) - (_fired max 0)) max 0;
@@ -998,10 +1179,44 @@ switch (_operation) do {
         };
     };
 
+    // server: [profileID, group] a reserve's reinforcement is over (its owner said so, it despawned, or the
+    // word never came): its garrison is put back, or it is sent home. The group is null at despawn.
+    case "reinforceBack": {
+        _args params [["_id", ""], ["_group", grpNull]];
+        if (!isServer) exitWith {};
+        private _record = ALiVE_lambs_reinforcing getOrDefault [_id, []];
+        ALiVE_lambs_reinforcing deleteAt _id;
+        private _profile = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler;
+        if (_record isEqualTo [] || {isNil "_profile"}) exitWith {};
+        _record params ["", "", "_centre", "_hadGarrison"];
+        // LAMBS takes an empty vehicle within 75 m for a group that has none; one that is not the profile's goes back
+        if (!isNull _group) then {
+            _group setVariable ["ALiVE_lambs_reinf", false, true];
+            private _own = (([_profile, "vehiclesInCommandOf", []] call ALiVE_fnc_hashGet) + ([_profile, "vehiclesInCargoOf", []] call ALiVE_fnc_hashGet)) apply {
+                private _vehicle = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                if (isNil "_vehicle") then { objNull } else { [_vehicle, "vehicle", objNull] call ALiVE_fnc_hashGet }
+            };
+            {
+                if !(_x in _own) then {
+                    ["toOwner", [_group, "unassign", [_group, _x]]] call ALiVE_fnc_lambs;
+                    TALLY("vehicle_returned");
+                };
+            } forEach (assignedVehicles _group);
+        };
+        if (count _centre > 1) then {
+            if (_hadGarrison) then {
+                [_profile, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [200, "true", _centre]]] call ALIVE_fnc_profileEntity;
+            } else {
+                [_profile, "addWaypoint", [_centre, 15] call ALIVE_fnc_createProfileWaypoint] call ALIVE_fnc_profileEntity;
+            };
+        };
+        TALLY("reinforce_back");
+        if (DEBUGON) then { ["ALiVE LAMBS: reserve %1 is sent back to %2 (garrison: %3).", _id, _centre, _hadGarrison] call ALiVE_fnc_dump };
+    };
+
     // owner: the server found a vehicle LAMBS took that is not the profile's
     case "unassign": {
         _args params [["_group", grpNull], ["_vehicle", objNull]];
-        if (isRemoteExecuted && {remoteExecutedOwner != 2}) exitWith {};
         if (isNull _group || {isNull _vehicle} || {!local _group}) exitWith {};
         _group leaveVehicle _vehicle;
     };
@@ -1015,14 +1230,13 @@ switch (_operation) do {
         private _leader = [_enemy, "leader", objNull] call ALiVE_fnc_hashGet;
         if (!(_leader isEqualType objNull) || {isNull _leader} || {!alive _leader}) exitWith {};
         [_group, [_leader, 1.5]] remoteExecCall ["reveal", groupOwner _group];
-        ["share", [_group, _leader]] remoteExecCall ["ALiVE_fnc_lambs", groupOwner _group];
+        ["toOwner", [_group, "share", [_group, _leader]]] call ALiVE_fnc_lambs;
         TALLY("told");
     };
 
     // owner: a moment after the reveal, the leader puts it on the LAMBS net inside LAMBS' own ranges
     case "share": {
         _args params [["_group", grpNull], ["_enemy", objNull]];
-        if (isRemoteExecuted && {remoteExecutedOwner != 2}) exitWith {};
         if (isNull _group || {isNull _enemy} || {!local _group} || {!LHAS(L_FNC_SHARE)}) exitWith {};
         [{
             params ["_group", "_enemy"];
@@ -1070,25 +1284,57 @@ switch (_operation) do {
             if (isNull _group) then { ALiVE_lambs_active deleteAt _id; continue };
             private _info = _group getVariable ["ALiVE_lambs", []];
             if (_info isEqualTo []) then { continue };
+            // ACE's transfer: held or let go as the headless clients come and go
+            ["aceHold", [_group]] call ALiVE_fnc_lambs;
             private _profile = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler;
             if (isNil "_profile") then { continue };
             // aircraft, boats, gun crews and SPE stay STATIC; only a garrison moves in and out of it
             private _role = ["classify", [_profile]] call ALiVE_fnc_lambs;
             if ((_info select 0) == "STATIC" && {_role == "STATIC" || {!(_group getVariable ["ALiVE_lambs_garrison", false])}}) then { continue };
-            if ((_role == "STATIC") isNotEqualTo (_group getVariable ["ALiVE_lambs_garrison", false])) then { _group setVariable ["ALiVE_lambs_garrison", _role == "STATIC", true] };
+            // a group that turns STATIC for good (a crew whose battery is listed after it spawned) is no garrison
+            private _garrison = _role == "STATIC" && {!(["fixed", [_profile]] call ALiVE_fnc_lambs)};
             // a group a command runs (patrol and the like) is not given its waypoint again by the owner
             private _cmd = ([_profile, "activeCommands", []] call ALiVE_fnc_hashGet) isNotEqualTo [];
             if (_cmd isNotEqualTo (_group getVariable ["ALiVE_lambs_cmd", false])) then { _group setVariable ["ALiVE_lambs_cmd", _cmd, true] };
-            if (_role != (_info select 0)) then {
-                _group setVariable ["ALiVE_lambs", [_role, _id, _info select 2], true];
-                ["roleVars", [_group, _role]] call ALiVE_fnc_lambs;
-                if (DEBUGON) then { ["ALiVE LAMBS: %1 (%2) is now %3.", _group, _id, _role] call ALiVE_fnc_dump };
+            // in one go: "mayMove" reads the garrison flag and the role's switches, and this loop is scheduled, so
+            // the AI Distributor must not look at the group between the two being written
+            isNil {
+                if (_garrison isNotEqualTo (_group getVariable ["ALiVE_lambs_garrison", false])) then { _group setVariable ["ALiVE_lambs_garrison", _garrison, true] };
+                if (_role != (_info select 0)) then {
+                    _group setVariable ["ALiVE_lambs", [_role, _id, _info select 2], true];
+                    ["roleVars", [_group, _role]] call ALiVE_fnc_lambs;
+                    // the role decides whether ACE may move the group, so the hold is looked at again with the new one
+                    ["aceHold", [_group]] call ALiVE_fnc_lambs;
+                    if (DEBUGON) then { ["ALiVE LAMBS: %1 (%2) is now %3.", _group, _id, _role] call ALiVE_fnc_dump };
+                };
             };
         } forEach +ALiVE_lambs_active;
         {
             private _map = _x;
             { if (isNil { [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler }) then { _map deleteAt _x } } forEach (keys _map);
         } forEach [ALiVE_lambs_orders, ALiVE_lambs_intel, ALiVE_lambs_reinforcing];
+
+        // a reinforcement whose end was never reported (its owner dropped): the reserve goes back all the same
+        {
+            if (time - (_y select 0) > REINFORCE_CAP + 120) then {
+                TALLY("reinforce_expired");
+                ["reinforceBack", [_x, ALiVE_lambs_active getOrDefault [_x, grpNull]]] call ALiVE_fnc_lambs;
+            };
+        } forEach +ALiVE_lambs_reinforcing;
+
+        // a battery LAMBS took whose mission never reported its end (the gun deleted, its owner dropped) is ALiVE's again
+        {
+            // read from the map itself: a copy of it would copy the battery record too
+            (ALiVE_lambs_firing get _x) params ["_record", "_at", "_gun"];
+            if (isNull _gun || {!alive _gun} || {time - _at > ARTY_COUNT_TIME + 60}) then {
+                ALiVE_lambs_firing deleteAt _x;
+                [_record, "cooldownUntil", time + ARTY_POOL_COOLDOWN] call ALiVE_fnc_hashSet;
+                [_record, "state", ["IDLE", "DRY"] select (([_record, "rounds", 0] call ALiVE_fnc_hashGet) <= 0)] call ALiVE_fnc_hashSet;
+                if (!isNull _gun) then { ["unpool", [_gun]] call ALiVE_fnc_lambs };
+                TALLY("pool_expired");
+                if (DEBUGON) then { ["ALiVE LAMBS: battery %1 taken back from a LAMBS mission that never reported its end.", [_record, "entityID", ""] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump };
+            };
+        } forEach (keys ALiVE_lambs_firing);
 
         // an attack order follows its target; with the target gone the order goes too
         {

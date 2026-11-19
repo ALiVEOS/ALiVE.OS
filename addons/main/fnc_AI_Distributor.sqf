@@ -24,6 +24,7 @@ See Also:
 Author:
 Highhead
 Jman
+Goldwep
 ---------------------------------------------------------------------------- */
 
 params
@@ -136,6 +137,10 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
                 private _HC = (GVAR(AI_DISTRIBUTOR_HCLIST) select _HC_index);
                 _HC_index = (_HC_index + 1);
+
+                // Integrate: a group LAMBS runs only goes to a headless client that has said it runs LAMBS;
+                // on any other it would be left with neither LAMBS nor Soldier Behaviour
+                if !(["mayMove", [_x, owner _HC]] call ALiVE_fnc_lambs) then { sleep 0.5; continue };
 
                 // Naked-unit workaround for issue #604. The engine
                 // occasionally resets affected units' loadouts to their
