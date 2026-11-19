@@ -1647,6 +1647,11 @@ switch(_operation) do {
         };
         ["ALiVE MIL_ARTILLERY - virtual fire mission: battery %1 (%2) -> %3 at grid %4: %5. %6 round(s) left in the ledger",
             _entityID, _kind, _targetID, mapGridPosition _targetPos, _resultText, _roundsLeft] call ALiVE_fnc_dump;
+
+        // on the list of fire missions (see ALIVE_fnc_MilArtilleryFireMission), already over: it is settled at once
+        if (isNil "ALIVE_artyMissions") then { ALIVE_artyMissions = [] };
+        ALIVE_artyMissions = ALIVE_artyMissions select { (_x select 9) < 0 || {time - (_x select 9) < 60} };
+        ALIVE_artyMissions pushBack [_entityID, _sideText, _kind, [_batteryPos select 0, _batteryPos select 1], [_targetPos select 0, _targetPos select 1], _n, time, 2, 1, time];
     };
 
     // counter-battery --------------------------------------------------------

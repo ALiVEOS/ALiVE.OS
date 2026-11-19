@@ -55,6 +55,7 @@ private _sideText = [_record,"side"] call ALiVE_fnc_hashGet;
 // missile at a laser put on the target, fired by ALIVE_fnc_missileArtillery where the launcher is local
 private _missile = ([_record,"kind",""] call ALiVE_fnc_hashGet) == "missile";
 private _released = false;
+private _boardEntry = [];
 
 // every profile this mission holds is recorded with the spawnType it had
 // before, so release restores holds owned by other systems (e.g. an air
@@ -80,6 +81,8 @@ private _fnc_release = {
     params ["_cooldownFactor"];
     if (_released) exitWith {};
     _released = true;
+    // over, on the list of fire missions (see _fnc_board)
+    if (_boardEntry isNotEqualTo []) then { _boardEntry set [7, 2]; _boardEntry set [9, time] };
 
     {
         _x params ["_pid","_pkind","_prior"];
@@ -126,6 +129,20 @@ if (_debug) then {
 // component uses, so the profile system keeps both ends physical until release
 private _entityProfile = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
 if (isNil "_entityProfile") exitWith { ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell; [1] call _fnc_release; };
+
+// The list of fire missions the War Room's artillery markers read: ALIVE_artyMissions, an array on the server only,
+// one entry per mission [battery ID, side, kind, battery [x,y], target [x,y], rounds, time ordered, phase (0 laying,
+// 1 firing, 2 over), virtual 0/1, end time (-1 while running)]. Put on here, set firing when the first round goes and
+// over in the release every exit runs through; entries over for a minute are pruned when the next goes on. A virtual
+// mission goes on already over (virtualFireMission).
+if (isNil "ALIVE_artyMissions") then { ALIVE_artyMissions = [] };
+ALIVE_artyMissions = ALIVE_artyMissions select { (_x select 9) < 0 || {time - (_x select 9) < 60} };
+private _bp = [_entityProfile,"position",[0,0,0]] call ALiVE_fnc_hashGet;
+_boardEntry = [_entityID, if (_sideText isEqualType west) then { str _sideText } else { toUpper _sideText },
+    [_record,"kind","gun"] call ALiVE_fnc_hashGet, [_bp select 0, _bp select 1], [_targetPos select 0, _targetPos select 1],
+    _roundsThisMission, time, 0, 0, -1];
+ALIVE_artyMissions pushBack _boardEntry;
+private _fnc_board = { if (!_released) then { _boardEntry set [7, 1] } };
 
 // a launcher crewed by UAV AI has no crew profile, so its record names the launcher's own vehicle profile:
 // nothing to hold but the launcher, which brings its crew with it when it spawns
@@ -687,6 +704,7 @@ if (_illumMag != "") then {
 // enemy's counter-battery for a flare
 if (_illumOnly) exitWith {
     _gunLead setVariable ["ALiVE_artyIllumOnly", true, true];
+    call _fnc_board;
     [_gunLead, [_aimBase, _mag, 1]] remoteExec ["doArtilleryFire", _gunLead];
     private _illumDeadline = time + 60;
     waitUntil { sleep 3; ((call _fnc_firedCount) > 0) || {time > _illumDeadline} };
@@ -743,10 +761,12 @@ if (_debug) then {
     ["ALiVE MIL_ARTILLERY - ranging round ordered: %1 firing %2 at %3", typeOf _gunLead, _mag, _rangingAim] call ALiVE_fnc_dump;
 };
 ["STR_ALIVE_MIL_ARTILLERY_CALL_SHOT"] call _fnc_tell;
+call _fnc_board;
 
 sleep 25;
 
 // main volley - every gun, per-round aim offset via the mission dispersion
+call _fnc_board;
 private _roundsPerGun = 1 max ceil (_roundsThisMission / count _guns);
 {
     private _volleyAim = _aimBase getPos [random _dispersion, random 360];
