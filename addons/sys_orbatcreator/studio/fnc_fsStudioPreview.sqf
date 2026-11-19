@@ -109,6 +109,11 @@ if (_op == "vehicle" && {!isNull _old} && {_oldRef isEqualTo _arg} && {typeOf _o
             _all append [configName _x, _stored getOrDefault [configName _x, getNumber (_x >> "initPhase")]];
         };
     } forEach (configProperties [configFile >> "CfgVehicles" >> _class >> "animationSources", "isClass _x", true]);
+    // a frozen vehicle keeps gathering speed, and all of it came out the moment its physics came back on, which
+    // threw it off the stage: at rest and back in place first
+    _old setVelocity [0, 0, 0];
+    _old setDir 180;
+    _old setPosASL _stage;
     _old enableSimulation true;
     _session set ["bodyPaint", _paint];
     [_old, [false, [_paint, 1]] select !(_paint isEqualTo ""), [false, _all] select !(_all isEqualTo [])] call BIS_fnc_initVehicle;
