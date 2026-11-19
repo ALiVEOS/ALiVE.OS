@@ -33,6 +33,8 @@ the session; it moves only when a value changes, never every frame.
       open combo list or a scrollbar past the popup's edge keeps its own mouse;
     - "popMove" / "popUp": a popup display's mouse events, which follow a drag
       that has started, and keep the four areas round a popup being dragged.
+      A press on an area within 0.4 s of a release that was not on one starts
+      no drag: it is the second press of a double-click on an open list.
 A drag ends when its button is found released, wherever the pointer was let go.
 Limits: pitch -10..80; distance from just outside the unit (its size) to 60; the
 sideways move stays within the unit's bounding radius, so it never leaves the view.
@@ -212,10 +214,18 @@ switch (_op) do {
     };
     case "down": {
         _args params ["", "_button", "_mx", "_my"];
+        // the second press of a double-click on an open combo list: the first press picked and closed the list,
+        // so this one lands on the open view. It is not a view drag (a hand moving before the release would pan)
+        (_session getOrDefault ["popRelease", [-1, true]]) params ["_tUp", "_onArea"];
+        if (!_onArea && {diag_tickTime - _tUp < 0.4}) exitWith {};
+        _session set ["areaPress", true];
         _session set ["drag", [_button, _mx, _my, diag_tickTime]];
     };
     case "popLayout": { [_args select 0] call _layout };
     case "popUp": {
+        // when the release came and whether its press was on the open view, for the double-click test in "down"
+        _session set ["popRelease", [diag_tickTime, _session getOrDefault ["areaPress", false]]];
+        _session set ["areaPress", false];
         _session set ["drag", []];
         [_args select 0] call _layout;
     };
@@ -226,7 +236,10 @@ switch (_op) do {
         // the left button held with no view drag going: the popup may be moving by its title
         if ((inputMouse 0) != 0 && {(_session getOrDefault ["drag", []]) isEqualTo []}) then { [_args select 0] call _layout };
     };
-    case "up": { _session set ["drag", []] };
+    case "up": {
+        _session set ["drag", []];
+        _session set ["areaPress", false];
+    };
     case "move": {
         _args params ["", "_mx", "_my"];
         private _drag = _session getOrDefault ["drag", []];
