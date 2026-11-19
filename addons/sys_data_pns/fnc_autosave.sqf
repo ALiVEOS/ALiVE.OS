@@ -48,6 +48,23 @@ private _handle = [_interval, _once] spawn {
 
         if (!_once) then { sleep _interval };
 
+        // While Auto Pause holds the modules with no players on, one save after the pause keeps the
+        // campaign; every timed save after it wrote the same state again and froze the server for
+        // nothing. So the timer skips until a player is back. A save asked for "now" always runs.
+        private _pausedAt = missionNamespace getVariable ["ALiVE_PAUSEMODULES_PAUSEDAT", -1];
+        if (
+            !_once &&
+            {_pausedAt >= 0} &&
+            {(missionNamespace getVariable ["ALiVE_SYS_DATA_PNS_LASTSAVE", -1]) > _pausedAt}
+        ) then {
+            if !(missionNamespace getVariable ["ALiVE_SYS_DATA_PNS_PAUSESKIP", false]) then {
+                ALiVE_SYS_DATA_PNS_PAUSESKIP = true;
+                ["SYS DATA PNS Autosave - modules paused and saved since the pause, so the timed saves wait for a player"] call ALiVE_fnc_dump;
+            };
+            continue;
+        };
+        ALiVE_SYS_DATA_PNS_PAUSESKIP = false;
+
         // a save asked for now (a trigger, a script, a War Room order) only waits for the two notices below;
         // the timed one gives the five seconds' warning first, as players expect it
 	    if (!_once) then { sleep 5 };
@@ -264,6 +281,8 @@ private _handle = [_interval, _once] spawn {
 	    };
 
 	    sleep 0.2;
+        // when the last save finished, for the pause check above (and for a server swap waiting on a save)
+        ALiVE_SYS_DATA_PNS_LASTSAVE = serverTime;
         ["SAVING FINISHED!"] call ALiVE_fnc_dumpMPH;
         ["SYS DATA PNS Autosave - the save held the server for %1 s%2", _heldFor, _writeText] call ALiVE_fnc_dump;
 	    sleep 2;
