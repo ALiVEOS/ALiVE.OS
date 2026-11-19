@@ -322,7 +322,10 @@ NEO_fnc_casHoldWhenParked = {
 // "If it cannot taxi then teleport it").
 NEO_fnc_casTakeoffWatch = {
     params ["_veh", "_callsign"];
-    if (!(_veh isKindOf "Plane") || {unitIsUAV _veh} || {_veh getVariable ["NEO_casTakeoffWatch", false]}) exitWith {};
+    // A drone gets the watch too: one tasked behind a parked plane had no way out at all (19 Nov). One connected to a
+    // UAV terminal is a player's to fly, and is never moved.
+    private _flown = { unitIsUAV _veh && {isUAVConnected _veh} };
+    if (!(_veh isKindOf "Plane") || {call _flown} || {_veh getVariable ["NEO_casTakeoffWatch", false]}) exitWith {};
     _veh setVariable ["NEO_casTakeoffWatch", true];
     private _from = getPosATL _veh;
     private _task = _veh getVariable ["NEO_radioCurrentTask", []];
@@ -331,11 +334,11 @@ NEO_fnc_casTakeoffWatch = {
     private _up = { ((getPosATL _veh) select 2) > 10 && {!isTouchingGround _veh} };
     waitUntil {
         sleep 2;
-        !alive _veh || {call _up} || {!(call _same)}
+        !alive _veh || {call _up} || {!(call _same)} || {call _flown}
             || {(time - _t0) > 75 && {(_veh distance2D _from) < 40}} || {(time - _t0) > 240}
     };
     _veh setVariable ["NEO_casTakeoffWatch", nil];
-    if (!alive _veh || {call _up} || {!(call _same)} || {_task isEqualTo []} || {(_task param [0, ""]) == "RTB"}) exitWith {};
+    if (!alive _veh || {call _up} || {!(call _same)} || {call _flown} || {_task isEqualTo []} || {(_task param [0, ""]) == "RTB"}) exitWith {};
 
     // the nearest runway: the world's main airfield or one of its secondary ones
     private _cfg = configFile >> "CfgWorlds" >> worldName;
