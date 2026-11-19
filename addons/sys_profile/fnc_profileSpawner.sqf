@@ -132,9 +132,12 @@ if !(_despawnQueue isEqualTo []) then {
         private _spawnedAt = _spawnedAtByID get _profileID;
         // Not while the Active Limiter is turning groups away: a held group nobody is near would keep a
         // slot from one next to a player.
+        // Nor while Auto Pause is putting groups away on an empty server: nobody is there to see one come straight
+        // back, and the profile system waits on them before it pauses (a minute more, 19 Nov).
         private _held = !isNil "_spawnedAt" &&
             {time - _spawnedAt < _despawnHold} &&
-            {(_coordinator getOrDefault ["limiterFullSince",0]) == 0};
+            {(_coordinator getOrDefault ["limiterFullSince",0]) == 0} &&
+            {isNil "ALiVE_main_PAUSEMODULES_PAUSED"};
 
         if (!_held && {isNil {_claimCounts get _profileID}}) then {
             _spawnedAtByID deleteAt _profileID;

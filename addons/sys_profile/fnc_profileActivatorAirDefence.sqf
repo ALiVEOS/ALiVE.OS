@@ -84,6 +84,14 @@ switch (_operation) do {
             } forEach _y;
         } forEach (missionNamespace getVariable ["ALiVE_ATO_airborne", createHashMap]);
 
+        // With the modules paused (Auto Pause, nobody on) no site is kept for its grace: they are let go at once, so the
+        // profile system, which pauses once its groups are put away, is not kept waiting on them (5 sites held 96 s on an
+        // empty server, 19 Nov). The air commanders take their aircraft off the list as they pause anyway.
+        if (!isNil "ALiVE_main_PAUSEMODULES_PAUSED") then {
+            _sources = [];
+            _logic set ["lastSeen", createHashMap];
+        };
+
         // idle once no aircraft is up and no site is still in its grace
         if ((_sources isEqualTo [] && {count (_logic get "lastSeen") == 0}) || {(_logic get "radius") <= 0}) exitWith {
             // idle: still complete every tick, or no profile on the map could ever despawn
