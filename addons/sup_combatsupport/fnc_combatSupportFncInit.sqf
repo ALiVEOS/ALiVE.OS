@@ -128,6 +128,37 @@ NEO_fnc_csTaxiLines = {
     };
     _lines
 };
+// Each airport's runway, from its ilsPosition and ilsDirection: it starts 100 m short of the threshold and runs along
+// the take-off heading as far as that airport's taxi points reach, plus 100 m (800 m at least, 4 km at most).
+// [] -> [[airport index, [a, b]], ...]
+NEO_fnc_csRunwayLines = {
+    private _w = configFile >> "CfgWorlds" >> worldName;
+    private _fields = [_w];
+    private _sec = _w >> "SecondaryAirports";
+    for "_i" from 0 to ((count _sec) - 1) do { _fields pushBack (_sec select _i) };
+    private _lines = [];
+    {
+        private _id = _forEachIndex;
+        private _ils = getArray (_x >> "ilsPosition");
+        private _dirV = getArray (_x >> "ilsDirection");
+        if (count _ils >= 2 && {count _dirV >= 3} && {(_ils select 0) != 0 || {(_ils select 1) != 0}}) then {
+            private _a = [_ils select 0, _ils select 1, 0];
+            // ilsDirection points back out along the approach, so the take-off run is the other way
+            private _u = vectorNormalized [-(_dirV select 0), -(_dirV select 2), 0];
+            private _far = 0;
+            private _field = _x;
+            {
+                private _pts = getArray (_field >> _x);
+                for "_i" from 0 to ((count _pts) - 2) step 2 do {
+                    _far = _far max (([_pts select _i, _pts select (_i + 1), 0] vectorDiff _a) vectorDotProduct _u);
+                };
+            } forEach ["ilsTaxiIn", "ilsTaxiOff"];
+            private _len = ((_far + 100) max 800) min 4000;
+            _lines pushBack [_id, [_a vectorDiff (_u vectorMultiply 100), _a vectorAdd (_u vectorMultiply _len)]];
+        };
+    } forEach _fields;
+    _lines
+};
 // [point, a, b] -> metres from the point to the line from a to b, on the ground
 NEO_fnc_csDistToLine = {
     params ["_p", "_a", "_b"];
@@ -173,8 +204,18 @@ NEO_fnc_csClearStand = {
         missionNamespace setVariable ["NEO_csStands", _taken];
         _this
     };
+    // and room either side of a runway: the strip kept clear for aircraft taking off and landing, 75 m from the
+    // centreline. RSS7's A-10, moved off the taxi route, stood 81 m from Takistan's main runway centreline (19 Nov).
+    private _runways = [] call NEO_fnc_csRunwayLines;
+    private _rwReach = _half + 75;
     private _on = [_lines, _stand, _reach] call NEO_fnc_csOnTaxiLine;
-    if (_on isEqualTo []) exitWith { +_stand call _fnc_record };
+    private _onRw = [_runways, _stand, _rwReach] call NEO_fnc_csOnTaxiLine;
+    if (_on isEqualTo [] && {_onRw isEqualTo []}) exitWith { +_stand call _fnc_record };
+    private _why = if (_on isEqualTo []) then {
+        format ["%1 m from the runway centreline of airport %2", _onRw select 1, _onRw select 0]
+    } else {
+        format ["%1 m from a taxi route of airport %2", _on select 1, _on select 0]
+    };
 
     // the air commander's stands, from its ledger, when it has placed them by now
     private _ato = [];
@@ -200,6 +241,7 @@ NEO_fnc_csClearStand = {
         if (surfaceIsWater _p) exitWith { false };
         if (((surfaceNormal _p) select 2) < 0.985) exitWith { false };
         if !(([_lines, _p, _reach] call NEO_fnc_csOnTaxiLine) isEqualTo []) exitWith { false };
+        if !(([_runways, _p, _rwReach] call NEO_fnc_csOnTaxiLine) isEqualTo []) exitWith { false };
         if ((_taken findIf { ((_x select 0) distance2D _p) < (_half + (_x select 1) + 5) }) >= 0) exitWith { false };
         if ((_ato findIf { (_x distance2D _p) < (_half + 20) }) >= 0) exitWith { false };
         if ((vehicles findIf { (_x isKindOf "Air" || {_x isKindOf "LandVehicle"}) && {!(_x isEqualTo _veh)} && {((getPosATL _x) select 2) < 5} && {(_x distance2D _p) < (_half + (_x call _halfOf) + 3)} }) >= 0) exitWith { false };
@@ -219,12 +261,12 @@ NEO_fnc_csClearStand = {
         _r = _r + 15;
     };
     if (_spot isEqualTo []) exitWith {
-        ["COMBAT SUPPORT - %1 (%2): its stand at %3 is %4 m from a taxi route of airport %5, and no clear spot was found within 180 m, so it stays there and may hold up aircraft taxiing past",
-            _callsign, typeOf _veh, mapGridPosition _stand, _on select 1, _on select 0] call ALiVE_fnc_dump;
+        ["COMBAT SUPPORT - %1 (%2): its stand at %3 is %4, and no clear spot was found within 180 m, so it stays there and may be in the way of other aircraft",
+            _callsign, typeOf _veh, mapGridPosition _stand, _why] call ALiVE_fnc_dump;
         +_stand call _fnc_record
     };
-    ["COMBAT SUPPORT - %1 (%2): its stand at %3 was %4 m from a taxi route of airport %5, where it would block aircraft taxiing out, so its stand is now %6 m away at %7 (%8)",
-        _callsign, typeOf _veh, mapGridPosition _stand, _on select 1, _on select 0, round (_spot distance2D _stand), mapGridPosition _spot, [round (_spot select 0), round (_spot select 1)]] call ALiVE_fnc_dump;
+    ["COMBAT SUPPORT - %1 (%2): its stand at %3 was %4, where it would be in the way of other aircraft, so its stand is now %5 m away at %6 (%7)",
+        _callsign, typeOf _veh, mapGridPosition _stand, _why, round (_spot distance2D _stand), mapGridPosition _spot, [round (_spot select 0), round (_spot select 1)]] call ALiVE_fnc_dump;
     _spot call _fnc_record
 };
 // [vehicle, stand, direction] puts an aircraft standing on the ground somewhere else onto its stand: after a load it
