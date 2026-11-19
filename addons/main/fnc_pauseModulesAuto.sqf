@@ -41,8 +41,26 @@ MOD(PAUSEMODULES_PAUSE) = {
 
     ["- Pausing Modules"] call ALiVE_fnc_dumpR;
 
+    // The profile system pauses last. Paused at once, its spawning stops before the groups spawned around the last
+    // player have been put away, and they stayed live AI all through the pause (68 to 81 groups overnight on an empty
+    // server, 19 Nov). Left running with nobody on, it despawns them within a few rounds; it pauses once none are
+    // left, or after 3 minutes at most. A player joining in that time calls the pause off (the flag is cleared).
+    [] spawn {
+        private _t0 = diag_tickTime;
+        private _spawned = {
+            if (isNil "ALIVE_profileHandler") exitWith { 0 };
+            private _active = [ALIVE_profileHandler, "getActiveEntities"] call ALIVE_fnc_profileHandler;
+            if (isNil "_active" || {!(_active isEqualType [])}) exitWith { 0 };
+            count _active
+        };
+        private _atPause = call _spawned;
+        waitUntil { sleep 5; isNil QGVAR(PAUSEMODULES_PAUSED) || {(call _spawned) == 0} || {diag_tickTime - _t0 > 180} };
+        if (isNil QGVAR(PAUSEMODULES_PAUSED)) exitWith {};
+        ["- Profiles paused last: %1 spawned groups when the other modules paused, %2 after %3 s", _atPause, call _spawned, round (diag_tickTime - _t0)] call ALiVE_fnc_dumpR;
+        ["ALIVE_SYS_PROFILE"] call ALiVE_fnc_pauseModule;
+    };
+
     [
-        "ALIVE_SYS_PROFILE",
         "ALIVE_MIL_OPCOM",
         "ALiVE_MIL_CQB",
         "ALiVE_SUP_FOB",
