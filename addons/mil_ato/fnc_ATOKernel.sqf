@@ -3064,6 +3064,24 @@ switch(_operation) do {
             // A paused commander never ticks, so nothing it put out of sight
             // would be shown again for the whole pause.
             [_logic, "wakeAll", "paused"] call MAINCLASS;
+            // An aircraft in the air when the server empties is held where it is, at its speed, until somebody
+            // joins. A paused commander makes no decisions, so one on patrol never turned for home on low fuel, and
+            // a MiG-29 on CAP was still flying at 15% fuel on an empty server (Jman, 18 Nov). Held with its
+            // simulation off, so it neither burns fuel nor falls; its speed and attitude are kept to give back.
+            private _place = [_logic, "place"] call _fnc_piece;
+            if !(_place isEqualTo []) then {
+                private _held = 0;
+                {
+                    private _obj = [_place, "objFor", _x] call ALIVE_fnc_ATOPlace;
+                    if (_obj isEqualType objNull && {alive _obj} && {simulationEnabled _obj} && {!isTouchingGround _obj}
+                        && {((getPos _obj) select 2) > 5} && {((crew _obj) findIf { isPlayer _x }) < 0}) then {
+                        _obj setVariable ["ALiVE_mil_ato_frozen", [velocity _obj, vectorDir _obj, vectorUp _obj, _logic]];
+                        _obj enableSimulationGlobal false;
+                        _held = _held + 1;
+                    };
+                } forEach (+((([_k, "rows", []] call ALIVE_fnc_hashGet) param [1, []])));
+                if (_held > 0) then { ["ALIVE_fnc_ATOKernel - %1 aircraft in the air held where they are for the pause", _held] call ALiVE_fnc_dump };
+            };
             if !(_base isEqualTo []) then { [_base, "pause", true] call ALIVE_fnc_ATOBase };
             if !(_watch isEqualTo []) then { [_watch, "pause", true] call ALIVE_fnc_ATOWatch };
         } else {
@@ -3112,6 +3130,28 @@ switch(_operation) do {
                 [_k, "paused", false] call ALIVE_fnc_hashSet;
                 [_k, "pausedAt", -1] call ALIVE_fnc_hashSet;
             };
+            // The aircraft held in the air for the pause fly on as they were. The speed is given where the hull
+            // lives, a headless client's for one, since a velocity set from elsewhere does not take.
+            private _released = 0;
+            {
+                private _was = _x getVariable ["ALiVE_mil_ato_frozen", []];
+                if (_was isEqualType [] && {count _was == 4} && {(_was select 3) isEqualTo _logic}) then {
+                    _x setVariable ["ALiVE_mil_ato_frozen", nil];
+                    if (alive _x) then {
+                        _was params ["_vel", "_dir", "_up"];
+                        _x enableSimulationGlobal true;
+                        if (local _x) then {
+                            _x setVectorDirAndUp [_dir, _up];
+                            _x setVelocity _vel;
+                        } else {
+                            [_x, [_dir, _up]] remoteExec ["setVectorDirAndUp", _x];
+                            [_x, _vel] remoteExec ["setVelocity", _x];
+                        };
+                        _released = _released + 1;
+                    };
+                };
+            } forEach (vehicles select { !isNil { _x getVariable "ALiVE_mil_ato_frozen" } });
+            if (_released > 0) then { ["ALIVE_fnc_ATOKernel - %1 aircraft held for the pause fly on", _released] call ALiVE_fnc_dump };
             if !(_base isEqualTo []) then { [_base, "pause", false] call ALIVE_fnc_ATOBase };
             if !(_watch isEqualTo []) then { [_watch, "pause", false] call ALIVE_fnc_ATOWatch };
             ["ALIVE_fnc_ATOKernel - un-paused after %1 s; %2 row clock(s) moved", round _delta, _moved] call ALiVE_fnc_dump;
