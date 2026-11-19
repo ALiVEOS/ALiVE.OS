@@ -190,6 +190,17 @@ class CfgVehicles {
         picture = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
     };
 
+    // Kawi's wish (#1108): the insurgents' recruitment HQs, IED factories and weapons depots near the
+    // spot are disabled, as when a player dismantles one
+    class ALiVE_ModuleZeusDisableInstallations : ALiVE_ModuleZeusBase
+    {
+        scopeCurator = 2;
+        displayName = "$STR_ALIVE_ZEUS_DISABLE";
+        ALiVE_zeusAction = "disableInstallations";
+        icon = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+        picture = "x\alive\addons\mil_opcom\icon_mil_OPCOM.paa";
+    };
+
     class ALiVE_ModuleZeusCreateTask : ALiVE_ModuleZeusBase
     {
         scopeCurator = 2;

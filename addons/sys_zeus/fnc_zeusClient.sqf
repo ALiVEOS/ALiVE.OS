@@ -11,7 +11,7 @@ server, which checks the Zeus and does the work (ALiVE_fnc_zeusRequest).
 
 Parameters:
 String - the module: "save", "debug", "soloTest", "spotReport", "handGroup", "bomber", "convertBomber",
-    "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "createTask",
+    "carBomb", "ied", "iedAmbush", "spawnGroup", "removeGroup", "objective", "reveal", "disableInstallations", "createTask",
     "closeTask", "airStrike", "resupply", "townMood", "tipOff", "angryCrowd", "createHub", "removeHub",
     "createFob", "removeFob", "createRally", "removeRally", "cancelObjective", "commanderSeat" or "commanderControl"
 Array - position (ATL)
@@ -340,6 +340,28 @@ switch (_action) do {
             ] call zen_dialog_fnc_create;
         } else {
             ["reveal", [_position, 1000, ""]] call _send;
+        };
+    };
+
+    // The recruitment HQs, IED factories and weapons depots within 100 m, or with Zeus Enhanced a
+    // radius chosen
+    case "disableInstallations": {
+        if (_zen) then {
+            [
+                localize "STR_ALIVE_ZEUS_DISABLE",
+                [
+                    ["SLIDER:RADIUS", localize "STR_ALIVE_ZEUS_RADIUS", [25, 1000, 100, 0, _position]]
+                ],
+                {
+                    params ["_values", "_args"];
+                    _args params ["_position", "_send"];
+                    ["disableInstallations", [_position, round (_values select 0)]] call _send;
+                },
+                {},
+                [_position, _send]
+            ] call zen_dialog_fnc_create;
+        } else {
+            ["disableInstallations", [_position, 100]] call _send;
         };
     };
 

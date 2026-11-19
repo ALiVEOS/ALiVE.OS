@@ -471,6 +471,57 @@ switch (_action) do {
         ["STR_ALIVE_ZEUS_REVEAL_DONE", [_found, _radius]] call _reply;
     };
 
+    // The insurgents' recruitment HQs, IED factories and weapons depots near the spot are disabled, as
+    // when a player dismantles one (ALiVE_fnc_INS_disableBuildingInstallations): each comes off its
+    // town's list, so it stays gone after a save and load. The Zeus is not named as the one who did it.
+    // A building is only marked with its installations once they are set up round a player, so one
+    // with nobody near is marked here first from its town's list, as that set-up marks it
+    case "disableInstallations": {
+        _args params [["_position", [], [[]]], ["_radius", 100, [0]]];
+        if (count _position < 2) exitWith {};
+        _radius = (_radius max 25) min 1000;
+        private _insurgents = (missionNamespace getVariable ["OPCOM_instances", []]) select { ([_x, "controltype", ""] call ALiVE_fnc_HashGet) == "asymmetric" };
+        if (_insurgents isEqualTo []) exitWith {
+            ["STR_ALIVE_ZEUS_REVEAL_NOINSURGENTS"] call _reply;
+        };
+        if (isNil "ALiVE_fnc_INS_registerInstallationOnBuilding") then { call ALiVE_fnc_INS_helpers };
+        private _buildings = [];
+        {
+            private _handler = _x;
+            {
+                private _objective = _x;
+                private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
+                {
+                    _x params ["_key", "_var", "_disabledVar"];
+                    private _stored = [_objective, _key, []] call ALiVE_fnc_HashGet;
+                    if ((_stored isEqualType [] && {_stored isNotEqualTo []}) || {_stored isEqualType objNull && {!isNull _stored}}) then {
+                        private _building = [_handler, "convertObject", _stored] call ALiVE_fnc_OPCOM;
+                        if (!isNull _building && {alive _building} && {_building distance2D _position < _radius}) then {
+                            [_building, _var, _objectiveID, _disabledVar] call ALiVE_fnc_INS_registerInstallationOnBuilding;
+                            _buildings pushBackUnique _building;
+                        };
+                    };
+                } forEach [
+                    ["factory", "ALiVE_mil_OPCOM_factory", "ALiVE_MIL_OPCOM_FACTORY_DISABLED"],
+                    ["HQ", "ALiVE_mil_OPCOM_HQ", "ALiVE_MIL_OPCOM_HQ_DISABLED"],
+                    ["depot", "ALiVE_mil_OPCOM_depot", "ALiVE_MIL_OPCOM_DEPOT_DISABLED"]
+                ];
+            } forEach ([_handler, "objectives", []] call ALiVE_fnc_HashGet);
+        } forEach _insurgents;
+        private _done = 0;
+        {
+            if (([_x] call ALiVE_fnc_INS_getBuildingInstallations) isNotEqualTo []) then {
+                [_x, objNull] call ALiVE_fnc_INS_disableBuildingInstallations;
+                _done = _done + 1;
+            };
+        } forEach _buildings;
+        if (_done == 0) exitWith {
+            ["STR_ALIVE_ZEUS_DISABLE_NONE", [_radius]] call _reply;
+        };
+        ["ALiVE Zeus - %1 disabled %2 insurgent installation building(s) within %3 m of %4", name _caller, _done, _radius, mapGridPosition _position] call ALiVE_fnc_dump;
+        ["STR_ALIVE_ZEUS_DISABLE_DONE", [_done, _radius]] call _reply;
+    };
+
     // A task for every player of the side, with its marker on the spot, as a player makes one on the
     // tablet. A plain module gives it to the side of the player nearest the spot
     case "createTask": {

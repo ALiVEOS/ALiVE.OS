@@ -215,6 +215,9 @@
 <Key ID="STR_ALIVE_ZEUS_REVEAL">
     <English>Reveal Insurgent Sites</English>
 </Key>
+<Key ID="STR_ALIVE_ZEUS_DISABLE">
+    <English>Disable Insurgent Installation</English>
+</Key>
 <Key ID="STR_ALIVE_ZEUS_CREATETASK">
     <English>Create Task</English>
 </Key>
@@ -289,6 +292,12 @@
 </Key>
 <Key ID="STR_ALIVE_ZEUS_REVEAL_DONE">
     <English>ALiVE: installations in %1 insurgent towns within %2 m are on the map.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_DISABLE_NONE">
+    <English>ALiVE: no recruitment HQ, IED factory or weapons depot within %1 m.</English>
+</Key>
+<Key ID="STR_ALIVE_ZEUS_DISABLE_DONE">
+    <English>ALiVE: %1 insurgent installation(s) within %2 m disabled.</English>
 </Key>
 <Key ID="STR_ALIVE_ZEUS_TASK_TITLE">
     <English>Move to grid %1</English>

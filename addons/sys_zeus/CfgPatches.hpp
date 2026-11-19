@@ -20,6 +20,7 @@ class CfgPatches {
             "ALiVE_ModuleZeusCommanderSeat",
             "ALiVE_ModuleZeusCommanderControl",
             "ALiVE_ModuleZeusRevealInstallations",
+            "ALiVE_ModuleZeusDisableInstallations",
             "ALiVE_ModuleZeusCreateTask",
             "ALiVE_ModuleZeusCloseTask",
             "ALiVE_ModuleZeusAirStrike",
