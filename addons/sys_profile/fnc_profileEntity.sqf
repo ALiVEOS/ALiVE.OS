@@ -1004,6 +1004,8 @@ switch(_operation) do {
                     };
                 };
             };
+            // Integrate: new orders end the LAMBS task that served the old ones
+            ["reordered", [_logic]] call ALiVE_fnc_lambs;
         };
     };
 
@@ -1046,6 +1048,8 @@ switch(_operation) do {
                 [ALIVE_commandRouter,"deactivate", _logic] call ALIVE_fnc_commandRouter;
                 [_logic,"activeCommands",[]] call ALIVE_fnc_hashSet;
             };
+            // Integrate: new orders end the LAMBS task that served the old ones
+            if (_logic select 2 select 1) then { ["reordered", [_logic]] call ALiVE_fnc_lambs };
         };
     };
 
@@ -1550,7 +1554,7 @@ switch(_operation) do {
             [_logic,"spawnIncomplete", (_units findIf {isNull _x}) > -1] call ALIVE_fnc_hashSet;
             [_logic,"leader", leader _group] call ALIVE_fnc_hashSet;
             // other AI mods' opt-outs, under the ALiVE (Required) module's Guard setting
-            ["guard", [_group]] call ALiVE_fnc_modConflicts;
+            ["guard", [_group, "PROFILE"]] call ALiVE_fnc_modConflicts;
             [_logic,"group", _group] call ALIVE_fnc_hashSet;
             [_logic,"units", _units] call ALIVE_fnc_hashSet;
             [_logic,"active", true] call ALIVE_fnc_hashSet;
@@ -1633,9 +1637,13 @@ switch(_operation) do {
             // profile is fully spawned and cannot be corrupted -> allow damage again
             {_x allowDamage true} foreach _units;
 
+            // Integrate: LAMBS Danger takes the group on, now its waypoints and commands are set
+            if (_group getVariable ["ALiVE_lambs_run", false]) then { ["attach", [_group, _logic]] call ALiVE_fnc_lambs };
+
             // Military AI soldier behaviour: the group may be taken on by the machine that owns it.
             // The flag is public so a headless client the group moves to can take it on too.
-            if (!isNil "ALiVE_fnc_AIBehaviour" && {["setting", ["behaviourEnabled", false]] call ALiVE_fnc_AIBehaviour}) then {
+            // A group LAMBS runs under Integrate is left to LAMBS.
+            if (!isNil "ALiVE_fnc_AIBehaviour" && {!(_group getVariable ["ALiVE_lambs_run", false])} && {["setting", ["behaviourEnabled", false]] call ALiVE_fnc_AIBehaviour}) then {
                 _group setVariable ["ALiVE_AIB_eligible", true, true];
                 ["attach", [_group]] call ALiVE_fnc_AIBehaviour;
             };
@@ -1899,6 +1907,9 @@ switch(_operation) do {
                 [_logic,"active", false] call ALIVE_fnc_hashSet;
                 [_logic,"combatScanPending", true] call ALIVE_fnc_hashSet;
 
+                // Integrate: the LAMBS task ends and the commander's waypoints are noted
+                ["detach", [_group, _logic]] call ALiVE_fnc_lambs;
+
                 // update profile waypoints before despawn
                 [_logic,"clearWaypoints"] call MAINCLASS;
 
@@ -1924,6 +1935,8 @@ switch(_operation) do {
                     };
                 };
                 [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
+                // Integrate: waypoints LAMBS made do not come back as the commander's orders
+                if (_group getVariable ["ALiVE_lambs", []] isNotEqualTo []) then { ["scrub", [_logic]] call ALiVE_fnc_lambs };
 
                 [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
 

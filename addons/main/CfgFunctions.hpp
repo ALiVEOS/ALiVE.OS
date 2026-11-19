@@ -76,6 +76,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_modConflicts.sqf";
                 ALIVE_RECOMPILE;
             };
+            class lambs {
+                description = "Integrate setting: LAMBS Danger fights ALiVE's ground groups under ALiVE's orders";
+                file = "\x\alive\addons\main\fnc_lambs.sqf";
+                ALIVE_RECOMPILE;
+            };
             class isModuleInitialised {
                 description = "Checks if given modules are initialised";
                 file = "\x\alive\addons\main\fnc_isModuleInitialised.sqf";

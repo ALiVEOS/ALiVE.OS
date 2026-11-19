@@ -2423,7 +2423,7 @@ class CfgVehicles {
             {
                     property =  MVAR(ALiVE_ModConflicts);
                     displayName = "Other AI mods";
-                    tooltip = "What ALiVE does when a mod known to change its AI is loaded (LAMBS Danger, VCOM AI, ASR AI3, BHL AI).\nGuard: keep ALiVE's own groups out of the mod where the mod allows it, and tell admins.\nWarn: only tell admins and players.\nOff: do nothing.";
+                    tooltip = "What ALiVE does when a mod known to change its AI is loaded (LAMBS Danger, VCOM AI, ASR AI3, BHL AI).\nGuard: keep ALiVE's own groups out of the mod where the mod allows it, and tell admins.\nIntegrate: as Guard, except LAMBS Danger fights ALiVE's ground groups (its tactics, tasks and radio) while ALiVE's commanders keep the orders, reserves, artillery and intelligence. ALiVE's Soldier Behaviour is not put on groups LAMBS runs. Needs LAMBS Danger on the server; without it this is Guard.\nWarn: only tell admins and players.\nOff: do nothing.";
                     defaultValue = """GUARD""";
                     class Values
                     {
@@ -2431,6 +2431,11 @@ class CfgVehicles {
                             {
                                     name = "Guard";
                                     value = "GUARD";
+                            };
+                            class integrate
+                            {
+                                    name = "Integrate (LAMBS Danger)";
+                                    value = "INTEGRATE";
                             };
                             class warn
                             {
@@ -2441,6 +2446,46 @@ class CfgVehicles {
                             {
                                     name = "Off";
                                     value = "OFF";
+                            };
+                    };
+            };
+            class ALiVE_LambsArtilleryPool: Combo
+            {
+                    property =  MVAR(ALiVE_LambsArtilleryPool);
+                    displayName = "Integrate: ALiVE artillery for LAMBS";
+                    tooltip = "With Other AI mods on Integrate. No (default): LAMBS calls for fire go to ALiVE's Military Artillery under ALiVE's own rules.\nYes: as well, ALiVE's idle batteries with rounds are offered to LAMBS to fire itself. Rounds LAMBS fires come off the battery's count and the battery cools down after.";
+                    defaultValue = """false""";
+                    class Values
+                    {
+                            class No
+                            {
+                                    name = "No";
+                                    value = "false";
+                            };
+                            class Yes
+                            {
+                                    name = "Yes";
+                                    value = "true";
+                            };
+                    };
+            };
+            class ALiVE_LambsDebug: Combo
+            {
+                    property =  MVAR(ALiVE_LambsDebug);
+                    displayName = "Integrate: debug";
+                    tooltip = "With Other AI mods on Integrate, log what ALiVE does with LAMBS Danger to the RPT (lines start ALiVE LAMBS:). [""stats""] call ALiVE_fnc_lambs logs the counters.";
+                    defaultValue = """false""";
+                    class Values
+                    {
+                            class No
+                            {
+                                    name = "No";
+                                    value = "false";
+                            };
+                            class Yes
+                            {
+                                    name = "Yes";
+                                    value = "true";
                             };
                     };
             };

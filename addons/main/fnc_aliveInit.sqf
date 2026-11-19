@@ -32,6 +32,8 @@ nil
 #define DEFAULT_GC_THRESHOLD "100"
 #define DEFAULT_GC_INTERVAL "300"
 #define DEFAULT_GC_INDIVIDUALTYPES ""
+#define DEFAULT_LAMBS_ARTILLERY_POOL "false"
+#define DEFAULT_LAMBS_DEBUG "false"
 
 #define MPINTERRUPT 49
 #define ABORTBUTTON 104
@@ -813,6 +815,8 @@ _GC setVariable ["ALiVE_GC_INDIVIDUALTYPES", _logic getVariable ["ALiVE_GC_INDIV
 
 // Mods that change ALiVE's AI: found and reported on every machine; under Guard, ALiVE's groups are kept out of them
 [_logic] spawn { ["init", [_this select 0]] call ALiVE_fnc_modConflicts };
+// Integrate: LAMBS Danger fights ALiVE's ground groups; waits for the setting read just above
+[_logic getVariable ["ALiVE_LambsDebug", DEFAULT_LAMBS_DEBUG], _logic getVariable ["ALiVE_LambsArtilleryPool", DEFAULT_LAMBS_ARTILLERY_POOL]] spawn { ["init", _this] call ALiVE_fnc_lambs };
 
 // Only on Server
 if (isServer) then {

@@ -158,6 +158,9 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
                     private _g = _x;
                     isNil { ["release", [_g, "moving to a headless client"]] call ALiVE_fnc_AIBehaviour };
                 };
+                // Integrate: a LAMBS task the group is on ends here, while the men can still be reached
+                private _g = _x;
+                isNil { ["release", [_g]] call ALiVE_fnc_lambs };
 
                 _x setGroupOwner (owner _HC);
 
