@@ -838,6 +838,12 @@
 <Key ID="STR_ALIVE_HUB_BUILD_OFFER_COMMENT">
     <English>What a hub built at a supply point offers. Supplies and ammo only (the default): what the module offers, cut to supplies and ammo crates. Everything the module offers: the same as its other hubs.</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_BUILD_BUILDINGS">
+    <English>Hubs In Buildings</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_BUILDINGS_COMMENT">
+    <English>Where a built hub goes. Never (the default): a small supplies layout on open ground. Prefer: inside the nearest building that can hold one (enterable, can be destroyed, not a tower, and with no insurgent installation or other hub in it), with its crates indoors; a layout when there is none. Only: in a building or not at all.</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_BUILD_MAX">
     <English>Most Built Hubs</English>
 </Key>

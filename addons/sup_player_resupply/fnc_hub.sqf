@@ -34,7 +34,10 @@ Parameters:
     ["build", [module, where, most, spacing]] - server, spawned: Build Hubs; where is FIELDHQ (beside each Field HQ
         Military Placement sets out for the module's side), HQ (at each AI Commander of the side) or FIELDHQ_HQ
     ["buildAt", [module, centre, envelope, faction, kind]] - server: one such hub, a small supplies layout clear of
-        the envelope (a diameter) round the centre, with one of its crates tagged; kind is FIELDHQ or HQ
+        the envelope (a diameter) round the centre, with one of its crates tagged; kind is FIELDHQ, HQ or SUPPLY;
+        with Hubs In Buildings on Prefer or Only, crates inside a building near the centre instead (buildInside)
+    ["buildInside", [module, centre, reach, kind]] - server: a hub inside the nearest building within reach that can
+        hold one, its crate tagged; objNull when there is none
     ["tag", [object, module]] - server: makes the object one of the module's hubs, with its hold actions
     ["settings", [module]] - the settings above, any machine
     ["markers", []] - a player's machine: keeps a map marker on each working hub of the player's side
@@ -279,6 +282,10 @@ switch (_op) do {
         _buildAge = ((round _buildAge) min 120) * 60;
         // supply point hubs offer supplies and ammo only unless the module says the full catalogue
         _logic setVariable ["ALiVE_hub_supplyCut", toUpper (["hub_build_supply_offer", "SUPPLIES"] call _text) != "FULL", true];
+        // Hubs In Buildings: NEVER (a layout on open ground), PREFER (a building near the spot, else a layout), ONLY
+        private _inBuildings = toUpper (["hub_build_buildings", "NEVER"] call _text);
+        if !(_inBuildings in ["NEVER", "PREFER", "ONLY"]) then { _inBuildings = "NEVER" };
+        _logic setVariable ["ALiVE_hub_inBuildings", _inBuildings];
         private _buildMax = parseNumber (["hub_build_max", "3"] call _text);
         if (_buildMax <= 0) then { _buildMax = 3 };
         _buildMax = (round _buildMax) min 20;
@@ -560,6 +567,15 @@ switch (_op) do {
         _args params [["_logic", objNull, [objNull]], ["_centre", [0,0,0], [[]]], ["_clear", 0, [0]], ["_faction", "", [""]], ["_kind", "FIELDHQ", [""]]];
         _result = objNull;
         private _label = switch (_kind) do { case "FIELDHQ": {"the Field HQ"}; case "SUPPLY": {"the supply point"}; default {"the AI Commander's HQ"} };
+        // Hubs In Buildings: a building first, as far out as the layout search below would go
+        private _inBuildings = _logic getVariable ["ALiVE_hub_inBuildings", "NEVER"];
+        if (_inBuildings != "NEVER") then {
+            _result = ["buildInside", [_logic, _centre, switch (_kind) do { case "HQ": {400}; case "SUPPLY": {300}; default {150} }, _kind]] call ALIVE_fnc_hub;
+        };
+        if (!isNull _result) exitWith {};
+        if (_inBuildings == "ONLY") exitWith {
+            ["ALiVE Logistics Hub: no building that can hold a hub near %1 at %2, and Hubs In Buildings is Only, so none is built there", _label, mapGridPosition _centre] call ALiVE_fnc_dumpR;
+        };
         private _compType = ["Military", "Guerrilla"] select ((_faction call ALiVE_fnc_factionSide) == RESISTANCE);
         private _comp = selectRandom ([_compType, ["Supplies"], ["Small"], _faction] call ALiVE_fnc_getCompositions);
         if (isNil "_comp") then { _comp = selectRandom ([_compType, ["FieldHQ"], ["Small"], _faction] call ALiVE_fnc_getCompositions) };
@@ -622,6 +638,64 @@ switch (_op) do {
         _counter setVariable ["ALiVE_hub_zeus", 3];
         ["tag", [_counter, _logic]] call ALIVE_fnc_hub;
         ["ALiVE Logistics Hub: built %1 at %2 (%3 m from %4), hub object %5", configName _comp, mapGridPosition _pos, round (_pos distance2D _centre), _label, typeOf _counter] call _debug;
+        _result = _counter;
+    };
+
+    // A hub inside a building: the nearest House or Building within reach that an insurgent installation could also use
+    // (enterable, can be destroyed, big enough, no tower, nothing installed in it), not the one at the centre (a Field HQ's
+    // own) and none another hub stands in, with at least one indoor spot under its roof. The hub's crate goes on the lowest
+    // one, a crate and a sack on the next two where the building has them;
+    // the building is the layout. Only the hub's crate comes back after a restart, as for the layouts' other objects.
+    case "buildInside": {
+        _args params [["_logic", objNull, [objNull]], ["_centre", [0,0,0], [[]]], ["_reach", 150, [0]], ["_kind", "FIELDHQ", [""]]];
+        _result = objNull;
+        if (isNil "ALiVE_fnc_INS_buildingSuitable") then { call ALiVE_fnc_INS_helpers };
+        private _hubs = (missionNamespace getVariable ["ALiVE_hub_list", []]) select { !isNull _x };
+        // indoor spots of this building only, with a roof over them, lowest first
+        private _indoor = {
+            private _s = ([_this] call ALIVE_fnc_getBuildingPositions) select {
+                private _a = ATLtoASL _x;
+                lineIntersects [_a vectorAdd [0, 0, 0.5], _a vectorAdd [0, 0, 2.5]]
+            };
+            [_s, [], { _x select 2 }, "ASCEND"] call BIS_fnc_sortBy
+        };
+        private _spots = [];
+        private _near = nearestObjects [_centre, ["House", "Building"], _reach];
+        // why each building was passed over, for the RPT when none will do
+        private _why = [0, 0, 0, 0];
+        private _i = _near findIf {
+            private _b = _x;
+            switch (true) do {
+                case ((_b distance2D _centre) <= 12 || {!alive _b}): { _why set [0, (_why select 0) + 1]; false };
+                case ((_hubs findIf { (_x distance2D _b) < 25 }) > -1): { _why set [1, (_why select 1) + 1]; false };
+                case !([_b] call ALiVE_fnc_INS_buildingSuitable): { _why set [2, (_why select 2) + 1]; false };
+                default {
+                    _spots = _b call _indoor;
+                    if (_spots isEqualTo []) then { _why set [3, (_why select 3) + 1] };
+                    _spots isNotEqualTo []
+                };
+            }
+        };
+        if (_i < 0) exitWith {
+            ["ALiVE Logistics Hub: %1 buildings within %2 m of %3: %4 at the centre or destroyed, %5 with a hub in them, %6 unsuitable (not enterable, cannot be destroyed, too small, a tower, or holding an installation), %7 with no spot under the roof", count _near, _reach, mapGridPosition _centre, _why select 0, _why select 1, _why select 2, _why select 3] call _debug;
+        };
+        private _building = _near select _i;
+        private _counter = createVehicle ["Land_PaperBox_closed_F", [0, 0, 0], [], 0, "CAN_COLLIDE"];
+        _counter setPosATL (_spots select 0);
+        _counter setDir (random 360);
+        {
+            if (count _spots > _forEachIndex + 1) then {
+                private _o = createVehicle [_x, [0, 0, 0], [], 0, "CAN_COLLIDE"];
+                _o setPosATL (_spots select (_forEachIndex + 1));
+                _o setDir (random 360);
+            };
+        } forEach ["Land_WoodenCrate_01_F", "Land_Sack_F"];
+        _counter setVariable ["ALiVE_hub_name", localize (switch (_kind) do { case "FIELDHQ": {"STR_ALIVE_HUB_FIELD_NAME"}; case "SUPPLY": {"STR_ALIVE_HUB_SUPPLY_NAME"}; default {"STR_ALIVE_HUB_HQ_NAME"} })];
+        _counter setVariable ["ALiVE_hub_built", _kind, true];
+        _counter setVariable ["ALiVE_hub_zeus", 3];
+        _counter setVariable ["ALiVE_hub_building", typeOf _building, true];
+        ["tag", [_counter, _logic]] call ALIVE_fnc_hub;
+        ["ALiVE Logistics Hub: built a hub inside %1 at %2 (%3 m from the centre), hub object %4", typeOf _building, mapGridPosition _building, round (_building distance2D _centre), typeOf _counter] call _debug;
         _result = _counter;
     };
 

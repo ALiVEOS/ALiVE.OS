@@ -354,6 +354,21 @@ class CfgVehicles {
                                     class FULL { name = "Everything the module offers"; value = "FULL"; };
                             };
                     };
+                    class hub_build_buildings : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_build_buildings";
+                            displayName = "$STR_ALIVE_HUB_BUILD_BUILDINGS";
+                            tooltip = "$STR_ALIVE_HUB_BUILD_BUILDINGS_COMMENT";
+                            defaultValue = """NEVER""";
+                            typeName = "STRING";
+                            ALiVE_showWhen[] = {{"hub_build", "not", "OFF"}};
+                            class Values
+                            {
+                                    class NEVER { name = "Never: a layout on open ground"; value = "NEVER"; };
+                                    class PREFER { name = "Prefer: a building, else a layout"; value = "PREFER"; };
+                                    class ONLY { name = "Only: in a building, or none"; value = "ONLY"; };
+                            };
+                    };
 
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_GENERAL"; displayName = "GENERAL"; };
                     class hub_debug : Combo
