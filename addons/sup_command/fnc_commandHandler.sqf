@@ -2499,7 +2499,8 @@ switch(_operation) do {
         if (isNull _player) exitWith {};
 
         if (_limit == "FACTION") then {
-            _result = (faction _player) in ([_opcom,"factions",[]] call ALiVE_fnc_hashGet);
+            // any case: a faction's units may write it b_araf for the class B_ARAF
+            _result = (([_opcom,"factions",[]] call ALiVE_fnc_hashGet) findIf { _x == faction _player }) > -1;
         } else {
             _result = ([_logic,"opsPlayerSideText",_player] call MAINCLASS) == ([_opcom,"side",""] call ALiVE_fnc_hashGet);
         };

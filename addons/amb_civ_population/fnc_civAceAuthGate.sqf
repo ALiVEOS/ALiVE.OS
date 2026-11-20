@@ -49,5 +49,5 @@ if (count _authorized == 0) exitWith { true };
 (getPlayerUID player in _authorized)
     || {typeOf player in _authorized}
     || {name player in _authorized}
-    || {faction player in _authorized}
+    || {(_authorized findIf { _x isEqualType "" && {_x == faction player} }) > -1} // any case: units may write b_araf for B_ARAF
     || {rank player in _authorized}

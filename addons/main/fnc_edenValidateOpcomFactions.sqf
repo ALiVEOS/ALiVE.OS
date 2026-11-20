@@ -645,7 +645,8 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
         // legitimate mission pattern (editor-placed units for ambient
         // purposes, sys_profile-virtualized groups, or reserved for a
         // future OPCOM) and is not a misconfiguration.
-        private _unmatched = _opcomFactions select { !(_x in _globalSourceFactions) && {!(_x in _editorSourceFactions)} };
+        // any case: a faction's units and groups may write it b_araf for the class B_ARAF
+        private _unmatched = _opcomFactions select { private _f = _x; (_globalSourceFactions findIf { _x == _f }) < 0 && {(_editorSourceFactions findIf { _x == _f }) < 0} };
         private _matched = _opcomFactions - _unmatched;
 
         // Track which OPCOM factions DID have a source (for the

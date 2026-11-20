@@ -173,7 +173,7 @@ switch(_operation) do {
                 if (_factions isEqualTo []) then {
                     allPlayers select {side (group _x) == _sourceSide}
                 } else {
-                    allPlayers select {(faction _x) in _factions}
+                    allPlayers select { private _f = faction _x; (_factions findIf { _x == _f }) > -1 }
                 };
             };
             default {allPlayers select {side (group _x) == _sourceSide}};
@@ -582,7 +582,7 @@ switch(_operation) do {
                     if (_sourceFactions isEqualTo []) then {
                         allPlayers select {side (group _x) == _sourceSide}
                     } else {
-                        allPlayers select {(faction _x) in _sourceFactions}
+                        allPlayers select { private _f = faction _x; (_sourceFactions findIf { _x == _f }) > -1 }
                     };
                 };
                 default {allPlayers select {side (group _x) == _sourceSide}};

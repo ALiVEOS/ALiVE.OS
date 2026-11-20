@@ -259,7 +259,7 @@ switch(_operation) do {
                 if (alive _bogey
                     && {_bogey isKindOf "Air"}
                     && {((getPosATL _bogey) select 2) > RADAR_HEIGHT}
-                    && {(faction _bogey) in _factions}) then {
+                    && {(_factions findIf { _x == faction _bogey }) > -1}) then {
                     private _at = getPosATL _bogey;
                     // over the Airspace Blacklist (#1084) is not this commander's business
                     if ((_black findIf { _at inArea _x }) > -1) then { continue };
@@ -305,7 +305,7 @@ switch(_operation) do {
                 // attempt to work around this by changing the world rather than
                 // the question.
                 private _hostile = false;
-                if (count _factions > 0) then { _hostile = (faction _veh) in _factions };
+                if (count _factions > 0) then { _hostile = (_factions findIf { _x == faction _veh }) > -1 };
                 if (!_hostile && {count _sides > 0}) then {
                     _hostile = (str (side _veh)) in _sides;
                 };

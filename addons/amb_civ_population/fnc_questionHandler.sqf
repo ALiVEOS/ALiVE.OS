@@ -388,11 +388,11 @@ switch (_question) do {
             if (_askerInsurgent) then {
                 // a military side hostile to his, and not one of the insurgent factions themselves
                 if (alive _leader && {side _x in [west, east, independent]} && {(_mySide getFriend (side _x)) < 0.6}
-                    && {!(faction _leader in _insurgentFaction)} && {_leader distance2D _pos < 1100}) then {
+                    && {(_insFactions findIf { _x == faction _leader }) < 0} && {_leader distance2D _pos < 1100}) then {
                     _insurgents pushBack _leader;
                 };
             } else {
-                if ((faction _leader in _insurgentFaction) and {_leader distance2D _pos < 1100}) then {
+                if (((_insFactions findIf { _x == faction _leader }) > -1) and {_leader distance2D _pos < 1100}) then {
                     _insurgents pushBack _leader;
                 };
             };
