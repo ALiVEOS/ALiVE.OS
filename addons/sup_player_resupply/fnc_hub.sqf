@@ -31,10 +31,10 @@ ALiVE_hub_backAt is when it comes back. Manage Hub on the hub opens ALIVE_fnc_hu
 
 Parameters:
     ["init", [module]] - server: reads the settings, tags the synced objects
-    ["buildFieldHQ", [module]] - server, spawned: Build Hubs = At Field HQ, a hub built beside each Field HQ
-        Military Placement sets out for the module's side
-    ["buildAt", [module, fieldHQ, faction]] - server: one such hub, a small supplies layout with one of its
-        crates tagged; fieldHQ is [position, envelope, faction] as Military Placement keeps it in ALiVE_fieldHQ
+    ["build", [module, where, most, spacing]] - server, spawned: Build Hubs; where is FIELDHQ (beside each Field HQ
+        Military Placement sets out for the module's side), HQ (at each AI Commander of the side) or FIELDHQ_HQ
+    ["buildAt", [module, centre, envelope, faction, kind]] - server: one such hub, a small supplies layout clear of
+        the envelope (a diameter) round the centre, with one of its crates tagged; kind is FIELDHQ or HQ
     ["tag", [object, module]] - server: makes the object one of the module's hubs, with its hold actions
     ["settings", [module]] - the settings above, any machine
     ["markers", []] - a player's machine: keeps a map marker on each working hub of the player's side
@@ -266,9 +266,13 @@ switch (_op) do {
                 default { _hubs pushBack _o };
             };
         } forEach _synced;
-        // Build Hubs (#1091): OFF, or FIELDHQ for a hub beside each Field HQ of the side
+        // Build Hubs (#1091): OFF, FIELDHQ, HQ or FIELDHQ_HQ, with Most Built Hubs and Spacing
         private _build = toUpper (["hub_build", "OFF"] call _text);
-        if !(_build in ["OFF", "FIELDHQ"]) then { _build = "OFF" };
+        if !(_build in ["OFF", "FIELDHQ", "HQ", "FIELDHQ_HQ"]) then { _build = "OFF" };
+        private _buildMax = parseNumber (["hub_build_max", "3"] call _text);
+        if (_buildMax <= 0) then { _buildMax = 3 };
+        _buildMax = (round _buildMax) min 20;
+        private _buildSpacing = ((parseNumber (["hub_build_spacing", "1000"] call _text)) max 0) min 10000;
         if (_hubs isEqualTo [] && {_build == "OFF"}) then {
             ["ALiVE Logistics Hub: no object is synced to the module at %1, so it has no hubs", mapGridPosition _logic] call ALiVE_fnc_dumpR;
         };
@@ -315,57 +319,119 @@ switch (_op) do {
             };
             { ["nodeAdd", [_x]] call ALIVE_fnc_hub } forEach _hubs;
         };
-        if (_build == "FIELDHQ") then { ["buildFieldHQ", [_logic]] spawn ALIVE_fnc_hub };
+        if (_build != "OFF") then { ["build", [_logic, _build, _buildMax, _buildSpacing]] spawn ALIVE_fnc_hub };
 
         _logic setVariable ["startupComplete", true, true];
     };
 
-    // Build Hubs = At Field HQ (#1091): once Military Placement has set out its Field HQ, a small supplies layout
-    // goes up beside it and one crate of it becomes a hub of this module, as if it had been synced in Eden. From
-    // there it is an ordinary hub: Collect, the catalogue, losing and repair, its marker and its place as a supply
-    // point. The Military Placement modules synced to this one, or with none synced, every one of this side.
-    case "buildFieldHQ": {
-        _args params [["_logic", objNull, [objNull]]];
+    // Build Hubs (#1091): small supplies layouts that become hubs of this module, as if they had been synced in Eden,
+    // where the side's logistics already runs from. At Field HQ: beside each Field HQ Military Placement sets out
+    // for the side (the Military Placement modules synced to this one, or with none synced, every one of the side).
+    // At HQ: at each AI Commander of the side, the spot its logistics sets off from (the commanders synced to this
+    // module, else those synced to its Military Logistics modules, else every one of the side). Field HQs first,
+    // then HQs, up to Most Built Hubs, and none within Spacing of another hub of the side. From there each is an
+    // ordinary hub: Collect, the catalogue, losing and repair, its marker and its place as a supply point.
+    case "build": {
+        _args params [["_logic", objNull, [objNull]], ["_mode", "OFF", [""]], ["_max", 3, [0]], ["_spacing", 1000, [0]]];
         if (!isServer || {isNull _logic}) exitWith {};
         private _side = (["settings", [_logic]] call ALIVE_fnc_hub) select 0;
-        private _isMP = { typeOf _this == "ALiVE_mil_placement" };
-        private _mps = (synchronizedObjects _logic) select { _x call _isMP };
-        private _named = _mps isNotEqualTo [];
-        if (!_named) then { _mps = (entities "Module_F") select { _x call _isMP } };
-        if (_mps isEqualTo []) exitWith {
-            ["ALiVE Logistics Hub: Build Hubs is At Field HQ at the module at %1, but the mission has no Military Placement module, so no hub is built", mapGridPosition _logic] call ALiVE_fnc_dumpR;
-        };
-        // a Field HQ is set out during Military Placement's start; wait for all of them to finish
+        private _synced = synchronizedObjects _logic;
+        private _where = mapGridPosition _logic;
+        // [kind, centre, envelope, faction, source module]
+        private _sites = [];
         private _t0 = time;
-        waitUntil { sleep 5; time - _t0 > 900 || {(_mps findIf { !(_x getVariable ["startupComplete", false]) }) < 0} };
+        if (_mode in ["FIELDHQ", "FIELDHQ_HQ"]) then {
+            private _isMP = { typeOf _this == "ALiVE_mil_placement" };
+            private _mps = _synced select { _x call _isMP };
+            private _named = _mps isNotEqualTo [];
+            if (!_named) then { _mps = (entities "Module_F") select { _x call _isMP } };
+            if (_mps isEqualTo []) exitWith {
+                ["ALiVE Logistics Hub: Build Hubs is At Field HQ at the module at %1, but the mission has no Military Placement module, so no hub is built at a Field HQ", _where] call ALiVE_fnc_dumpR;
+            };
+            // a Field HQ is set out during Military Placement's start; wait for all of them to finish
+            waitUntil { sleep 5; time - _t0 > 900 || {(_mps findIf { !(_x getVariable ["startupComplete", false]) }) < 0} };
+            {
+                private _fhq = _x getVariable ["ALiVE_fieldHQ", []];
+                switch (true) do {
+                    case (_fhq isEqualTo []): {
+                        if (_named) then {
+                            ["ALiVE Logistics Hub: the Military Placement module at %1 set out no Field HQ (Create Field HQ off, no HQ objective or no clear spot), so no hub is built there", mapGridPosition _x] call ALiVE_fnc_dumpR;
+                        };
+                    };
+                    case ((str ((_fhq select 2) call ALiVE_fnc_factionSide)) != _side): {
+                        if (_named) then {
+                            ["ALiVE Logistics Hub: the Military Placement module at %1 is faction %2, not of the hub's side %3, so no hub is built there", mapGridPosition _x, _fhq select 2, _side] call ALiVE_fnc_dumpR;
+                        };
+                    };
+                    default { _sites pushBack ["FIELDHQ", _fhq select 0, _fhq select 1, _fhq select 2, _x] };
+                };
+            } forEach _mps;
+        };
+        if (_mode in ["HQ", "FIELDHQ_HQ"]) then {
+            private _isOP = { typeOf _this == "ALiVE_mil_opcom" };
+            private _ops = _synced select { _x call _isOP };
+            private _named = _ops isNotEqualTo [];
+            if (!_named) then {
+                { _ops append ((synchronizedObjects _x) select { _x call _isOP }) } forEach (_logic getVariable ["ALiVE_hub_mlMods", []]);
+                _ops = _ops arrayIntersect _ops;
+            };
+            if (_ops isEqualTo []) then { _ops = (entities "Module_F") select { _x call _isOP } };
+            if (_ops isEqualTo []) exitWith {
+                ["ALiVE Logistics Hub: Build Hubs is At HQ at the module at %1, but the mission has no AI Commander module, so no hub is built at an HQ", _where] call ALiVE_fnc_dumpR;
+            };
+            waitUntil { sleep 5; time - _t0 > 900 || {(_ops findIf { isNil {_x getVariable "handler"} }) < 0} };
+            {
+                private _h = _x getVariable "handler";
+                private _pos = position _x;
+                if (isNil "_h") then {
+                    ["ALiVE Logistics Hub: the AI Commander at %1 had not started after 15 minutes, so no hub is built at it", mapGridPosition _x] call ALiVE_fnc_dumpR;
+                } else {
+                    private _facs = [_h, "factions", []] call ALIVE_fnc_hashGet;
+                    switch (true) do {
+                        case (([_h, "side", ""] call ALIVE_fnc_hashGet) != _side): {
+                            if (_named) then {
+                                ["ALiVE Logistics Hub: the AI Commander at %1 is not of the hub's side %2, so no hub is built at it", mapGridPosition _x, _side] call ALiVE_fnc_dumpR;
+                            };
+                        };
+                        // a commander starting from a ship, or one left over water: no ground to build on
+                        case (surfaceIsWater _pos): {
+                            ["ALiVE Logistics Hub: the AI Commander at %1 stands over water, so no hub is built at it", mapGridPosition _x] call ALiVE_fnc_dumpR;
+                        };
+                        case (_facs isEqualTo []): {};
+                        default { _sites pushBack ["HQ", _pos, 0, _facs select 0, _x] };
+                    };
+                };
+            } forEach _ops;
+        };
+        if (_sites isEqualTo []) exitWith {};
         if !(isNil QMOD(COMPOSITIONS_LOADED)) exitWith {
-            ["ALiVE Logistics Hub: the layouts came from the saved mission, so the module at %1 builds no hub at a Field HQ this time", mapGridPosition _logic] call ALiVE_fnc_dumpR;
+            ["ALiVE Logistics Hub: the layouts came from the saved mission, so the module at %1 builds no hub this time", _where] call ALiVE_fnc_dumpR;
         };
         private _built = [];
         {
-            private _mp = _x;
-            private _fhq = _mp getVariable ["ALiVE_fieldHQ", []];
+            _x params ["_kind", "_centre", "_env", "_faction", "_src"];
+            private _label = ["the AI Commander's HQ", "the Field HQ"] select (_kind == "FIELDHQ");
+            private _others = (missionNamespace getVariable ["ALiVE_hub_list", []]) select { !isNull _x && {((_x getVariable ["ALiVE_hub", []]) param [0, ""]) == _side} };
+            // the nearest hub of the side, so the RPT names the one that is in the way
+            private _nearD = 1e9;
+            { _nearD = _nearD min (_x distance2D _centre) } forEach _others;
             switch (true) do {
-                case (_fhq isEqualTo []): {
-                    if (_named) then {
-                        ["ALiVE Logistics Hub: the Military Placement module at %1 set out no Field HQ (Create Field HQ off, no HQ objective or no clear spot), so no hub is built there", mapGridPosition _mp] call ALiVE_fnc_dumpR;
-                    };
+                // two Hub modules of a side build one hub at a place, not two
+                case (!isNull (_src getVariable ["ALiVE_hub_builtHere", objNull])): {};
+                case (count _built >= _max): {
+                    ["ALiVE Logistics Hub: the module at %1 has built its Most Built Hubs (%2), so none at %3 at %4", _where, _max, _label, mapGridPosition _centre] call ALiVE_fnc_dumpR;
                 };
-                case ((str ((_fhq select 2) call ALiVE_fnc_factionSide)) != _side): {
-                    if (_named) then {
-                        ["ALiVE Logistics Hub: the Military Placement module at %1 is faction %2, not of the hub's side %3, so no hub is built there", mapGridPosition _mp, _fhq select 2, _side] call ALiVE_fnc_dumpR;
-                    };
+                case (_nearD < _spacing): {
+                    ["ALiVE Logistics Hub: a hub of side %1 stands %2 m from %3 at %4, inside the Spacing of %5 m, so no hub is built there", _side, round _nearD, _label, mapGridPosition _centre, _spacing] call ALiVE_fnc_dumpR;
                 };
-                // two Hub modules of a side build one hub at a Field HQ, not two
-                case (!isNull (_mp getVariable ["ALiVE_hub_builtHere", objNull])): {};
                 default {
-                    private _hub = ["buildAt", [_logic, _fhq, _fhq select 2]] call ALIVE_fnc_hub;
-                    if (!isNil "_hub" && {!isNull _hub}) then { _mp setVariable ["ALiVE_hub_builtHere", _hub]; _built pushBack _hub };
+                    private _hub = ["buildAt", [_logic, _centre, _env, _faction, _kind]] call ALIVE_fnc_hub;
+                    if (!isNil "_hub" && {!isNull _hub}) then { _src setVariable ["ALiVE_hub_builtHere", _hub]; _built pushBack _hub };
                 };
             };
-        } forEach _mps;
-        ["ALiVE Logistics Hub: the module at %1 built %2 hubs at Field HQs of side %3: %4", mapGridPosition _logic, count _built, _side,
-            _built apply { [typeOf _x, mapGridPosition _x] }] call ALiVE_fnc_dumpR;
+        } forEach _sites;
+        ["ALiVE Logistics Hub: the module at %1 built %2 hubs of side %3: %4", _where, count _built, _side,
+            _built apply { [_x getVariable ["ALiVE_hub_built", ""], typeOf _x, mapGridPosition _x] }] call ALiVE_fnc_dumpR;
         if (_built isEqualTo []) exitWith {};
         publicVariable "ALiVE_hub_list";
         // their place in the supply network, as for the synced hubs
@@ -378,30 +444,35 @@ switch (_op) do {
     };
 
     case "buildAt": {
-        _args params [["_logic", objNull, [objNull]], ["_fhq", [], [[]]], ["_faction", "", [""]]];
+        _args params [["_logic", objNull, [objNull]], ["_centre", [0,0,0], [[]]], ["_clear", 0, [0]], ["_faction", "", [""]], ["_kind", "FIELDHQ", [""]]];
         _result = objNull;
-        _fhq params [["_hqPos", [0,0,0], [[]]], ["_hqEnv", 50, [0]]];
+        private _label = ["the AI Commander's HQ", "the Field HQ"] select (_kind == "FIELDHQ");
         private _compType = ["Military", "Guerrilla"] select ((_faction call ALiVE_fnc_factionSide) == RESISTANCE);
         private _comp = selectRandom ([_compType, ["Supplies"], ["Small"], _faction] call ALiVE_fnc_getCompositions);
         if (isNil "_comp") then { _comp = selectRandom ([_compType, ["FieldHQ"], ["Small"], _faction] call ALiVE_fnc_getCompositions) };
         if (isNil "_comp") exitWith {
-            ["ALiVE Logistics Hub: no Supplies or Field HQ layout of size Small for faction %1, so no hub is built at its Field HQ at %2", _faction, mapGridPosition _hqPos] call ALiVE_fnc_dumpR;
+            ["ALiVE Logistics Hub: no Supplies or Field HQ layout of size Small for faction %1, so no hub is built at %2 at %3", _faction, _label, mapGridPosition _centre] call ALiVE_fnc_dumpR;
         };
         private _env = [_comp] call ALiVE_fnc_getCompositionRadius;
-        // both envelopes are diameters: the layout stands clear of the Field HQ by half of each, and 5 m
-        private _gap = (_hqEnv + _env) / 2 + 5;
+        // both envelopes are diameters: the layout stands clear of what is at the centre by half of each, and 5 m
+        private _gap = (_clear + _env) / 2 + 5;
+        // A commander usually stands in a base, among roads, runways and buildings, where the open-ground check of a
+        // Field HQ finds nothing (Stratis Air Base, NUC 20 Nov): there the roadside check and a wider search
+        private _isHQ = _kind == "HQ";
+        private _mode = ["fieldhq", "military"] select _isHQ;
+        private _reach = [150, 400] select _isHQ;
         private _spot = [];
-        for "_try" from 1 to 8 do {
+        for "_try" from 1 to 10 do {
             if (_spot isNotEqualTo []) exitWith {};
-            private _found = [_hqPos getPos [_gap + 10, random 360], 20 + 15 * _try, _env, "fieldhq"] call ALiVE_fnc_findCompositionSpawnPosition;
-            if (count _found > 0 && {((_found select 0) distance2D _hqPos) >= _gap}) then { _spot = _found };
+            private _found = [_centre getPos [_gap + 10, random 360], 20 + (_reach - 20) * _try / 10, _env, _mode] call ALiVE_fnc_findCompositionSpawnPosition;
+            if (count _found > 0 && {((_found select 0) distance2D _centre) >= _gap}) then { _spot = _found };
         };
         if (_spot isEqualTo []) exitWith {
-            ["ALiVE Logistics Hub: no clear spot for a hub within %1 m of the Field HQ at %2, so none is built there", round (_gap + 130), mapGridPosition _hqPos] call ALiVE_fnc_dumpR;
+            ["ALiVE Logistics Hub: no clear spot for a hub within %1 m of %2 at %3, so none is built there", round (_gap + _reach + 10), _label, mapGridPosition _centre] call ALiVE_fnc_dumpR;
         };
         private _pos = _spot select 0;
-        // facing the Field HQ
-        private _dir = _pos getDir _hqPos;
+        // facing the centre
+        private _dir = _pos getDir _centre;
         [_comp, _pos, _dir, _faction] call ALiVE_fnc_spawnComposition;
         private _made = (_pos nearestObject "ALIVE_DemoCharge_Remote_Ammo") getVariable ["ALiVE_x_lib_COMPOSITION_OBJECTS", []];
         // the counter: an ammo box, else the biggest crate, container or box of the layout
@@ -426,10 +497,12 @@ switch (_op) do {
             _counter = createVehicle ["Land_CargoBox_V1_F", _pos, [], 3, "NONE"];
             _counter setDir _dir;
         };
-        if ((_counter getVariable ["ALiVE_hub_name", ""]) == "") then { _counter setVariable ["ALiVE_hub_name", localize "STR_ALIVE_HUB_FIELD_NAME"] };
-        _counter setVariable ["ALiVE_hub_built", "FIELDHQ", true];
+        if ((_counter getVariable ["ALiVE_hub_name", ""]) == "") then {
+            _counter setVariable ["ALiVE_hub_name", localize (["STR_ALIVE_HUB_HQ_NAME", "STR_ALIVE_HUB_FIELD_NAME"] select (_kind == "FIELDHQ"))];
+        };
+        _counter setVariable ["ALiVE_hub_built", _kind, true];
         ["tag", [_counter, _logic]] call ALIVE_fnc_hub;
-        ["ALiVE Logistics Hub: built %1 at %2 (%3 m from the Field HQ), hub object %4", configName _comp, mapGridPosition _pos, round (_pos distance2D _hqPos), typeOf _counter] call _debug;
+        ["ALiVE Logistics Hub: built %1 at %2 (%3 m from %4), hub object %5", configName _comp, mapGridPosition _pos, round (_pos distance2D _centre), _label, typeOf _counter] call _debug;
         _result = _counter;
     };
 

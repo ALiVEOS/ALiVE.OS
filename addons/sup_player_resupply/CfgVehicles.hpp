@@ -329,8 +329,12 @@ class CfgVehicles {
                             {
                                     class OFF { name = "Off"; value = "OFF"; };
                                     class FIELDHQ { name = "At Field HQ"; value = "FIELDHQ"; };
+                                    class HQ { name = "At HQ"; value = "HQ"; };
+                                    class FIELDHQ_HQ { name = "At Field HQ and HQ"; value = "FIELDHQ_HQ"; };
                             };
                     };
+                    class hub_build_max : Edit { property = "ALiVE_sup_logistics_hub_hub_build_max"; displayName = "$STR_ALIVE_HUB_BUILD_MAX"; tooltip = "$STR_ALIVE_HUB_BUILD_MAX_COMMENT"; typeName = "STRING"; defaultValue = """3"""; ALiVE_showWhen[] = {{"hub_build", "not", "OFF"}}; };
+                    class hub_build_spacing : Edit { property = "ALiVE_sup_logistics_hub_hub_build_spacing"; displayName = "$STR_ALIVE_HUB_BUILD_SPACING"; tooltip = "$STR_ALIVE_HUB_BUILD_SPACING_COMMENT"; typeName = "STRING"; defaultValue = """1000"""; ALiVE_showWhen[] = {{"hub_build", "not", "OFF"}}; };
 
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_GENERAL"; displayName = "GENERAL"; };
                     class hub_debug : Combo
@@ -351,7 +355,7 @@ class CfgVehicles {
                 class ModuleDescription
                 {
                         description[] = {"$STR_ALIVE_HUB_COMMENT"};
-                        sync[] = {"AnyStaticObject", "ALiVE_SUP_PLAYER_RESUPPLY", "ALiVE_mil_logistics", "ALiVE_mil_placement"};
+                        sync[] = {"AnyStaticObject", "ALiVE_SUP_PLAYER_RESUPPLY", "ALiVE_mil_logistics", "ALiVE_mil_placement", "ALiVE_mil_opcom"};
                 };
         };
 };

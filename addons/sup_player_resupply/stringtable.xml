@@ -824,10 +824,25 @@
     <English>Build Hubs</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_BUILD_COMMENT">
-    <English>At Field HQ: when Military Placement sets out a Field HQ for this module's side, a small supplies layout is built beside it and one of its crates becomes a hub of this module, with all the settings above. Military Placement modules synced to this module, or with none synced, every one of the side. Off: only the synced objects are hubs.</English>
+    <English>Hubs this module builds itself: a small supplies layout, one of whose crates becomes a hub with all the settings above. At Field HQ: beside each Field HQ Military Placement sets out for this module's side (the Military Placement modules synced to this module, or with none synced, every one of the side). At HQ: at each AI Commander of the side, where its logistics sets off from (the commanders synced to this module, else those synced to its Military Logistics, else every one of the side). Off: only the synced objects are hubs.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_MAX">
+    <English>Most Built Hubs</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_MAX_COMMENT">
+    <English>The most hubs this module builds, Field HQs first, then HQs. 1 to 20, default 3.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_SPACING">
+    <English>Spacing (m)</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_SPACING_COMMENT">
+    <English>No hub is built within this distance of another hub of the side, synced or built. 0 for no limit, default 1000.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_FIELD_NAME">
     <English>Field Hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_HQ_NAME">
+    <English>HQ Hub</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_DEBUG">
     <English>Debug</English>
