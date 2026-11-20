@@ -743,8 +743,10 @@ class FSM
        "            // The cap counts civilians already sent to spawn, not only those that have finished (Jman 9 Nov)." \n
        "            // A spawn runs in the scheduler and only joins the active list at its end, so on a busy server" \n
        "            // dozens were sent while the count still read under the limit. Read fresh each time, too: a" \n
-       "            // despawn replaces the list, so the copy taken at CHECK goes stale. Cars count as well." \n
-       "            _agentsActive = [ALIVE_agentHandler, ""getActiveAgents""] call ALIVE_fnc_agentHandler;" \n
+       "            // despawn replaces the list, so the copy taken at CHECK goes stale. Cars count as well: the" \n
+       "            // handler's active hash holds people and cars, its activeAgents list people only, so a car" \n
+       "            // spawned and then dropped out of the count after its 60 s as pending (Jman 20 Nov)." \n
+       "            _agentsActive = ([ALIVE_agentHandler, ""getActive""] call ALIVE_fnc_agentHandler) select 1;" \n
        "            if (isNil ""ALiVE_civPop_pending"") then { ALiVE_civPop_pending = [] };" \n
        "            ALiVE_civPop_pending = ALiVE_civPop_pending select {(time - (_x select 1)) < 60 && {!((_x select 0) in _agentsActive)}};" \n
        "            _countAgentsActive = (count _agentsActive) + (count ALiVE_civPop_pending);" \n
@@ -1490,8 +1492,10 @@ class FSM
        "            // The cap counts civilians already sent to spawn, not only those that have finished (Jman 9 Nov)." \n
        "            // A spawn runs in the scheduler and only joins the active list at its end, so on a busy server" \n
        "            // dozens were sent while the count still read under the limit. Read fresh each time, too: a" \n
-       "            // despawn replaces the list, so the copy taken at CHECK goes stale. Cars count as well." \n
-       "            _agentsActive = [ALIVE_agentHandler, ""getActiveAgents""] call ALIVE_fnc_agentHandler;" \n
+       "            // despawn replaces the list, so the copy taken at CHECK goes stale. Cars count as well: the" \n
+       "            // handler's active hash holds people and cars, its activeAgents list people only, so a car" \n
+       "            // spawned and then dropped out of the count after its 60 s as pending (Jman 20 Nov)." \n
+       "            _agentsActive = ([ALIVE_agentHandler, ""getActive""] call ALIVE_fnc_agentHandler) select 1;" \n
        "            if (isNil ""ALiVE_civPop_pending"") then { ALiVE_civPop_pending = [] };" \n
        "            ALiVE_civPop_pending = ALiVE_civPop_pending select {(time - (_x select 1)) < 60 && {!((_x select 0) in _agentsActive)}};" \n
        "            _countAgentsActive = (count _agentsActive) + (count ALiVE_civPop_pending);" \n
