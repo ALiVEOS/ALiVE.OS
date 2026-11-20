@@ -73,8 +73,9 @@ Parameters:
         Persistent on (then in the server's profile, as the FOBs are)
     ["permStoreKey"] - server: the name the changes are saved under, beside the FOBs
     ["permLoad", [module]] - server: the saved change put back on the module, once the save has been read
-    ["permSave"] - server: every module's change written, and the hubs a Zeus made
-    ["zeusRestore", [rows]] - server, from the read: the hubs a Zeus made before the restart put back
+    ["permSave"] - server: every module's change written, and the hubs a Zeus made or the module built
+    ["zeusRestore", [rows]] - server, from the read: the hubs a Zeus made before the restart put back, and the
+        built hubs on their restored layouts, down ones still down for the rest of their repair time
     ["dismantle", [hubNetId]] - server, through ALIVE_fnc_hubRequest: a player's hold action finished
     ["hubDown", [hubNetId, destroyed, byName, byEnemy]] - server: the hub stops working, and with a
         Repair Time comes back later
@@ -404,8 +405,13 @@ switch (_op) do {
             } forEach _ops;
         };
         if (_sites isEqualTo []) exitWith {};
+        // ALiVE Data puts the saved layouts back during its start; the built hubs on them are tagged again from the save
+        if (["ALiVE_sys_data"] call ALiVE_fnc_isModuleAvailable) then {
+            private _t2 = diag_tickTime;
+            waitUntil { sleep 1; (!isNil "ALIVE_sys_data" && {ALIVE_sys_data getVariable ["startupComplete", false]}) || {diag_tickTime - _t2 > 300} };
+        };
         if !(isNil QMOD(COMPOSITIONS_LOADED)) exitWith {
-            ["ALiVE Logistics Hub: the layouts came from the saved mission, so the module at %1 builds no hub this time", _where] call ALiVE_fnc_dumpR;
+            ["ALiVE Logistics Hub: the layouts came from the saved mission, so the module at %1 builds no hub this time; the hubs built before the restart come back on them", _where] call ALiVE_fnc_dumpR;
         };
         private _built = [];
         {
@@ -434,6 +440,8 @@ switch (_op) do {
             _built apply { [_x getVariable ["ALiVE_hub_built", ""], typeOf _x, mapGridPosition _x] }] call ALiVE_fnc_dumpR;
         if (_built isEqualTo []) exitWith {};
         publicVariable "ALiVE_hub_list";
+        // kept over a restart with ALiVE Data
+        ["permSave"] call ALIVE_fnc_hub;
         // their place in the supply network, as for the synced hubs
         private _mlMods = _logic getVariable ["ALiVE_hub_mlMods", []];
         if (_mlMods isEqualTo []) exitWith {};
@@ -501,6 +509,8 @@ switch (_op) do {
             _counter setVariable ["ALiVE_hub_name", localize (["STR_ALIVE_HUB_HQ_NAME", "STR_ALIVE_HUB_FIELD_NAME"] select (_kind == "FIELDHQ"))];
         };
         _counter setVariable ["ALiVE_hub_built", _kind, true];
+        // saved over a restart as the Zeus hubs are, under 3
+        _counter setVariable ["ALiVE_hub_zeus", 3];
         ["tag", [_counter, _logic]] call ALIVE_fnc_hub;
         ["ALiVE Logistics Hub: built %1 at %2 (%3 m from %4), hub object %5", configName _comp, mapGridPosition _pos, round (_pos distance2D _centre), _label, typeOf _counter] call _debug;
         _result = _counter;
@@ -527,9 +537,10 @@ switch (_op) do {
         private _owner = _hub getVariable ["ALiVE_hub_owner", ""];
         if !(_owner isEqualType "") then { _owner = "" };
         _hub setVariable ["ALiVE_hub_owner", _owner, true];
-        // and last, whether a Zeus made it (ALiVE_hub_zeus: 1 on an object, 2 a container put down), kept over a restart
+        // whether a Zeus made it (ALiVE_hub_zeus: 1 on an object, 2 a container put down) or the module built it (3), kept
+        // over a restart, and last what a built one was built at (FIELDHQ or HQ)
         ALiVE_hub_registry set [_netId, [_side, true, _logic, _logic getVariable ["ALiVE_hub_collect", false], _logic getVariable ["ALiVE_hub_mlMods", []],
-            typeOf _hub, getPosATL _hub, getDir _hub, vectorUp _hub, _name, _owner, _hub getVariable ["ALiVE_hub_zeus", 0]]];
+            typeOf _hub, getPosATL _hub, getDir _hub, vectorUp _hub, _name, _owner, _hub getVariable ["ALiVE_hub_zeus", 0], _hub getVariable ["ALiVE_hub_built", ""]]];
         _hub setVariable ["ALiVE_hub_backAt", -1, true];
         _hub setVariable ["ALiVE_hub", [_side, true, _s select 1, _logic], true];
         ALiVE_hub_list pushBackUnique _hub;
@@ -1068,16 +1079,23 @@ switch (_op) do {
         ALiVE_hub_permStore = _store;
         // and the hubs a Zeus made: [1 on an object or 2 a container put down, side, module (permKey), class, posATL, dir,
         // up, name, owner], where they were made (a destroyed one is rebuilt there); with any from an earlier start that
-        // couldn't be put back this time (its module gone), so they aren't lost
+        // couldn't be put back this time (its module gone), so they aren't lost. The hubs the module built (3) add what
+        // they were built at and the seconds left until a down one is back (-1 up, 0 lost for good)
         private _zeus = +(missionNamespace getVariable ["ALiVE_hub_zeusKept", []]);
         {
             private _z = _y param [11, 0];
-            if (_z in [1, 2]) then {
-                _y params ["_side", "", "_logic", "", "", "_class", "_pos", "_dir", "_up", ["_name", ""], ["_owner", ""]];
+            if (_z in [1, 2, 3]) then {
+                _y params ["_side", "_alive", "_logic", "", "", "_class", "_pos", "_dir", "_up", ["_name", ""], ["_owner", ""]];
                 // where it stands now, settled, when it is there; else where it was made
                 private _o = _x call BIS_fnc_objectFromNetId;
                 if (!isNull _o && {alive _o}) then { _pos = getPosATL _o; _dir = getDir _o; _up = vectorUp _o };
-                _zeus pushBack [_z, _side, ["permKey", [_logic]] call ALIVE_fnc_hub, _class, _pos, _dir, _up, _name, _owner];
+                private _row = [_z, _side, ["permKey", [_logic]] call ALIVE_fnc_hub, _class, _pos, _dir, _up, _name, _owner];
+                if (_z == 3) then {
+                    private _left = -1;
+                    if (!_alive) then { _left = ["left", ["hub:" + _x]] call ALiVE_fnc_siteClock; _left = [0, 1 max round _left] select (_left >= 0) };
+                    _row append [_y param [12, ""], _left];
+                };
+                _zeus pushBack _row;
             };
         } forEach (missionNamespace getVariable ["ALiVE_hub_registry", createHashMap]);
         private _key = ["permStoreKey"] call ALIVE_fnc_hub;
@@ -1099,7 +1117,7 @@ switch (_op) do {
             profileNamespace setVariable [_key, _plain];
             saveProfileNamespace;
         };
-        ["ALiVE Logistics Hub - %1 permission change(s) and %2 Zeus hub(s) saved to %3", count _store, count _zeus, _key] call ALiVE_fnc_dump;
+        ["ALiVE Logistics Hub - %1 permission change(s) and %2 Zeus or built hub(s) saved to %3", count _store, count _zeus, _key] call ALiVE_fnc_dump;
         _result = true;
     };
 
@@ -1116,8 +1134,12 @@ switch (_op) do {
             waitUntil { sleep 2; ((allMissionObjects "ALiVE_sup_logistics_hub") findIf { isNil {_x getVariable "ALiVE_hub_settings"} }) < 0 || {time - _t0 > 120} };
             private _kept = [];
             private _made = [];
+            private _down = [];
             {
-                _x params ["_z", "_side", "_modKey", "_class", "_pos", "_dir", "_up", ["_name", ""], ["_owner", ""]];
+                _x params ["_z", "_side", "_modKey", "_class", "_pos", "_dir", "_up", ["_name", ""], ["_owner", ""], ["_kind", ""], ["_left", -1]];
+                // a built hub comes back only on its restored layout: without one the module builds afresh, and one
+                // lost for good stays lost
+                if (_z == 3 && {isNil QMOD(COMPOSITIONS_LOADED) || {_left == 0}}) then { continue };
                 private _mods = missionNamespace getVariable ["ALiVE_hub_modules", []];
                 private _i = _mods findIf { !isNull _x && {(["permKey", [_x]] call ALIVE_fnc_hub) == _modKey} };
                 if (_i < 0) then { _i = _mods findIf { !isNull _x && {((["settings", [_x]] call ALIVE_fnc_hub) select 0) == _side} } };
@@ -1126,10 +1148,13 @@ switch (_op) do {
                     ["ALiVE Logistics Hub - the Zeus hub %1 at %2 has no %3 Hub module this time, so it waits in the save", _class, mapGridPosition _pos, _side] call ALiVE_fnc_dump;
                 } else {
                     private _hub = objNull;
-                    if (_z == 1) then {
-                        private _near = (nearestObjects [_pos, [_class], 3]) select { alive _x && {!((_x call BIS_fnc_netId) in ALiVE_hub_registry)} };
+                    if (_z in [1, 3]) then {
+                        // a built hub's crate is in its restored layout, where the layout first set it down
+                        private _near = (nearestObjects [_pos, [_class], [3, 10] select (_z == 3)]) select { alive _x && {!((_x call BIS_fnc_netId) in ALiVE_hub_registry)} };
                         if (_near isNotEqualTo []) then { _hub = _near select 0 };
-                    } else {
+                    };
+                    // a container put down, or a built hub's crate the layout didn't have (one was added)
+                    if (_z == 2 || {_z == 3 && {isNull _hub}}) then {
                         _hub = createVehicle [_class, _pos, [], 0, "CAN_COLLIDE"];
                         _hub setDir _dir;
                         _hub setVectorUp _up;
@@ -1141,6 +1166,10 @@ switch (_op) do {
                         _hub setVariable ["ALiVE_hub_name", _name];
                         _hub setVariable ["ALiVE_hub_owner", _owner];
                         _hub setVariable ["ALiVE_hub_zeus", _z];
+                        if (_z == 3) then {
+                            _hub setVariable ["ALiVE_hub_built", _kind, true];
+                            if (_left > 0) then { _down pushBack [_hub, _left] };
+                        };
                         // a side other than its module's only when that module lets the enemy take hubs
                         private _ms = ["settings", [_mods select _i]] call ALIVE_fnc_hub;
                         _made pushBack [_hub, _mods select _i, ["", _side] select (_side != (_ms select 0) && {_ms param [15, false]})];
@@ -1152,8 +1181,20 @@ switch (_op) do {
             // a moment for players' machines to learn of the new objects before their hold actions are sent
             sleep 1;
             { ["tag", _x] call ALIVE_fnc_hub } forEach _made;
+            // a built hub that was down before the restart is down still, back after the rest of its repair time,
+            // with no notification: nothing was lost just now
+            {
+                _x params ["_hub", "_left"];
+                private _netId = _hub call BIS_fnc_netId;
+                private _e = ALiVE_hub_registry get _netId;
+                _e set [1, false];
+                private _logic = _e select 2;
+                _hub setVariable ["ALiVE_hub", [_e select 0, false, (["settings", [_logic]] call ALIVE_fnc_hub) select 1, _logic], true];
+                _hub setVariable ["ALiVE_hub_backAt", ([time, serverTime] select isMultiplayer) + _left, true];
+                ["start", ["hub:" + _netId, _left, "ALIVE_fnc_hub", ["hubRestore", [_netId]], [_e select 0, _e select 6, ["siteLabel", [_netId]] call ALIVE_fnc_hub, "back"]]] call ALiVE_fnc_siteClock;
+            } forEach _down;
             publicVariable "ALiVE_hub_list";
-            ["ALiVE Logistics Hub - %1 hub(s) a Zeus made before the restart are back: %2", count _made, _made apply { [typeOf (_x select 0), mapGridPosition (_x select 0), (_x select 0) getVariable ["ALiVE_hub_name", ""]] }] call ALiVE_fnc_dump;
+            ["ALiVE Logistics Hub - %1 hub(s) a Zeus made or the module built before the restart are back: %2", count _made, _made apply { [typeOf (_x select 0), mapGridPosition (_x select 0), (_x select 0) getVariable ["ALiVE_hub_name", ""], (_x select 0) getVariable ["ALiVE_hub_built", ""], ((_x select 0) getVariable ["ALiVE_hub", []]) param [1, false]] }] call ALiVE_fnc_dump;
             // supply points once Military Logistics has its network, as the synced hubs are
             private _t1 = time;
             waitUntil { sleep 5; !isNil "ALIVE_ML_supplyNetwork" || {time - _t1 > 600} };
@@ -1292,6 +1333,8 @@ switch (_op) do {
             if (!isNull _hub) then { _hub setVariable ["ALiVE_hub_backAt", ([time, serverTime] select isMultiplayer) + _repair, true] };
             ["start", ["hub:" + _netId, _repair, "ALIVE_fnc_hub", ["hubRestore", [_netId]], [_e select 0, _e select 6, _label, "back"]]] call ALiVE_fnc_siteClock;
         };
+        // a built hub is saved down, with its repair time left, or lost
+        if ((_e param [11, 0]) == 3) then { ["permSave"] call ALIVE_fnc_hub };
     };
 
     // how every site's notifications and map name it: by its name, else by its grid
@@ -1336,6 +1379,7 @@ switch (_op) do {
             _hub setVariable ["ALiVE_hub_name", _name];
             _hub setVariable ["ALiVE_hub_owner", _owner];
             _hub setVariable ["ALiVE_hub_zeus", _e param [11, 0]];
+            if ((_e param [12, ""]) != "") then { _hub setVariable ["ALiVE_hub_built", _e select 12, true] };
             _hub setDir _dir;
             _hub setVectorUp _up;
             _hub setPosATL _pos;
@@ -1350,6 +1394,8 @@ switch (_op) do {
             _hub setVariable ["ALiVE_hub_backAt", -1, true];
         };
         ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
+        // a built hub is saved up again (a Zeus's below, when taken)
+        if ((_hub getVariable ["ALiVE_hub_zeus", 0]) == 3) then { ["permSave"] call ALIVE_fnc_hub };
         if (_side == _was) exitWith { ["notify", ["back", _side, _label]] call ALiVE_fnc_siteClock };
         ["notify", ["lost", _was, _label]] call ALiVE_fnc_siteClock;
         ["notify", ["taken", _side, _label]] call ALiVE_fnc_siteClock;
