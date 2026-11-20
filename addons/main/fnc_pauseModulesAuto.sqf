@@ -33,6 +33,9 @@ MOD(PAUSEMODULES_PAUSE) = {
     if (!isNil QGVAR(PAUSEMODULES_PAUSED)) exitWith {};
     GVAR(PAUSEMODULES_PAUSED) = true;
     publicVariable QGVAR(PAUSEMODULES_PAUSED);
+    // ends a staged start still running (Ease In After Idle) and its logistics hold
+    MOD(PAUSEMODULES_EASEGEN) = (missionNamespace getVariable [QMOD(PAUSEMODULES_EASEGEN), 0]) + 1;
+    MOD(PAUSEMODULES_EASEUNTIL) = -1;
     // keep an open window if a deferred close has not run yet (re-pause before anyone loaded in)
     if ((missionNamespace getVariable [QMOD(PAUSEMODULES_PAUSEDAT), -1]) < 0) then {
         MOD(PAUSEMODULES_PAUSEDAT) = serverTime;
@@ -78,6 +81,38 @@ MOD(PAUSEMODULES_RESUME) = {
 
     ["- Starting Modules"] call ALiVE_fnc_dumpR;
 
+    // Ease In After Idle (Required module, off by default): everything starting in the same minute as the first
+    // player cost the server 29 s of game time in 26 minutes (19 Nov, stalls up to 2.5 s as groups, convoys and
+    // aircraft were made). On, the modules start in stages over the delay, the profile system first so the player
+    // has AI round them at once, and Military Logistics holds vehicle convoys and deliveries that fly until the delay is up.
+    if (missionNamespace getVariable [QMOD(PAUSEMODULES_EASEIN), false]) then {
+        private _delay = missionNamespace getVariable [QMOD(PAUSEMODULES_EASEDELAY), 180];
+        MOD(PAUSEMODULES_EASEUNTIL) = time + _delay;
+        private _gen = (missionNamespace getVariable [QMOD(PAUSEMODULES_EASEGEN), 0]) + 1;
+        MOD(PAUSEMODULES_EASEGEN) = _gen;
+        ["- Easing in after idle: the profile system now, the other modules over %1 s, logistics holds vehicle convoys and deliveries that fly until then", _delay] call ALiVE_fnc_dumpR;
+        ["ALIVE_SYS_PROFILE"] call ALiVE_fnc_unPauseModule;
+        [_gen, _delay] spawn {
+            params ["_gen", "_delay"];
+            private _t0 = diag_tickTime;
+            {
+                _x params ["_share", "_modules"];
+                // each stage at its share of the delay from the resume, not from the stage before
+                private _at = _t0 + _delay * _share;
+                waitUntil { sleep 2; diag_tickTime >= _at || {(missionNamespace getVariable [QMOD(PAUSEMODULES_EASEGEN), 0]) != _gen} };
+                // paused again, or a newer resume took over: stop here
+                if ((missionNamespace getVariable [QMOD(PAUSEMODULES_EASEGEN), 0]) != _gen || {!isNil QGVAR(PAUSEMODULES_PAUSED)}) exitWith {};
+                ["- Easing in after idle: starting %1", _modules] call ALiVE_fnc_dumpR;
+                // in one frame, as the all-at-once start from the connect handler: scheduled, a busy scheduler stretched
+                // one stage to 2-3 minutes on the rig and the next stages slipped behind it
+                isNil { _modules call ALiVE_fnc_unPauseModule };
+            } forEach [
+                [1/3, ["ALiVE_MIL_CQB", "ALIVE_AMB_CIV_POPULATION"]],
+                [2/3, ["ALIVE_MIL_OPCOM", "ALiVE_SUP_FOB"]],
+                [1, ["ALiVE_MIL_ATO"]]
+            ];
+        };
+    } else {
     [
         "ALIVE_SYS_PROFILE",
         "ALIVE_MIL_OPCOM",
@@ -86,6 +121,7 @@ MOD(PAUSEMODULES_RESUME) = {
         "ALIVE_AMB_CIV_POPULATION",
         "ALiVE_MIL_ATO"
     ] call ALiVE_fnc_unPauseModule;
+    };
 
     // task clock stays stopped until a player is actually in the world (cap 900 s)
     [_waitForPlayer] spawn {

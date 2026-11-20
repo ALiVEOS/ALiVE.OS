@@ -2588,6 +2588,36 @@ class CfgVehicles {
                             };
                     };
             };
+            class ALiVE_PAUSEEASEIN: Combo
+            {
+                    property =  MVAR(ALiVE_PAUSEEASEIN);
+                    displayName = "$STR_ALiVE_PAUSEEASEIN";
+                    tooltip = "$STR_ALiVE_PAUSEEASEIN_COMMENT";
+                    typeName = "BOOL";
+                    defaultValue = "false";
+                    ALiVE_showWhen[] = {{"ALiVE_PAUSEMODULES", "is", "true"}};
+                    class Values
+                    {
+                            class Yes
+                            {
+                                    name = "Yes";
+                                    value = 1;
+                            };
+                            class No
+                            {
+                                    name = "No";
+                                    value = 0;
+                            };
+                    };
+            };
+            class ALiVE_PAUSEEASEDELAY: Edit
+            {
+                    property =  MVAR(ALiVE_PAUSEEASEDELAY);
+                    displayName = "$STR_ALiVE_PAUSEEASEDELAY";
+                    tooltip = "$STR_ALiVE_PAUSEEASEDELAY_COMMENT";
+                    defaultValue = """180""";
+                    ALiVE_showWhen[] = {{"ALiVE_PAUSEMODULES", "is", "true"}, {"ALiVE_PAUSEEASEIN", "is", "true"}};
+            };
             class HDR_GC : ALiVE_ModuleSubTitle { property = "ALiVE_require_HDR_GC"; displayName = "GARBAGE COLLECTOR"; };
             class ALiVE_GC_INTERVAL: Edit
             {

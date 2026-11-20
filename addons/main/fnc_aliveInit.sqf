@@ -797,6 +797,12 @@ if !(_logic getVariable ["ALIVE_DISABLEMARKERS", false]) then {
 
 // Pause Modules
 if (_logic getVariable ["ALIVE_PAUSEMODULES", false]) then {
+    // Ease In After Idle: staged start after an idle pause, delay in seconds (Edit box, 30 to 1800, 180 if blank)
+    ALiVE_PAUSEMODULES_EASEIN = _logic getVariable ["ALiVE_PAUSEEASEIN", false];
+    private _easeDelay = _logic getVariable ["ALiVE_PAUSEEASEDELAY", 180];
+    if (_easeDelay isEqualType "") then { _easeDelay = if (_easeDelay == "") then { 180 } else { parseNumber _easeDelay } };
+    if !(_easeDelay isEqualType 0) then { _easeDelay = 180 };
+    ALiVE_PAUSEMODULES_EASEDELAY = (_easeDelay max 30) min 1800;
     call ALiVE_fnc_pauseModulesAuto;
 };
 

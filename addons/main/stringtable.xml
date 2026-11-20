@@ -365,6 +365,18 @@
     <Chinesesimp>当没有玩家存在时,将自动暂停vAI、AI指挥官、CQB和Amb Civs。</Chinesesimp>
     <Spanish>Pausa automáticamente la IA virtual, el Comandante IA, CQB y los civiles ambientales si no hay jugadores en el servidor.</Spanish>
 </Key>
+<Key ID="STR_ALiVE_PAUSEEASEIN">
+    <English>Ease In After Idle:</English>
+</Key>
+<Key ID="STR_ALiVE_PAUSEEASEIN_COMMENT">
+    <English>With Auto Pause on: when the first player joins a paused server, the AI around them start at once and the other modules follow in stages (CQB and civilians, then the AI Commanders and FOBs, then air tasking) over the Ease In Time. Military Logistics holds vehicle convoys and deliveries that would fly (1500 m or more, or over water) until then. Spreads out the work that otherwise all starts in the same minute.</English>
+</Key>
+<Key ID="STR_ALiVE_PAUSEEASEDELAY">
+    <English>Ease In Time (s):</English>
+</Key>
+<Key ID="STR_ALiVE_PAUSEEASEDELAY_COMMENT">
+    <English>Seconds over which the modules start after an idle pause, and how long logistics holds vehicle convoys and deliveries that would fly. 30 to 1800, default 180.</English>
+</Key>
 <Key ID="STR_ALIVE_PERFATSTART">
     <English>Performance Monitoring at Start:</English>
     <Chinesesimp>开局时进行性能监测:</Chinesesimp>

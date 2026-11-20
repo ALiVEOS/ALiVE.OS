@@ -8332,9 +8332,28 @@ switch(_operation) do {
                     };
                 };
 
+                // Ease In After Idle (Required module): just after the first player joins a paused server, armoured and
+                // mechanised convoys and deliveries that fly (1500 m or more, or water on the way) wait until the staged start is over
+                private _easeHold = false;
+                if ((missionNamespace getVariable ["ALiVE_PAUSEMODULES_EASEUNTIL", -1]) > time && {!_playerRequested} && {!_shipLaunch} && {_reinforcementAvailable}
+                    && {([_event, "from", ""] call ALIVE_fnc_hashGet) != "ATO"}) then {
+                    private _easeFrom = [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet;
+                    private _easeDist = _eventPosition distance2D _easeFrom;
+                    _easeHold = (_eventForceArmour + _eventForceMechanised + _eventForceMotorised) > 0 || {_easeDist >= 1500};
+                    // water on the way: it flies whatever the distance (rule 6 below)
+                    if (!_easeHold) then {
+                        private _easeDir = _eventPosition getDir _easeFrom;
+                        for "_i" from 50 to _easeDist step 50 do { if (surfaceIsWater (_eventPosition getPos [_i, _easeDir])) exitWith { _easeHold = true } };
+                    };
+                    if (_easeHold && {!([_event, "easeHoldLogged", false] call ALIVE_fnc_hashGet)}) then {
+                        [_event, "easeHoldLogged", true] call ALIVE_fnc_hashSet;
+                        ["ML - Easing in after idle: event %1 (heavy, far or over water) waits %2 s more", _eventID, round ((missionNamespace getVariable ["ALiVE_PAUSEMODULES_EASEUNTIL", -1]) - time)] call ALiVE_fnc_dump;
+                    };
+                };
+
                 if(_reinforcementAvailable || _shipLaunch) then {
 
-                    if((time - _eventTime) > _waitTime && {!_shipHold}) then {
+                    if((time - _eventTime) > _waitTime && {!_shipHold} && {!_easeHold}) then {
 
                         private ["_reinforcementPosition","_playersInRange","_paraDrop","_remotePosition","_airTrans","_noHeavy","_slingAvailable","_water","_AA","_newPos","_routeDistance","_routeDirection"];
 
