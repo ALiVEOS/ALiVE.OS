@@ -127,6 +127,7 @@ Goldwep
 #define RESTORE_GAP          60
 #define REINFORCE_QUIET      180
 #define REINFORCE_CAP        900
+#define HANDOVER_TIME        60
 #define SEND_CONTACT         10
 #define SEND_ASSESS          20
 #define SEND_MORALE          30
@@ -161,7 +162,7 @@ if (_operation in ["report", "with"] && {isNil "_lambsDoor"} && {isRemoteExecute
 if (isNil "ALiVE_lambs_stats") then {
     ALiVE_lambs_urgent = [];                // keys of groups this machine sees to before their turn
     ALiVE_lambs_with = [];                  // server: owner ids of the other machines that run LAMBS
-    ALiVE_lambs_sameOrders = "";            // server: the profile whose waypoints are about to be cleared and laid again
+    ALiVE_lambs_sameOrders = createHashMap; // server: profileID -> true while its waypoints are about to be cleared and laid again
     ALiVE_lambs_stats = createHashMap;
     ALiVE_lambs_groups = createHashMap;     // key -> state of a group this machine owns
     ALiVE_lambs_active = createHashMap;     // server: profileID -> group
@@ -333,11 +334,43 @@ switch (_operation) do {
             // a garrison moved on: LAMBS has it back
             _group setVariable ["ALiVE_lambs_run", true, true];
             { _x setVariable [L_NOUNIT, false, true] } forEach units _group;
+            // Soldier Behaviour was put on it as a garrison: it comes off on the machine that has the group,
+            // and is not put on again when the group changes machine
+            if (_group getVariable ["ALiVE_AIB_eligible", false]) then {
+                _group setVariable ["ALiVE_AIB_eligible", false, true];
+                ["toOwner", [_group, "soldierBehaviour", [_group, false]]] call ALiVE_fnc_lambs;
+                // a group that has just changed machine may have Soldier Behaviour's attach still on its way
+                // (it waits 2 s after the men become local), so it is looked at once more after that
+                [{
+                    if (!isNull _this && {_this getVariable ["ALiVE_lambs_run", false]}) then {
+                        ["toOwner", [_this, "soldierBehaviour", [_this, false]]] call ALiVE_fnc_lambs;
+                    };
+                }, _group, 4] call CBA_fnc_waitAndExecute;
+            };
         };
         if (_static && {_group getVariable ["ALiVE_lambs_run", false]}) then {
             // not LAMBS' after all: the soldiers get what Guard gives them
             _group setVariable ["ALiVE_lambs_run", false, true];
             { ["unit", [_x]] call ALiVE_fnc_modConflicts } forEach units _group;
+            // and Soldier Behaviour, as a garrison has under Guard
+            if (!isNil "ALiVE_fnc_AIBehaviour" && {["setting", ["behaviourEnabled", false]] call ALiVE_fnc_AIBehaviour}) then {
+                _group setVariable ["ALiVE_AIB_eligible", true, true];
+                ["toOwner", [_group, "soldierBehaviour", [_group, true]]] call ALiVE_fnc_lambs;
+            };
+        };
+    };
+
+    // owner: [group, on] Soldier Behaviour follows a garrison out of LAMBS' hands and back
+    case "soldierBehaviour": {
+        _args params [["_group", grpNull], ["_on", false]];
+        if (isNull _group || {!local _group} || {isNil "ALiVE_fnc_AIBehaviour"}) exitWith {};
+        // in one go: the soldier behaviour tick must not act on the group half way through
+        isNil {
+            if (_on) then {
+                ["attach", [_group]] call ALiVE_fnc_AIBehaviour;
+            } else {
+                if (_group getVariable ["ALiVE_AIB_attached", false]) then { ["release", [_group, "LAMBS has the group"]] call ALiVE_fnc_AIBehaviour };
+            };
         };
     };
 
@@ -371,6 +404,8 @@ switch (_operation) do {
             };
             if (_id != "") then {
                 ALiVE_lambs_active set [_id, _group];
+                // [machine it was last seen on, the one before, when it changed]: see "report"
+                _group setVariable ["ALiVE_lambs_owners", [groupOwner _group, -1, 0]];
                 _group setVariable ["ALiVE_lambs_cmd", ([_profile, "activeCommands", []] call ALiVE_fnc_hashGet) isNotEqualTo [], true];
                 private _order = ALiVE_lambs_orders getOrDefault [_id, []];
                 if (_order isNotEqualTo []) then {
@@ -596,7 +631,7 @@ switch (_operation) do {
         _args params [["_profile", []]];
         if (!ACTIVE || {!isServer} || {_profile isEqualTo []}) exitWith {};
         private _id = [_profile, "profileID", ""] call ALiVE_fnc_hashGet;
-        if (_id isEqualType "") then { ALiVE_lambs_sameOrders = _id };
+        if (_id isEqualType "" && {_id != ""}) then { ALiVE_lambs_sameOrders set [_id, true] };
     };
 
     // server: new orders are being written, so whatever LAMBS task served the old ones ends
@@ -606,7 +641,7 @@ switch (_operation) do {
         private _id = [_profile, "profileID", ""] call ALiVE_fnc_hashGet;
         if !(_id isEqualType "") exitWith {};
         // a clear that lays the same orders again (see "sameOrders"): the order stands
-        if (_id != "" && {_id == ALiVE_lambs_sameOrders}) exitWith { ALiVE_lambs_sameOrders = "" };
+        if (_id in ALiVE_lambs_sameOrders) exitWith { ALiVE_lambs_sameOrders deleteAt _id };
         // spawned or virtual: an order left here would come back on the next spawn
         ALiVE_lambs_orders deleteAt _id;
         private _group = ALiVE_lambs_active getOrDefault [_id, grpNull];
@@ -1064,7 +1099,14 @@ switch (_operation) do {
                 private _gun = _payload param [0, objNull];
                 !(_gun isEqualType objNull) || {isNull _gun} || {owner _gun != _sender}
             } else {
-                isNull _group || {groupOwner _group != _sender}
+                // a report sent just before the group changed machine arrives after it: the machine it was on is
+                // still heard for a short while, so a reserve's garrison does not wait for the expiry
+                isNull _group || {
+                    private _owners = _group getVariable ["ALiVE_lambs_owners", [-1, -1, 0]];
+                    groupOwner _group != _sender
+                    && {(_owners select 0) != _sender}
+                    && {(_owners select 1) != _sender || {time - (_owners select 2) > HANDOVER_TIME}}
+                }
             }
         };
         if (_refused) exitWith { TALLY("report_refused") };
@@ -1284,6 +1326,10 @@ switch (_operation) do {
             if (isNull _group) then { ALiVE_lambs_active deleteAt _id; continue };
             private _info = _group getVariable ["ALiVE_lambs", []];
             if (_info isEqualTo []) then { continue };
+            // the machine the group is on is noted, with the one before it and when it changed: see "report"
+            private _owners = _group getVariable ["ALiVE_lambs_owners", [-1, -1, 0]];
+            private _ownerNow = groupOwner _group;
+            if (_ownerNow != (_owners select 0)) then { _group setVariable ["ALiVE_lambs_owners", [_ownerNow, _owners select 0, time]] };
             // ACE's transfer: held or let go as the headless clients come and go
             ["aceHold", [_group]] call ALiVE_fnc_lambs;
             private _profile = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler;

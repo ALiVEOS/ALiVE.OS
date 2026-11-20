@@ -46,7 +46,7 @@ isNil {
     // without LAMBS the Integrate checks still run: "active" only looks for this function
     if (isNil "lambs_wp_fnc_taskReset") then { lambs_wp_fnc_taskReset = {} };
     ALiVE_lambs_debug = false;
-    ALiVE_lambs_sameOrders = "";
+    ALiVE_lambs_sameOrders = createHashMap;
 
     // the reports below are made as ALiVE_fnc_lambsRemote makes them, wherever the test is run from
     private _lambsDoor = true;
@@ -150,10 +150,24 @@ isNil {
     ["order: stored for a virtual profile", "test_lambs_v1" in ALiVE_lambs_orders] call _fnc_check;
     // a despawn or a route rebuild clears the waypoints to lay the same orders again
     ["sameOrders", [_virtual]] call ALiVE_fnc_lambs;
+    // another profile flagged in between (a route rebuild) does not take the first one's flag
+    private _virtual2 = [] call ALiVE_fnc_hashCreate;
+    [_virtual2, "profileID", "test_lambs_v2"] call ALiVE_fnc_hashSet;
+    ["sameOrders", [_virtual2]] call ALiVE_fnc_lambs;
     ["reordered", [_virtual]] call ALiVE_fnc_lambs;
+    ["reordered", [_virtual2]] call ALiVE_fnc_lambs;
+    ["sameOrders: each flag is used up by its own profile's clear", count ALiVE_lambs_sameOrders == 0] call _fnc_check;
     ["sameOrders: the clear that follows keeps the order", "test_lambs_v1" in ALiVE_lambs_orders] call _fnc_check;
     ["reordered", [_virtual]] call ALiVE_fnc_lambs;
     ["reordered: a virtual profile re-tasked loses its old order", !("test_lambs_v1" in ALiVE_lambs_orders)] call _fnc_check;
+
+    // --- a garrison LAMBS takes back loses Soldier Behaviour --------------------------
+    private _gB = createGroup [east, true];
+    _gB setVariable ["ALiVE_lambs_run", false];
+    _gB setVariable ["ALiVE_AIB_eligible", true];
+    ["roleVars", [_gB, "MANEUVER"]] call ALiVE_fnc_lambs;
+    ["roleVars: a garrison moved on is LAMBS' and no longer open to Soldier Behaviour", (_gB getVariable ["ALiVE_lambs_run", false]) && {!(_gB getVariable ["ALiVE_AIB_eligible", true])}] call _fnc_check;
+    deleteGroup _gB;
 
     // --- the network door ------------------------------------------------------------
     ["order", ["test_lambs_n1", "attack", [1, 1, 0], "x", -1]] call ALiVE_fnc_lambsRemote;
@@ -161,6 +175,18 @@ isNil {
     private _refusedBefore = ALiVE_lambs_stats getOrDefault ["report_refused", 0];
     ["report", ["contact", "test_lambs_none", "EAST", [0, 0, 0], [[], 1], 99]] call ALiVE_fnc_lambs;
     ["report: refused from a machine that does not own the group", (ALiVE_lambs_stats getOrDefault ["report_refused", 0]) == _refusedBefore + 1] call _fnc_check;
+    // a report from the machine the group has just left is still heard for a short while
+    private _gH = createGroup [east, true];
+    ALiVE_lambs_active set ["test_lambs_h1", _gH];
+    _gH setVariable ["ALiVE_lambs_owners", [groupOwner _gH, 98, time]];
+    _refusedBefore = ALiVE_lambs_stats getOrDefault ["report_refused", 0];
+    ["report", ["panic", "test_lambs_h1", "EAST", [], [], 98]] call ALiVE_fnc_lambs;
+    ["report: heard from the machine the group has just left", (ALiVE_lambs_stats getOrDefault ["report_refused", 0]) == _refusedBefore] call _fnc_check;
+    _gH setVariable ["ALiVE_lambs_owners", [groupOwner _gH, 98, time - 600]];
+    ["report", ["panic", "test_lambs_h1", "EAST", [], [], 98]] call ALiVE_fnc_lambs;
+    ["report: refused from it once the handover is old", (ALiVE_lambs_stats getOrDefault ["report_refused", 0]) == _refusedBefore + 1] call _fnc_check;
+    ALiVE_lambs_active deleteAt "test_lambs_h1";
+    deleteGroup _gH;
 
     // --- a second reinforce call keeps the first note --------------------------------
     ALiVE_lambs_reinforcing set ["test_lambs_r9", [0, [1, 1, 0], [5, 5, 0], true]];

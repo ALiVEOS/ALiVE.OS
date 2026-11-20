@@ -32,7 +32,7 @@ Goldwep
 // owner to server
 #define TO_SERVER ["report", "with"]
 // server to owner
-#define TO_OWNER  ["detachLocal", "share", "unassign", "nudge"]
+#define TO_OWNER  ["detachLocal", "share", "unassign", "nudge", "soldierBehaviour"]
 
 params [["_operation", "", [""]], ["_args", [], [[]]]];
 
