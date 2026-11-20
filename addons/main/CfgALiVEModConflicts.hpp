@@ -42,6 +42,16 @@ class CfgALiVEModConflicts {
         unitVars[] = {"asr_ai_exclude"};
         unitVarsWithBehaviour[] = {};
     };
+    class A3_Command {
+        name = "A3 Command";
+        patches[] = {"A3C_CORE"};
+        missionVar = "";
+        effect = "it treats the AI groups of any side no player is fighting (every group, with no players in) as a player's own: they stop attacking on their own and never flee, their other AI mods are turned off, and on a dedicated server they are taken back off a headless client";
+        handling = "ALiVE's groups are left out of A3 Command, which also keeps them off its command map; a group a player leads stays A3 Command's";
+        groupVars[] = {"A3C_HC_BLACKLIST"};
+        unitVars[] = {};
+        unitVarsWithBehaviour[] = {};
+    };
     class BHL_AI {
         name = "BHL AI";
         patches[] = {"BHL_AI"};

@@ -1245,6 +1245,10 @@ switch(_operation) do {
 
             if(_active) then {
                 _newGroup = createGroup _sideObject;
+                // the group's opt-outs from other AI mods go on before its first unit: A3 Command takes over any group it finds
+                // without its flag and turns off attacking on its own, and spawning the units can give it that moment (NUC 20 Nov,
+                // 7 of 42 groups); the guard runs again once the units are in, for their own flags
+                ["guard", [_newGroup]] call ALiVE_fnc_modConflicts;
             };
 
             private _removeIndexes = [];
@@ -1386,6 +1390,10 @@ switch(_operation) do {
 
             private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
             private _group = createGroup _sideObject;
+            // the group's opt-outs from other AI mods go on before its first unit: A3 Command takes over any group it finds
+            // without its flag and turns off attacking on its own, and spawning the units can give it that moment (NUC 20 Nov,
+            // 7 of 42 groups); the guard runs again once the units are in, for their own flags
+            ["guard", [_group]] call ALiVE_fnc_modConflicts;
 
             // determine a suitable spawn position
             [_logic] call ALIVE_fnc_profileGetGoodSpawnPosition;
