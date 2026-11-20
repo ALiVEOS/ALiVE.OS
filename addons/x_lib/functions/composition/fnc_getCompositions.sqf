@@ -102,6 +102,7 @@ if (!_missionOnly && {_env == "Jungle"} && {!isClass (_configPaths select 0)} &&
 };
 
 // Default to regular if additional PBOs are not loaded
+private _plainSet = false;
 if (!_missionOnly && {!isClass (_configPaths select 0)} && {!isClass (_configPaths select 1)}) then {
     // Said once per set. Every camp, HQ and outpost asks again, so a Jungle terrain without the optional
     // composition_vn pack logged it 123 times in one startup on Cam Lao Nam.
@@ -112,6 +113,7 @@ if (!_missionOnly && {!isClass (_configPaths select 0)} && {!isClass (_configPat
         ["WARNING: No %1 compositions are loaded, so the standard %2 compositions are used instead. Add the matching composition PBO from ALiVE's optional folder to @ALiVE or @ALiVEServer if there is one.", _compType,_comp] call ALiVE_fnc_dump;
     };
 
+    _plainSet = true;
     _configPaths = [
         missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
         configFile >> "CfgGroups" >> "Empty" >> _comp
@@ -208,6 +210,13 @@ if (count _result == 0 && {_compType != _comp} && {!_missionOnly}) then {
         missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
         configFile >> "CfgGroups" >> "Empty" >> _comp
     ] call _fnc_collect;
+} else {
+    // A mission's own compositions in the plain set (Military rather than Military_Woodland) were left out whenever
+    // the terrain's set found something, so a mission's camps never showed on a Woodland, Desert or Pacific map.
+    // They join the terrain's here; ALiVE's own plain set stays out, as it is made for other terrain.
+    if (_compType != _comp && {!_missionOnly} && {!_plainSet}) then {
+        [missionConfigFile >> "CfgGroups" >> "Empty" >> _comp] call _fnc_collect;
+    };
 };
 
 
