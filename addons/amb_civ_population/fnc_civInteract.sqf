@@ -867,7 +867,7 @@ switch (_operation) do {
 		private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
 			[ALIVE_civilianHostilityFloor, str (side (group player)), 0] call ALiVE_fnc_hashGet
 		} else { 0 };
-		private _h = ((_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max _sideBaseline) max 0 min 100;
+		private _h = ((_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max ((createHashMapFromArray (missionNamespace getVariable ["ALiVE_CivPop_TownThreat", []])) getOrDefault [_civ getVariable ["ALiVE_clusterID", ""], 0]) max _sideBaseline) max 0 min 100;
 		private _hostile = random 100 < ((_h - 30) max 0);
 		private _text = "";
 
@@ -1540,7 +1540,7 @@ switch (_operation) do {
 			private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
 				[ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet
 			} else { 0 };
-			private _h = ((_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max _sideBaseline) max 0 min 100;
+			private _h = ((_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max ((createHashMapFromArray (missionNamespace getVariable ["ALiVE_CivPop_TownThreat", []])) getOrDefault [_civ getVariable ["ALiVE_clusterID", ""], 0]) max _sideBaseline) max 0 min 100;
 			_civ setVariable ["intelGathered", true];
 
 			// Hide the button on the still-open dialog so the player sees

@@ -8,10 +8,10 @@ Description:
     Returns true when the civilian's effective hostility is BELOW the
     given threshold, i.e. when the entry should remain visible.
 
-    Reads the civilian's `ALiVE_CivPop_Hostility`, floored by the module's
+    Reads the civilian's `ALiVE_CivPop_Hostility`, raised to its town's current threat
+    (`ALiVE_CivPop_TownThreat`, as the dialog reads it) and floored by the module's
     per-side Hostility Floor (`ALIVE_civilianHostilityFloor`, none by default)
-    for the player's side, as the approach gesture does. The dialog can differ: it also
-    counts the town's current threat.
+    for the player's side, as the approach gesture does.
 
     The companion ACE menu in addons/sys_acemenu/fnc_aceMenuCiv.sqf
     gates each restricted entry with `&& {[_target, N] call
@@ -38,7 +38,7 @@ params [["_civ", objNull, [objNull]], ["_threshold", 60, [0]]];
 
 if (isNull _civ) exitWith { false };
 
-private _civHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+private _civHostility = (_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max ((createHashMapFromArray (missionNamespace getVariable ["ALiVE_CivPop_TownThreat", []])) getOrDefault [_civ getVariable ["ALiVE_clusterID", ""], 0]);
 private _playerSide = str (side (group player));
 private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
     [ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet

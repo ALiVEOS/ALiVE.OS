@@ -391,6 +391,13 @@ switch(_operation) do {
             // set agent id on the unit
             _unit setVariable ["agentID", _agentID];
 
+            // The players' machines need the civilian's town to read its current threat
+            // (ALiVE_CivPop_TownThreat), as the dialog does, for the gestures, aim reactions,
+            // ACE menu tiers and Gather Intel
+            if ((_logic select 2 select 9) isNotEqualTo "") then {
+                _unit setVariable ["ALiVE_clusterID", _logic select 2 select 9, true];
+            };
+
             // The players' machines read the unit's copy of the civilian's hostility (the ACE
             // menu tiers, the approach gesture, the aim reactions, Gather Intel), so it starts
             // from the record, which kept its value while the civilian was despawned. At the

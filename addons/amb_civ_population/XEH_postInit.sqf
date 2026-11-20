@@ -391,13 +391,13 @@ if (hasInterface) then {
                         || {_civ getVariable ["ALiVE_civ_dialogHold", false]};
                     if (_d < 2 && {!_frozen} && {!_held}) then {
                         // Pick the approach gesture by the civ's effective
-                        // hostility - per-civ ALiVE_CivPop_Hostility floored
-                        // by the module's per-side campaign baseline. The
-                        // dialog's indicator can differ: it also counts the
-                        // town's current threat. Fires regardless of indicator
+                        // hostility - per-civ ALiVE_CivPop_Hostility, raised to
+                        // the town's current threat as the dialog's indicator
+                        // reads it, and floored by the module's per-side campaign
+                        // baseline. Fires regardless of indicator
                         // mode so even indicator-off missions get a discoverable
                         // disposition cue from the wave / head-shake choice.
-                        private _civHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+                        private _civHostility = (_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max ((createHashMapFromArray (missionNamespace getVariable ["ALiVE_CivPop_TownThreat", []])) getOrDefault [_civ getVariable ["ALiVE_clusterID", ""], 0]);
                         private _playerSide = str (side (group player));
                         private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
                             [ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet
@@ -506,7 +506,7 @@ if (hasInterface) then {
             // The civ's effective hostility, which sets the reaction, and the hold time
             // in Dynamic mode: its own figure floored by the module's baseline for the
             // player's side, as the approach gesture and the vehicle stop read it.
-            private _civHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+            private _civHostility = (_civ getVariable ["ALiVE_CivPop_Hostility", 30]) max ((createHashMapFromArray (missionNamespace getVariable ["ALiVE_CivPop_TownThreat", []])) getOrDefault [_civ getVariable ["ALiVE_clusterID", ""], 0]);
             private _playerSide = str (side (group player));
             private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
                 [ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet
@@ -670,7 +670,7 @@ if (hasInterface) then {
                             // scenarios as well as calm ones.
                             if !(_order == "STOP_VEHICLE") then {
                                 if (_angle < 10) then {
-                                    private _civHostility = _drv getVariable ["ALiVE_CivPop_Hostility", 30];
+                                    private _civHostility = (_drv getVariable ["ALiVE_CivPop_Hostility", 30]) max ((createHashMapFromArray (missionNamespace getVariable ["ALiVE_CivPop_TownThreat", []])) getOrDefault [_drv getVariable ["ALiVE_clusterID", ""], 0]);
                                     private _playerSide = str (side (group player));
                                     private _sideBaseline = if (!isNil "ALIVE_civilianHostilityFloor") then {
                                         [ALIVE_civilianHostilityFloor, _playerSide, 0] call ALiVE_fnc_hashGet

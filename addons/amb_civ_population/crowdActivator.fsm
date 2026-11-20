@@ -263,7 +263,7 @@ class FSM
                          "            if (count _nearestAgent > 0) then {" \n
                          "                 " \n
                          "                 private _clusterID = [_nearestAgent, ""homeCluster""] call ALiVE_fnc_hashGet;" \n
-                         "					  _agent setVariable [""ALiVE_clusterID"", _clusterID, false];" \n
+                         "					  _agent setVariable [""ALiVE_clusterID"", _clusterID, true];" \n
                          "                 private _cluster = [_activeClusters, _clusterID,[]] call ALIVE_fnc_hashGet;" \n
                          "					" \n
                          "" \n

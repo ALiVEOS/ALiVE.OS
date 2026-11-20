@@ -22,9 +22,14 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private _activeClusters = [ALIVE_clusterHandler, "getActive"] call ALIVE_fnc_clusterHandler;
+
+// The towns under threat now, [clusterID, level], published for the players' machines: the gestures, aim reactions,
+// ACE menu tiers and Gather Intel there read the same town threat the dialog does. Sent only when it changes.
+private _threat = [];
 
 {
     private _cluster = _x;
@@ -38,8 +43,15 @@ private _activeClusters = [ALIVE_clusterHandler, "getActive"] call ALIVE_fnc_clu
         private _hostileSide = str(side (group(_nearUnits select 0)));
         private _hostileLevel = [_clusterHostility, _hostileSide, 0] call ALIVE_fnc_hashGet;
         [_cluster, "posture", _hostileLevel] call ALIVE_fnc_hashSet;
+        if (_hostileLevel isEqualType 0 && {_hostileLevel > 0}) then {
+            _threat pushBack [[_cluster, "clusterID", ""] call ALIVE_fnc_hashGet, _hostileLevel];
+        };
     }else{
         [_cluster, "posture", 0] call ALIVE_fnc_hashSet;
     };
 
 } forEach (_activeClusters select 2);
+
+if !(_threat isEqualTo (missionNamespace getVariable ["ALiVE_CivPop_TownThreat", []])) then {
+    missionNamespace setVariable ["ALiVE_CivPop_TownThreat", _threat, true];
+};
