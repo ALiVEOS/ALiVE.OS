@@ -43,7 +43,7 @@ Parameters:
     ["rename", [hubNetId, name]] - server, through ALIVE_fnc_hubRequest: the Manage Hub window's Rename
     ["rules", [module, kind]] - Who Can Collect (kind "COLLECT", the default) or Who Can Dismantle
         ("DISMANTLE") as [rules, names]: an admin's in-game change, or the module's
-    ["catalogueRules", [module]] - the module's List and three lists under the tablet's Never and
+    ["catalogueRules", [module, hub]] - the module's List and three lists under the tablet's Never and
         List kinds, read by ALIVE_fnc_lists
     ["tabletModule"] - the Player Combat Logistics module, objNull when there is none
     ["unitSide", [unit]] - the unit's side as text, a civilian-side player counted by faction
@@ -74,6 +74,8 @@ Parameters:
     ["permStoreKey"] - server: the name the changes are saved under, beside the FOBs
     ["permLoad", [module]] - server: the saved change put back on the module, once the save has been read
     ["permSave"] - server: every module's change written, and the hubs a Zeus made or the module built
+    ["supplyWatch", [module, most, spacing, ageSeconds]] - server: Build Hubs At Supply Points, a hub at each
+        place Military Logistics has delivered to and kept units at for the age, within the cap and spacing
     ["zeusRestore", [rows]] - server, from the read: the hubs a Zeus made before the restart put back, and the
         built hubs on their restored layouts, down ones still down for the rest of their repair time
     ["dismantle", [hubNetId]] - server, through ALIVE_fnc_hubRequest: a player's hold action finished
@@ -268,8 +270,15 @@ switch (_op) do {
             };
         } forEach _synced;
         // Build Hubs (#1091): OFF, FIELDHQ, HQ or FIELDHQ_HQ, with Most Built Hubs and Spacing
+        // and At Supply Points (SUPPLY, alone or after the others), with Supply Point Age and what those hubs offer
         private _build = toUpper (["hub_build", "OFF"] call _text);
-        if !(_build in ["OFF", "FIELDHQ", "HQ", "FIELDHQ_HQ"]) then { _build = "OFF" };
+        if !(_build in ["OFF", "FIELDHQ", "HQ", "FIELDHQ_HQ", "SUPPLY", "FIELDHQ_SUPPLY", "HQ_SUPPLY", "FIELDHQ_HQ_SUPPLY"]) then { _build = "OFF" };
+        private _buildParts = _build splitString "_";
+        private _buildAge = parseNumber (["hub_build_age", "10"] call _text);
+        if (_buildAge <= 0) then { _buildAge = 10 };
+        _buildAge = ((round _buildAge) min 120) * 60;
+        // supply point hubs offer supplies and ammo only unless the module says the full catalogue
+        _logic setVariable ["ALiVE_hub_supplyCut", toUpper (["hub_build_supply_offer", "SUPPLIES"] call _text) != "FULL", true];
         private _buildMax = parseNumber (["hub_build_max", "3"] call _text);
         if (_buildMax <= 0) then { _buildMax = 3 };
         _buildMax = (round _buildMax) min 20;
@@ -320,7 +329,8 @@ switch (_op) do {
             };
             { ["nodeAdd", [_x]] call ALIVE_fnc_hub } forEach _hubs;
         };
-        if (_build != "OFF") then { ["build", [_logic, _build, _buildMax, _buildSpacing]] spawn ALIVE_fnc_hub };
+        if ("FIELDHQ" in _buildParts || {"HQ" in _buildParts}) then { ["build", [_logic, _build, _buildMax, _buildSpacing]] spawn ALIVE_fnc_hub };
+        if ("SUPPLY" in _buildParts) then { ["supplyWatch", [_logic, _buildMax, _buildSpacing, _buildAge]] spawn ALIVE_fnc_hub };
 
         _logic setVariable ["startupComplete", true, true];
     };
@@ -341,7 +351,8 @@ switch (_op) do {
         // [kind, centre, envelope, faction, source module]
         private _sites = [];
         private _t0 = time;
-        if (_mode in ["FIELDHQ", "FIELDHQ_HQ"]) then {
+        private _parts = _mode splitString "_";
+        if ("FIELDHQ" in _parts) then {
             private _isMP = { typeOf _this == "ALiVE_mil_placement" };
             private _mps = _synced select { _x call _isMP };
             private _named = _mps isNotEqualTo [];
@@ -368,7 +379,7 @@ switch (_op) do {
                 };
             } forEach _mps;
         };
-        if (_mode in ["HQ", "FIELDHQ_HQ"]) then {
+        if ("HQ" in _parts) then {
             private _isOP = { typeOf _this == "ALiVE_mil_opcom" };
             private _ops = _synced select { _x call _isOP };
             private _named = _ops isNotEqualTo [];
@@ -451,10 +462,104 @@ switch (_op) do {
         { ["nodeAdd", [_x]] call ALIVE_fnc_hub } forEach _built;
     };
 
+    // At Supply Points (#1091): every minute, the places Military Logistics has delivered to for the side's commanders
+    // and still has units at (its supply network's delivery nodes). One that has stood for Supply Point Age gets a
+    // hub, the oldest first, one a minute, within Most Built Hubs (every hub the module built counts, bar ones lost
+    // for good) and never within Spacing, or 500 m, of a hub of the side: a delivery within 500 m of one merges into it.
+    // From then on it is an ordinary hub: it stays while it stands, whatever becomes of the delivered units.
+    case "supplyWatch": {
+        _args params [["_logic", objNull, [objNull]], ["_max", 3, [0]], ["_spacing", 1000, [0]], ["_age", 600, [0]]];
+        if (!isServer || {isNull _logic}) exitWith {};
+        private _side = (["settings", [_logic]] call ALIVE_fnc_hub) select 0;
+        private _where = mapGridPosition _logic;
+        private _mlMods = _logic getVariable ["ALiVE_hub_mlMods", []];
+        if (_mlMods isEqualTo []) exitWith {
+            ["ALiVE Logistics Hub: Build Hubs at the module at %1 includes At Supply Points, but the module is not synced to Military Logistics, where the supply points come from, so no hub is built at one", _where] call ALiVE_fnc_dumpR;
+        };
+        private _t0 = time;
+        waitUntil { sleep 10; time - _t0 > 900 || {(_mlMods findIf { !(_x getVariable ["initialAnalysisComplete", false]) }) < 0} };
+        if (isNil "ALIVE_ML_supplyNetwork") exitWith {
+            ["ALiVE Logistics Hub: Military Logistics has no supply network after 15 minutes, so the module at %1 builds no hub at a supply point", _where] call ALiVE_fnc_dumpR;
+        };
+        // after a restart the hubs built before it are back first, so they count
+        if (["ALiVE_sys_data"] call ALiVE_fnc_isModuleAvailable) then {
+            private _t2 = diag_tickTime;
+            waitUntil { sleep 1; (!isNil "ALIVE_sys_data" && {ALIVE_sys_data getVariable ["startupComplete", false]}) || {diag_tickTime - _t2 > 300} };
+            sleep 30;
+        };
+        private _factions = ["commanderFactions", [_side, _mlMods]] call ALIVE_fnc_hub;
+        if (_factions isEqualTo []) exitWith {
+            ["ALiVE Logistics Hub: the Military Logistics synced to the module at %1 serves no AI Commander of side %2, so no hub is built at a supply point", _where, _side] call ALiVE_fnc_dumpR;
+        };
+        private _gap = _spacing max 500;
+        private _repair = ((["settings", [_logic]] call ALIVE_fnc_hub) select 9) > 0;
+        ["ALiVE Logistics Hub: the module at %1 builds hubs at supply points of %2 that have stood %3 min, up to %4 built hubs, %5 m apart", _where, _factions, round (_age / 60), _max, round _gap] call _debug;
+        // [first seen, position, faction] by faction and position to the metre
+        private _seen = createHashMap;
+        private _full = false;
+        while { !isNull _logic } do {
+            sleep 60;
+            // working, or down and coming back: a hub lost for good no longer counts or blocks its ground
+            private _counts = { (_this select 1) || {_repair} };
+            private _mine = (values ALiVE_hub_registry) select { (_x param [2, objNull]) isEqualTo _logic && {(_x param [12, ""]) != ""} && {_x call _counts} };
+            if (count _mine >= _max) then {
+                if (!_full) then {
+                    _full = true;
+                    ["ALiVE Logistics Hub: the module at %1 has built its Most Built Hubs (%2), so no more at supply points", _where, _max] call ALiVE_fnc_dumpR;
+                };
+                continue;
+            };
+            _full = false;
+            private _now = time;
+            private _live = [];
+            private _plain = 0;
+            {
+                private _fac = _x;
+                {
+                    if (!(_x param [2, false]) && {(_x param [3, ""]) != "HUB"}) then { _plain = _plain + 1 };
+                    if (!(_x param [2, false]) && {(_x param [3, ""]) != "HUB"} && {((_x param [1, []]) findIf { !isNil {[ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler} }) > -1}) then {
+                        private _p = _x select 0;
+                        private _key = format ["%1:%2:%3", _fac, round (_p select 0), round (_p select 1)];
+                        _live pushBack _key;
+                        if !(_key in _seen) then { _seen set [_key, [_now, _p, _fac]] };
+                    };
+                } forEach ([ALIVE_ML_supplyNetwork, _fac, []] call ALIVE_fnc_hashGet);
+            } forEach _factions;
+            { if !(_x in _live) then { _seen deleteAt _x } } forEach (keys _seen);
+            private _others = (missionNamespace getVariable ["ALiVE_hub_list", []]) select {
+                !isNull _x && {((_x getVariable ["ALiVE_hub", []]) param [0, ""]) == _side}
+                && {(ALiVE_hub_registry getOrDefault [_x call BIS_fnc_netId, []]) call { _this isNotEqualTo [] && {(_this select 1) || {((["settings", [_this select 2]] call ALIVE_fnc_hub) select 9) > 0}} }}
+            };
+            private _pick = [];
+            {
+                _y params ["_since", "_p", "_fac"];
+                if (_now - _since >= _age && {_pick isEqualTo [] || {_since < (_pick select 0)}} && {(_others findIf { (_x distance2D _p) < _gap }) < 0}) then {
+                    _pick = [_since, _p, _fac, _x];
+                };
+            } forEach _seen;
+            if (_pick isEqualTo []) then {
+                // each waiting supply point: grid, seconds it has stood, metres to the nearest hub of the side
+                ["ALiVE Logistics Hub: the module at %1 sees %2 delivery point(s), %3 with live units; none ready yet: %4", _where, _plain, count _seen,
+                    (values _seen) apply { private _v = _x; [mapGridPosition (_v select 1), round (_now - (_v select 0)),
+                        [round selectMin (_others apply { _x distance2D (_v select 1) }), -1] select (_others isEqualTo [])] }] call _debug;
+                continue;
+            };
+            _pick params ["", "_p", "_fac", "_key"];
+            // tried once: with no clear spot it is tried again after another Supply Point Age
+            _seen deleteAt _key;
+            private _hub = ["buildAt", [_logic, _p, 0, _fac, "SUPPLY"]] call ALIVE_fnc_hub;
+            if (isNil "_hub" || {isNull _hub}) then { continue };
+            ["ALiVE Logistics Hub: the module at %1 built a hub at the supply point at %2 (%3), %4 m from it", _where, mapGridPosition _p, _fac, round (_hub distance2D _p)] call ALiVE_fnc_dumpR;
+            publicVariable "ALiVE_hub_list";
+            ["permSave"] call ALIVE_fnc_hub;
+            ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
+        };
+    };
+
     case "buildAt": {
         _args params [["_logic", objNull, [objNull]], ["_centre", [0,0,0], [[]]], ["_clear", 0, [0]], ["_faction", "", [""]], ["_kind", "FIELDHQ", [""]]];
         _result = objNull;
-        private _label = ["the AI Commander's HQ", "the Field HQ"] select (_kind == "FIELDHQ");
+        private _label = switch (_kind) do { case "FIELDHQ": {"the Field HQ"}; case "SUPPLY": {"the supply point"}; default {"the AI Commander's HQ"} };
         private _compType = ["Military", "Guerrilla"] select ((_faction call ALiVE_fnc_factionSide) == RESISTANCE);
         private _comp = selectRandom ([_compType, ["Supplies"], ["Small"], _faction] call ALiVE_fnc_getCompositions);
         if (isNil "_comp") then { _comp = selectRandom ([_compType, ["FieldHQ"], ["Small"], _faction] call ALiVE_fnc_getCompositions) };
@@ -466,15 +571,19 @@ switch (_op) do {
         private _gap = (_clear + _env) / 2 + 5;
         // A commander usually stands in a base, among roads, runways and buildings, where the open-ground check of a
         // Field HQ finds nothing (Stratis Air Base, NUC 20 Nov): there the roadside check and a wider search
-        private _isHQ = _kind == "HQ";
-        private _mode = ["fieldhq", "military"] select _isHQ;
-        private _reach = [150, 400] select _isHQ;
+        // A supply point is often a town or a held objective: open ground first, then the roadside check
+        private _searches = switch (_kind) do { case "HQ": {[["military", 400]]}; case "SUPPLY": {[["fieldhq", 150], ["military", 300]]}; default {[["fieldhq", 150]]} };
         private _spot = [];
-        for "_try" from 1 to 10 do {
-            if (_spot isNotEqualTo []) exitWith {};
-            private _found = [_centre getPos [_gap + 10, random 360], 20 + (_reach - 20) * _try / 10, _env, _mode] call ALiVE_fnc_findCompositionSpawnPosition;
-            if (count _found > 0 && {((_found select 0) distance2D _centre) >= _gap}) then { _spot = _found };
-        };
+        private _reach = 150;
+        {
+            _x params ["_mode", "_far"];
+            _reach = _far;
+            for "_try" from 1 to 10 do {
+                if (_spot isNotEqualTo []) exitWith {};
+                private _found = [_centre getPos [_gap + 10, random 360], 20 + (_reach - 20) * _try / 10, _env, _mode] call ALiVE_fnc_findCompositionSpawnPosition;
+                if (count _found > 0 && {((_found select 0) distance2D _centre) >= _gap}) then { _spot = _found };
+            };
+        } forEach _searches;
         if (_spot isEqualTo []) exitWith {
             ["ALiVE Logistics Hub: no clear spot for a hub within %1 m of %2 at %3, so none is built there", round (_gap + _reach + 10), _label, mapGridPosition _centre] call ALiVE_fnc_dumpR;
         };
@@ -506,7 +615,7 @@ switch (_op) do {
             _counter setDir _dir;
         };
         if ((_counter getVariable ["ALiVE_hub_name", ""]) == "") then {
-            _counter setVariable ["ALiVE_hub_name", localize (["STR_ALIVE_HUB_HQ_NAME", "STR_ALIVE_HUB_FIELD_NAME"] select (_kind == "FIELDHQ"))];
+            _counter setVariable ["ALiVE_hub_name", localize (switch (_kind) do { case "FIELDHQ": {"STR_ALIVE_HUB_FIELD_NAME"}; case "SUPPLY": {"STR_ALIVE_HUB_SUPPLY_NAME"}; default {"STR_ALIVE_HUB_HQ_NAME"} })];
         };
         _counter setVariable ["ALiVE_hub_built", _kind, true];
         // saved over a restart as the Zeus hubs are, under 3
@@ -592,7 +701,17 @@ switch (_op) do {
 
     // Kept per machine once the settings are there: the lists are parsed against this machine's config
     case "catalogueRules": {
-        _args params [["_logic", objNull, [objNull]]];
+        _args params [["_logic", objNull, [objNull]], ["_hub", objNull, [objNull]]];
+        // a hub built at a supply point offers what the module's lists allow, cut to supplies and ammo (the
+        // SUPPLIES list), unless the module offers the full catalogue there
+        if (!isNull _hub && {!isNull _logic} && {(_hub getVariable ["ALiVE_hub_built", ""]) == "SUPPLY"} && {_logic getVariable ["ALiVE_hub_supplyCut", false]}) exitWith {
+            _result = _logic getVariable "ALiVE_hub_catRulesSupply";
+            if (isNil "_result") then {
+                _result = ["merge", [["catalogueRules", [_logic]] call ALIVE_fnc_hub, ["get", "SUPPLIES"] call ALIVE_fnc_lists]] call ALIVE_fnc_lists;
+                // kept only once the module's own rules are kept, so a player's machine asks again after its tablet starts
+                if (!isNil {_logic getVariable "ALiVE_hub_catRules"}) then { _logic setVariable ["ALiVE_hub_catRulesSupply", _result] };
+            };
+        };
         _result = if (isNull _logic) then { nil } else { _logic getVariable "ALiVE_hub_catRules" };
         if (isNil "_result") then {
             private _s = if (isNull _logic) then { nil } else { _logic getVariable "ALiVE_hub_settings" };
@@ -783,10 +902,23 @@ switch (_op) do {
         private _entry = ALiVE_hub_registry getOrDefault [_netId, []];
         if (count _entry < 5 || {!(_entry select 1)}) exitWith {};
         private _factions = ["commanderFactions", [_entry select 0, _entry select 4]] call ALIVE_fnc_hub;
+        // a hub built at a supply point stands in for the delivery's node there: its units go into the hub's node,
+        // and back to a plain node if the hub leaves the network
+        private _takeOver = (_hub getVariable ["ALiVE_hub_built", ""]) == "SUPPLY";
         {
             private _nodes = [ALIVE_ML_supplyNetwork, _x, []] call ALIVE_fnc_hashGet;
             if ((_nodes findIf { (_x param [4, ""]) isEqualTo _netId }) < 0) then {
-                _nodes pushBack [getPosATL _hub, [], false, "HUB", _netId];
+                private _ids = [];
+                if (_takeOver) then {
+                    for "_i" from (count _nodes - 1) to 0 step -1 do {
+                        private _n = _nodes select _i;
+                        if (!(_n param [2, false]) && {(_n param [3, ""]) != "HUB"} && {((_n select 0) distance2D _hub) < 500}) then {
+                            _ids append (_n select 1);
+                            _nodes deleteAt _i;
+                        };
+                    };
+                };
+                _nodes pushBack [getPosATL _hub, _ids arrayIntersect _ids, false, "HUB", _netId];
                 [ALIVE_ML_supplyNetwork, _x, _nodes] call ALIVE_fnc_hashSet;
             };
         } forEach _factions;
@@ -869,7 +1001,7 @@ switch (_op) do {
 
             // every class: in the side's catalogue or an Also list, then the hub's lists
             private _sideCat = ["sideCatalogue", [_hubSide]] call ALIVE_fnc_hub;
-            private _hubRules = ["catalogueRules", [_logic]] call ALIVE_fnc_hub;
+            private _hubRules = ["catalogueRules", [_logic, _hub]] call ALIVE_fnc_hub;
             private _pr = missionNamespace getVariable ["ALIVE_SUP_PLAYER_RESUPPLY", objNull];
             private _prRules = if (isNull _pr) then { createHashMap } else { _pr getVariable ["pr_catalogueRules", createHashMap] };
             private _alsoLower = ((_hubRules getOrDefault ["alsoClasses", []]) + (_prRules getOrDefault ["alsoClasses", []])) apply { toLower _x };

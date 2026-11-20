@@ -331,10 +331,29 @@ class CfgVehicles {
                                     class FIELDHQ { name = "At Field HQ"; value = "FIELDHQ"; };
                                     class HQ { name = "At HQ"; value = "HQ"; };
                                     class FIELDHQ_HQ { name = "At Field HQ and HQ"; value = "FIELDHQ_HQ"; };
+                                    class SUPPLY { name = "At Supply Points"; value = "SUPPLY"; };
+                                    class FIELDHQ_SUPPLY { name = "At Field HQ and Supply Points"; value = "FIELDHQ_SUPPLY"; };
+                                    class HQ_SUPPLY { name = "At HQ and Supply Points"; value = "HQ_SUPPLY"; };
+                                    class FIELDHQ_HQ_SUPPLY { name = "At Field HQ, HQ and Supply Points"; value = "FIELDHQ_HQ_SUPPLY"; };
                             };
                     };
                     class hub_build_max : Edit { property = "ALiVE_sup_logistics_hub_hub_build_max"; displayName = "$STR_ALIVE_HUB_BUILD_MAX"; tooltip = "$STR_ALIVE_HUB_BUILD_MAX_COMMENT"; typeName = "STRING"; defaultValue = """3"""; ALiVE_showWhen[] = {{"hub_build", "not", "OFF"}}; };
                     class hub_build_spacing : Edit { property = "ALiVE_sup_logistics_hub_hub_build_spacing"; displayName = "$STR_ALIVE_HUB_BUILD_SPACING"; tooltip = "$STR_ALIVE_HUB_BUILD_SPACING_COMMENT"; typeName = "STRING"; defaultValue = """1000"""; ALiVE_showWhen[] = {{"hub_build", "not", "OFF"}}; };
+                    class hub_build_age : Edit { property = "ALiVE_sup_logistics_hub_hub_build_age"; displayName = "$STR_ALIVE_HUB_BUILD_AGE"; tooltip = "$STR_ALIVE_HUB_BUILD_AGE_COMMENT"; typeName = "STRING"; defaultValue = """10"""; ALiVE_showWhen[] = {{"hub_build", "has", "supply"}}; };
+                    class hub_build_supply_offer : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_build_supply_offer";
+                            displayName = "$STR_ALIVE_HUB_BUILD_OFFER";
+                            tooltip = "$STR_ALIVE_HUB_BUILD_OFFER_COMMENT";
+                            defaultValue = """SUPPLIES""";
+                            typeName = "STRING";
+                            ALiVE_showWhen[] = {{"hub_build", "has", "supply"}};
+                            class Values
+                            {
+                                    class SUPPLIES { name = "Supplies and ammo only"; value = "SUPPLIES"; };
+                                    class FULL { name = "Everything the module offers"; value = "FULL"; };
+                            };
+                    };
 
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_GENERAL"; displayName = "GENERAL"; };
                     class hub_debug : Combo

@@ -824,22 +824,37 @@
     <English>Build Hubs</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_BUILD_COMMENT">
-    <English>Hubs this module builds itself: a small supplies layout, one of whose crates becomes a hub with all the settings above. At Field HQ: beside each Field HQ Military Placement sets out for this module's side (the Military Placement modules synced to this module, or with none synced, every one of the side). At HQ: at each AI Commander of the side, where its logistics sets off from (the commanders synced to this module, else those synced to its Military Logistics, else every one of the side). Off: only the synced objects are hubs.</English>
+    <English>Hubs this module builds itself: a small supplies layout, one of whose crates becomes a hub with all the settings above. At Field HQ: beside each Field HQ Military Placement sets out for this module's side (the Military Placement modules synced to this module, or with none synced, every one of the side). At HQ: at each AI Commander of the side, where its logistics sets off from (the commanders synced to this module, else those synced to its Military Logistics, else every one of the side). At Supply Points: where this module's Military Logistics has delivered troops who are still there, once they have held the place for the Supply Point Age (the module must be synced to Military Logistics). Off: only the synced objects are hubs.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_AGE">
+    <English>Supply Point Age (min)</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_AGE_COMMENT">
+    <English>How many minutes troops delivered by Military Logistics must hold a place before a hub is built there. 1 to 120, default 10.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_OFFER">
+    <English>Supply Point Hubs Offer</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_OFFER_COMMENT">
+    <English>What a hub built at a supply point offers. Supplies and ammo only (the default): what the module offers, cut to supplies and ammo crates. Everything the module offers: the same as its other hubs.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_BUILD_MAX">
     <English>Most Built Hubs</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_BUILD_MAX_COMMENT">
-    <English>The most hubs this module builds, Field HQs first, then HQs. 1 to 20, default 3.</English>
+    <English>The most hubs this module builds, Field HQs first, then HQs, then supply points as they come. 1 to 20, default 3. A hub lost for good no longer counts.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_BUILD_SPACING">
     <English>Spacing (m)</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_BUILD_SPACING_COMMENT">
-    <English>No hub is built within this distance of another hub of the side, synced or built. 0 for no limit, default 1000.</English>
+    <English>No hub is built within this distance of another hub of the side, synced or built. 0 for no limit, default 1000. A supply point hub is never built within 500 m of one.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_FIELD_NAME">
     <English>Field Hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_SUPPLY_NAME">
+    <English>Supply Point Hub</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_HQ_NAME">
     <English>HQ Hub</English>

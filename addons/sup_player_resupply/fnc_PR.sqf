@@ -739,10 +739,12 @@ switch(_operation) do {
         private _hub = ["nearHub", [player]] call ALIVE_fnc_hub;
         private _module = if (isNull _hub) then { objNull } else { (_hub getVariable ["ALiVE_hub", []]) param [3, objNull] };
         if (isNull _module) exitWith { _result = [_vehicles, _groups] };
-        private _rules = ["catalogueRules", [_module]] call ALIVE_fnc_hub;
+        private _rules = ["catalogueRules", [_module, _hub]] call ALIVE_fnc_hub;
         if (["empty", _rules] call ALIVE_fnc_lists) exitWith { _result = [_vehicles, _groups] };
+        // by module, and whether the hub is a supply point one with its own cut (#1091)
+        private _keyKept = [_module, (_hub getVariable ["ALiVE_hub_built", ""]) == "SUPPLY"];
         private _kept = _logic getVariable ["ALiVE_PR_collectCatalogue", []];
-        if ((_kept param [0, objNull]) isEqualTo _module) exitWith { _result = [_kept select 1, _kept select 2] };
+        if ((_kept param [0, []]) isEqualTo _keyKept) exitWith { _result = [_kept select 1, _kept select 2] };
         _vehicles = +_vehicles;
         _groups = +_groups;
         {
@@ -761,7 +763,7 @@ switch(_operation) do {
                 };
             } forEach ALiVE_PR_HUB_ALSO;
         };
-        _logic setVariable ["ALiVE_PR_collectCatalogue", [_module, _vehicles, _groups]];
+        _logic setVariable ["ALiVE_PR_collectCatalogue", [_keyKept, _vehicles, _groups]];
         _result = [_vehicles, _groups];
     };
     case "marker": {
@@ -1205,7 +1207,7 @@ switch(_operation) do {
         ALiVE_PR_ALSO = _rules get "alsoClasses";
         // a hub that read the lists before the tablet had reads them again
         ALiVE_HUB_sideCatalogue = createHashMap;
-        { _x setVariable ["ALiVE_hub_catRules", nil] } forEach (missionNamespace getVariable ["ALiVE_hub_modules", []]);
+        { _x setVariable ["ALiVE_hub_catRules", nil]; _x setVariable ["ALiVE_hub_catRulesSupply", nil] } forEach (missionNamespace getVariable ["ALiVE_hub_modules", []]);
         // a hub that started first has written its lists; one still to start writes them then
         [_logic, "blacklist", ALiVE_PR_BLACKLIST] call MAINCLASS;
         [_logic, "whitelist", ALiVE_PR_WHITELIST] call MAINCLASS;
