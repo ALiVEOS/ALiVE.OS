@@ -1243,7 +1243,10 @@ switch(_operation) do {
             };
         };
 
-        private _rings = if (_wide) then { [60,100,150,220,300,400,500,600] } else { [60,100,150,220] };
+        // The outer rings are only reached when every nearer one is full. A small strip with no hangar (Utah Beach)
+        // had its rings to 220 m taken by the fighters borrowed from another faction, so the faction's own planes
+        // found no spot at all; ordinary airframes now look out to 400 m as well (Jman 20 Nov).
+        private _rings = if (_wide) then { [60,100,150,220,300,400,500,600] } else { [60,100,150,220,300,400] };
         private _spot = [];
 
         {
