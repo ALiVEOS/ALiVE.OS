@@ -381,7 +381,10 @@ switch(_operation) do {
 
                 ([_logic, ["profilesByFaction","profilesByFactionByType","profilesByFactionByVehicleType"]] call ALiVE_fnc_hashGetMany) params ["_profilesByFaction","_profilesByFactionByType","_profilesByFactionByVehicleType"];
 
-                private _profileFaction = [_profile,"faction"] call ALIVE_fnc_hashGet;
+                // filed under the faction class's own spelling, and the profile given it too, so a profile made or
+                // loaded with faction "b_araf" is found by an AI Commander of B_ARAF and leaves the same list it joined
+                private _profileFaction = ([_profile,"faction"] call ALIVE_fnc_hashGet) call ALIVE_fnc_profileFactionName;
+                [_profile,"faction",_profileFaction] call ALIVE_fnc_hashSet;
 
                 // checked and made in one go: two placement modules registering the first groups of a faction at the same
                 // time could otherwise each make the faction's lists, or one find the faction listed before its lists by
@@ -562,7 +565,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
 
             if (_profileType in ["entity","vehicle"]) then {
-                private _profileFaction = [_profile,"faction"] call ALIVE_fnc_hashGet;
+                private _profileFaction = ([_profile,"faction"] call ALIVE_fnc_hashGet) call ALIVE_fnc_profileFactionName;
                 private _profilesBySide = [_logic,"profilesBySide"] call ALIVE_fnc_hashGet;
 
                 // remove reference to main profile on by side hash
@@ -830,12 +833,12 @@ switch(_operation) do {
         if (_args isEqualType "") then {
             private _profilesByFaction = [_logic, "profilesByFaction"] call ALIVE_fnc_hashGet;
 
-            _result = [_profilesByFaction, _args, []] call ALIVE_fnc_hashGet;
+            _result = [_profilesByFaction, _args call ALIVE_fnc_profileFactionName, []] call ALIVE_fnc_hashGet;
         };
     };
 
     case "getProfilesByFactionByType": {
-        private _faction = _args select 0;
+        private _faction = (_args select 0) call ALIVE_fnc_profileFactionName;
         private _type = _args select 1;
 
         private _profilesByFactionByType = [_logic, "profilesByFactionByType"] call ALIVE_fnc_hashGet;
@@ -852,7 +855,7 @@ switch(_operation) do {
     };
 
     case "getProfilesByFactionByVehicleType": {
-        private _faction = _args select 0;
+        private _faction = (_args select 0) call ALIVE_fnc_profileFactionName;
         private _type = _args select 1;
 
         private _profilesByFactionByVehicleType = [_logic, "profilesByFactionByVehicleType"] call ALIVE_fnc_hashGet;

@@ -56,6 +56,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileEntity.sqf";
                 ALIVE_RECOMPILE;
             };
+            class profileFactionName {
+                description = "A faction's name as its CfgFactionClasses class spells it";
+                file = "\x\alive\addons\sys_profile\fnc_profileFactionName.sqf";
+                ALIVE_RECOMPILE;
+            };
             class profileMenuDef {
                 description = "profileMenuDef";
                 file = "\x\alive\addons\sys_profile\fnc_profileMenuDef.sqf";

@@ -187,7 +187,8 @@ switch (_operation) do {
 
     case "faction": {
         if (_args isEqualType "") then {
-            [_logic,"faction", _args] call ALIVE_fnc_hashSet;
+            // as the faction class spells it, whatever case the group or unit wrote it in
+            [_logic,"faction", _args call ALIVE_fnc_profileFactionName] call ALIVE_fnc_hashSet;
         } else {
             _result = [_logic,"faction"] call ALIVE_fnc_hashGet;
         };
