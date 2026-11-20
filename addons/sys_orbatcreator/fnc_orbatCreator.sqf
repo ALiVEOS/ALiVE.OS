@@ -1971,6 +1971,24 @@ switch(_operation) do {
 
     };
 
+    case "getFactionConfigName": {
+
+        // A faction's class name as the editor holds it, whatever case it is asked for in. Factions are kept under
+        // their class name (B_ARAF), but the units and groups read in from config carry it lower case (b_araf), and
+        // the hash matches keys exactly. A name no faction has is given back as it is.
+
+        private _faction = _args;
+        _result = _faction;
+
+        if (_faction isEqualType "") then {
+            private _state = [_logic,"state"] call MAINCLASS;
+            private _factionNames = ([_state,"factions"] call ALiVE_fnc_hashGet) select 1;
+            private _index = _factionNames findIf { _x == _faction };
+            if (_index > -1) then { _result = _factionNames select _index };
+        };
+
+    };
+
     case "setFactionSide": {
 
         private ["_groupCategory","_groupsInCategory","_group","_groupUnits","_unit","_customUnit","_customUnitFaction"];
@@ -6989,7 +7007,10 @@ switch(_operation) do {
         _result = _result + _indent + _indent + ("scopeCurator = 2;") + _newLine;
         _result = _result + _indent + _indent + ("displayName = " + str _unitDisplayName + ";") + _newLine;
         _result = _result + _indent + _indent + ("side = " + str _unitSide + ";") + _newLine;
-        _result = _result + _indent + _indent + ("faction = " + str _unitFaction + ";"); // newline handled by type specific properties
+        // the faction as its class is written (CfgFactionClasses takes the faction's configName), not the editor's
+        // lower-case key: units saying "b_araf" for the class B_ARAF were missed by anything matching names exactly
+        private _unitFactionName = [_logic,"getFactionConfigName", _unitFaction] call MAINCLASS;
+        _result = _result + _indent + _indent + ("faction = " + str _unitFactionName + ";"); // newline handled by type specific properties
 
         // get type-specific properties
 
@@ -7808,7 +7829,9 @@ switch(_operation) do {
             _result = _result + _indentOuter + "class " + _groupConfigName + " {" + _newLine;
             _result = _result + _indentInner + "name = " + str _groupDisplayName + ";" + _newLine;
             _result = _result + _indentInner + "side = " + str _groupSide + ";" + _newLine;
-            _result = _result + _indentInner + "faction = " + str _groupFaction + ";" + _newLine;
+            // as its class is written, like the units (see the unit export)
+            private _groupFactionName = [_logic,"getFactionConfigName", _groupFaction] call MAINCLASS;
+            _result = _result + _indentInner + "faction = " + str _groupFactionName + ";" + _newLine;
             _result = _result + _indentInner + "icon = " + str _groupIcon + ";" + _newLine;
             _result = _result + _indentInner + "rarityGroup = " + str _groupRarity + ";" + _newLine;
 
