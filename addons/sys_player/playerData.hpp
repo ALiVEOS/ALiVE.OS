@@ -110,7 +110,8 @@ GVAR(UNIT_DATA) = [
         ["rating",{rating  (_this select 0);}, {(_this select 0) addrating (_this select 1);}],
         ["rank",{rank (_this select 0);}, {(_this select 0) setUnitRank (_this select 1);}],
         ["group",{group  (_this select 0);}, "SKIP"], // {[(_this select 0)] joinSilent (_this select 1);}
-        ["leader", {(leader  (_this select 0) == (_this select 0));}, "SKIP"], // {(_this select 1) selectLeader (_this select 0);}
+        // Put back by the server (ALIVE_fnc_player "getPlayer"), where the group's owner is known: selectLeader needs the group local
+        ["leader", {(leader  (_this select 0) == (_this select 0));}, "SKIP"],
         // Whether the player's group opted out of C2ISTAR's automatic orders. The opt-out lives on the
         // group, which a reload rebuilds, so it went back to opted in. Only a true is put back: a
         // groupmate saved before the opt-out must not switch it on again for the whole group. A save

@@ -626,6 +626,22 @@ switch(_operation) do {
                             // Execute getplayer on local client using CBA_fnc_remoteLocalEvent
                             [ "getPlayer", [_unit, [_unit, _playerHash]] ] call CBA_fnc_whereLocalEvent;
 
+                            // A player who led their group when they saved leads it again. While they were away an AI
+                            // of the group took over, and the player came back under it. Done here, not in the client's
+                            // restore (playerData.hpp "leader"), because selectLeader only works where the group is
+                            // local, which is often not the player's machine; the server knows its owner.
+                            private _wasLeader = ([_playerHash, "leader", false] call ALIVE_fnc_hashGet) isEqualTo true;
+                            private _grp = group _unit;
+                            if (_wasLeader && {leader _grp != _unit} && {alive _unit}) then {
+                                private _was = name leader _grp;
+                                if (local _grp) then {
+                                    _grp selectLeader _unit;
+                                } else {
+                                    [_grp, _unit] remoteExecCall ["selectLeader", groupOwner _grp];
+                                };
+                                ["SYS_PLAYER - %1 led their group when they saved and leads it again (it was %2)", name _unit, _was] call ALiVE_fnc_dump;
+                            };
+
                             // Only the player goes back to where they saved. Their AI squadmates start from the
                             // editor on every load and walk out to them, and one of the player's own class looks
                             // like a copy of them: the "clone" of #822. So when the player leads their group,
@@ -643,7 +659,7 @@ switch(_operation) do {
                             if (
                                 _logic getVariable ["savePosition", true]
                                 && {count _savedPos > 1}
-                                && {leader group _unit == _unit}
+                                && {leader group _unit == _unit || {_wasLeader}}
                                 && {([_playerHash, "vehicle", "NONE"] call ALIVE_fnc_hashGet) == "NONE"}
                                 && {typeOf _unit == ([_playerHash, "class", typeOf _unit] call ALIVE_fnc_hashGet) || {!isMultiplayer} || {_logic getVariable ["allowDiffClass", false]}}
                             ) then {
