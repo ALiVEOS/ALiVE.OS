@@ -8009,8 +8009,10 @@ switch (_operation) do {
         };
     };
 
-    // true while one of the pause's tasks is still open; one that never appeared (nothing to find there) is given
-    // 2 minutes, then counts as closed
+    // true while one of the pause's tasks is still open. A finished task's record is taken off the handler, so with
+    // none left the pause is over only if one of them finished (kept by id in ALiVE_c2istar_finishedTasks). When
+    // none could be made at all (nothing to build there), the timer decides, as with no tasks to give: such a pause
+    // used to end 2 minutes in, a 30 minute hold included (#1120 RPT, Jman 20 Nov)
     case "occPauseTasksOpen": {
         private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
         private _ids = _module getVariable ["ALiVE_Occ_pauseTasks", []];
@@ -8021,7 +8023,8 @@ switch (_operation) do {
             (_ids findIf { (_rid find _x) == 0 }) >= 0
         };
         if (_records isEqualTo []) exitWith {
-            _result = time < ((_module getVariable ["ALiVE_Occ_raisedAt", -1]) + 120);
+            private _finished = missionNamespace getVariable ["ALiVE_c2istar_finishedTasks", createHashMap];
+            _result = (_ids findIf { _x in _finished }) < 0;
         };
         _result = (_records findIf { !((_x select 8) in ["Succeeded","Failed","Canceled"]) }) >= 0;
     };

@@ -1070,6 +1070,12 @@ switch (_operation) do {
                     };
                 };
 
+                // An AI Commander's task that could not be built said nothing, so its capture pause looked as if the
+                // task had never been asked for (#1120 RPT): one line, debug or not
+                if (_requestPlayerID isEqualTo "OPCOM") then {
+                    ["C2ISTAR - generateTask: the AI Commander's %1 task %2 for %3 could not be built at %4, nothing suitable there", _taskType, _taskID, _taskSide, if (_taskLocation isEqualType [] && {count _taskLocation >= 2}) then { mapGridPosition _taskLocation } else { "?" }] call ALiVE_fnc_dump;
+                };
+
                 // A player asked for a task against enemy kit and Tasks Only Against Known Enemy turned its target
                 // down: say so, rather than leave them waiting (ALIVE_fnc_taskKnownEnemy). Not for the automatic
                 // tasks or Player Orders, which go on to pick another kind
