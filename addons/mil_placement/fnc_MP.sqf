@@ -1428,6 +1428,8 @@ switch(_operation) do {
 
                         if (!isNil "_HQ") then {
                             [_HQ, _safePos, _safeDir, _faction] call ALiVE_fnc_spawnComposition;
+                            // where the Field HQ went, for a Logistics Hub module with Build Hubs = At Field HQ (#1091)
+                            _logic setVariable ["ALiVE_fieldHQ", [_safePos, _envelope, _faction]];
                         };
 
                         [_logic, "FieldHQBuilding", nearestObject [_safePos, "building"]] call MAINCLASS;

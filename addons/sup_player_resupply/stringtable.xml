@@ -820,6 +820,15 @@
 <Key ID="STR_ALIVE_HUB_RADIUS_COMMENT">
     <English>How close to a hub a player must stand to collect there, from 2 to 200 metres (30 if left alone). Within it the tablet opens without an access item, if Who Can Collect lets the player in.</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_BUILD">
+    <English>Build Hubs</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_COMMENT">
+    <English>At Field HQ: when Military Placement sets out a Field HQ for this module's side, a small supplies layout is built beside it and one of its crates becomes a hub of this module, with all the settings above. Military Placement modules synced to this module, or with none synced, every one of the side. Off: only the synced objects are hubs.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_FIELD_NAME">
+    <English>Field Hub</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_DEBUG">
     <English>Debug</English>
 </Key>

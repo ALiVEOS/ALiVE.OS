@@ -317,6 +317,21 @@ class CfgVehicles {
                     class hub_dismantle_who { property = "ALiVE_sup_logistics_hub_hub_dismantle_who"; displayName = "$STR_ALIVE_HUB_DISMANTLE_WHO"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_WHO_COMMENT"; control = "ALiVE_HubDismantleChoice"; typeName = "STRING"; expression = "_this setVariable ['hub_dismantle_who', _value];"; defaultValue = """SIDE"""; };
                     class hub_dismantle_list : Edit { property = "ALiVE_sup_logistics_hub_hub_dismantle_list"; displayName = "$STR_ALIVE_HUB_DISMANTLE_LIST"; tooltip = "$STR_ALIVE_HUB_DISMANTLE_LIST_COMMENT"; typeName = "STRING"; defaultValue = """"""; ALiVE_showWhen[] = {{"hub_dismantle_who", "has", "LIST"}}; ALiVE_showStyle = "dim"; };
 
+                    class HDR_BUILT : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_BUILT"; displayName = "BUILT HUBS"; };
+                    class hub_build : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_build";
+                            displayName = "$STR_ALIVE_HUB_BUILD";
+                            tooltip = "$STR_ALIVE_HUB_BUILD_COMMENT";
+                            defaultValue = """OFF""";
+                            typeName = "STRING";
+                            class Values
+                            {
+                                    class OFF { name = "Off"; value = "OFF"; };
+                                    class FIELDHQ { name = "At Field HQ"; value = "FIELDHQ"; };
+                            };
+                    };
+
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_GENERAL"; displayName = "GENERAL"; };
                     class hub_debug : Combo
                     {
@@ -336,7 +351,7 @@ class CfgVehicles {
                 class ModuleDescription
                 {
                         description[] = {"$STR_ALIVE_HUB_COMMENT"};
-                        sync[] = {"AnyStaticObject", "ALiVE_SUP_PLAYER_RESUPPLY", "ALiVE_mil_logistics"};
+                        sync[] = {"AnyStaticObject", "ALiVE_SUP_PLAYER_RESUPPLY", "ALiVE_mil_logistics", "ALiVE_mil_placement"};
                 };
         };
 };
