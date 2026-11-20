@@ -67,6 +67,7 @@ class CfgVehicles {
                                 defaultValue = """0""";
                                 typeName = "NUMBER";
                         };
+                        class campSource : Combo { property = "ALiVE_mil_placement_campSource"; displayName = "$STR_ALIVE_MP_CAMP_SOURCE"; tooltip = "$STR_ALIVE_MP_CAMP_SOURCE_COMMENT"; defaultValue = """all"""; class Values { class All{name="$STR_ALIVE_MP_CAMP_SOURCE_ALL";value="all";default=1;}; class Mission{name="$STR_ALIVE_MP_CAMP_SOURCE_MISSION";value="mission";}; }; ALiVE_showWhenAny[] = {{"randomcamps", ">", 0}}; };
 
                         // ---- Unit placement: Objectives Only hides every section from FORCE COMPOSITION down ----
                         class HDR_PLACEMENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_PLACEMENT"; displayName = "UNIT PLACEMENT"; };

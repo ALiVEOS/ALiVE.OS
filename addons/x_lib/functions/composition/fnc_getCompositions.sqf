@@ -17,6 +17,10 @@ Array - Category name(s) - leave [] for any
 
 Array - Size - ["Large","Medium","Small"] - leave [] for any size
 Array - Faction(s) (Optional) - leave [] for any faction
+Bool - Recursive (Optional) - try again with any size and the standard set when nothing is found
+Array - Search string(s) (Optional) - leave [] for any name
+String - Source (Optional) - "all" (default): the mission's and ALiVE's compositions; "mission": only the mission's own
+    (description.ext CfgGroups >> Empty), from both the terrain's set (e.g. Military_Woodland) and the plain one (Military)
 
 Returns:
 Array - Of composition configs, empty array if nothing found
@@ -61,6 +65,8 @@ if (count _this > 5) then {
     _searchString = _this select 5;
 };
 
+private _missionOnly = (count _this > 6) && {(_this select 6) isEqualTo "mission"};
+
 if (!isNil "ALiVE_mapCompositionType") then {
     _env = ALiVE_mapCompositionType;
 };
@@ -74,10 +80,19 @@ private _configPaths = [
     configFile >> "CfgGroups" >> "Empty" >> _compType
 ];
 
+// Only the mission's own compositions. A mission maker may put them in the terrain's set or the plain one, and the plain
+// one was only read when the terrain's set found nothing, so both are read here, and nothing from ALiVE's.
+if (_missionOnly) then {
+    private _sets = [_compType];
+    if (_env == "Jungle") then { _sets pushBack format ["%1_Pacific", _comp] };
+    _sets pushBackUnique _comp;
+    _configPaths = (_sets apply { missionConfigFile >> "CfgGroups" >> "Empty" >> _x }) select { isClass _x };
+};
+
 // Jungle comes only with the optional SOG composition pack, and there is no civilian Jungle set at all. Without one
 // the nearest set is Pacific, which ships with ALiVE, rather than the standard set: a Vietnam map played without SOG
 // (Da Krong, from the Unsung mod) can then be Jungle and still get jungle-looking camps.
-if (_env == "Jungle" && {!isClass (_configPaths select 0)} && {!isClass (_configPaths select 1)}) then {
+if (!_missionOnly && {_env == "Jungle"} && {!isClass (_configPaths select 0)} && {!isClass (_configPaths select 1)}) then {
     private _pacific = format ["%1_Pacific", _comp];
     private _paths = [missionConfigFile >> "CfgGroups" >> "Empty" >> _pacific, configFile >> "CfgGroups" >> "Empty" >> _pacific];
     if (isClass (_paths select 0) || {isClass (_paths select 1)}) then {
@@ -87,7 +102,7 @@ if (_env == "Jungle" && {!isClass (_configPaths select 0)} && {!isClass (_config
 };
 
 // Default to regular if additional PBOs are not loaded
-if (!isClass (_configPaths select 0) && !isClass(_configPaths select 1)) then {
+if (!_missionOnly && {!isClass (_configPaths select 0)} && {!isClass (_configPaths select 1)}) then {
     // Said once per set. Every camp, HQ and outpost asks again, so a Jungle terrain without the optional
     // composition_vn pack logged it 123 times in one startup on Cam Lao Nam.
     private _warned = missionNamespace getVariable ["ALiVE_compositionSetsWarned", []];
@@ -188,7 +203,7 @@ _configPaths call _fnc_collect;
 // sets are empty without the optional CUP compositions, so Random Camps, field HQs and outposts found nothing on a
 // Woodland or Desert terrain while the troops meant for them were placed anyway. Fall back to the standard set for
 // the same categories, as is already done when the set is missing altogether.
-if (count _result == 0 && {_compType != _comp}) then {
+if (count _result == 0 && {_compType != _comp} && {!_missionOnly}) then {
     [
         missionConfigFile >> "CfgGroups" >> "Empty" >> _comp,
         configFile >> "CfgGroups" >> "Empty" >> _comp
@@ -196,7 +211,7 @@ if (count _result == 0 && {_compType != _comp}) then {
 };
 
 
-if (count _result == 0 && _recursive) then {
+if (count _result == 0 && {_recursive} && {!_missionOnly}) then {
     private _temp = "Urban";
     if (!isNil "ALiVE_mapCompositionType") then {
         // If we can't find any compositions for the current environment i.e. desert/woodland then check urban for any size composition

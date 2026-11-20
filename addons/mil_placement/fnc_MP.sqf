@@ -67,6 +67,7 @@ Jman
 #define DEFAULT_RESERVE_EMPTY_VEHICLE_LOCKED "1"
 #define DEFAULT_RESERVE_ORPHAN_CREW_BEHAVIOUR "SpawnAsInfantry"
 #define DEFAULT_RANDOMCAMPS "0"
+#define DEFAULT_CAMP_SOURCE "all"
 
 private ["_logic","_operation","_args","_result"];
 
@@ -488,6 +489,11 @@ switch(_operation) do {
         if (_args isEqualTo objNull) then { _args = _logic getVariable ["randomCamps", DEFAULT_RANDOMCAMPS] };
         if (_args isEqualType 0) then { _args = str _args };
         _result = [_logic,_operation,_args,DEFAULT_RANDOMCAMPS] call ALIVE_fnc_OOsimpleOperation;
+    };
+
+    // Where Random Camps come from: "all" (the mission's and ALiVE's) or "mission" (the mission's own only)
+    case "campSource": {
+        _result = [_logic,_operation,_args,DEFAULT_CAMP_SOURCE] call ALIVE_fnc_OOsimpleOperation;
     };
 
     // Return placement setting
@@ -1503,9 +1509,26 @@ switch(_operation) do {
                         // The small camps join in when there are fewer than three medium ones to choose from, as there
                         // were none at all before. A set can be that thin for a faction: on Cam Lao Nam with the SOG
                         // pack, O_VC and O_PAVN have one medium camp, a prison camp, so every Random Camp was one.
-                        private _campPool = [_compType, ["Camps","Outposts"], ["Medium"], _faction] call ALiVE_fnc_getCompositions;
-                        if (count _campPool < 3) then {
-                            _campPool = _campPool + ([_compType, ["Camps","Outposts"], ["Small"], _faction] call ALiVE_fnc_getCompositions);
+                        // Random Camps From = Mission only leaves ALiVE's camps out. A mission with no camps of its own for
+                        // this faction gets ALiVE's after all, said once in the RPT, so the camp's troops still have a camp.
+                        private _campSource = [_logic, "campSource"] call MAINCLASS;
+                        if !(_campSource isEqualTo "mission") then { _campSource = "all" };
+                        private _fnc_campPool = {
+                            private _pool = [_compType, ["Camps","Outposts"], ["Medium"], _faction, false, [], _this] call ALiVE_fnc_getCompositions;
+                            if (count _pool < 3) then {
+                                _pool = _pool + ([_compType, ["Camps","Outposts"], ["Small"], _faction, false, [], _this] call ALiVE_fnc_getCompositions);
+                            };
+                            _pool
+                        };
+                        private _campPool = _campSource call _fnc_campPool;
+                        if (_campPool isEqualTo [] && {_campSource == "mission"}) then {
+                            private _warned = missionNamespace getVariable ["ALiVE_mp_missionCampsWarned", []];
+                            if !(_faction in _warned) then {
+                                _warned pushBack _faction;
+                                missionNamespace setVariable ["ALiVE_mp_missionCampsWarned", _warned];
+                                ["ALiVE MP - Random Camps From is Mission only, but the mission has no %1 camps or outposts for %2 (description.ext CfgGroups >> Empty >> %1 or %1_<terrain set>, class names with Camp or Outpost in them), so ALiVE's camps are used", _compType, _faction] call ALiVE_fnc_dump;
+                            };
+                            _campPool = "all" call _fnc_campPool;
                         };
                         _composition = selectRandom _campPool;
 

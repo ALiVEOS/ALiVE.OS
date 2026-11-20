@@ -56,6 +56,18 @@
     <Portuguese>Gera acampamentos de campo aleatórios em terreno plano e aberto dentro da TAOR. A configuração controla a densidade pela distância mínima entre acampamentos: Nenhum = desligado, Baixo = a 2500 m (esparso), Médio = a 1500 m, Alto = a 1000 m (denso). Maior densidade adiciona mais bases operacionais avançadas imprevisíveis além dos objetivos militares fixos. Com Apenas objetivos, os acampamentos continuam registrados como objetivos para o Comandante IA, sem unidades colocadas neles.</Portuguese>
     <Russian>Создаёт случайные полевые лагеря на ровной открытой местности в пределах TAOR. Параметр управляет плотностью через минимальное расстояние между лагерями: Нет = выкл., Низко = 2500 м между ними (разрежено), Средне = 1500 м, Высоко = 1000 м (плотно). Большая плотность добавляет больше непредсказуемых передовых оперативных баз помимо стационарных военных объектов. При режиме «Только объекты» лагеря всё равно регистрируются как объекты для ИИ-командира, но войска в них не размещаются.</Russian>
 </Key>
+<Key ID="STR_ALIVE_MP_CAMP_SOURCE">
+    <English>Random Camps From:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_CAMP_SOURCE_COMMENT">
+    <English>Which camp layouts Random Camps are built from. ALiVE and mission: ALiVE's own camps and any the mission adds. Mission only: only the camps in the mission's description.ext (CfgGroups &gt;&gt; Empty &gt;&gt; Military, or Guerrilla for independent factions, or the same with the terrain's set added, such as Military_Woodland), with Camp or Outpost in the class name. A faction the mission has no camps for gets ALiVE's, with a line in the RPT.</English>
+</Key>
+<Key ID="STR_ALIVE_MP_CAMP_SOURCE_ALL">
+    <English>ALiVE and mission</English>
+</Key>
+<Key ID="STR_ALIVE_MP_CAMP_SOURCE_MISSION">
+    <English>Mission only</English>
+</Key>
 <Key ID="STR_ALIVE_MP_TAOR">
     <English>TAOR Marker:</English>
     <Chinese>TAOR 標記：</Chinese>
