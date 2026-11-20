@@ -10,7 +10,8 @@ meeting with the local leader, the repair, the aid handed over. The players have
 area for Civic Hold Time (C2ISTAR, ALIVE_civicHoldDuration) before the task succeeds, which gives an
 enemy commander time to answer it. The countdown stops while enemies are within 150 m, and the task
 fails when no player of the side has been within 200 m for 30 seconds. Players hear the time left
-every 30 seconds. 0 seconds keeps the old behaviour: the task succeeds as soon as the action is done.
+every 30 seconds, or while it is stopped, how many enemies are within 150 m and where the nearest is.
+0 seconds keeps the old behaviour: the task succeeds as soon as the action is done.
 
 Call it from the task's stage once its completion flag is set; it keeps its state in the task's
 params hash ("holdLeft", "holdAway", "holdNext"). On a failure it sets "holdFailed", which the task's
@@ -70,9 +71,28 @@ if (!_contested && {_near}) then { _left = _left - _step };
 
 if (_now >= ([_params, "holdNext", 0] call ALIVE_fnc_hashGet) && {_left > 0}) then {
     [_params, "holdNext", _now + 30] call ALIVE_fnc_hashSet;
+    // Who is stopping the clock, worked out only here, every 30 s: the enemy men within 150 m, crews
+    // included, and where the nearest one is. A player told only "enemies close by" could not see what
+    // was holding the task in a town where they were inside buildings (#1121). Virtual groups also stop
+    // the clock but have nobody on the ground to point at, so with none in sight the old line is kept.
+    private _foes = [];
+    if (_contested) then {
+        {
+            if (_x isKindOf "CAManBase") then { _foes pushBack _x } else { _foes append (crew _x) };
+        } forEach (_pos nearEntities [["CAManBase", "LandVehicle", "Air", "Ship"], 150]);
+        _foes = _foes select { alive _x && {(_sideObj getFriend (side group _x)) < 0.6} };
+    };
+    private _nearestFoe = if (_foes isEqualTo []) then { objNull } else { [_foes, _pos] call BIS_fnc_nearestPosition };
     // the hold's state in the RPT every 30 s, so a hold that never ends can be read from a report (#1121)
-    ["C2ISTAR - hold at %1 for %2: %3 s left, players near %4, side online %5, away %6 s, enemies near %7", mapGridPosition _pos, _side, round _left, _near, _sideOnline, round _away, _contested] call ALiVE_fnc_dump;
-    [if (_contested) then { "Enemies close by: clear them to carry on." } else { format ["Hold position: %1:%2 left.", floor (_left / 60), [floor (_left mod 60), 2] call CBA_fnc_formatNumber] }, true] call _say;
+    ["C2ISTAR - hold at %1 for %2: %3 s left, players near %4, side online %5, away %6 s, enemies near %7 (%8 in sight)", mapGridPosition _pos, _side, round _left, _near, _sideOnline, round _away, _contested, count _foes] call ALiVE_fnc_dump;
+    private _text = format ["Hold position: %1:%2 left.", floor (_left / 60), [floor (_left mod 60), 2] call CBA_fnc_formatNumber];
+    if (_contested) then {
+        _text = if (isNull _nearestFoe) then { "Enemies close by: clear them to carry on." } else {
+            format ["Enemies close by: %1 within 150 m, the nearest %2 m %3. Clear them to carry on.", count _foes, round (_nearestFoe distance2D _pos),
+                ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"] select (round ((_pos getDir _nearestFoe) / 45) mod 8)]
+        };
+    };
+    [_text, true] call _say;
 };
 
 _left <= 0
