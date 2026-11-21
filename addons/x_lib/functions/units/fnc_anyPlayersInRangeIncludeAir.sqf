@@ -20,6 +20,10 @@ Number - UAV spawn distance (optional, default 0 = disabled). When >0,
          each UAV that has a connected player is checked against this radius.
          Back-compat: callers that omit this arg get the prior behaviour
          (no UAV check).
+Boolean - Spawn check (optional, default false). When true, a helicopter above
+         150 km/h and 10 m counts at the Virtual AI System's fast helicopter
+         radius, when that is set and smaller, as it does for profiles. Despawn
+         checks leave it false so nothing vanishes under a passing helicopter.
 
 Returns:
 Boolean - Returns if players within range
@@ -38,13 +42,17 @@ ARJay, Jman
 
 Peer Reviewed:
 ---------------------------------------------------------------------------- */
-private ["_position","_spawnDistance","_jetSpawnDistance","_helicopterSpawnDistance","_uavSpawnDistance","_players","_player","_position","_anyInRange"];
+private ["_position","_spawnDistance","_jetSpawnDistance","_helicopterSpawnDistance","_uavSpawnDistance","_spawnClaim","_players","_player","_position","_anyInRange"];
 
 PARAMS_1(_position);
 DEFAULT_PARAM(1,_spawnDistance,1500);
 DEFAULT_PARAM(2,_jetSpawnDistance,0);
 DEFAULT_PARAM(3,_helicopterSpawnDistance,1500);
 DEFAULT_PARAM(4,_uavSpawnDistance,0);
+DEFAULT_PARAM(5,_spawnClaim,false);
+
+private _fastRadius = missionNamespace getVariable ["ALIVE_spawnRadiusHeliFast", 0];
+private _fastHeli = _spawnClaim && {_fastRadius > 0} && {_fastRadius < _helicopterSpawnDistance};
 
 // #918: drop headless clients (they sit in allPlayers) so an HC doesn't trigger spawning
 _players = allPlayers - entities "HeadlessClient_F";
@@ -60,7 +68,9 @@ scopeName "main";
     if(
         (!(vehicle _x isKindOf "Plane") && {!(vehicle _x isKindOf "Helicopter")} && {(_x distance _position < _spawnDistance)}) ||
         {(vehicle _x isKindOf "Plane") && {(_x distance _position < _jetSpawnDistance)}} ||
-        {(vehicle _x isKindOf "Helicopter") && {(_x distance _position < _helicopterSpawnDistance)}}
+        {(vehicle _x isKindOf "Helicopter") && {(_x distance _position) < (
+            if (_fastHeli && {speed (vehicle _x) > 150} && {((getPos (vehicle _x)) select 2) > 10}) then { _fastRadius } else { _helicopterSpawnDistance }
+        )}}
     ) then {
         _anyInRange = true;
         breakTo "main";

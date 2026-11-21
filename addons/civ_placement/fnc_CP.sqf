@@ -962,7 +962,7 @@ switch(_operation) do {
                                 private _entry = _x;
                                 _entry params ["_position", "_size"];
 
-                                if (([_position, ALIVE_spawnRadius, ALIVE_spawnRadiusJet, ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir)
+                                if (([_position, ALIVE_spawnRadius, ALIVE_spawnRadiusJet, ALIVE_spawnRadiusHeli, 0, true] call ALiVE_fnc_anyPlayersInRangeIncludeAir)
                                     || {([_position, ALIVE_spawnRadiusJet] call ALiVE_fnc_anyAutonomousInRange) > 0}) then {
 
                                     // taken in one step: listed as being built, so only this thread builds it
@@ -993,6 +993,9 @@ switch(_operation) do {
                                                 };
                                             };
                                         };
+                                        // one roadblock at a time, a Smooth Spawn interval per man of a typical roadblock apart, as
+                                        // the Virtual AI System spaces its groups: a convoy reaching a ring of checkpoints built them all at once
+                                        if (count _thisroadblockResult > 0) then { sleep ((((missionNamespace getVariable ["ALiVE_smoothSpawn", 0.3]) max 0.05) * 5) min 5) };
                                         if (_debug && {count _thisroadblockResult == 0} && {_attempts >= _maxRoadblockSpawnAttempts}) then {
                                             ["Roadblock at %1 failed to spawn after %2 attempts; removing from queue", _position, _attempts] call ALiVE_fnc_dump;
                                         };
