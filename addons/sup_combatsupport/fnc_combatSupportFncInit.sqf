@@ -205,11 +205,20 @@ NEO_fnc_csNearestOnLines = {
 // clear way from it to the nearest taxi line, and the aircraft faces down that way: the heading set in the mission is
 // for the spot it was placed on, and on RSS7 an A-10 moved 141 m to a spot by the hangars faced a hangar wall and could
 // not taxi out (19 Nov). That heading is left on the aircraft as NEO_csStandDir for the caller to use.
+// A stand under a roof (a hangar or a helicopter stall) is left as it is: the mission maker put the aircraft there, and
+// the search could only move it out into the open. A helicopter lifts straight off, so it only moves when it stands on
+// the runway itself, never for a taxi line or the strip beside the runway. No new spot is on a road: aircraft moved out of their stalls were parked on the access roads.
 NEO_fnc_csClearStand = {
     params ["_veh", "_stand", ["_callsign", ""]];
     _veh setVariable ["NEO_csStandDir", nil];
     if (!(_stand isEqualType []) || {count _stand < 2}) exitWith { _stand };
     if (count _stand > 2 && {(_stand select 2) >= 1.5}) exitWith { _stand };
+    // a roof straight above the stand, up to 25 m
+    private _base = AGLToASL [_stand select 0, _stand select 1, 1];
+    private _roofed = (lineIntersectsSurfaces [_base, _base vectorAdd [0, 0, 25], _veh, objNull, true, 4, "GEOM", "NONE"]) findIf {
+        ((_x select [2, 2]) findIf { !isNull _x && {_x isKindOf "Building"} }) >= 0
+    };
+    private _heli = _veh isKindOf "Helicopter";
     private _halfOf = {
         (boundingBoxReal _this) params ["_lo", "_hi"];
         ((abs ((_hi select 0) - (_lo select 0))) max (abs ((_hi select 1) - (_lo select 1)))) / 2
@@ -217,7 +226,7 @@ NEO_fnc_csClearStand = {
     private _half = _veh call _halfOf;
     // room either side of a taxi line for the aircraft that use it to pass, wingtip to wingtip
     private _reach = _half + 20;
-    private _lines = [_stand] call NEO_fnc_csTaxiLines;
+    private _lines = if (_heli) then { [] } else { [_stand] call NEO_fnc_csTaxiLines };
     private _taken = missionNamespace getVariable ["NEO_csStands", []];
     _taken = _taken select { !((_x select 2) isEqualTo toUpper _callsign) };
     private _fnc_record = {
@@ -228,10 +237,16 @@ NEO_fnc_csClearStand = {
     // and room either side of a runway: the strip kept clear for aircraft taking off and landing, 75 m from the
     // centreline. RSS7's A-10, moved off the taxi route, stood 81 m from Takistan's main runway centreline (19 Nov).
     private _runways = [] call NEO_fnc_csRunwayLines;
-    private _rwReach = _half + 75;
+    // a helicopter is only in the way standing on the runway itself: Khe Sanh's helicopter revetments sit 48-55 m from
+    // the centreline, and every helicopter there was moved out of them (20 Nov)
+    private _rwReach = if (_heli) then { _half + 10 } else { _half + 75 };
     private _on = [_lines, _stand, _reach] call NEO_fnc_csOnTaxiLine;
     private _onRw = [_runways, _stand, _rwReach] call NEO_fnc_csOnTaxiLine;
     if (_on isEqualTo [] && {_onRw isEqualTo []}) exitWith { +_stand call _fnc_record };
+    if (_roofed >= 0) exitWith {
+        ["COMBAT SUPPORT - %1 (%2): its stand at %3 is under a roof, so it stays there", _callsign, typeOf _veh, mapGridPosition _stand] call ALiVE_fnc_dump;
+        +_stand call _fnc_record
+    };
     private _why = if (_on isEqualTo []) then {
         format ["%1 m from the runway centreline of airport %2", _onRw select 1, _onRw select 0]
     } else {
@@ -264,6 +279,8 @@ NEO_fnc_csClearStand = {
     private _fnc_clear = {
         params ["_p"];
         if (surfaceIsWater _p) exitWith { false };
+        // a road: by its type, since on some maps the airfield's own tarmac is laid as road pieces too
+        if (((_p nearRoads (_half max 6)) findIf { ((getRoadInfo _x) select 0) in ["ROAD", "MAIN ROAD", "TRACK"] }) >= 0) exitWith { false };
         if (((surfaceNormal _p) select 2) < 0.985) exitWith { false };
         if !(([_lines, _p, _reach] call NEO_fnc_csOnTaxiLine) isEqualTo []) exitWith { false };
         if !(([_runways, _p, _rwReach] call NEO_fnc_csOnTaxiLine) isEqualTo []) exitWith { false };
@@ -304,14 +321,15 @@ NEO_fnc_csClearStand = {
             _r = _r + 15;
         };
         if (_spot isNotEqualTo []) exitWith {};
-    } forEach [true, false];
+    } forEach ([[true, false], [false]] select _heli);
     if (_spot isEqualTo []) exitWith {
         ["COMBAT SUPPORT - %1 (%2): its stand at %3 is %4, and no clear spot was found within 180 m, so it stays there and may be in the way of other aircraft",
             _callsign, typeOf _veh, mapGridPosition _stand, _why] call ALiVE_fnc_dump;
         +_stand call _fnc_record
     };
     private _q = [_wayLines, _spot] call NEO_fnc_csNearestOnLines;
-    private _hdg = if (_q isEqualTo []) then { getDir _veh } else { _spot getDir _q };
+    // a helicopter keeps its heading: it needs no way out
+    private _hdg = if (_heli || {_q isEqualTo []}) then { getDir _veh } else { _spot getDir _q };
     _veh setVariable ["NEO_csStandDir", _hdg];
     ["COMBAT SUPPORT - %1 (%2): its stand at %3 was %4, where it would be in the way of other aircraft, so its stand is now %5 m away at %6 (%7), facing %8 towards the taxi route%9",
         _callsign, typeOf _veh, mapGridPosition _stand, _why, round (_spot distance2D _stand), mapGridPosition _spot, [round (_spot select 0), round (_spot select 1)],
