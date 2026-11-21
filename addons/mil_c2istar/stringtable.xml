@@ -587,7 +587,7 @@
     <English>Keep Player Objectives Across Saves:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_KEEP_OBJECTIVES_COMMENT">
-    <English>Yes: objectives set by players, Zeus or the War Room are saved with the mission and come back after a restart, and the commander plans them again with the forces it has then. Needs ALiVE Data and a commander with Persistent set to Yes. Timed recon, search and destroy and ambush orders are never saved. No: these objectives last for the session only, and any saved earlier are dropped at the next start.</English>
+    <English>Yes: objectives set by players, Zeus or the War Room are saved with the mission and come back after a restart, and the commander plans them again with the forces it has then. The side's Commander seat is kept too, if its holder comes back in time. Needs ALiVE Data and a commander with Persistent set to Yes. Timed recon, search and destroy and ambush orders are never saved. No: these objectives last for the session only, and any saved earlier are dropped at the next start.</English>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT">

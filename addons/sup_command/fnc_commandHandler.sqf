@@ -3697,6 +3697,7 @@ switch(_operation) do {
             _seats set [_side, [getPlayerUID _player, name _player, time, -1]];
         };
         ALiVE_SCOM_commandSeats = _seats;
+        (missionNamespace getVariable ["ALiVE_SCOM_seatRestored", createHashMap]) deleteAt _side;
         // a hand-over offered by the last commander no longer stands
         (missionNamespace getVariable ["ALiVE_SCOM_seatOffers", createHashMap]) deleteAt _side;
         [_logic,"cmdSeatPublish"] call MAINCLASS;
@@ -3829,6 +3830,96 @@ switch(_operation) do {
 
     };
 
+    case "cmdSeatSave": {
+
+        // Keep Player Objectives Across Saves: each side's commander seat is saved with the mission, for sides with a
+        // persistent commander. Called by every commander's save; written only when it has changed, since each
+        // write saves the whole data file. Server only.
+
+        if (!isServer) exitWith {};
+        if (isNil "ALIVE_sys_data" || {missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true]}) exitWith {};
+        private _list = [];
+        if ((missionNamespace getVariable ["ALiVE_c2istar_keepObjectives", false]) && {[_logic,"cmdSeatOn"] call MAINCLASS}) then {
+            private _kept = ((missionNamespace getVariable ["OPCOM_instances", []]) select { [_x,"persistent",false] call ALiVE_fnc_hashGet }) apply { [_x,"side",""] call ALiVE_fnc_hashGet };
+            { if (_x in _kept) then { _list pushBack [_x, _y select 0, _y select 1] } } forEach (missionNamespace getVariable ["ALiVE_SCOM_commandSeats", createHashMap]);
+        };
+        if (_list isEqualTo (missionNamespace getVariable ["ALiVE_SCOM_seatSaved", []])) exitWith {};
+        ALiVE_SCOM_seatSaved = +_list;
+        // the local data store's read sets these without private; declared here so it can't change a caller's
+        private _uid = ""; private _keys = [];
+        if (isNil "ALiVE_SCOM_dataHandler") then {
+            ALiVE_SCOM_dataHandler = [nil, "create"] call ALIVE_fnc_Data;
+            [ALiVE_SCOM_dataHandler, "storeType", true] call ALIVE_fnc_Data;
+        };
+        private _key = format ["%1-SCOMSEAT", ([""] call ALiVE_fnc_storeKeys) select 0];
+        private _doc = [[["data", _list]]] call CBA_fnc_hashCreate;
+        // the War Room backend updates a document by its revision, as for the commanders' own records
+        private _prev = [ALiVE_SCOM_dataHandler, "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+        if (_prev isEqualType [] && {count _prev > 0}) then {
+            private _rev = [_prev, "_rev"] call CBA_fnc_hashGet;
+            if (!isNil "_rev") then { [_doc, "_rev", _rev] call CBA_fnc_hashSet };
+        };
+        [ALiVE_SCOM_dataHandler, "write", ["mil_opcom", _doc, false, _key]] call ALIVE_fnc_Data;
+        ["SCOM Commander seat: saved %1", _list apply { format ["%1 %2", _x select 0, _x select 2] }] call ALiVE_fnc_dump;
+
+    };
+
+    case "cmdSeatLoad": {
+
+        // the seats saved by cmdSeatSave, put back at mission start when Keep Player Objectives Across Saves is still
+        // on, the seat is still one per side and the side still has a persistent commander. A restored holder gets
+        // at least five minutes to come back once the first player is in. Server, scheduled (it waits for ALiVE Data).
+
+        if (!isServer || {!canSuspend}) exitWith {};
+        private _t0 = diag_tickTime;
+        waitUntil { sleep 1; (!isNil "ALiVE_c2istar_commanderSeat" && {!isNil "ALIVE_sys_data_DISABLED"} && {!isNil "OPCOM_instances"}) || {diag_tickTime - _t0 > 60} };
+        if (isNil "ALIVE_sys_data" || {missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true]}) exitWith {};
+        if (isNil "ALiVE_SCOM_dataHandler") then {
+            ALiVE_SCOM_dataHandler = [nil, "create"] call ALIVE_fnc_Data;
+            [ALiVE_SCOM_dataHandler, "storeType", true] call ALIVE_fnc_Data;
+        };
+        private _key = format ["%1-SCOMSEAT", ([""] call ALiVE_fnc_storeKeys) select 0];
+        private _plain = [];
+        // the local data store's read sets these without private; declared here so it can't change a caller's
+        private _uid = ""; private _keys = [];
+        private _doc = [ALiVE_SCOM_dataHandler, "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+        if (_doc isEqualType [] && {count _doc > 0}) then {
+            private _d = [_doc, "data"] call CBA_fnc_hashGet;
+            if (!isNil "_d" && {_d isEqualType []}) then { _plain = _d };
+        };
+        // what is stored now, so the next save writes only if the seats differ from it (an empty list clears it)
+        ALiVE_SCOM_seatSaved = +_plain;
+        if (_plain isEqualTo []) exitWith {};
+        // the commanders' persistence is read once they have started
+        waitUntil { sleep 1; ((OPCOM_instances findIf { !([_x,"startupComplete",false] call ALiVE_fnc_hashGet) }) < 0) || {diag_tickTime - _t0 > 300} };
+        private _why = switch (true) do {
+            case !(missionNamespace getVariable ["ALiVE_c2istar_keepObjectives", false]): { "Keep Player Objectives Across Saves is off" };
+            case !([_logic,"cmdSeatOn"] call MAINCLASS): { "the Commander seat is off" };
+            default { "" };
+        };
+        if (_why != "") exitWith { ["SCOM Commander seat: saved seats not restored: %1", _why] call ALiVE_fnc_dump };
+        private _kept = ((missionNamespace getVariable ["OPCOM_instances", []]) select { [_x,"persistent",false] call ALiVE_fnc_hashGet }) apply { [_x,"side",""] call ALiVE_fnc_hashGet };
+        private _seats = missionNamespace getVariable ["ALiVE_SCOM_commandSeats", createHashMap];
+        if (isNil "ALiVE_SCOM_seatRestored") then { ALiVE_SCOM_seatRestored = createHashMap };
+        {
+            _x params [["_side","",[""]], ["_uid","",[""]], ["_name","",[""]]];
+            switch (true) do {
+                case (_side == "" || {_uid == ""}): {};
+                case !(_side in _kept): { ["SCOM Commander seat: saved seat for %1 not restored: the side has no persistent commander", _side] call ALiVE_fnc_dump };
+                // someone has taken it already in this session
+                case (_side in _seats): {};
+                default {
+                    _seats set [_side, [_uid, _name, time, -1]];
+                    ALiVE_SCOM_seatRestored set [_side, true];
+                    ["SCOM Commander seat: seat restored for %1 (%2)", _side, _name] call ALiVE_fnc_dump;
+                };
+            };
+        } forEach _plain;
+        ALiVE_SCOM_commandSeats = _seats;
+        [_logic,"cmdSeatPublish"] call MAINCLASS;
+
+    };
+
     case "cmdSeatWatch": {
 
         // server, once: a commander who disconnects keeps the seat for the Free The Seat After time and gets it back on
@@ -3838,13 +3929,19 @@ switch(_operation) do {
         ALiVE_SCOM_seatWatch = true;
         if (isNil "ALiVE_SCOM_commandSeats") then { ALiVE_SCOM_commandSeats = createHashMap };
         [_logic,"cmdSeatPublish"] call MAINCLASS;
+        // the saved seat's name, so Clear Current Mission's Data clears it too
+        if (isNil "ALiVE_storeSuffixes") then { ALiVE_storeSuffixes = [] };
+        ALiVE_storeSuffixes pushBackUnique "-SCOMSEAT";
 
         [_logic] spawn {
             params ["_logic"];
+            [_logic,"cmdSeatLoad"] call ALiVE_fnc_commandHandler;
             while {true} do {
                 sleep 20;
                 private _seats = missionNamespace getVariable ["ALiVE_SCOM_commandSeats", createHashMap];
                 private _release = missionNamespace getVariable ["ALiVE_c2istar_commanderSeatRelease", 180];
+                private _restored = missionNamespace getVariable ["ALiVE_SCOM_seatRestored", createHashMap];
+                private _anyone = (allPlayers - entities "HeadlessClient_F") isNotEqualTo [];
                 {
                     // each seat checked and freed in one go, so a take, hand-over or return in between can't be undone
                     isNil {
@@ -3854,14 +3951,23 @@ switch(_operation) do {
                     _y params ["_uid", "_name", "", "_goneSince"];
                     private _player = [_uid] call ALiVE_fnc_getPlayerByUID;
                     private _why = "";
+                    // a seat restored from the save waits for the first player before its away time starts, and gives
+                    // its holder at least five minutes to load in
+                    private _wasSaved = _x in _restored;
                     if (isNull _player) then {
+                        if (_wasSaved && {!_anyone}) exitWith {};
                         if (_goneSince < 0) then {
                             _y set [3, time];
                             ["SCOM Commander seat: %1's commander %2 is away", _x, _name] call ALiVE_fnc_dump;
                         } else {
-                            if (time - _goneSince >= _release) then { _why = format ["%1 has been away too long, so the seat is free.", _name] };
+                            if (time - _goneSince >= ([_release, _release max 300] select _wasSaved)) then {
+                                _why = format ["%1 has been away too long, so the seat is free.", _name];
+                                if (_wasSaved) then { ["SCOM Commander seat: restored seat freed for %1", _x] call ALiVE_fnc_dump };
+                            };
                         };
                     } else {
+                        // back in: from now on an ordinary seat
+                        _restored deleteAt _x;
                         if (_goneSince >= 0) then {
                             _y set [3, -1];
                             ["SCOM Commander seat: %1's commander %2 is back", _x, _name] call ALiVE_fnc_dump;

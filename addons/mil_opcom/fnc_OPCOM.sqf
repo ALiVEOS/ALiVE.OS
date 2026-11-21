@@ -4932,6 +4932,9 @@ switch (_operation) do {
             };
             [GVAR(DATAHANDLER), "write", ["mil_opcom", _opData, false, _opKey]] call ALIVE_fnc_Data;
 
+            // the Commander seat, kept with Keep Player Objectives Across Saves (written only when it has changed)
+            if (!isNil "ALIVE_commandHandler") then { [ALIVE_commandHandler, "cmdSeatSave"] call ALiVE_fnc_commandHandler };
+
             // Start From Ship: the groups still aboard
             if ([_logic, "shipStart", false] call ALiVE_fnc_hashGet) then {
                 private _shipKey = format ["%1-OPCOM_%2-ship", _missionName, [_logic, "opcomID"] call CBA_fnc_hashGet];
