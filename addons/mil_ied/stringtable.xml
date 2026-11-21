@@ -349,7 +349,7 @@
     <English>Jammers Stop Drones:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_JAMMED_COMMENT">
-    <English>A working jammer near the drone (a vehicle's within Jammer Radius, a carried one within Carried Jammer Radius, see IED THREAT, or a Crows Electronic Warfare drone jammer) makes it lose its signal and drop without exploding.</English>
+    <English>A working jammer near the drone (a vehicle's within Jammer Radius, a carried one within Carried Jammer Radius, see IED THREAT, or a Crows Electronic Warfare drone jammer) makes it lose its signal and drop without exploding. A drone whose AI pilot is killed or whose fuel is drained by another mod's jammer drops the same way, whatever this is set to.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_SHOTDOWN">
     <English>Explodes When Shot Down:</English>

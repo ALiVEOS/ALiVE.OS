@@ -10,7 +10,8 @@ The drone is the side's vanilla quadcopter (or Drone Class) with a dummy of its 
 player 40 m over the ground at 15 m/s, holds about 25 m over him for 4 s (the warning: its rotors overhead), then dives. When it reaches him it is
 removed and the real warhead is made and set off there (measured on the NUC, DRN46 to DRN51: a warhead carried on
 the drone does not hurt a vehicle; one made at the moment of the hit does, if it comes in 45 degrees down from in
-front of the vehicle). Shot down, jammed, taken over by a UAV terminal, out of battery (240 s) or no longer run by the
+front of the vehicle). Shot down, jammed (another mod's jammer that kills its AI pilot or drains its fuel counts),
+taken over by a UAV terminal, out of battery (240 s) or no longer run by the
 server, it drops without exploding; with Explodes When Shot Down on, one shot down in its final dive explodes.
 
 Everything runs on the server. The drone has no profile and is never saved.
@@ -195,6 +196,8 @@ _dg allowFleeing 0;
 // the pilot only gives the drone a crew; the flight is scripted (the AI pilot climbed away from its move orders)
 { _x disableAI "MOVE"; _x disableAI "PATH" } forEach _crew;
 _uav lockDriver true;
+// the FPV AI Drones mod leaves a drone alone that another script flies
+_uav setVariable ["FPV_AI_Drones_managed", true, true];
 
 // no player's UAV terminal can connect to it, joining in progress too
 private _jip = format ["ALiVE_IED_droneLink_%1", netId _uav];
@@ -344,6 +347,10 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         // a player's UAV terminal has it (a server sees that through UAVControl only)
         if (!isNull ((UAVControl _uav) param [0, objNull])) exitWith { ["taken over by a UAV terminal", true] call _fnc_end };
         if (_jamOn && {[_uav, -1, true] call ALiVE_fnc_iedJammerNear}) exitWith { ["jammed", true] call _fnc_end };
+        // another mod's jammer that kills its AI pilot or drains its fuel: nothing flies it any more, whatever
+        // Jammers Stop Drones says (that setting covers ALiVE's own jammer checks above)
+        if (((crew _uav) findIf { alive _x }) < 0) exitWith { ["no pilot (jammed by another mod?)", true] call _fnc_end };
+        if ((fuel _uav) <= 0) exitWith { ["no fuel (jammed by another mod?)", true] call _fnc_end };
         if (time - (_d get "t0") > 240) exitWith { ["out of battery", true] call _fnc_end };
         private _players = allPlayers - entities "HeadlessClient_F";
         if ((_players findIf { (_x distance _uav) < 1500 }) < 0) exitWith { ["no player within 1500 m", false] call _fnc_end };
