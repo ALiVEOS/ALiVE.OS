@@ -218,6 +218,18 @@ NEO_fnc_csClearStand = {
     private _roofed = (lineIntersectsSurfaces [_base, _base vectorAdd [0, 0, 25], _veh, objNull, true, 4, "GEOM", "NONE"]) findIf {
         ((_x select [2, 2]) findIf { !isNull _x && {_x isKindOf "Building"} }) >= 0
     };
+    // or inside a revetment's walls: most have no roof, so the ray goes up between the walls and finds nothing. Khe
+    // Sanh's aircraft revetments sit 42-55 m from the runway centreline, inside the strip kept clear for planes (21 Nov).
+    if (_roofed < 0) then {
+        _roofed = ((nearestObjects [_stand, [], 40, true]) + (nearestTerrainObjects [_stand, [], 40, false, true])) findIf {
+            ((toLower (typeOf _x + ((getModelInfo _x) select 0))) find "revet") >= 0 && {
+                (boundingBoxReal [_x, "Geometry"]) params ["_lo", "_hi"];
+                private _m = _x worldToModel [_stand select 0, _stand select 1, 0];
+                (_m select 0) > ((_lo select 0) - 2) && {(_m select 0) < ((_hi select 0) + 2)}
+                    && {(_m select 1) > ((_lo select 1) - 2)} && {(_m select 1) < ((_hi select 1) + 2)}
+            }
+        };
+    };
     private _heli = _veh isKindOf "Helicopter";
     private _halfOf = {
         (boundingBoxReal _this) params ["_lo", "_hi"];
@@ -244,7 +256,7 @@ NEO_fnc_csClearStand = {
     private _onRw = [_runways, _stand, _rwReach] call NEO_fnc_csOnTaxiLine;
     if (_on isEqualTo [] && {_onRw isEqualTo []}) exitWith { +_stand call _fnc_record };
     if (_roofed >= 0) exitWith {
-        ["COMBAT SUPPORT - %1 (%2): its stand at %3 is under a roof, so it stays there", _callsign, typeOf _veh, mapGridPosition _stand] call ALiVE_fnc_dump;
+        ["COMBAT SUPPORT - %1 (%2): its stand at %3 is under a roof or in a revetment, so it stays there", _callsign, typeOf _veh, mapGridPosition _stand] call ALiVE_fnc_dump;
         +_stand call _fnc_record
     };
     private _why = if (_on isEqualTo []) then {
