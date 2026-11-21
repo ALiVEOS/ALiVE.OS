@@ -145,8 +145,14 @@ private _debug = ADDON getVariable ["debug", false];
 private _side = side _grp;
 private _lead = leader _grp;
 
-// the class: Drone Class, or the vanilla quadcopter of the launching group's side
+// the class: Drone Class, or the launching group's side's own: a Crocus FPV drone with that mod loaded (AP for a
+// Small charge, AT for Medium), otherwise the vanilla quadcopter
 private _fallback = switch (_side) do { case west: { "B_UAV_01_F" }; case independent: { "I_UAV_01_F" }; default { "O_UAV_01_F" } };
+if (isClass (configFile >> "CfgVehicles" >> "ARMAFPV_Crocus_AT_Base")) then {
+    private _crocus = format ["%1_Crocus_%2", ["O", "B", "I"] select (([east, west, independent] find _side) max 0),
+        ["AT", "AP"] select ((ADDON getVariable ["Drone_Charge", "MEDIUM"]) == "SMALL")];
+    if (isClass (configFile >> "CfgVehicles" >> _crocus)) then { _fallback = _crocus };
+};
 private _class = ADDON getVariable ["Drone_Class", ""];
 if (_class != "" && {!isClass (configFile >> "CfgVehicles" >> _class) || {getNumber (configFile >> "CfgVehicles" >> _class >> "isUav") != 1}}) then {
     if (_debug) then { ["ALIVE-%1 FPV drone: Drone Class %2 is not a drone, using %3", time, _class, _fallback] call ALiVE_fnc_dump };
@@ -207,8 +213,25 @@ private _jip = format ["ALiVE_IED_droneLink_%1", netId _uav];
 private _model = getText (configFile >> "CfgAmmo" >> _ammo >> "model");
 if ((_model select [0, 1]) == "\") then { _model = _model select [1] };
 if ((_model find ".") < 0) then { _model = _model + ".p3d" };
+// (a Crocus carries its own on the model)
+private _isCrocus = _class isKindOf "ARMAFPV_Crocus_AT_Base";
+// a Crocus sets its own warhead off at any hit (a branch on the way in will do), unless told it is already going
+// off: told so from the start, so the warhead goes off only when this flight sets it off, as with any other drone
+if (_isCrocus) then {
+    _uav setVariable ["DB_fpv_isDetonating", true, true];
+    // and it is built to break at a light knock (armour 0.5, five times the impact damage): a bump on the scripted
+    // flight is ignored, while bullets and blasts still bring it down
+    _uav addEventHandler ["HandleDamage", {
+        params ["_u", "", "_dmg", "_src", "_proj", "_idx"];
+        if (_proj isEqualTo "" && {isNull _src || {_src isEqualTo _u}}) exitWith {
+            if (ADDON getVariable ["debug", false] && {_dmg > 0.05}) then { ["ALIVE-%1 FPV drone: a bump on the Crocus ignored (%2)", time, _dmg toFixed 2] call ALiVE_fnc_dump };
+            if (_idx < 0) then { damage _u } else { _u getHitIndex _idx }
+        };
+        _dmg
+    }];
+};
 private _dummy = objNull;
-if (_model != ".p3d") then {
+if (_model != ".p3d" && {!_isCrocus}) then {
     _dummy = createSimpleObject [_model, getPosASL _uav];
     if (!isNull _dummy) then { _dummy attachTo [_uav, [0, 0.1, -0.12]] };
 };

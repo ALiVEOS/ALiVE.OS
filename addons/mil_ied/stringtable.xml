@@ -361,7 +361,7 @@
     <English>Drone Class:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_CLASS_COMMENT">
-    <English>Class name of the drone. It must be a UAV with an AI crew seat. Empty or a wrong name uses the vanilla quadcopter of the launching group's side.</English>
+    <English>Class name of the drone. It must be a UAV with an AI crew seat. Empty or a wrong name uses the launching group's side's own drone: with the Crocus FPV drone mod loaded a Crocus (AP for a Small charge, AT for Medium), otherwise the vanilla quadcopter.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_THREAT_LEVEL">
     <English>FPV Drone Threat</English>
