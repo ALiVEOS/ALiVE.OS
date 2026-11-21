@@ -546,7 +546,9 @@ switch(_operation) do {
                         [GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
                     };
 
-                    GVAR(STORE) call ALIVE_fnc_inspectHash;
+                    // the whole store, every trigger and IED, line by line: over a thousand lines in seconds on a
+                    // large map at every start (RSS7 Takistan, 21 Nov), so only with Debug on
+                    if (_debug) then { GVAR(STORE) call ALIVE_fnc_inspectHash };
 
                     //Push to clients
                     PublicVariable QGVAR(STORE);
