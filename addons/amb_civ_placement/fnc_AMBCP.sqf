@@ -737,6 +737,8 @@ switch(_operation) do {
             // carries it; the two together never pass that budget in one frame.
             // The longest block and the lowest server fps are kept for the summary line.
             private _blockLongest = [0, ""];
+            // the slowest single item, and what it was doing: a block that runs far over its budget is one item
+            private _itemSlowest = [0, "", ""];
             private _fpsLowest = 1000;
             private _fnc_timeBoxed = {
                 params ["_items", "_fnc", ["_vars", []]];
@@ -754,13 +756,20 @@ switch(_operation) do {
                     private _tbUse = missionNamespace getVariable ['ALiVE_ambcp_frameUse', [-1, 0]];
                     private _tbSpent = [0, _tbUse select 1] select ((_tbUse select 0) == diag_frameNo);
                     private _tbLeft = _tbBudget - _tbSpent;
-                    while { _tbI < count _tbItems && {diag_tickTime - _tbStart < _tbLeft} } do { private _tbIt = _tbItems select _tbI; _tbI = _tbI + 1; _tbJob set [2, _tbI]; _tbIt call _tbFnc; }; "];
+                    while { _tbI < count _tbItems && {diag_tickTime - _tbStart < _tbLeft} } do { private _tbIt = _tbItems select _tbI; _tbI = _tbI + 1; _tbJob set [2, _tbI];
+                        private _tbWhat = ''; private _tbT0 = diag_tickTime; _tbIt call _tbFnc; private _tbOne = diag_tickTime - _tbT0;
+                        if (_tbOne > ((_tbJob select 10) select 0)) then {
+                            if (_tbWhat isEqualTo '') then { _tbWhat = switch (typeName _tbIt) do { case 'SCALAR': { 'starting a town' }; case 'OBJECT': { typeOf _tbIt }; default { 'finding the buildings of a town' } } };
+                            _tbJob set [10, [_tbOne, _tbWhat, (_tbJob select 9) getVariable ['startupStage', ['', 0]]]];
+                        };
+                    }; "];
                 { _src = _src + format ["if (!isNil '%1') then { _tbEnv set ['%1', %1] }; ", _x] } forEach _vars;
                 _src = _src + "private _tbTook = diag_tickTime - _tbStart; ALiVE_ambcp_frameUse = [diag_frameNo, _tbSpent + _tbTook]; if (_tbTook > (_tbJob select 5)) then { _tbJob set [5, _tbTook]; _tbJob set [8, (_tbJob select 9) getVariable ['startupStage', ['', 0]]] };
                     if (time > 1) then { _tbJob set [6, (_tbJob select 6) min diag_fps] }; if (_tbI >= count _tbItems) then { _tbJob set [4, true] };";
                 private _block = compile _src;
-                // [items, fnc, next item, variables, done, longest block, lowest fps, block, stage of the longest block, logic]
-                private _job = [_items, _fnc, 0, _tbEnv, false, 0, 1000, _block, ["", 0], _logic];
+                // [items, fnc, next item, variables, done, longest block, lowest fps, block, stage of the longest block, logic,
+                // slowest item: [seconds, what it was doing, stage]]
+                private _job = [_items, _fnc, 0, _tbEnv, false, 0, 1000, _block, ["", 0], _logic, [0, "", ["", 0]]];
                 private _pfh = [{
                     params ["_job", "_handle"];
                     if (_job select 4) exitWith { [_handle] call CBA_fnc_removePerFrameHandler };
@@ -777,6 +786,8 @@ switch(_operation) do {
                 { if (_x in _tbEnv) then { call compile format ["%1 = _tbEnv get '%1'", _x] } } forEach _vars;
                 if ((_job select 5) > (_blockLongest select 0)) then { _blockLongest = [_job select 5, format ["%1, town %2", (_job select 8) select 0, (_job select 8) select 1]] };
                 _fpsLowest = _fpsLowest min (_job select 6);
+                (_job select 10) params ["_tbOne", "_tbWhat", "_tbStage"];
+                if (_tbOne > (_itemSlowest select 0)) then { _itemSlowest = [_tbOne, _tbWhat, format ["%1, town %2", _tbStage select 0, _tbStage select 1]] };
             };
 
             // Place ambient vehicles
@@ -864,6 +875,7 @@ switch(_operation) do {
                                 }else{
                                     _vehicleClass = selectRandom _landClasses;
                                 };
+                                _tbWhat = format ["parking %1 by %2", _vehicleClass, typeOf _building];
 
                                 //["SUPPORT PLACEMENT: %1",_supportPlacement] call ALIVE_fnc_dump;
                                 //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
@@ -1205,6 +1217,7 @@ switch(_operation) do {
                         private _building = _this;
 
                         private _unitClass = selectRandom _civClasses;
+                        _tbWhat = format ["placing %1 in %2", _unitClass, typeOf _building];
                         private _agentID = format["agent_%1",[ALIVE_agentHandler, "getNextInsertID"] call ALIVE_fnc_agentHandler];
 
                         private _buildingPositions = [getPosATL _building,15] call ALIVE_fnc_findIndoorHousePositions;
@@ -1302,8 +1315,9 @@ switch(_operation) do {
 
             ["AMBCP %1 - Ambient land vehicles placed: %2",_ambientVehicleFactions,_countLandUnits] call ALiVE_fnc_dump;
             ["AMBCP %1 - Ambient civilian units placed: %2",_factions,_countCivilianUnits] call ALiVE_fnc_dump;
-            ["AMBCP %1 - Placement worked in blocks of at most %2 ms (longest: %3); lowest server fps while placing %4",
-                _factions, round ((_blockLongest select 0) * 1000), _blockLongest select 1, round _fpsLowest] call ALiVE_fnc_dump;
+            ["AMBCP %1 - Placement worked in blocks of at most %2 ms (longest: %3); lowest server fps while placing %4%5",
+                _factions, round ((_blockLongest select 0) * 1000), _blockLongest select 1, round _fpsLowest,
+                ["", format ["; the slowest single step took %1 ms (%2, %3)", round ((_itemSlowest select 0) * 1000), _itemSlowest select 1, _itemSlowest select 2]] select ((_itemSlowest select 0) > 0.05)] call ALiVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
