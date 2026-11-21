@@ -2768,6 +2768,8 @@ switch(_operation) do {
                 private _unitSideText = [_unitSide] call ALiVE_fnc_sideNumberToText;
                 private _unitSideObject = [_unitSideText] call ALiVE_fnc_sideTextToObject;
 				private _loadout = [];
+                // the unit made below to read a config loadout; declared here so it can be deleted after the branch
+                private _realUnit = objNull;
 
 				// Check to see if this is an ORBATRON unit and get loadout
 				if (getNumber(_unitConfig >> "ALiVE_orbatCreator_owned") == 1) then {
@@ -2786,13 +2788,13 @@ switch(_operation) do {
                         };
                     };
 				} else {
-                	private _realUnit = (createGroup _unitSideObject) createUnit [_unit, [0,0,0], [], 0, "NONE"];
+                	_realUnit = (createGroup _unitSideObject) createUnit [_unit, [0,0,0], [], 0, "NONE"];
                 	_loadout = getUnitLoadout _realUnit;
 				};
 
                 [_newUnit,"loadout", _loadout] call ALiVE_fnc_hashSet;
 
-                [_logic,"deleteUnit", _realUnit] call MAINCLASS;
+                if (!isNull _realUnit) then { [_logic,"deleteUnit", _realUnit] call MAINCLASS };
             } else {
                 private _crew = getText (_unitConfig >> "crew");
 
@@ -2816,8 +2818,6 @@ switch(_operation) do {
                 [_newUnit,"crew", _crew] call ALiVE_fnc_hashSet;
                 [_newUnit,"turrets", _turrets] call ALiVE_fnc_hashSet;
                 [_newUnit,"texture", _texture] call ALiVE_fnc_hashSet;
-
-                [_logic,"deleteUnit", _realUnit] call MAINCLASS;
             };
 
 			// Check to see if unit was imported correctly.
@@ -7173,12 +7173,12 @@ switch(_operation) do {
         _result = _result + _indent + _indent + "respawnWeapons[] = " + _weaponsItemsStringArray + ";" + _newLine;
         _result = _result + _newLine;
 
-        // Add magazines
-        private _primarymag = if (count (_unitLoadout select 0) > 0) then {(_unitLoadout select 0) select 4 select 0} else {""};
-        private _primarysecmag = if (count (_unitLoadout select 0) > 0) then {(_unitLoadout select 0) select 5 select 0} else {""};
-        private _secondarymag = if (count (_unitLoadout select 1) > 0) then {(_unitLoadout select 1) select 4 select 0} else {""};
-        private _handgunmag = if (count (_unitLoadout select 2) > 0) then {(_unitLoadout select 2) select 4 select 0} else {""};
-        private _binomag = if (count (_unitLoadout select 8) > 0) then {(_unitLoadout select 8) select 4 select 0} else {""};
+        // Add magazines (an empty magazine slot in the loadout is [], so each read has a default)
+        private _primarymag = if (count (_unitLoadout select 0) > 0) then {((_unitLoadout select 0) param [4, []]) param [0, ""]} else {""};
+        private _primarysecmag = if (count (_unitLoadout select 0) > 0) then {((_unitLoadout select 0) param [5, []]) param [0, ""]} else {""};
+        private _secondarymag = if (count (_unitLoadout select 1) > 0) then {((_unitLoadout select 1) param [4, []]) param [0, ""]} else {""};
+        private _handgunmag = if (count (_unitLoadout select 2) > 0) then {((_unitLoadout select 2) param [4, []]) param [0, ""]} else {""};
+        private _binomag = if (count (_unitLoadout select 8) > 0) then {((_unitLoadout select 8) param [4, []]) param [0, ""]} else {""};
         private _mags = [_primarymag, _primarysecmag, _secondarymag, _handgunmag, _binomag, _primarymag, _primarysecmag, _handgunmag, _binomag] - [""];
         private _magsItemsStringArray = [_logic,"arrayToConfigArrayString", _mags] call MAINCLASS;
         _result = _result + _indent + _indent + "magazines[] = " + _magsItemsStringArray + ";" + _newLine;
