@@ -313,7 +313,13 @@
     <English>FPV Drone Threat:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_THREAT_COMMENT">
-    <English>Chance, checked every 30 seconds, that insurgents who have spotted a player launch an explosive quadcopter at them. It hovers over them for 4 seconds before it dives. None switches FPV drones off. Needs an AI Commander set to Insurgency.</English>
+    <English>Chance, checked every 30 seconds, that an AI Commander's group that has spotted a player of a hostile side launches an explosive quadcopter at them. It hovers over them for 4 seconds before it dives. None switches FPV drones off. Drones Launched By picks which AI Commanders' groups can launch them.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_LAUNCHERS">
+    <English>Drones Launched By:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_LAUNCHERS_COMMENT">
+    <English>Every AI Commander: groups of any AI Commander's side, whatever its control type, launch drones at players of a side hostile to theirs. Insurgent commanders only: only groups of AI Commanders set to Insurgency do. Suicide bombers always come from insurgents only.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_MAX">
     <English>Most Drones At Once:</English>
@@ -331,7 +337,7 @@
     <English>Drone Launch Range (m):</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_RANGE_COMMENT">
-    <English>Insurgents further than this from a player do not launch a drone. They never launch from closer than 300 m, so 300 or less means no drones. Default 1200.</English>
+    <English>Groups further than this from a player do not launch a drone. They never launch from closer than 300 m, so 300 or less means no drones. Default 1200.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_CHARGE">
     <English>Drone Warhead:</English>
@@ -355,7 +361,7 @@
     <English>Drone Class:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_CLASS_COMMENT">
-    <English>Class name of the drone. It must be a UAV with an AI crew seat. Empty or a wrong name uses the vanilla quadcopter of the insurgents' side.</English>
+    <English>Class name of the drone. It must be a UAV with an AI crew seat. Empty or a wrong name uses the vanilla quadcopter of the launching group's side.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_THREAT_LEVEL">
     <English>FPV Drone Threat</English>

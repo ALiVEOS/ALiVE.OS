@@ -333,6 +333,9 @@ switch(_operation) do {
                     private _droneClass = _logic getVariable ["Drone_Class", ""];
                     ADDON setVariable ["Drone_Class", [_droneClass, ""] select !(_droneClass isEqualType "")];
                     if ((ADDON getVariable "Drone_Class") isEqualType "") then { ADDON setVariable ["Drone_Class", trim (ADDON getVariable "Drone_Class")] };
+                    // Drones Launched By: every AI Commander's side (ALL, default) or only the insurgent ones; read by bomberDispatch
+                    private _launchers = _logic getVariable ["Drone_Launchers", "ALL"];
+                    ADDON setVariable ["Drone_Launchers", ["ALL", "INSURGENT"] select (_launchers isEqualType "" && {(toUpper _launchers) == "INSURGENT"})];
                     [ADDON, "IED_Engineer_Trip_Base",            _logic getVariable ["IED_Engineer_Trip_Base", 0.02]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Trip_ThresholdMin",    _logic getVariable ["IED_Engineer_Trip_ThresholdMin", 0.7]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Trip_ThresholdMax",    _logic getVariable ["IED_Engineer_Trip_ThresholdMax", 1.3]] call MAINCLASS;
@@ -1327,6 +1330,8 @@ switch(_operation) do {
             // drone instead, from a group 300 m to Drone Launch Range away (ALiVE_fnc_createFPVDrone): one at a time
             // each, Most Drones At Once in all, then none for Drone Wait minutes for him and the players around him,
             // and none from that group either. After either weapon the other waits 3 minutes. Both share one scan.
+            // Drones come from the groups of every AI Commander's side (Drones Launched By, or only the insurgent
+            // ones), and only at a player whose side that group's side is hostile to; bombers stay insurgent only.
             if (!isServer) exitWith {};
             private _debug = [_logic, "debug"] call MAINCLASS;
             private _warned = false;
@@ -1336,47 +1341,61 @@ switch(_operation) do {
             if (isNil "ALiVE_IED_drones") then { ALiVE_IED_drones = [] };
             while { !isNull _logic } do {
                 sleep 30;
+                private _droneAll = (ADDON getVariable ["Drone_Launchers", "ALL"]) == "ALL";
+                // insurgents (asymmetric AI Commanders) send bombers; drones come from them, or from every AI Commander
                 private _insSides = [];
+                private _droneSides = [];
                 {
-                    if (([_x, "controltype", ""] call ALiVE_fnc_hashGet) == "asymmetric") then {
-                        private _sideText = [_x, "side", ""] call ALiVE_fnc_hashGet;
-                        if (_sideText isEqualType "") then { _sideText = [_sideText] call ALIVE_fnc_sideTextToObject };
-                        _insSides pushBackUnique _sideText;
+                    private _sideText = [_x, "side", ""] call ALiVE_fnc_hashGet;
+                    if (_sideText isEqualType "") then { _sideText = [_sideText] call ALIVE_fnc_sideTextToObject };
+                    if (_sideText isEqualType west) then {
+                        private _ins = ([_x, "controltype", ""] call ALiVE_fnc_hashGet) == "asymmetric";
+                        if (_ins) then { _insSides pushBackUnique _sideText };
+                        if (_ins || _droneAll) then { _droneSides pushBackUnique _sideText };
                     };
                 } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
                 private _bombOn = ([_logic, "Bomber_Dispatch"] call MAINCLASS) && {(_logic getVariable ["Bomber_Threat", 0]) > 0};
                 private _droneChance = _logic getVariable ["Drone_Threat", 0];
                 private _range = ADDON getVariable ["Drone_Range", 1200];
                 private _droneOn = _droneChance > 0 && {_range > 300};
-                if (_debug && {_droneOn} && {!_warned} && {_insSides isEqualTo []}) then {
+                if (_debug && {_droneOn} && {!_warned} && {_droneSides isEqualTo []}) then {
                     _warned = true;
-                    ["ALIVE-%1 FPV drone: no AI Commander is set to Insurgency, so no drones are launched", time] call ALiVE_fnc_dump;
+                    [["ALIVE-%1 FPV drone: no AI Commander, so no drones are launched", "ALIVE-%1 FPV drone: no AI Commander is set to Insurgency, so no drones are launched"] select !_droneAll, time] call ALiVE_fnc_dump;
                 };
-                if (_insSides isNotEqualTo [] && {_bombOn || _droneOn}) then {
+                _bombOn = _bombOn && {_insSides isNotEqualTo []};
+                _droneOn = _droneOn && {_droneSides isNotEqualTo []};
+                if (_bombOn || _droneOn) then {
                     private _players = allPlayers - entities "HeadlessClient_F";
                     {
                         private _player = _x;
                         private _veh = vehicle _player;
                         private _curator = !isNull (getAssignedCuratorLogic _player);
+                        // the AI Commander sides hostile to him: a group of one of these may launch a drone at him
+                        private _pSide = side group _player;
+                        private _hostile = _droneSides select { (_x getFriend _pSide) < 0.6 };
                         if (alive _player
-                            && {!(_player call ALiVE_fnc_iedBomberSpares)}
                             && {((getPosATL _veh) select 2) < 25}) then {
                             private _bomberFree = _bombOn && {!_curator}
+                                && {!(_player call ALiVE_fnc_iedBomberSpares)}
                                 && {time > (_player getVariable ["ALiVE_IED_dispatchNext", 0])}
                                 && {!alive (_player getVariable ["ALiVE_IED_dispatchBomber", objNull])};
                             // a drone goes after a player on foot or in a land vehicle, never Zeus (unless testing alone)
                             private _droneFree = _droneOn && {!_curator || {missionNamespace getVariable ["ALiVE_zeusSoloTest", false]}}
                                 && {!(_veh isKindOf "Air")} && {!(_veh isKindOf "Ship")}
+                                && {_hostile isNotEqualTo []}
                                 && {time > (_player getVariable ["ALiVE_IED_droneNext", 0])}
                                 && {isNull (_player getVariable ["ALiVE_IED_droneOn", objNull])}
                                 && {(count ALiVE_IED_drones) < (ADDON getVariable ["Drone_Max", 2])};
                             if (_bomberFree || _droneFree) then {
-                                // one scan for both: insurgent groups that have spotted him, 150 m out to the larger of
-                                // 800 m (bomber) and Drone Launch Range
-                                private _seen = [_veh, 150, 800 max _range, _insSides] call ALiVE_fnc_iedSpotters;
+                                // one scan for both: groups that have spotted him, 150 m out to the larger of 800 m
+                                // (bomber) and Drone Launch Range, of the insurgent sides and the sides hostile to him
+                                private _scanSides = [];
+                                if (_bomberFree) then { _scanSides append _insSides };
+                                if (_droneFree) then { _scanSides append _hostile };
+                                private _seen = [_veh, 150, [800, 800 max _range] select _droneFree, _scanSides arrayIntersect _scanSides] call ALiVE_fnc_iedSpotters;
                                 private _launched = false;
                                 if (_bomberFree) then {
-                                    private _spotters = (_seen select { (_x select 1) < 800 }) apply { _x select 0 };
+                                    private _spotters = (_seen select { (_x select 1) < 800 && {(side (_x select 0)) in _insSides} }) apply { _x select 0 };
                                     if (_spotters isNotEqualTo [] && {random 1 < 0.5}) then {
                                         private _from = getPos leader (selectRandom _spotters);
                                         private _faction = ADDON getVariable ["bomberFaction", "CIV_F"];
@@ -1411,7 +1430,7 @@ switch(_operation) do {
                                 };
                                 if (!_launched && _droneFree) then {
                                     private _groups = (_seen select {
-                                        (_x select 1) > 300 && {(_x select 1) < _range} && {time > ((_x select 0) getVariable ["ALiVE_IED_droneGroupNext", 0])}
+                                        (_x select 1) > 300 && {(_x select 1) < _range} && {(side (_x select 0)) in _hostile} && {time > ((_x select 0) getVariable ["ALiVE_IED_droneGroupNext", 0])}
                                     }) apply { _x select 0 };
                                     if (_groups isEqualTo [] || {(random 100) >= _droneChance}) exitWith {};
                                     // never at a player under a roof
@@ -1432,7 +1451,7 @@ switch(_operation) do {
                                             };
                                         } forEach _players;
                                         if (_debug) then {
-                                            ["ALIVE-%1 FPV drone: insurgents near %2 who spotted %3 from %4 m launched a drone", time, mapGridPosition leader _grp, name _player, round ((leader _grp) distance _veh)] call ALiVE_fnc_dump;
+                                            ["ALIVE-%1 FPV drone: a %5 group near %2 that spotted %3 from %4 m launched a drone", time, mapGridPosition leader _grp, name _player, round ((leader _grp) distance _veh), side _grp] call ALiVE_fnc_dump;
                                         };
                                     };
                                 };

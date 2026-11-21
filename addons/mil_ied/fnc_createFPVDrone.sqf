@@ -4,7 +4,7 @@ SCRIPT(createFPVDrone);
 /* ----------------------------------------------------------------------------
 Function: ALiVE_fnc_createFPVDrone
 Description:
-An insurgent FPV suicide drone sent at a player by the bomber and drone dispatcher (fnc_IED "bomberDispatch").
+An FPV suicide drone sent at a player by the bomber and drone dispatcher (fnc_IED "bomberDispatch").
 
 The drone is the side's vanilla quadcopter (or Drone Class) with a dummy of its warhead under it. It flies to the
 player 40 m over the ground at 15 m/s, holds about 25 m over him for 4 s (the warning: its rotors overhead), then dives. When it reaches him it is
@@ -17,7 +17,7 @@ Everything runs on the server. The drone has no profile and is never saved.
 
 Parameters:
 0: OBJECT - the player
-1: GROUP - the insurgent group that spotted him and launches it
+1: GROUP - the AI Commander's group that spotted him and launches it
 
 or a mode: ["nolink", [drone]] (every client: its UAV terminal can't connect to the drone),
 ["roofed", [unit or vehicle]] (is there a roof within 3 m over him), ["blow", [state, position ASL, fuse, on target]]
@@ -144,7 +144,7 @@ private _debug = ADDON getVariable ["debug", false];
 private _side = side _grp;
 private _lead = leader _grp;
 
-// the class: Drone Class, or the vanilla quadcopter of the insurgents' side
+// the class: Drone Class, or the vanilla quadcopter of the launching group's side
 private _fallback = switch (_side) do { case west: { "B_UAV_01_F" }; case independent: { "I_UAV_01_F" }; default { "O_UAV_01_F" } };
 private _class = ADDON getVariable ["Drone_Class", ""];
 if (_class != "" && {!isClass (configFile >> "CfgVehicles" >> _class) || {getNumber (configFile >> "CfgVehicles" >> _class >> "isUav") != 1}}) then {

@@ -112,6 +112,11 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_Drone_Threat"; displayName = "$STR_ALIVE_IED_DRONE_THREAT"; tooltip = "$STR_ALIVE_IED_DRONE_THREAT_COMMENT"; defaultValue = """0""";
                                 class Values { class None{name="None";value=0;default=1;}; class Low{name="Low";value=10;}; class Med{name="Medium";value=20;}; class High{name="High";value=30;}; class Extreme{name="Extreme";value=50;}; };
                         };
+                        class Drone_Launchers : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Launchers"; displayName = "$STR_ALIVE_IED_DRONE_LAUNCHERS"; tooltip = "$STR_ALIVE_IED_DRONE_LAUNCHERS_COMMENT"; defaultValue = """ALL""";
+                                class Values { class All{name="Every AI Commander";value="ALL";default=1;}; class Insurgent{name="Insurgent commanders only";value="INSURGENT";}; };
+                        };
                         class Drone_Max : Edit { property = "ALiVE_mil_ied_Drone_Max"; displayName = "$STR_ALIVE_IED_DRONE_MAX"; tooltip = "$STR_ALIVE_IED_DRONE_MAX_COMMENT"; defaultValue = """2"""; };
                         class Drone_Wait : Edit { property = "ALiVE_mil_ied_Drone_Wait"; displayName = "$STR_ALIVE_IED_DRONE_WAIT"; tooltip = "$STR_ALIVE_IED_DRONE_WAIT_COMMENT"; defaultValue = """10"""; };
                         class Drone_Range : Edit { property = "ALiVE_mil_ied_Drone_Range"; displayName = "$STR_ALIVE_IED_DRONE_RANGE"; tooltip = "$STR_ALIVE_IED_DRONE_RANGE_COMMENT"; defaultValue = """1200"""; };
