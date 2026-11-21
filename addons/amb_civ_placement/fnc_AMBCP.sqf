@@ -34,6 +34,8 @@ Jman
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS ALIVE_fnc_baseClass
+// seconds of placement work each frame (#1137): small, so a frame is never held long
+#define AMBCP_FRAME_BUDGET 0.007
 #define MAINCLASS ALIVE_fnc_AMBCP
 #define MTEMPLATE "ALiVE_AMBCP_%1"
 #define DEFAULT_SIZE "100"
@@ -720,28 +722,62 @@ switch(_operation) do {
 
             // #1108: with hundreds of scripts running at startup the scheduler gave the placement loops a sliver
             // of each frame, and one server took 10 min over 94 towns of parked cars and as long again for
-            // civilians. A town's buildings are now worked through unscheduled, up to 20 ms at a time, then the
-            // frame is handed back, so placement runs at full speed without freezing the server. The longest
-            // block and the lowest server fps are kept for the summary line.
+            // civilians. A town's buildings were then worked through unscheduled, 20 ms at a time, but each block
+            // still waited its turn behind every scheduled script: a saved game on Kunduz with ~136 running spent
+            // 2292 s on 460 parked cars, a few seconds of actual work (#1137). The blocks now run from a per-frame
+            // handler, a small budget each frame shared by all the modules (AMBCP_FRAME_BUDGET), so placement keeps pace with the server's
+            // frames whatever the script count, and a frame is never held for long. Every town of a stage goes
+            // through one job: a town's index comes first and puts that town's buildings in next, because a
+            // scheduled loop over the towns still waited its turn twice a town. The variables the work reads
+            // and changes go in with the job by name and are written back when it is done. Should the
+            // handler not run (no frames advancing), the waiting script works the blocks itself as before.
+            // The longest block and the lowest server fps are kept for the summary line.
             private _blockLongest = [0, ""];
             private _fpsLowest = 1000;
             private _fnc_timeBoxed = {
-                params ["_items", "_fnc", "_town"];
-                private _i = 0;
-                private _n = count _items;
-                while { _i < _n } do {
-                    isNil {
-                        private _start = diag_tickTime;
-                        while { _i < _n && {diag_tickTime - _start < 0.02} } do {
-                            (_items select _i) call _fnc;
-                            _i = _i + 1;
-                        };
-                        private _took = diag_tickTime - _start;
-                        if (_took > (_blockLongest select 0)) then { _blockLongest = [_took, format ["%1, town %2", (_logic getVariable ["startupStage", [""]]) select 0, _town]] };
+                params ["_items", "_fnc", ["_vars", []]];
+                if (_items isEqualTo []) exitWith {};
+                // the named variables, as they stand now, travel with the job
+                private _tbEnv = createHashMap;
+                { private _v = call compile _x; if (!isNil "_v") then { _tbEnv set [_x, _v] } } forEach _vars;
+                // one block: the variables made local again, items worked until the budget is spent, then written back.
+                // The next item is counted before it is worked, so an error in one can never repeat it every frame.
+                // The budget is one per frame for every Civilian Placement module together (ALiVE_ambcp_frameUse: frame,
+                // seconds spent in it), so two modules never take twice the frame. The fallback block works one item at least.
+                private _src = "params ['_tbJob', ['_tbForce', false]]; _tbJob params ['_tbItems', '_tbFnc', '', '_tbEnv']; ";
+                { _src = _src + format ["private %1 = _tbEnv get '%1'; ", _x] } forEach _vars;
+                _src = _src + format ["private _tbI = _tbJob select 2; private _tbStart = diag_tickTime;
+                    private _tbUse = missionNamespace getVariable ['ALiVE_ambcp_frameUse', [-1, 0]];
+                    private _tbSpent = [0, _tbUse select 1] select ((_tbUse select 0) == diag_frameNo);
+                    private _tbLeft = %1 - _tbSpent; if (_tbForce) then { _tbLeft = _tbLeft max 0.002 };
+                    while { _tbI < count _tbItems && {diag_tickTime - _tbStart < _tbLeft} } do { private _tbIt = _tbItems select _tbI; _tbI = _tbI + 1; _tbJob set [2, _tbI]; _tbIt call _tbFnc; }; ", AMBCP_FRAME_BUDGET];
+                { _src = _src + format ["if (!isNil '%1') then { _tbEnv set ['%1', %1] }; ", _x] } forEach _vars;
+                _src = _src + "private _tbTook = diag_tickTime - _tbStart; ALiVE_ambcp_frameUse = [diag_frameNo, _tbSpent + _tbTook]; if (_tbTook > (_tbJob select 5)) then { _tbJob set [5, _tbTook]; _tbJob set [8, (_tbJob select 9) getVariable ['startupStage', ['', 0]]] };
+                    if (time > 1) then { _tbJob set [6, (_tbJob select 6) min diag_fps] }; if (_tbI >= count _tbItems) then { _tbJob set [4, true] };";
+                private _block = compile _src;
+                // [items, fnc, next item, variables, done, longest block, lowest fps, block, stage of the longest block, logic]
+                private _job = [_items, _fnc, 0, _tbEnv, false, 0, 1000, _block, ["", 0], _logic];
+                private _pfh = [{
+                    params ["_job", "_handle"];
+                    if (_job select 4) exitWith { [_handle] call CBA_fnc_removePerFrameHandler };
+                    [_job] call (_job select 7);
+                }, 0, _job] call CBA_fnc_addPerFrameHandler;
+                private _seen = -1;
+                private _seenAt = diag_tickTime;
+                waitUntil {
+                    if ((_job select 2) != _seen) then { _seen = _job select 2; _seenAt = diag_tickTime };
+                    // the handler has not moved for a second: work a block here, as the scheduled loop did
+                    if (!(_job select 4) && {diag_tickTime - _seenAt > 1}) then {
+                        isNil { [_job, true] call _block };
+                        _seenAt = diag_tickTime;
                     };
-                    // the loading frames read 1-2 fps on any start, so they are left out
-                    if (time > 1) then { _fpsLowest = _fpsLowest min diag_fps };
+                    _job select 4
                 };
+                [_pfh] call CBA_fnc_removePerFrameHandler;
+                // the town's variables as the work left them
+                { if (_x in _tbEnv) then { call compile format ["%1 = _tbEnv get '%1'", _x] } } forEach _vars;
+                if ((_job select 5) > (_blockLongest select 0)) then { _blockLongest = [_job select 5, format ["%1, town %2", (_job select 8) select 0, (_job select 8) select 1]] };
+                _fpsLowest = _fpsLowest min (_job select 6);
             };
 
             // Place ambient vehicles
@@ -777,36 +813,51 @@ switch(_operation) do {
 
                 if(count _landClasses > 0) then {
 
-                    {
-                        _logic setVariable ["startupStage", ["placing parked vehicles", _forEachIndex + 1, count _clusters]];
-                        private _supportCount = 0;
-                        private _supportMax = 0;
-
-                        private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
-                        private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
-
-                        //["NODES: %1",_nodes] call ALIVE_fnc_dump;
-
-                        private _buildings = [_forEachIndex, _nodes] call _ambResolveBuildings;
-
-                        //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
-
-                        private _countBuildings = count _buildings;
-                        private _parkingChance = 0.25 * _ambientVehicleAmount;
-                        _supportMax = 3 * _parkingChance;
-
-                        private _usedPositions = [];
+                    private _parkingChance = 0.25 * _ambientVehicleAmount;
+                    private _supportMax = 3 * _parkingChance;
+                    private _supportCount = 0;
+                    private _clusterID = "";
+                    private _usedPositions = [];
+                    private _townBuildings = [];
 
                         private _fnc_parkOne = {
-                            if(random 1 < _parkingChance) then {
-
-                                private _building = _this;
+                            // a town's index: its buildings go in next. A town not sorted into buildings yet puts
+                            // in its nodes instead, each checked as it comes up, which fills the same list the later
+                            // stages read; sorting a big town in one go held a frame for ~100 ms.
+                            if (_this isEqualType 0) exitWith {
+                                _logic setVariable ["startupStage", ["placing parked vehicles", _this + 1, count _clusters]];
+                                private _cluster = _clusters select _this;
+                                _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
+                                _supportCount = 0;
+                                _usedPositions = [];
+                                private _cached = _ambBuildingsByCluster select _this;
+                                if (isNil "_cached") then {
+                                    _townBuildings = [];
+                                    _ambBuildingsByCluster set [_this, _townBuildings];
+                                    _tbItems insert [_tbI, ([_cluster, "nodes"] call ALIVE_fnc_hashGet) apply { [_x] }];
+                                } else {
+                                    _tbItems insert [_tbI, _cached];
+                                };
+                            };
+                            private _building = _this;
+                            // a node still to be checked
+                            if (_building isEqualType []) then {
+                                _building = _building select 0;
+                                if ([[_building], _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes isEqualTo []) then {
+                                    _building = objNull;
+                                } else {
+                                    _townBuildings pushBack _building;
+                                };
+                            };
+                            if(!isNull _building && {random 1 < _parkingChance}) then {
 
                                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
                                 //["LAND CLASSES: %1",_landClasses] call ALIVE_fnc_dump;
 
                                 // A chance for each parked vehicle, at most one per town. The count starts
                                 // at 0, under any cap, so the first vehicle of every town was a support one.
+                                // declared here: the job runs outside this function, so the outer private does not reach it
+                                private _vehicleClass = "";
                                 private _supportPlacement = false;
                                 if(_supportCount < 1 && {random 1 < _supportMax}) then {
                                     _supportPlacement = true;
@@ -834,9 +885,11 @@ switch(_operation) do {
                                 };
                             };
                         };
-                        [_buildings, _fnc_parkOne, _forEachIndex + 1] call _fnc_timeBoxed;
-
-                    } forEach _clusters;
+                    private _towns = [];
+                    { _towns pushBack _forEachIndex } forEach _clusters;
+                    [_towns, _fnc_parkOne, ["_parkingChance", "_supportCount", "_supportMax", "_supportClasses", "_landClasses",
+                        "_side", "_faction", "_clusterID", "_initialdamage", "_countLandUnits", "_usedPositions",
+                        "_logic", "_clusters", "_ambBuildingsByCluster", "_civilianPopulationBuildingTypes", "_townBuildings"]] call _fnc_timeBoxed;
                 };
             };
 
@@ -1131,18 +1184,24 @@ switch(_operation) do {
                     ["AMBCP %1 - Civilian caps: module %2, per town %3; %4 buildings chosen before the caps", _factions, _maxCivilians, _maxCiviliansPerTown, _countChosen] call ALiVE_fnc_dump;
                 };
 
-                {
-                    _logic setVariable ["startupStage", ["placing civilians", _forEachIndex + 1, count _clusters]];
-                    private _clusterAgents = [];
-                    private _clusterID = [_x, "clusterID"] call ALIVE_fnc_hashGet;
-                    private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
-                    private _ambientCivilianRoles = [ALIVE_civilianPopulationSystem, "ambientCivilianRoles",[]] call ALiVE_fnc_HashGet;
-
-                    //["NODES: %1",_nodes] call ALIVE_fnc_dump;
-
-                    private _buildings = _ambChosen select _forEachIndex;
+                private _ambientCivilianRoles = [ALIVE_civilianPopulationSystem, "ambientCivilianRoles",[]] call ALiVE_fnc_HashGet;
+                private _clusterAgents = [];
+                private _clusterID = "";
 
                     private _fnc_civOne = {
+                        // a town's index: the town before is registered, then its chosen buildings go in next.
+                        // -1 ends the list and registers the last town. A scheduled call per town waited its turn.
+                        if (_this isEqualType 0) exitWith {
+                            // Publish completed agents per cluster; IDs were allocated during creation.
+                            if (_clusterAgents isNotEqualTo []) then {
+                                [ALIVE_agentHandler, "registerAgents", _clusterAgents] call ALIVE_fnc_agentHandler;
+                            };
+                            _clusterAgents = [];
+                            if (_this < 0) exitWith {};
+                            _logic setVariable ["startupStage", ["placing civilians", _this + 1, count _clusters]];
+                            _clusterID = [_clusters select _this, "clusterID"] call ALIVE_fnc_hashGet;
+                            _tbItems insert [_tbI, _ambChosen select _this];
+                        };
 
                         private _building = _this;
 
@@ -1235,14 +1294,11 @@ switch(_operation) do {
                         _countCivilianUnits = _countCivilianUnits + 1;
 
                     };
-                    [_buildings, _fnc_civOne, _forEachIndex + 1] call _fnc_timeBoxed;
-
-                    // Publish completed agents per cluster; IDs were allocated during creation.
-                    if (count _clusterAgents > 0) then {
-                        [ALIVE_agentHandler, "registerAgents", _clusterAgents] call ALIVE_fnc_agentHandler;
-                    };
-
-                } forEach _clusters;
+                private _towns = [];
+                { _towns pushBack _forEachIndex } forEach _clusters;
+                _towns pushBack -1;
+                [_towns, _fnc_civOne, ["_civClasses", "_side", "_factions", "_faction", "_clusterID",
+                    "_ambientCivilianRoles", "_clusterAgents", "_countCivilianUnits", "_logic", "_clusters", "_ambChosen"]] call _fnc_timeBoxed;
             };
 
             ["AMBCP %1 - Ambient land vehicles placed: %2",_ambientVehicleFactions,_countLandUnits] call ALiVE_fnc_dump;
