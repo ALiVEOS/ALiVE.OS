@@ -439,7 +439,8 @@ switch (_operation) do {
                     if (_rangeProfileIndex < count _rangeProfiles) then {
                         private _nearProfile = _rangeProfiles select _rangeProfileIndex;
                         _rangeProfileIndex = _rangeProfileIndex + 1;
-                        private _rangeProfileID = (_nearProfile select 2) select 4;
+                        // a profile removed since the list was built has its data cut short: no ID, so it is skipped
+                        private _rangeProfileID = (_nearProfile param [2, []]) param [4, ""];
                         private _rangeSeenState = _rangeSeenProfileIDs getOrDefault [_rangeProfileID, 0];
 
                         if (_rangeSeenState == 0) then {
