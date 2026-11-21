@@ -1439,8 +1439,27 @@ switch (_op) do {
         private _vSide = [(faction _v) call ALiVE_fnc_factionSide] call ALIVE_fnc_sideObjectToNumber;
         if !(_vSide in [0, 1, 2, 3]) then { _vSide = _cfgSide };
         private _vSideText = [_vSide] call ALIVE_fnc_sideNumberToText;
+        // but the side that last crewed it counts first: compiled groups of one side often drive another's
+        // vehicles, and a GUER group's BLUFOR truck read as the player's own (AshTray, 12 Nov). The crew's side
+        // is its profile's, while the vehicle is still profiled, else that of a dead crewman still inside.
+        private _crewSide = "";
+        private _pid = _v getVariable ["profileID", ""];
+        if (_pid isEqualType "" && {_pid != ""} && {!isNil "ALIVE_profileHandler"}) then {
+            private _p = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
+            if (!isNil "_p") then {
+                private _ps = [_p, "side"] call ALIVE_fnc_hashGet;
+                if (!isNil "_ps" && {_ps isEqualType ""}) then { _crewSide = _ps };
+            };
+        };
+        if !(_crewSide in ["WEST", "EAST", "GUER"]) then {
+            _crewSide = "";
+            private _dead = (crew _v) select { !alive _x && {_x isKindOf "CAManBase"} };
+            if !(_dead isEqualTo []) then { _crewSide = [getNumber (configOf (_dead select 0) >> "side")] call ALIVE_fnc_sideNumberToText };
+            if !(_crewSide in ["WEST", "EAST", "GUER"]) then { _crewSide = "" };
+        };
+        if (_crewSide != "") then { _vSideText = _crewSide };
         private _me = ["unitSide", [_caller]] call ALIVE_fnc_hub;
-        private _own = _vSideText == _me || {faction _v == faction _caller};
+        private _own = _vSideText == _me || {_crewSide == "" && {faction _v == faction _caller}};
         private _enemy = !_own && {_vSideText in ["WEST", "EAST", "GUER"]} && {[[_me] call ALIVE_fnc_sideTextToObject, [_vSideText] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsEnemy};
         if (_mode == "ENEMY" && {!_enemy}) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_NOTENEMY"] call _tell };
         private _faction = faction _caller;
@@ -1463,7 +1482,7 @@ switch (_op) do {
         if (_whole > 0) then { [ALIVE_globalForcePool, _faction, _pool + _whole] call ALIVE_fnc_hashSet };
         ["STR_ALIVE_HUB_TRADED", [_worth, _whole, _pool + _whole, ALiVE_hub_tradeCarry get _faction]] call _tell;
         ["ALiVE Logistics Hub - %1 traded in %2 (%3, damage %4) at %5: worth %6, %7 added to %8's force pool (now %9), %10 kept",
-            name _caller, _class, ["other", "own side"] select _own, _dmg, _hub call BIS_fnc_netId, _worth, _whole, _faction, _pool + _whole, ALiVE_hub_tradeCarry get _faction] call ALiVE_fnc_dump;
+            name _caller, _class, format ["%1%2", ["other", "own side"] select _own, ["", format [", last crewed by %1", _crewSide]] select (_crewSide != "")], _dmg, _hub call BIS_fnc_netId, _worth, _whole, _faction, _pool + _whole, ALiVE_hub_tradeCarry get _faction] call ALiVE_fnc_dump;
         _result = true;
     };
 
