@@ -2423,7 +2423,7 @@ class CfgVehicles {
             {
                     property =  MVAR(ALiVE_ModConflicts);
                     displayName = "Other AI mods";
-                    tooltip = "What ALiVE does when a mod known to change its AI is loaded (LAMBS Danger, VCOM AI, ASR AI3, BHL AI).\nGuard: keep ALiVE's own groups out of the mod where the mod allows it, and tell admins.\nWarn: only tell admins and players.\nOff: do nothing.";
+                    tooltip = "What ALiVE does when a mod known to change its AI is loaded (LAMBS Danger, VCOM AI, ASR AI3, BHL AI).\nGuard: keep ALiVE's own groups out of the mod where the mod allows it, and tell admins.\nIntegrate: as Guard, except LAMBS Danger fights ALiVE's ground groups (its tactics, tasks and radio) while ALiVE's commanders keep the orders, reserves, artillery and intelligence. ALiVE's Soldier Behaviour is not put on groups LAMBS runs. Headless clients without LAMBS Danger are given neither those groups nor garrison groups: both stay on the server. Needs LAMBS Danger on the server; without it this is Guard.\nWarn: only tell admins and players.\nOff: do nothing.";
                     defaultValue = """GUARD""";
                     class Values
                     {
@@ -2431,6 +2431,11 @@ class CfgVehicles {
                             {
                                     name = "Guard";
                                     value = "GUARD";
+                            };
+                            class integrate
+                            {
+                                    name = "$STR_ALIVE_MODCONFLICTS_INTEGRATE";
+                                    value = "INTEGRATE";
                             };
                             class warn
                             {
@@ -2441,6 +2446,48 @@ class CfgVehicles {
                             {
                                     name = "Off";
                                     value = "OFF";
+                            };
+                    };
+            };
+            class ALiVE_LambsArtilleryPool: Combo
+            {
+                    property =  MVAR(ALiVE_LambsArtilleryPool);
+                    displayName = "$STR_ALIVE_LAMBS_ARTILLERY_POOL";
+                    tooltip = "$STR_ALIVE_LAMBS_ARTILLERY_POOL_COMMENT";
+                    defaultValue = """false""";
+                    ALiVE_showWhen[] = {{"ALiVE_ModConflicts","is","INTEGRATE"}};
+                    class Values
+                    {
+                            class No
+                            {
+                                    name = "No";
+                                    value = "false";
+                            };
+                            class Yes
+                            {
+                                    name = "Yes";
+                                    value = "true";
+                            };
+                    };
+            };
+            class ALiVE_LambsDebug: Combo
+            {
+                    property =  MVAR(ALiVE_LambsDebug);
+                    displayName = "$STR_ALIVE_LAMBS_DEBUG";
+                    tooltip = "$STR_ALIVE_LAMBS_DEBUG_COMMENT";
+                    defaultValue = """false""";
+                    ALiVE_showWhen[] = {{"ALiVE_ModConflicts","is","INTEGRATE"}};
+                    class Values
+                    {
+                            class No
+                            {
+                                    name = "No";
+                                    value = "false";
+                            };
+                            class Yes
+                            {
+                                    name = "Yes";
+                                    value = "true";
                             };
                     };
             };

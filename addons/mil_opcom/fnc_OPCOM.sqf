@@ -46,6 +46,7 @@ See Also:
 Author:
 Highhead
 Jman
+Goldwep
 
 Peer reviewed:
 nil
@@ -2260,6 +2261,8 @@ switch (_operation) do {
 
                     _profileWaypoint = [_pos, 50, "MOVE", "FULL", 50, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                     [_profile,"insertWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
+                    // Integrate: LAMBS hunts the target down once the group is close
+                    ["order", [_profileID, "attack", _pos, _target, -1]] call ALiVE_fnc_lambs;
                     _section pushBack _profileID;
                 } forEach _candidates;
 
@@ -3113,6 +3116,8 @@ switch (_operation) do {
                     };
                 };
                 [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
+                // Integrate: the kind of order, so LAMBS can fight it the right way once the group is there
+                ["order", [_profileID, _orders, _pos, _objectiveID, -1]] call ALiVE_fnc_lambs;
                 _pendingOrders pushBack [_pos,_profileID,_objectiveID,_issuedAt,_orderID];
                 _profileWaypoints pushBack _profileWaypoint;
             };
@@ -4041,6 +4046,8 @@ switch (_operation) do {
                     [_hold,"statements",["false",""]] call ALiVE_fnc_hashSet;
                     [_profile,"addWaypoint",_hold] call ALIVE_fnc_profileEntity;
                 };
+                // Integrate: a search and destroy is hunted with LAMBS; an ambush keeps off the radio
+                ["order", [_x, _type, _pos, _manualObjectiveID, time + _seconds]] call ALiVE_fnc_lambs;
             };
         } forEach _section;
 

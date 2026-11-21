@@ -25,6 +25,7 @@ Nothing
 
 Author:
 Jman
+Goldwep
 ---------------------------------------------------------------------------- */
 
 if (!isServer) exitWith {};
@@ -77,8 +78,14 @@ _grp setVariable ["ALIVE_profileIgnore", true, true];
 { _grp createUnit [_x, _spot, [], 5, "FORM"] } forEach _classes;
 private _units = units _grp;
 { _x setVariable ["ALIVE_profileIgnore", true, true] } forEach _units;
-// kept out of other AI mods under Guard, like the rest of ALiVE's groups
-["guard", [_grp]] call ALiVE_fnc_modConflicts;
+// kept out of other AI mods under Guard, like the rest of ALiVE's groups; under Integrate, LAMBS Danger
+// stalks the survivors with it instead, once it is in close
+if (["creep", [_grp, _pos]] call ALiVE_fnc_lambs) then {
+    // the other AI mods are still kept off it
+    ["guard", [_grp, "PROFILE"]] call ALiVE_fnc_modConflicts;
+} else {
+    ["guard", [_grp]] call ALiVE_fnc_modConflicts;
+};
 // in fast to the blast, then search and destroy round it; told nothing about the players, so it
 // closes in rather than starting a long-range firefight from where it appears
 _grp setCombatMode "RED";
@@ -100,6 +107,8 @@ format ["%1 men of %2 (%3) %4 m from the blast at %5", count _units, [_best, "fa
     if (isNull _grp || {({ alive _x } count units _grp) == 0}) exitWith {};
     // back the way it came, away from the blast
     private _leader = leader _grp;
+    // Integrate: the LAMBS stalk ends first
+    ["stop", [_grp, "pulling back"]] call ALiVE_fnc_lambs;
     while { (count waypoints _grp) > 0 } do { deleteWaypoint ((waypoints _grp) select 0) };
     _grp setBehaviour "AWARE";
     _grp addWaypoint [_pos getPos [700, _pos getDir _leader], 50];
