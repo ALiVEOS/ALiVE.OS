@@ -25,7 +25,7 @@ Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
-private ["_result","_error","_module","_data","_async","_missionKey","_saveData", "_indexRev","_indexDoc","_index","_newIndexDoc","_createIndex","_indexArray","_tempIndexDoc","_indexCount","_indexRevs"];
+private ["_logic","_args","_result","_error","_module","_data","_async","_missionKey","_saveData", "_indexRev","_indexDoc","_index","_newIndexDoc","_createIndex","_indexArray","_tempIndexDoc","_indexCount","_indexRevs"];
 
 _logic = _this select 0;
 _args = _this select 1;

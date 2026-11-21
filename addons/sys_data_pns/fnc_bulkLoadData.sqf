@@ -25,7 +25,7 @@ Jman
 Peer Reviewed:
 
 ---------------------------------------------------------------------------- */
-private ["_response","_result","_error","_module","_data","_missionKey","_indexDoc","_index","_flag"];
+private ["_logic","_args","_response","_result","_error","_module","_data","_missionKey","_indexDoc","_index","_flag"];
 
 _logic = _this select 0;
 _args = _this select 1;
