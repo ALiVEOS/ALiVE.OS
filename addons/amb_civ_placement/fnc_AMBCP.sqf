@@ -36,6 +36,8 @@ Jman
 #define SUPERCLASS ALIVE_fnc_baseClass
 // seconds of placement work each frame (#1137): small, so a frame is never held long
 #define AMBCP_FRAME_BUDGET 0.007
+// seconds the waiting script works on each of its own turns, as before #1137, so a quiet server is no slower
+#define AMBCP_TURN_BUDGET 0.02
 #define MAINCLASS ALIVE_fnc_AMBCP
 #define MTEMPLATE "ALiVE_AMBCP_%1"
 #define DEFAULT_SIZE "100"
@@ -729,8 +731,10 @@ switch(_operation) do {
             // frames whatever the script count, and a frame is never held for long. Every town of a stage goes
             // through one job: a town's index comes first and puts that town's buildings in next, because a
             // scheduled loop over the towns still waited its turn twice a town. The variables the work reads
-            // and changes go in with the job by name and are written back when it is done. Should the
-            // handler not run (no frames advancing), the waiting script works the blocks itself as before.
+            // and changes go in with the job by name and are written back when it is done. The
+            // waiting script also works a block of up to AMBCP_TURN_BUDGET whenever it gets a turn, as the old
+            // loop did, so on a quiet server placement is as quick as before and on a busy one the handler
+            // carries it; the two together never pass that budget in one frame.
             // The longest block and the lowest server fps are kept for the summary line.
             private _blockLongest = [0, ""];
             private _fpsLowest = 1000;
@@ -743,14 +747,14 @@ switch(_operation) do {
                 // one block: the variables made local again, items worked until the budget is spent, then written back.
                 // The next item is counted before it is worked, so an error in one can never repeat it every frame.
                 // The budget is one per frame for every Civilian Placement module together (ALiVE_ambcp_frameUse: frame,
-                // seconds spent in it), so two modules never take twice the frame. The fallback block works one item at least.
-                private _src = "params ['_tbJob', ['_tbForce', false]]; _tbJob params ['_tbItems', '_tbFnc', '', '_tbEnv']; ";
+                // seconds spent in it), so two modules never take twice the frame. The waiting script's block is given a larger budget.
+                private _src = format ["params ['_tbJob', ['_tbBudget', %1]]; _tbJob params ['_tbItems', '_tbFnc', '', '_tbEnv']; ", AMBCP_FRAME_BUDGET];
                 { _src = _src + format ["private %1 = _tbEnv get '%1'; ", _x] } forEach _vars;
                 _src = _src + format ["private _tbI = _tbJob select 2; private _tbStart = diag_tickTime;
                     private _tbUse = missionNamespace getVariable ['ALiVE_ambcp_frameUse', [-1, 0]];
                     private _tbSpent = [0, _tbUse select 1] select ((_tbUse select 0) == diag_frameNo);
-                    private _tbLeft = %1 - _tbSpent; if (_tbForce) then { _tbLeft = _tbLeft max 0.002 };
-                    while { _tbI < count _tbItems && {diag_tickTime - _tbStart < _tbLeft} } do { private _tbIt = _tbItems select _tbI; _tbI = _tbI + 1; _tbJob set [2, _tbI]; _tbIt call _tbFnc; }; ", AMBCP_FRAME_BUDGET];
+                    private _tbLeft = _tbBudget - _tbSpent;
+                    while { _tbI < count _tbItems && {diag_tickTime - _tbStart < _tbLeft} } do { private _tbIt = _tbItems select _tbI; _tbI = _tbI + 1; _tbJob set [2, _tbI]; _tbIt call _tbFnc; }; "];
                 { _src = _src + format ["if (!isNil '%1') then { _tbEnv set ['%1', %1] }; ", _x] } forEach _vars;
                 _src = _src + "private _tbTook = diag_tickTime - _tbStart; ALiVE_ambcp_frameUse = [diag_frameNo, _tbSpent + _tbTook]; if (_tbTook > (_tbJob select 5)) then { _tbJob set [5, _tbTook]; _tbJob set [8, (_tbJob select 9) getVariable ['startupStage', ['', 0]]] };
                     if (time > 1) then { _tbJob set [6, (_tbJob select 6) min diag_fps] }; if (_tbI >= count _tbItems) then { _tbJob set [4, true] };";
@@ -762,15 +766,10 @@ switch(_operation) do {
                     if (_job select 4) exitWith { [_handle] call CBA_fnc_removePerFrameHandler };
                     [_job] call (_job select 7);
                 }, 0, _job] call CBA_fnc_addPerFrameHandler;
-                private _seen = -1;
-                private _seenAt = diag_tickTime;
+                // each turn this script gets, a block here too, as the scheduled loop did (and the whole job, should
+                // the handler never run)
                 waitUntil {
-                    if ((_job select 2) != _seen) then { _seen = _job select 2; _seenAt = diag_tickTime };
-                    // the handler has not moved for a second: work a block here, as the scheduled loop did
-                    if (!(_job select 4) && {diag_tickTime - _seenAt > 1}) then {
-                        isNil { [_job, true] call _block };
-                        _seenAt = diag_tickTime;
-                    };
+                    if !(_job select 4) then { isNil { [_job, AMBCP_TURN_BUDGET] call _block } };
                     _job select 4
                 };
                 [_pfh] call CBA_fnc_removePerFrameHandler;
