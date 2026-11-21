@@ -276,6 +276,20 @@ NEO_fnc_csClearStand = {
     // the way out leads to the nearest taxi line, or the runway at a field with none
     private _wayLines = if (_lines isEqualTo []) then { _runways } else { _lines };
     private _needWay = true;
+    // anything standing within reach of a spot, by its own size: the type list missed SOG's sandbag walls and other large
+    // pieces, and a 10 m trench wall whose centre was 11 m off a moved OV-10 had its edge 6 m from it (Khe Sanh, 21 Nov).
+    // The size is the geometry's, so flat tarmac pieces, cables and litter on the ground, and markers with no geometry, pass.
+    private _fnc_blocked = {
+        params ["_p", "_r"];
+        private _objs = (nearestObjects [_p, [], _r + 15, true]) + (nearestTerrainObjects [_p, [], _r + 15, false, true]);
+        (_objs findIf {
+            !(_x isEqualTo _veh) && {!(_x isKindOf "Man")} && {
+                (boundingBoxReal [_x, "Geometry"]) params ["_lo", "_hi"];
+                private _wide = ((_hi select 0) - (_lo select 0)) max ((_hi select 1) - (_lo select 1));
+                ((_hi select 2) - (_lo select 2)) >= 0.5 && {_wide >= 1} && {(_x distance2D _p) < (_r + _wide / 2 + 2)}
+            }
+        }) >= 0
+    };
     private _fnc_clear = {
         params ["_p"];
         if (surfaceIsWater _p) exitWith { false };
@@ -290,6 +304,7 @@ NEO_fnc_csClearStand = {
         if !((nearestTerrainObjects [_p, _blockers, _half, false, true]) isEqualTo []) exitWith { false };
         private _wayOk = true;
         if !((nearestObjects [_p, ["House", "Wall"], _half]) isEqualTo []) exitWith { false };
+        if ([_p, _half] call _fnc_blocked) exitWith { false };
         // a clear way out: nothing built or grown across the strip a wingspan wide from the nose to the taxi line
         if (_needWay) then {
             private _q = [_wayLines, _p] call NEO_fnc_csNearestOnLines;
@@ -300,7 +315,8 @@ NEO_fnc_csClearStand = {
             while { _d < _len && {_wayOk} } do {
                 private _s = _p getPos [_d, _h];
                 if (!((nearestTerrainObjects [_s, _blockers, _half, false, true]) isEqualTo [])
-                    || {!((nearestObjects [_s, ["House", "Wall"], _half]) isEqualTo [])}) then { _wayOk = false };
+                    || {!((nearestObjects [_s, ["House", "Wall"], _half]) isEqualTo [])}
+                    || {[_s, _half] call _fnc_blocked}) then { _wayOk = false };
                 _d = _d + 8;
             };
         };
@@ -332,7 +348,7 @@ NEO_fnc_csClearStand = {
     private _hdg = if (_heli || {_q isEqualTo []}) then { getDir _veh } else { _spot getDir _q };
     _veh setVariable ["NEO_csStandDir", _hdg];
     ["COMBAT SUPPORT - %1 (%2): its stand at %3 was %4, where it would be in the way of other aircraft, so its stand is now %5 m away at %6 (%7), facing %8 towards the taxi route%9",
-        _callsign, typeOf _veh, mapGridPosition _stand, _why, round (_spot distance2D _stand), mapGridPosition _spot, [round (_spot select 0), round (_spot select 1)],
+        _callsign, typeOf _veh, format ["%1 (%2)", mapGridPosition _stand, [round (_stand select 0), round (_stand select 1)]], _why, round (_spot distance2D _stand), mapGridPosition _spot, [round (_spot select 0), round (_spot select 1)],
         round _hdg, if (_needWay) then { "" } else { " (no spot nearby had a clear way to it)" }] call ALiVE_fnc_dump;
     _spot call _fnc_record
 };
