@@ -71,6 +71,21 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ied\fnc_iedUnitQualifies.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class iedJammerNear {
+                                description = "Is a vehicle with a working jammer near (trigger man and FPV drone)";
+                                file = "\x\alive\addons\mil_ied\fnc_iedJammerNear.sqf";
+                                ALIVE_RECOMPILE;
+                        };
+                        class iedSpotters {
+                                description = "The insurgent groups that have spotted a player (bomber and FPV drone dispatch)";
+                                file = "\x\alive\addons\mil_ied\fnc_iedSpotters.sqf";
+                                ALIVE_RECOMPILE;
+                        };
+                        class createFPVDrone {
+                                description = "An insurgent FPV suicide drone sent at a player";
+                                file = "\x\alive\addons\mil_ied\fnc_createFPVDrone.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class createVBIED {
                                 description = "Create a VB-IED";
                                 file = "\x\alive\addons\mil_ied\fnc_createVBIED.sqf";

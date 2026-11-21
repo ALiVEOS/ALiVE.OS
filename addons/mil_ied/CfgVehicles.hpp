@@ -105,6 +105,32 @@ class CfgVehicles {
                         // how long before another is sent, and how far that wait reaches (bomberDispatch)
                         class Bomber_Dispatch_Wait : Edit { property = "ALiVE_mil_ied_Bomber_Dispatch_Wait"; displayName = "$STR_ALIVE_IED_BOMBER_DISPATCH_WAIT"; tooltip = "$STR_ALIVE_IED_BOMBER_DISPATCH_WAIT_COMMENT"; defaultValue = """10"""; };
                         class Bomber_Dispatch_Share : Edit { property = "ALiVE_mil_ied_Bomber_Dispatch_Share"; displayName = "$STR_ALIVE_IED_BOMBER_DISPATCH_SHARE"; tooltip = "$STR_ALIVE_IED_BOMBER_DISPATCH_SHARE_COMMENT"; defaultValue = """150"""; };
+                        // ---- FPV Drones (bomberDispatch, createFPVDrone) ---------------------
+                        class HDR_DRONE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_DRONE"; displayName = "FPV DRONES"; };
+                        class Drone_Threat : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Threat"; displayName = "$STR_ALIVE_IED_DRONE_THREAT"; tooltip = "$STR_ALIVE_IED_DRONE_THREAT_COMMENT"; defaultValue = """0""";
+                                class Values { class None{name="None";value=0;default=1;}; class Low{name="Low";value=10;}; class Med{name="Medium";value=20;}; class High{name="High";value=30;}; class Extreme{name="Extreme";value=50;}; };
+                        };
+                        class Drone_Max : Edit { property = "ALiVE_mil_ied_Drone_Max"; displayName = "$STR_ALIVE_IED_DRONE_MAX"; tooltip = "$STR_ALIVE_IED_DRONE_MAX_COMMENT"; defaultValue = """2"""; };
+                        class Drone_Wait : Edit { property = "ALiVE_mil_ied_Drone_Wait"; displayName = "$STR_ALIVE_IED_DRONE_WAIT"; tooltip = "$STR_ALIVE_IED_DRONE_WAIT_COMMENT"; defaultValue = """10"""; };
+                        class Drone_Range : Edit { property = "ALiVE_mil_ied_Drone_Range"; displayName = "$STR_ALIVE_IED_DRONE_RANGE"; tooltip = "$STR_ALIVE_IED_DRONE_RANGE_COMMENT"; defaultValue = """1200"""; };
+                        class Drone_Charge : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Charge"; displayName = "$STR_ALIVE_IED_DRONE_CHARGE"; tooltip = "$STR_ALIVE_IED_DRONE_CHARGE_COMMENT"; defaultValue = """MEDIUM""";
+                                class Values { class Small{name="Small";value="SMALL";}; class Medium{name="Medium";value="MEDIUM";default=1;}; };
+                        };
+                        class Drone_Jammed : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Jammed"; displayName = "$STR_ALIVE_IED_DRONE_JAMMED"; tooltip = "$STR_ALIVE_IED_DRONE_JAMMED_COMMENT"; defaultValue = """true""";
+                                class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; };
+                        };
+                        class Drone_ShotDown : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_ShotDown"; displayName = "$STR_ALIVE_IED_DRONE_SHOTDOWN"; tooltip = "$STR_ALIVE_IED_DRONE_SHOTDOWN_COMMENT"; defaultValue = """false""";
+                                class Values { class No{name="No";value="false";default=1;}; class Yes{name="Yes";value="true";}; };
+                        };
+                        class Drone_Class : Edit { property = "ALiVE_mil_ied_Drone_Class"; displayName = "$STR_ALIVE_IED_DRONE_CLASS"; tooltip = "$STR_ALIVE_IED_DRONE_CLASS_COMMENT"; defaultValue = """"""; };
                         // ---- Vehicle-Borne IED ----------------------------------------------
                         class HDR_VBIED : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_VBIED"; displayName = "VEHICLE-BORNE IED"; };
                         class VB_IED_Threat : Combo

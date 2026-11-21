@@ -309,6 +309,57 @@
     <Portuguese>Quando um homem-bomba é enviado contra um jogador, todos os jogadores a esta distância em metros dele recebem a mesma espera, assim um grupo atrai um só e não um para cada. 0 para só o jogador visado. Padrão 150.</Portuguese>
     <Russian>Когда к игроку отправлен смертник, все игроки в этом радиусе (в метрах) от него получают ту же паузу, так что группа привлекает одного смертника, а не по одному на каждого. 0 — только для самого игрока. По умолчанию 150.</Russian>
 </Key>
+<Key ID="STR_ALIVE_IED_DRONE_THREAT">
+    <English>FPV Drone Threat:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_THREAT_COMMENT">
+    <English>Chance, checked every 30 seconds, that insurgents who have spotted a player launch an explosive quadcopter at them. It hovers over them for 4 seconds before it dives. None switches FPV drones off. Needs an AI Commander set to Insurgency.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_MAX">
+    <English>Most Drones At Once:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_MAX_COMMENT">
+    <English>The most FPV drones in the air at one time across the mission. Blank or below zero keeps the default. Default 2.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_WAIT">
+    <English>Drone Wait (minutes):</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_WAIT_COMMENT">
+    <English>Minutes before the same player, or anyone within Bomber Wait Shared Within of them, can be sent another drone; the group that launched it waits as long. Default 10.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_RANGE">
+    <English>Drone Launch Range (m):</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_RANGE_COMMENT">
+    <English>Insurgents further than this from a player do not launch a drone. They never launch from closer than 300 m, so 300 or less means no drones. Default 1200.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_CHARGE">
+    <English>Drone Warhead:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_CHARGE_COMMENT">
+    <English>Small: a grenade, enough for a man but not a vehicle. Medium: a rocket warhead, enough for a man or a light vehicle.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_JAMMED">
+    <English>Jammers Stop Drones:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_JAMMED_COMMENT">
+    <English>A vehicle with a working jammer within Jammer Radius (IED THREAT section) makes the drone lose its signal and drop without exploding.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_SHOTDOWN">
+    <English>Explodes When Shot Down:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_SHOTDOWN_COMMENT">
+    <English>Yes: a drone shot down during its final dive explodes where it falls. Shot down earlier, it never explodes.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_CLASS">
+    <English>Drone Class:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_CLASS_COMMENT">
+    <English>Class name of the drone. It must be a UAV with an AI crew seat. Empty or a wrong name uses the vanilla quadcopter of the insurgents' side.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_THREAT_LEVEL">
+    <English>FPV Drone Threat</English>
+</Key>
 <Key ID="STR_ALIVE_IED_VB_IED_THREAT">
     <English>Vehicle Borne IED Threat:</English>
     <Chinese>車載 IED 威脅：</Chinese>

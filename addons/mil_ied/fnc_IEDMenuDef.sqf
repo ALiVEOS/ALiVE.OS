@@ -123,6 +123,15 @@ if (_menuName == "IED") then {
                     true,
                     true
                 ],
+                [localize "STR_ALIVE_IED_DRONE_THREAT_LEVEL",
+                    { uiNameSpace setVariable ["ALIVE_UI_SETVALUE_PARAMS",[ADDON, "Drone_Threat", "FPV Drone Threat", "Enter a valid number between 0 (no threat) and 50 (extreme threat)"]]; createDialog "ALIVE_ui_setNumberValue";},
+                    "",
+                    localize "STR_ALIVE_IED_DRONE_THREAT_COMMENT",
+                    "",
+                    -1,
+                    true,
+                    true
+                ],
                 [localize "STR_ALIVE_IED_VB_IED_THREAT_LEVEL",
                     { uiNameSpace setVariable ["ALIVE_UI_SETVALUE_PARAMS",[ADDON, "VB_IED_Threat", "VB IED Threat Level", "Enter a valid number between 0 (no threat) and 70 (extreme threat)"]]; createDialog "ALIVE_ui_setNumberValue";},
                     "",
