@@ -35,10 +35,16 @@ Operations (callers outside this file):
 Nothing here is called over the network. The machine that owns a group and the server talk through
 ALiVE_fnc_lambsRemote, which checks who sent each call; a report sent straight to this function is refused.
 
-LAMBS versions: everything under "LAMBS Danger names" is in the 2.6.2 release. The three names under
-"LAMBS pull requests" are from two pull requests LAMBS has not merged or released (#501, #487). Each
-is looked for before it is used and does nothing on 2.6.2, so the file works on the release as it is
-and picks those changes up if they ship under the same names.
+Headless clients: under Integrate, "mayMove" checks garrison groups as well as the groups LAMBS runs, so
+when headless clients lack LAMBS the garrisons stay on the server along with the LAMBS-run groups.
+
+LAMBS versions: everything under "LAMBS Danger names" is in the live release (tag 2.6.2, which reports
+itself as 2.6.2.1) and on nk3nny/LambsDanger master (63122df5), under the same name and with the same
+parameters: the two differ only in build scripts, so no name needs a second spelling. The three names
+under "LAMBS pull requests" are from two pull requests LAMBS has not merged (nk3nny/LambsDanger#501,
+nk3nny/LambsDanger#487), so they are in the release and on master under no name at all. A dev build
+that carries those pull requests has them. Each is looked for before it is used and does nothing
+without it, so the file works with or without them.
 
 Examples:
 (begin example)
@@ -49,7 +55,12 @@ Author:
 Goldwep
 ---------------------------------------------------------------------------- */
 
-// LAMBS Danger names (2.6.2)
+// LAMBS Danger names, live and dev. Each was checked in the live release (tag 2.6.2, version 2.6.2.1) and
+// on nk3nny/LambsDanger master (63122df5). The two carry the same addons, so one spelling serves both and
+// a rename on their side is a change to the one line here.
+// How they are looked for: the two addons, L_FNC_ASSAULT and L_FNC_RESET in "init", and L_VERSION on the
+// server, or Integrate stays off. Every other function with LHAS where it is used, and it is skipped when
+// missing. Variables are read with a default.
 #define L_PATCH_DANGER       "lambs_danger"
 #define L_PATCH_WP           "lambs_wp"
 #define L_VERSION            "lambs_main_versionLoadedOnServer"
@@ -79,11 +90,12 @@ Goldwep
 // CBA event names are not case sensitive: LAMBS raises the first as lambs_danger_onContact
 #define L_EVENTS             [["lambs_danger_OnContact", "contact"], ["lambs_danger_OnAssess", "assess"], ["lambs_danger_OnReinforce", "reinforce"], ["lambs_danger_OnArtilleryCalled", "artycalled"], ["lambs_main_OnPanic", "panic"], ["lambs_main_OnFleeing", "fleeing"]]
 
-// LAMBS pull requests, not merged or released at 2.6.2. Nothing below exists in the release: the function
-// is looked for before use and the waypoint names match nothing, so on 2.6.2 these do nothing.
-// #487 per-side reinforcement setting
+// LAMBS pull requests, open, and in neither the live release nor master. A dev build that carries them
+// has these names. The function is looked for with LHAS before use and the waypoint names match nothing
+// without the pull request, so on a build that lacks them these do nothing.
+// nk3nny/LambsDanger#487 per-side reinforcement setting
 #define L_FNC_SIDEREINFORCE  "lambs_danger_fnc_applySideReinforcementSetting"
-// #501 named reinforce waypoints
+// nk3nny/LambsDanger#501 named reinforce waypoints
 #define L_WP_NAMES           ["LAMBS_Reinforce_SAD", "LAMBS_Reinforce_GUARD"]
 
 // ALiVE's own names
@@ -398,7 +410,7 @@ switch (_operation) do {
             // under ACE's own transfer the group is held on the server from the start unless every headless
             // client runs LAMBS; "serverTick" lets it go once they all do
             ["aceHold", [_group]] call ALiVE_fnc_lambs;
-            // LAMBS' per-side reinforcement setting (its PR #487) writes the flag a second after the group is made
+            // LAMBS' per-side reinforcement setting (nk3nny/LambsDanger#487) writes the flag a second after the group is made
             if (LHAS(L_FNC_SIDEREINFORCE)) then {
                 [{ ["roleVars", [_this, (_this getVariable ["ALiVE_lambs", ["MANEUVER"]]) select 0]] call ALiVE_fnc_lambs }, _group, 2] call CBA_fnc_waitAndExecute;
             };
