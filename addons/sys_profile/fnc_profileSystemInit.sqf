@@ -78,8 +78,13 @@ if(isServer) then {
     private _spawnTypeUAVRadius = parseNumber (_logic getVariable ["spawnRadiusUAV", "-1"]);
     // Vehicle Spawn Distance (#422): blank or 0 keeps vehicles at the normal spawn distance.
     ALIVE_spawnRadiusVehicle = parseNumber (_logic getVariable ["spawnRadiusVehicle", "0"]);
-    // Fast Helicopter Spawn Radius: a helicopter airborne above 150 km/h only spawns AI this close. 0 or blank is off.
-    ALIVE_spawnRadiusHeliFast = parseNumber (_logic getVariable ["spawnTypeHeliFastRadius", "0"]);
+    // Fast Helicopter Spawn Radius: a helicopter airborne above 150 km/h only spawns AI this close. 600 when blank or
+    // not set (a mission made before it had a default gets it too: a 250 km/h pass over a Takistan town held frames of
+    // up to 494 ms with it off, at most 77 ms at 600, 21 Nov); 0 is off.
+    private _fastRaw = _logic getVariable ["spawnTypeHeliFastRadius", "600"];
+    if (_fastRaw isEqualType "") then { _fastRaw = if ((_fastRaw splitString " ") isEqualTo []) then { 600 } else { parseNumber _fastRaw } };
+    if !(_fastRaw isEqualType 0) then { _fastRaw = 600 };
+    ALIVE_spawnRadiusHeliFast = _fastRaw max 0;
     private _proximitySpawning = true;
     private _airCombatSpawning = false;
     private _airCombatPlaneVehicleRadius = 2500;
