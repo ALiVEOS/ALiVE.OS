@@ -3360,10 +3360,16 @@ switch(_operation) do {
         // drain from the remoteExec queue in the same server frame
 
         private _counter = ([_logic,"playerObjectiveCounter",0] call ALiVE_fnc_hashGet) + 1;
-        [_logic,"playerObjectiveCounter",_counter] call ALiVE_fnc_hashSet;
 
         private _opcomID = [_opcom,"opcomID",""] call ALiVE_fnc_hashGet;
         private _objectiveID = format ["%1_player_obj_%2", _opcomID, _counter];
+        // the counter starts again each session, while objectives kept across a save keep their ids
+        private _byID = [_opcom,"objectivesByID",createHashMap] call ALiVE_fnc_hashGet;
+        while {_objectiveID in _byID} do {
+            _counter = _counter + 1;
+            _objectiveID = format ["%1_player_obj_%2", _opcomID, _counter];
+        };
+        [_logic,"playerObjectiveCounter",_counter] call ALiVE_fnc_hashSet;
 
         // taken or held as the player asked, or judged by the commander when he didn't say
         private _state = ["unassigned", "attack"] select (_intent == "take");

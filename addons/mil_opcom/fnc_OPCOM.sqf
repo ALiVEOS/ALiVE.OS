@@ -4789,12 +4789,14 @@ switch (_operation) do {
             if (isnil QGVAR(OBJECTIVES_DB_SAVE) || {!(isnil QGVAR(OBJECTIVES_DB_SAVE)) && {time - (GVAR(OBJECTIVES_DB_SAVE) select 1) > 300}}) then {
 
                 _objectivesGlobal = [];
+                // objectives set by players, Zeus or the War Room are kept only when C2ISTAR's Keep Player
+                // Objectives Across Saves is on; timed orders (recon, search and destroy, ambush) never are
+                private _keepPlayer = missionNamespace getVariable ["ALiVE_c2istar_keepObjectives", false];
                 {
                     if ([_x,"persistent",false] call ALIVE_fnc_HashGet) then {
-                        // player-designated objectives are session-only by design; a player FOB's
-                        // objective is saved with the FOB and re-added by Player FOBs on load, so
+                        // a player FOB's objective is saved with the FOB and re-added by Player FOBs on load, so
                         // saving it here too would give the commander two of it after a restart
-                        _objectivesGlobal = _objectivesGlobal + (([_x, "objectives",[]] call ALiVE_fnc_HashGet) select {!([_x,"playerCreated",false] call ALiVE_fnc_HashGet) && {!([_x,"manualTask",false] call ALiVE_fnc_HashGet)} && {([_x,"fobID",""] call ALiVE_fnc_HashGet) == ""}});
+                        _objectivesGlobal = _objectivesGlobal + (([_x, "objectives",[]] call ALiVE_fnc_HashGet) select {(_keepPlayer || {!([_x,"playerCreated",false] call ALiVE_fnc_HashGet)}) && {!([_x,"manualTask",false] call ALiVE_fnc_HashGet)} && {([_x,"fobID",""] call ALiVE_fnc_HashGet) == ""}});
                     };
                 } foreach OPCOM_INSTANCES;
 
@@ -5108,8 +5110,17 @@ switch (_operation) do {
                     "minefield","minefieldLaid",
                     // Dug In: the groups that hold each objective and the vehicles parked there
                     "dugInMembers","dugInPinned",
-                    "_rev"
+                    "_rev",
+                    // set by players, Zeus or the War Room (Keep Player Objectives Across Saves): the tablet's
+                    // labels, the cap and who may cancel it all read these
+                    "playerCreated","playerIntent","issuedBy"
                 ];
+
+                // with Keep Player Objectives Across Saves off, any kept from an earlier session are dropped
+                // (they would otherwise come back until the next save left them out)
+                if !(missionNamespace getVariable ["ALiVE_c2istar_keepObjectives", false]) then {
+                    _objectives = _objectives select { !(([_x,"playerCreated",false] call ALiVE_fnc_HashGet) in [true, "true"]) };
+                };
 
                 // Rebuild objectives in correct index-order
                 private _savedTypes = [];
@@ -5130,6 +5141,8 @@ switch (_operation) do {
                             [_target,_x] call ALiVE_fnc_HashRem;
                         };
                     } foreach _keys;
+                    // a stored true can come back as text from some data stores; the readers want a bool
+                    if (([_target,"playerCreated",false] call ALiVE_fnc_HashGet) isEqualTo "true") then { [_target,"playerCreated",true] call ALiVE_fnc_HashSet };
 
                     _objectives set [_foreachIndex, _target];
                 } foreach _objectives;

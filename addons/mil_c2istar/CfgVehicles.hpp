@@ -766,6 +766,19 @@ class CfgVehicles {
                             typeName = "NUMBER";
                             ALiVE_showWhen[] = {{"scomOpsAllowPlayerObjectives", "is", "true"}};
                     };
+                    // Zeus and War Room objectives are kept too, so this shows whether or not players may set them
+                    class scomOpsKeepObjectives : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsKeepObjectives";
+                            displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_KEEP_OBJECTIVES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_KEEP_OBJECTIVES_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
 
                     // ---- Intel tablet ------------------------------------------------
                     class SPACER_ROLE_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_INTEL"; displayName = "INTEL TABLET"; };

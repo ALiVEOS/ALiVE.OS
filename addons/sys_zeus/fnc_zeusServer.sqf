@@ -414,8 +414,14 @@ switch (_action) do {
         private _sides = [];
         {
             private _opcomID = [_x, "opcomID", ""] call ALiVE_fnc_HashGet;
-            // The time keeps the id apart from one set in an earlier session of the same mission
+            // The time keeps the id apart from one set earlier in a long session; serverTime starts again with the
+            // server, so an id an objective kept across a save already has is skipped
             private _id = format ["%1_zeus_obj_%2_%3", _opcomID, round serverTime, ALiVE_zeus_objectiveCount];
+            private _byID = [_x, "objectivesByID", createHashMap] call ALiVE_fnc_HashGet;
+            while {_id in _byID} do {
+                ALiVE_zeus_objectiveCount = ALiVE_zeus_objectiveCount + 1;
+                _id = format ["%1_zeus_obj_%2_%3", _opcomID, round serverTime, ALiVE_zeus_objectiveCount];
+            };
             private _objective = [_x, "addObjective", [_id, _position, 100, "custom", 100, ["unassigned", "attack"] select (_intent == "take"), "none", _opcomID, true, true]] call ALiVE_fnc_OPCOM;
             if (!isNil "_objective") then {
                 [_objective, "playerIntent", _intent] call ALiVE_fnc_hashSet;
