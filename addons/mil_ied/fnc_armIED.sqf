@@ -272,6 +272,28 @@ private _gracePeriod = 15;
         // A jammer within Jammer Radius stops the trigger man (0 = off, and then nothing is looked for); the test is
         // shared with the FPV drone (ALiVE_fnc_iedJammerNear)
         private _fnc_jammed = { [_ied] call ALiVE_fnc_iedJammerNear };
+        // An RHS RHINO (a heat decoy on a boom in front of the vehicle) that is fitted, lowered and not destroyed sets a
+        // proximity IED off once the IED is in a corridor ahead of the hull, so it goes off in front of the vehicle
+        // rather than under it. Found from the vehicle's animation sources (once per class), as the RHS Raise action does
+        private _fnc_rhinoAhead = {
+            private _v = _this;
+            if (isNil "ALiVE_IED_RhinoFits") then { ALiVE_IED_RhinoFits = createHashMap };
+            private _fit = ALiVE_IED_RhinoFits getOrDefault [typeOf _v, []];
+            if (_fit isEqualTo []) then {
+                private _src = configOf _v >> "AnimationSources";
+                _fit = [isClass (_src >> "rhino") && {isClass (_src >> "hide_rhino")}, getText (_src >> "hit_rhino_source" >> "hitpoint")];
+                ALiVE_IED_RhinoFits set [typeOf _v, _fit];
+            };
+            _fit params ["_has", "_hit"];
+            if (!_has || {(_v doorPhase "rhino") <= 0.9} || {(_v animationPhase "hide_rhino") >= 0.5}
+                || {_hit != "" && {(_v getHitPointDamage _hit) >= 1}}) exitWith { false };
+            // ahead of the vehicle's centre, as wide as the hull plus 0.5 m a side, to 3 m past the front of its
+            // bounding box plus the ground it covers in one poll
+            (boundingBoxReal _v) params ["_lo", "_hi"];
+            private _m = _v worldToModel (ASLToAGL (getPosASL _ied));
+            private _ahead = (_m select 1) >= 0 && {(_m select 1) <= (_hi select 1) + 3 + ((((speed _v) max 0) / 3.6 * 0.5) min 5)};
+            _ahead && {(abs (_m select 0)) <= (((_hi select 0) max (abs (_lo select 0))) + 0.5)}
+        };
         private _jamLogged = false;
         private _debugLocal       = ADDON getVariable ["debug", false];
         private _stompRadius      = ADDON getVariable ["resolvedStompRadius", 0];
@@ -500,6 +522,20 @@ private _gracePeriod = 15;
                         };
                     };
                 } forEach (+(keys _tripMap));
+
+                // a lowered RHINO ahead of a vehicle that counts sets off a proximity IED (one with a trigger man is
+                // left to him, below: the RHINO fools a heat fuse, not a man watching)
+                if (!_shouldDetonate && {!_dickerMode}) then {
+                    private _rv = (_ied nearEntities ["LandVehicle", 25]) select {
+                        alive _x && {({alive _x} count (crew _x)) > 0} && {((getposATL _x) select 2) < 8}
+                        && {(((crew _x) findIf {_x in _players}) > -1) || {_aiTriggerable && {_x call ALiVE_fnc_iedAICounts}}}
+                        && {_x call _fnc_rhinoAhead}
+                    };
+                    if (_rv isNotEqualTo []) then {
+                        _shouldDetonate = true;
+                        if (_debugLocal) then { ["ALIVE-%1 IED: set off ahead of %2 by its RHINO, %3 m from the IED", time, typeOf (_rv select 0), round ((_rv select 0) distance _ied)] call ALiVE_fnc_dump };
+                    };
+                };
 
                 // With a trigger man the IED is his to set off, not a pressure device: free, he
                 // fires it a second or two after anyone comes within 15 m of the blast radius;
