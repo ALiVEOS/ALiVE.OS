@@ -1148,6 +1148,9 @@ switch (_operation) do {
 
             // set profile id on the unit
             _vehicle setVariable ["profileID", _profileID];
+            // and the side of the group it belongs to, which outlasts the profile: an empty vehicle reads civilian,
+            // and its profile goes once a player gets in (Logistics Hub Trade In reads it)
+            if (_side in ["WEST", "EAST", "GUER"]) then { _vehicle setVariable ["ALiVE_lastCrewSide", _side] };
 
             // killed event handler
             _eventID = _vehicle addMPEventHandler["MPKilled", ALIVE_fnc_profileKilledEventHandler];

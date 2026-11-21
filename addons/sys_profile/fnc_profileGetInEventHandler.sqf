@@ -20,6 +20,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 private ["_unit","_getInUnit","_profileID","_profile"];
 
@@ -36,6 +37,9 @@ if(isPlayer _getInUnit) then {
     private _entitiesInCargoOf = _profile select 2 select 9;
 
     if (_entitiesInCommandOf isequalto [] && { _entitiesInCargoOf isequalto [] }) then {
+        // the side whose vehicle it was stays on it, for the server, once the profile is gone
+        private _side = _profile select 2 select 3;
+        if (_side in ["WEST", "EAST", "GUER"]) then { _unit setVariable ["ALiVE_lastCrewSide", _side, true] };
         [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
     };
 };

@@ -1441,10 +1441,12 @@ switch (_op) do {
         private _vSideText = [_vSide] call ALIVE_fnc_sideNumberToText;
         // but the side that last crewed it counts first: compiled groups of one side often drive another's
         // vehicles, and a GUER group's BLUFOR truck read as the player's own (AshTray, 12 Nov). The crew's side
-        // is its profile's, while the vehicle is still profiled, else that of a dead crewman still inside.
-        private _crewSide = "";
+        // is the one ALiVE left on it (its profile's side, kept on the vehicle once a player gets in and the profile
+        // goes), else its profile's while it is still profiled, else that of a dead crewman still inside.
+        private _crewSide = _v getVariable ["ALiVE_lastCrewSide", ""];
+        if !(_crewSide isEqualType "" && {_crewSide in ["WEST", "EAST", "GUER"]}) then { _crewSide = "" };
         private _pid = _v getVariable ["profileID", ""];
-        if (_pid isEqualType "" && {_pid != ""} && {!isNil "ALIVE_profileHandler"}) then {
+        if (_crewSide == "" && {_pid isEqualType ""} && {_pid != ""} && {!isNil "ALIVE_profileHandler"}) then {
             private _p = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
             if (!isNil "_p") then {
                 private _ps = [_p, "side"] call ALIVE_fnc_hashGet;
