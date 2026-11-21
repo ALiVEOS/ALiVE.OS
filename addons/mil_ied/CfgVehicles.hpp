@@ -77,6 +77,9 @@ class CfgVehicles {
                         };
                         class IED_Detection_Device : Edit { property = "ALiVE_mil_ied_IED_Detection_Device"; displayName = "$STR_ALIVE_IED_IED_DETECTION_DEVICE"; tooltip = "$STR_ALIVE_IED_IED_DETECTION_DEVICE_COMMENT"; defaultValue = """MineDetector"""; };
                         class IED_Dicker_Chance : Edit { property = "ALiVE_mil_ied_IED_Dicker_Chance"; displayName = "$STR_ALIVE_IED_DICKER_CHANCE"; tooltip = "$STR_ALIVE_IED_DICKER_CHANCE_COMMENT"; defaultValue = """0"""; };
+                        // a vehicle's jammer (RHS DUKE, or a listed class) stops a trigger man setting his IED off (armIED)
+                        class IED_Jammer_Radius : Edit { property = "ALiVE_mil_ied_IED_Jammer_Radius"; displayName = "$STR_ALIVE_IED_JAMMER_RADIUS"; tooltip = "$STR_ALIVE_IED_JAMMER_RADIUS_COMMENT"; defaultValue = """150"""; };
+                        class IED_Jammer_Vehicles : Edit { property = "ALiVE_mil_ied_IED_Jammer_Vehicles"; displayName = "$STR_ALIVE_IED_JAMMER_VEHICLES"; tooltip = "$STR_ALIVE_IED_JAMMER_VEHICLES_COMMENT"; defaultValue = """"""; };
                         // A squad of the nearest hostile force comes in after a blast (ALiVE_fnc_IEDAmbush)
                         class IED_Ambush_Chance : Edit { property = "ALiVE_mil_ied_IED_Ambush_Chance"; displayName = "$STR_ALIVE_IED_AMBUSH_CHANCE"; tooltip = "$STR_ALIVE_IED_AMBUSH_CHANCE_COMMENT"; defaultValue = """0"""; };
                         // An area whose IEDs were all cleared stays clear, or is armed again after this many in-game hours

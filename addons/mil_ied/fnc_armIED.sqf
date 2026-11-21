@@ -269,6 +269,36 @@ private _gracePeriod = 15;
             && {!(_dicker getVariable ["ace_captives_isHandcuffed", false])} && {!(_dicker getVariable ["ace_captives_isSurrendering", false])}
             && {(_dicker distance _ied) < 400}
         };
+        // A jammer within Jammer Radius stops the trigger man (0 = off, and then nothing is looked for). It works while
+        // its vehicle is alive with the engine on: an RHS DUKE that is shown and not destroyed, a class in Jammer
+        // Vehicles, or a vehicle given ALiVE_IED_Jammer true. RHS has no jammer entry in its config, so the DUKE is
+        // read from the vehicle's animation sources, once per class.
+        private _jamRadius  = ADDON getVariable ["IED_Jammer_Radius", 150];
+        private _jamClasses = ADDON getVariable ["IED_Jammer_Vehicles", []];
+        private _fnc_jammerWorks = {
+            private _v = _this;
+            if (!alive _v || {!isEngineOn _v}) exitWith { false };
+            private _set = _v getVariable ["ALiVE_IED_Jammer", 0];
+            if (_set isEqualType true) exitWith { _set };
+            if ((toLower typeOf _v) in _jamClasses) exitWith { true };
+            if (isNil "ALiVE_IED_JammerFits") then { ALiVE_IED_JammerFits = createHashMap };
+            private _fit = ALiVE_IED_JammerFits getOrDefault [typeOf _v, []];
+            if (_fit isEqualTo []) then {
+                private _src = configOf _v >> "AnimationSources";
+                private _hide = ["DUKE_Hide", "Hide_DUKE"] select { isClass (_src >> _x) };
+                private _hits = (("true" configClasses _src) select { private _n = toLower configName _x; (_n find "hitduke") == 0 })
+                    apply { getText (_x >> "hitpoint") } select { _x != "" };
+                _fit = [_hide param [0, ""], _hits];
+                ALiVE_IED_JammerFits set [typeOf _v, _fit];
+            };
+            _fit params ["_hide", "_hits"];
+            // shown, and not every one of its parts destroyed
+            _hide != "" && {(_v animationSourcePhase _hide) < 0.5} && {_hits isEqualTo [] || {(_hits findIf { (_v getHitPointDamage _x) < 1 }) > -1}}
+        };
+        private _fnc_jammed = {
+            _jamRadius > 0 && {((_ied nearEntities [["LandVehicle"], _jamRadius]) findIf { _x call _fnc_jammerWorks }) > -1}
+        };
+        private _jamLogged = false;
         private _debugLocal       = ADDON getVariable ["debug", false];
         private _stompRadius      = ADDON getVariable ["resolvedStompRadius", 0];
 
@@ -507,7 +537,13 @@ private _gracePeriod = 15;
                             alive _x && {((getposATL (vehicle _x)) select 2) < 8} && {!(_x isEqualTo _dicker)}
                             && {(_x in _players) || {((crew _x) findIf {_x in _players}) > -1} || {_aiTriggerable && {_x call ALiVE_fnc_iedAICounts}}}
                         }) isNotEqualTo [];
-                        if (!_near) then { _dickerAt = -1 } else {
+                        private _jammed = _near && {call _fnc_jammed};
+                        if (_jammed && {_debugLocal} && {!_jamLogged}) then {
+                            _jamLogged = true;
+                            ["ALIVE-%1 IED: a jammer stops trigger man %2 setting off the IED at %3", time, name _dicker, getPosATL _ied] call ALiVE_fnc_dump;
+                        };
+                        if (!_near || {_jammed}) then { _dickerAt = -1 } else {
+                            _jamLogged = false;
                             if (_dickerAt < 0) then { _dickerAt = time + 1 + random 2 };
                             if (time >= _dickerAt) then {
                                 _shouldDetonate = true;

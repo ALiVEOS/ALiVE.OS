@@ -291,6 +291,15 @@ switch(_operation) do {
                     private _dickerChance = _logic getVariable ["IED_Dicker_Chance", 0];
                     if (_dickerChance isEqualType "") then { _dickerChance = parseNumber _dickerChance };
                     ADDON setVariable ["IED_Dicker_Chance", _dickerChance];
+                    // Jammer Radius (m, 0 = off) and Jammer Vehicles (class names); read by armIED for trigger man IEDs
+                    private _jamRadius = _logic getVariable ["IED_Jammer_Radius", 150];
+                    if (_jamRadius isEqualType "") then { _jamRadius = if (_jamRadius isEqualTo "") then { 150 } else { parseNumber _jamRadius } };
+                    if (!(_jamRadius isEqualType 0) || {_jamRadius < 0}) then { _jamRadius = 150 };
+                    ADDON setVariable ["IED_Jammer_Radius", _jamRadius];
+                    private _jamClasses = _logic getVariable ["IED_Jammer_Vehicles", ""];
+                    if (_jamClasses isEqualType "") then { _jamClasses = (([_jamClasses, " ", ""] call CBA_fnc_replace) splitString ",") apply { toLower _x } };
+                    if !(_jamClasses isEqualType []) then { _jamClasses = [] };
+                    ADDON setVariable ["IED_Jammer_Vehicles", _jamClasses];
                     // Re-arm Cleared Areas, in-game hours (0 = never); read by createIED.
                     private _rearmCleared = _logic getVariable ["IED_Rearm_Cleared", 0];
                     if (_rearmCleared isEqualType "") then { _rearmCleared = parseNumber _rearmCleared };

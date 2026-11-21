@@ -483,6 +483,18 @@
 <Key ID="STR_ALIVE_IED_DICKER_CHANCE_COMMENT">
     <English>How many IEDs get a civilian trigger man watching from 40 to 150 m away, from inside a house among the civilians where there is one. While he is free he sets the IED off himself when anyone comes near, so a careful approach won't save you. Kill him, detain him or make him surrender and it won't go off when approached; disarm it as usual. ALiVE IEDs only. Type a percentage, 0 to 100.</English>
 </Key>
+<Key ID="STR_ALIVE_IED_JAMMER_RADIUS">
+    <English>Jammer Radius (m)</English>
+</Key>
+<Key ID="STR_ALIVE_IED_JAMMER_RADIUS_COMMENT">
+    <English>A trigger man can't set his IED off while a vehicle with a working jammer is this close to it: he waits, and tries again once it has gone. A jammer works while the vehicle is alive with its engine on. RHS vehicles fitted with a DUKE count, unless the DUKE is hidden or destroyed, and so do the classes listed in Jammer Vehicles. IEDs without a trigger man go off as usual. 0 turns jammers off.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_JAMMER_VEHICLES">
+    <English>Jammer Vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_IED_JAMMER_VEHICLES_COMMENT">
+    <English>Vehicle classes, beyond the RHS vehicles fitted with a DUKE, that carry a jammer, separated by commas. In a script, a vehicle can be given or denied one with setVariable ["ALiVE_IED_Jammer", true] (or false).</English>
+</Key>
 <Key ID="STR_ALIVE_IED_REARM_CLEARED">
     <English>Re-arm Cleared Areas</English>
 </Key>
