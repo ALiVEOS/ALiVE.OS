@@ -80,6 +80,9 @@ class CfgVehicles {
                         // a vehicle's jammer (RHS DUKE, or a listed class) stops a trigger man setting his IED off (armIED)
                         class IED_Jammer_Radius : Edit { property = "ALiVE_mil_ied_IED_Jammer_Radius"; displayName = "$STR_ALIVE_IED_JAMMER_RADIUS"; tooltip = "$STR_ALIVE_IED_JAMMER_RADIUS_COMMENT"; defaultValue = """150"""; };
                         class IED_Jammer_Vehicles : Edit { property = "ALiVE_mil_ied_IED_Jammer_Vehicles"; displayName = "$STR_ALIVE_IED_JAMMER_VEHICLES"; tooltip = "$STR_ALIVE_IED_JAMMER_VEHICLES_COMMENT"; defaultValue = """"""; };
+                        // a backpack, weapon or item carried by a man (player or AI), within its own smaller radius (iedJammerNear)
+                        class IED_Jammer_Carried : Edit { property = "ALiVE_mil_ied_IED_Jammer_Carried"; displayName = "$STR_ALIVE_IED_JAMMER_CARRIED"; tooltip = "$STR_ALIVE_IED_JAMMER_CARRIED_COMMENT"; defaultValue = """"""; };
+                        class IED_Jammer_Carried_Radius : Edit { property = "ALiVE_mil_ied_IED_Jammer_Carried_Radius"; displayName = "$STR_ALIVE_IED_JAMMER_CARRIED_RADIUS"; tooltip = "$STR_ALIVE_IED_JAMMER_CARRIED_RADIUS_COMMENT"; defaultValue = """50"""; };
                         // A squad of the nearest hostile force comes in after a blast (ALiVE_fnc_IEDAmbush)
                         class IED_Ambush_Chance : Edit { property = "ALiVE_mil_ied_IED_Ambush_Chance"; displayName = "$STR_ALIVE_IED_AMBUSH_CHANCE"; tooltip = "$STR_ALIVE_IED_AMBUSH_CHANCE_COMMENT"; defaultValue = """0"""; };
                         // An area whose IEDs were all cleared stays clear, or is armed again after this many in-game hours

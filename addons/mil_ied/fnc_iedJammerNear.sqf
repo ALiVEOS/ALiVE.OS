@@ -4,16 +4,28 @@ SCRIPT(iedJammerNear);
 /* ----------------------------------------------------------------------------
 Function: ALiVE_fnc_iedJammerNear
 Description:
-Is a vehicle with a working jammer near this place: the IED module's Jammer Radius and Jammer Vehicles. Used by the
-trigger man (armIED) and the FPV drone (createFPVDrone).
+Is a working jammer near this place: the IED module's jammer settings. Used by the trigger man (armIED) and the FPV
+drone (createFPVDrone).
 
-A jammer works while its vehicle is alive with the engine on: an RHS DUKE that is shown and not destroyed, a class in
-Jammer Vehicles, or a vehicle given ALiVE_IED_Jammer true (false switches one off). RHS has no jammer entry in its
-config, so the DUKE is read from the vehicle's animation sources, once per class (ALiVE_IED_JammerFits).
+A vehicle's jammer works while the vehicle is alive with the engine on: an RHS DUKE that is shown and not destroyed, a
+class in Jammer Vehicles, or a vehicle given ALiVE_IED_Jammer true (false switches one off), within Jammer Radius.
+RHS has no jammer entry in its config, so the DUKE is read from the vehicle's animation sources, once per class
+(ALiVE_IED_JammerFits).
+
+A carried jammer works while the man carrying it is alive, player or AI, within Carried Jammer Radius: a backpack,
+weapon or item listed in Carried Jammers, or a man given ALiVE_IED_Jammer true (false switches his off).
+
+With Crows Electronic Warfare loaded, its own jammers count with no setup, whatever they are placed on (a vehicle, a
+man, an object): each while it is switched on in the mod, within the mod's own effective radius. Drones need one with
+the mod's drone jamming; a trigger man is stopped by either kind. A drone the mod is jamming (a player aiming a Spectrum
+Device with the jammer antenna at it) counts too.
+
+Jammer Radius 0 turns all of it off.
 
 Parameters:
 0: OBJECT or ARRAY - the object, or a position (AGL), to look around
-1: NUMBER - radius in metres (optional; default the module's Jammer Radius, 0 = off)
+1: NUMBER - radius in metres for vehicles (optional; default the module's Jammer Radius, 0 = off)
+2: BOOL - true when asking for a drone (optional, default false)
 
 Returns:
 BOOL - true if a working jammer is within the radius
@@ -22,12 +34,23 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params [["_at", objNull, [objNull, []]], ["_radius", -1, [0]]];
+params [["_at", objNull, [objNull, []]], ["_radius", -1, [0]], ["_forDrone", false, [true]]];
 
 if (_at isEqualTo objNull) exitWith { false };
 if (_radius < 0) then { _radius = ADDON getVariable ["IED_Jammer_Radius", 150] };
 if (_radius <= 0) exitWith { false };
 private _jamClasses = ADDON getVariable ["IED_Jammer_Vehicles", []];
+
+// Crows Electronic Warfare (crowsEW_main_jamMap, kept on the server: [object, falloff radius, effective radius,
+// switched on, capabilities]); a drone it is jamming is in crowsEW_spectrum_activeJammedUnits
+if (_forDrone && {_at isEqualType objNull} && {_at in (missionNamespace getVariable ["crowsEW_spectrum_activeJammedUnits", []])}) exitWith { true };
+private _crows = missionNamespace getVariable ["crowsEW_main_jamMap", 0];
+if (_crows isEqualType createHashMap && {count _crows > 0} && {
+    (values _crows) findIf {
+        _x params [["_obj", objNull, [objNull]], ["_fall", 0], ["_eff", 0, [0]], ["_on", false, [true]], ["_caps", [], [[]]]];
+        _on && {alive _obj} && {["DroneJammer", "VoiceCommsJammer"] select [0, [2, 1] select _forDrone] findIf { _x in _caps } > -1} && {(_obj distance _at) < _eff}
+    } > -1
+}) exitWith { true };
 
 private _fnc_jammerWorks = {
     private _v = _this;
@@ -49,5 +72,20 @@ private _fnc_jammerWorks = {
     // shown, and not every one of its parts destroyed
     _hide != "" && {(_v animationSourcePhase _hide) < 0.5} && {_hits isEqualTo [] || {(_hits findIf { (_v getHitPointDamage _x) < 1 }) > -1}}
 };
+if (((_at nearEntities [["LandVehicle"], _radius]) findIf { _x call _fnc_jammerWorks }) > -1) exitWith { true };
 
-((_at nearEntities [["LandVehicle"], _radius]) findIf { _x call _fnc_jammerWorks }) > -1
+// carried: Carried Jammers is a set of lower case class names (IED_Jammer_Carried, a hashmap)
+private _cRadius = ADDON getVariable ["IED_Jammer_Carried_Radius", 50];
+if (_cRadius <= 0) exitWith { false };
+private _carried = ADDON getVariable ["IED_Jammer_Carried", createHashMap];
+private _fnc_carries = {
+    private _m = _this;
+    if (!alive _m) exitWith { false };
+    private _set = _m getVariable ["ALiVE_IED_Jammer", 0];
+    if (_set isEqualType true) exitWith { _set };
+    if (count _carried == 0) exitWith { false };
+    (toLower backpack _m) in _carried
+        || {(weapons _m) findIf { (toLower _x) in _carried } > -1}
+        || {(assignedItems _m + items _m) findIf { (toLower _x) in _carried } > -1}
+};
+((_at nearEntities [["CAManBase"], _cRadius]) findIf { _x call _fnc_carries }) > -1

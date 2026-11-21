@@ -349,7 +349,7 @@
     <English>Jammers Stop Drones:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_JAMMED_COMMENT">
-    <English>A vehicle with a working jammer within Jammer Radius (IED THREAT section) makes the drone lose its signal and drop without exploding.</English>
+    <English>A working jammer near the drone (a vehicle's within Jammer Radius, a carried one within Carried Jammer Radius, see IED THREAT, or a Crows Electronic Warfare drone jammer) makes it lose its signal and drop without exploding.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_SHOTDOWN">
     <English>Explodes When Shot Down:</English>
@@ -544,13 +544,25 @@
     <English>Jammer Radius (m)</English>
 </Key>
 <Key ID="STR_ALIVE_IED_JAMMER_RADIUS_COMMENT">
-    <English>A trigger man can't set his IED off while a vehicle with a working jammer is this close to it: he waits, and tries again once it has gone. A jammer works while the vehicle is alive with its engine on. RHS vehicles fitted with a DUKE count, unless the DUKE is hidden or destroyed, and so do the classes listed in Jammer Vehicles. IEDs without a trigger man go off as usual. 0 turns jammers off.</English>
+    <English>A trigger man can't set his IED off while a vehicle with a working jammer is this close to it: he waits, and tries again once it has gone. A jammer works while the vehicle is alive with its engine on. RHS vehicles fitted with a DUKE count, unless the DUKE is hidden or destroyed, and so do the classes listed in Jammer Vehicles. With Crows Electronic Warfare loaded, its jammers count too, at the range set in the mod, while switched on there. IEDs without a trigger man go off as usual. 0 turns jammers off.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_JAMMER_VEHICLES">
     <English>Jammer Vehicles</English>
 </Key>
 <Key ID="STR_ALIVE_IED_JAMMER_VEHICLES_COMMENT">
     <English>Vehicle classes, beyond the RHS vehicles fitted with a DUKE, that carry a jammer, separated by commas. In a script, a vehicle can be given or denied one with setVariable ["ALiVE_IED_Jammer", true] (or false).</English>
+</Key>
+<Key ID="STR_ALIVE_IED_JAMMER_CARRIED">
+    <English>Carried Jammers</English>
+</Key>
+<Key ID="STR_ALIVE_IED_JAMMER_CARRIED_COMMENT">
+    <English>Backpack, weapon or item classes that are a jammer a man carries, separated by commas, for mods ALiVE doesn't know. A carried jammer works while the man carrying it is alive, player or AI, within Carried Jammer Radius, and stops trigger men and drones the same way a vehicle's does. In a script, a man can be given or denied one with setVariable ["ALiVE_IED_Jammer", true] (or false).</English>
+</Key>
+<Key ID="STR_ALIVE_IED_JAMMER_CARRIED_RADIUS">
+    <English>Carried Jammer Radius (m)</English>
+</Key>
+<Key ID="STR_ALIVE_IED_JAMMER_CARRIED_RADIUS_COMMENT">
+    <English>How close a carried jammer must be to an IED or a drone to stop it. Smaller than a vehicle's, as a man-pack jammer is weaker: 50 m covers a section spread out around the man carrying it. 0 turns carried jammers off.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_REARM_CLEARED">
     <English>Re-arm Cleared Areas</English>

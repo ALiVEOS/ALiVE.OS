@@ -301,6 +301,15 @@ switch(_operation) do {
                     if (_jamClasses isEqualType "") then { _jamClasses = (([_jamClasses, " ", ""] call CBA_fnc_replace) splitString ",") apply { toLower _x } };
                     if !(_jamClasses isEqualType []) then { _jamClasses = [] };
                     ADDON setVariable ["IED_Jammer_Vehicles", _jamClasses];
+                    // Carried Jammers (backpack, weapon or item classes) and Carried Jammer Radius (m, 0 = off); read by iedJammerNear
+                    private _jamCarried = _logic getVariable ["IED_Jammer_Carried", ""];
+                    if (_jamCarried isEqualType "") then { _jamCarried = (([_jamCarried, " ", ""] call CBA_fnc_replace) splitString ",") apply { toLower _x } };
+                    if !(_jamCarried isEqualType []) then { _jamCarried = [] };
+                    ADDON setVariable ["IED_Jammer_Carried", createHashMapFromArray (_jamCarried apply { [_x, true] })];
+                    private _jamCarriedRadius = _logic getVariable ["IED_Jammer_Carried_Radius", 50];
+                    if (_jamCarriedRadius isEqualType "") then { _jamCarriedRadius = if (_jamCarriedRadius isEqualTo "") then { 50 } else { parseNumber _jamCarriedRadius } };
+                    if (!(_jamCarriedRadius isEqualType 0) || {_jamCarriedRadius < 0}) then { _jamCarriedRadius = 50 };
+                    ADDON setVariable ["IED_Jammer_Carried_Radius", _jamCarriedRadius];
                     // Re-arm Cleared Areas, in-game hours (0 = never); read by createIED.
                     private _rearmCleared = _logic getVariable ["IED_Rearm_Cleared", 0];
                     if (_rearmCleared isEqualType "") then { _rearmCleared = parseNumber _rearmCleared };

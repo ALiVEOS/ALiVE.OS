@@ -182,6 +182,12 @@ private _dg = group (_crew select 0);
     _x setVariable ["acex_headless_blacklist", true, true];
     _x setVariable ["ALiVE_advciv_blacklist", true, true];
 } forEach ([_uav, _dg] + _crew);
+// Crows Electronic Warfare: a drone signal its Spectrum Device can find and its drone jammers can jam. The mod gives one
+// to the classes in its own drone list (the vanilla quadcopter is in it); a Drone Class outside that list gets one here.
+if (!isNil "crowsEW_spectrum_fnc_initDroneSignals"
+    && {((((missionNamespace getVariable ["crowsEW_spectrum_defaultClassForJammingSignal", ""]) splitString ",") apply { trim _x }) findIf { _x != "" && {_uav isKindOf _x} }) < 0}) then {
+    [_uav] call crowsEW_spectrum_fnc_initDroneSignals;
+};
 _dg setBehaviour "CARELESS";
 _dg setCombatMode "BLUE";
 _dg setSpeedMode "FULL";
@@ -337,7 +343,7 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         if (!local _uav) exitWith { ["no longer run by the server", true] call _fnc_end };
         // a player's UAV terminal has it (a server sees that through UAVControl only)
         if (!isNull ((UAVControl _uav) param [0, objNull])) exitWith { ["taken over by a UAV terminal", true] call _fnc_end };
-        if (_jamOn && {[_uav] call ALiVE_fnc_iedJammerNear}) exitWith { ["jammed", true] call _fnc_end };
+        if (_jamOn && {[_uav, -1, true] call ALiVE_fnc_iedJammerNear}) exitWith { ["jammed", true] call _fnc_end };
         if (time - (_d get "t0") > 240) exitWith { ["out of battery", true] call _fnc_end };
         private _players = allPlayers - entities "HeadlessClient_F";
         if ((_players findIf { (_x distance _uav) < 1500 }) < 0) exitWith { ["no player within 1500 m", false] call _fnc_end };
