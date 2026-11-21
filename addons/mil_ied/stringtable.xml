@@ -321,6 +321,12 @@
 <Key ID="STR_ALIVE_IED_DRONE_LAUNCHERS_COMMENT">
     <English>Every AI Commander: groups of any AI Commander's side, whatever its control type, launch drones at players of a side hostile to theirs. Insurgent commanders only: only groups of AI Commanders set to Insurgency do. Suicide bombers always come from insurgents only.</English>
 </Key>
+<Key ID="STR_ALIVE_IED_DRONE_ROAM">
+    <English>Roaming Drones:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_ROAM_COMMENT">
+    <English>Chance, checked every 30 seconds for each player, of a drone launched from an objective held by a side hostile to them, 400 m to 2 km away. It searches the ground round the objective, then round where its side last knew a player to be, and goes after the first hostile player it sees within 300 m. It uses the same limits as the other drones (Most Drones At Once, Drone Wait, Drones Launched By). None switches roaming drones off.</English>
+</Key>
 <Key ID="STR_ALIVE_IED_DRONE_MAX">
     <English>Most Drones At Once:</English>
 </Key>
@@ -337,7 +343,13 @@
     <English>Drone Launch Range (m):</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_RANGE_COMMENT">
-    <English>Groups further than this from a player do not launch a drone. They never launch from closer than 300 m, so 300 or less means no drones. Default 1200.</English>
+    <English>Groups further than this from a player do not launch a drone. They never launch from closer than 300 m, so 300 or less means no drones. Default 2000.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_BATTERY">
+    <English>Drone Battery (minutes):</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_BATTERY_COMMENT">
+    <English>How long a drone can fly. When it runs out the drone comes down, and Chance To Explode When Downed decides whether it goes off. Blank or under 1 keeps the default. Default 10.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_CHARGE">
     <English>Drone Warhead:</English>
@@ -352,10 +364,10 @@
     <English>A working jammer near the drone (a vehicle's within Jammer Radius, a carried one within Carried Jammer Radius, see IED THREAT, or a Crows Electronic Warfare drone jammer) makes it lose its signal and drop without exploding. A drone whose AI pilot is killed or whose fuel is drained by another mod's jammer drops the same way, whatever this is set to.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_SHOTDOWN">
-    <English>Explodes When Shot Down:</English>
+    <English>Chance To Explode When Downed:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_SHOTDOWN_COMMENT">
-    <English>Yes: a drone shot down during its final dive explodes where it falls. Shot down earlier, it never explodes.</English>
+    <English>The chance that a drone brought down explodes where it hits the ground: shot down at any point, crashed, stuck, or out of battery. A jammed drone, or one taken over with a UAV terminal, never explodes. Default 50 %.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_CLASS">
     <English>Drone Class:</English>

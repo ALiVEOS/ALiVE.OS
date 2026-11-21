@@ -120,9 +120,15 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_Drone_Launchers"; displayName = "$STR_ALIVE_IED_DRONE_LAUNCHERS"; tooltip = "$STR_ALIVE_IED_DRONE_LAUNCHERS_COMMENT"; defaultValue = """ALL""";
                                 class Values { class All{name="Every AI Commander";value="ALL";default=1;}; class Insurgent{name="Insurgent commanders only";value="INSURGENT";}; };
                         };
+                        class Drone_Roam : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Roam"; displayName = "$STR_ALIVE_IED_DRONE_ROAM"; tooltip = "$STR_ALIVE_IED_DRONE_ROAM_COMMENT"; defaultValue = """0""";
+                                class Values { class None{name="None";value=0;default=1;}; class Low{name="Low";value=10;}; class Med{name="Medium";value=20;}; class High{name="High";value=30;}; };
+                        };
                         class Drone_Max : Edit { property = "ALiVE_mil_ied_Drone_Max"; displayName = "$STR_ALIVE_IED_DRONE_MAX"; tooltip = "$STR_ALIVE_IED_DRONE_MAX_COMMENT"; defaultValue = """2"""; };
                         class Drone_Wait : Edit { property = "ALiVE_mil_ied_Drone_Wait"; displayName = "$STR_ALIVE_IED_DRONE_WAIT"; tooltip = "$STR_ALIVE_IED_DRONE_WAIT_COMMENT"; defaultValue = """10"""; };
-                        class Drone_Range : Edit { property = "ALiVE_mil_ied_Drone_Range"; displayName = "$STR_ALIVE_IED_DRONE_RANGE"; tooltip = "$STR_ALIVE_IED_DRONE_RANGE_COMMENT"; defaultValue = """1200"""; };
+                        class Drone_Range : Edit { property = "ALiVE_mil_ied_Drone_Range"; displayName = "$STR_ALIVE_IED_DRONE_RANGE"; tooltip = "$STR_ALIVE_IED_DRONE_RANGE_COMMENT"; defaultValue = """2000"""; };
+                        class Drone_Battery : Edit { property = "ALiVE_mil_ied_Drone_Battery"; displayName = "$STR_ALIVE_IED_DRONE_BATTERY"; tooltip = "$STR_ALIVE_IED_DRONE_BATTERY_COMMENT"; defaultValue = """10"""; };
                         class Drone_Charge : Combo
                         {
                                 property = "ALiVE_mil_ied_Drone_Charge"; displayName = "$STR_ALIVE_IED_DRONE_CHARGE"; tooltip = "$STR_ALIVE_IED_DRONE_CHARGE_COMMENT"; defaultValue = """MEDIUM""";
@@ -135,8 +141,8 @@ class CfgVehicles {
                         };
                         class Drone_ShotDown : Combo
                         {
-                                property = "ALiVE_mil_ied_Drone_ShotDown"; displayName = "$STR_ALIVE_IED_DRONE_SHOTDOWN"; tooltip = "$STR_ALIVE_IED_DRONE_SHOTDOWN_COMMENT"; defaultValue = """false""";
-                                class Values { class No{name="No";value="false";default=1;}; class Yes{name="Yes";value="true";}; };
+                                property = "ALiVE_mil_ied_Drone_ShotDown"; displayName = "$STR_ALIVE_IED_DRONE_SHOTDOWN"; tooltip = "$STR_ALIVE_IED_DRONE_SHOTDOWN_COMMENT"; defaultValue = """50""";
+                                class Values { class Never{name="Never";value="false";}; class C25{name="25 %";value="25";}; class C50{name="50 %";value="50";default=1;}; class C75{name="75 %";value="75";}; class Always{name="Always";value="true";}; };
                         };
                         class Drone_Class : Edit { property = "ALiVE_mil_ied_Drone_Class"; displayName = "$STR_ALIVE_IED_DRONE_CLASS"; tooltip = "$STR_ALIVE_IED_DRONE_CLASS_COMMENT"; defaultValue = """"""; };
                         // ---- Vehicle-Borne IED ----------------------------------------------
