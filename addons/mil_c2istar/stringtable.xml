@@ -560,6 +560,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_SEAT_RELEASE_COMMENT">
     <English>Minutes a commander can be disconnected before the seat is free again. Rejoining in time keeps it. Dying does not free it.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_DEPUTIES">
+    <English>Deputies</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SEAT_DEPUTIES_COMMENT">
+    <English>Yes: the seat holder may name up to two deputies. A deputy can set objectives and give orders like the holder, but cannot hand over the seat, name other deputies, pause the commander or change its settings. Deputies are dropped when the seat changes hands or is freed, and are not kept across a restart.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_COMMANDER_PICTURE">
     <English>Commander's Picture</English>
 </Key>

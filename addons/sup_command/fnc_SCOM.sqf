@@ -1622,17 +1622,21 @@ switch (_operation) do {
 
                 case "INTEL_SEAT_SELECT": {
 
-                    // a Commander seat row picked: a player's row lets the commander hand command to them
+                    // a Commander seat row picked: a player's row lets the commander hand command to them, a deputy
+                    // row name or remove that player as a deputy
 
                     (_args select 0) params ["_selectedList","_selectedIndex"];
                     private _commandState = [_logic,"commandState"] call MAINCLASS;
                     private _rows = [_commandState,"cmdSeatRows",[]] call ALIVE_fnc_hashGet;
                     private _pick = "";
+                    private _kind = "";
                     if (_selectedIndex >= 0 && {_selectedIndex < count _rows}) then {
                         private _key = (_rows select _selectedIndex) select 0;
-                        if ((_key find "PLAYER|") == 0) then { _pick = _key select [7] };
+                        if ((_key find "PLAYER|") == 0) then { _pick = _key select [7]; _kind = "PLAYER" };
+                        if ((_key find "DEPUTY|") == 0) then { _pick = _key select [7]; _kind = "DEPUTY" };
                     };
                     [_commandState,"cmdSeatPick",_pick] call ALIVE_fnc_hashSet;
+                    [_commandState,"cmdSeatPickKind",_kind] call ALIVE_fnc_hashSet;
                     [_logic,"commandState",_commandState] call MAINCLASS;
                     [_logic,"cmdSeatButtons"] call MAINCLASS;
 
@@ -1640,7 +1644,8 @@ switch (_operation) do {
 
                 case "INTEL_SEAT_ACTION": {
 
-                    // take, stand down, relieve, hand over, accept or decline; the server checks and answers
+                    // take, stand down, relieve, hand over, accept, decline, or name or remove a deputy; the server
+                    // checks and answers
 
                     private _kind = _args param [0, ""];
                     private _commandState = [_logic,"commandState"] call MAINCLASS;
@@ -1652,6 +1657,8 @@ switch (_operation) do {
                         case "OFFER": { ["CMD_SEAT_OFFER", [_uid, [_commandState,"cmdSeatPick",""] call ALIVE_fnc_hashGet]] };
                         case "ACCEPT": { ["CMD_SEAT_ANSWER", [_uid, true]] };
                         case "DECLINE": { ["CMD_SEAT_ANSWER", [_uid, false]] };
+                        case "DEPUTY_ADD": { ["CMD_SEAT_DEPUTY", [_uid, [_commandState,"cmdSeatPick",""] call ALIVE_fnc_hashGet, "ADD"]] };
+                        case "DEPUTY_DROP": { ["CMD_SEAT_DEPUTY", [_uid, [_commandState,"cmdSeatPick",""] call ALIVE_fnc_hashGet, "DROP"]] };
                         default { [] };
                     };
                     if (_ev isEqualTo []) exitWith {};
@@ -4694,8 +4701,9 @@ switch (_operation) do {
     case "enableCommanderSeat": {
 
         // the Commander seat page: [uid, [seat on, side text, holder's name or "", you hold it, you may take it, you may
-        // give orders, why not, offered to you by]]. Rows say who holds command and whether you can give orders; the
-        // holder also gets a row per player of the side to hand command to
+        // give orders, why not, offered to you by, deputies on, the deputies, you are a deputy]]. Rows say who holds
+        // command and whether you can give orders; the holder also gets a row per player of the side to hand command
+        // to and, with Deputies on, one to name or remove them as a deputy
 
         if (_args isEqualType []) then {
 
@@ -4704,8 +4712,10 @@ switch (_operation) do {
             if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "SEAT") exitwith {};
 
             _args params ["_uid", ["_seat",[]]];
-            _seat params [["_on",false], ["_side",""], ["_holder",""], ["_mine",false], ["_mayTake",false], ["_mayOrder",false], ["_why",""], ["_offeredBy",""]];
-            [_commandState,"cmdSeatInfo",[_on,_side,_holder,_mine,_mayTake,_offeredBy]] call ALIVE_fnc_hashSet;
+            _seat params [["_on",false], ["_side",""], ["_holder",""], ["_mine",false], ["_mayTake",false], ["_mayOrder",false], ["_why",""], ["_offeredBy",""], ["_depOn",false], ["_deps",[]], ["_isDep",false]];
+            // the holder gets [uid, name] pairs, everyone else the names
+            private _depIDs = if (_mine) then { _deps apply { _x param [0, ""] } } else { [] };
+            [_commandState,"cmdSeatInfo",[_on,_side,_holder,_mine,_mayTake,_offeredBy,_depOn,_depIDs]] call ALIVE_fnc_hashSet;
 
             // rows: [key, text]
             private _rows = [];
@@ -4720,10 +4730,28 @@ switch (_operation) do {
                 if (!_mine && {!_mayTake} && {_offeredBy == ""}) then { _rows pushBack ["TAKE", localize "STR_ALIVE_SCOM_SEAT_MAY_NOT_TAKE"] };
             };
             if (_offeredBy != "") then { _rows pushBack ["OFFER", format [localize "STR_ALIVE_SCOM_SEAT_OFFERED", _offeredBy]] };
+            if (_isDep) then { _rows pushBack ["DEPUTYME", localize "STR_ALIVE_SCOM_SEAT_YOU_DEPUTY"] };
+            if (_depOn && {!_mine} && {_deps isNotEqualTo []}) then {
+                _rows pushBack ["DEPUTIES", format [localize "STR_ALIVE_SCOM_SEAT_DEPUTIES", _deps joinString ", "]];
+            };
             if (_mine) then {
+                private _others = allPlayers select { isPlayer _x && {_x != player} && {side group _x == side group player} };
                 {
                     _rows pushBack ["PLAYER|" + getPlayerUID _x, format [localize "STR_ALIVE_SCOM_SEAT_HAND_ROW", name _x]];
-                } forEach (allPlayers select { isPlayer _x && {_x != player} && {side group _x == side group player} });
+                } forEach _others;
+                if (_depOn) then {
+                    {
+                        private _id = getPlayerUID _x;
+                        _rows pushBack ["DEPUTY|" + _id, format [localize (["STR_ALIVE_SCOM_SEAT_DEPUTY_ROW_ADD", "STR_ALIVE_SCOM_SEAT_DEPUTY_ROW_DROP"] select (_id in _depIDs)), name _x]];
+                    } forEach _others;
+                    // a deputy who is away keeps the place, and can still be removed
+                    {
+                        _x params [["_id",""], ["_name",""]];
+                        if ((_others findIf { getPlayerUID _x == _id }) < 0) then {
+                            _rows pushBack ["DEPUTY|" + _id, format [localize "STR_ALIVE_SCOM_SEAT_DEPUTY_ROW_DROP", _name]];
+                        };
+                    } forEach _deps;
+                };
             };
 
             private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
@@ -4735,6 +4763,7 @@ switch (_operation) do {
             } forEach _rows;
             [_commandState,"cmdSeatRows",_rows] call ALIVE_fnc_hashSet;
             [_commandState,"cmdSeatPick",""] call ALIVE_fnc_hashSet;
+            [_commandState,"cmdSeatPickKind",""] call ALIVE_fnc_hashSet;
             [_logic,"commandState",_commandState] call MAINCLASS;
 
             [_logic,"cmdSeatButtons"] call MAINCLASS;
@@ -4754,11 +4783,13 @@ switch (_operation) do {
     case "cmdSeatButtons": {
 
         // the Commander seat page's buttons. BR1: Accept an offer, Stand down, Take command, or (an admin) Relieve the
-        // commander. BR3: Decline an offer, or Hand over once a player is picked
+        // commander. BR3: Decline an offer, Hand over once a player is picked, or Name deputy / Remove deputy once a
+        // deputy row is picked
 
         private _commandState = [_logic,"commandState"] call MAINCLASS;
-        ([_commandState,"cmdSeatInfo",[]] call ALIVE_fnc_hashGet) params [["_on",false], ["_side",""], ["_holder",""], ["_mine",false], ["_mayTake",false], ["_offeredBy",""]];
+        ([_commandState,"cmdSeatInfo",[]] call ALIVE_fnc_hashGet) params [["_on",false], ["_side",""], ["_holder",""], ["_mine",false], ["_mayTake",false], ["_offeredBy",""], ["_depOn",false], ["_depIDs",[]]];
         private _pick = [_commandState,"cmdSeatPick",""] call ALIVE_fnc_hashGet;
+        private _pickKind = [_commandState,"cmdSeatPickKind",""] call ALIVE_fnc_hashGet;
         private _admin = !isMultiplayer || {isServer} || {(call BIS_fnc_admin) > 0};
         private _b1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
         private _b3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
@@ -4773,6 +4804,9 @@ switch (_operation) do {
         private _three = switch (true) do {
             case (!_on): { [] };
             case (_offeredBy != ""): { ["STR_ALIVE_SCOM_SEAT_DECLINE", "DECLINE"] };
+            case (_mine && {_pick != ""} && {_pickKind == "DEPUTY"}): {
+                [["STR_ALIVE_SCOM_SEAT_DEPUTY_ADD", "DEPUTY_ADD"], ["STR_ALIVE_SCOM_SEAT_DEPUTY_DROP", "DEPUTY_DROP"]] select (_pick in _depIDs)
+            };
             case (_mine && {_pick != ""}): { ["STR_ALIVE_SCOM_SEAT_HAND_OVER", "OFFER"] };
             default { [] };
         };

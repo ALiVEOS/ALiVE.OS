@@ -1540,6 +1540,8 @@ switch(_operation) do {
             if (_release isEqualType "") then { _release = parseNumber _release };
             if !(_release isEqualType 0 && {finite _release}) then { _release = 3 };
             missionNamespace setVariable ["ALiVE_c2istar_commanderSeatRelease", ((_release max 0.5) min 60) * 60];
+            // Deputies: the seat holder may name up to two players who give orders beside them
+            missionNamespace setVariable ["ALiVE_c2istar_commanderSeatDeputies", (_logic getVariable ["commanderSeatDeputies", "false"]) in ["true", true]];
         };
         ALiVE_c2istar_fnc_atPrison = {
             params ["_pos"];

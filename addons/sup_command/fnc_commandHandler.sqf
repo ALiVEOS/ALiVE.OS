@@ -387,6 +387,12 @@ switch(_operation) do {
 
                 };
 
+                case "CMD_SEAT_DEPUTY": {
+
+                    [_logic,"cmdSeatDeputy", _data select [0, 3]] call MAINCLASS;
+
+                };
+
                 case "OPS_ADD_OBJECTIVE": {
 
                     // a marker is only ever linked by the server's own marker watch
@@ -3597,6 +3603,19 @@ switch(_operation) do {
 
     };
 
+    case "cmdIsDeputy": {
+
+        // is this player one of the side's deputies: [uid, side text]. Only while the seat and C2ISTAR's Deputies are
+        // on and the side has a holder
+
+        _args params [["_playerID","",[""]],["_side","",[""]]];
+        _result = [_logic,"cmdSeatOn"] call MAINCLASS
+            && {missionNamespace getVariable ["ALiVE_c2istar_commanderSeatDeputies", false]}
+            && {([_logic,"cmdSeatHolder",_side] call MAINCLASS) isNotEqualTo []}
+            && {(((missionNamespace getVariable ["ALiVE_SCOM_commandDeputies", createHashMap]) getOrDefault [_side, []]) findIf { (_x select 0) == _playerID }) >= 0};
+
+    };
+
     case "cmdMayDirect": {
 
         // the seat's own check, made on top of the Ops limit and the other settings: [uid, side text]. True with the
@@ -3612,7 +3631,8 @@ switch(_operation) do {
         _result = if (_holder isEqualTo []) then {
             (missionNamespace getVariable ["ALiVE_c2istar_commanderSeatEmpty", "ANYONE"]) == "ANYONE"
         } else {
-            (_holder select 0) == _playerID
+            // the holder, or one of the deputies they named
+            (_holder select 0) == _playerID || {[_logic,"cmdIsDeputy",[_playerID,_side]] call MAINCLASS}
         };
 
     };
@@ -3698,8 +3718,9 @@ switch(_operation) do {
         };
         ALiVE_SCOM_commandSeats = _seats;
         (missionNamespace getVariable ["ALiVE_SCOM_seatRestored", createHashMap]) deleteAt _side;
-        // a hand-over offered by the last commander no longer stands
+        // a hand-over offered by the last commander no longer stands, and their deputies go with them
         (missionNamespace getVariable ["ALiVE_SCOM_seatOffers", createHashMap]) deleteAt _side;
+        (missionNamespace getVariable ["ALiVE_SCOM_commandDeputies", createHashMap]) deleteAt _side;
         [_logic,"cmdSeatPublish"] call MAINCLASS;
         ["SCOM Commander seat: %1 - %2", _side, _text] call ALiVE_fnc_dump;
         [_logic,"cmdSideNotify",[_side,_text,[]]] call MAINCLASS;
@@ -3713,7 +3734,8 @@ switch(_operation) do {
     case "cmdSeatStatus": {
 
         // the seat as the tablet shows it: [uid]. Reply CMD_SEAT: [uid, [seat on, side text, holder's name or "",
-        // you hold it, you may take it, you may give orders, why not ("" when you may), offered to you by ("" for none)]]
+        // you hold it, you may take it, you may give orders, why not ("" when you may), offered to you by ("" for none),
+        // deputies on, the deputies ([uid, name] pairs for the holder, names for the rest), you are a deputy]]
 
         _args params [["_playerID","",[""]]];
         private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
@@ -3728,6 +3750,8 @@ switch(_operation) do {
         if (_offer isNotEqualTo [] && {(_offer select 1) == _playerID} && {time - (_offer select 2) < 60}) then {
             _offeredBy = _holder param [1, ""];
         };
+        private _depOn = _on && {missionNamespace getVariable ["ALiVE_c2istar_commanderSeatDeputies", false]};
+        private _deps = [[], (missionNamespace getVariable ["ALiVE_SCOM_commandDeputies", createHashMap]) getOrDefault [_side, []]] select (_depOn && {_holder isNotEqualTo []});
         ["CMD_SEAT", [_playerID, [
             _on,
             _side,
@@ -3736,7 +3760,10 @@ switch(_operation) do {
             _on && {!_mine} && {[_logic,"cmdMayTake",_player] call MAINCLASS},
             _may,
             ["", [_logic,"cmdWhyNot",[_playerID,_side]] call MAINCLASS] select !_may,
-            _offeredBy
+            _offeredBy,
+            _depOn,
+            [_deps apply { _x select 1 }, +_deps] select _mine,
+            [_logic,"cmdIsDeputy",[_playerID,_side]] call MAINCLASS
         ]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
 
     };
@@ -3827,6 +3854,56 @@ switch(_operation) do {
         if !([_logic,"cmdMayTake",_player] call MAINCLASS) exitWith { "The mission maker hasn't let you take command." call _reply };
         [_logic,"cmdSeatSet",[_side,_player,format ["%1 has handed command to %2.", [name _from, "The commander"] select (isNull _from), name _player]]] call MAINCLASS;
         "You hold command of your side." call _reply;
+
+    };
+
+    case "cmdSeatDeputy": {
+
+        // name or drop a deputy: [uid, the other player's uid, "ADD"|"DROP"]. Up to two per side, named by the seat
+        // holder (or an admin, for the other player's side). A deputy sets objectives and gives orders like the holder;
+        // deputies are never saved and go when the seat changes hands or is freed
+
+        _args params [["_playerID","",[""]],["_toID","",[""]],["_what","",[""]]];
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _player) exitWith {};
+        private _reply = { ["INTEL_ORDER_ACK", [_playerID, _this]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player] };
+        if (!([_logic,"cmdSeatOn"] call MAINCLASS) || {!(missionNamespace getVariable ["ALiVE_c2istar_commanderSeatDeputies", false])}) exitWith { "Deputies are switched off." call _reply };
+        if !(_what in ["ADD","DROP"]) exitWith {};
+        private _to = [_toID] call ALiVE_fnc_getPlayerByUID;
+        private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+        private _holds = [_logic,"cmdIsHolder",[_playerID,_side]] call MAINCLASS;
+        private _admin = ["isAdmin", [_player]] call ALiVE_fnc_siteWho;
+        if (!_holds && {_admin} && {!isNull _to}) then { _side = [_logic,"opsPlayerSideText",_to] call MAINCLASS };
+        private _holder = [_logic,"cmdSeatHolder",_side] call MAINCLASS;
+        if ((!_holds && {!_admin}) || {_holder isEqualTo []}) exitWith { "Only the seat holder names deputies." call _reply };
+        private _all = missionNamespace getVariable ["ALiVE_SCOM_commandDeputies", createHashMap];
+        private _deps = _all getOrDefault [_side, []];
+        private _i = _deps findIf { (_x select 0) == _toID };
+        private _resend = { { [_logic,"cmdSeatStatus",[getPlayerUID _x]] call MAINCLASS } forEach ([_logic,"cmdSidePlayers",_side] call MAINCLASS) };
+        if (_what == "DROP") exitWith {
+            if (_i < 0) exitWith { "That player isn't a deputy." call _reply };
+            private _name = (_deps select _i) select 1;
+            _deps deleteAt _i;
+            _all set [_side, _deps];
+            ALiVE_SCOM_commandDeputies = _all;
+            ["SCOM Commander seat: %1 deputy removed: %2", _side, _name] call ALiVE_fnc_dump;
+            [_logic,"cmdSideNotify",[_side,format ["%1 is no longer a deputy commander.", _name],[]]] call MAINCLASS;
+            (format ["%1 is no longer a deputy.", _name]) call _reply;
+            call _resend;
+        };
+        if (_i >= 0) exitWith { "That player is already a deputy." call _reply };
+        if (isNull _to || {_toID == (_holder select 0)}) exitWith { "Pick another player of your side." call _reply };
+        if (([_logic,"opsPlayerSideText",_to] call MAINCLASS) != _side) exitWith { "That player is on another side." call _reply };
+        if !([_logic,"cmdMayTake",_to] call MAINCLASS) exitWith { "That player is not allowed to command." call _reply };
+        if (count _deps >= 2) exitWith { "The deputy list is full." call _reply };
+        _deps pushBack [_toID, name _to];
+        _all set [_side, _deps];
+        ALiVE_SCOM_commandDeputies = _all;
+        ["SCOM Commander seat: %1 deputy named: %2", _side, name _to] call ALiVE_fnc_dump;
+        [_logic,"cmdSideNotify",[_side,format ["%1 is now a deputy commander and can give the AI Commander orders.", name _to],[]]] call MAINCLASS;
+        [format ["ALiVE: %1 has made you a deputy commander. You can set objectives and give the AI Commander orders.", _holder select 1]] remoteExecCall ["systemChat", _to];
+        (format ["%1 is now a deputy.", name _to]) call _reply;
+        call _resend;
 
     };
 
@@ -3980,6 +4057,27 @@ switch(_operation) do {
                     if (_why != "") then { [_logic,"cmdSeatSet",[_x,objNull,_why]] call ALiVE_fnc_commandHandler };
                     };
                 } forEach (keys _seats);
+                // a deputy who has changed side is dropped; one who is away or dead keeps the place until the seat
+                // changes hands
+                isNil {
+                    private _all = missionNamespace getVariable ["ALiVE_SCOM_commandDeputies", createHashMap];
+                    private _changed = [];
+                    {
+                        private _side = _x;
+                        private _keep = _y select {
+                            private _p = [_x select 0] call ALiVE_fnc_getPlayerByUID;
+                            isNull _p || {!alive _p} || {([_logic,"opsPlayerSideText",_p] call ALiVE_fnc_commandHandler) == _side}
+                        };
+                        if (count _keep != count _y) then { _changed pushBack [_side, _keep] };
+                    } forEach _all;
+                    {
+                        _x params ["_side", "_keep"];
+                        _all set [_side, _keep];
+                        ["SCOM Commander seat: %1 deputy dropped after a side change", _side] call ALiVE_fnc_dump;
+                        [_logic,"cmdSideNotify",[_side,"A deputy commander has changed side and is no longer a deputy.",[]]] call ALiVE_fnc_commandHandler;
+                        { [_logic,"cmdSeatStatus",[getPlayerUID _x]] call ALiVE_fnc_commandHandler } forEach ([_logic,"cmdSidePlayers",_side] call ALiVE_fnc_commandHandler);
+                    } forEach _changed;
+                };
             };
         };
 

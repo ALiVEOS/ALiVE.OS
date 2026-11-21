@@ -669,6 +669,20 @@ class CfgVehicles {
                             ALiVE_showWhen[] = {{"commanderSeat", "is", "side"}};
                     };
                     class commanderSeatRelease : Edit { property = "ALiVE_MIL_C2ISTAR_commanderSeatRelease"; displayName = "$STR_ALIVE_C2ISTAR_SEAT_RELEASE"; tooltip = "$STR_ALIVE_C2ISTAR_SEAT_RELEASE_COMMENT"; typeName = "STRING"; defaultValue = """3"""; ALiVE_showWhen[] = {{"commanderSeat", "is", "side"}}; };
+                    // Deputies: up to two players the seat holder names to give orders beside them (never saved)
+                    class commanderSeatDeputies : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_commanderSeatDeputies";
+                            displayName = "$STR_ALIVE_C2ISTAR_SEAT_DEPUTIES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SEAT_DEPUTIES_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                            ALiVE_showWhen[] = {{"commanderSeat", "is", "side"}};
+                    };
 
                     // ---- Operations tablet -------------------------------------------
                     class SPACER_ROLE_OPS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_OPS"; displayName = "OPERATIONS TABLET"; };

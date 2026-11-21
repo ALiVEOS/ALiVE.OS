@@ -934,6 +934,30 @@
 <Key ID="STR_ALIVE_SCOM_SEAT_HAND_ROW">
     <English>Hand command to %1</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DEPUTY_ROW_ADD">
+    <English>Name %1 as deputy</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DEPUTY_ROW_DROP">
+    <English>Remove %1 as deputy</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_YOU_DEPUTY">
+    <English>You are a deputy commander: you can set objectives and give the AI Commander orders.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DEPUTIES">
+    <English>Deputies: %1</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DEPUTY_ADD">
+    <English>Name deputy</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DEPUTY_ADD_COMMENT">
+    <English>Let this player set objectives and give the AI Commander orders beside you (up to two deputies).</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DEPUTY_DROP">
+    <English>Remove deputy</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_SEAT_DEPUTY_DROP_COMMENT">
+    <English>This player stops being a deputy and can no longer give the AI Commander orders.</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_SEAT_ANSWER_HINT">
     <English>Accept or decline within a minute.</English>
 </Key>
