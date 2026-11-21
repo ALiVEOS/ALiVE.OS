@@ -318,6 +318,29 @@ switch (_operation) do {
 
     };
 
+    case "cmdObjLeave": {
+
+        // leaving the Commander page's Objectives view: the Operations page gets its own commander and view back, a late
+        // reply is dropped (it needs the objectives view), and the markers and map click go
+
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        if !([_commandState,"cmdObjOn",false] call ALIVE_fnc_hashGet) exitwith {};
+        ([_commandState,"cmdObjKeep",[DEFAULT_SELECTED_VALUE,"GROUPS"]] call ALIVE_fnc_hashGet) params ["_keepOpcom","_keepMode"];
+        [_commandState,"cmdObjOn",false] call ALIVE_fnc_hashSet;
+        [_commandState,"opsOPCOMSelectedValue",_keepOpcom] call ALIVE_fnc_hashSet;
+        [_commandState,"opsViewMode",[_keepMode,"GROUPS"] select (_keepMode == "OBJECTIVES")] call ALIVE_fnc_hashSet;
+        [_commandState,"opsObjectivesSelectedID",""] call ALIVE_fnc_hashSet;
+        [_commandState,"opsObjectiveDesignatePos",[]] call ALIVE_fnc_hashSet;
+        [_logic,"commandState",_commandState] call MAINCLASS;
+        [_logic,"clearObjMarkers"] call MAINCLASS;
+        if (!isNull (findDisplay SCOMTablet_CTRL_MainDisplay)) then {
+            private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+            _editMap ctrlSetEventHandler ["MouseButtonDown", ""];
+            _editMap ctrlSetEventHandler ["MouseButtonDblClick", ""];
+        };
+
+    };
+
     case "clearObjMarkers": {
 
         {
@@ -898,6 +921,9 @@ switch (_operation) do {
         // The machine has an interface? Must be a MP client, SP client or a client that acts as host!
         if (hasInterface) then {
 
+            // closed in the Commander page's Objectives view: the Operations page's own commander comes back
+            [_logic,"cmdObjLeave"] call MAINCLASS;
+
             private ["_commandState","_IMINTcam","_markers","_groupWaypoints","_plannedWaypoints"];
 
             _commandState = [_logic,"commandState"] call MAINCLASS;
@@ -1422,6 +1448,14 @@ switch (_operation) do {
 
                     // Commander's Picture: the three tabs on the left buttons, the list and its map in the middle
 
+                    // coming back from the Objectives view (its Back), or opening the tablet again after it: the Commander tab
+                    [_logic,"cmdObjLeave"] call MAINCLASS;
+                    private _cs = [_logic,"commandState"] call MAINCLASS;
+                    if (([_cs,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) == "OBJECTIVES") then {
+                        [_cs,"cmdTab","COMMANDER"] call ALIVE_fnc_hashSet;
+                        [_logic,"commandState",_cs] call MAINCLASS;
+                    };
+
                     private _commandState = [_logic,"commandState"] call MAINCLASS;
                     [_commandState,"intelViewMode","COMMANDER"] call ALIVE_fnc_hashSet;
                     [_logic,"commandState",_commandState] call MAINCLASS;
@@ -1485,6 +1519,7 @@ switch (_operation) do {
                     // one of the three tabs: Commander asks the server; Radio and Air read what this machine has heard
 
                     private _tab = _args param [0, "COMMANDER"];
+                    if (_tab != "OBJECTIVES") then { [_logic,"cmdObjLeave"] call MAINCLASS };
                     private _commandState = [_logic,"commandState"] call MAINCLASS;
                     if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitWith {};
                     [_commandState,"cmdTab",_tab] call ALIVE_fnc_hashSet;
@@ -1524,6 +1559,25 @@ switch (_operation) do {
                         [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_WAITING"]] call MAINCLASS;
                         ["INTEL_GET_PICTURE", [getPlayerUID player]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
                     } else {
+                        // the commander's objectives: the Operations page's objectives view for the side's commander (the
+                        // same list, map and buttons, and the same checks on the server); the top Back returns here
+                        if (_tab == "OBJECTIVES") exitWith {
+                            _editMap ctrlShow true;
+                            _detail ctrlShow false;
+                            [_logic,"cmdListWidth","COMMANDER"] call MAINCLASS;
+                            private _opc = [_commandState,"cmdObjOpcom",[]] call ALIVE_fnc_hashGet;
+                            if (count _opc < 3) exitWith { [_logic,"cmdText",[SCOMTablet_CTRL_IntelStatus, localize "STR_ALIVE_SCOM_CMD_OBJ_NONE"]] call MAINCLASS };
+                            // the Operations page keeps its own commander and view, put back on leaving
+                            if !([_commandState,"cmdObjOn",false] call ALIVE_fnc_hashGet) then {
+                                [_commandState,"cmdObjOn",true] call ALIVE_fnc_hashSet;
+                                [_commandState,"cmdObjKeep",[[_commandState,"opsOPCOMSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashGet, [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashGet]] call ALIVE_fnc_hashSet;
+                            };
+                            [_commandState,"opsOPCOMSelectedValue",_opc] call ALIVE_fnc_hashSet;
+                            [_logic,"commandState",_commandState] call MAINCLASS;
+                            private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
+                            _back ctrlSetEventHandler ["MouseButtonClick", "['INTEL_VIEW_COMMANDER',[]] call ALIVE_fnc_SCOMTabletOnAction"];
+                            ["OPS_VIEW_OBJECTIVES",[]] call ALIVE_fnc_SCOMTabletOnAction;
+                        };
                         // the Commander seat: who holds command of the side, and taking, handing over or standing down
                         if (_tab == "SEAT") exitWith {
                             _editMap ctrlShow false;
@@ -4634,6 +4688,12 @@ switch (_operation) do {
             _b2 ctrlSetText localize "STR_ALIVE_SCOM_UI_REFRESH";
             _b2 ctrlSetTooltip "";
             _b2 ctrlSetEventHandler ["MouseButtonClick", format ["['INTEL_CMD_TAB',['%1']] call ALIVE_fnc_SCOMTabletOnAction", [_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet]];
+            // with nothing picked it opens the commander's objectives instead (the picture refreshes itself every 30 s)
+            if (_cmdTabOn && {count ([_commandState,"cmdObjOpcom",[]] call ALIVE_fnc_hashGet) >= 3}) then {
+                _b2 ctrlSetText localize "STR_ALIVE_SCOM_CMD_OBJECTIVES";
+                _b2 ctrlSetTooltip localize "STR_ALIVE_SCOM_CMD_OBJECTIVES_COMMENT";
+                _b2 ctrlSetEventHandler ["MouseButtonClick", "['INTEL_CMD_TAB',['OBJECTIVES']] call ALIVE_fnc_SCOMTabletOnAction"];
+            };
         };
         if (_orders && _looking) then {
             _go ctrlSetText localize "STR_ALIVE_SCOM_CMD_GO";
@@ -5031,7 +5091,11 @@ switch (_operation) do {
             if (([_commandState,"intelViewMode",""] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
             if (([_commandState,"cmdTab","COMMANDER"] call ALIVE_fnc_hashGet) != "COMMANDER") exitwith {};
 
-            _args params ["_uid", ["_mode","READ"], ["_cmds",[]], ["_notes",[]]];
+            _args params ["_uid", ["_mode","READ"], ["_cmds",[]], ["_notes",[]], ["_cmdrs",[]]];
+
+            // the commander the Objectives button opens ([id, name, side]; none from an older server)
+            [_commandState,"cmdObjOpcom",(_cmdrs param [0, []])] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
 
             [_logic,"clearCmdMarkers"] call MAINCLASS;
 
@@ -5392,6 +5456,8 @@ switch (_operation) do {
         _buttonR3 ctrlShow true;
         _buttonR3 ctrlSetText localize "STR_ALIVE_SCOM_UI_VIEW_GROUPS";
         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_VIEW_GROUPS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        // opened from the Commander page: no groups to go to there, its Back is the top one
+        if ([_commandState,"cmdObjOn",false] call ALIVE_fnc_hashGet) then { _buttonR3 ctrlShow false };
 
         {
             private _button = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);

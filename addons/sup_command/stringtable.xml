@@ -934,6 +934,15 @@
 <Key ID="STR_ALIVE_SCOM_SEAT_HAND_ROW">
     <English>Hand command to %1</English>
 </Key>
+<Key ID="STR_ALIVE_SCOM_CMD_OBJECTIVES">
+    <English>Objectives</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_OBJECTIVES_COMMENT">
+    <English>The commander's objectives on the map, in its order. Add one, cancel your own or change the order, as on the Operations page.</English>
+</Key>
+<Key ID="STR_ALIVE_SCOM_CMD_OBJ_NONE">
+    <English>No commander of your side takes objectives from you.</English>
+</Key>
 <Key ID="STR_ALIVE_SCOM_SEAT_DEPUTY_ROW_ADD">
     <English>Name %1 as deputy</English>
 </Key>

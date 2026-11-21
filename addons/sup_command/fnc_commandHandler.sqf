@@ -2680,7 +2680,8 @@ switch(_operation) do {
         // are finding out about (Find Out Before Attacking). The side is the server's own, never the client's; each
         // commander also passes the Intel limit, and sends positions only when its Intel Markers setting is on.
         // Reply: [uid, mode, [[faction, stance, Intel Wait minutes, positions shared, rows], ...], [[faction, seconds left
-        // holding after a capture, its place, seconds left to prepare, its place, tasks asked for], ...]]
+        // holding after a capture, its place, seconds left to prepare, its place, tasks asked for], ...], [[commander id,
+        // name, side], ...] (the Objectives view)]
 
         if (_args isEqualType []) then {
 
@@ -2766,7 +2767,23 @@ switch(_operation) do {
                 } forEach OPCOM_instances;
             };
 
-            ["INTEL_PICTURE", [_playerID, _mode, _out, _notes]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+            // the side's commanders this player may give objectives, as the Operations page lists them ([id, name, side]),
+            // those finding out first; the Commander page's Objectives view uses the first
+            private _cmdrs = [];
+            if (!isNil "OPCOM_instances") then {
+                private _side = [_logic,"opsPlayerSideText",_player] call MAINCLASS;
+                private _later = [];
+                {
+                    if (([_x,"side",""] call ALiVE_fnc_hashGet) == _side
+                        && {[_logic,"opsCallerAuthorizedForOpcom",[_playerID,_x,"opsLimit"]] call MAINCLASS}) then {
+                        private _entry = [[_x,"opcomID"] call ALiVE_fnc_hashGet, [_x,"name"] call ALiVE_fnc_hashGet, [_x,"side"] call ALiVE_fnc_hashGet];
+                        if ([_x,"intelCycle",false] call ALiVE_fnc_hashGet) then { _cmdrs pushBack _entry } else { _later pushBack _entry };
+                    };
+                } forEach OPCOM_instances;
+                _cmdrs append _later;
+            };
+
+            ["INTEL_PICTURE", [_playerID, _mode, _out, _notes, _cmdrs]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
 
         };
 
