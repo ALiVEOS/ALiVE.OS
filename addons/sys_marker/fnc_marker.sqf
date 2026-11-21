@@ -493,7 +493,7 @@ switch (_operation) do {
                                             [_markersHash, QGVAR(dir), _dir] call ALIVE_fnc_hashSet;
                                             [_markersHash, QGVAR(size), [_width,_length/2]] call ALIVE_fnc_hashSet;
                                             [_markersHash, QGVAR(pos), _pos] call ALIVE_fnc_hashSet;
-                                            _markersHash call ALIVE_fnc_inspectHash;
+                                            if (missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]) then { _markersHash call ALIVE_fnc_inspectHash };
                                             // Create Marker
                                             _markerName = "LINE" + str(random 5000 + 1);
                                             [MOD(SYS_marker), "addMarker", [_markerName, _markersHash]] call ALiVE_fnc_marker;

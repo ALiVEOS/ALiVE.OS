@@ -159,7 +159,8 @@ switch (_operation) do {
 
                 };
 
-                GVAR(STORE) call ALIVE_fnc_inspectHash;
+                // the loaded store, line by line, only when the saved data's debug is on
+                if (missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]) then { GVAR(STORE) call ALIVE_fnc_inspectHash };
 
                 [_logic,"state",GVAR(STORE)] call ALiVE_fnc_sitrep;
 

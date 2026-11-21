@@ -189,7 +189,9 @@ switch(_operation) do {
                                      };
                                 } foreach (synchronizedObjects _logic);
 
-                                _factionData call ALiVE_fnc_InspectHash;
+                                // once for every faction in the game, so only with Debug on: over 1,600 lines at each start
+                                // with RHS and 3CB loaded (21 Nov)
+                                if (GVAR(DEBUG)) then { _factionData call ALiVE_fnc_InspectHash };
 
                                 [GVAR(STORE),_id,_factionData] call ALiVE_fnc_HashSet;
                             };

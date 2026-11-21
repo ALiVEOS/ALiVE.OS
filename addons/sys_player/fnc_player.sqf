@@ -198,7 +198,8 @@ switch(_operation) do {
                         if ([_res] call ALIVE_fnc_isHash) then {
                             GVAR(player_data) = _res;
 
-                            GVAR(player_data) call ALiVE_fnc_inspectHash;
+                            // every saved player, line by line, only when the saved data's debug is on
+                            if (missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]) then { GVAR(player_data) call ALiVE_fnc_inspectHash };
                         };
 
 	                    // if SP or player that hosts a session execute connected EH manually
