@@ -52,6 +52,28 @@ if (_crows isEqualType createHashMap && {count _crows > 0} && {
     } > -1
 }) exitWith { true };
 
+// Sania and Electronic Warfare REDUX: a Sania, Sania_with_tripod or Volnorez_1 that the mod has switched on
+// (DB_jammer_isActive). REDUX gives each jammer its own range (DB_Jammer_range) and jams fully out to
+// DB_Jammer_fullJamRatio of it (default 0.45); Sania has one range for all, DB_Jammer_maxJamDistance (default 600 m).
+// The jammers are listed again every 5 s (ALiVE_IED_saniaList)
+if (isClass (configFile >> "CfgVehicles" >> "Sania_Base")) then {
+    if (time > (missionNamespace getVariable ["ALiVE_IED_saniaAt", -1])) then {
+        ALiVE_IED_saniaAt = time + 5;
+        ALiVE_IED_saniaList = entities "Sania_Base";
+    };
+};
+if ((missionNamespace getVariable ["ALiVE_IED_saniaList", []]) findIf {
+    alive _x && {_x getVariable ["DB_jammer_isActive", false]} && {
+        private _r = _x getVariable ["DB_Jammer_range", -1];
+        private _reach = if (_r isEqualType 0 && {_r >= 0}) then {
+            _r * (missionNamespace getVariable ["DB_Jammer_fullJamRatio", 0.45])
+        } else {
+            missionNamespace getVariable ["DB_Jammer_maxJamDistance", 600]
+        };
+        (_x distance _at) < _reach
+    }
+} > -1) exitWith { true };
+
 private _fnc_jammerWorks = {
     private _v = _this;
     if (!alive _v || {!isEngineOn _v}) exitWith { false };

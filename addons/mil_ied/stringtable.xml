@@ -361,7 +361,7 @@
     <English>Jammers Stop Drones:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_JAMMED_COMMENT">
-    <English>A working jammer near the drone (a vehicle's within Jammer Radius, a carried one within Carried Jammer Radius, see IED THREAT, or a Crows Electronic Warfare drone jammer) makes it lose its signal and drop without exploding. A drone whose AI pilot is killed or whose fuel is drained by another mod's jammer drops the same way, whatever this is set to.</English>
+    <English>A working jammer near the drone (a vehicle's within Jammer Radius, a carried one within Carried Jammer Radius, see IED THREAT, a Crows Electronic Warfare drone jammer, or a Sania or Volnorez that Sania &amp; Volnorez EW or Electronic Warfare REDUX has switched on) makes it lose its signal and drop without exploding. A drone whose AI pilot is killed or whose fuel is drained by another mod's jammer drops the same way, whatever this is set to.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_SHOTDOWN">
     <English>Chance To Explode When Downed:</English>
@@ -556,7 +556,7 @@
     <English>Jammer Radius (m)</English>
 </Key>
 <Key ID="STR_ALIVE_IED_JAMMER_RADIUS_COMMENT">
-    <English>A trigger man can't set his IED off while a vehicle with a working jammer is this close to it: he waits, and tries again once it has gone. A jammer works while the vehicle is alive with its engine on. RHS vehicles fitted with a DUKE count, unless the DUKE is hidden or destroyed, and so do the classes listed in Jammer Vehicles. With Crows Electronic Warfare loaded, its jammers count too, at the range set in the mod, while switched on there. IEDs without a trigger man go off as usual. 0 turns jammers off.</English>
+    <English>A trigger man can't set his IED off while a vehicle with a working jammer is this close to it: he waits, and tries again once it has gone. A jammer works while the vehicle is alive with its engine on. RHS vehicles fitted with a DUKE count, unless the DUKE is hidden or destroyed, and so do the classes listed in Jammer Vehicles. With Crows Electronic Warfare loaded, its jammers count too, at the range set in the mod, while switched on there. So do the Sania and Volnorez jammers of Sania &amp; Volnorez EW and Electronic Warfare REDUX, while switched on, out to the range where the mod jams fully. IEDs without a trigger man go off as usual. 0 turns jammers off.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_JAMMER_VEHICLES">
     <English>Jammer Vehicles</English>
