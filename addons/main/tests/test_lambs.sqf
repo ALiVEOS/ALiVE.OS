@@ -172,6 +172,12 @@ isNil {
     // --- the network door ------------------------------------------------------------
     ["order", ["test_lambs_n1", "attack", [1, 1, 0], "x", -1]] call ALiVE_fnc_lambsRemote;
     ["lambsRemote: an operation not on its list is not run", !("test_lambs_n1" in ALiVE_lambs_orders)] call _fnc_check;
+    // no machine has this number, so it is not a headless client's. Run by remote call the engine names the
+    // caller's machine, which is taken off the list again.
+    private _withWas = +ALiVE_lambs_with;
+    ["with", [], 9999] call ALiVE_fnc_lambsRemote;
+    ["lambsRemote: a machine number that is no headless client's is not taken as the sender", !(9999 in ALiVE_lambs_with)] call _fnc_check;
+    { ALiVE_lambs_with deleteAt (ALiVE_lambs_with find _x) } forEach (ALiVE_lambs_with - _withWas);
     private _refusedBefore = ALiVE_lambs_stats getOrDefault ["report_refused", 0];
     ["report", ["contact", "test_lambs_none", "EAST", [0, 0, 0], [[], 1], 99]] call ALiVE_fnc_lambs;
     ["report: refused from a machine that does not own the group", (ALiVE_lambs_stats getOrDefault ["report_refused", 0]) == _refusedBefore + 1] call _fnc_check;

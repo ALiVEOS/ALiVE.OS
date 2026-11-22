@@ -240,7 +240,7 @@ switch (_operation) do {
         if (!ACTIVE || {!isNil "ALiVE_lambs_started"}) exitWith {};
         ALiVE_lambs_started = true;
         // the server moves the groups LAMBS runs only to machines that have said they run LAMBS
-        if (!isServer) then { ["with", []] remoteExecCall ["ALiVE_fnc_lambsRemote", 2] };
+        if (!isServer) then { ["with", [], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2] };
 
         // LAMBS raises its events on the machine that owns the unit
         {
@@ -944,7 +944,7 @@ switch (_operation) do {
                     private _wps = waypoints _group;
                     for "_i" from (count _wps - 1) to 0 step -1 do { if (waypointName (_wps select _i) in L_WP_NAMES) then { deleteWaypoint (_wps select _i) } };
                     (_group getVariable ["ALiVE_lambs", ["", "", ""]]) params ["", "_id", "_sideText"];
-                    ["report", ["reinforceDone", _id, _sideText, getPosATL _leader, []]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+                    ["report", ["reinforceDone", _id, _sideText, getPosATL _leader, []], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
                 continue;
             };
@@ -1023,7 +1023,7 @@ switch (_operation) do {
             private _gun = _third;
             if !(_gun isEqualType objNull) exitWith {};
             if (isNull _gun) exitWith {};
-            ["report", ["artycalled", "", str side _group, _fourth, [_gun]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+            ["report", ["artycalled", "", str side _group, _fourth, [_gun]], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
             [_gun, str side _group] spawn {
                 params ["_gun", "_sideText"];
                 _gun setVariable ["ALiVE_lambs_fired", 0];
@@ -1032,7 +1032,7 @@ switch (_operation) do {
                 sleep 20;
                 waitUntil { sleep 5; !alive _gun || {time > _until} || {((group gunner _gun) getVariable [L_CURTACTIC, ""]) != "taskArtillery"} };
                 _gun removeEventHandler ["Fired", _eh];
-                ["report", ["artydone", "", _sideText, getPosATL _gun, [_gun, _gun getVariable ["ALiVE_lambs_fired", 0]]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+                ["report", ["artydone", "", _sideText, getPosATL _gun, [_gun, _gun getVariable ["ALiVE_lambs_fired", 0]]], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
             };
         };
 
@@ -1057,7 +1057,7 @@ switch (_operation) do {
                 _state set ["lastEvent", time];
                 if (["contact", SEND_CONTACT] call _due) then {
                     TALLY("contact_seen");
-                    ["report", ["contact", _id, _sideText, getPosATL _unit, [[_third] select { _x isEqualType objNull && {!isNull _x} }, 1]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+                    ["report", ["contact", _id, _sideText, getPosATL _unit, [[_third] select { _x isEqualType objNull && {!isNull _x} }, 1]], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
             };
             case "assess": {
@@ -1065,21 +1065,21 @@ switch (_operation) do {
                 private _enemies = if (_third isEqualType []) then { _third select { _x isEqualType objNull && {alive _x} } } else { [] };
                 if (_enemies isEqualTo []) exitWith {};
                 if (["assess", SEND_ASSESS] call _due) then {
-                    ["report", ["assess", _id, _sideText, getPosATL _unit, [_enemies select [0, ASSESS_ENEMIES], count _enemies, { alive _x } count units _group]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+                    ["report", ["assess", _id, _sideText, getPosATL _unit, [_enemies select [0, ASSESS_ENEMIES], count _enemies, { alive _x } count units _group]], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
                 // LAMBS' own rule for calling fire, sent to ALiVE's batteries when LAMBS has no gun of its own to call
                 if (LHAS(L_FNC_FRIENDLIES) && {!(LHAS(L_FNC_HASARTY) && {[side _group] call LFNC(L_FNC_HASARTY)})}) then {
                     private _index = _enemies findIf { _unit distance2D _x > ARTY_MIN_RANGE && {([_unit, getPosATL _x, ARTY_FRIENDLY] call LFNC(L_FNC_FRIENDLIES)) isEqualTo []} };
                     if (_index > -1 && {["arty", SEND_ARTY] call _due}) then {
                         private _target = _enemies select _index;
-                        ["report", ["arty", _id, _sideText, getPosATL _target, [_target, count _enemies]]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+                        ["report", ["arty", _id, _sideText, getPosATL _target, [_target, count _enemies]], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                     };
                 };
             };
             case "panic";
             case "fleeing": {
                 if (["morale", SEND_MORALE] call _due) then {
-                    ["report", [_kind, _id, _sideText, getPosATL _unit, []]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+                    ["report", [_kind, _id, _sideText, getPosATL _unit, []], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
             };
             case "reinforce": {
@@ -1090,7 +1090,7 @@ switch (_operation) do {
                     _group setVariable ["ALiVE_lambs_reinf", true, true];
                 };
                 if (["reinforce", SEND_MORALE] call _due) then {
-                    ["report", ["reinforce", _id, _sideText, if (_third isEqualType [] && {count _third > 1}) then { _third } else { getPosATL _unit }, []]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+                    ["report", ["reinforce", _id, _sideText, if (_third isEqualType [] && {count _third > 1}) then { _third } else { getPosATL _unit }, []], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
                 };
             };
         };

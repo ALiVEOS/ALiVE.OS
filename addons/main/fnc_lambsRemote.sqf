@@ -11,18 +11,25 @@ and each is checked against the machine that sent it. ALiVE_fnc_lambs takes the 
 operations from here alone and leaves every other operation open, so a call made on the server
 inside a client's remote call (a Zeus module, a commander tablet order) is not turned away.
 
+The engine does not always say who sent a call: one from a headless client can reach the server with
+isRemoteExecuted false and remoteExecutedOwner 0. So the sending machine adds its own clientOwner, and the
+server takes that number only when the engine gave none and it is the owner of a headless client. A
+machine could at worst say that a real headless client runs LAMBS; it cannot pass as a player's machine
+or get a group moved to itself.
+
 A mission that limits remoteExec through CfgRemoteExec must allow ALiVE_fnc_lambsRemote.
 
 Parameters:
 String - operation
 Array - arguments
+Number - the sending machine's clientOwner (optional, sent with the owner-to-server operations)
 
 Returns:
 Nothing
 
 Examples:
 (begin example)
-["report", ["contact", _id, _sideText, _position, _payload]] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
+["report", ["contact", _id, _sideText, _position, _payload], clientOwner] remoteExecCall ["ALiVE_fnc_lambsRemote", 2];
 (end)
 
 Author:
@@ -34,7 +41,7 @@ Goldwep
 // server to owner
 #define TO_OWNER  ["detachLocal", "share", "unassign", "nudge", "soldierBehaviour"]
 
-params [["_operation", "", [""]], ["_args", [], [[]]]];
+params [["_operation", "", [""]], ["_args", [], [[]]], ["_claimed", -1, [0]]];
 
 // seen by ALiVE_fnc_lambs, which takes a report from nowhere else
 private _lambsDoor = true;
@@ -43,6 +50,16 @@ if (!_toServer && {!(_operation in TO_OWNER)}) exitWith {};
 
 // -1: not from the network (single player, or called on this machine)
 private _sender = if (isRemoteExecuted && {isMultiplayer}) then { remoteExecutedOwner } else { -1 };
+
+// the engine named no sender and the call says which machine it is from: this machine itself counts as
+// not from the network, a headless client is taken at its word, and anything else is turned away
+private _unknown = false;
+if (_sender < 1 && {isMultiplayer} && {_claimed > -1}) then {
+    if (_claimed == clientOwner) exitWith { _sender = -1 };
+    if (isServer && {((entities "HeadlessClient_F") findIf { owner _x == _claimed }) > -1}) exitWith { _sender = _claimed };
+    _unknown = true;
+};
+if (_unknown) exitWith {};
 
 if (_toServer) exitWith {
     if (!isServer) exitWith {};
