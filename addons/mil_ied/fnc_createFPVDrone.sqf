@@ -7,7 +7,8 @@ Description:
 An FPV suicide drone sent at a player by the bomber and drone dispatcher (fnc_IED "bomberDispatch").
 
 The drone is the side's vanilla quadcopter (or Drone Class) with a dummy of its warhead under it. It flies to the
-player 40 m over the ground at 15 m/s, holds about 25 m over him for 4 s (the warning: its rotors overhead), then dives. When it reaches him it is
+player 40 m over the ground at 15 m/s; within 150 m it makes its attack run, swinging in from a random side and
+weaving as it closes (the warning is its rotors), then dives. When it reaches him it is
 removed and the real warhead is made and set off there (measured on the NUC, DRN46 to DRN51: a warhead carried on
 the drone does not hurt a vehicle; one made at the moment of the hit does, if it comes in 45 degrees down from in
 front of the vehicle). Downed (shot down in any phase, crashed or stuck, or out of battery after Drone Battery
@@ -62,8 +63,8 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
 
         case "blow": {
             // the warhead goes off: the drone and its dummy are removed and the real warhead is made and set off.
-            // On target (a hit, or a crash within 8 m of him): for a vehicle 45 degrees down from in front of it,
-            // 2.5 m off its centre; for a man 0.5 m back along the line to his chest. Elsewhere, where the drone was
+            // On target (a hit, or a crash within 8 m of him): for a vehicle from above, just off the armour over
+            // its engine; for a man 0.5 m back along the line to his chest. Elsewhere, where the drone was
             _args params ["_d", "_pos", ["_fuse", ""], ["_onTarget", false]];
             if (_d getOrDefault ["gone", false]) exitWith {};
             _d set ["gone", true];
@@ -87,8 +88,23 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
                     if ((vectorMagnitude _v) > 0.01) then { _dir = vectorNormalized _v };
                     _pp = _pos vectorAdd (_dir vectorMultiply -0.5);
                 } else {
-                    _dir = vectorNormalized ((vectorDir _tgt) vectorAdd [0, 0, -1]);
-                    _pp = (_tgt modelToWorldWorld [0, 0, 0]) vectorAdd (_dir vectorMultiply -2.5);
+                    // from above, onto the engine (the roof is a tank's thinnest armour, and the engine under it
+                    // is what stops it), or the centre when the model names no engine
+                    _dir = vectorNormalized (((vectorDir _tgt) vectorMultiply 0.2) vectorAdd [0, 0, -1]);
+                    private _hp = getAllHitPointsDamage _tgt;
+                    private _ei = if (_hp isEqualTo []) then { -1 } else { (_hp select 0) findIf { _x == "HitEngine" } };
+                    private _mp = [0, 0, 0];
+                    if (_ei >= 0) then {
+                        private _sp = _tgt selectionPosition [(_hp select 1) select _ei, "HitPoints"];
+                        if (_sp isNotEqualTo [0, 0, 0]) then { _mp = _sp };
+                    };
+                    private _c = _tgt modelToWorldWorld _mp;
+                    _pp = _c vectorAdd (_dir vectorMultiply -2.5);
+                    // a fixed 2.5 m can be inside a big hull, or short of it: the charge goes 0.5 m out from the
+                    // armour, found along the same line from 10 m out
+                    private _far = _c vectorAdd (_dir vectorMultiply -10);
+                    private _s = (lineIntersectsSurfaces [_far, _c, objNull, objNull, true, 1, "FIRE", "GEOM"]) select { (_x select 2) isEqualTo _tgt || {(_x select 3) isEqualTo _tgt} };
+                    if (_s isNotEqualTo []) then { _pp = ((_s select 0) select 0) vectorAdd (_dir vectorMultiply -0.5) };
                 };
             };
             private _ch = createVehicle [_d get "ammo", ASLToAGL _pp, [], 0, "CAN_COLLIDE"];
@@ -101,6 +117,16 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
             private _lead = _d get "lead";
             if (alive _lead) then { _ch setShotParents [_lead, _lead] };
             triggerAmmo _ch;
+            // a Large charge is a tandem: the anti-tank warhead with a rocket warhead behind it, so a tank it reaches
+            // is not left with only a scratch when the first one finds no weak spot
+            if ((_d get "ammo") == "M_Titan_AT" && {isClass (configFile >> "CfgAmmo" >> "R_PG32V_F")}) then {
+                private _ch2 = createVehicle ["R_PG32V_F", ASLToAGL _pp, [], 0, "CAN_COLLIDE"];
+                _ch2 setPosASL (_pp vectorAdd (_dir vectorMultiply -0.3));
+                _ch2 setVectorDirAndUp [_dir, vectorNormalized _up];
+                _ch2 setVelocity (_dir vectorMultiply 22);
+                if (alive _lead) then { _ch2 setShotParents [_lead, _lead] };
+                triggerAmmo _ch2;
+            };
             ["end", [_d, format ["exploded (%1)", _fuse], false]] call ALiVE_fnc_createFPVDrone;
         };
 
@@ -137,13 +163,13 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
 
         case "info": {
             // ALiVE_IED_droneInfo on the drone, server-local, for the War Room's live map: [phase ("search", "cruise",
-            // "hover", "dive" or "drop"), target or objNull, the launching group or the objective position it roams
+            // "attack", "hover" (waiting over a player under a roof), "dive" or "drop"), target or objNull, the launching group or the objective position it roams
             // from, launch time, battery end time]; updated when the phase or the target changes
             _args params ["_d"];
             private _uav = _d get "uav";
             if (isNull _uav) exitWith {};
             private _phase = switch (_d get "phase") do {
-                case "terminal": { ["hover", "dive"] select ((_d getOrDefault ["diveAt", -1]) >= 0) };
+                case "terminal": { ["attack", "dive"] select ((_d getOrDefault ["diveAt", -1]) >= 0) };
                 case "roof": { "hover" };
                 default { _d get "phase" };
             };
@@ -185,7 +211,7 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
             if ((_d getOrDefault ["marker", ""]) != "") then { deleteMarker (_d get "marker") };
             if (_d get "debug") then {
                 ["ALIVE-%1 FPV drone: flight over after %2 s: %3; closest %4 m to %5", time, round (time - (_d get "t0")), _why,
-                    [(_d get "min") toFixed 1, "-"] select ((_d get "min") > 1e8), if (isNull _target) then { "nobody" } else { name _target }] call ALiVE_fnc_dump;
+                    [(_d get "min") toFixed 1, "-"] select ((_d get "min") > 1e8), if (isNull _target) then { "nobody" } else { [typeOf _target, name _target] select (_target isKindOf "Man") }] call ALiVE_fnc_dump;
             };
         };
     };
@@ -216,10 +242,12 @@ if (_class != "" && {!isClass (configFile >> "CfgVehicles" >> _class) || {getNum
 };
 if (_class == "") then { _class = _fallback };
 
-// the warhead: Medium is a rocket warhead, Small a grenade; a missing class falls back to the other
-private _sizes = ["R_PG32V_F", "mini_Grenade"];
-private _ammo = _sizes select ((ADDON getVariable ["Drone_Charge", "MEDIUM"]) == "SMALL");
-if !(isClass (configFile >> "CfgAmmo" >> _ammo)) then { _ammo = (_sizes - [_ammo]) select 0 };
+// the warhead: Large the Titan's top-attack anti-tank warhead, Medium a rocket warhead, Small a grenade; a missing
+// class falls back to the next one that exists
+private _sizes = ["M_Titan_AT", "R_PG32V_F", "mini_Grenade"];
+private _ammo = _sizes select ((["LARGE", "MEDIUM", "SMALL"] find (ADDON getVariable ["Drone_Charge", "MEDIUM"])) max 0);
+if !(isClass (configFile >> "CfgAmmo" >> _ammo)) then { _ammo = (_sizes select { isClass (configFile >> "CfgAmmo" >> _x) }) param [0, ""] };
+if (_ammo == "") then { _ammo = "mini_Grenade" };
 if !(isClass (configFile >> "CfgAmmo" >> _ammo)) exitWith {
     if (_debug) then { ["ALIVE-%1 FPV drone: no warhead class found, no drone launched", time] call ALiVE_fnc_dump };
     objNull
@@ -266,8 +294,9 @@ _uav setVariable ["FPV_AI_Drones_managed", true, true];
 private _jip = format ["ALiVE_IED_droneLink_%1", netId _uav];
 ["nolink", [_uav]] remoteExecCall ["ALiVE_fnc_createFPVDrone", 0, _jip];
 
-// the dummy of the warhead it carries (a model only; nothing in it can go off)
-private _model = getText (configFile >> "CfgAmmo" >> _ammo >> "model");
+// the dummy of the warhead it carries (a model only; nothing in it can go off; a Large one shows the rocket
+// warhead, the Titan's own model being a whole missile)
+private _model = getText (configFile >> "CfgAmmo" >> (["R_PG32V_F", _ammo] select (_ammo != "M_Titan_AT")) >> "model");
 if ((_model select [0, 1]) == "\") then { _model = _model select [1] };
 if ((_model find ".") < 0) then { _model = _model + ".p3d" };
 // (a Crocus carries its own on the model)
@@ -276,6 +305,9 @@ private _isCrocus = _class isKindOf "ARMAFPV_Crocus_AT_Base";
 // off: told so from the start, so the warhead goes off only when this flight sets it off, as with any other drone
 if (_isCrocus) then {
     _uav setVariable ["DB_fpv_isDetonating", true, true];
+    // the mod launches its drone captive, and nobody shoots at a captive: this one can be shot at like any other
+    _uav setCaptive false;
+    { _x setCaptive false } forEach crew _uav;
     // and it is built to break at a light knock (armour 0.5, five times the impact damage): a bump on the scripted
     // flight is ignored, while bullets and blasts still bring it down
     _uav addEventHandler ["HandleDamage", {
@@ -302,7 +334,9 @@ private _d = createHashMapFromArray [
     ["min", 1e9], ["minBox", 1e9], ["lastDist", 1e9], ["lastPos", getPosASL _uav],
     ["side", _side], ["from", [_grp, _site] select _roam], ["batteryEnd", time + 60 * _battery],
     // a player further than this from the drone: it is called back
-    ["recall", [1500, 2500] select _roam]
+    ["recall", [1500, 2500] select _roam],
+    // Medium and Large charges go after crewed vehicles too, AI-crewed ones included
+    ["vehicles", (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"]
 ];
 if (_roam) then {
     // the search: a loose box of four legs 300 to 500 m round a centre, flown at cruise height
@@ -327,7 +361,7 @@ if (_debug) then {
     _m setMarkerText "FPV";
     _d set ["marker", _m];
     if (!_roam) then {
-        ["ALIVE-%1 FPV drone: %2 (%3, %4 warhead) launched at %5 from %6, %7 m away", time, _class, _side, _ammo, name _target, mapGridPosition _p, round (_p distance _target)] call ALiVE_fnc_dump;
+        ["ALIVE-%1 FPV drone: %2 (%3, %4 warhead) launched at %5 from %6, %7 m away", time, _class, _side, _ammo, ([typeOf _target, name _target] select (_target isKindOf "Man")), mapGridPosition _p, round (_p distance _target)] call ALiVE_fnc_dump;
     };
 };
 
@@ -340,6 +374,8 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
     if (_d get "gone") exitWith { removeMissionEventHandler ["EachFrame", _thisEventHandler] };
     private _uav = _d get "uav";
     if (isNull _uav) exitWith { ["end", [_d, "deleted", false]] call ALiVE_fnc_createFPVDrone };
+    // held while the server is paused (the once-a-second loop below): no steering
+    if ((_d getOrDefault ["heldAt", -1]) >= 0) exitWith {};
     private _now = diag_tickTime;
     if (!alive _uav) exitWith {
         // a crash within 8 m of him is a hit; shot down anywhere else, Chance To Explode When Downed decides
@@ -383,20 +419,36 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
     };
     if (!alive _target) exitWith { ["end", [_d, "the player died", true]] call ALiVE_fnc_createFPVDrone };
 
-    // the warning: about 25 m over him for 4 s (reached at up to 22 m/s, at most 15 s), following him
+    // the attack run, no hover over him: after a short pause at most (none half the time, otherwise up to 1 s) it
+    // swings in from a random side, weaving 10 to 25 m left or right and 12 to 25 m up every 1 to 2 s at 20 m/s,
+    // aimed where he will be; once it is at least as high over him as it is out from him (a dive 45 degrees or
+    // steeper, so it does not fly into the ground short of him), or after 20 s, it dives
     if ((_d getOrDefault ["diveAt", -1]) < 0) exitWith {
-        private _want = (getPosASL _tv) vectorAdd [0, 0, 25];
-        private _v = (velocity _tv) vectorAdd ((_want vectorDiff _pos) vectorMultiply 1.5);
-        if ((vectorMagnitude _v) > 22) then { _v = (vectorNormalized _v) vectorMultiply 22 };
-        _uav setVelocity _v;
-        private _flat = [(_want select 0) - (_pos select 0), (_want select 1) - (_pos select 1), 0];
-        if ((vectorMagnitude _flat) > 1) then { (vectorNormalized _flat) call _fnc_turn };
-        if ((_d get "hoverAt") < 0 && {(_pos vectorDistance _want) < 10}) then { _d set ["hoverAt", _now] };
-        if (((_d get "hoverAt") >= 0 && {_now - (_d get "hoverAt") >= 4}) || {_now > (_d get "hoverLimit")}) then {
+        if (_now < (_d get "pauseUntil")) exitWith { _uav setVelocity [0, 0, 0] };
+        if (_now >= (_d get "weaveAt")) then {
+            _d set ["weaveAt", _now + 1 + random 1];
+            _d set ["weaveW", (10 + random 15) * (selectRandom [-1, 1])];
+            _d set ["weaveH", 12 + random 13];
+        };
+        private _aim = (getPosASL _tv) vectorAdd ((velocity _tv) vectorMultiply ((_dist / 20) min 3));
+        private _hz = _pos distance2D _aim;
+        if (_hz < (((_pos select 2) - ((getPosASL _tv) select 2)) max 8) || {_now > (_d get "hoverLimit")}) exitWith {
             _d set ["diveAt", _now];
             _d set ["prev", _pos];
             ["info", [_d]] call ALiVE_fnc_createFPVDrone;
         };
+        // a point 70 % of the way out from him along the approach bearing, pushed sideways by the weave (less as
+        // it closes) and up by the weave height: chasing it curves the drone round onto that bearing as it closes
+        private _b = _d get "attackB";
+        private _out = [sin _b, cos _b, 0];
+        private _across = [cos _b, -(sin _b), 0];
+        private _want = _aim vectorAdd (_out vectorMultiply ((_hz * 0.7) min 120))
+            vectorAdd (_across vectorMultiply ((_d get "weaveW") * ((_hz / 60) min 1))) vectorAdd [0, 0, _d get "weaveH"];
+        _want set [2, (_want select 2) max ((getTerrainHeightASL _want) + 8)];
+        private _v = (vectorNormalized (_want vectorDiff _pos)) vectorMultiply 20;
+        _uav setVelocity _v;
+        private _flat = [_v select 0, _v select 1, 0];
+        if ((vectorMagnitude _flat) > 1) then { (vectorNormalized _flat) call _fnc_turn };
     };
 
     // the dive: closest approach measured between this frame and the last, so a low frame rate can't
@@ -441,8 +493,9 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
     private _fnc_end = { ["end", [_d, _this select 0, _this select 1]] call ALiVE_fnc_createFPVDrone };
 
     private _fnc_downed = { ["downed", [_d, _this]] call ALiVE_fnc_createFPVDrone };
-    // the player: alive, on the ground, not in an aircraft
-    private _fit = { alive _this && {!((vehicle _this) isKindOf "Air")} && {((getPosATL (vehicle _this)) select 2) < 25} };
+    // the target: alive, on the ground, not in an aircraft; a vehicle (Medium and Large charges) with someone alive in it
+    private _fit = { alive _this && {!((vehicle _this) isKindOf "Air")} && {((getPosATL (vehicle _this)) select 2) < 25}
+        && {_this isKindOf "Man" || {((crew _this) findIf { alive _x }) > -1}} };
 
     while { !(_d get "gone") } do {
         sleep 1;
@@ -454,7 +507,67 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         // in the dive the frame handler decides what a death means
         if (!alive _uav && {(_d get "phase") != "terminal"}) exitWith { "shot down" call _fnc_downed };
         if (!alive _uav) then { continue };
+        // Pause Modules (Required module): while the server is paused with no players, or about to be (on, and nobody
+        // connected), the drone is held where it is, frozen, with its battery stopped; it carries on from the same
+        // phase when a player is back. A drone whose player has gone searches round where it is instead
+        private _hold = !isNil "ALiVE_main_PAUSEMODULES_PAUSED"
+            || {!isNil "ALiVE_PAUSEMODULES_EH_DISCONNECTED" && {((allPlayers - entities "HeadlessClient_F") findIf { true }) < 0}};
+        if (_hold) then {
+            if ((_d getOrDefault ["heldAt", -1]) < 0) then {
+                _d set ["heldAt", time];
+                _d set ["heldTick", diag_tickTime];
+                _uav enableSimulationGlobal false;
+                if (_d get "debug") then { ["ALIVE-%1 FPV drone: held while the server is paused, at %2", time, mapGridPosition _uav] call ALiVE_fnc_dump };
+            };
+            sleep 4;
+            continue;
+        };
+        if ((_d getOrDefault ["heldAt", -1]) >= 0) then {
+            private _dt = time - (_d get "heldAt");
+            private _dtk = diag_tickTime - (_d get "heldTick");
+            _d set ["heldAt", -1];
+            _d set ["batteryEnd", (_d get "batteryEnd") + _dt];
+            { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dtk] } } forEach ["hoverLimit", "diveAt", "pauseUntil", "weaveAt"];
+            if (_roofSince >= 0) then { _roofSince = _roofSince + _dt };
+            _stuckPos = getPosATL _uav;
+            _stuckAt = time;
+            _uav enableSimulationGlobal true;
+            if ((_d get "phase") != "search" && {!((_d get "target") call _fit)}) then {
+                private _t = _d get "target";
+                if (!isNull _t && {(_t getVariable ["ALiVE_IED_droneOn", objNull]) isEqualTo _uav}) then { _t setVariable ["ALiVE_IED_droneOn", objNull] };
+                private _c = getPosATL _uav;
+                private _r = 300 + random 200;
+                private _a = random 360;
+                _d set ["legs", [0, 90, 180, 270] apply { _c getPos [_r * (0.85 + random 0.3), _a + _x + (random 20) - 10] }];
+                _d set ["leg", 0];
+                _d set ["wp", (_d get "legs") select 0];
+                _d set ["target", objNull];
+                _d set ["phase", "search"];
+                _d set ["recall", 2500];
+                _d set ["diveAt", -1];
+                _roofSince = -1;
+            };
+            ["info", [_d]] call ALiVE_fnc_createFPVDrone;
+            if (_d get "debug") then { ["ALIVE-%1 FPV drone: carries on after %2 s held (%3)", time, round _dt, _d get "phase"] call ALiVE_fnc_dump };
+        };
         if (!local _uav) exitWith { ["no longer run by the server", true] call _fnc_end };
+        // AI-crewed vehicles of a side hostile to the drone's, within 400 m, with a gunner that can fire: every 2 s
+        // shown the drone and told to fire at it (their own aim decides whether they hit); within 30 m of one,
+        // its gunner is told to let it go, so he does not fire into his own vehicle
+        if (time >= (_d getOrDefault ["engageAt", 0])) then {
+            _d set ["engageAt", time + 2];
+            private _side = _d get "side";
+            {
+                private _gn = gunner _x;
+                if (alive _gn && {!isPlayer _gn} && {((side group _gn) getFriend _side) < 0.6}) then {
+                    if ((_x distance _uav) < 30) exitWith { if ((assignedTarget _gn) isEqualTo _uav) then { _gn doTarget objNull } };
+                    if (canFire _x) then {
+                        (group _gn) reveal [_uav, 4];
+                        if !((assignedTarget _gn) isEqualTo _uav) then { _gn doTarget _uav; _gn doFire _uav };
+                    };
+                };
+            } forEach (_uav nearEntities [["LandVehicle", "Ship"], 400]);
+        };
         // a player's UAV terminal has it (a server sees that through UAVControl only)
         if (!isNull ((UAVControl _uav) param [0, objNull])) exitWith { ["taken over by a UAV terminal", true] call _fnc_end };
         if (_jamOn && {[_uav, -1, true] call ALiVE_fnc_iedJammerNear}) exitWith { ["jammed", true] call _fnc_end };
@@ -475,8 +588,12 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         if ((_d get "phase") == "search") then {
             private _side = _d get "side";
             private _eye = getPosASL _uav;
-            private _seen = _players select {
-                _x call _fit && {(_x distance _uav) < 300} && {(_side getFriend (side group _x)) < 0.6}
+            private _cands = +_players;
+            if (_d get "vehicles") then {
+                _cands append ((_uav nearEntities [["LandVehicle"], 300]) select { ((crew _x) findIf { isPlayer _x }) < 0 && {time > (_x getVariable ["ALiVE_IED_droneNext", 0])} });
+            };
+            private _seen = _cands select {
+                _x call _fit && {(_x distance _uav) < 300} && {(_side getFriend ([side _x, side group _x] select (_x isKindOf "Man"))) < 0.6}
                 && {isNull (_x getVariable ["ALiVE_IED_droneOn", objNull])} && {!(_x call ALiVE_fnc_iedBomberSpares)}
                 && {isNull (getAssignedCuratorLogic _x) || {missionNamespace getVariable ["ALiVE_zeusSoloTest", false]}}
                 && {!((vehicle _x) isKindOf "Ship")}
@@ -496,7 +613,7 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
                 _stuckPos = getPosATL _uav;
                 _stuckAt = time;
                 ["info", [_d]] call ALiVE_fnc_createFPVDrone;
-                if (_d get "debug") then { ["ALIVE-%1 FPV drone: the roaming %2 drone spotted %3 %4 m away", time, _side, name _p, round (_p distance _uav)] call ALiVE_fnc_dump };
+                if (_d get "debug") then { ["ALIVE-%1 FPV drone: the roaming %2 drone spotted %3 %4 m away", time, _side, ([typeOf _p, name _p] select (_p isKindOf "Man")), round (_p distance _uav)] call ALiVE_fnc_dump };
             };
             if ((_eye distance2D (_d get "wp")) < 30) then {
                 private _leg = (_d get "leg") + 1;
@@ -556,7 +673,7 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
             _next setVariable ["ALiVE_IED_droneOn", _uav];
             _d set ["target", _next];
             ["info", [_d]] call ALiVE_fnc_createFPVDrone;
-            if (_d get "debug") then { ["ALIVE-%1 FPV drone: target lost, now after %2", time, name _next] call ALiVE_fnc_dump };
+            if (_d get "debug") then { ["ALIVE-%1 FPV drone: target lost, now after %2", time, ([typeOf _next, name _next] select (_next isKindOf "Man"))] call ALiVE_fnc_dump };
         };
         _target = _d get "target";
         if !(_target call _fit) exitWith { ["the player is gone, dead or in the air", false] call _fnc_end };
@@ -579,16 +696,19 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
                     _roofSince = time;
                     _d set ["phase", "roof"];
                     ["info", [_d]] call ALiVE_fnc_createFPVDrone;
-                    if (_d get "debug") then { ["ALIVE-%1 FPV drone: %2 is under a roof, waiting", time, name _target] call ALiVE_fnc_dump };
+                    if (_d get "debug") then { ["ALIVE-%1 FPV drone: %2 is under a roof, waiting", time, ([typeOf _target, name _target] select (_target isKindOf "Man"))] call ALiVE_fnc_dump };
                 };
             } else {
                 _roofSince = -1;
-                _d set ["hoverAt", -1];
-                _d set ["hoverLimit", diag_tickTime + 15];
+                // the attack run (frame handler): a pause of up to 1 s or none, a random side to come in from
+                _d set ["hoverLimit", diag_tickTime + 20];
+                _d set ["pauseUntil", diag_tickTime + ([0, random 1] select (random 1 < 0.5))];
+                _d set ["weaveAt", 0];
+                _d set ["attackB", (_tv getDir _uav) + (selectRandom [-1, 1]) * (40 + random 50)];
                 _d set ["prev", getPosASL _uav];
                 _d set ["phase", "terminal"];
                 ["info", [_d]] call ALiVE_fnc_createFPVDrone;
-                if (_d get "debug") then { ["ALIVE-%1 FPV drone: final run at %2, %3 m away, %4 m up", time, name _target, round (_uav distance _tv), round ((getPosATL _uav) select 2)] call ALiVE_fnc_dump };
+                if (_d get "debug") then { ["ALIVE-%1 FPV drone: final run at %2, %3 m away, %4 m up", time, ([typeOf _target, name _target] select (_target isKindOf "Man")), round (_uav distance _tv), round ((getPosATL _uav) select 2)] call ALiVE_fnc_dump };
             };
         } else {
             if ((_d get "phase") == "roof") then { _d set ["phase", "cruise"]; _roofSince = -1; ["info", [_d]] call ALiVE_fnc_createFPVDrone };

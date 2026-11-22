@@ -325,11 +325,11 @@ switch(_operation) do {
                         ADDON setVariable [_name, _v];
                     } forEach [["Bomber_Dispatch_Wait", 10], ["Bomber_Dispatch_Share", 150], ["VB_Min_Distance", 300],
                         ["Drone_Max", 2], ["Drone_Wait", 10], ["Drone_Range", 2000], ["Drone_Battery", 10], ["Drone_Roam", 0]];
-                    // FPV drone Warhead (SMALL or MEDIUM), Jammers Stop Drones, Chance To Explode When Downed and Drone Class;
+                    // FPV drone Warhead (SMALL, MEDIUM or LARGE), Jammers Stop Drones, Chance To Explode When Downed and Drone Class;
                     // read by bomberDispatch and createFPVDrone
                     private _charge = _logic getVariable ["Drone_Charge", "MEDIUM"];
                     if !(_charge isEqualType "") then { _charge = "MEDIUM" };
-                    ADDON setVariable ["Drone_Charge", ["MEDIUM", "SMALL"] select ((toUpper _charge) == "SMALL")];
+                    ADDON setVariable ["Drone_Charge", ["MEDIUM", toUpper _charge] select ((toUpper _charge) in ["SMALL", "LARGE"])];
                     {
                         _x params ["_name", "_default"];
                         private _v = _logic getVariable [_name, _default];
@@ -1527,6 +1527,39 @@ switch(_operation) do {
                             };
                         };
                     } forEach _players;
+                    // Medium and Large charges: AI-crewed land vehicles of a side hostile to a launching side, within 1200 m
+                    // of a player (a drone further than 1500 m from every player is called back), spotted the same way
+                    // as a player, each with its own Drone Wait. Players in vehicles are the player's own turn above
+                    if (_droneOn && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}) then {
+                        {
+                            private _v = _x;
+                            if (alive _v && {_v isKindOf "LandVehicle"} && {!(_v isKindOf "StaticWeapon")}
+                                && {((crew _v) findIf { alive _x }) > -1} && {((crew _v) findIf { isPlayer _x }) < 0}
+                                && {time > (_v getVariable ["ALiVE_IED_droneNext", 0])}
+                                && {isNull (_v getVariable ["ALiVE_IED_droneOn", objNull])}
+                                && {(count ALiVE_IED_drones) < (ADDON getVariable ["Drone_Max", 2])}
+                                && {(_players findIf { (_x distance _v) < 1200 }) > -1}) then {
+                                private _vSide = side _v;
+                                private _hostileV = _droneSides select { (_x getFriend _vSide) < 0.6 };
+                                if (_hostileV isEqualTo [] || {(random 100) >= _droneChance}) exitWith {};
+                                private _groups = (([_v, 150, _range, _hostileV] call ALiVE_fnc_iedSpotters) select {
+                                    (_x select 1) > 300 && {(_x select 1) < _range} && {time > ((_x select 0) getVariable ["ALiVE_IED_droneGroupNext", 0])}
+                                }) apply { _x select 0 };
+                                if (_groups isEqualTo []) exitWith {};
+                                if (["roofed", [_v]] call ALiVE_fnc_createFPVDrone) exitWith {};
+                                private _grp = selectRandom _groups;
+                                private _uav = [_v, _grp] call ALiVE_fnc_createFPVDrone;
+                                if (!isNull _uav) then {
+                                    private _until = time + 60 * (ADDON getVariable ["Drone_Wait", 10]);
+                                    _grp setVariable ["ALiVE_IED_droneGroupNext", _until];
+                                    _v setVariable ["ALiVE_IED_droneNext", _until];
+                                    if (_debug) then {
+                                        ["ALIVE-%1 FPV drone: a %2 group near %3 that spotted a %4 (%5 crew) from %6 m launched a drone", time, side _grp, mapGridPosition leader _grp, typeOf _v, _vSide, round ((leader _grp) distance _v)] call ALiVE_fnc_dump;
+                                    };
+                                };
+                            };
+                        } forEach vehicles;
+                    };
                 };
             };
         };

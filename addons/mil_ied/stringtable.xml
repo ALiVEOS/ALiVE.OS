@@ -313,7 +313,7 @@
     <English>FPV Drone Threat:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_THREAT_COMMENT">
-    <English>Chance, checked every 30 seconds, that an AI Commander's group that has spotted a player of a hostile side launches an explosive quadcopter at them. It hovers over them for 4 seconds before it dives. None switches FPV drones off. Drones Launched By picks which AI Commanders' groups can launch them.</English>
+    <English>Chance, checked every 30 seconds, that an AI Commander's group that has spotted a player of a hostile side launches an explosive quadcopter at them (with a Medium or Large warhead, at a crewed vehicle of a hostile side too, AI crews included). Within 150 m it swings in from a random side, weaving, and dives. None switches FPV drones off. Drones Launched By picks which AI Commanders' groups can launch them.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_LAUNCHERS">
     <English>Drones Launched By:</English>
@@ -325,7 +325,7 @@
     <English>Roaming Drones:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_ROAM_COMMENT">
-    <English>Chance, checked every 30 seconds for each player, of a drone launched from an objective held by a side hostile to them, 400 m to 2 km away. It searches the ground round the objective, then round where its side last knew a player to be, and goes after the first hostile player it sees within 300 m. It uses the same limits as the other drones (Most Drones At Once, Drone Wait, Drones Launched By). None switches roaming drones off.</English>
+    <English>Chance, checked every 30 seconds for each player, of a drone launched from an objective held by a side hostile to them, 400 m to 2 km away. It searches the ground round the objective, then round where its side last knew a player to be, and goes after the first hostile player it sees within 300 m (or, with a Medium or Large warhead, the first crewed hostile vehicle). It uses the same limits as the other drones (Most Drones At Once, Drone Wait, Drones Launched By). None switches roaming drones off.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_MAX">
     <English>Most Drones At Once:</English>
@@ -355,7 +355,7 @@
     <English>Drone Warhead:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_CHARGE_COMMENT">
-    <English>Small: a grenade, enough for a man but not a vehicle. Medium: a rocket warhead, enough for a man or a light vehicle.</English>
+    <English>Small: a grenade, enough for a man but not a vehicle; these drones go after players only. Medium: a rocket warhead that destroys most vehicles. Large: an anti-tank warhead that destroys tanks. Medium and Large drones also go after crewed vehicles of a hostile side, AI crews included, never empty ones.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_JAMMED">
     <English>Jammers Stop Drones:</English>

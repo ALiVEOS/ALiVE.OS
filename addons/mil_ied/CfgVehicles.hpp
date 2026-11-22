@@ -132,7 +132,7 @@ class CfgVehicles {
                         class Drone_Charge : Combo
                         {
                                 property = "ALiVE_mil_ied_Drone_Charge"; displayName = "$STR_ALIVE_IED_DRONE_CHARGE"; tooltip = "$STR_ALIVE_IED_DRONE_CHARGE_COMMENT"; defaultValue = """MEDIUM""";
-                                class Values { class Small{name="Small";value="SMALL";}; class Medium{name="Medium";value="MEDIUM";default=1;}; };
+                                class Values { class Small{name="Small";value="SMALL";}; class Medium{name="Medium";value="MEDIUM";default=1;}; class Large{name="Large";value="LARGE";}; };
                         };
                         class Drone_Jammed : Combo
                         {
