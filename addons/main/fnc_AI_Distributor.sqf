@@ -24,6 +24,7 @@ See Also:
 Author:
 Highhead
 Jman
+Goldwep
 ---------------------------------------------------------------------------- */
 
 params
@@ -132,10 +133,23 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
                 && {!(_x getVariable ["ALiVE_mil_ato_crew", false])} && {((vehicle _x) getVariable ["ALiVE_mil_ato_tail", ""]) isEqualTo ""}} count (units _x) > 0}) then {
 
                 // Distribute to available HCs //
-                if (_HC_index > ((count GVAR(AI_DISTRIBUTOR_HCLIST)) -1)) then {_HC_index = 0};
+                private _hcCount = count GVAR(AI_DISTRIBUTOR_HCLIST);
+                if (_HC_index > (_hcCount - 1)) then {_HC_index = 0};
 
-                private _HC = (GVAR(AI_DISTRIBUTOR_HCLIST) select _HC_index);
-                _HC_index = (_HC_index + 1);
+                // Integrate: a group LAMBS runs only goes to a headless client that has said it runs LAMBS;
+                // on any other it would be left with neither LAMBS nor Soldier Behaviour. The round robin
+                // starts at its turn and takes the first headless client the group may go to, so a group is
+                // not left on the server because its turn kept falling on one without LAMBS.
+                private _group = _x;
+                private _HC = objNull;
+                for "_i" from 0 to (_hcCount - 1) do {
+                    private _try = GVAR(AI_DISTRIBUTOR_HCLIST) select ((_HC_index + _i) mod _hcCount);
+                    if (["mayMove", [_group, owner _try]] call ALiVE_fnc_lambs) exitWith {
+                        _HC = _try;
+                        _HC_index = (_HC_index + _i + 1) mod _hcCount;
+                    };
+                };
+                if (isNull _HC) then { sleep 0.5; continue };
 
                 // Naked-unit workaround for issue #604. The engine
                 // occasionally resets affected units' loadouts to their
@@ -158,6 +172,9 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
                     private _g = _x;
                     isNil { ["release", [_g, "moving to a headless client"]] call ALiVE_fnc_AIBehaviour };
                 };
+                // Integrate: a LAMBS task the group is on ends here, while the men can still be reached
+                private _g = _x;
+                isNil { ["release", [_g]] call ALiVE_fnc_lambs };
 
                 _x setGroupOwner (owner _HC);
 

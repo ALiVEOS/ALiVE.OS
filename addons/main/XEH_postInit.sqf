@@ -69,6 +69,14 @@ PREPMAIN(ZEUSinit);
     };
 }, true] call CBA_fnc_addClassEventHandler;
 
+// Integrate: a group LAMBS runs for ALiVE is taken on by the machine it moves to (a headless client).
+// The event fires for each man; the attach is done once per group.
+["CAManBase", "Local", {
+    params ["_unit", "_local"];
+    if (!_local || {(group _unit) getVariable ["ALiVE_lambs", []] isEqualTo []}) exitWith {};
+    [{ ["attach", [group _this]] call ALiVE_fnc_lambs }, _unit, 2] call CBA_fnc_waitAndExecute;
+}, true] call CBA_fnc_addClassEventHandler;
+
 // Work out where every airfield's runways, taxiways and parking are, once, on
 // the server, and broadcast the result, so that aircraft are not later parked or
 // routed across an active runway. Parking in particular is inferred rather than

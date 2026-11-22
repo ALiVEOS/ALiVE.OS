@@ -1,6 +1,6 @@
 #include "\x\alive\addons\main\script_component.hpp"
 
-#define TESTS ["baseClass","OOsimpleOperation","RequireALiVE"]
+#define TESTS ["baseClass","OOsimpleOperation","RequireALiVE","lambs"]
 
 SCRIPT(test-main);
 

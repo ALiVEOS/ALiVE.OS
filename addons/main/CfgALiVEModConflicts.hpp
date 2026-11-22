@@ -9,6 +9,8 @@
 //   groupVars[] - set true on each group ALiVE makes, under Guard
 //   unitVars[]  - set true on each unit ALiVE makes, under Guard
 //   unitVarsWithBehaviour[] - set true on each unit only while ALiVE's own Soldier Behaviour is on
+//   integrates  - 1 when the Integrate setting hands ALiVE's profiled groups to the mod (ALiVE_fnc_lambs)
+//   integrateHandling - what Integrate does about it
 // The variables are each mod's own documented opt-outs, set public so they hold on a headless client.
 class CfgALiVEModConflicts {
     class LAMBS_Danger {
@@ -20,6 +22,8 @@ class CfgALiVEModConflicts {
         groupVars[] = {"lambs_danger_disableGroupAI"};
         unitVars[] = {};
         unitVarsWithBehaviour[] = {"lambs_danger_disableAI"};
+        integrates = 1;
+        integrateHandling = "LAMBS fights ALiVE's ground groups with its tactics, tasks and radio, while ALiVE's commanders keep the orders, reserves, artillery and intelligence; aircraft, boats and artillery crews stay under Guard";
     };
     class VCOM_AI {
         name = "VCOM AI";
