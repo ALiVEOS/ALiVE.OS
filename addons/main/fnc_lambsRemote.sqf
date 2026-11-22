@@ -11,8 +11,8 @@ and each is checked against the machine that sent it. ALiVE_fnc_lambs takes the 
 operations from here alone and leaves every other operation open, so a call made on the server
 inside a client's remote call (a Zeus module, a commander tablet order) is not turned away.
 
-The engine does not always say who sent a call: one from a headless client can reach the server with
-isRemoteExecuted false and remoteExecutedOwner 0. So the sending machine adds its own clientOwner, and the
+The engine does not say who sent a call from a headless client: remoteExecutedOwner is 0 for one by
+design, and isRemoteExecuted has been seen false as well. So the sending machine adds its own clientOwner, and the
 server takes that number only when the engine gave none and it is the owner of a headless client. A
 machine could at worst say that a real headless client runs LAMBS; it cannot pass as a player's machine
 or get a group moved to itself.
