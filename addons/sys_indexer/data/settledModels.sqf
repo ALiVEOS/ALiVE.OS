@@ -1,4 +1,4 @@
-// Generated 2026-11-16 from 182 terrain indexes in addons/main/static: every model at least two indexes list and
+// Generated 2026-11-23 from 183 terrain indexes in addons/main/static: every model at least two indexes list and
 // all of them categorise the same way (4135 models: 2607 categorised, 1528 blacklist only). The in-game indexer
 // fills these in without asking when its Known Categories setting is Yes. Regenerated, not edited by hand.
 [
