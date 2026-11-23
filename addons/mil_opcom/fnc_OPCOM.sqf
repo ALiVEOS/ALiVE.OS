@@ -946,6 +946,16 @@ switch (_operation) do {
             _fromSave = count _objectives > 0;
 
             ["OPCOM loaded %1 objectives from DB!", count _objectives] call ALiVE_fnc_dump;
+            // why none came back, debug or not: no objectives part in the save, an empty one, or none of this commander's
+            if (_objectives isEqualTo []) then {
+                private _raw = if (isNil QGVAR(OBJECTIVES_DB_LOAD)) then { false } else { GVAR(OBJECTIVES_DB_LOAD) param [0, false] };
+                private _why = if !(_raw isEqualType [] && {count _raw > 2} && {(_raw select 2) isEqualType []}) then {
+                    "the save has NO objectives part (missing); a first start has none"
+                } else {
+                    if ((_raw select 2) isEqualTo []) then { "the save's objectives part is EMPTY" } else { format ["the save holds %1 objectives, none of them this commander's", count (_raw select 2)] }
+                };
+                ["OPCOM %1 - no saved objectives: %2, so its objectives are made afresh", [_handler,"opcomID",""] call CBA_fnc_hashGet, _why] call ALiVE_fnc_dump;
+            };
         
             // Load starting forces
             private _key = format ["%1-OPCOM_%2-starting-forces", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];

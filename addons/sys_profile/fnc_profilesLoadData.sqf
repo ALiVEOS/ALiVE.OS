@@ -22,6 +22,7 @@ ALIVE_fnc_profilesLoadData
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_result","_profiles"];
@@ -63,6 +64,13 @@ if(ALIVE_loadProfilesPersistent) then {
 
                     ALiVE_sysProfileLastLoadTime = time;
 
+                    // said plainly, debug or not: a save with no forces in it reads the same as a lost one otherwise
+                    if ((_profiles select 1) isEqualTo []) then {
+                        ["Virtual AI System - the save's AI forces part is EMPTY (no profiles in it); nothing is placed again"] call ALiVE_fnc_dump;
+                    } else {
+                        ["Virtual AI System - %1 profiles loaded from the save", count (_profiles select 1)] call ALiVE_fnc_dump;
+                    };
+
                     [ALIVE_profileHandler,"reset"] call ALIVE_fnc_profileHandler;
 
                     //_profiles call ALIVE_fnc_inspectHash;
@@ -71,9 +79,7 @@ if(ALIVE_loadProfilesPersistent) then {
 
                 }else{
 
-                    if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["LOAD PROFILE DATA No data loaded setting persistence false"] call ALiVE_fnc_dump;
-                    };
+                    ["Virtual AI System - the save has NO AI forces part (missing), so the forces are placed from the start; a first start has none"] call ALiVE_fnc_dump;
 
                     ALIVE_loadProfilesPersistent = false;
 
