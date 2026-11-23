@@ -42,6 +42,8 @@ private _spawnInfantry = {
         if (_group != "FALSE" && {!(_group in ALiVE_PLACEMENT_GROUPBLACKLIST)}) then {
             private _at = _near getPos [_dist + random 100, random 360];
             private _profiles = [_group, _at, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+            // a task's own men are never Outbreak zombies, whatever their faction
+            { [_x, "noZombie", true] call ALIVE_fnc_hashSet } forEach _profiles;
             if (_profiles isNotEqualTo []) then {
                 [_profiles select 0, "simProtectUntil", time + 900] call ALIVE_fnc_hashSet;
                 private _wp = [_goal getPos [random 30, random 360], 50, "MOVE", "FULL", 50, [], "LINE", "NO CHANGE", "AWARE"] call ALIVE_fnc_createProfileWaypoint;

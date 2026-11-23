@@ -1702,8 +1702,9 @@ switch(_operation) do {
             // zombie reads civilian, a BLU_F one WEST), so nobody shoots him. Joining the group again gives him
             // the group's side; measured, BLUFOR and AAF then fire on CIV_F and BLU_F zombies.
             // the faction by name, not by slot: a profile cut short while it spawned failed on the slot (2 elements
-            // where 30 were expected)
+            // where 30 were expected). A task's own men (noZombie) are left out of all three Outbreak steps
             private _outbreakFaction = [[_logic, "faction", ""] call ALIVE_fnc_hashGet] param [0, "", [""]];
+            if ([[_logic, "noZombie", false] call ALIVE_fnc_hashGet] param [0, false, [false]]) then { _outbreakFaction = "" };
             private _sideFaction = _outbreakFaction;
             if (_sideFaction isEqualType "" && {(toLower _sideFaction) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])}) then {
                 private _keepLeader = leader _group;

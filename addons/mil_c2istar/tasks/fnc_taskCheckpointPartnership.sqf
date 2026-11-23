@@ -123,6 +123,8 @@ private _spawnWaveProfiles = {
     {
         private _spawnPosition = (_remotePosition getPos [random 200, random 360]);
         private _profiles = [_x, _spawnPosition, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        // a task's own men are never Outbreak zombies, whatever their faction
+        { [_x, "noZombie", true] call ALIVE_fnc_hashSet } forEach _profiles;
         // a wave is left out of simulated combat for 15 minutes, or until players are near enough for it to
         // spawn, so it isn't fought and lost as virtual groups before anybody sees it (sys_profile simulator)
         if (_profiles isNotEqualTo []) then { [_profiles select 0, "simProtectUntil", time + 900] call ALIVE_fnc_hashSet };
@@ -145,6 +147,8 @@ private _spawnWaveProfiles = {
         if !(_vehicleGroup == "FALSE") then {
             private _spawnPosition = (_remotePosition getPos [random 200, random 360]);
             private _profiles = [_vehicleGroup, _spawnPosition, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+            // a task's own men are never Outbreak zombies, whatever their faction
+            { [_x, "noZombie", true] call ALIVE_fnc_hashSet } forEach _profiles;
             // a wave is left out of simulated combat for 15 minutes, or until players are near enough for it to
             // spawn, so it isn't fought and lost as virtual groups before anybody sees it (sys_profile simulator)
             if (_profiles isNotEqualTo []) then { [_profiles select 0, "simProtectUntil", time + 900] call ALIVE_fnc_hashSet };

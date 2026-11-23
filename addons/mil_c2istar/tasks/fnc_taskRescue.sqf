@@ -473,6 +473,8 @@ switch (_taskState) do {
                         private["_hostageProfile1","_hostageProfile1ID","_hostageGroup","_hostage","_hostage1Active"];
 
                         _hostageProfile1 = [_unitDetails select 0,_taskSide,_taskFaction, _targetPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
+                        // a task's own men are never Outbreak zombies, whatever their faction
+                        [_hostageProfile1, "noZombie", true] call ALIVE_fnc_hashSet;
                         _hostageProfile1ID = _hostageProfile1 select 2 select 4;
 
                         [_hostageProfile1,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileEntity;

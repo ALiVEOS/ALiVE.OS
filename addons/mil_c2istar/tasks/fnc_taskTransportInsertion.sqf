@@ -173,6 +173,8 @@ switch (_taskState) do {
             if !(typeName _group == "BOOL") then {
 
                 _profile = [_group, _pickupPosition, random(360), true, _taskFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+                // a task's own men are never Outbreak zombies, whatever their faction
+                { [_x, "noZombie", true] call ALIVE_fnc_hashSet } forEach _profile;
                 _profileID = _profile select 0 select 2 select 4;
 
             } else {

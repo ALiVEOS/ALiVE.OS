@@ -572,12 +572,16 @@ switch (_taskState) do {
                         private["_units","_HVTProfile1","_HVTProfile1ID","_HVTProfile2","_HVTProfile1ID","_HVTProfile2ID","_HVTGroup","_HVT","_HVTGroup2","_HVT2","_HVT1Active","_HVT2Active"];
 
                         _HVTProfile1 = [_unitDetails select 0,_taskEnemySide,_taskEnemyFaction,_taskPosition,random(360),_taskEnemyFaction,true] call ALIVE_fnc_createProfileEntity;
+                        // a task's own men are never Outbreak zombies, whatever their faction
+                        [_HVTProfile1, "noZombie", true] call ALIVE_fnc_hashSet;
 
                         _HVTProfile1ID = _HVTProfile1 select 2 select 4;
 
                         _units = [[_taskEnemyFaction], 1, ALiVE_MIL_CQB_UNITBLACKLIST] call ALiVE_fnc_taskGetHVTUnits;
 
                         _HVTProfile2 = [_units,_taskEnemySide,_taskEnemyFaction,_taskPosition,random(360),_taskEnemyFaction,true] call ALIVE_fnc_createProfileEntity;
+                        // a task's own men are never Outbreak zombies, whatever their faction
+                        [_HVTProfile2, "noZombie", true] call ALIVE_fnc_hashSet;
                         _HVTProfile2ID = _HVTProfile2 select 2 select 4;
 
                         waitUntil {
@@ -626,6 +630,8 @@ switch (_taskState) do {
                         _remotePosition = [_taskPosition, 2000, 1, true] call ALIVE_fnc_getPositionDistancePlayers;
 
                         _HVTProfile1 = [_units,_taskEnemySide,_taskEnemyFaction,_remotePosition,random(360),_taskEnemyFaction,true] call ALIVE_fnc_createProfileEntity;
+                        // a task's own men are never Outbreak zombies, whatever their faction
+                        [_HVTProfile1, "noZombie", true] call ALIVE_fnc_hashSet;
                         _HVTProfile1ID = _HVTProfile1 select 2 select 4;
 
                         [_remotePosition,_taskPosition,_taskEnemySide,_taskEnemyFaction,_HVTProfile1] call ALIVE_fnc_taskCreateVehicleInsertionForUnits;
@@ -657,6 +663,8 @@ switch (_taskState) do {
                         _extractionPosition = [_taskPosition, 4000, 1, true] call ALIVE_fnc_getPositionDistancePlayers;
 
                         _HVTProfile1 = [_units,_taskEnemySide,_taskEnemyFaction,_taskPosition,random(360),_taskEnemyFaction,true] call ALIVE_fnc_createProfileEntity;
+                        // a task's own men are never Outbreak zombies, whatever their faction
+                        [_HVTProfile1, "noZombie", true] call ALIVE_fnc_hashSet;
                         _HVTProfile1ID = _HVTProfile1 select 2 select 4;
 
                         [_remotePosition,_taskPosition,_extractionPosition,_taskEnemySide,_taskEnemyFaction,_HVTProfile1] call ALIVE_fnc_taskCreateVehicleExtractionForUnits;
