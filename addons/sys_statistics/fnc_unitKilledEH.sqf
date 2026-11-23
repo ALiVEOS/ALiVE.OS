@@ -269,7 +269,10 @@ if (_stats || {_killFeed != "None"}) then {
             };
 
             if (_stats) then {
-                _data = _data + [ ["Death","true"] , ["Player",getplayeruid _killed], ["PlayerName",name _killed], ["playerGroup", [_killed] call ALiVE_fnc_getPlayerGroup] ];
+                // The vehicle he died in, read now: the War Room took it from where he was when the kill was
+                // shown, so a player who had respawned into a tank read as killed in that tank. Empty on foot.
+                private _inVeh = objectParent _killed;
+                _data = _data + [ ["Death","true"] , ["Player",getplayeruid _killed], ["PlayerName",name _killed], ["playerGroup", [_killed] call ALiVE_fnc_getPlayerGroup], ["KilledVehicle", if (isNull _inVeh) then {""} else {typeOf _inVeh}] ];
                 // Send data to server to be written to DB
                 GVAR(UPDATE_EVENTS) = _data;
                 publicVariableServer QGVAR(UPDATE_EVENTS);
