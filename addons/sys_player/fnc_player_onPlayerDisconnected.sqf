@@ -44,7 +44,8 @@ if (!isNil QMOD(sys_player) && isServer) then {
             // never landed would replace the record they own with the fresh spawn.
             {
                 private _puid = getPlayerUID _x;
-                if (_puid != "" && {MOD(sys_player) getVariable [_puid + "_restored", false]}) then {
+                // (the autosave has just updated those it lists, one a frame: ALiVE_sys_player_savePrepared)
+                if (_puid != "" && {MOD(sys_player) getVariable [_puid + "_restored", false]} && {!(_puid in (missionNamespace getVariable ["ALiVE_sys_player_savePrepared", []]))}) then {
                     [MOD(sys_player), "setPlayer", [_x]] call ALIVE_fnc_player;
                 };
             } forEach (allPlayers - entities "HeadlessClient_F");

@@ -65,6 +65,14 @@ private _handle = [_interval, _once] spawn {
         };
         ALiVE_SYS_DATA_PNS_PAUSESKIP = false;
 
+        // A timed save on a server already below 10 fps waits for it to recover, up to 2 minutes: the save's one
+        // frame came on top of a slow one (0.8 fps with 26 players). A save asked for now never waits
+        if (!_once && {diag_fps < 10}) then {
+            ["SYS DATA PNS Autosave - the server is at %1 fps, so the save waits up to 2 minutes for 10", round diag_fps] call ALiVE_fnc_dump;
+            private _holdUntil = time + 120;
+            waitUntil { sleep 2; diag_fps >= 10 || {time > _holdUntil} };
+        };
+
         // a save asked for now (a trigger, a script, a War Room order) only waits for the two notices below;
         // the timed one gives the five seconds' warning first, as players expect it
 	    if (!_once) then { sleep 5 };
@@ -83,6 +91,20 @@ private _handle = [_interval, _once] spawn {
 	    if ((missionNamespace getVariable ["ALIVE_saveProfilesPersistent", false]) && {!isNil "ALIVE_profileHandler"}
 	        && {isNil "ALiVE_sysProfileLastSaveTime" || {time - ALiVE_sysProfileLastSaveTime > 300}}) then {
 	        _prepared = [ALIVE_profileHandler, "prepareExportProfileData"] call ALIVE_fnc_profileHandler;
+	    };
+	    // Each player's record is brought up to date one player a frame, so the one-frame save below only writes
+	    // them (with 26 players the updates were most of Server Player OPD). Only those whose restore is in, as
+	    // the save itself does; the save skips anyone listed here and still updates one who joined since
+	    ALiVE_sys_player_savePrepared = [];
+	    if (!isNil "ALiVE_sys_player" && {ALiVE_sys_player getVariable ["enablePlayerPersistence", false]}) then {
+	        {
+	            private _puid = getPlayerUID _x;
+	            if (_puid != "" && {ALiVE_sys_player getVariable [_puid + "_restored", false]}) then {
+	                isNil { [ALiVE_sys_player, "setPlayer", [_x]] call ALIVE_fnc_player };
+	                ALiVE_sys_player_savePrepared pushBack _puid;
+	                sleep 0.01;
+	            };
+	        } forEach (allPlayers - entities "HeadlessClient_F");
 	    };
 	    private _prepTime = diag_tickTime - _prepStart;
 	    private _saveStart = diag_tickTime;
@@ -262,6 +284,7 @@ private _handle = [_interval, _once] spawn {
 
 		} call CBA_fnc_Directcall;
 	    ALiVE_profileExportCache = nil;
+	    ALiVE_sys_player_savePrepared = nil;
 	    // how long the one-frame save held the server, for the RPT and the War Room's Diagnostics
 	    private _heldFor = (round ((diag_tickTime - _saveStart) * 100)) / 100;
 	    // The files are written on a frame of their own: the write was the biggest part of the stall (about 2 s on a
