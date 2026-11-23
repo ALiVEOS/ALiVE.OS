@@ -20,6 +20,9 @@ man, an object): each while it is switched on in the mod, within the mod's own e
 the mod's drone jamming; a trigger man is stopped by either kind. A drone the mod is jamming (a player aiming a Spectrum
 Device with the jammer antenna at it) counts too.
 
+A drone that EW Drone Jammer is jamming, or that Grouse's Counter-Drone Suite has knocked out, counts as jammed.
+Both mods pick their drones and their range themselves, so these count for drones only.
+
 Jammer Radius 0 turns all of it off.
 
 Parameters:
@@ -44,6 +47,9 @@ private _jamClasses = ADDON getVariable ["IED_Jammer_Vehicles", []];
 // Crows Electronic Warfare (crowsEW_main_jamMap, kept on the server: [object, falloff radius, effective radius,
 // switched on, capabilities]); a drone it is jamming is in crowsEW_spectrum_activeJammedUnits
 if (_forDrone && {_at isEqualType objNull} && {_at in (missionNamespace getVariable ["crowsEW_spectrum_activeJammedUnits", []])}) exitWith { true };
+// EW Drone Jammer marks a drone it is jamming (EWDJ_jamState "soft", or "hard" for a hard kill), and Grouse's
+// Counter-Drone Suite one it has knocked out (UAVDisabled): each mod picks its drones and range itself
+if (_forDrone && {_at isEqualType objNull} && {(_at getVariable ["EWDJ_jamState", ""]) isNotEqualTo "" || {(_at getVariable ["UAVDisabled", false]) isEqualTo true}}) exitWith { true };
 private _crows = missionNamespace getVariable ["crowsEW_main_jamMap", 0];
 if (_crows isEqualType createHashMap && {count _crows > 0} && {
     (values _crows) findIf {
