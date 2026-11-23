@@ -133,6 +133,9 @@ private _schema = createHashMapFromArray [
         // his part in AUTO GROUPS: "" = worked out (ALiVE_fnc_fsAutoRole)
         ["role", "S", "", "role?"],
         ["specOps", "B", false, ""],
+        // engineer and canDeactivateMines written into his class: -1 = as his base class, 0 or 1 = set on the Units tab
+        ["engineer", "N", -1, [-1, 1]],
+        ["eod", "N", -1, [-1, 1]],
         // written in its own optional part, which loads only when the mods it needs are loaded
         ["optional", "B", false, ""]
     ]],

@@ -19,6 +19,9 @@ fields, with the selection driving the preview.
     - "name", "class", "classAuto", "category", "fixed": the fields. A value the
       model refuses puts the stored value back and says why in the status box;
       "fixed" keeps the body's face and voice in the unit's identity;
+    - "engineer", "eod": Engineer and EOD, ticked as the base class until changed;
+      a tick that matches the base class is stored as "as the base" (-1), so the
+      export writes engineer and canDeactivateMines only where he differs;
     - "add", "base": open the class browser (ALiVE_fnc_fsStudioBrowser), in multi
       and single mode;
     - "arsenal": the Arsenal choice, kept in the session and the prefs (ACE only
@@ -103,7 +106,8 @@ private _show = {
         _c ctrlSetPosition [_cp select 0, _below + _row * 1.15 * _cell, _cp select 2, _cp select 3];
         _c ctrlCommit 0;
     } forEach [[FS_IDC_U_POOLSLABEL, 0], [FS_IDC_U_POOLS, 0], [FS_IDC_U_POOLSEDIT, 0], [FS_IDC_U_ROLL, 1], [FS_IDC_U_UNROLL, 1],
-        [FS_IDC_U_ROLELABEL, 2], [FS_IDC_U_ROLE, 2], [FS_IDC_U_SPECOPS, 2], [FS_IDC_U_SPECOPSLABEL, 2]];
+        [FS_IDC_U_ROLELABEL, 2], [FS_IDC_U_ROLE, 2], [FS_IDC_U_SPECOPS, 2], [FS_IDC_U_SPECOPSLABEL, 2],
+        [FS_IDC_U_ENGINEER, 3], [FS_IDC_U_ENGINEERLABEL, 3], [FS_IDC_U_EOD, 3], [FS_IDC_U_EODLABEL, 3]];
     // his part in AUTO GROUPS; Automatic names the part worked out
     _session set ["roleFilling", true];
     private _roleCombo = _display displayCtrl FS_IDC_U_ROLE;
@@ -120,7 +124,13 @@ private _show = {
     _session set ["roleFilling", false];
     (_display displayCtrl FS_IDC_U_SPECOPS) cbSetChecked (_entry getOrDefault ["specOps", false]);
     (_display displayCtrl FS_IDC_U_OPTIONAL) cbSetChecked (_entry getOrDefault ["optional", false]);
-    { (_display displayCtrl _x) ctrlEnable !(_id isEqualTo "") } forEach [FS_IDC_U_ROLE, FS_IDC_U_SPECOPS, FS_IDC_U_OPTIONAL];
+    // Engineer and EOD: his own setting, else his base class's
+    {
+        _x params ["_idc", "_key", "_prop"];
+        private _v = _entry getOrDefault [_key, -1];
+        (_display displayCtrl _idc) cbSetChecked (if (_v < 0) then { getNumber (configFile >> "CfgVehicles" >> _base >> _prop) > 0 } else { _v > 0 });
+    } forEach [[FS_IDC_U_ENGINEER, "engineer", "engineer"], [FS_IDC_U_EOD, "eod", "canDeactivateMines"]];
+    { (_display displayCtrl _x) ctrlEnable !(_id isEqualTo "") } forEach [FS_IDC_U_ROLE, FS_IDC_U_SPECOPS, FS_IDC_U_OPTIONAL, FS_IDC_U_ENGINEER, FS_IDC_U_EOD];
     private _poolDict = _faction getOrDefault ["pools", createHashMap];
     private _worn = (_entry getOrDefault ["pools", []]) select { _x in _poolDict };
     (_display displayCtrl FS_IDC_U_POOLS) ctrlSetText (if (_worn isEqualTo []) then { localize "STR_ALIVE_FS_PL_NONE" } else { (_worn apply { (_poolDict get _x) getOrDefault ["name", _x] }) joinString ", " });
@@ -267,6 +277,15 @@ switch (_op) do {
         _args params [["_ctrl", controlNull], ["_index", -1]];
         if (_index < 0) exitWith {};
         ["category", _ctrl lbData _index] call _set;
+    };
+    case "engineer";
+    case "eod": {
+        private _id = _session getOrDefault ["selUnit", ""];
+        if !(_id in _units) exitWith {};
+        private _on = cbChecked (_display displayCtrl ([FS_IDC_U_ENGINEER, FS_IDC_U_EOD] select (_op == "eod")));
+        // the same as his base class is kept as -1, so a later change of base class still carries through
+        private _baseOn = getNumber (configFile >> "CfgVehicles" >> ((_units get _id) getOrDefault ["base", ""]) >> (["engineer", "canDeactivateMines"] select (_op == "eod"))) > 0;
+        [_op, [[0, 1] select _on, -1] select (_on isEqualTo _baseOn)] call _set;
     };
     case "fixed": {
         private _id = _session getOrDefault ["selUnit", ""];

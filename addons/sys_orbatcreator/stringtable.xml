@@ -1133,6 +1133,18 @@
 <Key ID="STR_ALIVE_FS_U_SPECOPS_TIP">
     <English>Special forces: AUTO GROUPS puts him in recon teams (ALiVE's SpecOps groups), not in the regular infantry.</English>
 </Key>
+<Key ID="STR_ALIVE_FS_U_ENGINEER">
+    <English>Engineer</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_ENGINEER_TIP">
+    <English>Engineer: he can repair vehicles with a toolkit, whatever his base class. Ticked as his base class until you change it.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_EOD">
+    <English>EOD</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_EOD_TIP">
+    <English>Explosive ordnance disposal: he can defuse mines and explosives with a toolkit, whatever his base class. Ticked as his base class until you change it.</English>
+</Key>
 <Key ID="STR_ALIVE_FS_EC_INFANTRY">
     <English>Every ALiVE placement needs infantry groups.</English>
 </Key>

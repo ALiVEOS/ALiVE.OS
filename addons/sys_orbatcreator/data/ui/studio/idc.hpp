@@ -90,6 +90,10 @@
 #define FS_IDC_U_SPECOPSLABEL       14230
 #define FS_IDC_U_OPTIONAL           14231
 #define FS_IDC_U_OPTIONALLABEL      14232
+#define FS_IDC_U_ENGINEER           14233
+#define FS_IDC_U_ENGINEERLABEL      14234
+#define FS_IDC_U_EOD                14235
+#define FS_IDC_U_EODLABEL           14236
 
 // ---------------------------------------------------------------- Vehicles tab
 #define FS_IDC_V_LIST               14301

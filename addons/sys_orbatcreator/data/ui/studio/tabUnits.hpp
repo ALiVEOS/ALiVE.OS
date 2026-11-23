@@ -260,5 +260,33 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
             y = (FS_H(26.24) + FS_SP_ULIST);
             w = FS_W(2.1);
         };
+        // written into his class, so any base class can repair and clear mines; shown as his base class until changed
+        class Engineer : ALiVE_FS_RscCheckBox {
+            idc = FS_IDC_U_ENGINEER;
+            tooltip = "$STR_ALIVE_FS_U_ENGINEER_TIP";
+            x = FS_W(0);
+            y = (FS_H(27.39) + FS_SP_ULIST);
+            onCheckedChanged = "['engineer', _this] call ALiVE_fnc_fsStudioTabUnits";
+        };
+        class EngineerLabel : ALiVE_FS_RscLabel {
+            idc = FS_IDC_U_ENGINEERLABEL;
+            text = "$STR_ALIVE_FS_U_ENGINEER";
+            tooltip = "$STR_ALIVE_FS_U_ENGINEER_TIP";
+            x = FS_W(0.9);
+            y = (FS_H(27.39) + FS_SP_ULIST);
+            w = FS_W(4);
+        };
+        class Eod : Engineer {
+            idc = FS_IDC_U_EOD;
+            tooltip = "$STR_ALIVE_FS_U_EOD_TIP";
+            x = FS_W(5);
+            onCheckedChanged = "['eod', _this] call ALiVE_fnc_fsStudioTabUnits";
+        };
+        class EodLabel : EngineerLabel {
+            idc = FS_IDC_U_EODLABEL;
+            text = "$STR_ALIVE_FS_U_EOD";
+            tooltip = "$STR_ALIVE_FS_U_EOD_TIP";
+            x = FS_W(5.9);
+        };
     };
 };
