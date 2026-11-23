@@ -160,6 +160,15 @@ class Cfg3DEN {
             icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
             useSideColorOnIcon = 1;
         };
+        class ALiVE_Preset_kick_out_the_opfor_units {
+            path = "x\alive\addons\sys_presets\compositions\kick_out_the_opfor_units";
+            side = 1;
+            editorCategory = "ALiVE_PresetCat";
+            editorSubcategory = "ALiVE_PresetSub";
+            displayName = "Kick out the OpFor units";
+            icon = "\A3\ui_f\data\map\markers\nato\b_inf.paa";
+            useSideColorOnIcon = 1;
+        };
         class ALiVE_Preset_nato_holds_one_area {
             path = "x\alive\addons\sys_presets\compositions\nato_holds_one_area";
             side = 1;
