@@ -1701,7 +1701,10 @@ switch(_operation) do {
             // Outbreak: a man of another side's class made in the zombie group keeps his class's side (a CIV_F
             // zombie reads civilian, a BLU_F one WEST), so nobody shoots him. Joining the group again gives him
             // the group's side; measured, BLUFOR and AAF then fire on CIV_F and BLU_F zombies.
-            private _sideFaction = _logic select 2 select 29;
+            // the faction by name, not by slot: a profile cut short while it spawned failed on the slot (2 elements
+            // where 30 were expected)
+            private _outbreakFaction = [[_logic, "faction", ""] call ALIVE_fnc_hashGet] param [0, "", [""]];
+            private _sideFaction = _outbreakFaction;
             if (_sideFaction isEqualType "" && {(toLower _sideFaction) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])}) then {
                 private _keepLeader = leader _group;
                 private _misSided = _units select { !isNull _x && {side _x != side _group} };
@@ -1715,7 +1718,7 @@ switch(_operation) do {
             // it. Clothes stay, so a CIV_F horde looks like townsfolk and a BLU_F horde like dead soldiers; the
             // call takes the weapons. Units that are zombies by class already are left to the mod. Without
             // WebKnight's mod nobody is converted and the zombie hunt still runs.
-            private _convertFaction = _logic select 2 select 29;
+            private _convertFaction = _outbreakFaction;
             if (_convertFaction isEqualType "" && {(toLower _convertFaction) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])} && {isClass (configFile >> "CfgPatches" >> "WBK_ZombieCreatures")} && {!isNil "WBK_LoadAIThroughEden"}) then {
                 {
                     if (alive _x && {!(_x getVariable ["WBK_AI_isZombie", false])} && {(toLower (getText (configOf _x >> "faction"))) != "wbk_ai_zhambies"}) then {
@@ -1728,7 +1731,7 @@ switch(_operation) do {
             // Outbreak: a zombie faction's group is tagged so the zombie hunt (ALiVE_fnc_zombieHunt) drives it
             // at civilians, on whichever machine owns it, and each zombie is marked so nothing mistakes a
             // zombie in civilian clothes for a civilian.
-            private _spawnFaction = _logic select 2 select 29;
+            private _spawnFaction = _outbreakFaction;
             if (_spawnFaction isEqualType "" && {(toLower _spawnFaction) in (missionNamespace getVariable ["ALiVE_zombieFactions", []])}) then {
                 _group setVariable ["ALiVE_zombieHunt", true, true];
                 { _x setVariable ["ALiVE_zombie", true, true] } forEach _units;
