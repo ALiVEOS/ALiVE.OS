@@ -92,6 +92,33 @@ ALiVE_diag_fnc_scripts = {
     ["SERVER", "SERVER_SCRIPTS", _text] call ALiVE_fnc_diagEvent;
 };
 
+// Every 10 minutes (each 20th row, and the first): the 15 scripts running most, counted by script name and file, as
+// "count name (file)" joined by "; ", to see which of them pile up on a long mission (Jman 23 Nov)
+ALiVE_diag_fnc_scriptTop = {
+    private _n = createHashMap;
+    {
+        private _f = _x select 1;
+        if (_f select [0, 1] == "\") then { _f = _f select [1] };
+        private _parts = _f splitString "\";
+        if (count _parts > 3) then { _f = (_parts select [count _parts - 3]) joinString "\" };
+        // a ";" in a name or file would split its entry on the page, and a name can be long code text
+        private _nm = ((_x select 0) splitString ";") joinString ",";
+        if (count _nm > 60) then { _nm = (_nm select [0, 57]) + "..." };
+        private _k = [_nm, (_f splitString ";") joinString ","];
+        _n set [_k, (_n getOrDefault [_k, 0]) + 1];
+    } forEach diag_activeSQFScripts;
+    private _rows = (keys _n) apply { [_n get _x, _x select 0, _x select 1] };
+    _rows sort false;
+    private _text = "";
+    {
+        _x params ["_c", "_nm", "_fl"];
+        private _t = format ["%1 %2 (%3)", _c, _nm, _fl];
+        if (count _text + count _t + 2 > 990) exitWith {};
+        _text = if (_text == "") then { _t } else { _text + "; " + _t };
+    } forEach (_rows select [0, 15]);
+    ["SERVER", "SERVER_SCRIPT_TOP", _text] call ALiVE_fnc_diagEvent;
+};
+
 // Once a run: the loaded mods by name, split over several events past 1000 characters
 ALiVE_diag_fnc_mods = {
     private _names = getLoadedModsInfo apply { _x select 0 };
@@ -190,4 +217,5 @@ ALiVE_diag_pfh = [{
     if (!ALiVE_diag_modsSent) then { ALiVE_diag_modsSent = true; call ALiVE_diag_fnc_mods };
     ALiVE_diag_snapCount = ALiVE_diag_snapCount + 1;
     if (ALiVE_diag_snapCount % 2 == 0) then { call ALiVE_diag_fnc_scripts };
+    if (ALiVE_diag_snapCount % 20 == 1) then { call ALiVE_diag_fnc_scriptTop };
 }, 1] call CBA_fnc_addPerFrameHandler;

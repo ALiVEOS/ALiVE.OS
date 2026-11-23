@@ -62,5 +62,8 @@ No player names or UIDs go in either ring.
 // every minute (each 2nd row): the scripts running, counted by where their file comes from (ALiVE, CBA, ACE, mission, other
 // mods by their first two path segments, "no file"), then "; FSMs <n>" for the mission FSMs
 #define DIAG_SERVER_SCRIPTS        "SERVER_SCRIPTS"
+// every 10 minutes (each 20th row, and the first): the 15 scripts running most, counted by script name and file (the
+// file's last three path segments), as "count name (file)" joined by "; "
+#define DIAG_SERVER_SCRIPT_TOP     "SERVER_SCRIPT_TOP"
 // once a run: the loaded mods by name, several rows when the list is longer than 1000 characters
 #define DIAG_SERVER_MODS           "SERVER_MODS"
