@@ -54,6 +54,21 @@ ALiVE_diag_modsSent = false;
 ALiVE_diag_errors = 0;
 addMissionEventHandler ["ScriptError", { ALiVE_diag_errors = ALiVE_diag_errors + 1 }];
 
+// CPS (Jman 23 Nov): a scheduled loop that counts its own turns, so a row can say how often the scheduler got round to
+// a waiting script over its 30 s. It rests while the diagnostics are off
+ALiVE_diag_cpsN = 0;
+ALiVE_diag_cpsAt = diag_tickTime;
+ALiVE_diag_cpsH = [] spawn {
+    while {true} do {
+        if (ALiVE_diag_active) then {
+            ALiVE_diag_cpsN = ALiVE_diag_cpsN + 1;
+            sleep 0.001;
+        } else {
+            sleep 5;
+        };
+    };
+};
+
 // Every minute (each 2nd row): the scripts running, by where their file comes from, and the mission FSMs
 ALiVE_diag_fnc_scripts = {
     private _groups = createHashMap;
@@ -99,7 +114,7 @@ ALiVE_diag_pfh = [{
         ALiVE_WR_diagOn isEqualTo true
     };
     ALiVE_diag_active = _on;
-    if (!_on) exitWith { ALiVE_diag_fpsMin = 1000; ALiVE_diag_errors = 0; ALiVE_diag_next = time + 30 };
+    if (!_on) exitWith { ALiVE_diag_fpsMin = 1000; ALiVE_diag_errors = 0; ALiVE_diag_next = time + 30; ALiVE_diag_cpsN = 0; ALiVE_diag_cpsAt = diag_tickTime };
     ALiVE_diag_fpsMin = ALiVE_diag_fpsMin min diag_fpsMin;
     if (time < ALiVE_diag_next) exitWith {};
     ALiVE_diag_next = time + 30;
@@ -135,13 +150,36 @@ ALiVE_diag_pfh = [{
     private _ai = allUnits select { !isPlayer _x };
     private _aiOther = { isNil { _x getVariable "profileID" } } count _ai;
 
+    // (Jman 23 Nov) the CPS over this row's time, the AI with no ALiVE profile by the side of its group, and where all
+    // AI runs: the server, each headless client (HC1, HC2... in their order), or a player's machine
+    private _cps = round (ALiVE_diag_cpsN / ((diag_tickTime - ALiVE_diag_cpsAt) max 1) * 10) / 10;
+    ALiVE_diag_cpsN = 0;
+    ALiVE_diag_cpsAt = diag_tickTime;
+    private _otherSide = [0, 0, 0, 0];
+    private _hcIds = (entities "HeadlessClient_F") apply { owner _x };
+    private _mach = [["server", 0, 0]];
+    { _mach pushBack [format ["HC%1", _forEachIndex + 1], 0, 0] } forEach _hcIds;
+    _mach pushBack ["players", 0, 0];
+    {
+        private _mine = !isNil { _x getVariable "profileID" };
+        if (!_mine) then {
+            private _i = [west, east, resistance, civilian] find (side group _x);
+            if (_i >= 0) then { _otherSide set [_i, (_otherSide select _i) + 1] };
+        };
+        private _o = owner _x;
+        private _h = _hcIds find _o;
+        private _row = _mach select (if (_o == 2) then { 0 } else { if (_h >= 0) then { _h + 1 } else { count _mach - 1 } });
+        if (_mine) then { _row set [1, (_row select 1) + 1] } else { _row set [2, (_row select 2) + 1] };
+    } forEach _ai;
+
     ALiVE_diag_seq = ALiVE_diag_seq + 1;
     ALiVE_diag_snap pushBack [
         ALiVE_diag_seq, round (time * 10) / 10, round (diag_fps * 10) / 10, round (ALiVE_diag_fpsMin * 10) / 10,
         diag_activeScripts, _profiles, _active, _groups, _opcoms, _mls, _jobs,
         ALiVE_diag_spawns, ALiVE_diag_despawns,
         _aiOther, count vehicles, count allDead, count agents, ALiVE_diag_errors,
-        count _ai - _aiOther
+        count _ai - _aiOther,
+        _cps, _otherSide, _mach
     ];
     if (count ALiVE_diag_snap > 120) then { ALiVE_diag_snap deleteAt 0 };
     ALiVE_diag_spawns = 0;

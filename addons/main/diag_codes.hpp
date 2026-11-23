@@ -21,10 +21,15 @@ ALiVE_diag_snap, a ring of 120, one row every 30 s:
    aiOther (AI units with no ALiVE profile: mission-placed, CQB, other mods; units ALiVE spawns or takes
    over carry the "profileID" variable), vehicles (count vehicles), dead (count allDead), agents (count agents),
    scriptErrorsSinceLast (every script error on the server, any mod or the mission, from the engine's ScriptError event),
-   aliveUnits (AI units ALiVE spawned or took over, the ones carrying "profileID")]
+   aliveUnits (AI units ALiVE spawned or took over, the ones carrying "profileID"),
+   cps (scheduler cycles a second over the 30 s: how often a waiting scheduled script got a turn),
+   [west, east, resistance, civilian] (aiOther by the side of its group),
+   [[machine, aliveUnits, aiOther], ...] (where the AI is local: "server", "HC1", "HC2"... in the order of the
+   headless clients, then "players" for AI in groups local to a player's machine)]
   Indexes: 0 seq, 1 time, 2 fps, 3 fpsMin, 4 scripts, 5 profiles, 6 activeProfiles, 7 groups, 8 commanders,
-  9 logistics, 10 pathfinderQueue, 11 spawns, 12 despawns, 13 aiOther, 14 vehicles, 15 dead, 16 agents, 17 scriptErrors, 18 aliveUnits.
-  Rows written before 16 Nov 2026 end at 12.
+  9 logistics, 10 pathfinderQueue, 11 spawns, 12 despawns, 13 aiOther, 14 vehicles, 15 dead, 16 agents, 17 scriptErrors, 18 aliveUnits,
+  19 cps, 20 aiOtherBySide, 21 aiByMachine.
+  Rows written before 16 Nov 2026 end at 12; before 23 Nov 2026 at 18.
 
 ALiVE_diag_events, a ring of 200:
   [seq, serverTime (s), category, code, text (1000 characters at most), [x, y] or [], repeatCount]
