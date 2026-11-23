@@ -184,7 +184,48 @@ _bomber addMPEventHandler ["MPKilled", {
     // Have bomber go after victim for up to 10 minutes
     _time = time + 600;
     _timer = time;
+    // A bomber who stops closing on his target (in COMBAT he can go to ground, or the long path fails) is
+    // nudged: after 30 s CARELESS and standing up, after 60 s a short leg 25 m towards the target, after 90 s,
+    // with no player within 100 m of him, moved 25 m on towards the target. Any progress starts it over
+    private _bestD = 1e9;
+    private _stallAt = time;
+    private _stallStep = 0;
     waitUntil {
+
+        if (!isNil "_victim" && {!isNull _victim} && {!isNull _bomber} && {alive _bomber}) then {
+            private _dNow = _bomber distance _victim;
+            if (_dNow < _bestD - 3) then {
+                _bestD = _dNow;
+                _stallAt = time;
+                _stallStep = 0;
+            } else {
+                if (time - _stallAt > 30) then {
+                    _stallAt = time;
+                    _stallStep = _stallStep + 1;
+                    private _toward = (getPosATL _bomber) getPos [25 min (_dNow - 2), _bomber getDir _victim];
+                    switch (_stallStep) do {
+                        case 1: {
+                            [_bomber, "CARELESS"] remoteExecCall ["setBehaviour", _bomber];
+                            [_bomber, "UP"] remoteExecCall ["setUnitPos", _bomber];
+                            [_bomber, getPos _victim] remoteExecCall ["doMove", _bomber];
+                        };
+                        case 2: {
+                            [_bomber, _toward] remoteExecCall ["doMove", _bomber];
+                        };
+                        default {
+                            if (((allPlayers - entities "HeadlessClient_F") findIf { (_x distance _bomber) < 100 }) < 0) then {
+                                private _to = _toward findEmptyPosition [0, 15, typeOf _bomber];
+                                if (_to isEqualTo []) then { _to = _toward };
+                                _bomber setPosATL _to;
+                            };
+                            [_bomber, getPos _victim] remoteExecCall ["doMove", _bomber];
+                        };
+                    };
+                    ["ALIVE-%1 Suicide Bomber: no closer than %2 m for 30 s, nudge %3", time, round _bestD, _stallStep] call ALiVE_fnc_dump;
+                    _timer = time;
+                };
+            };
+        };
 
         if (!isNil "_victim" && {!isNull _victim} && {time - _timer > 15}) then {
             // doMove must execute on the machine where the bomber is local.
