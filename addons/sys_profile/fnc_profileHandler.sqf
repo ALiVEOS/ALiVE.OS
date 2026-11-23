@@ -1894,6 +1894,11 @@ switch(_operation) do {
                         [_profileVehicle, "spawnType", [_profile,"spawnType"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
                     };
 
+                    // the Garbage Collector's crew-lost mark (ALiVE_fnc_GCAbandoned)
+                    if("ALiVE_crewLost" in (_profile select 1)) then {
+                        [_profileVehicle, "ALiVE_crewLost", ([_profile,"ALiVE_crewLost"] call ALIVE_fnc_hashGet) in [true, "true"]] call ALIVE_fnc_hashSet;
+                    };
+
                     // artillery despawn-hold marker (see the entity branch)
                     if("ALiVE_artyHold" in (_profile select 1)) then {
                         [_profileVehicle, "ALiVE_artyHold", [_profile,"ALiVE_artyHold"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;

@@ -27,6 +27,33 @@
     <Chinesesimp>垃圾收集器杂波类型</Chinesesimp>
     <Spanish>Tipos de objeto del recolector de basura</Spanish>
 </Key>
+<Key ID="STR_ALIVE_GC_ABANDONED">
+    <English>Abandoned Vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_GC_ABANDONED_COMMENT">
+    <English>What happens to enemy vehicles left with no crew that are knocked out (can't move, engine or tracks destroyed, or a hull ACE left standing after the crew bailed out) or whose crew has been gone longer than the delay. Only when no player is within the distance. Player-side, civilian, logistics and player-used vehicles are never touched.</English>
+</Key>
+<Key ID="STR_ALIVE_GC_ABANDONED_OFF">
+    <English>Leave them</English>
+</Key>
+<Key ID="STR_ALIVE_GC_ABANDONED_REMOVE">
+    <English>Remove them</English>
+</Key>
+<Key ID="STR_ALIVE_GC_ABANDONED_WRECK">
+    <English>Turn them into wrecks</English>
+</Key>
+<Key ID="STR_ALIVE_GC_ABANDONED_DELAY">
+    <English>Abandoned After (minutes)</English>
+</Key>
+<Key ID="STR_ALIVE_GC_ABANDONED_DELAY_COMMENT">
+    <English>How long an undamaged vehicle must stand without its crew before it counts as abandoned. A knocked-out one counts straight away.</English>
+</Key>
+<Key ID="STR_ALIVE_GC_ABANDONED_DISTANCE">
+    <English>No Player Within (m)</English>
+</Key>
+<Key ID="STR_ALIVE_GC_ABANDONED_DISTANCE_COMMENT">
+    <English>An abandoned vehicle is only removed or wrecked when no player is this close to it.</English>
+</Key>
 <Key ID="STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT">
     <English>Include certain non-unit or non-vehicle objects in collection eg: ["Box_NATO_Wps_F","Box_NATO_AmmoOrd_F"]</English>
     <Chinesesimp>在集合中包含某些非单位或非车辆对象,例如:["Box_NATO_Wps_F","Box_NATO_AmmoOrd_F"]</Chinesesimp>

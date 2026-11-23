@@ -38,6 +38,7 @@ See Also:
 Author:
 BIS
 Highhead
+Jman
 
 Peer reviewed:
 nil
@@ -135,6 +136,15 @@ switch(_operation) do {
         _logic setVariable ["gcThreshold", _threshold];
         _logic setVariable ["nextCollectTime", ALiVE_simulationTime + _interval];
         _logic setVariable ["ALiVE_GC_PFH", -1];
+
+        // abandoned vehicles (ALiVE_fnc_GCAbandoned): its own slow loop, on whatever the interval is
+        private _abandoned = toLower (_logic getVariable ["ALiVE_GC_ABANDONED", "off"]);
+        if (_abandoned in ["remove", "wreck"]) then {
+            _logic setVariable ["abandonedMode", _abandoned];
+            _logic setVariable ["abandonedDelay", 60 * ((parseNumber format ["%1", _logic getVariable ["ALiVE_GC_ABANDONED_DELAY", "15"]]) max 1)];
+            _logic setVariable ["abandonedDistance", (parseNumber format ["%1", _logic getVariable ["ALiVE_GC_ABANDONED_DISTANCE", "1000"]]) max 0];
+            [_logic] spawn ALiVE_fnc_GCAbandoned;
+        };
 
         if (_interval < 1) exitwith {
             ["Garbage Collector turned off..."] call ALiVE_fnc_dump;

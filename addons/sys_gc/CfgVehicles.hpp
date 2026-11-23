@@ -37,6 +37,22 @@ class CfgVehicles {
                         class ALiVE_GC_INTERVAL : Edit { property = "ALiVE_sys_gc_ALiVE_GC_INTERVAL"; displayName = "$STR_ALIVE_GC_INTERVAL"; tooltip = "$STR_ALIVE_GC_INTERVAL_COMMENT"; defaultValue = """300"""; };
                         class ALiVE_GC_THRESHHOLD : Edit { property = "ALiVE_sys_gc_ALiVE_GC_THRESHHOLD"; displayName = "$STR_ALIVE_GC_THRESHHOLD"; tooltip = "$STR_ALIVE_GC_THRESHHOLD_COMMENT"; defaultValue = """100"""; ALiVE_showWhen[] = {{"ALiVE_GC_INTERVAL", ">", 0.99}}; };
                         class ALiVE_GC_INDIVIDUALTYPES : Edit { property = "ALiVE_sys_gc_ALiVE_GC_INDIVIDUALTYPES"; displayName = "$STR_ALIVE_GC_INDIVIDUALTYPES"; tooltip = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT"; defaultValue = """"""; ALiVE_showWhen[] = {{"ALiVE_GC_INTERVAL", ">", 0.99}}; };
+                        class HDR_ABANDONED : ALiVE_ModuleSubTitle { property = "ALiVE_sys_gc_HDR_ABANDONED"; displayName = "ABANDONED VEHICLES"; };
+                        class ALiVE_GC_ABANDONED : Combo
+                        {
+                                property = "ALiVE_sys_gc_ALiVE_GC_ABANDONED";
+                                displayName = "$STR_ALIVE_GC_ABANDONED";
+                                tooltip = "$STR_ALIVE_GC_ABANDONED_COMMENT";
+                                defaultValue = """off""";
+                                class Values
+                                {
+                                    class Off { name = "$STR_ALIVE_GC_ABANDONED_OFF"; value = "off"; default = 1; };
+                                    class Remove { name = "$STR_ALIVE_GC_ABANDONED_REMOVE"; value = "remove"; };
+                                    class Wreck { name = "$STR_ALIVE_GC_ABANDONED_WRECK"; value = "wreck"; };
+                                };
+                        };
+                        class ALiVE_GC_ABANDONED_DELAY : Edit { property = "ALiVE_sys_gc_ALiVE_GC_ABANDONED_DELAY"; displayName = "$STR_ALIVE_GC_ABANDONED_DELAY"; tooltip = "$STR_ALIVE_GC_ABANDONED_DELAY_COMMENT"; defaultValue = """15"""; };
+                        class ALiVE_GC_ABANDONED_DISTANCE : Edit { property = "ALiVE_sys_gc_ALiVE_GC_ABANDONED_DISTANCE"; displayName = "$STR_ALIVE_GC_ABANDONED_DISTANCE"; tooltip = "$STR_ALIVE_GC_ABANDONED_DISTANCE_COMMENT"; defaultValue = """1000"""; };
                         class ModuleDescription : ModuleDescription {};
                 };
         };
