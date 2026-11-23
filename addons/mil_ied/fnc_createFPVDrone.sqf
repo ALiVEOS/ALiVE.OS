@@ -74,11 +74,24 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
             private _dummy = _d get "dummy";
             private _tgt = vehicle (_d get "target");
             if (!isNull _dummy) then { deleteVehicle _dummy };
-            // the drone's body must not take the blast: moved well away this frame, deleted at the end of it
+            // the drone's body must not take the blast: moved well away this frame, hidden, and deleted 5 minutes
+            // later. It is kept because the blast is credited to it and its pilot, and with ACE a man it hurts can die
+            // well after the blast (one bled out 17 s later): a kill whose shooter no longer exists was put down to the
+            // dead man's own vehicle ("Run over (GAZ-233114)", friendly fire)
+            private _pilot = objNull;
             if (!isNull _uav) then {
+                _pilot = (crew _uav) param [0, objNull];
+                _uav setVariable ["ALiVE_IED_fpvStrike", true, true];
                 _uav setPosASL (_pos vectorAdd [0, 0, 400]);
-                { deleteVehicle _x } forEach (crew _uav);
-                deleteVehicle _uav;
+                _uav allowDamage false;
+                { _x allowDamage false } forEach (crew _uav);
+                _uav hideObjectGlobal true;
+                _uav enableSimulationGlobal false;
+                [_uav] spawn {
+                    params ["_uav"];
+                    sleep 300;
+                    if (!isNull _uav) then { { deleteVehicle _x } forEach (crew _uav); deleteVehicle _uav };
+                };
             };
             private _dir = [0, 0, -1];
             private _pp = _pos;
@@ -107,6 +120,12 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
                     if (_s isNotEqualTo []) then { _pp = ((_s select 0) select 0) vectorAdd (_dir vectorMultiply -0.5) };
                 };
             };
+            // the target and everyone in it are marked as struck by this drone: a man it hurts often dies later of
+            // his wrecked vehicle burning or blowing up, which the game credits to nobody, or to the vehicle itself,
+            // and the statistics kill record then credits the drone (it is kept 5 minutes, below)
+            if (_onTarget && {!isNull _tgt} && {!isNull _uav}) then {
+                { _x setVariable ["ALiVE_IED_fpvHit", [_uav, serverTime], true] } forEach ([_tgt] + crew _tgt);
+            };
             private _ch = createVehicle [_d get "ammo", ASLToAGL _pp, [], 0, "CAN_COLLIDE"];
             _ch setPosASL _pp;
             // straight down has no "up" from the world's vertical
@@ -114,8 +133,11 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
             if ((vectorMagnitude _up) < 0.1) then { _up = [0, 1, 0] };
             _ch setVectorDirAndUp [_dir, vectorNormalized _up];
             _ch setVelocity (_dir vectorMultiply 22);
+            // credited to the drone and its pilot, so a kill reads as the drone's and its side's; the launching
+            // group's leader when the drone is gone
             private _lead = _d get "lead";
-            if (alive _lead) then { _ch setShotParents [_lead, _lead] };
+            private _parents = if (!isNull _uav && {!isNull _pilot}) then { [_uav, _pilot] } else { if (alive _lead) then { [_lead, _lead] } else { [] } };
+            if (_parents isNotEqualTo []) then { _ch setShotParents _parents };
             triggerAmmo _ch;
             // a Large charge is a tandem: the anti-tank warhead with a rocket warhead behind it, so a tank it reaches
             // is not left with only a scratch when the first one finds no weak spot
@@ -124,7 +146,7 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
                 _ch2 setPosASL (_pp vectorAdd (_dir vectorMultiply -0.3));
                 _ch2 setVectorDirAndUp [_dir, vectorNormalized _up];
                 _ch2 setVelocity (_dir vectorMultiply 22);
-                if (alive _lead) then { _ch2 setShotParents [_lead, _lead] };
+                if (_parents isNotEqualTo []) then { _ch2 setShotParents _parents };
                 triggerAmmo _ch2;
             };
             ["end", [_d, format ["exploded (%1)", _fuse], false]] call ALiVE_fnc_createFPVDrone;
@@ -199,8 +221,11 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
                     };
                 } else {
                     if (!isNull _dummy) then { deleteVehicle _dummy };
-                    { deleteVehicle _x } forEach (crew _uav);
-                    deleteVehicle _uav;
+                    // a drone that has just struck is kept, hidden, until its blast has been credited (see "blow")
+                    if !(_uav getVariable ["ALiVE_IED_fpvStrike", false]) then {
+                        { deleteVehicle _x } forEach (crew _uav);
+                        deleteVehicle _uav;
+                    };
                 };
             } else {
                 if (!isNull _dummy) then { deleteVehicle _dummy };

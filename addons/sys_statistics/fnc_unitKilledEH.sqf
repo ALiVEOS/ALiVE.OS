@@ -87,6 +87,16 @@ if (_stats || {_killFeed != "None"}) then {
         if (!isNull _hitBy && {time - _hitTime <= 60}) then { _killer = _hitBy };
     };
 
+    // Struck by an ALiVE FPV drone in the last 5 minutes and killed by nobody, by himself or by his own vehicle
+    // (the wreck the drone left burning or blowing up): the drone killed him. Recorded "Run over (GAZ-233114)",
+    // friendly fire, before
+    (_killed getVariable ["ALiVE_IED_fpvHit", []]) params [["_fpvDrone", objNull], ["_fpvTime", -1]];
+    if (!isNull _fpvDrone && {serverTime - _fpvTime <= 300}
+        && {isNull _killer || {_killer == _killed} || {_killer == objectParent _killed} || {_killer == vehicle _killed} || {!(_killer isKindOf "Man") && {(_killer getVariable ["ALiVE_IED_fpvHit", []]) isNotEqualTo []}}}) then {
+        _killer = _fpvDrone;
+        _aceKilled = false;
+    };
+
     // if killed is a player or a vehicle then record, if killer is player or player in a vehicle
     if ( (_killed == player) || !(_killed iskindof "Man") || (isPlayer _killer) ) then {
 
@@ -183,8 +193,16 @@ if (_stats || {_killFeed != "None"}) then {
             };
         };
 
+        // An ALiVE FPV drone's strike: the blast is credited to the drone and its pilot, which carry no weapon,
+        // so it read "Run over (Crocus AP)". Recorded as the drone's warhead instead
+        if (!isNull _killer && {(vehicle _killer) getVariable ["ALiVE_IED_fpvStrike", false]}) then {
+            _killerweapon = format ["FPV drone strike (%1)", getText (configFile >> "cfgVehicles" >> (typeOf (vehicle _killer)) >> "displayName")];
+            _killerweaponType = typeOf (vehicle _killer);
+        };
+
         // the kinds the War Room draws: what did it, what the killer was in (or "man"), and what died
         private _weaponKind = switch (true) do {
+            case ((vehicle _killer) getVariable ["ALiVE_IED_fpvStrike", false]): {"explosive"};
             case _selfWrecked: {"none"};
             case ((_killerweapon find "Run over (") == 0): {"runover"};
             default {_killerweaponType call GVAR(fnc_weaponKind)};
