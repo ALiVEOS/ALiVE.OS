@@ -356,21 +356,57 @@
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_TARGETS">
     <English>Drone Targets</English>
+    <Chinese>無人機目標</Chinese>
+    <Chinesesimp>无人机目标</Chinesesimp>
+    <Spanish>Objetivos de los drones</Spanish>
+    <French>Cibles des drones</French>
+    <Portuguese>Alvos dos drones</Portuguese>
+    <Russian>Цели дронов</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_TARGETS_COMMENT">
     <English>Players only: drones go after players, on foot or in a land vehicle, as before. Players and AI: they also go after AI of a hostile side. A group that launches a drone may send it at an AI unit or crewed vehicle it knows about instead of the player, and a searching drone takes AI on foot it can see within 300 m. The warhead rules stay the same: only Medium and Large drones go after vehicles.</English>
+    <Chinese>僅限玩家：無人機和以前一樣攻擊步行或乘坐地面載具的玩家。玩家與AI：也會攻擊敵對陣營的AI。發射無人機的小隊可能改派它攻擊已知的AI單位或有乘員的載具，而不是玩家；搜索中的無人機會攻擊300公尺內看到的步行AI。彈頭規則不變：只有中型和大型無人機會攻擊載具。</Chinese>
+    <Chinesesimp>仅限玩家：无人机和以前一样攻击步行或乘坐地面载具的玩家。玩家与AI：也会攻击敌对阵营的AI。发射无人机的小队可能改派它攻击已知的AI单位或有乘员的载具，而不是玩家；搜索中的无人机会攻击300米内看到的步行AI。弹头规则不变：只有中型和大型无人机会攻击载具。</Chinesesimp>
+    <Spanish>Solo jugadores: los drones atacan a los jugadores, a pie o en un vehículo terrestre, como antes. Jugadores e IA: también atacan a la IA de un bando hostil. Un grupo que lanza un dron puede enviarlo contra una unidad de IA o un vehículo con tripulación que conozca en lugar del jugador, y un dron en búsqueda ataca a la IA a pie que vea a menos de 300 m. Las reglas de la carga no cambian: solo los drones medianos y grandes atacan vehículos.</Spanish>
+    <French>Joueurs uniquement: les drones s'en prennent aux joueurs, à pied ou dans un véhicule terrestre, comme avant. Joueurs et IA: ils s'en prennent aussi à l'IA d'un camp hostile. Un groupe qui lance un drone peut l'envoyer sur une unité IA ou un véhicule avec équipage qu'il connaît au lieu du joueur, et un drone en recherche attaque l'IA à pied qu'il voit à moins de 300 m. Les règles de charge ne changent pas: seuls les drones moyens et grands s'en prennent aux véhicules.</French>
+    <Portuguese>Apenas jogadores: os drones atacam jogadores, a pé ou num veículo terrestre, como antes. Jogadores e IA: também atacam a IA de um lado hostil. Um grupo que lança um drone pode enviá-lo contra uma unidade de IA ou um veículo tripulado que conheça em vez do jogador, e um drone em busca ataca a IA a pé que veja a menos de 300 m. As regras da ogiva não mudam: apenas os drones médios e grandes atacam veículos.</Portuguese>
+    <Russian>Только игроки: дроны атакуют игроков, пеших или в наземной технике, как раньше. Игроки и ИИ: они также атакуют ИИ враждебной стороны. Группа, запускающая дрон, может направить его на известного ей бойца ИИ или технику с экипажем вместо игрока, а дрон в поиске атакует пеший ИИ, который видит в пределах 300 м. Правила боевой части не меняются: технику атакуют только средние и большие дроны.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_TARGETS_PLAYERS">
     <English>Players only</English>
+    <Chinese>僅限玩家</Chinese>
+    <Chinesesimp>仅限玩家</Chinesesimp>
+    <Spanish>Solo jugadores</Spanish>
+    <French>Joueurs uniquement</French>
+    <Portuguese>Apenas jogadores</Portuguese>
+    <Russian>Только игроки</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_TARGETS_ALL">
     <English>Players and AI</English>
+    <Chinese>玩家與AI</Chinese>
+    <Chinesesimp>玩家与AI</Chinesesimp>
+    <Spanish>Jugadores e IA</Spanish>
+    <French>Joueurs et IA</French>
+    <Portuguese>Jogadores e IA</Portuguese>
+    <Russian>Игроки и ИИ</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_ABANDONED">
     <English>Drones Also Hit Abandoned Vehicles</English>
+    <Chinese>無人機也攻擊被棄置的載具</Chinese>
+    <Chinesesimp>无人机也攻击被弃置的载具</Chinesesimp>
+    <Spanish>Los drones también atacan vehículos abandonados</Spanish>
+    <French>Les drones frappent aussi les véhicules abandonnés</French>
+    <Portuguese>Os drones também atacam veículos abandonados</Portuguese>
+    <Russian>Дроны также атакуют брошенную технику</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_ABANDONED_COMMENT">
     <English>Medium and Large drones only. A searching drone also goes after an abandoned vehicle of a hostile side it can see within 300 m: empty and knocked out (can't move, engine or tracks destroyed, or left standing by ACE) but not destroyed, so it could still be repaired. Its side is the side the vehicle belongs to.</English>
+    <Chinese>僅限中型和大型無人機。搜索中的無人機也會攻擊300公尺內看到的敵對陣營被棄置載具：無人且已失去作用（無法移動、引擎或履帶被毀，或被ACE定住），但尚未被摧毀，仍可修復。其陣營即載具所屬的陣營。</Chinese>
+    <Chinesesimp>仅限中型和大型无人机。搜索中的无人机也会攻击300米内看到的敌对阵营被弃置载具：无人且已失去作用（无法移动、引擎或履带被毁，或被ACE定住），但尚未被摧毁，仍可修复。其阵营即载具所属的阵营。</Chinesesimp>
+    <Spanish>Solo drones medianos y grandes. Un dron en búsqueda también ataca un vehículo abandonado de un bando hostil que vea a menos de 300 m: vacío e inutilizado (no puede moverse, motor u orugas destruidos, o inmovilizado por ACE) pero no destruido, de modo que aún podría repararse. Su bando es el bando al que pertenece el vehículo.</Spanish>
+    <French>Drones moyens et grands uniquement. Un drone en recherche s'en prend aussi à un véhicule abandonné d'un camp hostile qu'il voit à moins de 300 m: vide et hors de combat (immobilisé, moteur ou chenilles détruits, ou immobilisé par ACE) mais pas détruit, donc encore réparable. Son camp est celui auquel le véhicule appartient.</French>
+    <Portuguese>Apenas drones médios e grandes. Um drone em busca também ataca um veículo abandonado de um lado hostil que veja a menos de 300 m: vazio e inutilizado (não se move, motor ou lagartas destruídos, ou imobilizado pelo ACE) mas não destruído, podendo ainda ser reparado. O seu lado é o lado a que o veículo pertence.</Portuguese>
+    <Russian>Только средние и большие дроны. Дрон в поиске также атакует брошенную технику враждебной стороны, которую видит в пределах 300 м: пустую и выведенную из строя (не может двигаться, двигатель или гусеницы уничтожены, или обездвижена ACE), но не уничтоженную, то есть её ещё можно отремонтировать. Её сторона та, которой принадлежит техника.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_BOATS">
     <English>Drones Also Hit Boats</English>
