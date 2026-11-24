@@ -97,6 +97,17 @@ if (_stats || {_killFeed != "None"}) then {
         _aceKilled = false;
     };
 
+    // A drone's AI crew (what lets a drone fly; its player only borrows it) is no soldier, and a drone wrecked by
+    // its own side, a kamikaze drone's strike or its own crash, is spent, not lost. The game names the player
+    // flying it as the killer of both, so a player's kamikaze drone read as him killing his own side (AshTray,
+    // 24 Nov). Neither is recorded or announced; a drone the enemy brings down still is
+    private _uavSpent = if (_killed isKindOf "Man") then {
+        _killed isKindOf "UAV_AI_base_F" || {!isPlayer _killed && {unitIsUAV (objectParent _killed)}}
+    } else {
+        unitIsUAV _killed && {_killer == _killed || {(side group _killer) == ([east, west, independent, civilian] param [getNumber (configOf _killed >> "side"), civilian])}}
+    };
+    if (_uavSpent) exitWith {};
+
     // if killed is a player or a vehicle then record, if killer is player or player in a vehicle
     if ( (_killed == player) || !(_killed iskindof "Man") || (isPlayer _killer) ) then {
 
