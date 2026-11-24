@@ -101,10 +101,13 @@ ALiVE_diag_fnc_scriptTop = {
         if (_f select [0, 1] == "\") then { _f = _f select [1] };
         private _parts = _f splitString "\";
         if (count _parts > 3) then { _f = (_parts select [count _parts - 3]) joinString "\" };
-        // a ";" in a name or file would split its entry on the page, and a name can be long code text
-        private _nm = ((_x select 0) splitString ";") joinString ",";
+        // a ";" in a name or file would split its entry on the page, and a name can be long code text; its
+        // newlines and tabs (any character below 32) become spaces, as raw ones made the War Room drop the whole
+        // 30 s record this row went out with (KH, 23 Nov: every one lost)
+        private _fnc_flat = { toString ((toArray _this) apply { [_x, 32] select (_x < 32) }) };
+        private _nm = (((_x select 0) call _fnc_flat) splitString ";") joinString ",";
         if (count _nm > 60) then { _nm = (_nm select [0, 57]) + "..." };
-        private _k = [_nm, (_f splitString ";") joinString ","];
+        private _k = [_nm, ((_f call _fnc_flat) splitString ";") joinString ","];
         _n set [_k, (_n getOrDefault [_k, 0]) + 1];
     } forEach diag_activeSQFScripts;
     private _rows = (keys _n) apply { [_n get _x, _x select 0, _x select 1] };
