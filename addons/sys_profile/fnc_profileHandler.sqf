@@ -1447,6 +1447,9 @@ switch(_operation) do {
                     private _pinnedBy = if (isNil "ALIVE_profileStationaryBy") then { "" } else { [ALIVE_profileStationaryBy, _profileID, ""] call ALIVE_fnc_hashGet };
                     if (_pinnedBy isEqualType "" && {_pinnedBy != ""}) then { [_exportProfile, "stationaryBy", _pinnedBy] call ALIVE_fnc_hashSet };
                 };
+                // which module placed a parked vehicle (mp, cmp or roadblock), kept so the label survives a reload
+                private _placedBy = if (isNil "ALIVE_profilePlacedBy") then { "" } else { [ALIVE_profilePlacedBy, _profileID, ""] call ALIVE_fnc_hashGet };
+                if (_placedBy isEqualType "" && {_placedBy != ""}) then { [_exportProfile, "placedBy", _placedBy] call ALIVE_fnc_hashSet };
 
                 [_exportProfiles, _profileID, _exportProfile] call ALIVE_fnc_hashSet;
 
@@ -1476,7 +1479,7 @@ switch(_operation) do {
         private _from = 0;
         { _text = _text + str (_values select [_from, _x - _from]); _from = _x + 1 } forEach _skip;
         _text = _text + str (_values select [_from]);
-        _result = [_text, !isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _values select 4, false] call ALIVE_fnc_hashGet}, if (isNil "ALIVE_profileStationaryBy") then { "" } else { [ALIVE_profileStationaryBy, _values select 4, ""] call ALIVE_fnc_hashGet }];
+        _result = [_text, !isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _values select 4, false] call ALIVE_fnc_hashGet}, if (isNil "ALIVE_profileStationaryBy") then { "" } else { [ALIVE_profileStationaryBy, _values select 4, ""] call ALIVE_fnc_hashGet }, if (isNil "ALIVE_profilePlacedBy") then { "" } else { [ALIVE_profilePlacedBy, _values select 4, ""] call ALIVE_fnc_hashGet }];
     };
 
     case "prepareExportProfileData": {
@@ -1847,6 +1850,11 @@ switch(_operation) do {
                             [ALIVE_profileStationaryBy, [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet, _importPinnedBy] call ALIVE_fnc_hashSet;
                         };
                         [_profileVehicle, "busy", true] call ALIVE_fnc_hashSet;
+                    };
+                    private _importPlacedBy = [_profile, "placedBy", ""] call ALIVE_fnc_hashGet;
+                    if (_importPlacedBy isEqualType "" && {_importPlacedBy != ""}) then {
+                        if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate; };
+                        [ALIVE_profilePlacedBy, [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet, _importPlacedBy] call ALIVE_fnc_hashSet;
                     };
                     private _importLocked = [_profile, "ALiVE_reserveLocked", false] call ALIVE_fnc_hashGet;
                     if (_importLocked isEqualType "") then { _importLocked = (toLower _importLocked) == "true" };

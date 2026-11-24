@@ -2089,6 +2089,8 @@ switch(_operation) do {
                                 // returns nil. createCrew=false (supplies
                                 // don't need crew).
                                 private _supplyProfile = [_vehicleClass, _side, _faction, _position, _direction, false, _faction] call ALIVE_fnc_createProfileVehicle;
+                                // Remember which module placed it: a label only, it does not pin the vehicle.
+                                if (!isNil "_supplyProfile" && {_supplyProfile isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_supplyProfile, "profileID"] call ALIVE_fnc_hashGet, "cmp"] call ALIVE_fnc_hashSet };
                                 // Force upright via the profile-spawn path:
                                 // slot 10 is objNull until the profile
                                 // activates physically. Pass classname +
@@ -2157,7 +2159,9 @@ switch(_operation) do {
                                 ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement_custom faction=%1 class=%2 pos=%3 parked empty",
                                     _faction, _vehicleClass, _position] call ALiVE_fnc_dump;
                             };
-                            [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                            private _placedProfile = [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                            // Remember which module placed it: a label only, it does not pin the vehicle.
+                            if (!isNil "_placedProfile" && {_placedProfile isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_placedProfile, "profileID"] call ALIVE_fnc_hashGet, "cmp"] call ALIVE_fnc_hashSet };
                             _countProfiles = _countProfiles + 1;
                             _countUncrewedHelis =_countUncrewedHelis + 1;
                         };
@@ -2295,7 +2299,9 @@ switch(_operation) do {
                                     // mil_placement/fnc_MP.sqf:1200. The `true` was
                                     // mis-positionally setting `_isSPE` and skipping the
                                     // unified spawn-position validator on activation.
-                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                    private _placedProfile = [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                    // Remember which module placed it: a label only, it does not pin the vehicle.
+                                    if (!isNil "_placedProfile" && {_placedProfile isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_placedProfile, "profileID"] call ALIVE_fnc_hashGet, "cmp"] call ALIVE_fnc_hashSet };
 
                                     _countLandUnits = _countLandUnits + 1;
 
@@ -2477,6 +2483,8 @@ switch(_operation) do {
                             } else {
                                 [_aaClass, _side, _faction, _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfileVehicle
                             };
+                            // Remember which module placed it: a label only, it does not pin the vehicle.
+                            if (!isNil "_aaProfile" && {_aaProfile isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_aaProfile, "profileID"] call ALIVE_fnc_hashGet, "cmp"] call ALIVE_fnc_hashSet };
                             if (!isNil "_aaProfile") then {
                                 private _profileID = [_aaProfile, "profileID"] call ALIVE_fnc_profileVehicle;
                                 if (typeName _profileID == "STRING" && {_profileID != ""}) then {

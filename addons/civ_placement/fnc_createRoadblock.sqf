@@ -399,6 +399,8 @@ for "_j" from 1 to (count _roadpoints) do {
                         // wall was created there with CAN_COLLIDE and blew up (Jman 14 Oct 2026). The
                         // validator keeps a clear spot and its heading as they are, so the parking still holds.
                         _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, _parkPosition, _parkDirection, true, _fac, [], false] call ALiVE_fnc_createProfileVehicle;
+                        // Remember which module placed it: a label only, it does not pin the vehicle.
+                        if (!isNil "_vehicle" && {_vehicle isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_vehicle, "profileID"] call ALIVE_fnc_hashGet, "roadblock"] call ALIVE_fnc_hashSet };
                     } else {
                         // No-profile-handler fallback path: route through the
                         // unified vehicle spawn validator (#850 Phase 2) so

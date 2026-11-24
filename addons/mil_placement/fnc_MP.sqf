@@ -1756,6 +1756,8 @@ switch(_operation) do {
                                 // direct createVehicle if profile creation
                                 // returns nil. createCrew=false.
                                 private _supplyProfile = [_vehicleClass, _side, _faction, _position, _direction, false, _faction] call ALIVE_fnc_createProfileVehicle;
+                                // Remember which module placed it: a label only, it does not pin the vehicle.
+                                if (!isNil "_supplyProfile" && {_supplyProfile isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_supplyProfile, "profileID"] call ALIVE_fnc_hashGet, "mp"] call ALIVE_fnc_hashSet };
                                 // Force upright via profile-spawn path: slot
                                 // 10 is objNull until the profile activates.
                                 // Pass classname + position so the class
@@ -1841,7 +1843,9 @@ switch(_operation) do {
                                     ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement faction=%1 class=%2 pos=%3 parked empty",
                                         _faction, _vehicleClass, _position] call ALiVE_fnc_dump;
                                 };
-                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                private _placedProfile = [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                // Remember which module placed it: a label only, it does not pin the vehicle.
+                                if (!isNil "_placedProfile" && {_placedProfile isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_placedProfile, "profileID"] call ALIVE_fnc_hashGet, "mp"] call ALIVE_fnc_hashSet };
                                 _countProfiles = _countProfiles + 1;
                                 _countUncrewedHelis = _countUncrewedHelis + 1;
                             };
@@ -1984,7 +1988,9 @@ switch(_operation) do {
                                             _faction, _vehicleClass, _position] call ALiVE_fnc_dump;
                                     };
 
-                                    [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                    private _placedProfile = [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                    // Remember which module placed it: a label only, it does not pin the vehicle.
+                                    if (!isNil "_placedProfile" && {_placedProfile isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_placedProfile, "profileID"] call ALIVE_fnc_hashGet, "mp"] call ALIVE_fnc_hashSet };
                                     _countProfiles = _countProfiles + 1;
                                     _countUncrewedAir = _countUncrewedAir + 1;
                                 };
@@ -2262,7 +2268,9 @@ switch(_operation) do {
                                         // and _isSPE fall back to their defaults ([] and false)
                                         // and the validator engages on activation. Same fix
                                         // applied to mil_placement_custom/fnc_CMP.sqf:939.
-                                        [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                        private _placedProfile = [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                        // Remember which module placed it: a label only, it does not pin the vehicle.
+                                        if (!isNil "_placedProfile" && {_placedProfile isEqualType []}) then { if (isNil "ALIVE_profilePlacedBy") then { ALIVE_profilePlacedBy = [] call ALIVE_fnc_hashCreate }; [ALIVE_profilePlacedBy, [_placedProfile, "profileID"] call ALIVE_fnc_hashGet, "mp"] call ALIVE_fnc_hashSet };
 
                                         _countLandUnits = _countLandUnits + 1;
 
