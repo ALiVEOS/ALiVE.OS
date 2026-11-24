@@ -16,6 +16,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sup_fob\fnc_FOBTypesInit.sqf";
                 ALIVE_RECOMPILE;
                         };
+                        class MCSCompat {
+                                description = "Offers the MCS containers mod's containers at FOBs and sets up the ones built, when it is loaded (server)";
+                                file = "\x\alive\addons\sup_fob\fnc_MCSCompat.sqf";
+                ALIVE_RECOMPILE;
+                        };
                         class fobCap {
                                 description = "How many FOBs a side may have";
                                 file = "\x\alive\addons\sup_fob\fnc_fobCap.sqf";

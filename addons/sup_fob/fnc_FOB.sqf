@@ -124,7 +124,9 @@ private _settings = createHashMapFromArray [
     ["fob_troop_cost", [50, [0, 100000]]],
     ["fob_troop_cap", [8, [0, 100]]],
     ["fob_arsenal", [false, "bool"]],
-    ["fob_arsenal_explosives", [false, "bool"]]
+    ["fob_arsenal_explosives", [false, "bool"]],
+    ["fob_mcs_build", [true, "bool"]],
+    ["fob_mcs_armory", ["SIDE", "text"]]
 ];
 
 switch (_operation) do {
@@ -326,7 +328,7 @@ switch (_operation) do {
             };
             case (_kind isEqualTo "text"): {
                 _value = if (_raw isEqualType "") then { _raw } else { str _raw };
-                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting", "fob_buildpreset", "fob_faction_scope", "fob_timer_cancel"]) then { _value = toUpper _value };
+                if (_name in ["fob_cap_type", "fob_supply_source", "fob_enemy_targeting", "fob_buildpreset", "fob_faction_scope", "fob_timer_cancel", "fob_mcs_armory"]) then { _value = toUpper _value };
             };
             default {
                 private _n = if (_raw isEqualType "") then { parseNumber _raw } else { _raw };

@@ -564,6 +564,7 @@ switch (_op) do {
                     _o setPosWorld _pos;
                     _o setVariable ["ALiVE_FOB_object", _id, true];
                     _live pushBack [_o, _class, _cost];
+                    if (!isNil "ALiVE_fnc_MCSCompat") then { ["onBuilt", [_o, [_entry, "side", ""] call ALIVE_fnc_hashGet]] call ALiVE_fnc_MCSCompat };
                     _result = _result + 1;
                 } else {
                     ["ALiVE Player FOBs - %1: %2 isn't in this game any more, so it wasn't rebuilt", _id, _class] call ALiVE_fnc_dumpR;
@@ -700,6 +701,7 @@ switch (_op) do {
         if (((getPosATL _o) select 2) < 0) then { _o setPosATL [_pos select 0, _pos select 1, 0] };
         _o setVariable ["ALiVE_FOB_object", _id, true];
         ([_entry, "objects", []] call ALIVE_fnc_hashGet) pushBack [_o, _class, _cost];
+        if (!isNil "ALiVE_fnc_MCSCompat") then { ["onBuilt", [_o, [_entry, "side", ""] call ALIVE_fnc_hashGet]] call ALiVE_fnc_MCSCompat };
         ALiVE_FOB_dirty = true;
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["STR_ALIVE_FOB_BUILT", [_name, _cost]] call _tell;

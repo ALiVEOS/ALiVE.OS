@@ -456,6 +456,10 @@ private _seen = createHashMap;
 // cuts (NeisAEL, 2 Nov: a list written by the page, put back into the page, came back with about 200 rows)
 private _catalogDump = [_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB;
 private _scanAll = createHashMap;
+// [[class, cost, tier], ...] for the MCS containers, [] without MCS or with the option off
+private _mcsRows = if (isNil "ALiVE_fnc_MCSCompat") then { [] } else { ["rows"] call ALiVE_fnc_MCSCompat };
+private _mcsTier = createHashMapFromArray (_mcsRows apply { [toLower (_x select 0), _x select 2] });
+{ if !((toLower (_x select 0)) in _fixed) then { _fixed set [toLower (_x select 0), _x select 1] } } forEach _mcsRows;
 private _add = {
     params ["_class", "_cfg", "_kind", ["_peek", false]];
     private _lc = toLower _class;
@@ -487,6 +491,8 @@ private _add = {
             if (_kind == "FORTIFICATION" && {"tower" in _lc || {"patrol" in _lc}}) then { _tier = 2 };
             // and the Arsenal
             if (_lc == "alive_fob_arsenal") then { _tier = 2 };
+            // and the MCS containers (ALiVE_fnc_MCSCompat)
+            if (_lc in _mcsTier) then { _tier = _mcsTier get _lc };
         };
     };
     if (_cost < 0) exitWith {};
@@ -662,6 +668,11 @@ if (_folders isNotEqualTo [] && {_only isEqualTo []}) then {
 };
 
 if (_arsenal && {isClass (configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal")}) then { ["ALiVE_FOB_Arsenal", configFile >> "CfgVehicles" >> "ALiVE_FOB_Arsenal", "SUPPLY"] call _add };
+// the MCS containers, with the MCS containers mod loaded and MCS Containers In Build List on: kept
+// whatever the Build List Preset, as the Arsenal is; a price in the lists above wins, Never Build drops one
+{
+    [_x select 0, configFile >> "CfgVehicles" >> (_x select 0), "SUPPLY"] call _add;
+} forEach _mcsRows;
 
 // Whitelisted classes the rules didn't pick, priced as fortifications (an aircraft here is one the
 // rules turned down: a civilian one, a drone or one with no pilot's seat, so it stays one too)

@@ -324,6 +324,27 @@
             <Key ID="STR_ALIVE_FOB_ARSENAL_EXPLOSIVES_COMMENT">
                 <English>Yes: the FOB Arsenal also offers grenades, mines and explosive charges. No: it leaves them out.</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_MCS_BUILD">
+                <English>MCS Containers In Build List</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MCS_BUILD_COMMENT">
+                <English>Only matters when the MCS containers mod is loaded. Yes: its generator, command post, medical, armory, EW and mast containers are offered under Supply in the build menu (generator tier 1, command post, medical and armory tier 2, EW and mast tier 3), whatever the Build List. A container built at a FOB belongs to the FOB's side and follows MCS's own power rules, so the ones that need power need a generator. A price in the lists below wins, and Never Build still leaves one out. No: they are offered only if the Build List or the lists below name them.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MCS_ARMORY">
+                <English>MCS Armory Arsenal</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MCS_ARMORY_COMMENT">
+                <English>What the arsenal in an MCS armory container built at a FOB holds. Side's Gear: the uniforms, weapons, magazines, items and backpacks the side's soldiers carry, from the factions its AI Commanders field. Full Arsenal: every item. Not Offered: the armory container is left out of the build menu. The arsenal is free; the container costs supply.</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MCS_ARMORY_SIDE">
+                <English>Side's Gear</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MCS_ARMORY_FULL">
+                <English>Full Arsenal</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_MCS_ARMORY_NONE">
+                <English>Not Offered</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_BUILDLIST">
                 <English>Build List</English>
             </Key>

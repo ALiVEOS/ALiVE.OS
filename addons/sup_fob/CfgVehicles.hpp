@@ -223,6 +223,34 @@ class CfgVehicles {
                                 ALiVE_showWhen[] = {{"fob_arsenal", "is", "true"}};
                         };
 
+                        class HDR_MCS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_MCS"; displayName = "MCS CONTAINERS"; };
+                        class fob_mcs_build : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_mcs_build";
+                                displayName = "$STR_ALIVE_FOB_MCS_BUILD";
+                                tooltip = "$STR_ALIVE_FOB_MCS_BUILD_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "$STR_ALIVE_FOB_YES"; value = true; default = 1; };
+                                    class No { name = "$STR_ALIVE_FOB_NO"; value = false; };
+                                };
+                        };
+                        class fob_mcs_armory : Combo
+                        {
+                                property = "ALiVE_sup_fob_fob_mcs_armory";
+                                displayName = "$STR_ALIVE_FOB_MCS_ARMORY";
+                                tooltip = "$STR_ALIVE_FOB_MCS_ARMORY_COMMENT";
+                                defaultValue = """SIDE""";
+                                class Values
+                                {
+                                    class Side { name = "$STR_ALIVE_FOB_MCS_ARMORY_SIDE"; value = "SIDE"; default = 1; };
+                                    class Full { name = "$STR_ALIVE_FOB_MCS_ARMORY_FULL"; value = "FULL"; };
+                                    class None { name = "$STR_ALIVE_FOB_MCS_ARMORY_NONE"; value = "NONE"; };
+                                };
+                                ALiVE_showWhen[] = {{"fob_mcs_build", "is", "true"}};
+                        };
+
                         class HDR_DEFENCE : ALiVE_ModuleSubTitle { property = "ALiVE_sup_fob_HDR_DEFENCE"; displayName = "ATTACK AND CAPTURE"; };
                         class fob_enemy_targeting : Combo
                         {
