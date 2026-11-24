@@ -361,7 +361,11 @@ private _d = createHashMapFromArray [
     // a player further than this from the drone: it is called back
     ["recall", [1500, 2500] select _roam],
     // Medium and Large charges go after crewed vehicles too, AI-crewed ones included
-    ["vehicles", (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"]
+    ["vehicles", (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"],
+    // Drone Targets Players and AI: a searching drone also takes hostile AI on foot
+    ["ai", (ADDON getVariable ["Drone_Targets", "PLAYERS"]) == "ALL"],
+    // Drones Also Hit Abandoned Vehicles (Medium and Large only): empty, knocked-out hostile vehicles too
+    ["abandoned", (ADDON getVariable ["Drone_Abandoned", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}]
 ];
 if (_roam) then {
     // the search: a loose box of four legs 300 to 500 m round a centre, flown at cruise height
@@ -518,9 +522,16 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
     private _fnc_end = { ["end", [_d, _this select 0, _this select 1]] call ALiVE_fnc_createFPVDrone };
 
     private _fnc_downed = { ["downed", [_d, _this]] call ALiVE_fnc_createFPVDrone };
-    // the target: alive, on the ground, not in an aircraft; a vehicle (Medium and Large charges) with someone alive in it
+    // the target: alive, on the ground, not in an aircraft; a vehicle (Medium and Large charges) with someone alive in it,
+    // or with Drones Also Hit Abandoned Vehicles an empty, knocked-out one (ALiVE_fnc_vehicleAbandoned)
     private _fit = { alive _this && {!((vehicle _this) isKindOf "Air")} && {((getPosATL (vehicle _this)) select 2) < 25}
-        && {_this isKindOf "Man" || {((crew _this) findIf { alive _x }) > -1}} };
+        && {_this isKindOf "Man" || {((crew _this) findIf { alive _x }) > -1} || {(_d get "abandoned") && {[_this] call ALiVE_fnc_vehicleAbandoned}}} };
+    // whose side a target is on: a man's group, a crewed vehicle's crew, an empty vehicle's own side in its config
+    private _fnc_tside = {
+        if (_this isKindOf "Man") exitWith { side group _this };
+        if (((crew _this) findIf { alive _x }) >= 0) exitWith { side _this };
+        [east, west, independent, civilian] param [getNumber (configOf _this >> "side"), civilian]
+    };
 
     while { !(_d get "gone") } do {
         sleep 1;
@@ -617,9 +628,15 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
             if (_d get "vehicles") then {
                 _cands append ((_uav nearEntities [["LandVehicle"], 300]) select { ((crew _x) findIf { isPlayer _x }) < 0 && {time > (_x getVariable ["ALiVE_IED_droneNext", 0])} });
             };
+            // Players and AI: AI men on foot (a man in a vehicle is reached through the vehicle, Medium and Large only)
+            if (_d get "ai") then {
+                _cands append ((_uav nearEntities [["CAManBase"], 300]) select { !isPlayer _x && {(vehicle _x) isEqualTo _x} });
+            };
             private _seen = _cands select {
-                _x call _fit && {(_x distance _uav) < 300} && {(_side getFriend ([side _x, side group _x] select (_x isKindOf "Man"))) < 0.6}
-                && {isNull (_x getVariable ["ALiVE_IED_droneOn", objNull])} && {!(_x call ALiVE_fnc_iedBomberSpares)}
+                _x call _fit && {(_x distance _uav) < 300} && {(_side getFriend (_x call _fnc_tside)) < 0.6}
+                && {isNull (_x getVariable ["ALiVE_IED_droneOn", objNull])}
+                // an empty vehicle has no crew side for the bomber check; its config side decided it above
+                && {(!(_x isKindOf "Man") && {((crew _x) findIf { alive _x }) < 0}) || {!(_x call ALiVE_fnc_iedBomberSpares)}}
                 && {isNull (getAssignedCuratorLogic _x) || {missionNamespace getVariable ["ALiVE_zeusSoloTest", false]}}
                 && {!((vehicle _x) isKindOf "Ship")}
                 && {([_uav, "VIEW", vehicle _x] checkVisibility [_eye, (getPosASL (vehicle _x)) vectorAdd [0, 0, 1.5]]) > 0.3}

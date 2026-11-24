@@ -338,7 +338,10 @@ switch(_operation) do {
                         if (_v isEqualType 0) then { _v = _v > 0 };
                         if !(_v isEqualType true) then { _v = _default };
                         ADDON setVariable [_name, _v];
-                    } forEach [["Drone_Jammed", true]];
+                    } forEach [["Drone_Jammed", true], ["Drone_Abandoned", false]];
+                    // Drone Targets: players only (PLAYERS, default) or players and hostile AI (ALL); read by bomberDispatch and createFPVDrone
+                    private _dTargets = _logic getVariable ["Drone_Targets", "PLAYERS"];
+                    ADDON setVariable ["Drone_Targets", ["PLAYERS", "ALL"] select (_dTargets isEqualType "" && {(toUpper _dTargets) == "ALL"})];
                     // Chance To Explode When Downed, 0 to 100 (default 50); the old Yes and No read as 100 and 0
                     private _downed = _logic getVariable ["Drone_ShotDown", 50];
                     if (_downed isEqualType "") then {
@@ -1464,7 +1467,25 @@ switch(_operation) do {
                                         if (_debug) then { ["ALIVE-%1 FPV drone: %2 is under a roof, no drone launched", time, name _player] call ALiVE_fnc_dump };
                                     };
                                     private _grp = selectRandom _groups;
-                                    private _uav = [_player, _grp] call ALiVE_fnc_createFPVDrone;
+                                    // Drone Targets Players and AI: half the time the group sends it at hostile AI it knows
+                                    // about instead, 300 m to Drone Launch Range from its leader: a man on foot, or (Medium and
+                                    // Large) a vehicle with AI alive in it and no player; on the ground, not under a roof
+                                    private _tgt = _player;
+                                    if ((ADDON getVariable ["Drone_Targets", "PLAYERS"]) == "ALL" && {random 1 < 0.5}) then {
+                                        private _lead = leader _grp;
+                                        private _vehOk = (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL";
+                                        private _ai = (_lead targets [true, _range]) select {
+                                            alive _x && {(_x distance _lead) > 300}
+                                            && {((getPosATL _x) select 2) < 25}
+                                            && {isNull (_x getVariable ["ALiVE_IED_droneOn", objNull])}
+                                            && {if (_x isKindOf "Man") then { !isPlayer _x && {(vehicle _x) isEqualTo _x} } else {
+                                                _vehOk && {_x isKindOf "LandVehicle"} && {((crew _x) findIf { alive _x }) >= 0} && {((crew _x) findIf { isPlayer _x }) < 0}
+                                            }}
+                                        };
+                                        _ai = _ai select { !(["roofed", [_x]] call ALiVE_fnc_createFPVDrone) };
+                                        if (_ai isNotEqualTo []) then { _tgt = selectRandom _ai };
+                                    };
+                                    private _uav = [_tgt, _grp] call ALiVE_fnc_createFPVDrone;
                                     if (!isNull _uav) then {
                                         _launched = true;
                                         // Drone Wait for him, the players around him and the group; no bomber for 3 minutes
@@ -1478,7 +1499,8 @@ switch(_operation) do {
                                             };
                                         } forEach _players;
                                         if (_debug) then {
-                                            ["ALIVE-%1 FPV drone: a %5 group near %2 that spotted %3 from %4 m launched a drone", time, mapGridPosition leader _grp, name _player, round ((leader _grp) distance _veh), side _grp] call ALiVE_fnc_dump;
+                                            ["ALIVE-%1 FPV drone: a %5 group near %2 that spotted %3 from %4 m launched a drone at %6", time, mapGridPosition leader _grp, name _player, round ((leader _grp) distance _veh), side _grp,
+                                                [format ["AI %1 (%2)", typeOf _tgt, side group _tgt], "him"] select (_tgt isEqualTo _player)] call ALiVE_fnc_dump;
                                         };
                                     };
                                 };

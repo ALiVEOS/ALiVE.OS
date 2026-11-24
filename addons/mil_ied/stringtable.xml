@@ -354,8 +354,26 @@
 <Key ID="STR_ALIVE_IED_DRONE_CHARGE">
     <English>Drone Warhead:</English>
 </Key>
+<Key ID="STR_ALIVE_IED_DRONE_TARGETS">
+    <English>Drone Targets</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_TARGETS_COMMENT">
+    <English>Players only: drones go after players, on foot or in a land vehicle, as before. Players and AI: they also go after AI of a hostile side. A group that launches a drone may send it at an AI unit or crewed vehicle it knows about instead of the player, and a searching drone takes AI on foot it can see within 300 m. The warhead rules stay the same: only Medium and Large drones go after vehicles.</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_TARGETS_PLAYERS">
+    <English>Players only</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_TARGETS_ALL">
+    <English>Players and AI</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_ABANDONED">
+    <English>Drones Also Hit Abandoned Vehicles</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_ABANDONED_COMMENT">
+    <English>Medium and Large drones only. A searching drone also goes after an abandoned vehicle of a hostile side it can see within 300 m: empty and knocked out (can't move, engine or tracks destroyed, or left standing by ACE) but not destroyed, so it could still be repaired. Its side is the side the vehicle belongs to.</English>
+</Key>
 <Key ID="STR_ALIVE_IED_DRONE_CHARGE_COMMENT">
-    <English>Small: a grenade, enough for a man but not a vehicle; these drones go after players only. Medium: a rocket warhead that destroys most vehicles. Large: an anti-tank warhead that destroys tanks. Medium and Large drones also go after crewed vehicles of a hostile side, AI crews included, never empty ones.</English>
+    <English>Small: a grenade, enough for a man but not a vehicle; these drones go after men only. Medium: a rocket warhead that destroys most vehicles. Large: an anti-tank warhead that destroys tanks. Medium and Large drones also go after crewed vehicles of a hostile side, AI crews included; empty ones only with Drones Also Hit Abandoned Vehicles.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DRONE_JAMMED">
     <English>Jammers Stop Drones:</English>

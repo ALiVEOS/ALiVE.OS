@@ -17,9 +17,13 @@ Left by its crew: ALiVE_fnc_GCAbandoned marks a profile whose crew is gone
 
 Works without ACE (the ACE check then reads its default).
 
+Given a vehicle object instead (FPV drones' Abandoned Vehicles), it is abandoned
+when it is a land vehicle, alive, with nobody alive in it, and disabled as above;
+there is no crew-lost wait for an object.
+
 Parameters:
-    _profile - ARRAY - a vehicle profile
-    _delay   - NUMBER - seconds since the crew was lost before an undamaged vehicle counts
+    _profile - ARRAY - a vehicle profile, or OBJECT - a vehicle
+    _delay   - NUMBER - seconds since the crew was lost before an undamaged vehicle counts (profiles only)
 
 Returns:
     BOOL
@@ -36,11 +40,7 @@ Author:
     Jman
 ---------------------------------------------------------------------------- */
 
-params [["_profile", [], [[]]], ["_delay", 900, [0]]];
-
-if (_profile isEqualTo []) exitWith { false };
-if !(([_profile, "entitiesInCommandOf", []] call ALIVE_fnc_hashGet) isEqualTo []) exitWith { false };
-if !(([_profile, "entitiesInCargoOf", []] call ALIVE_fnc_hashGet) isEqualTo []) exitWith { false };
+params [["_profile", [], [[], objNull]], ["_delay", 900, [0]]];
 
 private _fnc_hitDisabled = {
     (_this findIf {
@@ -48,15 +48,27 @@ private _fnc_hitDisabled = {
         _dmg isEqualType 0 && {_dmg >= 0.9} && {_name isEqualType ""} && {((toLower _name) find "engine") >= 0 || {((toLower _name) find "track") >= 0}}
     }) >= 0
 };
+// a vehicle in the game: alive, nobody alive in it, and knocked out
+private _fnc_objDisabled = {
+    alive _this && {((crew _this) findIf { alive _x }) < 0}
+        && {!canMove _this
+            || {!(_this getVariable ["ace_vehicle_damage_canMove", true])}
+            || {(_this call ALIVE_fnc_vehicleGetDamage) call _fnc_hitDisabled}}
+};
+
+// a vehicle object rather than a profile (FPV drones): empty and disabled, with no wait
+if (_profile isEqualType objNull) exitWith { !isNull _profile && {_profile isKindOf "LandVehicle"} && {_profile call _fnc_objDisabled} };
+
+if (_profile isEqualTo []) exitWith { false };
+if !(([_profile, "entitiesInCommandOf", []] call ALIVE_fnc_hashGet) isEqualTo []) exitWith { false };
+if !(([_profile, "entitiesInCargoOf", []] call ALIVE_fnc_hashGet) isEqualTo []) exitWith { false };
 
 private _veh = [_profile, "vehicle", objNull] call ALIVE_fnc_hashGet;
 private _disabled = false;
 if (!isNull _veh && {[_profile, "active", false] call ALIVE_fnc_hashGet}) then {
     if (!alive _veh) exitWith {};
     if (((crew _veh) findIf { alive _x }) >= 0) exitWith { _disabled = -1 };
-    _disabled = !canMove _veh
-        || {!(_veh getVariable ["ace_vehicle_damage_canMove", true])}
-        || {(_veh call ALIVE_fnc_vehicleGetDamage) call _fnc_hitDisabled};
+    _disabled = _veh call _fnc_objDisabled;
 } else {
     _disabled = !([_profile, "canMove", true] call ALIVE_fnc_hashGet)
         || {([_profile, "damage", []] call ALIVE_fnc_hashGet) call _fnc_hitDisabled};

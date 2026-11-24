@@ -134,6 +134,16 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_Drone_Charge"; displayName = "$STR_ALIVE_IED_DRONE_CHARGE"; tooltip = "$STR_ALIVE_IED_DRONE_CHARGE_COMMENT"; defaultValue = """MEDIUM""";
                                 class Values { class Small{name="Small";value="SMALL";}; class Medium{name="Medium";value="MEDIUM";default=1;}; class Large{name="Large";value="LARGE";}; };
                         };
+                        class Drone_Targets : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Targets"; displayName = "$STR_ALIVE_IED_DRONE_TARGETS"; tooltip = "$STR_ALIVE_IED_DRONE_TARGETS_COMMENT"; defaultValue = """PLAYERS""";
+                                class Values { class Players{name="$STR_ALIVE_IED_DRONE_TARGETS_PLAYERS";value="PLAYERS";default=1;}; class All{name="$STR_ALIVE_IED_DRONE_TARGETS_ALL";value="ALL";}; };
+                        };
+                        class Drone_Abandoned : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Abandoned"; displayName = "$STR_ALIVE_IED_DRONE_ABANDONED"; tooltip = "$STR_ALIVE_IED_DRONE_ABANDONED_COMMENT"; defaultValue = """false""";
+                                class Values { class No{name="No";value="false";default=1;}; class Yes{name="Yes";value="true";}; };
+                        };
                         class Drone_Jammed : Combo
                         {
                                 property = "ALiVE_mil_ied_Drone_Jammed"; displayName = "$STR_ALIVE_IED_DRONE_JAMMED"; tooltip = "$STR_ALIVE_IED_DRONE_JAMMED_COMMENT"; defaultValue = """true""";
