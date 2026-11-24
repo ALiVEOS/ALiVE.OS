@@ -635,6 +635,20 @@ class CfgVehicles {
                                 };
                                 ALiVE_showWhen[] = {{"intelCycle", "is", "true"}};
                         };
+                        // A. Ares on GitHub (#1141): targets picked from what the commander's side has seen or been told of
+                        class knownTargets : Combo
+                        {
+                                property = "ALiVE_mil_opcom_knownTargets";
+                                displayName = "$STR_ALIVE_OPCOM_KNOWN_TARGETS";
+                                tooltip = "$STR_ALIVE_OPCOM_KNOWN_TARGETS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                                ALiVE_showWhen[] = {{"controltype", "is", {"invasion", "occupation", "assault"}}};
+                        };
 
                         // ---- Start From Ship: Invasion and Occupation --------------------
                         class HDR_SHIP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_opcom_HDR_SHIP"; displayName = "START FROM SHIP"; ALiVE_showWhen[] = {{"controltype", "is", {"invasion", "occupation"}}}; };

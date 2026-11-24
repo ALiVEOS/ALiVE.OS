@@ -163,6 +163,9 @@ switch (_operation) do {
         // Find Out Before Attacking (Ando on Discord): an Invasion or Occupation commander finds out what is at an objective
         // before its assault goes in (intelCollect, intelReady); off by default
         private _intelCycle = (toLower format ["%1", _logic getVariable ["intelCycle", "false"]]) in ["true", "1"];
+        // Targets Only What It Knows (A. Ares, #1141): an Invasion, Occupation or Assault commander counts an objective as
+        // the enemy's, or under threat, only from enemies its side has seen or been told of; off by default
+        private _knownTargets = (toLower format ["%1", _logic getVariable ["knownTargets", "false"]]) in ["true", "1"];
         private _intelConfidence = ((parseNumber format ["%1", _logic getVariable ["intelConfidence", 0.5]]) max 0) min 1;
         private _intelTimeout = ((parseNumber format ["%1", _logic getVariable ["intelTimeoutMins", 20]]) max 1) * 60;
         // Intel Markers: what it finds out is shown on its own side's maps (intelMarkers); off by default
@@ -523,6 +526,7 @@ switch (_operation) do {
             ["opTasksMax", _opTasksMax],
             ["opTasksKnownOnly", _opTasksKnownOnly],
             ["intelCycle", _intelCycle],
+            ["knownTargets", _knownTargets],
             ["intelConfidence", _intelConfidence],
             ["intelTimeout", _intelTimeout],
             ["intelMarkers", _intelMarkers],
@@ -5805,6 +5809,20 @@ switch (_operation) do {
         private _friendlyObjectives = [];
         private _enemyObjectives = [];
         private _contestedObjectives = [];
+        // Targets Only What It Knows (#1141): only enemies seen or reported in the last 30 minutes (knownEnemy) count, by
+        // their profile, or within 300 m of where one was reported. An objective whose enemies nobody has seen is left
+        // unassigned: TACOM sends a few groups to look first (its danger is unknown), and the full attack follows once
+        // they have seen what is there. Unseen enemies by an objective it holds bring no defend order either.
+        private _knownTargets = [_logic, "knownTargets", false] call ALiVE_fnc_HashGet
+            && {([_logic, "controltype", ""] call ALiVE_fnc_HashGet) in ["invasion", "occupation", "assault"]};
+        private _knownIDs = createHashMap;
+        private _knownPos = [];
+        private _unseenObjectives = [];
+        if (_knownTargets) then {
+            ([_logic, "knownEnemy"] call MAINCLASS) params ["_kIDs", "_kPos"];
+            { _knownIDs set [_x, true] } forEach _kIDs;
+            _knownPos = _kPos select { _x isEqualType [] && {count _x > 1} };
+        };
         {
             private _objective = _x;
 
@@ -5833,7 +5851,12 @@ switch (_operation) do {
                         if (_friendly) then {
                             _nearFriendlies pushBack _x;
                         } else {
-                            _nearEnemies pushBack _x;
+                            private _ep = _values select 2;
+                            if (!_knownTargets || {(_values select 4) in _knownIDs} || {(_knownPos findIf { (_x distance2D _ep) < 300 }) > -1}) then {
+                                _nearEnemies pushBack _x;
+                            } else {
+                                _unseenObjectives pushBackUnique _id;
+                            };
                         };
                     };
                 };
@@ -5897,6 +5920,14 @@ switch (_operation) do {
                     };
                 };
             } forEach _friendlyObjectives;
+        };
+
+        // the objectives with enemies near that this side doesn't know of, for tests and the debug log
+        if (_knownTargets) then {
+            [_logic, "unseenEnemyObjectives", _unseenObjectives] call ALiVE_fnc_HashSet;
+            if ([_logic, "debug", false] call ALiVE_fnc_HashGet && {_unseenObjectives isNotEqualTo []}) then {
+                ["OPCOM %1 - enemies nobody has seen at %2, not counted (Targets Only What It Knows)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _unseenObjectives] call ALiVE_fnc_dump;
+            };
         };
 
         private _clusterOccupation = [_friendlyObjectives, _enemyObjectives, _contestedObjectives, time];
@@ -6007,7 +6038,7 @@ switch (_operation) do {
             // stays known for a while after it goes out of sight, whether or not C2ISTAR shows intel. The C2ISTAR
             // module's own Tasks Only Against Known Enemy reads it too (ALIVE_fnc_taskKnownEnemy), and so does
             // Reinforcements Match the Enemy
-            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet || {[_logic, "reinforceMatchEnemy", false] call ALiVE_fnc_HashGet} || {[_logic, "intelCycle", false] call ALiVE_fnc_HashGet} || {missionNamespace getVariable ["ALiVE_c2istar_tasksKnownOnly", false]}) then {
+            if ([_logic, "opTasksKnownOnly", false] call ALiVE_fnc_HashGet || {[_logic, "reinforceMatchEnemy", false] call ALiVE_fnc_HashGet} || {[_logic, "intelCycle", false] call ALiVE_fnc_HashGet} || {[_logic, "knownTargets", false] call ALiVE_fnc_HashGet} || {missionNamespace getVariable ["ALiVE_c2istar_tasksKnownOnly", false]}) then {
                 private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
                 if (isNil "_seen") then { _seen = createHashMap; [_logic, "knownSeen", _seen] call ALiVE_fnc_HashSet };
                 // every reader looks back 30 minutes, so older sightings go here too, between reinforcement requests
@@ -7938,13 +7969,18 @@ switch (_operation) do {
     };
 
     // the operation in hand, for a persistent save: [seconds left on a pause after a capture, its objective, the
-    // objectives whose preparations are done, Assault's [target, wave number, seconds to the next wave]]
+    // objectives whose preparations are done, Assault's [target, wave number, seconds to the next wave], what it has
+    // seen of the enemy as [id, position, seconds ago] (Targets Only What It Knows, #1141; under 30 minutes old)]
     case "opState": {
         private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
         private _left = (((_module getVariable ["ALiVE_Occ_holdUntil", -1]) - time) max 0);
         private _aID = _module getVariable ["ALiVE_Assault_targetID", ""];
         _result = [round _left, [_module getVariable ["ALiVE_Occ_objectiveID", ""], ""] select (_left <= 0), +(_module getVariable ["ALiVE_prep_cleared", []]),
-            [[], [_aID, _module getVariable ["ALiVE_Assault_waveNo", 0], round (((_module getVariable ["ALiVE_Assault_nextWaveAt", -1]) - time) max 0)]] select (_aID != "")];
+            [[], [_aID, _module getVariable ["ALiVE_Assault_waveNo", 0], round (((_module getVariable ["ALiVE_Assault_nextWaveAt", -1]) - time) max 0)]] select (_aID != ""),
+            if ([_logic, "knownTargets", false] call ALiVE_fnc_HashGet) then {
+                private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+                if (isNil "_seen") then { [] } else { (_seen toArray false) select { time - ((_x select 1) select 1) <= 1800 } apply { [_x select 0, (_x select 1) select 0, round (time - ((_x select 1) select 1))] } }
+            } else { [] }];
     };
 
     // after a load: the preparations already done stay done, and a pause that was running holds attacks again at once
@@ -7952,8 +7988,18 @@ switch (_operation) do {
     case "opResume": {
         private _st = _args;
         if !(_st isEqualType []) exitWith {};
-        _st params [["_left", 0], ["_objID", ""], ["_cleared", []], ["_assault", []]];
+        _st params [["_left", 0], ["_objID", ""], ["_cleared", []], ["_assault", []], ["_knownSeen", []]];
         private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+        // Targets Only What It Knows: what it had seen is known again for the rest of its 30 minutes
+        if (_knownSeen isEqualType [] && {_knownSeen isNotEqualTo []}) then {
+            private _seen = [_logic, "knownSeen"] call ALiVE_fnc_HashGet;
+            if (isNil "_seen") then { _seen = createHashMap; [_logic, "knownSeen", _seen] call ALiVE_fnc_HashSet };
+            {
+                _x params [["_kID", "", [""]], ["_kPos", [], [[]]], ["_kAge", 0, [0]]];
+                if (_kID != "" && {count _kPos > 1} && {_kAge <= 1800}) then { _seen set [_kID, [_kPos, time - _kAge]] };
+            } forEach _knownSeen;
+            ["OPCOM %1: %2 enemy sightings known again after the load", [_logic,"side",""] call ALiVE_fnc_HashGet, count _seen] call ALiVE_fnc_dump;
+        };
         if (_cleared isEqualType [] && {_cleared isNotEqualTo []}) then { _module setVariable ["ALiVE_prep_cleared", +_cleared] };
         // Assault: the target and its waves carry on, the next one after the time it had left
         if (_assault isEqualType [] && {count _assault == 3}) then {
