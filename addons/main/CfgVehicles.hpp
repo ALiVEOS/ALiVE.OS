@@ -2687,6 +2687,35 @@ class CfgVehicles {
                     tooltip = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT";
                     defaultValue = """""";
             };
+            class ALiVE_GC_ABANDONED: Combo
+            {
+                    property =  MVAR(ALiVE_GC_ABANDONED);
+                    displayName = "$STR_ALIVE_GC_ABANDONED";
+                    tooltip = "$STR_ALIVE_GC_ABANDONED_COMMENT";
+                    defaultValue = """off""";
+                    class Values
+                    {
+                        class Off { name = "$STR_ALIVE_GC_ABANDONED_OFF"; value = "off"; default = 1; };
+                        class Remove { name = "$STR_ALIVE_GC_ABANDONED_REMOVE"; value = "remove"; };
+                        class Wreck { name = "$STR_ALIVE_GC_ABANDONED_WRECK"; value = "wreck"; };
+                    };
+            };
+            class ALiVE_GC_ABANDONED_DELAY: Edit
+            {
+                    property =  MVAR(ALiVE_GC_ABANDONED_DELAY);
+                    displayName = "$STR_ALIVE_GC_ABANDONED_DELAY";
+                    tooltip = "$STR_ALIVE_GC_ABANDONED_DELAY_COMMENT";
+                    defaultValue = """15""";
+                    ALiVE_showWhen[] = {{"ALiVE_GC_ABANDONED", "not", "off"}};
+            };
+            class ALiVE_GC_ABANDONED_DISTANCE: Edit
+            {
+                    property =  MVAR(ALiVE_GC_ABANDONED_DISTANCE);
+                    displayName = "$STR_ALIVE_GC_ABANDONED_DISTANCE";
+                    tooltip = "$STR_ALIVE_GC_ABANDONED_DISTANCE_COMMENT";
+                    defaultValue = """1000""";
+                    ALiVE_showWhen[] = {{"ALiVE_GC_ABANDONED", "not", "off"}};
+            };
             class HDR_TABLET : ALiVE_ModuleSubTitle { property = "ALiVE_require_HDR_TABLET"; displayName = "TABLET"; };
             class ALiVE_TABLET_MODEL: Combo
             {

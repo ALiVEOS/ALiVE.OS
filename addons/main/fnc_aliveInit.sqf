@@ -33,6 +33,9 @@ nil
 #define DEFAULT_GC_THRESHOLD "100"
 #define DEFAULT_GC_INTERVAL "300"
 #define DEFAULT_GC_INDIVIDUALTYPES ""
+#define DEFAULT_GC_ABANDONED "off"
+#define DEFAULT_GC_ABANDONED_DELAY "15"
+#define DEFAULT_GC_ABANDONED_DISTANCE "1000"
 #define DEFAULT_LAMBS_ARTILLERY_POOL "false"
 #define DEFAULT_LAMBS_DEBUG "false"
 
@@ -816,6 +819,9 @@ _GC setVariable ["debug", _logic getVariable ["debug", DEFAULT_DEBUG]];
 _GC setVariable ["ALiVE_GC_INTERVAL", _logic getVariable ["ALiVE_GC_INTERVAL", DEFAULT_GC_INTERVAL]];
 _GC setVariable ["ALiVE_GC_THRESHHOLD", _logic getVariable ["ALiVE_GC_THRESHHOLD", DEFAULT_GC_THRESHOLD]];
 _GC setVariable ["ALiVE_GC_INDIVIDUALTYPES", _logic getVariable ["ALiVE_GC_INDIVIDUALTYPES", DEFAULT_GC_INDIVIDUALTYPES]];
+_GC setVariable ["ALiVE_GC_ABANDONED", _logic getVariable ["ALiVE_GC_ABANDONED", DEFAULT_GC_ABANDONED]];
+_GC setVariable ["ALiVE_GC_ABANDONED_DELAY", _logic getVariable ["ALiVE_GC_ABANDONED_DELAY", DEFAULT_GC_ABANDONED_DELAY]];
+_GC setVariable ["ALiVE_GC_ABANDONED_DISTANCE", _logic getVariable ["ALiVE_GC_ABANDONED_DISTANCE", DEFAULT_GC_ABANDONED_DISTANCE]];
 [_GC, "init"] spawn ALiVE_fnc_GC;
 
 //---------------------------------------------------------------------------------------------------------//
