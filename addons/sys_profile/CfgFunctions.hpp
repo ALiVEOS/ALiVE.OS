@@ -11,6 +11,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileSystem.sqf";
                 ALIVE_RECOMPILE;
             };
+            class LAFSCompat {
+                description = "Keeps the groups the Light AI Fire Support mod uses as live AI, when it is loaded (server)";
+                file = "\x\alive\addons\sys_profile\fnc_LAFSCompat.sqf";
+                ALIVE_RECOMPILE;
+            };
             class profileWatchStrayFactions {
                 description = "Logs AI of a faction no ALiVE module in the mission is set to, with what made them (server)";
                 file = "\x\alive\addons\sys_profile\fnc_profileWatchStrayFactions.sqf";

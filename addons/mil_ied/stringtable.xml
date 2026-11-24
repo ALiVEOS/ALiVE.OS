@@ -390,6 +390,42 @@
     <Portuguese>Jogadores e IA</Portuguese>
     <Russian>Игроки и ИИ</Russian>
 </Key>
+<Key ID="STR_ALIVE_IED_DRONE_LAFS">
+    <English>FPV Drones When LAFS Is Loaded</English>
+    <Chinese>載入LAFS時的FPV無人機</Chinese>
+    <Chinesesimp>加载LAFS时的FPV无人机</Chinesesimp>
+    <Spanish>Drones FPV con LAFS cargado</Spanish>
+    <French>Drones FPV avec LAFS chargé</French>
+    <Portuguese>Drones FPV com o LAFS carregado</Portuguese>
+    <Russian>FPV-дроны при загруженном LAFS</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_LAFS_OFF">
+    <English>Off (LAFS only)</English>
+    <Chinese>關閉（僅LAFS）</Chinese>
+    <Chinesesimp>关闭（仅LAFS）</Chinesesimp>
+    <Spanish>Desactivados (solo LAFS)</Spanish>
+    <French>Désactivés (LAFS seul)</French>
+    <Portuguese>Desligados (apenas LAFS)</Portuguese>
+    <Russian>Выкл. (только LAFS)</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_LAFS_BOTH">
+    <English>Both</English>
+    <Chinese>兩者</Chinese>
+    <Chinesesimp>两者</Chinesesimp>
+    <Spanish>Ambos</Spanish>
+    <French>Les deux</French>
+    <Portuguese>Ambos</Portuguese>
+    <Russian>Оба</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_LAFS_COMMENT">
+    <English>Only matters when the Light AI Fire Support mod (LAFS) is loaded, which has FPV drones of its own. Off (the default) launches no ALiVE FPV drones, so the two mods do not both send drones at the players. Both keeps the ALiVE drones as set above alongside the LAFS ones. Without LAFS this setting does nothing.</English>
+    <Chinese>僅在載入Light AI Fire Support模組（LAFS）時有效，該模組有自己的FPV無人機。關閉（預設）：ALiVE不發射FPV無人機，兩個模組不會同時向玩家派出無人機。兩者：保留上方設定的ALiVE無人機，與LAFS的無人機並存。未載入LAFS時此設定無作用。</Chinese>
+    <Chinesesimp>仅在加载Light AI Fire Support模组（LAFS）时有效，该模组有自己的FPV无人机。关闭（默认）：ALiVE不发射FPV无人机，两个模组不会同时向玩家派出无人机。两者：保留上方设置的ALiVE无人机，与LAFS的无人机并存。未加载LAFS时此设置无作用。</Chinesesimp>
+    <Spanish>Solo importa cuando está cargado el mod Light AI Fire Support (LAFS), que tiene sus propios drones FPV. Desactivados (por defecto) no lanza drones FPV de ALiVE, para que los dos mods no envíen drones a la vez contra los jugadores. Ambos mantiene los drones de ALiVE configurados arriba junto a los de LAFS. Sin LAFS este ajuste no hace nada.</Spanish>
+    <French>Ne compte que lorsque le mod Light AI Fire Support (LAFS) est chargé, qui a ses propres drones FPV. Désactivés (par défaut) ne lance aucun drone FPV d'ALiVE, pour que les deux mods n'envoient pas tous deux des drones sur les joueurs. Les deux garde les drones d'ALiVE réglés ci-dessus à côté de ceux de LAFS. Sans LAFS ce réglage ne fait rien.</French>
+    <Portuguese>Só conta quando o mod Light AI Fire Support (LAFS) está carregado, que tem os seus próprios drones FPV. Desligados (o padrão) não lança drones FPV do ALiVE, para que os dois mods não enviem drones ao mesmo tempo contra os jogadores. Ambos mantém os drones do ALiVE definidos acima ao lado dos do LAFS. Sem o LAFS esta opção não faz nada.</Portuguese>
+    <Russian>Действует только при загруженном моде Light AI Fire Support (LAFS), у которого есть свои FPV-дроны. Выкл. (по умолчанию): ALiVE не запускает FPV-дроны, чтобы два мода не отправляли дроны на игроков одновременно. Оба: дроны ALiVE с настройками выше работают вместе с дронами LAFS. Без LAFS эта настройка ничего не делает.</Russian>
+</Key>
 <Key ID="STR_ALIVE_IED_DRONE_ABANDONED">
     <English>Drones Also Hit Abandoned Vehicles</English>
     <Chinese>無人機也攻擊被棄置的載具</Chinese>

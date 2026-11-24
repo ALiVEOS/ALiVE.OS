@@ -356,6 +356,11 @@ switch(_operation) do {
                     // Drones Launched By: every AI Commander's side (ALL, default) or only the insurgent ones; read by bomberDispatch
                     private _launchers = _logic getVariable ["Drone_Launchers", "ALL"];
                     ADDON setVariable ["Drone_Launchers", ["ALL", "INSURGENT"] select (_launchers isEqualType "" && {(toUpper _launchers) == "INSURGENT"})];
+                    // FPV Drones When LAFS Is Loaded: Off (default) leaves drones to the Light AI Fire Support mod, Both keeps ALiVE's too
+                    private _lafsMode = _logic getVariable ["Drone_LAFS", "OFF"];
+                    private _lafsOff = !(_lafsMode isEqualType "" && {(toUpper _lafsMode) == "BOTH"}) && {!isNil "ALiVE_fnc_LAFSCompat"} && {["loaded"] call ALiVE_fnc_LAFSCompat};
+                    ADDON setVariable ["Drone_LAFSOff", _lafsOff];
+                    if (_lafsOff) then { ["ALIVE IED: the Light AI Fire Support mod is loaded, so ALiVE launches no FPV drones (FPV Drones When LAFS Is Loaded: Off)"] call ALiVE_fnc_dump };
                     [ADDON, "IED_Engineer_Trip_Base",            _logic getVariable ["IED_Engineer_Trip_Base", 0.02]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Trip_ThresholdMin",    _logic getVariable ["IED_Engineer_Trip_ThresholdMin", 0.7]] call MAINCLASS;
                     [ADDON, "IED_Engineer_Trip_ThresholdMax",    _logic getVariable ["IED_Engineer_Trip_ThresholdMax", 1.3]] call MAINCLASS;
@@ -1384,6 +1389,8 @@ switch(_operation) do {
                 private _range = ADDON getVariable ["Drone_Range", 2000];
                 private _droneOn = _droneChance > 0 && {_range > 300};
                 private _roamChance = ADDON getVariable ["Drone_Roam", 0];
+                // the Light AI Fire Support mod has the drones (FPV Drones When LAFS Is Loaded: Off)
+                if (ADDON getVariable ["Drone_LAFSOff", false]) then { _droneChance = 0; _roamChance = 0; _droneOn = false };
                 private _roamOn = _roamChance > 0 && {_droneSides isNotEqualTo []};
                 if (_debug && {_droneOn} && {!_warned} && {_droneSides isEqualTo []}) then {
                     _warned = true;

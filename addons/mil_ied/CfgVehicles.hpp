@@ -139,6 +139,11 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_Drone_Targets"; displayName = "$STR_ALIVE_IED_DRONE_TARGETS"; tooltip = "$STR_ALIVE_IED_DRONE_TARGETS_COMMENT"; defaultValue = """PLAYERS""";
                                 class Values { class Players{name="$STR_ALIVE_IED_DRONE_TARGETS_PLAYERS";value="PLAYERS";default=1;}; class All{name="$STR_ALIVE_IED_DRONE_TARGETS_ALL";value="ALL";}; };
                         };
+                        class Drone_LAFS : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_LAFS"; displayName = "$STR_ALIVE_IED_DRONE_LAFS"; tooltip = "$STR_ALIVE_IED_DRONE_LAFS_COMMENT"; defaultValue = """OFF""";
+                                class Values { class Off{name="$STR_ALIVE_IED_DRONE_LAFS_OFF";value="OFF";default=1;}; class Both{name="$STR_ALIVE_IED_DRONE_LAFS_BOTH";value="BOTH";}; };
+                        };
                         class Drone_Abandoned : Combo
                         {
                                 property = "ALiVE_mil_ied_Drone_Abandoned"; displayName = "$STR_ALIVE_IED_DRONE_ABANDONED"; tooltip = "$STR_ALIVE_IED_DRONE_ABANDONED_COMMENT"; defaultValue = """false""";

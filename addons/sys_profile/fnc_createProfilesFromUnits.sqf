@@ -165,6 +165,9 @@ if(_createMode == "IGNORE") then {
 // called a few lines earlier in profileSystem distinguishes a "mission" data
 // source precisely because init.sqf can have populated the variable before it,
 // so anything set there is visible here.
+//
+// With the Light AI Fire Support mod loaded, the groups it will use are marked first (ALiVE_fnc_LAFSCompat).
+if (!isNil "ALiVE_fnc_LAFSCompat") then { ["premark"] call ALiVE_fnc_LAFSCompat };
 private _markedGroups = _groups select {
     !isNull _x && {_x getVariable ["ALIVE_profileIgnore", false]}
 };
