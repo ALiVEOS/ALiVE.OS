@@ -135,6 +135,7 @@ class CfgVehicles
                 {
                     class Player { name = "Player"; value = "player"; default = 1; };
                     class Slot { name = "Slot"; value = "slot"; };
+                    class Side { name = "Player and side"; value = "side"; };
                 };
                 ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}};
             };
@@ -199,7 +200,7 @@ class CfgVehicles
                         value = "false";
                     };
                 };
-                ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}, {"persistBy", "is", "player"}};
+                ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}, {"persistBy", "is", {"player", "side"}}};
             };
 
             class HDR_SAVED : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_SAVED"; displayName = "WHAT IS SAVED"; ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}}; };
@@ -302,7 +303,7 @@ class CfgVehicles
                         value = "false";
                     };
                 };
-                ALiVE_showWhen[] = {{"persistBy", "is", "player"}};
+                ALiVE_showWhen[] = {{"persistBy", "is", {"player", "side"}}};
             };
 
             class HDR_STORAGE : ALiVE_ModuleSubTitle { property = "ALiVE_sys_playeroptions_HDR_STORAGE"; displayName = "STORAGE AND AUTOSAVE"; ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}}; };
