@@ -416,6 +416,8 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
     if (isNull _uav) exitWith { ["end", [_d, "deleted", false]] call ALiVE_fnc_createFPVDrone };
     // held while the server is paused (the once-a-second loop below): no steering
     if ((_d getOrDefault ["heldAt", -1]) >= 0) exitWith {};
+    // held still by a soft jam (Military Container Systems, the once-a-second loop below)
+    if (alive _uav && {(_d getOrDefault ["jamTick", -1]) >= 0}) exitWith { _uav setVelocity [0, 0, 0] };
     private _now = diag_tickTime;
     if (!alive _uav) exitWith {
         // a crash within 8 m of him is a hit; shot down anywhere else, Chance To Explode When Downed decides
@@ -548,6 +550,23 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         [east, west, independent, civilian] param [getNumber (configOf _this >> "side"), civilian]
     };
 
+    // its target gone or no longer one it may go after: it searches round where it is
+    private _fnc_research = {
+        private _t = _d get "target";
+        if (!isNull _t && {(_t getVariable ["ALiVE_IED_droneOn", objNull]) isEqualTo _uav}) then { _t setVariable ["ALiVE_IED_droneOn", objNull] };
+        private _c = getPosATL _uav;
+        private _r = 300 + random 200;
+        private _a = random 360;
+        _d set ["legs", [0, 90, 180, 270] apply { _c getPos [_r * (0.85 + random 0.3), _a + _x + (random 20) - 10] }];
+        _d set ["leg", 0];
+        _d set ["wp", (_d get "legs") select 0];
+        _d set ["target", objNull];
+        _d set ["phase", "search"];
+        _d set ["recall", 2500];
+        _d set ["diveAt", -1];
+        _roofSince = -1;
+    };
+
     while { !(_d get "gone") } do {
         sleep 1;
         if (_d get "gone") exitWith {};
@@ -578,26 +597,12 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
             private _dtk = diag_tickTime - (_d get "heldTick");
             _d set ["heldAt", -1];
             _d set ["batteryEnd", (_d get "batteryEnd") + _dt];
-            { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dtk] } } forEach ["hoverLimit", "diveAt", "pauseUntil", "weaveAt"];
+            { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dtk] } } forEach ["hoverLimit", "diveAt", "pauseUntil", "weaveAt", "jamTick"];
             if (_roofSince >= 0) then { _roofSince = _roofSince + _dt };
             _stuckPos = getPosATL _uav;
             _stuckAt = time;
             _uav enableSimulationGlobal true;
-            if ((_d get "phase") != "search" && {!((_d get "target") call _fit)}) then {
-                private _t = _d get "target";
-                if (!isNull _t && {(_t getVariable ["ALiVE_IED_droneOn", objNull]) isEqualTo _uav}) then { _t setVariable ["ALiVE_IED_droneOn", objNull] };
-                private _c = getPosATL _uav;
-                private _r = 300 + random 200;
-                private _a = random 360;
-                _d set ["legs", [0, 90, 180, 270] apply { _c getPos [_r * (0.85 + random 0.3), _a + _x + (random 20) - 10] }];
-                _d set ["leg", 0];
-                _d set ["wp", (_d get "legs") select 0];
-                _d set ["target", objNull];
-                _d set ["phase", "search"];
-                _d set ["recall", 2500];
-                _d set ["diveAt", -1];
-                _roofSince = -1;
-            };
+            if ((_d get "phase") != "search" && {!((_d get "target") call _fit)}) then { call _fnc_research };
             ["info", [_d]] call ALiVE_fnc_createFPVDrone;
             if (_d get "debug") then { ["ALIVE-%1 FPV drone: carries on after %2 s held (%3)", time, round _dt, _d get "phase"] call ALiVE_fnc_dump };
         };
@@ -622,6 +627,29 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         // a player's UAV terminal has it (a server sees that through UAVControl only)
         if (!isNull ((UAVControl _uav) param [0, objNull])) exitWith { ["taken over by a UAV terminal", true] call _fnc_end };
         if (_jamOn && {[_uav, -1, true] call ALiVE_fnc_iedJammerNear}) exitWith { ["jammed", true] call _fnc_end };
+        // Military Container Systems, read from its public jam state: a hard kill ends the flight and it drops; a soft
+        // kill holds it where it is, picking and chasing nothing, while its battery runs on; once the jam is lifted it
+        // carries on from the same phase (a new search if its target is gone)
+        private _mcs = _uav getVariable ["mcs_jamState", ""];
+        if (_mcs isEqualTo "hard") exitWith { ["jammed by Military Container Systems (hard)", true] call _fnc_end };
+        if (_mcs isEqualTo "soft") then {
+            if ((_d getOrDefault ["jamTick", -1]) < 0) then {
+                _d set ["jamTick", diag_tickTime];
+                if (_d get "debug") then { ["ALIVE-%1 FPV drone: jammed by Military Container Systems (soft), holding at %2", time, mapGridPosition _uav] call ALiVE_fnc_dump };
+            };
+        } else {
+            if ((_d getOrDefault ["jamTick", -1]) >= 0) then {
+                private _dtk = diag_tickTime - (_d get "jamTick");
+                _d set ["jamTick", -1];
+                { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dtk] } } forEach ["hoverLimit", "diveAt", "pauseUntil", "weaveAt"];
+                if (_roofSince >= 0) then { _roofSince = _roofSince + _dtk };
+                _stuckPos = getPosATL _uav;
+                _stuckAt = time;
+                if ((_d get "phase") != "search" && {!((_d get "target") call _fit)}) then { call _fnc_research };
+                ["info", [_d]] call ALiVE_fnc_createFPVDrone;
+                if (_d get "debug") then { ["ALIVE-%1 FPV drone: jam released after %2 s, resuming (%3)", time, round _dtk, _d get "phase"] call ALiVE_fnc_dump };
+            };
+        };
         // another mod's jammer that kills its AI pilot or drains its fuel: nothing flies it any more, whatever
         // Jammers Stop Drones says (that setting covers ALiVE's own jammer checks above)
         if (((crew _uav) findIf { alive _x }) < 0) exitWith { ["no pilot (jammed by another mod?)", true] call _fnc_end };
@@ -630,6 +658,8 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         private _players = allPlayers - entities "HeadlessClient_F";
         if ((_players findIf { (_x distance _uav) < (_d get "recall") }) < 0) exitWith { [format ["no player within %1 m", _d get "recall"], false] call _fnc_end };
         if ((_d get "marker") != "") then { (_d get "marker") setMarkerPos getPosATL _uav };
+        // held by a soft jam: nothing more this second
+        if ((_d getOrDefault ["jamTick", -1]) >= 0) then { continue };
 
         // a roaming drone searching: a player of a hostile side within 300 m that it can see becomes its target
         // (its own look, once a second; never a player Zeus or one another drone is after). Until then it flies
