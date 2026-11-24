@@ -138,7 +138,12 @@ while { alive _veh && {(call _fnc_crewAboard) isNotEqualTo []} } do {
     };
 };
 
-// lost: destroyed, or no living crew left aboard
+// lost: destroyed, or no living crew left aboard. Said in the RPT every time, with where the crew were: a
+// transport taken off the list waits out its respawn time with nothing else to show why (#1140)
+["ALiVE Combat Support - ground transport %1 (%2) is lost at %3: %4; its crew %5. %6", _callsign, _type, mapGridPosition _veh,
+    ["it has no living crew of its own aboard", "it is destroyed"] select (!alive _veh),
+    (units _grp) apply { [typeOf _x, alive _x, ["out of it", "aboard"] select (vehicle _x == _veh), round (_x distance _veh)] },
+    ["It is taken off the list until it respawns", "It was removed by the mission"] select (_veh getVariable ["NEO_groundRemoved", false])] call ALiVE_fnc_dump;
 _veh setVariable ["NEO_radioGroundRun", -1, true];
 _veh setVariable ["NEO_radioGroundUnitStatus", "KILLED", true];
 if !(_veh getVariable ["NEO_groundRemoved", false]) then {
