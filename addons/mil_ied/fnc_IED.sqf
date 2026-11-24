@@ -1358,6 +1358,8 @@ switch(_operation) do {
             if (!isServer) exitWith {};
             private _debug = [_logic, "debug"] call MAINCLASS;
             private _warned = false;
+            // when the "every player is a Zeus" debug line may be written again
+            private _zeusSaid = -1;
             if (_debug && {(_logic getVariable ["Drone_Threat", 0]) > 0} && {(ADDON getVariable ["Drone_Range", 2000]) <= 300}) then {
                 ["ALIVE-%1 FPV drone: Drone Launch Range is 300 m or less, so no drones are launched", time] call ALiVE_fnc_dump;
             };
@@ -1393,6 +1395,15 @@ switch(_operation) do {
                 private _boatsOn = (ADDON getVariable ["Drone_Boats", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"};
                 if (_bombOn || _droneOn || _roamOn) then {
                     private _players = allPlayers - entities "HeadlessClient_F";
+                    // players a drone may go after (Zeus only when testing alone): on foot or in a land vehicle (or a
+                    // boat with Drones Also Hit Boats), on the ground
+                    private _soloZeus = missionNamespace getVariable ["ALiVE_zeusSoloTest", false];
+                    private _eligible = _players select {
+                        alive _x && {_soloZeus || {isNull (getAssignedCuratorLogic _x)}}
+                        && {!((vehicle _x) isKindOf "Air")} && {_boatsOn || {!((vehicle _x) isKindOf "Ship")}}
+                        && {(["height", [vehicle _x]] call ALiVE_fnc_createFPVDrone) < 25}
+                    };
+                    private _allZeus = !_soloZeus && {_players isNotEqualTo []} && {(_players findIf { isNull (getAssignedCuratorLogic _x) }) < 0};
                     {
                         private _player = _x;
                         private _veh = vehicle _player;
@@ -1551,6 +1562,56 @@ switch(_operation) do {
                             };
                         };
                     } forEach _players;
+                    private _toAI = (ADDON getVariable ["Drone_Targets", "PLAYERS"]) == "ALL";
+                    if (_debug && {_droneOn} && {_allZeus} && {time > _zeusSaid}) then {
+                        _zeusSaid = time + 300;
+                        if (_toAI) then {
+                            ["ALIVE-%1 FPV drone: only Zeus players, so drones go after AI", time] call ALiVE_fnc_dump;
+                        } else {
+                            ["ALIVE-%1 FPV drone: no drones are launched, every player is a Zeus (drones only go after players on foot or in land vehicles%2)", time, [""," or boats"] select _boatsOn] call ALiVE_fnc_dump;
+                        };
+                    };
+                    // Drone Targets Players and AI with no player a drone may go after (all Zeus, or none on foot or in
+                    // a land vehicle): a group of a launching side sends one at hostile AI it knows about, 300 m to
+                    // Drone Launch Range from its leader and within 1200 m of a player, so it is seen
+                    if (_droneOn && {_toAI} && {_eligible isEqualTo []} && {_players isNotEqualTo []}
+                        && {(count ALiVE_IED_drones) < (ADDON getVariable ["Drone_Max", 2])} && {(random 100) < _droneChance}) then {
+                        private _vehOk = (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL";
+                        private _groups = allGroups select {
+                            (side _x) in _droneSides && {alive leader _x} && {!isPlayer leader _x}
+                            && {time > (_x getVariable ["ALiVE_IED_droneGroupNext", 0])}
+                            && {private _l = leader _x; (_players findIf { (_x distance _l) < (_range + 1200) }) >= 0}
+                        };
+                        private _pick = [];
+                        {
+                            private _grp = _x;
+                            private _lead = leader _grp;
+                            private _ai = (_lead targets [true, _range]) select {
+                                private _t = _x;
+                                alive _t && {(_t distance _lead) > 300}
+                                && {(_players findIf { (_x distance _t) < 1200 }) >= 0}
+                                && {(["height", [_t]] call ALiVE_fnc_createFPVDrone) < 25}
+                                && {isNull (_t getVariable ["ALiVE_IED_droneOn", objNull])}
+                                && {if (_t isKindOf "Man") then { !isPlayer _t && {(vehicle _t) isEqualTo _t} } else {
+                                    _vehOk && {_t isKindOf "LandVehicle" || {_boatsOn && {_t isKindOf "Ship"}}} && {!(_t isKindOf "StaticWeapon")}
+                                    && {((crew _t) findIf { alive _x }) >= 0} && {((crew _t) findIf { isPlayer _x }) < 0}
+                                }}
+                            };
+                            _ai = _ai select { !(["roofed", [_x]] call ALiVE_fnc_createFPVDrone) };
+                            if (_ai isNotEqualTo []) exitWith { _pick = [_grp, selectRandom _ai] };
+                        } forEach ((_groups call BIS_fnc_arrayShuffle) select [0, 6]);
+                        if (_pick isNotEqualTo []) then {
+                            _pick params ["_grp", "_tgt"];
+                            private _uav = [_tgt, _grp] call ALiVE_fnc_createFPVDrone;
+                            if (!isNull _uav) then {
+                                _grp setVariable ["ALiVE_IED_droneGroupNext", time + 60 * (ADDON getVariable ["Drone_Wait", 10])];
+                                if (_debug) then {
+                                    ["ALIVE-%1 FPV drone: no player to go after, so a %2 group near %3 launched a drone at AI %4 (%5) %6 m away", time, side _grp, mapGridPosition leader _grp,
+                                        typeOf _tgt, side group _tgt, round ((leader _grp) distance _tgt)] call ALiVE_fnc_dump;
+                                };
+                            };
+                        };
+                    };
                     // Medium and Large charges: AI-crewed land vehicles (and boats, with Drones Also Hit Boats) of a side hostile to a launching side, within 1200 m
                     // of a player (a drone further than 1500 m from every player is called back), spotted the same way
                     // as a player, each with its own Drone Wait. Players in vehicles are the player's own turn above
