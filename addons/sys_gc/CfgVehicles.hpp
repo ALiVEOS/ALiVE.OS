@@ -37,6 +37,19 @@ class CfgVehicles {
                         class ALiVE_GC_INTERVAL : Edit { property = "ALiVE_sys_gc_ALiVE_GC_INTERVAL"; displayName = "$STR_ALIVE_GC_INTERVAL"; tooltip = "$STR_ALIVE_GC_INTERVAL_COMMENT"; defaultValue = """300"""; };
                         class ALiVE_GC_THRESHHOLD : Edit { property = "ALiVE_sys_gc_ALiVE_GC_THRESHHOLD"; displayName = "$STR_ALIVE_GC_THRESHHOLD"; tooltip = "$STR_ALIVE_GC_THRESHHOLD_COMMENT"; defaultValue = """100"""; ALiVE_showWhen[] = {{"ALiVE_GC_INTERVAL", ">", 0.99}}; };
                         class ALiVE_GC_INDIVIDUALTYPES : Edit { property = "ALiVE_sys_gc_ALiVE_GC_INDIVIDUALTYPES"; displayName = "$STR_ALIVE_GC_INDIVIDUALTYPES"; tooltip = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT"; defaultValue = """"""; ALiVE_showWhen[] = {{"ALiVE_GC_INTERVAL", ">", 0.99}}; };
+                        class ALiVE_GC_EJECTION : Combo
+                        {
+                                property = "ALiVE_sys_gc_ALiVE_GC_EJECTION";
+                                displayName = "$STR_ALIVE_GC_EJECTION";
+                                tooltip = "$STR_ALIVE_GC_EJECTION_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = "true"; default = 1; };
+                                    class No { name = "No"; value = "false"; };
+                                };
+                                ALiVE_showWhen[] = {{"ALiVE_GC_INTERVAL", ">", 0.99}};
+                        };
                         class HDR_ABANDONED : ALiVE_ModuleSubTitle { property = "ALiVE_sys_gc_HDR_ABANDONED"; displayName = "ABANDONED VEHICLES"; };
                         class ALiVE_GC_ABANDONED : Combo
                         {

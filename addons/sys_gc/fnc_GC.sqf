@@ -146,6 +146,27 @@ switch(_operation) do {
             [_logic] spawn ALiVE_fnc_GCAbandoned;
         };
 
+        // Ejection seats and canopies (Jman, 24 Nov 2026): every plane that ejects names its seat and canopy classes
+        // in its EjectionSystem, so they are read from the config once here instead of kept in a list, for vanilla,
+        // the DLCs and any mod using the same system; anything of the base seat or canopy class counts too
+        private _ejectOn = (toLower format ["%1", _logic getVariable ["ALiVE_GC_EJECTION", "true"]]) in ["true", "1"];
+        private _eject = createHashMap;
+        private _ejectBases = [];
+        if (_ejectOn && {_interval >= 1}) then {
+            private _cfgV = configFile >> "CfgVehicles";
+            {
+                private _es = _x >> "EjectionSystem";
+                {
+                    private _c = getText (_es >> _x);
+                    if (_c != "" && {isClass (_cfgV >> _c)}) then { _eject set [_c, true] };
+                } forEach ["EjectionSeatClass", "CanopyClass"];
+            } forEach ("isClass (_x >> 'EjectionSystem')" configClasses _cfgV);
+            _ejectBases = ["Ejection_Seat_Base_F", "Plane_Canopy_Base_F"] select { isClass (_cfgV >> _x) };
+            ["Garbage Collector: cleaning up ejection seats and canopies, %1 classes (and any kind of %2): %3", count _eject, _ejectBases, keys _eject] call ALiVE_fnc_dump;
+        };
+        _logic setVariable ["gcEject", _eject];
+        _logic setVariable ["gcEjectBases", _ejectBases];
+
         if (_interval < 1) exitwith {
             ["Garbage Collector turned off..."] call ALiVE_fnc_dump;
             _logic setVariable ["startupComplete", true];
@@ -257,12 +278,17 @@ switch(_operation) do {
                         switch (typeName _object) do {
 
                             case (typeName objNull): {
+                                // an ejection seat someone has climbed back into is never taken
+                                if ((_object getVariable ["ALiVE_GC_ejectSeen", -1]) >= 0 && { (crew _object) findIf { alive _x } > -1 }) then {
+                                    _cursor = _cursor + 1;
+                                } else {
                                 if (_instant || { ({ (_x distance _object) <= 1700 } count _players) == 0 }) then {
                                     deleteVehicle _object;
                                     _queue deleteAt _cursor;
                                     _deletedCount = _deletedCount + 1;
                                 } else {
                                     _cursor = _cursor + 1;
+                                };
                                 };
                             };
 
@@ -307,10 +333,12 @@ switch(_operation) do {
     */
     case "beginCandidateScan": {
         private _individual = _logic getVariable ["ALiVE_GC_INDIVIDUALTYPES", []];
+        // the mission's clutter types, and the ejection seats and canopies
+        private _types = _individual + (keys (_logic getVariable ["gcEject", createHashMap])) + (_logic getVariable ["gcEjectBases", []]);
         private _work = [
             ["allDead", allDead],
             ["allGroups", allGroups],
-            ["entities", if (_individual isEqualTo []) then { [] } else { entities [_individual, [], true, false] }]
+            ["entities", if (_types isEqualTo []) then { [] } else { entities [_types, [], true, false] }]
         ];
 
         _logic setVariable ["gcPhase", "scanning"];
@@ -378,9 +406,25 @@ switch(_operation) do {
                     };
 
                     case "entities": {
-                        if (((typeOf _candidate) in _individual)
-                            && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
-                            [_logic,"trashIt", _candidate] call MAINCLASS;
+                        if (!isNull _candidate && { _queue isEqualTo [] || { !(_candidate in _queue) } }) then {
+                            if ((typeOf _candidate) in _individual) then {
+                                [_logic,"trashIt", _candidate] call MAINCLASS;
+                            } else {
+                                // an ejection seat or canopy: noted when first seen, queued once it has been there 3
+                                // minutes, has come to rest and has nobody alive in it
+                                private _bases = _logic getVariable ["gcEjectBases", []];
+                                if (((typeOf _candidate) in (_logic getVariable ["gcEject", createHashMap]) || { (_bases findIf { _candidate isKindOf _x }) > -1 })
+                                    && { !(_candidate in _sync) } && { !(_candidate getVariable [QGVAR(IGNORE), false]) }) then {
+                                    private _seen = _candidate getVariable ["ALiVE_GC_ejectSeen", -1];
+                                    if (_seen < 0) then {
+                                        _candidate setVariable ["ALiVE_GC_ejectSeen", ALiVE_simulationTime];
+                                    } else {
+                                        if ((ALiVE_simulationTime - _seen) >= 180 && { (abs speed _candidate) < 1 } && { (crew _candidate) findIf { alive _x } < 0 }) then {
+                                            [_logic,"trashIt", _candidate] call MAINCLASS;
+                                        };
+                                    };
+                                };
+                            };
                         };
                     };
                 };

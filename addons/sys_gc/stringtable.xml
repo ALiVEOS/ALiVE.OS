@@ -27,6 +27,24 @@
     <Chinesesimp>垃圾收集器杂波类型</Chinesesimp>
     <Spanish>Tipos de objeto del recolector de basura</Spanish>
 </Key>
+<Key ID="STR_ALIVE_GC_EJECTION">
+    <English>Clean Up Ejection Seats And Canopies</English>
+    <Chinese>清理彈射座椅和座艙罩</Chinese>
+    <Chinesesimp>清理弹射座椅和座舱罩</Chinesesimp>
+    <Spanish>Limpiar asientos eyectables y cabinas</Spanish>
+    <French>Nettoyer les sièges éjectables et les verrières</French>
+    <Portuguese>Limpar assentos ejetáveis e canopis</Portuguese>
+    <Russian>Убирать катапультные кресла и фонари</Russian>
+</Key>
+<Key ID="STR_ALIVE_GC_EJECTION_COMMENT">
+    <English>Yes (the default) removes the seats and canopies left on the ground after a pilot ejects, from vanilla, DLC and mod planes alike: each plane's own config names them. One is removed once it has lain still for 3 minutes, with nobody in it and no player within 1700 m. No leaves them where they fall.</English>
+    <Chinese>是（預設）：清除飛行員彈射後留在地面上的座椅和座艙罩，原版、DLC和模組飛機皆適用：每架飛機的設定中都寫明了這些物件。靜止3分鐘、無人乘坐且1700公尺內沒有玩家時才會清除。否：保留在原地。</Chinese>
+    <Chinesesimp>是（默认）：清除飞行员弹射后留在地面上的座椅和座舱罩，原版、DLC和模组飞机皆适用：每架飞机的配置中都写明了这些物件。静止3分钟、无人乘坐且1700米内没有玩家时才会清除。否：保留在原地。</Chinesesimp>
+    <Spanish>Sí (por defecto) retira los asientos y cabinas que quedan en el suelo tras la eyección de un piloto, de aviones vanilla, DLC y mods por igual: la configuración de cada avión los nombra. Se retira uno cuando lleva 3 minutos quieto, sin nadie dentro y sin jugadores a menos de 1700 m. No los deja donde caen.</Spanish>
+    <French>Oui (par défaut) retire les sièges et verrières laissés au sol après l'éjection d'un pilote, pour les avions vanilla, DLC et mods: la configuration de chaque avion les nomme. Un objet est retiré après 3 minutes immobile, sans personne dedans et sans joueur à moins de 1700 m. Non les laisse là où ils tombent.</French>
+    <Portuguese>Sim (o padrão) remove os assentos e canopis deixados no chão após a ejeção de um piloto, de aviões vanilla, DLC e mods: a configuração de cada avião indica-os. Um é removido depois de 3 minutos parado, sem ninguém dentro e sem jogadores a menos de 1700 m. Não deixa-os onde caem.</Portuguese>
+    <Russian>Да (по умолчанию): убирает кресла и фонари, оставшиеся на земле после катапультирования пилота, у ванильных самолётов, самолётов DLC и модов: их называет конфиг каждого самолёта. Объект убирается, когда пролежал неподвижно 3 минуты, в нём никого нет и в пределах 1700 м нет игроков. Нет: они остаются там, где упали.</Russian>
+</Key>
 <Key ID="STR_ALIVE_GC_ABANDONED">
     <English>Abandoned Vehicles</English>
 </Key>

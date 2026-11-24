@@ -2687,6 +2687,18 @@ class CfgVehicles {
                     tooltip = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT";
                     defaultValue = """""";
             };
+            class ALiVE_GC_EJECTION: Combo
+            {
+                    property =  MVAR(ALiVE_GC_EJECTION);
+                    displayName = "$STR_ALIVE_GC_EJECTION";
+                    tooltip = "$STR_ALIVE_GC_EJECTION_COMMENT";
+                    defaultValue = """true""";
+                    class Values
+                    {
+                        class Yes { name = "Yes"; value = "true"; default = 1; };
+                        class No { name = "No"; value = "false"; };
+                    };
+            };
             class ALiVE_GC_ABANDONED: Combo
             {
                     property =  MVAR(ALiVE_GC_ABANDONED);
