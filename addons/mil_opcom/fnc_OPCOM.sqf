@@ -258,6 +258,9 @@ switch (_operation) do {
         private _prepFire = (toLower format ["%1", _logic getvariable ["prepFire","false"]]) == "true";
         // Flanking Attacks (A. Ares on Discord, 24 Oct): one group holds the defenders, the others go round the side.
         private _flanking = (toLower format ["%1", _logic getvariable ["flanking","false"]]) == "true";
+        // Motorised Troops Dismount Short Of Objectives (Spicy on Discord, 24 Nov): passengers get out 150-300 m short
+        // of an objective they are sent to capture and go in on foot; they get back in for a later order further away.
+        private _dismount = (toLower format ["%1", _logic getvariable ["dismount","true"]]) == "true";
         private _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
         private _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
         private _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
@@ -484,6 +487,7 @@ switch (_operation) do {
             ["arriveTogether", _arriveTogether],
             ["prepFire", _prepFire],
             ["flanking", _flanking],
+            ["dismount", _dismount],
             ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],
             ["hostilityInstallationMultiplier", _hostilityInstallationMultiplier],
             ["hostilityInstallationInterval", _hostilityInstallationInterval],
@@ -3064,6 +3068,8 @@ switch (_operation) do {
         // aircraft don't hold (a spawned helicopter would take off and hover)
         private _airIDs = [_logic,"air",[]] call ALiVE_fnc_HashGet;
         private _issuedAt = time;
+        private _dismount = [_logic,"dismount",false] call ALiVE_fnc_HashGet;
+        private _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
 
         // Flanking Attacks: the holding group goes in once the last group swinging round should be at its side
         private _supportRelease = 0;
@@ -3088,6 +3094,12 @@ switch (_operation) do {
             private _profile = _profilesByID get _profileID;
 
             if !(isNil "_profile") then {
+                // Motorised Troops Dismount: passengers on foot from an earlier dismount get back in for an order
+                // further off than the dismount distance; nearer, they walk
+                private _mounted = _dismount && {!(_profileID in _airIDs)};
+                if (_mounted && {(([_profile,"position",_pos] call ALiVE_fnc_HashGet) distance2D _pos) > 300}) then {
+                    [[], "remountSection", [_profile, _debug]] call MAINCLASS;
+                };
                 [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
                 [_profile,"clearActiveCommands"] call ALIVE_fnc_profileEntity;
 
@@ -3125,6 +3137,34 @@ switch (_operation) do {
                         [_profile,"addWaypoint",_holdPoint] call ALIVE_fnc_profileEntity;
                     };
                 };
+                // Motorised Troops Dismount: on a capture, a group with passengers in a land vehicle it drives stops
+                // 150-300 m short on its way in (where it already is, if nearer) and they get out there; the group
+                // then goes on with the men on foot. The waypoint's statement does it, spawned or virtual
+                if (_mounted && {_orders == "capture"}) then {
+                    private _pass = false;
+                    {
+                        private _vp = _profilesByID get _x;
+                        if (!isNil "_vp" && {(_vp select 2 select 11) isKindOf "LandVehicle"}) then {
+                            private _seats = ([_profile select 2 select 7, _x, []] call ALiVE_fnc_HashGet) param [2, []];
+                            if (((_seats param [4, []]) + (_seats param [5, []])) isNotEqualTo []) exitWith { _pass = true };
+                        };
+                    } forEach (_profile select 2 select 8);
+                    if (!_pass) exitWith {};
+                    private _legsHere = _legs getOrDefault [_profileID, []];
+                    private _from = switch (true) do {
+                        case (_profileID == _supportID): { _supportHold };
+                        case (_legsHere isNotEqualTo []): { _legsHere select (count _legsHere - 1) };
+                        default { [_profile,"position",_pos] call ALiVE_fnc_HashGet };
+                    };
+                    private _short = 150 + random 150;
+                    private _stop = if ((_from distance2D _pos) <= _short) then { +_from } else { _pos getPos [_short, _pos getDir _from] };
+                    if (surfaceIsWater _stop) then { _stop = [_stop, 0, 100, 5, 0, 0.5, 0, [], [_stop, _stop]] call BIS_fnc_findSafePos };
+                    if (surfaceIsWater _stop) exitWith {};
+                    private _stopPoint = [[_stop select 0, _stop select 1, 0],0,"MOVE","NORMAL",30,[],"NO CHANGE","NO CHANGE","AWARE"] call ALIVE_fnc_createProfileWaypoint;
+                    // run on the server: a waypoint statement of a group on a headless client is run there
+                    [_stopPoint,"statements",["true", format ["if (isServer) then {[[],""dismountSection"",[""%1"",%2]] call ALiVE_fnc_OPCOM} else {[[],""dismountSection"",[""%1"",%2]] remoteExecCall [""ALiVE_fnc_OPCOM"",2]}", _profileID, _debug]]] call ALiVE_fnc_hashSet;
+                    [_profile,"addWaypoint",_stopPoint] call ALIVE_fnc_profileEntity;
+                };
                 [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
                 // Integrate: the kind of order, so LAMBS can fight it the right way once the group is there
                 ["order", [_profileID, _orders, _pos, _objectiveID, -1]] call ALiVE_fnc_lambs;
@@ -3135,6 +3175,74 @@ switch (_operation) do {
 
 
         _result = _profileWaypoints;
+    };
+
+    // Motorised Troops Dismount Short Of Objectives: run (on the server) by the stop short of a captured objective.
+    // The group's passengers (cargo and passenger-turret seats of land vehicles it drives) lose their seats in the
+    // profile; spawned, they get out and stay out. The crew keep theirs. A profile with men out of their seats moves at
+    // walking pace while virtual (profileVehicleAssignmentsGetSpeedPerSecond), and a save keeps the seats as they are.
+    // Running it twice does nothing more
+    case "dismountSection": {
+        _args params ["_profileID", ["_debug", false]];
+        if (isNil "ALIVE_profileHandler") exitWith {};
+        private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+        if (isNil "_profile") exitWith {};
+        private _active = _profile select 2 select 1;
+        private _units = _profile select 2 select 21;
+        private _out = [];
+        {
+            private _vehID = _x;
+            private _vp = [ALIVE_profileHandler, "getProfile", _vehID] call ALIVE_fnc_profileHandler;
+            private _a = [_profile select 2 select 7, _vehID, []] call ALiVE_fnc_HashGet;
+            if (isNil "_vp" || {_a isEqualTo []} || {!((_vp select 2 select 11) isKindOf "LandVehicle")}) then { continue };
+            private _seats = _a select 2;
+            if (((_seats select 4) + (_seats select 5)) isEqualTo []) then { continue };
+            private _men = [];
+            if (_active) then {
+                private _byUnit = [_a, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+                _men = ((_byUnit select 4) + (_byUnit select 5)) select { !isNull _x && {alive _x} };
+            };
+            private _new = [_vehID, _a select 1, [+(_seats select 0), +(_seats select 1), +(_seats select 2), +(_seats select 3), [], []]];
+            [_profile, "addVehicleAssignment", _new] call ALIVE_fnc_profileEntity;
+            [_vp, "addVehicleAssignment", _new] call ALIVE_fnc_profileVehicle;
+            if (_men isNotEqualTo []) then {
+                private _get = { { unassignVehicle _x; [_x] allowGetIn false; [_x] orderGetIn false } forEach _this };
+                if (local (_men select 0)) then { _men call _get } else { [_men, _get] remoteExec ["call", _men select 0] };
+            };
+            _out append ((_seats select 4) + (_seats select 5));
+        } forEach +(_profile select 2 select 8);
+        if (_debug && {_out isNotEqualTo []}) then {
+            ["OPCOM - %1: %2 passengers dismount at %3 (%4)", _profileID, count _out, mapGridPosition ([_profile, "position", [0, 0, 0]] call ALiVE_fnc_HashGet), ["virtual", "spawned"] select _active] call ALiVE_fnc_dump;
+        };
+        _result = count _out;
+    };
+
+    // ...and back in: men of the group without a seat are given the free seats of the land vehicles it drives again
+    // (ALIVE_fnc_createProfileVehicleAssignment); spawned, they are ordered in
+    case "remountSection": {
+        _args params ["_profile", ["_debug", false]];
+        _result = 0;
+        private _cmd = _profile select 2 select 8;
+        if (_cmd isEqualTo []) exitWith {};
+        private _before = (_profile select 2 select 7) call ALIVE_fnc_profileVehicleAssignmentsGetCount;
+        if (_before >= (_profile select 2 select 12)) exitWith {};
+        if (_profile select 2 select 1) then {
+            private _men = (_profile select 2 select 21) select { !isNull _x && {alive _x} };
+            if (_men isNotEqualTo []) then {
+                private _let = { { [_x] allowGetIn true } forEach _this };
+                if (local (_men select 0)) then { _men call _let } else { [_men, _let] remoteExec ["call", _men select 0] };
+            };
+        };
+        {
+            private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+            if (!isNil "_vp" && {(_vp select 2 select 11) isKindOf "LandVehicle"}) then {
+                [_profile, _vp, true] call ALIVE_fnc_createProfileVehicleAssignment;
+            };
+        } forEach +_cmd;
+        _result = ((_profile select 2 select 7) call ALIVE_fnc_profileVehicleAssignmentsGetCount) - _before;
+        if (_debug && {_result > 0}) then {
+            ["OPCOM - %1: %2 men get back in for an order further off", _profile select 2 select 4, _result] call ALiVE_fnc_dump;
+        };
     };
 
     case "confirmOrder": {

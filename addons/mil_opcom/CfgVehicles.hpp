@@ -370,6 +370,19 @@ class CfgVehicles {
                                 };
                                 ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
                         };
+                        // Spicy on Discord, 24 Nov: passengers get out short of an objective and go in on foot
+                        class dismount : Combo
+                        {
+                                property = "ALiVE_mil_opcom_dismount";
+                                displayName = "$STR_ALIVE_OPCOM_DISMOUNT";
+                                tooltip = "$STR_ALIVE_OPCOM_DISMOUNT_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                        class Yes { name = "Yes"; value = "true"; };
+                                        class No  { name = "No";  value = "false"; };
+                                };
+                        };
                         // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
                         class callForHelp : Combo
                         {

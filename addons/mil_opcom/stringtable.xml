@@ -1031,6 +1031,24 @@
 <Key ID="STR_ALIVE_OPCOM_FLANKING_COMMENT">
     <English>Any commander but an Asymmetric one (Dug In never attacks). When its scouts have found defenders on an objective and it sends three or more ground groups to take it, one group (the heaviest vehicles, else the infantry nearest the objective) stops about 300 m short and holds the defenders in place, while the others swing round to its side, about 90 degrees off, before all of them close in together. A group already standing off to the side goes straight in. Attacks with fewer groups, or where the scouts found nobody, go straight in as before. Aircraft aren't involved, and a group swinging round isn't sent to help elsewhere until the objective is taken.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_DISMOUNT">
+    <English>Motorised Troops Dismount Short Of Objectives</English>
+    <Chinese>摩托化部隊在目標前下車</Chinese>
+    <Chinesesimp>摩托化部队在目标前下车</Chinesesimp>
+    <French>Les troupes motorisées débarquent avant l'objectif</French>
+    <Portuguese>Tropas motorizadas desembarcam antes do objetivo</Portuguese>
+    <Russian>Мотопехота спешивается перед объектом</Russian>
+    <Spanish>Las tropas motorizadas desembarcan antes del objetivo</Spanish>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_DISMOUNT_COMMENT">
+    <English>Any commander. A group carried in its own trucks or armoured vehicles that is sent to take an objective stops 150 to 300 m short of it on its way in, its passengers get out and go in on foot, and the vehicles follow on with them in support. Given a later order further away than that, the passengers get back in first; for one nearer, they walk. Groups out of sight do the same and move at walking pace while their passengers are out. Off: they drive all the way in, as before.</English>
+    <Chinese>任何指揮官。乘坐自己卡車或裝甲車的小組在奉命奪取目標時，會在接近途中距目標150至300米處停下，乘員下車徒步進攻，車輛隨行支援。之後若接到更遠的命令，乘員會先上車；距離較近則步行前往。玩家視線外的小組同樣如此，乘員下車期間以步行速度移動。關閉：一路乘車直達，與以前相同。</Chinese>
+    <Chinesesimp>任何指挥官。乘坐自己卡车或装甲车的小组在奉命夺取目标时，会在接近途中距目标150至300米处停下，乘员下车徒步进攻，车辆随行支援。之后若接到更远的命令，乘员会先上车；距离较近则步行前往。玩家视线外的小组同样如此，乘员下车期间以步行速度移动。关闭：一路乘车直达，与以前相同。</Chinesesimp>
+    <French>Tout commandant. Un groupe transporté dans ses propres camions ou véhicules blindés, envoyé prendre un objectif, s'arrête à 150 à 300 m de celui-ci en approche ; ses passagers descendent et avancent à pied, et les véhicules les suivent en appui. Pour un ordre suivant plus éloigné, les passagers remontent d'abord ; pour un ordre plus proche, ils marchent. Les groupes hors de vue font de même et se déplacent au pas tant que leurs passagers sont à pied. Désactivé : ils roulent jusqu'au bout, comme avant.</French>
+    <Portuguese>Qualquer comandante. Um grupo transportado nos seus próprios camiões ou blindados, enviado para tomar um objetivo, para a 150 a 300 m dele na aproximação; os passageiros desembarcam e avançam a pé, e os veículos seguem-nos em apoio. Para uma ordem seguinte mais distante, os passageiros voltam a embarcar primeiro; para uma mais próxima, vão a pé. Os grupos fora de vista fazem o mesmo e deslocam-se a passo enquanto os passageiros estão a pé. Desligado: vão de veículo até ao fim, como antes.</Portuguese>
+    <Russian>Любой командир. Группа на собственных грузовиках или бронетехнике, посланная взять объект, останавливается в 150–300 м от него на подходе; пассажиры спешиваются и идут дальше пешком, а машины следуют за ними для поддержки. При следующем приказе дальше этого расстояния пассажиры сначала садятся обратно; при более близком идут пешком. Группы вне видимости поступают так же и движутся шагом, пока пассажиры спешены. Выкл.: едут до самого объекта, как раньше.</Russian>
+    <Spanish>Cualquier comandante. Un grupo transportado en sus propios camiones o blindados, enviado a tomar un objetivo, se detiene a 150-300 m de él durante la aproximación; sus pasajeros desembarcan y avanzan a pie, y los vehículos los siguen en apoyo. Ante una orden posterior más lejana, los pasajeros vuelven a subir primero; si es más cercana, caminan. Los grupos fuera de la vista hacen lo mismo y se mueven al paso mientras sus pasajeros van a pie. Desactivado: van en vehículo hasta el final, como antes.</Spanish>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_ARRIVE_TOGETHER">
     <English>Attacks Arrive Together</English>
 </Key>
