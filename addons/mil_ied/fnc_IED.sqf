@@ -338,7 +338,7 @@ switch(_operation) do {
                         if (_v isEqualType 0) then { _v = _v > 0 };
                         if !(_v isEqualType true) then { _v = _default };
                         ADDON setVariable [_name, _v];
-                    } forEach [["Drone_Jammed", true], ["Drone_Abandoned", false]];
+                    } forEach [["Drone_Jammed", true], ["Drone_Abandoned", false], ["Drone_Boats", false]];
                     // Drone Targets: players only (PLAYERS, default) or players and hostile AI (ALL); read by bomberDispatch and createFPVDrone
                     private _dTargets = _logic getVariable ["Drone_Targets", "PLAYERS"];
                     ADDON setVariable ["Drone_Targets", ["PLAYERS", "ALL"] select (_dTargets isEqualType "" && {(toUpper _dTargets) == "ALL"})];
@@ -1389,6 +1389,8 @@ switch(_operation) do {
                 };
                 _bombOn = _bombOn && {_insSides isNotEqualTo []};
                 _droneOn = _droneOn && {_droneSides isNotEqualTo []};
+                // Drones Also Hit Boats (Medium and Large only): a player in a boat is no longer passed over
+                private _boatsOn = (ADDON getVariable ["Drone_Boats", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"};
                 if (_bombOn || _droneOn || _roamOn) then {
                     private _players = allPlayers - entities "HeadlessClient_F";
                     {
@@ -1399,14 +1401,14 @@ switch(_operation) do {
                         private _pSide = side group _player;
                         private _hostile = _droneSides select { (_x getFriend _pSide) < 0.6 };
                         if (alive _player
-                            && {((getPosATL _veh) select 2) < 25}) then {
+                            && {(["height", [_veh]] call ALiVE_fnc_createFPVDrone) < 25}) then {
                             private _bomberFree = _bombOn && {!_curator}
                                 && {!(_player call ALiVE_fnc_iedBomberSpares)}
                                 && {time > (_player getVariable ["ALiVE_IED_dispatchNext", 0])}
                                 && {!alive (_player getVariable ["ALiVE_IED_dispatchBomber", objNull])};
                             // a drone goes after a player on foot or in a land vehicle, never Zeus (unless testing alone)
                             private _droneOk = (!_curator || {missionNamespace getVariable ["ALiVE_zeusSoloTest", false]})
-                                && {!(_veh isKindOf "Air")} && {!(_veh isKindOf "Ship")}
+                                && {!(_veh isKindOf "Air")} && {_boatsOn || {!(_veh isKindOf "Ship")}}
                                 && {_hostile isNotEqualTo []}
                                 && {time > (_player getVariable ["ALiVE_IED_droneNext", 0])}
                                 && {isNull (_player getVariable ["ALiVE_IED_droneOn", objNull])}
@@ -1476,10 +1478,10 @@ switch(_operation) do {
                                         private _vehOk = (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL";
                                         private _ai = (_lead targets [true, _range]) select {
                                             alive _x && {(_x distance _lead) > 300}
-                                            && {((getPosATL _x) select 2) < 25}
+                                            && {(["height", [_x]] call ALiVE_fnc_createFPVDrone) < 25}
                                             && {isNull (_x getVariable ["ALiVE_IED_droneOn", objNull])}
                                             && {if (_x isKindOf "Man") then { !isPlayer _x && {(vehicle _x) isEqualTo _x} } else {
-                                                _vehOk && {_x isKindOf "LandVehicle"} && {((crew _x) findIf { alive _x }) >= 0} && {((crew _x) findIf { isPlayer _x }) < 0}
+                                                _vehOk && {_x isKindOf "LandVehicle" || {_boatsOn && {_x isKindOf "Ship"}}} && {((crew _x) findIf { alive _x }) >= 0} && {((crew _x) findIf { isPlayer _x }) < 0}
                                             }}
                                         };
                                         _ai = _ai select { !(["roofed", [_x]] call ALiVE_fnc_createFPVDrone) };
@@ -1549,13 +1551,13 @@ switch(_operation) do {
                             };
                         };
                     } forEach _players;
-                    // Medium and Large charges: AI-crewed land vehicles of a side hostile to a launching side, within 1200 m
+                    // Medium and Large charges: AI-crewed land vehicles (and boats, with Drones Also Hit Boats) of a side hostile to a launching side, within 1200 m
                     // of a player (a drone further than 1500 m from every player is called back), spotted the same way
                     // as a player, each with its own Drone Wait. Players in vehicles are the player's own turn above
                     if (_droneOn && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}) then {
                         {
                             private _v = _x;
-                            if (alive _v && {_v isKindOf "LandVehicle"} && {!(_v isKindOf "StaticWeapon")}
+                            if (alive _v && {_v isKindOf "LandVehicle" || {_boatsOn && {_v isKindOf "Ship"}}} && {!(_v isKindOf "StaticWeapon")}
                                 && {((crew _v) findIf { alive _x }) > -1} && {((crew _v) findIf { isPlayer _x }) < 0}
                                 && {time > (_v getVariable ["ALiVE_IED_droneNext", 0])}
                                 && {isNull (_v getVariable ["ALiVE_IED_droneOn", objNull])}

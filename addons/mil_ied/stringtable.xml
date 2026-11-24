@@ -372,6 +372,24 @@
 <Key ID="STR_ALIVE_IED_DRONE_ABANDONED_COMMENT">
     <English>Medium and Large drones only. A searching drone also goes after an abandoned vehicle of a hostile side it can see within 300 m: empty and knocked out (can't move, engine or tracks destroyed, or left standing by ACE) but not destroyed, so it could still be repaired. Its side is the side the vehicle belongs to.</English>
 </Key>
+<Key ID="STR_ALIVE_IED_DRONE_BOATS">
+    <English>Drones Also Hit Boats</English>
+    <Chinese>無人機也攻擊船隻</Chinese>
+    <Chinesesimp>无人机也攻击船只</Chinesesimp>
+    <Spanish>Los drones también atacan barcos</Spanish>
+    <French>Les drones attaquent aussi les bateaux</French>
+    <Portuguese>Os drones também atacam barcos</Portuguese>
+    <Russian>Дроны атакуют и лодки</Russian>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_BOATS_COMMENT">
+    <English>Medium and Large drones only. A player in a boat can have a drone sent at him, and a searching drone also goes after crewed boats of a hostile side it can see within 300 m. A drone that has not closed 100 m on a boat in a minute gives up and drops.</English>
+    <Chinese>僅限中型和大型無人機。乘船的玩家也可能遭到無人機攻擊，搜索中的無人機也會攻擊 300 公尺內看得見的敵方有人船隻。一分鐘內未能接近船隻 100 公尺的無人機會放棄並墜落。</Chinese>
+    <Chinesesimp>仅限中型和大型无人机。乘船的玩家也可能遭到无人机攻击，搜索中的无人机也会攻击 300 米内看得见的敌方有人船只。一分钟内未能接近船只 100 米的无人机会放弃并坠落。</Chinesesimp>
+    <Spanish>Solo drones medianos y grandes. Se puede enviar un drone contra un jugador en un barco, y un drone en búsqueda también ataca barcos tripulados de un bando hostil que vea a menos de 300 m. Un drone que no se acerca 100 m a un barco en un minuto desiste y cae.</Spanish>
+    <French>Drones moyens et grands uniquement. Un drone peut être envoyé contre un joueur dans un bateau, et un drone en recherche attaque aussi les bateaux avec équipage d'un camp hostile qu'il voit à moins de 300 m. Un drone qui ne s'est pas rapproché de 100 m d'un bateau en une minute abandonne et tombe.</French>
+    <Portuguese>Apenas drones médios e grandes. Um drone pode ser enviado contra um jogador num barco, e um drone em busca também ataca barcos tripulados de um lado hostil que veja a menos de 300 m. Um drone que não se aproxima 100 m de um barco num minuto desiste e cai.</Portuguese>
+    <Russian>Только средние и большие дроны. Дрон может быть отправлен на игрока в лодке, а ищущий дрон также атакует лодки с экипажем враждебной стороны, которые видит в пределах 300 м. Дрон, не сблизившийся с лодкой на 100 м за минуту, прекращает погоню и падает.</Russian>
+</Key>
 <Key ID="STR_ALIVE_IED_DRONE_CHARGE_COMMENT">
     <English>Small: a grenade, enough for a man but not a vehicle; these drones go after men only. Medium: a rocket warhead that destroys most vehicles. Large: an anti-tank warhead that destroys tanks. Medium and Large drones also go after crewed vehicles of a hostile side, AI crews included; empty ones only with Drones Also Hit Abandoned Vehicles.</English>
 </Key>

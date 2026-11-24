@@ -144,6 +144,11 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_Drone_Abandoned"; displayName = "$STR_ALIVE_IED_DRONE_ABANDONED"; tooltip = "$STR_ALIVE_IED_DRONE_ABANDONED_COMMENT"; defaultValue = """false""";
                                 class Values { class No{name="No";value="false";default=1;}; class Yes{name="Yes";value="true";}; };
                         };
+                        class Drone_Boats : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Boats"; displayName = "$STR_ALIVE_IED_DRONE_BOATS"; tooltip = "$STR_ALIVE_IED_DRONE_BOATS_COMMENT"; defaultValue = """false""";
+                                class Values { class No{name="No";value="false";default=1;}; class Yes{name="Yes";value="true";}; };
+                        };
                         class Drone_Jammed : Combo
                         {
                                 property = "ALiVE_mil_ied_Drone_Jammed"; displayName = "$STR_ALIVE_IED_DRONE_JAMMED"; tooltip = "$STR_ALIVE_IED_DRONE_JAMMED_COMMENT"; defaultValue = """true""";

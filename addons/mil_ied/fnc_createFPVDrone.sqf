@@ -30,11 +30,12 @@ Parameters:
 3: SIDE - a roaming drone: its side
 
 or a mode: ["nolink", [drone]] (every client: its UAV terminal can't connect to the drone),
-["roofed", [unit or vehicle]] (is there a roof within 3 m over him), ["blow", [state, position ASL, fuse, on target]],
+["roofed", [unit or vehicle]] (is there a roof within 3 m over him), ["height", [object]] (its height over the
+ground, or over the sea where it is over water), ["blow", [state, position ASL, fuse, on target]],
 ["downed", [state, reason]], ["info", [state]] and ["end", [state, reason, drop]] (server).
 
 Returns:
-OBJECT - the drone, or objNull when none was launched (create); BOOL (roofed)
+OBJECT - the drone, or objNull when none was launched (create); BOOL (roofed); NUMBER (height)
 
 Author:
 Jman
@@ -59,6 +60,14 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
                 _tgt modelToWorldWorld [0, 0, (_hi select 2) + 0.2]
             };
             (lineIntersectsSurfaces [_from, _from vectorAdd [0, 0, 3], _tgt, objNull, true, 1]) isNotEqualTo []
+        };
+
+        case "height": {
+            // how high it is over what is under it: the ground, or the sea over water (getPosATL there is measured
+            // from the sea bed, so a boat on deep water read as far up in the air)
+            _args params [["_o", objNull, [objNull]]];
+            private _p = getPosASL _o;
+            if (surfaceIsWater _p) then { _p select 2 } else { (getPosATL _o) select 2 }
         };
 
         case "blow": {
@@ -365,7 +374,9 @@ private _d = createHashMapFromArray [
     // Drone Targets Players and AI: a searching drone also takes hostile AI on foot
     ["ai", (ADDON getVariable ["Drone_Targets", "PLAYERS"]) == "ALL"],
     // Drones Also Hit Abandoned Vehicles (Medium and Large only): empty, knocked-out hostile vehicles too
-    ["abandoned", (ADDON getVariable ["Drone_Abandoned", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}]
+    ["abandoned", (ADDON getVariable ["Drone_Abandoned", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}],
+    // Drones Also Hit Boats (Medium and Large only): a player in a boat, and crewed boats of a hostile side
+    ["boats", (ADDON getVariable ["Drone_Boats", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}]
 ];
 if (_roam) then {
     // the search: a loose box of four legs 300 to 500 m round a centre, flown at cruise height
@@ -473,7 +484,7 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         private _across = [cos _b, -(sin _b), 0];
         private _want = _aim vectorAdd (_out vectorMultiply ((_hz * 0.7) min 120))
             vectorAdd (_across vectorMultiply ((_d get "weaveW") * ((_hz / 60) min 1))) vectorAdd [0, 0, _d get "weaveH"];
-        _want set [2, (_want select 2) max ((getTerrainHeightASL _want) + 8)];
+        _want set [2, (_want select 2) max (((getTerrainHeightASL _want) max 0) + 8)];
         private _v = (vectorNormalized (_want vectorDiff _pos)) vectorMultiply 20;
         _uav setVelocity _v;
         private _flat = [_v select 0, _v select 1, 0];
@@ -504,7 +515,7 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
     };
     if (_fuse != "") exitWith { ["blow", [_d, _pos, _fuse, true]] call ALiVE_fnc_createFPVDrone };
     if (_now - (_d get "diveAt") > 15) exitWith { ["blow", [_d, _pos, "15 s in the dive", false]] call ALiVE_fnc_createFPVDrone };
-    if (((getPosATL _uav) select 2) < 1.5 && {_dist > 4}) exitWith { ["blow", [_d, _pos, "ground", false]] call ALiVE_fnc_createFPVDrone };
+    if ((["height", [_uav]] call ALiVE_fnc_createFPVDrone) < 1.5 && {_dist > 4}) exitWith { ["blow", [_d, _pos, "ground", false]] call ALiVE_fnc_createFPVDrone };
     private _dir = vectorNormalized (_cpos vectorAdd ((velocity _tv) vectorMultiply ((_dist / 22) min 3)) vectorDiff _pos);
     _dir call _fnc_turn;
     _uav setVelocity (_dir vectorMultiply 22);
@@ -518,13 +529,17 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
     private _stuckAt = time;
     private _roofSince = -1;
     private _retargeted = false;
+    // a boat being chased: when the chase was last measured and how far off it was then
+    private _chaseAt = -1;
+    private _chaseDist = 0;
     private _jamOn = ADDON getVariable ["Drone_Jammed", true];
     private _fnc_end = { ["end", [_d, _this select 0, _this select 1]] call ALiVE_fnc_createFPVDrone };
 
     private _fnc_downed = { ["downed", [_d, _this]] call ALiVE_fnc_createFPVDrone };
     // the target: alive, on the ground, not in an aircraft; a vehicle (Medium and Large charges) with someone alive in it,
     // or with Drones Also Hit Abandoned Vehicles an empty, knocked-out one (ALiVE_fnc_vehicleAbandoned)
-    private _fit = { alive _this && {!((vehicle _this) isKindOf "Air")} && {((getPosATL (vehicle _this)) select 2) < 25}
+    private _fit = { alive _this && {!((vehicle _this) isKindOf "Air")} && {(["height", [vehicle _this]] call ALiVE_fnc_createFPVDrone) < 25}
+        && {(_d get "boats") || {!((vehicle _this) isKindOf "Ship")}}
         && {_this isKindOf "Man" || {((crew _this) findIf { alive _x }) > -1} || {(_d get "abandoned") && {[_this] call ALiVE_fnc_vehicleAbandoned}}} };
     // whose side a target is on: a man's group, a crewed vehicle's crew, an empty vehicle's own side in its config
     private _fnc_tside = {
@@ -626,7 +641,7 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
             private _eye = getPosASL _uav;
             private _cands = +_players;
             if (_d get "vehicles") then {
-                _cands append ((_uav nearEntities [["LandVehicle"], 300]) select { ((crew _x) findIf { isPlayer _x }) < 0 && {time > (_x getVariable ["ALiVE_IED_droneNext", 0])} });
+                _cands append ((_uav nearEntities [["LandVehicle"] + (["Ship"] select [0, [0, 1] select (_d get "boats")]), 300]) select { ((crew _x) findIf { isPlayer _x }) < 0 && {time > (_x getVariable ["ALiVE_IED_droneNext", 0])} });
             };
             // Players and AI: AI men on foot (a man in a vehicle is reached through the vehicle, Medium and Large only)
             if (_d get "ai") then {
@@ -638,7 +653,6 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
                 // an empty vehicle has no crew side for the bomber check; its config side decided it above
                 && {(!(_x isKindOf "Man") && {((crew _x) findIf { alive _x }) < 0}) || {!(_x call ALiVE_fnc_iedBomberSpares)}}
                 && {isNull (getAssignedCuratorLogic _x) || {missionNamespace getVariable ["ALiVE_zeusSoloTest", false]}}
-                && {!((vehicle _x) isKindOf "Ship")}
                 && {([_uav, "VIEW", vehicle _x] checkVisibility [_eye, (getPosASL (vehicle _x)) vectorAdd [0, 0, 1.5]]) > 0.3}
             };
             if (_seen isNotEqualTo []) exitWith {
@@ -730,6 +744,24 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
             _stuckAt = time;
         };
         if (_d get "gone" || {_d getOrDefault ["falling", false]}) then { continue };
+
+        // a boat it can't catch (it cruises at 15 m/s, a fast boat goes twice that): no 100 m closed in a minute and
+        // it gives up and drops, instead of chasing it until the battery runs out
+        if (_tv isKindOf "Ship") then {
+            private _dist = _uav distance2D _tv;
+            if (_chaseAt < 0) then { _chaseAt = time; _chaseDist = _dist };
+            if (time - _chaseAt >= 60) then {
+                if (_dist > _chaseDist - 100) exitWith {
+                    ["ALIVE-%1 FPV drone: gave up on a %2 it could not catch (%3 m away, %4 m a minute before)", time, typeOf _tv, round _dist, round _chaseDist] call ALiVE_fnc_dump;
+                    ["the boat outran it", true] call _fnc_end;
+                };
+                _chaseAt = time;
+                _chaseDist = _dist;
+            };
+        } else {
+            _chaseAt = -1;
+        };
+        if (_d get "gone") then { continue };
 
         // the final run: under 150 m away with a line of sight; never at a player under a roof
         if ((_uav distance2D _tv) < 150 && {([_uav, "VIEW", _tv] checkVisibility [getPosASL _uav, (getPosASL _tv) vectorAdd [0, 0, 1.5]]) > 0.3}) then {
