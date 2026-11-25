@@ -39,7 +39,10 @@ _canLift = false;
 // A helicopter carrying something is refused. A load hanging on its sling ropes isn't among its attachedObjects (a load
 // this module lifts is, as is anything else attached to it), so getSlingLoad is asked as well: otherwise one slinging a
 // vehicle was offered Lift object for whatever stood nearest, which was the load on its own ropes.
-if (isnil "_object" || {isnil "_container"} || {{_object isKindOf _x} count _blackList > 0} || {!isnil {_object getvariable QGVAR(DISABLE)}} || {!(_container isKindOf "Air")} || {(getNumber (configFile >> "cfgVehicles" >> typeof _container >> "transportSoldier")) < 6} || {count attachedObjects _container > 0} || {!isNull getSlingLoad _container}) exitwith {_canLift};
+// Something already attached means the vehicle is towing or lifting, which is also how Untow and Release know there is
+// a load. A crate strapped on with Cargo Straps (cgs_carrier) and its strap parts (simple objects) are not a load, so a
+// vehicle carrying one can still tow and lift (#1143).
+if (isnil "_object" || {isnil "_container"} || {{_object isKindOf _x} count _blackList > 0} || {!isnil {_object getvariable QGVAR(DISABLE)}} || {!(_container isKindOf "Air")} || {(getNumber (configFile >> "cfgVehicles" >> typeof _container >> "transportSoldier")) < 6} || {(({!(isSimpleObject _x) && {(_x getVariable ["cgs_carrier", objNull]) isNotEqualTo _container}} count attachedObjects _container) > 0)} || {!isNull getSlingLoad _container}) exitwith {_canLift};
 
 {if (_container isKindOf _x) exitwith {_containerCanLift = true}} foreach _allowedContainers;
 {if (_object isKindOf _x) exitwith {_objectCanLift = true}} foreach _allowedObjects;

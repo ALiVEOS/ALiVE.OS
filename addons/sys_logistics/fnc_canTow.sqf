@@ -19,6 +19,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 nil
@@ -35,7 +36,10 @@ _blacklist = GVAR(TOWABLE) select 2;
 _canTow = false;
 
 // Basic checks
-if (isnil "_container" || {_object == _container} || {{_object isKindOf _x} count _blackList > 0} || {!isnil {_object getvariable QGVAR(DISABLE)}} || {(getNumber (configFile >> "cfgVehicles" >> typeof _container >> "transportSoldier")) == 0} || {count attachedObjects _container > 0}) exitwith {_canTow};
+// Something already attached means the vehicle is towing or lifting, which is also how Untow and Release know there is
+// a load. A crate strapped on with Cargo Straps (cgs_carrier) and its strap parts (simple objects) are not a load, so a
+// vehicle carrying one can still tow and lift (#1143).
+if (isnil "_container" || {_object == _container} || {{_object isKindOf _x} count _blackList > 0} || {!isnil {_object getvariable QGVAR(DISABLE)}} || {(getNumber (configFile >> "cfgVehicles" >> typeof _container >> "transportSoldier")) == 0} || {(({!(isSimpleObject _x) && {(_x getVariable ["cgs_carrier", objNull]) isNotEqualTo _container}} count attachedObjects _container) > 0)}) exitwith {_canTow};
 
 {if (_container isKindOf _x) exitwith {_containerCanTow = true}} foreach _allowedContainers;
 {if (_object isKindOf _x) exitwith {_objectCanTow = true}} foreach _allowedObjects;

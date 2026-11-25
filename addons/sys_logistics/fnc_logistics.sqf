@@ -1135,7 +1135,8 @@ switch (_operation) do {
                         switch (true) do {
                             case (!alive _x && {_x isKindOf "AllVehicles"}): {};
                             case (_x isKindOf "Air" && {((getPosATL _x) select 2) > 2}): {};
-                            case (!isNull _carrier && {_x in (_carrier getVariable ["ace_cargo_loaded", []])}): { _inAceCargo pushBack [_x, _carrier] };
+                            // a crate strapped onto a vehicle with Cargo Straps is saved beside it in the same way (#1143)
+                            case (!isNull _carrier && {(_x in (_carrier getVariable ["ace_cargo_loaded", []])) || {(_x getVariable ["cgs_carrier", objNull]) isEqualTo _carrier}}): { _inAceCargo pushBack [_x, _carrier] };
                             case (isObjectHidden _x || {!isNull _carrier}): {};
                             default {
                                 // only what has moved: taking every object's cargo and damage again would lengthen each save
