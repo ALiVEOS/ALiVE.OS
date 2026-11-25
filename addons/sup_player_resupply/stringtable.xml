@@ -971,7 +971,7 @@
     <English>Trade In Vehicles</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_TRADE_IN_COMMENT">
-    <English>A player who drives a vehicle to this hub can trade it in from the action menu, for a share of the one point a vehicle takes from his faction's force pool. Enemy vehicles: only vehicles of a side at war with his. Any vehicle: anything with wheels, tracks, rotors, wings or a hull. Anything not of his own side pays half; his own side's pay Own Side Pays. Damage takes its share off, so repair it first. What doesn't make a whole point is kept for his faction toward the next trade-in. Vehicles made at a hub or a FOB, or recruited, go back with Recycle or Dismiss instead. The player must be allowed to collect here (Who Can Collect). Off, the default, offers nothing.</English>
+    <English>A player who drives a vehicle to this hub can trade it in from the action menu, for a share of the one point a vehicle takes from his faction's force pool. Enemy vehicles: only vehicles of a side at war with his. Any vehicle: anything with wheels, tracks, rotors, wings or a hull. An artillery gun or mortar counts as a vehicle and is traded in from its gunner seat. Anything not of his own side pays half; his own side's pay Own Side Pays. Damage takes its share off, so repair it first. What doesn't make a whole point is kept for his faction toward the next trade-in. Vehicles made at a hub or a FOB, or recruited, go back with Recycle or Dismiss instead. The player must be allowed to collect here (Who Can Collect). Off, the default, offers nothing.</English>
 </Key>
 <Key ID="STR_ALIVE_HUB_TRADE_IN_OFF">
     <English>Off</English>

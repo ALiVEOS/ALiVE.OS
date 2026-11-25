@@ -1413,6 +1413,7 @@ switch (_op) do {
     // of the one point a vehicle takes from the force pool: half for anything not of the player's side, the
     // module's share for his own, less for damage. What doesn't make a whole point is kept for the
     // faction toward the next. [vehicle netId] -> true when traded
+    // A towed or captured artillery piece counts as a vehicle too (#1145): its gunner trades it in; other static weapons don't.
     case "tradeIn": {
         _result = false;
         _args params [["_vid", "", [""]]];
@@ -1421,7 +1422,7 @@ switch (_op) do {
         private _v = _vid call BIS_fnc_objectFromNetId;
         private _tell = { params ["_key", ["_a", []]]; ["notify", [_key, _a]] remoteExecCall ["ALIVE_fnc_hubManage", owner _caller] };
         if (isNull _caller || {!alive _caller} || {isNull _v}) exitWith {};
-        if (!alive _v || {!(_v isKindOf "LandVehicle" || {_v isKindOf "Air"} || {_v isKindOf "Ship"})} || {_v isKindOf "StaticWeapon"}) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_WHAT"] call _tell };
+        if (!alive _v || {!(_v isKindOf "LandVehicle" || {_v isKindOf "Air"} || {_v isKindOf "Ship"})} || {_v isKindOf "StaticWeapon" && {!([_v] call ALIVE_fnc_isArtillery)}}) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_WHAT"] call _tell };
         private _hub = ["nearHub", [_caller]] call ALIVE_fnc_hub;
         if (isNull _hub) exitWith { ["STR_ALIVE_HUB_TRADE_REFUSED_FAR"] call _tell };
         private _info = _hub getVariable ["ALiVE_hub", []];
