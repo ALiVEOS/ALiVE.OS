@@ -318,5 +318,28 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
             y = (FS_H(28.54) + FS_SP_ULIST);
             w = FS_W(5);
         };
+        // the Init Code: a short view of it and the popup; placed under the tick boxes by the tab
+        class InitLabel : ALiVE_FS_RscLabel {
+            idc = FS_IDC_U_INITLABEL;
+            text = "$STR_ALIVE_FS_L_INITCODE";
+            tooltip = "$STR_ALIVE_FS_INITCODE_TIP";
+            y = (FS_H(29.69) + FS_SP_ULIST);
+        };
+        class Init : ALiVE_FS_RscText {
+            idc = FS_IDC_U_INIT;
+            tooltip = "$STR_ALIVE_FS_INITCODE_TIP";
+            x = FS_FIELD_X;
+            y = (FS_H(29.69) + FS_SP_ULIST);
+            w = FS_NARROW_W;
+        };
+        class InitEdit : ALiVE_FS_RscButton {
+            idc = FS_IDC_U_INITEDIT;
+            text = "$STR_ALIVE_FS_BTN_EDIT";
+            tooltip = "$STR_ALIVE_FS_INITCODE_TIP";
+            x = FS_SIDE_X;
+            y = (FS_H(29.69) + FS_SP_ULIST);
+            w = FS_SIDE_W;
+            onButtonClick = "['initCode', []] call ALiVE_fnc_fsStudioTabUnits";
+        };
     };
 };

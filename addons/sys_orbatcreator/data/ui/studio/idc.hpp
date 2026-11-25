@@ -98,6 +98,9 @@
 #define FS_IDC_U_MEDICLABEL         14238
 #define FS_IDC_U_UAVHACKER          14239
 #define FS_IDC_U_UAVHACKERLABEL     14240
+#define FS_IDC_U_INITLABEL          14241
+#define FS_IDC_U_INIT               14242
+#define FS_IDC_U_INITEDIT           14243
 
 // ---------------------------------------------------------------- Vehicles tab
 #define FS_IDC_V_LIST               14301
@@ -124,6 +127,9 @@
 #define FS_IDC_V_PYLONS             14326
 #define FS_IDC_V_OPTIONAL           14327
 #define FS_IDC_V_OPTIONALLABEL      14328
+#define FS_IDC_V_INITLABEL          14329
+#define FS_IDC_V_INIT               14330
+#define FS_IDC_V_INITEDIT           14331
 
 // ---------------------------------------------------------------- Groups tab
 #define FS_IDC_G_CATEGORY           14401

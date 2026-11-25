@@ -716,6 +716,30 @@
 <Key ID="STR_ALIVE_FS_S_PASTE_OK">
     <English>Faction %1 loaded. %2 class(es) are not loaded here and are shown in red.</English>
 </Key>
+<Key ID="STR_ALIVE_FS_S_PASTE_OK_NOCODE">
+    <English>Faction %1 loaded. %2 class(es) are not loaded here and are shown in red. Init code isn't taken from pasted factions.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_L_INITCODE">
+    <English>Init code</English>
+</Key>
+<Key ID="STR_ALIVE_FS_INIT_NONE">
+    <English>None</English>
+</Key>
+<Key ID="STR_ALIVE_FS_INITCODE_TIP">
+    <English>Code run on every machine when this unit is created. _this select 0 is the unit. Only this unit runs it, never units based on him. Wrap anything with a global effect in if (local (_this select 0)) then { ... }.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_INITCODE_TIP_V">
+    <English>Code run on every machine when this vehicle is created. _this select 0 is the vehicle. Only this vehicle runs it, never vehicles based on it. Wrap anything with a global effect in if (local (_this select 0)) then { ... }.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_Q_INITCODE">
+    <English>Init code for %1. Runs on every machine when he is created. _this select 0 is the unit.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_Q_INITCODE_V">
+    <English>Init code for %1. Runs on every machine when it is created. _this select 0 is the vehicle.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_CODE_BAD">
+    <English>That init code was not kept. Keep it under 8000 characters, without preprocessor commands such as #include.</English>
+</Key>
 <Key ID="STR_ALIVE_FS_S_FILE_MISSING">
     <English>%1 was not found in Documents\Arma 3\ALiVE\orbat\import.</English>
 </Key>

@@ -631,6 +631,65 @@ class ALiVE_FS_Prompt {
     };
 };
 
+// ---------------------------------------------------------------- code prompt (24 x 14)
+// The prompt with a tall box of several lines, for a unit's or vehicle's Init Code. Same idd and idcs as the
+// prompt, so ALiVE_fnc_fsStudioPrompt runs it; OK is not the default button, so Enter starts a new line.
+#define FS_CP_W 24
+#define FS_CP_H 14
+
+class ALiVE_FS_CodePrompt {
+    idd = FS_IDD_PROMPT;
+    movingEnable = 0;
+    enableSimulation = 1;
+    FS_POPUP_MOUSE;
+
+    class controlsBackground {
+        class Background : ALiVE_FS_RscBackground {
+            x = FS_PX(0,FS_CP_W);
+            y = FS_PY(0,FS_CP_H);
+            w = FS_W(FS_CP_W);
+            h = FS_H(FS_CP_H);
+        };
+    };
+
+    class controls {
+        FS_POPUP_AREAS;
+        class Question : ALiVE_FS_RscStructuredText {
+            idc = FS_IDC_PR_QUESTION;
+            x = FS_PX(0.5,FS_CP_W);
+            y = FS_PY(0.3,FS_CP_H);
+            w = FS_W(23);
+            h = FS_H(2.6);
+        };
+        class Edit : ALiVE_FS_RscEdit {
+            idc = FS_IDC_PR_EDIT;
+            style = 16; // ST_MULTI
+            autocomplete = "scripting";
+            maxChars = 20000;
+            x = FS_PX(0.5,FS_CP_W);
+            y = FS_PY(3.1,FS_CP_H);
+            w = FS_W(23);
+            h = FS_H(9.5);
+        };
+        class Ok : ALiVE_FS_RscButton {
+            idc = FS_IDC_PR_OK;
+            text = "$STR_ALIVE_FS_BTN_OK";
+            x = FS_PX(0.5,FS_CP_W);
+            y = FS_PY(12.9,FS_CP_H);
+            w = FS_W(11.45);
+            onButtonClick = "['ok', _this] call ALiVE_fnc_fsStudioPrompt";
+        };
+        class Cancel : ALiVE_FS_RscButton {
+            idc = FS_IDC_PR_CANCEL;
+            text = "$STR_ALIVE_FS_BTN_CANCEL";
+            x = FS_PX(12.05,FS_CP_W);
+            y = FS_PY(12.9,FS_CP_H);
+            w = FS_W(11.45);
+            onButtonClick = "['cancel', _this] call ALiVE_fnc_fsStudioPrompt";
+        };
+    };
+};
+
 // ---------------------------------------------------------------- help (24 x 20)
 // Help for the tab on show. Opens at the right of the screen, so the panel it
 // talks about stays in view, and drags by its title like the class browser.

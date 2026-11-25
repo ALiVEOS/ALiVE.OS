@@ -57,6 +57,13 @@ private _lines = [
     private _v = _e getOrDefault [_key, -1];
     if (_v isEqualType 0 && {_v >= 0}) then { _lines pushBack (_i + _prop + " = " + ((_v min 1) toFixed 0) + ";") };
 } forEach [["engineer", "engineer"], ["eod", "canDeactivateMines"], ["medic", "attendant"], ["uavHacker", "uavHacker"]];
+// the Init Code as typed, one string per line so its comments and line breaks come back on import; it runs from
+// the CBA InitPost entry (ALiVE_fnc_fsGenConfig)
+private _initCode = _e getOrDefault ["initCode", ""];
+if !(_initCode isEqualTo "") then {
+    private _codeLines = (_initCode splitString (toString [13])) joinString "";
+    _lines pushBack (_i + "ALiVE_FS_initCode[] = {" + (((_codeLines splitString (toString [10])) apply { _x call _q }) joinString ", ") + "};");
+};
 private _types = _identity getOrDefault ["types", []];
 if (count _types > 0) then { _lines pushBack (_i + "identityTypes[] = " + (_types call _a) + ";") };
 if !((_la get "uniform") isEqualTo "") then { _lines pushBack (_i + "uniformClass = " + ((_la get "uniform") call _q) + ";") };

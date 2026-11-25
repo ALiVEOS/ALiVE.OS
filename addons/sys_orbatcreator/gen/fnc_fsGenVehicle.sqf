@@ -62,6 +62,13 @@ private _textures = _e getOrDefault ["textures", []];
 if (count _textures > 0) then { _lines pushBack (_i + "hiddenSelectionsTextures[] = " + (_textures call _a) + ";") };
 private _markingsOff = _e getOrDefault ["markingsOff", []];
 if (count _markingsOff > 0) then { _lines pushBack (_i + "ALiVE_FS_markingsOff[] = " + (_markingsOff call _a) + ";") };
+// the Init Code as typed, one string per line so its comments and line breaks come back on import; it runs from
+// the CBA InitPost entry (ALiVE_fnc_fsGenConfig)
+private _initCode = _e getOrDefault ["initCode", ""];
+if !(_initCode isEqualTo "") then {
+    private _codeLines = (_initCode splitString (toString [13])) joinString "";
+    _lines pushBack (_i + "ALiVE_FS_initCode[] = {" + (((_codeLines splitString (toString [10])) apply { _x call _q }) joinString ", ") + "};");
+};
 
 private _components = (_e getOrDefault ["components", []]) apply { [_x getOrDefault ["source", ""], _x getOrDefault ["value", 0]] } select { !((_x select 0) isEqualTo "") };
 if (count _components > 0) then {

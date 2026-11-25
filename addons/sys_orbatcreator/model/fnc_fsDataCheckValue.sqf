@@ -25,6 +25,9 @@ Rules:
     turretPath - at most four whole numbers 0..99
     pos        - [] or three finite numbers, none above 999999 either way
     loadout    - ALiVE_fnc_fsDataLoadoutCheck
+    code       - Init Code: at most 8000 characters; tab, line feed and carriage return the only codes below 32;
+                 none of the four preprocessor words above (S_CODE_BAD). Comments are allowed: the export
+                 takes them out (ALiVE_fnc_fsGenConfig)
     [min, max] - a finite number inside the range
     ""         - any string
 A rule name ending in ? also accepts "".
@@ -107,6 +110,13 @@ switch (_name) do {
     };
     case "id": {
         if (_value isEqualType "" && {_value regexMatch "^[a-z][0-9]{1,6}$"}) then { "" } else { "S_NAME_BAD" }
+    };
+    case "code": {
+        private _ok = _value isEqualType "" && {(count (toArray _value)) <= 8000} && {((toArray _value) findIf { _x < 32 && {!(_x in [9, 10, 13])} }) < 0} && {
+            private _lower = toLower _value;
+            ([toString [95, 95] + "eval", toString [95, 95] + "exec", toString [35] + "include", toString [35] + "define"] findIf { (_lower find _x) >= 0 }) < 0
+        };
+        if (_ok) then { "" } else { "S_CODE_BAD" }
     };
     case "ref": {
         if (_value isEqualType "" && {_value regexMatch "^([uv][0-9]{1,6}|#[A-Za-z0-9_]{1,80})$"}) then { "" } else { "S_NAME_BAD" }

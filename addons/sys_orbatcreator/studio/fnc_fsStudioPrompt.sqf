@@ -11,7 +11,9 @@ or a question with one line to type in.
     - "open" [question, text, callback, args]: text nil (or not a string) asks
       yes/no and hides the line; a string shows the line filled with it. The
       callback is called once, when the popup closes, with
-      [ok, text, args]: ok true for OK, false for Cancel or Esc;
+      [ok, text, args]: ok true for OK, false for Cancel or Esc. A fifth
+      element names the popup class: "ALiVE_FS_CodePrompt" gives a tall box of
+      several lines (Init Code);
     - "ok" / "cancel": the two buttons.
 
 Parameters:
@@ -45,13 +47,13 @@ private _popup = findDisplay FS_IDD_PROMPT;
 
 switch (_op) do {
     case "open": {
-        _args params [["_question", ""], "_text", ["_callback", {}, [{}]], ["_cbArgs", []]];
+        _args params [["_question", ""], "_text", ["_callback", {}, [{}]], ["_cbArgs", []], ["_class", "ALiVE_FS_Prompt", [""]]];
         private _studio = _session getOrDefault ["display", displayNull];
         if (isNull _studio) exitWith {};
         // an open prompt is answered "no" before the new one takes its place
         if (!isNull _popup) then { _popup closeDisplay 2 };
         _session set ["prompt", [_callback, _cbArgs, false, ""]];
-        _popup = _studio createDisplay "ALiVE_FS_Prompt";
+        _popup = _studio createDisplay _class;
         if (isNull _popup) exitWith {
             _session deleteAt "prompt";
             [false, "", _cbArgs] call _callback;

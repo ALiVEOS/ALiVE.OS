@@ -132,6 +132,20 @@ if !(_subName isEqualTo "") then {
     };
 };
 
+// Init Code: a studio class's own (one it inherits is guarded to its parent's class, so it is not his), or the
+// EventHandlers entry an ORBAT Creator class carries; left out, with a note, when the model would refuse it.
+private _initCode = "";
+if (_owned isEqualTo "studio") then {
+    private _own = configProperties [_cfg, "configName _x == 'ALiVE_FS_initCode'", false];
+    if (count _own > 0) then { _initCode = (getArray (_own select 0)) joinString (toString [10]) };
+} else {
+    if (_owned isEqualTo "orbat") then { _initCode = getText (_cfg >> "EventHandlers" >> "ALiVE_orbatCreator_custom" >> "init") };
+};
+if !(([_initCode, "code"] call ALiVE_fnc_fsDataCheckValue) isEqualTo "") then {
+    _notes pushBack format ["%1: its init code could not be read and was left out.", _class];
+    _initCode = "";
+};
+
 private _keepClass = !(_owned isEqualTo "") && {[_class, "class"] call _ok};
 
 createHashMapFromArray [
@@ -148,5 +162,6 @@ createHashMapFromArray [
     ["engineer", "engineer" call _differs],
     ["eod", "canDeactivateMines" call _differs],
     ["medic", "attendant" call _differs],
-    ["uavHacker", "uavHacker" call _differs]
+    ["uavHacker", "uavHacker" call _differs],
+    ["initCode", _initCode]
 ]

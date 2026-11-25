@@ -291,8 +291,62 @@ private _looks = [];
     };
 } forEach _vehicles;
 
+// The faction author's Init Code, after the loadout or the looks. CBA runs an InitPost handler for its class and every
+// class made from it, so the code is wrapped to run only for this exact class: a child unit runs its own code, never
+// its parent's: the class check comes first and leaves the handler. CBA compiles the handler string as it is, with
+// no preprocessor, so a comment would be a script error on every machine: comments are taken out here (the text in
+// quotes left alone), before the line breaks become spaces (ALiVE_fnc_fsGenQuote). ALiVE_FS_initCode keeps them.
+private _noComments = {
+    private _in = toArray _this;
+    private _n = count _in;
+    private _out = [];
+    private _i = 0;
+    private _quote = -1;
+    while { _i < _n } do {
+        private _c = _in select _i;
+        private _next = _in param [_i + 1, -1];
+        if (_quote >= 0) then {
+            // inside "..." or '...', where a doubled quote is one quote character
+            _out pushBack _c;
+            if (_c == _quote) then { if (_next == _quote) then { _out pushBack _next; _i = _i + 1 } else { _quote = -1 } };
+        } else {
+            switch (true) do {
+                case (_c == 34 || {_c == 39}): { _quote = _c; _out pushBack _c };
+                // a // comment runs to the end of its line; the line break itself is kept
+                case (_c == 47 && {_next == 47}): {
+                    while { _i < _n && {!((_in select _i) in [10, 13])} } do { _i = _i + 1 };
+                    _i = _i - 1;
+                };
+                case (_c == 47 && {_next == 42}): {
+                    _i = _i + 2;
+                    while { _i < _n && {!((_in select _i) == 42 && {(_in param [_i + 1, -1]) == 47})} } do { _i = _i + 1 };
+                    _i = _i + 1;
+                    _out pushBack 32;
+                };
+                default { _out pushBack _c };
+            };
+        };
+        _i = _i + 1;
+    };
+    toString _out
+};
+private _codeOf = {
+    params ["_dict", "_id"];
+    private _code = (((_faction getOrDefault [_dict, createHashMap]) getOrDefault [_id, createHashMap]) getOrDefault ["initCode", ""]) call _noComments;
+    if ((trim _code) isEqualTo "") exitWith { "" };
+    format ["; if !(typeOf (_this select 0) isEqualTo '%1') exitWith {}; %2", _classOf get _id, _code]
+};
+{
+    private _code = ["vehicles", _x] call _codeOf;
+    if !(_code isEqualTo "") then {
+        private _cls = _classOf get _x;
+        private _at = _looks findIf { (_x select 0) isEqualTo _cls };
+        if (_at >= 0) then { (_looks select _at) set [1, ((_looks select _at) select 1) + _code] } else { _looks pushBack [_cls, _code select [2]] };
+    };
+} forEach _vehicles;
+
 // the loadout: a frame after a man is made, on respawn, and when he becomes local somewhere else
-private _init = (_menClasses apply { [_x, format ["[_this select 0, 'init'] call %1", _fnc]] }) + _looks;
+private _init = (_men apply { [_classOf get _x, format ["[_this select 0, 'init'] call %1", _fnc] + (["units", _x] call _codeOf)] }) + _looks;
 {
     _x params ["_root", "_key", "_entries"];
     if (count _entries > 0) then {

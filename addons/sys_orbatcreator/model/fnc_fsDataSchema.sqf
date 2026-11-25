@@ -139,6 +139,8 @@ private _schema = createHashMapFromArray [
         // attendant and uavHacker, the same way
         ["medic", "N", -1, [-1, 1]],
         ["uavHacker", "N", -1, [-1, 1]],
+        // the faction author's Init Code, run for this class only (ALiVE_fnc_fsGenConfig); never taken from pasted text
+        ["initCode", "S", "", "code"],
         // written in its own optional part, which loads only when the mods it needs are loaded
         ["optional", "B", false, ""]
     ]],
@@ -170,6 +172,7 @@ private _schema = createHashMapFromArray [
         ["pylons", "LS", [], "gear", 64],
         ["cargoMode", "N", 0, [0, 2]],
         ["cargo", "L:cargo", [], "", 64],
+        ["initCode", "S", "", "code"],
         ["optional", "B", false, ""]
     ]],
     // kind: 0 weapon, 1 magazine, 2 item, 3 backpack (the four Transport classes)

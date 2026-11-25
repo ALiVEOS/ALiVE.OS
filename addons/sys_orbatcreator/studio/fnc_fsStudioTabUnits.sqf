@@ -23,6 +23,9 @@ fields, with the selection driving the preview.
       Hacker, ticked as the base class until changed; a tick that matches the
       base class is stored as "as the base" (-1), so the export writes engineer,
       canDeactivateMines, attendant and uavHacker only where he differs;
+    - "initCode": opens the Init Code popup (ALiVE_FS_CodePrompt); "initCodeSet"
+      [id, text] keeps what was typed when the model takes it (rule "code"),
+      else says why;
     - "add", "base": open the class browser (ALiVE_fnc_fsStudioBrowser), in multi
       and single mode;
     - "arsenal": the Arsenal choice, kept in the session and the prefs (ACE only
@@ -109,7 +112,15 @@ private _show = {
     } forEach [[FS_IDC_U_POOLSLABEL, 0], [FS_IDC_U_POOLS, 0], [FS_IDC_U_POOLSEDIT, 0], [FS_IDC_U_ROLL, 1], [FS_IDC_U_UNROLL, 1],
         [FS_IDC_U_ROLELABEL, 2], [FS_IDC_U_ROLE, 2], [FS_IDC_U_SPECOPS, 2], [FS_IDC_U_SPECOPSLABEL, 2],
         [FS_IDC_U_ENGINEER, 3], [FS_IDC_U_ENGINEERLABEL, 3], [FS_IDC_U_EOD, 3], [FS_IDC_U_EODLABEL, 3],
-        [FS_IDC_U_MEDIC, 4], [FS_IDC_U_MEDICLABEL, 4], [FS_IDC_U_UAVHACKER, 4], [FS_IDC_U_UAVHACKERLABEL, 4]];
+        [FS_IDC_U_MEDIC, 4], [FS_IDC_U_MEDICLABEL, 4], [FS_IDC_U_UAVHACKER, 4], [FS_IDC_U_UAVHACKERLABEL, 4],
+        [FS_IDC_U_INITLABEL, 5], [FS_IDC_U_INIT, 5], [FS_IDC_U_INITEDIT, 5]];
+    // the Init Code, first line only
+    private _code = _entry getOrDefault ["initCode", ""];
+    private _first = trim ((_code splitString (toString [10, 13])) param [0, ""]);
+    (_display displayCtrl FS_IDC_U_INIT) ctrlSetText (if (_code isEqualTo "") then { localize "STR_ALIVE_FS_INIT_NONE" } else {
+        (_first select [0, 40]) + (["", "..."] select ((count _first) > 40 || {(count (_code splitString (toString [10]))) > 1}))
+    });
+    (_display displayCtrl FS_IDC_U_INITEDIT) ctrlEnable !(_id isEqualTo "");
     // his part in AUTO GROUPS; Automatic names the part worked out
     _session set ["roleFilling", true];
     private _roleCombo = _display displayCtrl FS_IDC_U_ROLE;
@@ -292,6 +303,22 @@ switch (_op) do {
         // the same as his base class is kept as -1, so a later change of base class still carries through
         private _baseOn = getNumber (configFile >> "CfgVehicles" >> ((_units get _id) getOrDefault ["base", ""]) >> (["engineer", "canDeactivateMines", "attendant", "uavHacker"] select _k)) > 0;
         [_op, [[0, 1] select _on, -1] select (_on isEqualTo _baseOn)] call _set;
+    };
+    case "initCode": {
+        private _id = _session getOrDefault ["selUnit", ""];
+        if !(_id in _units) exitWith {};
+        private _entry = _units get _id;
+        ["open", [format [localize "STR_ALIVE_FS_Q_INITCODE", _entry getOrDefault ["name", _id]], _entry getOrDefault ["initCode", ""], {
+            params ["_ok", "_text", "_cbArgs"];
+            if (_ok) then { ["initCodeSet", [_cbArgs select 0, _text]] call ALiVE_fnc_fsStudioTabUnits };
+        }, [_id], "ALiVE_FS_CodePrompt"]] call ALiVE_fnc_fsStudioPrompt;
+    };
+    case "initCodeSet": {
+        _args params [["_id", "", [""]], ["_text", "", [""]]];
+        if !(_id in _units) exitWith {};
+        _session set ["selUnit", _id];
+        // kept as typed, line breaks included; joined onto one line only in the export
+        ["initCode", trim ((_text splitString (toString [13])) joinString "")] call _set;
     };
     case "fixed": {
         private _id = _session getOrDefault ["selUnit", ""];

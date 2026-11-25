@@ -306,13 +306,18 @@ switch (_op) do {
             if (!_ok) exitWith {};
             ([_text] call ALiVE_fnc_fsDataParse) params ["_done", "_new", "_problems"];
             if (!_done) exitWith { [_problems] call _problem };
+            // pasted text can come from anyone, so no Init Code is taken from it
+            private _dropped = 0;
+            {
+                { if !((_y getOrDefault ["initCode", ""]) isEqualTo "") then { _y set ["initCode", ""]; _dropped = _dropped + 1 } } forEach (_new getOrDefault [_x, createHashMap]);
+            } forEach ["units", "vehicles"];
             ["replace", [_new]] call ALiVE_fnc_fsDataStore;
             ["paste"] call _replaced;
             private _missing = 0;
             {
                 { if !(isClass (configFile >> "CfgVehicles" >> (_y getOrDefault ["base", ""]))) then { _missing = _missing + 1 } } forEach (_new getOrDefault [_x, createHashMap]);
             } forEach ["units", "vehicles"];
-            [0, "S_PASTE_OK", [_new getOrDefault ["name", ""], _missing]] call ALiVE_fnc_fsStudioStatus;
+            [0, ["S_PASTE_OK", "S_PASTE_OK_NOCODE"] select (_dropped > 0), [_new getOrDefault ["name", ""], _missing]] call ALiVE_fnc_fsStudioStatus;
         }, [_replaced, _problem]]] call ALiVE_fnc_fsStudioPrompt;
     };
 

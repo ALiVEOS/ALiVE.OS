@@ -120,6 +120,13 @@ private _show = {
     (_display displayCtrl FS_IDC_V_CLASSAUTO) cbSetChecked (_entry getOrDefault ["classAuto", true]);
     (_display displayCtrl FS_IDC_V_OPTIONAL) cbSetChecked (_entry getOrDefault ["optional", false]);
     (_display displayCtrl FS_IDC_V_OPTIONAL) ctrlEnable !(_id isEqualTo "");
+    // the Init Code, first line only
+    private _code = _entry getOrDefault ["initCode", ""];
+    private _first = trim ((_code splitString (toString [10, 13])) param [0, ""]);
+    (_display displayCtrl FS_IDC_V_INIT) ctrlSetText (if (_code isEqualTo "") then { localize "STR_ALIVE_FS_INIT_NONE" } else {
+        (_first select [0, 40]) + (["", "..."] select ((count _first) > 40 || {(count (_code splitString (toString [10]))) > 1}))
+    });
+    (_display displayCtrl FS_IDC_V_INITEDIT) ctrlEnable !(_id isEqualTo "");
     private _base = _entry getOrDefault ["base", ""];
     private _baseName = getText (configFile >> "CfgVehicles" >> _base >> "displayName");
     (_display displayCtrl FS_IDC_V_BASE) ctrlSetText (if (_baseName isEqualTo "") then { _base } else { format ["%1 (%2)", _base, _baseName] });
@@ -218,17 +225,18 @@ private _show = {
     private _ph = (((lbSize _parts) max 1) min 6) * _rowH;
     _parts ctrlSetPosition [_pp select 0, _pp select 1, _pp select 2, _ph];
     _parts ctrlCommit 0;
-    // the cargo row under the parts, the crew note under the cargo row
+    // the cargo row under the parts, the Init Code row under it, the crew note under that
     private _below = (_pp select 1) + _ph + (_rowH / 3);
     {
-        private _c = _display displayCtrl _x;
+        _x params ["_idc", "_row"];
+        private _c = _display displayCtrl _idc;
         private _cp = ctrlPosition _c;
-        _c ctrlSetPosition [_cp select 0, _below, _cp select 2, _cp select 3];
+        _c ctrlSetPosition [_cp select 0, _below + _row * _rowH * (1 + 1 / 3), _cp select 2, _cp select 3];
         _c ctrlCommit 0;
-    } forEach [FS_IDC_V_CARGOLABEL, FS_IDC_V_CARGO, FS_IDC_V_CARGOEDIT];
+    } forEach [[FS_IDC_V_CARGOLABEL, 0], [FS_IDC_V_CARGO, 0], [FS_IDC_V_CARGOEDIT, 0], [FS_IDC_V_INITLABEL, 1], [FS_IDC_V_INIT, 1], [FS_IDC_V_INITEDIT, 1]];
     private _note = _display displayCtrl FS_IDC_V_NOTE;
     private _np = ctrlPosition _note;
-    _note ctrlSetPosition [_np select 0, _below + _rowH * (1 + 1 / 3), _np select 2, _np select 3];
+    _note ctrlSetPosition [_np select 0, _below + 2 * _rowH * (1 + 1 / 3), _np select 2, _np select 3];
     _note ctrlCommit 0;
 
     // cargo: As the base vehicle, Empty, or "N kinds, M in all"
@@ -421,6 +429,22 @@ switch (_op) do {
         ["pylons", _list, true] call _set;
     };
     case "cargo": { ["open"] call ALiVE_fnc_fsStudioCargo };
+    case "initCode": {
+        private _id = _session getOrDefault ["selVehicle", ""];
+        if !(_id in _vehicles) exitWith {};
+        private _entry = _vehicles get _id;
+        ["open", [format [localize "STR_ALIVE_FS_Q_INITCODE_V", _entry getOrDefault ["name", _id]], _entry getOrDefault ["initCode", ""], {
+            params ["_ok", "_text", "_cbArgs"];
+            if (_ok) then { ["initCodeSet", [_cbArgs select 0, _text]] call ALiVE_fnc_fsStudioTabVehicles };
+        }, [_id], "ALiVE_FS_CodePrompt"]] call ALiVE_fnc_fsStudioPrompt;
+    };
+    case "initCodeSet": {
+        _args params [["_id", "", [""]], ["_text", "", [""]]];
+        if !(_id in _vehicles) exitWith {};
+        _session set ["selVehicle", _id];
+        // kept as typed, line breaks included; joined onto one line only in the export
+        ["initCode", trim ((_text splitString (toString [13])) joinString "")] call _set;
+    };
     case "add": {
         if (!isNil "ALiVE_fnc_fsStudioBrowser") then { ["open", ["multi", 1]] call ALiVE_fnc_fsStudioBrowser };
     };

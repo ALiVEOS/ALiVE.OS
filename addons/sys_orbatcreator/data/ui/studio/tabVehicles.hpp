@@ -235,10 +235,34 @@ class ALiVE_FS_TabVehicles : ALiVE_FS_RscGroup {
             onButtonClick = "['open'] call ALiVE_fnc_fsStudioCargo";
         };
 
+        // the Init Code: a short view of it and the popup; the tab puts the row under the cargo row
+        class InitLabel : ALiVE_FS_RscLabel {
+            idc = FS_IDC_V_INITLABEL;
+            text = "$STR_ALIVE_FS_L_INITCODE";
+            tooltip = "$STR_ALIVE_FS_INITCODE_TIP_V";
+            y = (FS_H(28.07) + FS_SP_VLIST + FS_SP_VSEATS);
+        };
+        class Init : ALiVE_FS_RscText {
+            idc = FS_IDC_V_INIT;
+            tooltip = "$STR_ALIVE_FS_INITCODE_TIP_V";
+            x = FS_FIELD_X;
+            y = (FS_H(28.07) + FS_SP_VLIST + FS_SP_VSEATS);
+            w = FS_NARROW_W;
+        };
+        class InitEdit : ALiVE_FS_RscButton {
+            idc = FS_IDC_V_INITEDIT;
+            text = "$STR_ALIVE_FS_BTN_EDIT";
+            tooltip = "$STR_ALIVE_FS_INITCODE_TIP_V";
+            x = FS_SIDE_X;
+            y = (FS_H(28.07) + FS_SP_VLIST + FS_SP_VSEATS);
+            w = FS_SIDE_W;
+            onButtonClick = "['initCode', []] call ALiVE_fnc_fsStudioTabVehicles";
+        };
+
         // W_ALIVE_CREW, shown by the tab when it applies
         class Note : ALiVE_FS_RscStructuredText {
             idc = FS_IDC_V_NOTE;
-            y = (FS_H(28.07) + FS_SP_VLIST + FS_SP_VSEATS);
+            y = (FS_H(29.22) + FS_SP_VLIST + FS_SP_VSEATS);
             h = FS_H(1.49);
         };
     };
