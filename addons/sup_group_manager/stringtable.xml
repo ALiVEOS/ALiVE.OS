@@ -675,6 +675,21 @@
 <Key ID="STR_ALIVE_RALLY_UI_GONE">
     <English>That rally point is no longer there.</English>
 </Key>
+<Key ID="STR_ALIVE_RALLY_ADMIN_MOVED">
+    <English>%1 moved to %2.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ADMIN_PICKED">
+    <English>%1 picked up.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ADMIN_NOMOVE">
+    <English>%1 is one of the mission's own rally points, so it stays where it is.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ADMIN_NOPICKUP">
+    <English>%1 is one of the mission's own rally points, so it can't be picked up.</English>
+</Key>
+<Key ID="STR_ALIVE_RALLY_ADMIN_NORENAME">
+    <English>%1 takes its name from its headquarters.</English>
+</Key>
 <Key ID="STR_ALIVE_RALLY_UI_NO_ROOM">
     <English>There's no room to arrive at that rally point.</English>
 </Key>

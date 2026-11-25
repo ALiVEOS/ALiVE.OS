@@ -38,6 +38,12 @@ Operations:
                                 Permissions window (ALiVE_fnc_siteWhoDialog); kept over a restart
                                 when the mission saves
 "permReset" [unit]              an admin puts Who Can Manage back to the module's settings
+"adminMove" [object, posATL, dir, byText]   server, with no player (the War Room's live map): a squad
+                                leader's or Zeus' rally point moved; a mission's own is refused
+"adminRename" [object, name, byText]        server, with no player: any rally point but a headquarters'
+"adminPickup" [object, byText]              server, with no player: a squad leader's or Zeus' point taken up
+"adminPermReset" [byText]                   server, with no player: as "permReset"
+                                The four return [ok, message key, its arguments]; byText names who in the RPT
 "plant"   [group, leader or posATL, dir, name]
                                 server: a squad leader's rally point made and watched (deploy, and
                                 its return after Overrun Repair Time)
@@ -58,6 +64,9 @@ Operations:
                                 destination: a row from "list", an object, or a position.
                                 force true skips the enemy check and the wait between trips.
                                 Returns true when the trip was asked for.
+
+A row of ALiVE_rallyPoints is [object, name, side, kind, owner group, module, squad, placedAt], placedAt being
+the serverTime it was put down or brought back.
 
 Examples:
 (begin example)
@@ -115,7 +124,7 @@ private _result = true;
 private _refused = false;
 if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_rallyInner"}) then {
     private _sender = remoteExecutedOwner;
-    _refused = if (_op in ["travel", "move", "refused", "plant", "restore", "leaderBack", "permLoad", "permSave", "pendingWatch", "storeQueue"]) then { true } else {
+    _refused = if (_op in ["travel", "move", "refused", "plant", "restore", "leaderBack", "permLoad", "permSave", "pendingWatch", "storeQueue", "adminMove", "adminRename", "adminPickup", "adminPermReset"]) then { true } else {
         switch (true) do {
             case (isServer && {_op in ["deploy", "pickup", "rename", "check", "permissions", "permReset"]}): {
                 private _u = _args param [0, objNull];
@@ -143,7 +152,7 @@ switch (_op) do {
         if (_name == "") then { _name = [getPosATL _obj] call _autoName };
         private _list = (missionNamespace getVariable ["ALiVE_rallyPoints", []]) select { !isNull (_x select 0) && {(_x select 0) != _obj} };
         // a squad leader's point keeps the squad that put it down, also when the whole side may use it
-        _list pushBack [_obj, _name, toUpper _side, _kind, _owner, objNull, _squad];
+        _list pushBack [_obj, _name, toUpper _side, _kind, _owner, objNull, _squad, serverTime];
         ALiVE_rallyPoints = _list;
         publicVariable "ALiVE_rallyPoints";
         // the squad leaders' and Zeus' are kept over a restart
@@ -178,7 +187,7 @@ switch (_op) do {
         private _keep = _list select { !isNull (_x select 0) && {alive (_x select 0)} && {(_x select 3) != "class" || {!((_x param [5, objNull]) isEqualTo _module)} || {(_x select 0) in _now}} };
         private _known = _keep apply { _x select 0 };
         private _new = _now select { !(_x in _known) };
-        { _keep pushBack [_x, (_x getVariable ["ALiVE_rallyName", ""]) call { if (_this != "") then { _this } else { [getPosATL _x] call _autoName } }, toUpper _side, "class", grpNull, _module] } forEach _new;
+        { _keep pushBack [_x, (_x getVariable ["ALiVE_rallyName", ""]) call { if (_this != "") then { _this } else { [getPosATL _x] call _autoName } }, toUpper _side, "class", grpNull, _module, grpNull, serverTime] } forEach _new;
         if (count _keep != count _list || {_new isNotEqualTo []}) then {
             ALiVE_rallyPoints = _keep;
             publicVariable "ALiVE_rallyPoints";
@@ -336,8 +345,9 @@ switch (_op) do {
         if (["pointCapture", false] call _set) then {
             _taker = ["holder", [getPosATL _o, _who, (["enemyRadius", 100] call _set) max 50]] call ALiVE_fnc_siteClock;
         };
+        _row = +_row;
+        _row set [7, serverTime];
         if (_taker != "") then {
-            _row = +_row;
             _row set [2, _taker];
             _row set [4, grpNull];
         };
@@ -388,6 +398,73 @@ switch (_op) do {
         ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
         deleteVehicle _obj;
         if (!isNull _grp && {(_grp getVariable ["ALiVE_rallyDeployed", objNull]) isEqualTo _obj}) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
+    };
+
+    // The War Room's live map, on the server with no player: a rally point moved, renamed or picked up, or Who Can
+    // Manage put back. No Who Can Manage or 5 m check; byText names who in the RPT. [ok, message key, its arguments]
+    case "adminMove";
+    case "adminRename";
+    case "adminPickup": {
+        _result = [false, "", []];
+        if (!isServer) exitWith {};
+        private _obj = _args param [0, objNull];
+        if !(_obj isEqualType objNull) exitWith {};
+        private _list = missionNamespace getVariable ["ALiVE_rallyPoints", []];
+        private _i = if (isNull _obj) then { -1 } else { _list findIf { (_x select 0) isEqualTo _obj } };
+        if (_i < 0 || {!alive _obj}) exitWith { _result = [false, "STR_ALIVE_RALLY_UI_GONE", []] };
+        (_list select _i) params ["", "_name", "", "_kind", ["_owner", grpNull], "", ["_squad", grpNull]];
+        switch (_op) do {
+            case "adminMove": {
+                _args params ["", ["_pos", [], [[]]], ["_dir", 0, [0]], ["_by", "", [""]]];
+                if (_by == "" || {!(_pos isEqualTypeParams [0, 0])}) exitWith {};
+                if !(_kind in ["leader", "zeus"]) exitWith { _result = [false, "STR_ALIVE_RALLY_ADMIN_NOMOVE", [_name]] };
+                _pos = [_pos select 0, _pos select 1, 0];
+                private _from = mapGridPosition _obj;
+                _obj setDir _dir;
+                _obj setPosATL _pos;
+                _obj setVectorUp (surfaceNormal _pos);
+                ["storeQueue"] call ALiVE_fnc_rallyPoint;
+                ["ALiVE Rally Points - %1 moved %2 from %3 to %4", _by, _name, _from, mapGridPosition _pos] call ALiVE_fnc_dump;
+                _result = [true, "STR_ALIVE_RALLY_ADMIN_MOVED", [_name, mapGridPosition _pos]];
+            };
+            case "adminRename": {
+                _args params ["", ["_new", "", [""]], ["_by", "", [""]]];
+                if (_by == "") exitWith {};
+                // a headquarters' point is named after it
+                if (_kind == "hq") exitWith { _result = [false, "STR_ALIVE_RALLY_ADMIN_NORENAME", [_name]] };
+                _new = ["cleanName", [_new, 32]] call ALiVE_fnc_siteWho;
+                if (_new == "") exitWith { _result = [false, "STR_ALIVE_RALLY_UI_RENAME_EMPTY", [32]] };
+                (_list select _i) set [1, _new];
+                ALiVE_rallyPoints = _list;
+                publicVariable "ALiVE_rallyPoints";
+                ["storeQueue"] call ALiVE_fnc_rallyPoint;
+                ["ALiVE Rally Points - %1 renamed %2 to %3", _by, _name, _new] call ALiVE_fnc_dump;
+                _result = [true, "STR_ALIVE_RALLY_UI_RENAMED", [_new]];
+            };
+            case "adminPickup": {
+                _args params ["", ["_by", "", [""]]];
+                if (_by == "") exitWith {};
+                if !(_kind in ["leader", "zeus"]) exitWith { _result = [false, "STR_ALIVE_RALLY_ADMIN_NOPICKUP", [_name]] };
+                private _grp = [_squad, _owner] select (isNull _squad);
+                ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
+                deleteVehicle _obj;
+                if (!isNull _grp && {(_grp getVariable ["ALiVE_rallyDeployed", objNull]) isEqualTo _obj}) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
+                ["ALiVE Rally Points - %1 picked up %2", _by, _name] call ALiVE_fnc_dump;
+                _result = [true, "STR_ALIVE_RALLY_ADMIN_PICKED", [_name]];
+            };
+        };
+    };
+
+    case "adminPermReset": {
+        _result = [false, "", []];
+        _args params [["_by", "", [""]]];
+        private _logic = missionNamespace getVariable ["ALiVE_rallyLogic", objNull];
+        if (!isServer || {_by == ""} || {isNull _logic}) exitWith {};
+        _logic setVariable ["ALiVE_rally_perm", nil, true];
+        _logic setVariable ["ALiVE_rally_permChanged", true];
+        ["permSave"] call ALiVE_fnc_rallyPoint;
+        ["ALiVE Rally Points - %1 put who can manage rally points back to the module's settings", _by] call ALiVE_fnc_dump;
+        _result = [true, "STR_ALIVE_RALLY_PERM_RESET", []];
     };
 
     // Who Can Manage: a squad leader's point renamed or picked up, a synced point renamed. Works on any machine.
