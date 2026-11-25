@@ -735,9 +735,27 @@ switch (_operation) do {
                 if (_spot isNotEqualTo []) then { _position = _spot };
             };
 
-            _vehicle = createVehicle [_vehicleClass, _position, [], 0, _special];
-
-            _vehicle allowDamage false;
+            // #1145: a BM-21 made beside a rock or a tree had its wheels and body wrecked as it appeared, with
+            // damage switched off (overall damage stayed 0, so the settle check below missed it); it could not
+            // move, the crew got out, and the gun stood empty. Until it settles, a part damaged anyway is put
+            // straight back as it was made (or as the profile's own damage restored it below). Made and guarded
+            // in one step, so a pause in this script can't leave it unprotected. Taken off at the settle check.
+            isNil {
+                _vehicle = createVehicle [_vehicleClass, _position, [], 0, _special];
+                _vehicle allowDamage false;
+                _vehicle setVariable ["ALiVE_spawnHits", (getAllHitPointsDamage _vehicle) param [2, []]];
+                _vehicle setVariable ["ALiVE_spawnGuardEH", _vehicle addEventHandler ["Dammaged", {
+                    params ["_v", "", "", "_index"];
+                    if (_index < 0 || {_v getVariable ["ALiVE_spawnHitsOff", false]}) exitWith {};
+                    private _was = (_v getVariable ["ALiVE_spawnHits", []]) param [_index, 0];
+                    if ((_v getHitIndex _index) > _was) then {
+                        private _off = !isDamageAllowed _v;
+                        if (_off) then { _v allowDamage true };
+                        _v setHitIndex [_index, _was];
+                        if (_off) then { _v allowDamage false };
+                    };
+                }]];
+            };
 
             // createVehicle puts a car at sea on the sea bed, under the ship: stand it on the deck straight
             // below, found by looking down from above the ship. A group's vehicles are spread around its
@@ -1138,7 +1156,10 @@ switch (_operation) do {
             if(count _damage > 0) then {
                 private _protected = !isDamageAllowed _vehicle;
                 if (_protected) then { _vehicle allowDamage true };
+                _vehicle setVariable ["ALiVE_spawnHitsOff", true];
                 [_vehicle, _damage] call ALIVE_fnc_vehicleSetDamage;
+                _vehicle setVariable ["ALiVE_spawnHits", (getAllHitPointsDamage _vehicle) param [2, []]];
+                _vehicle setVariable ["ALiVE_spawnHitsOff", nil];
                 if (_protected) then { _vehicle allowDamage false };
             };
 
@@ -1258,6 +1279,7 @@ switch (_operation) do {
                 params ["_v"];
                 if (isNull _v) exitWith {};
                 if (!alive _v) exitWith {}; // already dead, nothing to do
+                _v removeEventHandler ["Dammaged", _v getVariable ["ALiVE_spawnGuardEH", -1]];
                 private _spawnPos = _v getVariable ["ALiVE_settleSpawnPos", getPosATL _v];
                 private _drift = (_v distance2D _spawnPos);
                 private _belowTerrain = (getPosATL _v select 2) < -0.5;
