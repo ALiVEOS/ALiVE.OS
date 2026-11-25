@@ -2501,13 +2501,23 @@ switch(_operation) do {
             _result = _unit;
         };
 
-        private _unitParent = [_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet;
+        private _unitParent = [_unitData,"inheritsFrom",""] call ALiVE_fnc_hashGet;
         private _unitParentConfigPath = configFile >> "CfgVehicles" >> _unitParent;
 
-        while {!isClass _unitParentConfigPath} do {
+        // Each step is a custom unit's parent. A chain that reaches a name that is neither a class nor a custom unit
+        // (or loops back on itself) has no real class: it ends there instead of asking forever, which hung the
+        // game, and the unit's own name is the answer.
+        private _steps = 0;
+        while {!isClass _unitParentConfigPath && {_steps < 64}} do {
             _unitParentEntry = [_customUnits,_unitParent] call ALiVE_fnc_hashGet;
-            _unitParent = [_unitParentEntry,"inheritsFrom"] call ALiVE_fnc_hashGet;
+            if (isNil "_unitParentEntry") exitWith {_steps = 64};
+            _unitParent = [_unitParentEntry,"inheritsFrom",""] call ALiVE_fnc_hashGet;
             _unitParentConfigPath = _cfgVehicles >> _unitParent;
+            _steps = _steps + 1;
+        };
+        if (!isClass _unitParentConfigPath) exitWith {
+            ["ORBAT Creator: no real class found under %1 (its parents end at '%2')", _unit, _unitParent] call ALiVE_fnc_dump;
+            _result = _unit;
         };
 
         _unitParent = [_logic,"stripOCImportSuffix", _unitParent] call MAINCLASS;
@@ -5246,6 +5256,23 @@ switch(_operation) do {
         private _classList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_UNITTYPE_UNITS );
         [_classList,_unitParent] call ALiVE_fnc_listSelectData;
 
+        // The list holds this faction's units in this category, so a parent from anywhere else (a vehicle's base
+        // class, another mod's unit) is not in it and nothing would be selected; Confirm would then re-parent the
+        // unit to whatever the list gave. The unit's own parent is added and selected instead, so Confirm keeps it.
+        private _ownParent = [_selectedUnitData,"inheritsFrom",""] call ALiVE_fnc_hashGet;
+        private _shown = lbCurSel _classList;
+        if (_ownParent != "" && {_shown < 0 || {!((_classList lbData _shown) in [_ownParent, _selectedUnit])}}) then {
+            private _parentName = getText (configFile >> "CfgVehicles" >> _ownParent >> "displayName");
+            if (_parentName == "") then {
+                private _parentUnit = [_logic,"getCustomUnit", _ownParent] call MAINCLASS;
+                if (!isNil "_parentUnit") then { _parentName = [_parentUnit,"displayName",""] call ALiVE_fnc_hashGet };
+            };
+            if (_parentName == "") then { _parentName = _ownParent };
+            private _row = _classList lbAdd _parentName;
+            _classList lbSetData [_row, _ownParent];
+            _classList lbSetCurSel _row;
+        };
+
     };
 
     case "onEditUnitConfirmClicked": {
@@ -5307,7 +5334,7 @@ switch(_operation) do {
             [_selectedUnitData,"faction", _faction] call ALiVE_fnc_hashSet;
         };
 
-        if (_parentClass != _selectedUnit && {_parentClass != _unitParentClass}) then {
+        if (_parentClass != "" && {_parentClass != _selectedUnit} && {_parentClass != _unitParentClass}) then {
             [_selectedUnitData,"inheritsFrom", _parentClass] call ALiVE_fnc_hashSet;
 
             private _parentClassUnit = [_logic,"getCustomUnit", _parentClass] call MAINCLASS;
