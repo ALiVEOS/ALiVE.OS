@@ -736,6 +736,16 @@ switch (_operation) do {
                 _logic set ["currentJobData", [false,[false,false,false],nil,nil,nil,nil,nil,nil,nil,_naval]];
             };
 
+            // An aeroplane flies straight to its waypoint. Every cell is open to it and none costs more than
+            // another, so the search could only draw that line. On a large map it was one of the longest jobs
+            // in the queue, and when it found no way through it came back as one point and left the aeroplane
+            // where it was.
+            if ((_procedure select 0) isEqualTo "Plane") exitWith {
+                [_callbackArgs, [_endPos]] spawn _callback;
+                _pathJobs deleteAt 0;
+                [_logic,"loadCurrentJobData"] call MAINCLASS;
+            };
+
             private _terrainGrid = _logic get "terrainGrid";
 
             // Goal-snap: a land-capable group must never be routed
