@@ -961,6 +961,21 @@
 <Key ID="STR_ALIVE_HUB_COLLECTED">
     <English>Requisition collected at the hub</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_ADMIN_PAUSED">
+    <English>%1 is paused: nothing is collected there and it supplies nothing until it is resumed</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ADMIN_RESUMED">
+    <English>%1 works again</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ADMIN_MOVED">
+    <English>%1 moved to %2</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ADMIN_DOWN">
+    <English>%1 is down, so it can't be moved</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_ADMIN_REMOVED">
+    <English>%1 is no longer a logistics hub</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_PERMISSIONS_NONE">
     <English>That is not a logistics hub, so nothing changed</English>
 </Key>

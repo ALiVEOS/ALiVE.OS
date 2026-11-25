@@ -86,6 +86,22 @@ Parameters:
         Repair Time comes back later
     ["hubRestore", [hubNetId]] - server: the hub works again, rebuilt if it can't be mended
     ["siteLabel", [hubNetId]] - how the down, back and lost notifications and the down marker name it
+    The War Room's live map, on the server with no player; byText names who in the RPT. Each returns [ok, message
+    key, its arguments], the key being why not when ok is false:
+    ["admin", [op, [hubNetId, ...], byText]] - op "rename" [hubNetId, name] (an empty name clears it) or
+        "permReset" [hubNetId]
+    ["adminPause", [hubNetId, on, byText]] - the hub stays up and on the map but takes no collections and supplies
+        nothing while paused (ALiVE_hub_paused on it); kept over a restart when the mission saves
+    ["adminMove", [hubNetId, posATL, dir, byText]] - a working hub moved, with its supply point; a Zeus's or a
+        built one is saved at its new place
+    ["adminRemove", [hubNetId, byText]] - the hub is no hub any more, for good: unlike hubDown it never comes back,
+        also after a restart when the mission saves. The object stays
+    ["statsDeparture", [hubNetId, eventID]], ["statsEventDone", [eventID]] - server, from Military Logistics: a
+        delivery sets off from the hub, or its event is over. ALiVE_hub_stats on the hub is [deliveries from it
+        still under way, the serverTime the last one set off or -1]
+
+The registry entry (ALiVE_hub_registry, by net id) is [side, alive, module, offers Collect, Military Logistics
+modules, class, posATL, dir, up, name, owner, Zeus or built (0-3), built at, paused, key where it was first made].
 
 Returns:
 See above
@@ -728,10 +744,24 @@ switch (_op) do {
         private _owner = _hub getVariable ["ALiVE_hub_owner", ""];
         if !(_owner isEqualType "") then { _owner = "" };
         _hub setVariable ["ALiVE_hub_owner", _owner, true];
+        // where it was first made, kept through a rebuild, so a pause or a removal from the War Room finds it again after
+        // a restart (as does where it stands now)
+        private _key = _hub getVariable ["ALiVE_hub_firstKey", ""];
+        if !(_key isEqualType "" && {_key != ""}) then { _key = ["keyAt", [getPosATL _hub]] call ALIVE_fnc_hub };
+        _hub setVariable ["ALiVE_hub_firstKey", _key];
+        private _keys = [_key, ["keyAt", [getPosATL _hub]] call ALIVE_fnc_hub];
+        // removed for good from the War Room before the restart: no hub
+        if ((_keys arrayIntersect (missionNamespace getVariable ["ALiVE_hub_removedKeys", []])) isNotEqualTo []) exitWith {
+            ["ALiVE Logistics Hub - %1 at %2 was removed before the restart, so it is no hub", typeOf _hub, mapGridPosition _hub] call ALiVE_fnc_dump;
+        };
+        private _paused = (_hub getVariable ["ALiVE_hub_paused", false]) isEqualTo true
+            || {(_keys arrayIntersect (missionNamespace getVariable ["ALiVE_hub_pausedKeys", []])) isNotEqualTo []};
+        _hub setVariable ["ALiVE_hub_paused", _paused, true];
+        if !((_hub getVariable ["ALiVE_hub_stats", []]) isEqualTypeArray [0, 0]) then { _hub setVariable ["ALiVE_hub_stats", [0, -1], true] };
         // whether a Zeus made it (ALiVE_hub_zeus: 1 on an object, 2 a container put down) or the module built it (3), kept
-        // over a restart, and last what a built one was built at (FIELDHQ or HQ)
+        // over a restart, then what a built one was built at (FIELDHQ or HQ), whether it is paused and where it was first made
         ALiVE_hub_registry set [_netId, [_side, true, _logic, _logic getVariable ["ALiVE_hub_collect", false], _logic getVariable ["ALiVE_hub_mlMods", []],
-            typeOf _hub, getPosATL _hub, getDir _hub, vectorUp _hub, _name, _owner, _hub getVariable ["ALiVE_hub_zeus", 0], _hub getVariable ["ALiVE_hub_built", ""]]];
+            typeOf _hub, getPosATL _hub, getDir _hub, vectorUp _hub, _name, _owner, _hub getVariable ["ALiVE_hub_zeus", 0], _hub getVariable ["ALiVE_hub_built", ""], _paused, _key]];
         _hub setVariable ["ALiVE_hub_backAt", -1, true];
         _hub setVariable ["ALiVE_hub", [_side, true, _s select 1, _logic], true];
         ALiVE_hub_list pushBackUnique _hub;
@@ -879,7 +909,7 @@ switch (_op) do {
         private _best = 1e9;
         {
             private _info = _x getVariable ["ALiVE_hub", []];
-            if (_info isEqualTypeArray ["", true, 0, objNull] && {_info select 1} && {(_info select 0) == _sideText}) then {
+            if (_info isEqualTypeArray ["", true, 0, objNull] && {_info select 1} && {(_info select 0) == _sideText} && {!(_x getVariable ["ALiVE_hub_paused", false])}) then {
                 private _d = _unit distance _x;
                 if (_d <= (_info select 2) && {_d < _best}) then { _best = _d; _result = _x };
             };
@@ -982,7 +1012,7 @@ switch (_op) do {
         if (!isServer || {isNull _hub} || {isNil "ALIVE_ML_supplyNetwork"} || {isNil "ALiVE_hub_registry"}) exitWith {};
         private _netId = _hub call BIS_fnc_netId;
         private _entry = ALiVE_hub_registry getOrDefault [_netId, []];
-        if (count _entry < 5 || {!(_entry select 1)}) exitWith {};
+        if (count _entry < 5 || {!(_entry select 1)} || {(_entry param [13, false]) isEqualTo true}) exitWith {};
         private _factions = ["commanderFactions", [_entry select 0, _entry select 4]] call ALIVE_fnc_hub;
         // a hub built at a supply point stands in for the delivery's node there: its units go into the hub's node,
         // and back to a plain node if the hub leaves the network
@@ -1046,6 +1076,7 @@ switch (_op) do {
             (ALiVE_hub_registry get _netId) params ["_hubSide", "_alive", "_logic", "_collect"];
             private _hub = _netId call BIS_fnc_objectFromNetId;
             if (isNull _hub || {!_alive}) exitWith { "the hub is down" };
+            if (((ALiVE_hub_registry get _netId) param [13, false]) isEqualTo true) exitWith { "the hub is paused" };
             if (!_collect) exitWith { "the hub's module isn't synced to Player Combat Logistics" };
             private _i = playableUnits findIf { getPlayerUID _x == _playerID };
             private _player = if (_i > -1) then { playableUnits select _i } else { if (!isMultiplayer && {hasInterface}) then { player } else { objNull } };
@@ -1245,6 +1276,7 @@ switch (_op) do {
                 waitUntil { sleep 1; (!isNil "ALIVE_sys_data" && {!isNil "ALIVE_sys_data_DISABLED"} && {ALIVE_sys_data getVariable ["startupComplete", false]}) || {diag_tickTime - _t0 > 300} };
             };
             private _store = [];
+            private _marks = [];
             if (["permCanSave"] call ALIVE_fnc_hub) then {
                 private _key = ["permStoreKey"] call ALIVE_fnc_hub;
                 private _plain = [];
@@ -1265,11 +1297,30 @@ switch (_op) do {
                     _store = (_plain param [1, []]) select { _x isEqualType [] && {(_x param [0, 0]) isEqualType ""} };
                     // the hubs a Zeus made, put back below
                     _zeus = (_plain param [2, []]) select { _x isEqualTypeParams [0, "", "", "", [], 0, []] };
+                    _marks = _plain param [3, []];
                 };
                 if (_store isNotEqualTo []) then { ["ALiVE Logistics Hub - %1 saved permission change(s) read from %2", count _store, _key] call ALiVE_fnc_dump };
             };
             ALiVE_hub_permStore = _store;
             { _x call _apply } forEach (missionNamespace getVariable ["ALiVE_hub_modules", []]);
+            // paused and removed from the War Room before the restart: the hubs up now, and any put back after this
+            if (_marks isEqualType [] && {count _marks == 2}) then {
+                private _flat = { private _k = []; { if (_x isEqualType []) then { { if (_x isEqualType "" && {_x != ""}) then { _k pushBackUnique _x } } forEach _x } } forEach _this; _k };
+                ALiVE_hub_pausedKeys = (_marks select 0) call _flat;
+                ALiVE_hub_removed = (_marks select 1) select { _x isEqualTypeArray ["", ""] };
+                ALiVE_hub_removedKeys = ALiVE_hub_removed call _flat;
+                private _n = [0, 0];
+                {
+                    private _o = _x call BIS_fnc_objectFromNetId;
+                    private _k = [_y param [14, ""], ["keyAt", [[getPosATL _o, _y select 6] select (isNull _o)]] call ALIVE_fnc_hub];
+                    if ((_k arrayIntersect ALiVE_hub_removedKeys) isNotEqualTo []) then {
+                        ["adminRemove", [_x, "the save", true]] call ALIVE_fnc_hub; _n set [1, (_n select 1) + 1];
+                    } else {
+                        if ((_k arrayIntersect ALiVE_hub_pausedKeys) isNotEqualTo []) then { ["adminPause", [_x, true, "the save"]] call ALIVE_fnc_hub; _n set [0, (_n select 0) + 1] };
+                    };
+                } forEach +(missionNamespace getVariable ["ALiVE_hub_registry", createHashMap]);
+                if (_n isNotEqualTo [0, 0]) then { ["ALiVE Logistics Hub - from before the restart: %1 hub(s) paused again, %2 removed again", _n select 0, _n select 1] call ALiVE_fnc_dump };
+            };
             if (_zeus isNotEqualTo []) then { ["zeusRestore", [_zeus]] call ALIVE_fnc_hub };
         };
     };
@@ -1312,8 +1363,16 @@ switch (_op) do {
                 _zeus pushBack _row;
             };
         } forEach (missionNamespace getVariable ["ALiVE_hub_registry", createHashMap]);
+        // the hubs the War Room paused or removed, by where they were first made and where they stand
+        private _paused = [];
+        {
+            if ((_y param [13, false]) isEqualTo true) then {
+                private _o = _x call BIS_fnc_objectFromNetId;
+                _paused pushBack [_y param [14, ""], ["keyAt", [[getPosATL _o, _y select 6] select (isNull _o)]] call ALIVE_fnc_hub];
+            };
+        } forEach (missionNamespace getVariable ["ALiVE_hub_registry", createHashMap]);
         private _key = ["permStoreKey"] call ALIVE_fnc_hub;
-        private _plain = ["v1", _store, _zeus];
+        private _plain = ["v1", _store, _zeus, [_paused, missionNamespace getVariable ["ALiVE_hub_removed", []]]];
         if (!isNil "ALIVE_sys_data" && {!(missionNamespace getVariable ["ALIVE_sys_data_DISABLED", true])}) then {
             if (isNil "ALiVE_hub_dataHandler") then {
                 ALiVE_hub_dataHandler = [nil, "create"] call ALIVE_fnc_Data;
@@ -1577,6 +1636,143 @@ switch (_op) do {
         if ((_e param [11, 0]) == 3) then { ["permSave"] call ALIVE_fnc_hub };
     };
 
+    // where a hub stands, to the metre, as the saves find it: "x:y"
+    case "keyAt": {
+        _args params [["_p", [0, 0, 0], [[]]]];
+        _result = format ["%1:%2", round (_p param [0, 0]), round (_p param [1, 0])];
+    };
+
+    // The War Room's live map, on the server with no player (never through ALIVE_fnc_hubRequest, never from another
+    // machine). [ok, message key, its arguments]
+    case "admin";
+    case "adminPause";
+    case "adminMove";
+    case "adminRemove": {
+        _result = [false, "", []];
+        if (!isServer || {!isNil "_ALiVE_hubCaller"} || {isRemoteExecuted && {remoteExecutedOwner != 2}}) exitWith {};
+        private _sub = _op;
+        private _a = _args;
+        private _by = "";
+        switch (_op) do {
+            case "admin": { _args params [["_o", "", [""]], ["_x2", [], [[]]], ["_b", "", [""]]]; _sub = _o; _a = _x2; _by = _b };
+            case "adminPause": { _by = _args param [2, ""] };
+            case "adminMove": { _by = _args param [3, ""] };
+            case "adminRemove": { _by = _args param [1, ""] };
+        };
+        if !(_by isEqualType "" && {_by != ""}) exitWith {};
+        private _netId = _a param [0, ""];
+        if (!(_netId isEqualType "") || {isNil "ALiVE_hub_registry"} || {!(_netId in ALiVE_hub_registry)}) exitWith { _result = [false, "STR_ALIVE_HUB_PERMISSIONS_NONE", []] };
+        private _e = ALiVE_hub_registry get _netId;
+        private _hub = _netId call BIS_fnc_objectFromNetId;
+        private _label = ["label", [_hub]] call ALIVE_fnc_hub;
+        if ((_e param [9, ""]) != "") then { _label = _e select 9 };
+        switch (_sub) do {
+            case "rename": {
+                private _name = _a param [1, ""];
+                if !(_name isEqualType "") exitWith {};
+                _name = ["cleanName", [_name]] call ALIVE_fnc_hub;
+                if (!isNull _hub) then { _hub setVariable ["ALiVE_hub_name", _name, true] };
+                _e set [9, _name];
+                ["ALiVE Logistics Hub - %1 named %2 at %3 [%4]", _by, _e select 5, mapGridPosition (_e select 6), _name] call ALiVE_fnc_dump;
+                if ((_e param [11, 0]) > 0) then { ["permSave"] call ALIVE_fnc_hub };
+                _result = [true, ["STR_ALIVE_HUB_RENAMED", "STR_ALIVE_HUB_RENAME_CLEARED"] select (_name == ""), [[_name], []] select (_name == "")];
+            };
+            case "permReset": {
+                private _m = _e select 2;
+                _m setVariable ["ALiVE_hub_perm_collect", nil, true];
+                _m setVariable ["ALiVE_hub_perm_dismantle", nil, true];
+                _m setVariable ["ALiVE_hub_permChanged", true];
+                ["permSave"] call ALIVE_fnc_hub;
+                ["ALiVE Logistics Hub - %1 put who can collect and dismantle back to the module's settings, on the module at %2", _by, mapGridPosition _m] call ALiVE_fnc_dump;
+                _result = [true, "STR_ALIVE_HUB_PERMISSIONS_RESET", []];
+            };
+            case "adminPause": {
+                private _on = _a param [1, true];
+                if !(_on isEqualType true) exitWith {};
+                _e set [13, _on];
+                if (!isNull _hub) then { _hub setVariable ["ALiVE_hub_paused", _on, true] };
+                // no supply from it while paused; back in the network when it works again
+                if (_on) then { ["nodeRemove", [_netId]] call ALIVE_fnc_hub } else { if (!isNull _hub) then { ["nodeAdd", [_hub]] call ALIVE_fnc_hub } };
+                if (_by != "the save") then {
+                    ["permSave"] call ALIVE_fnc_hub;
+                    ["ALiVE Logistics Hub - %1 %2 %3 at %4", _by, ["resumed", "paused"] select _on, _label, mapGridPosition (_e select 6)] call ALiVE_fnc_dump;
+                };
+                _result = [true, ["STR_ALIVE_HUB_ADMIN_RESUMED", "STR_ALIVE_HUB_ADMIN_PAUSED"] select _on, [_label]];
+            };
+            case "adminMove": {
+                _a params ["", ["_pos", [], [[]]], ["_dir", 0, [0]]];
+                if !(_pos isEqualTypeParams [0, 0]) exitWith {};
+                if (isNull _hub || {!alive _hub} || {!(_e select 1)}) exitWith { _result = [false, "STR_ALIVE_HUB_ADMIN_DOWN", [_label]] };
+                private _from = mapGridPosition _hub;
+                _pos = [_pos select 0, _pos select 1, 0];
+                _hub setDir _dir;
+                _hub setPosATL _pos;
+                _hub setVectorUp (surfaceNormal _pos);
+                _e set [6, getPosATL _hub];
+                _e set [7, getDir _hub];
+                _e set [8, vectorUp _hub];
+                // its supply point follows it (players' map markers follow by themselves)
+                ["nodeRemove", [_netId]] call ALIVE_fnc_hub;
+                ["nodeAdd", [_hub]] call ALIVE_fnc_hub;
+                ["permSave"] call ALIVE_fnc_hub;
+                ["ALiVE Logistics Hub - %1 moved %2 from %3 to %4", _by, _label, _from, mapGridPosition _hub] call ALiVE_fnc_dump;
+                _result = [true, "STR_ALIVE_HUB_ADMIN_MOVED", [_label, mapGridPosition _hub]];
+            };
+            case "adminRemove": {
+                // no repair later, no actions, no supply point, off the list and the map
+                ["cancel", ["hub:" + _netId]] call ALiVE_fnc_siteClock;
+                remoteExec ["", "ALiVE_hub_enemy_" + _netId];
+                remoteExec ["", "ALiVE_hub_own_" + _netId];
+                remoteExec ["", "ALiVE_hub_manage_" + _netId];
+                ["nodeRemove", [_netId]] call ALIVE_fnc_hub;
+                ALiVE_hub_registry deleteAt _netId;
+                ALiVE_hub_list = ALiVE_hub_list select { !isNull _x && {_x != _hub} };
+                publicVariable "ALiVE_hub_list";
+                if (!isNull _hub) then {
+                    _hub setVariable ["ALiVE_hub", nil, true];
+                    _hub setVariable ["ALiVE_hub_backAt", nil, true];
+                    _hub setVariable ["ALiVE_hub_paused", nil, true];
+                    _hub setVariable ["ALiVE_hub_stats", nil, true];
+                };
+                // never back, also after a restart: kept by where it was first made and where it stands
+                if (_by != "the save") then {
+                    if (isNil "ALiVE_hub_removed") then { ALiVE_hub_removed = [] };
+                    private _k = [_e param [14, ""], ["keyAt", [[getPosATL _hub, _e select 6] select (isNull _hub)]] call ALIVE_fnc_hub];
+                    ALiVE_hub_removed pushBack _k;
+                    if (isNil "ALiVE_hub_removedKeys") then { ALiVE_hub_removedKeys = [] };
+                    { if (_x != "") then { ALiVE_hub_removedKeys pushBackUnique _x } } forEach _k;
+                    ["permSave"] call ALIVE_fnc_hub;
+                    ["ALiVE Logistics Hub - %1 removed %2 at %3 for good", _by, _label, mapGridPosition (_e select 6)] call ALiVE_fnc_dump;
+                };
+                _result = [true, "STR_ALIVE_HUB_ADMIN_REMOVED", [_label]];
+            };
+        };
+    };
+
+    // Military Logistics: a delivery sets off from a hub, or a delivery's event is over. ALiVE_hub_stats on the hub,
+    // read by the War Room's live map: [deliveries from it still under way, serverTime the last one set off or -1]
+    case "statsDeparture": {
+        _args params [["_netId", "", [""]], ["_eventID", ""]];
+        if (!isServer || {_netId == ""}) exitWith {};
+        if (isNil "ALiVE_hub_queue") then { ALiVE_hub_queue = createHashMap };
+        private _ids = ALiVE_hub_queue getOrDefault [_netId, []];
+        _ids pushBackUnique _eventID;
+        ALiVE_hub_queue set [_netId, _ids];
+        private _hub = _netId call BIS_fnc_objectFromNetId;
+        if (!isNull _hub) then { _hub setVariable ["ALiVE_hub_stats", [count _ids, [time, serverTime] select isMultiplayer], true] };
+    };
+    case "statsEventDone": {
+        _args params [["_eventID", ""]];
+        if (!isServer || {isNil "ALiVE_hub_queue"}) exitWith {};
+        {
+            if (_eventID in _y) then {
+                _y deleteAt (_y find _eventID);
+                private _hub = _x call BIS_fnc_objectFromNetId;
+                if (!isNull _hub) then { _hub setVariable ["ALiVE_hub_stats", [count _y, (_hub getVariable ["ALiVE_hub_stats", [0, -1]]) param [1, -1]], true] };
+            };
+        } forEach ALiVE_hub_queue;
+    };
+
     // how every site's notifications and map name it: by its name, else by its grid
     case "siteLabel": {
         _args params [["_netId", "", [""]]];
@@ -1619,6 +1815,8 @@ switch (_op) do {
             _hub setVariable ["ALiVE_hub_name", _name];
             _hub setVariable ["ALiVE_hub_owner", _owner];
             _hub setVariable ["ALiVE_hub_zeus", _e param [11, 0]];
+            _hub setVariable ["ALiVE_hub_paused", _e param [13, false], true];
+            _hub setVariable ["ALiVE_hub_firstKey", _e param [14, ""]];
             if ((_e param [12, ""]) != "") then { _hub setVariable ["ALiVE_hub_built", _e select 12, true] };
             _hub setDir _dir;
             _hub setVectorUp _up;

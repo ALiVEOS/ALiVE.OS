@@ -2554,6 +2554,8 @@ switch(_operation) do {
         private _fallbackPos    = _args select 2;
         private _eventID        = _args select 3;
         private _dbg            = _args select 4;
+        // false for a convoy's way home, which sets off from no hub
+        private _departing      = _args param [5, true];
 
         private _nodeResult = _fallbackPos;
 
@@ -2566,6 +2568,7 @@ switch(_operation) do {
             private _bestNodeDist = 1e10;
             private _bestNodeIsHQ = false;
             private _bestNodeIsHub = false;
+            private _bestNodeHub = "";
 
             {
                 private _node     = _x;
@@ -2591,6 +2594,7 @@ switch(_operation) do {
                         _bestNodePos  = _nodePos;
                         _bestNodeIsHQ = _nodeIsHQ;
                         _bestNodeIsHub = _nodeIsHub;
+                        _bestNodeHub = _node param [4, ""];
                     };
                 };
             } forEach _nodes;
@@ -2608,6 +2612,10 @@ switch(_operation) do {
                         _bestNodePos, _faction, _fallbackPos] call ALiVE_fnc_dump;
                     _nodeResult = _fallbackPos;
                     _usedFallback = true;
+                };
+                // the hub's count for the War Room's live map (ALiVE_hub_stats)
+                if (_departing && {_bestNodeIsHub} && {!_usedFallback} && {_bestNodeHub isEqualType ""} && {_bestNodeHub != ""}) then {
+                    ["statsDeparture", [_bestNodeHub, _eventID]] call ALIVE_fnc_hub;
                 };
                 if (_dbg) then {
                     private _nodePos3 = _nodeResult;
@@ -13449,7 +13457,8 @@ switch(_operation) do {
                         _eventPosition,
                         _rawReinforcePos,
                         _eventID,
-                        _debug
+                        _debug,
+                        false
                     ]] call MAINCLASS;
 
                     if (_debug) then {
@@ -18862,6 +18871,8 @@ switch(_operation) do {
 
         _eventID = _args;
         _eventQueue = [_logic, "eventQueue"] call MAINCLASS;
+        // a delivery from a Logistics Hub is no longer under way (ALiVE_hub_stats)
+        if (!isNil "ALiVE_hub_queue") then { ["statsEventDone", [_eventID]] call ALIVE_fnc_hub };
 
         // An AI Commander's request is charged to the Force Pool when it arrives, and settled once its groups are made.
         // One turned down before that (the Static insertion point not held, or no groups could be made) used to keep
