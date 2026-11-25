@@ -96,7 +96,7 @@ switch (_operation) do {
             // 25-35 AI in a few seconds each time, and the server dropped from 45 to 25 FPS as players flew over
             // town after take-off (KH, Red Sector Seven, 13 Nov). While one is airborne and above 150 km/h it only
             // wakes what lies within this shorter radius, plus anti-air. What is already spawned is still held out to
-            // the full helicopter radius, so speeding up never puts anything away. 0 or blank (the default) is off.
+            // the full helicopter radius, so speeding up never puts anything away. 600 by default (a blank field too); 0 is off.
             private _claimRadius = -1;
 
             if (_spawnSourceVehicle isKindOf "Helicopter") then {
