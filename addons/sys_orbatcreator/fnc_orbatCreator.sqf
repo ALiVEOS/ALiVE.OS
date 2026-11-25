@@ -1018,6 +1018,7 @@ switch(_operation) do {
 
                 _displayNameInput ctrlSetText _unitDisplayName;
                 _classnameInput ctrlSetText _unitConfigName;
+                OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_INITCODE ) ctrlSetText ([_selectedUnitData,"initCode",""] call ALiVE_fnc_hashGet);
 
                 private _sideList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_SIDE );
                 private _factionList = OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_FACTION );
@@ -2770,6 +2771,8 @@ switch(_operation) do {
             [_newUnit,"side", _unitSide] call ALiVE_fnc_hashSet;
             [_newUnit,"faction", _unitFaction] call ALiVE_fnc_hashSet;
             [_newUnit,"identityTypes", _identityTypes] call ALiVE_fnc_hashset;
+            // the Init Code an exported faction carries, back into the box (as exported: one line)
+            [_newUnit,"initCode", getText (_unitConfig >> "EventHandlers" >> "ALiVE_orbatCreator_custom" >> "init")] call ALiVE_fnc_hashSet;
 
             if (_unit isKindOf "Man") then {
                 // spawn unit to get loadout
@@ -3166,6 +3169,59 @@ switch(_operation) do {
                 _result = _x;
             };
         } foreach _classnameComponents;
+
+    };
+
+    // The Init Code box's text, checked before it is kept: [ok, code, why not]. The code is kept as typed (line
+    // breaks included) and joined onto one line only when it is exported, as a config string can't hold a line
+    // break. A // comment would then hide everything after it, so a // with more lines below it is refused.
+    // A // inside a string (a URL) is refused the same way unless it is on the last line.
+    case "validateInitCode": {
+
+        private _code = [_args, toString [13], ""] call CBA_fnc_replace;
+        _code = _code trim [toString [9,10,32], 0];
+        private _lines = _code splitString toString [10];
+        private _bad = (_lines select [0, (count _lines - 1) max 0]) findIf { (_x find "//") >= 0 };
+
+        _result = if (_bad >= 0) then {
+            [false, _code, "Init Code: use /* */ comments, not //. Line breaks are joined on export, so a // would hide the lines after it. A // inside text can only be on the last line."]
+        } else {
+            [true, _code, ""]
+        };
+
+    };
+
+    // The Init Code as it goes into the exported config: one line, double quotes doubled
+    case "initCodeExportString": {
+
+        private _code = [_args, toString [13,10], " "] call CBA_fnc_replace;
+        { _code = [_code, toString [_x], " "] call CBA_fnc_replace } forEach [10, 13, 9];
+        _result = [_code, """", """"""] call CBA_fnc_replace;
+
+    };
+
+    // The exported EventHandlers class that carries the Init Code, or "" when none is needed. A cleared box still
+    // writes an empty init when the parent class has code of its own, or the parent's code would run instead.
+    case "exportInitCodeClass": {
+
+        _args params ["_unit", "_indent", "_newLine"];
+
+        private _code = [_unit,"initCode",""] call ALiVE_fnc_hashGet;
+        private _parent = [_unit,"inheritsFrom",""] call ALiVE_fnc_hashGet;
+        private _parentUnit = [_logic,"getCustomUnit", _parent] call MAINCLASS;
+        private _parentCode = if (isnil "_parentUnit") then {
+            getText (configFile >> "CfgVehicles" >> _parent >> "EventHandlers" >> "ALiVE_orbatCreator_custom" >> "init")
+        } else {
+            [_parentUnit,"initCode",""] call ALiVE_fnc_hashGet
+        };
+
+        _result = "";
+        if (_code != "" || {_parentCode != ""}) then {
+            private _string = [_logic,"initCodeExportString", _code] call MAINCLASS;
+            _result = _newLine + _indent + _indent + _indent + "class ALiVE_orbatCreator_custom {" + _newLine;
+            _result = _result + _indent + _indent + _indent + _indent + "init = """ + _string + """;" + _newLine;
+            _result = _result + _indent + _indent + _indent + "};" + _newLine;
+        };
 
     };
 
@@ -5052,6 +5108,9 @@ switch(_operation) do {
         if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
         if (lbCurSel _parentUnitList == -1) exitWith {_instructions ctrlSetText "A unit type must be selected from the list"};
 
+        private _initCheck = [_logic,"validateInitCode", ctrlText OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_INITCODE )] call MAINCLASS;
+        if !(_initCheck select 0) exitWith {_instructions ctrlSetText (_initCheck select 2)};
+
         private _state = [_logic,"state"] call MAINCLASS;
 
         // get side/faction
@@ -5120,6 +5179,17 @@ switch(_operation) do {
                 [_newUnit,"markingsOff", _markingsOff] call ALiVE_fnc_hashSet;
             };
         };
+
+        // the new unit starts with its parent's Init Code unless some was typed
+        private _initCode = _initCheck select 1;
+        if (_initCode == "") then {
+            _initCode = if (isnil "_customUnit") then {
+                getText (configFile >> "CfgVehicles" >> _parentClass >> "EventHandlers" >> "ALiVE_orbatCreator_custom" >> "init")
+            } else {
+                [_customUnit,"initCode",""] call ALiVE_fnc_hashGet
+            };
+        };
+        [_newUnit,"initCode", _initCode] call ALiVE_fnc_hashSet;
 
         [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
 
@@ -5211,7 +5281,12 @@ switch(_operation) do {
         if (_displayName == "") exitWith {_instructions ctrlSetText "Display name cannot be left blank"};
         if (_classname == "") exitWith {_instructions ctrlSetText "Class name cannot be left blank"};
 
+        private _initCheck = [_logic,"validateInitCode", ctrlText OC_getControl( OC_DISPLAY_CREATEUNIT , OC_CREATEUNIT_INPUT_INITCODE )] call MAINCLASS;
+        if !(_initCheck select 0) exitWith {_instructions ctrlSetText (_initCheck select 2)};
+
         // prerequisites verified, begin saving
+
+        [_selectedUnitData,"initCode", _initCheck select 1] call ALiVE_fnc_hashSet;
 
         if (_displayName != _unitDisplayName) then {
             [_selectedUnitData,"displayName", _displayName] call ALiVE_fnc_hashSet;
@@ -7349,6 +7424,7 @@ switch(_operation) do {
             _result = _result + _newLine + _indent + _indent + _indent + _indent + _EHString;
         };
         _result = _result + _newLine + _indent + _indent + _indent + "};" + _newLine;
+        _result = _result + ([_logic,"exportInitCodeClass", [_unit, _indent, _newLine]] call MAINCLASS);
         _result = _result + _newLine + _indent + _indent + "};" + _newLine;
     };
 
@@ -7443,6 +7519,7 @@ switch(_operation) do {
             _result = _result + _newLine + _indent + _indent + _indent + _indent + _EHString;
         };
         _result = _result + _newLine + _indent + _indent + _indent + "};" + _newLine;
+        _result = _result + ([_logic,"exportInitCodeClass", [_unit, _indent, _newLine]] call MAINCLASS);
         _result = _result + _newLine + _indent + _indent + "};" + _newLine;
 
     };

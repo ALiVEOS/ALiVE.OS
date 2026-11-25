@@ -79,6 +79,20 @@ switch(_operation) do {
         [_logic,"texture", ""] call ALiVE_fnc_hashSet;
         [_logic,"markingsOff", []] call ALiVE_fnc_hashSet;
 
+        // the faction author's own init code, exported as its own EventHandlers class (ALiVE_orbatCreator_custom)
+        [_logic,"initCode", ""] call ALiVE_fnc_hashSet;
+
+    };
+
+    case "initCode": {
+
+        if (typename _args == "STRING") then {
+            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _result = _args;
+        } else {
+            _result = [_logic,_operation,""] call ALiVE_fnc_hashGet;
+        };
+
     };
 
     case "inheritsFrom": {

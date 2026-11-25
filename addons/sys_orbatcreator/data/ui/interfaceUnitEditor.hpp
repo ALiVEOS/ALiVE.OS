@@ -394,11 +394,54 @@ class ALiVE_orbatCreator_interface_createUnit {
                     colorBackground[] = COLOR_BLACK_HARD;
                 };
 
+                // the faction author's own init code (exported as EventHandlers >> ALiVE_orbatCreator_custom)
+                class initcode_divider : orbatCreator_RscText {
+                    idc = 10041;
+                    text = "";
+                    x = 0 * safezoneW;
+                    y = 0.962 * safezoneH;
+                    w = 0.44 * safezoneW;
+                    h = 0.00125 * safezoneH;
+                    colorBackground[] = COLOR_GREY_TITLE_HARD;
+                };
+
+                class initcode_title : orbatCreator_common_popup_attribute_title {
+                    idc = 10042;
+                    text = "Init Code";
+                    tooltip = "Runs when this unit is created, on every machine (the server and each player), and again on respawn. _this select 0 is the unit. Wrap anything with a global effect in if (local (_this select 0)) then { ... }. Use /* */ for comments: line breaks are joined when the faction is exported. Double quotes are handled for you.";
+                    x = 0.005 * safezoneW;
+                    y = 0.972 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                };
+
+                class initcode_input : orbatCreator_RscEdit {
+                    idc = 10043;
+                    style = 16; // ST_MULTI
+                    autocomplete = "scripting";
+                    x = 0.033 * safezoneW;
+                    y = 1.017 * safezoneH;
+                    w = 0.364 * safezoneW;
+                    h = 0.2 * safezoneH;
+                    sizeEx = BASE_SIZE_TEXT * 0.85;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class initcode_help : orbatCreator_RscText {
+                    idc = 10044;
+                    text = "Runs on every machine when the unit is created. Use /* */ comments.";
+                    x = 0.033 * safezoneW;
+                    y = 1.222 * safezoneH;
+                    w = 0.364 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    sizeEx = BASE_SIZE_TEXT * 0.8;
+                };
+
                 class scroll_dummy : orbatCreator_RscText {
                     idc = 10040;
                     text = "";
                     x = 0 * safezoneW;
-                    y = 0.973 * safezoneH; // NEEDS READJUSTING
+                    y = 1.27 * safezoneH;
                     w = 0.46 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_BLACK(0);
