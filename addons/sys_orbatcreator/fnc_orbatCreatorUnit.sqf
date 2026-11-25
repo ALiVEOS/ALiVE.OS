@@ -27,6 +27,7 @@ See Also:
 
 Author:
 SpyderBlack723
+Jman
 
 Peer Reviewed:
 nil
@@ -76,6 +77,7 @@ switch(_operation) do {
         [_logic,"crew", ""] call ALiVE_fnc_hashSet;
         [_logic,"turrets", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
         [_logic,"texture", ""] call ALiVE_fnc_hashSet;
+        [_logic,"markingsOff", []] call ALiVE_fnc_hashSet;
 
     };
 

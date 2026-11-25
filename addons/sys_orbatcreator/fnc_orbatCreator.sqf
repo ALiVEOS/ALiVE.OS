@@ -268,6 +268,7 @@ switch(_operation) do {
         [_state,"editVehicle_vehicle", ""] call ALiVE_fnc_hashSet;
         [_state,"editVehicle_selectedCrewBySlot", +_tmpHash] call ALiVE_fnc_hashSet;
         [_state,"editVehicle_selectedTexture", []] call ALiVE_fnc_hashSet;
+        [_state,"editVehicle_markingsOff", []] call ALiVE_fnc_hashSet;
 
         [_state,"groupEditor_selectedGroupCategory", ""] call ALiVE_fnc_hashSet;
         [_state,"groupEditor_selectedGroup", ""] call ALiVE_fnc_hashSet;
@@ -1102,10 +1103,11 @@ switch(_operation) do {
                 _left_list_two ctrlshow false;
 
                 private _left_icon_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_ICON_THREE );
-                _left_icon_three ctrlshow false;
+                _left_icon_three ctrlSetText "\A3\Ui_f\data\GUI\Rsc\RscDisplayGarage\animationSources_ca.paa";
 
                 private _left_button_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_BUTTON_THREE );
-                _left_button_three ctrlshow false;
+                _left_button_three ctrlSetEventHandler ["MouseButtonDown","['onEditVehicleMarkingsClicked', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                _left_button_three ctrlSetTooltip "Markings";
 
                 private _left_list_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_THREE );
                 _left_list_three ctrlSetEventHandler ["lbSelChanged","['onEditVehicleListThreeSelected', _this] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -1138,6 +1140,12 @@ switch(_operation) do {
                 [_state,"editVehicle_vehicle", _selectedVehicle] call ALiVE_fnc_hashSet;
                 [_state,"editVehicle_selectedCrewBySlot", _selectedCrewBySlot] call ALiVE_fnc_hashSet;
                 [_state,"editVehicle_selectedTexture", _selectedVehicleTexture] call ALiVE_fnc_hashSet;
+                [_state,"editVehicle_markingsOff", +([_selectedVehicleData,"markingsOff",[]] call ALiVE_fnc_hashGet)] call ALiVE_fnc_hashSet;
+
+                // Markings shows only for a vehicle that has markings to take off
+                private _hasMarkings = ([_logic,"getVehicleMarkings", [_logic,"getRealUnitClass", _selectedVehicle] call MAINCLASS] call MAINCLASS) isNotEqualTo [];
+                _left_icon_three ctrlShow _hasMarkings;
+                _left_button_three ctrlShow _hasMarkings;
 
                 // populate crew list
 
@@ -2524,12 +2532,14 @@ switch(_operation) do {
 
         private _crew = "";
         private _texture = [];
+        private _markingsOff = [];
 
         if (!isnil "_customUnit") then {
             _vehicle = [_customUnit,"configName"] call ALiVE_fnc_hashGet;
             _loadout = [_customUnit,"loadout"] call ALiVE_fnc_hashGet;
             _crew = [_customUnit,"crew"] call ALiVE_fnc_hashGet;
             _texture = [_customUnit,"texture"] call ALiVE_fnc_hashGet;
+            _markingsOff = [_customUnit,"markingsOff",[]] call ALiVE_fnc_hashGet;
 
             private _customUnitSide = [_customUnit,"side"] call ALiVE_fnc_hashGet;
             private _customSideText = [_customUnitSide] call ALiVE_fnc_sideNumberToText;
@@ -2631,7 +2641,7 @@ switch(_operation) do {
             _activeUnit enableSimulation false;
             _activeUnit setDir 0;
 
-            [_logic,"setVehicleTexure", [_activeUnit,_texture]] call MAINCLASS;
+            [_logic,"setVehicleLook", [_activeUnit,_texture,_markingsOff]] call MAINCLASS;
 
             _cam camSetRelPos [0, (sizeOf _vehicle) * 0.65, (sizeOf _vehicle) * 0.1];
             _cam camSetFov 0.5;
@@ -2814,10 +2824,12 @@ switch(_operation) do {
                 };
 
                 private _texture = getText (_unitConfig >> "ALiVE_orbatCreator_texture");
+                private _markingsOff = getArray (_unitConfig >> "ALiVE_orbatCreator_markingsOff");
 
                 [_newUnit,"crew", _crew] call ALiVE_fnc_hashSet;
                 [_newUnit,"turrets", _turrets] call ALiVE_fnc_hashSet;
                 [_newUnit,"texture", _texture] call ALiVE_fnc_hashSet;
+                [_newUnit,"markingsOff", _markingsOff] call ALiVE_fnc_hashSet;
             };
 
 			// Check to see if unit was imported correctly.
@@ -3246,6 +3258,39 @@ switch(_operation) do {
         {
             _vehicle setObjectTexture [_forEachIndex, _textureArray select _forEachIndex];
         } foreach _textureArray;
+
+    };
+
+    case "getVehicleMarkings": {
+
+        // the markings a vehicle class can have taken off, as [index, selection name]: its hidden
+        // selections other than the paint ("camo"), such as national roundels, emblems and numbers
+
+        private _vehicle = _args;
+
+        _result = [];
+        {
+            if (_x isEqualType "" && {!("camo" in toLower _x)}) then { _result pushBack [_forEachIndex, _x] };
+        } foreach (getArray (configFile >> "CfgVehicles" >> _vehicle >> "hiddenSelections"));
+
+    };
+
+    case "setVehicleLook": {
+
+        // the preview's look: the class's own textures, the paint over them, then the markings taken off
+        // (the class's textures first, so a marking put back shows again)
+
+        _args params ["_vehicle","_texture",["_markingsOff",[]]];
+
+        {
+            if (_x isEqualType "") then { _vehicle setObjectTexture [_forEachIndex, _x] };
+        } foreach (getArray (configFile >> "CfgVehicles" >> typeof _vehicle >> "hiddenSelectionsTextures"));
+
+        [_logic,"setVehicleTexure", [_vehicle,_texture]] call MAINCLASS;
+
+        {
+            _vehicle setObjectTexture [_x, ""];
+        } foreach _markingsOff;
 
     };
 
@@ -5047,10 +5092,12 @@ switch(_operation) do {
                 private _turrets = + ([_parentCopy,"turrets"] call ALiVE_fnc_hashGet);
                 private _crew = [_parentCopy,"crew"] call ALiVE_fnc_hashGet;
                 private _texture = [_parentCopy,"texture"] call ALiVE_fnc_hashGet;
+                private _markingsOff = +([_parentCopy,"markingsOff",[]] call ALiVE_fnc_hashGet);
 
                 [_newUnit,"turrets", _turrets] call ALiVE_fnc_hashSet;
                 [_newUnit,"crew", _crew] call ALiVE_fnc_hashSet;
                 [_newUnit,"texture", _texture] call ALiVE_fnc_hashSet;
+                [_newUnit,"markingsOff", _markingsOff] call ALiVE_fnc_hashSet;
             };
         } else {
             private _realParentClass = [_logic,"getRealUnitClass", _parentClass] call MAINCLASS;
@@ -5065,10 +5112,12 @@ switch(_operation) do {
                 private _turrets = + ([_customUnit,"turrets"] call ALiVE_fnc_hashGet);
                 private _crew = [_customUnit,"crew"] call ALiVE_fnc_hashGet;
                 private _texture = [_customUnit,"texture"] call ALiVE_fnc_hashGet;
+                private _markingsOff = +([_customUnit,"markingsOff",[]] call ALiVE_fnc_hashGet);
 
                 [_newUnit,"turrets", _turrets] call ALiVE_fnc_hashSet;
                 [_newUnit,"crew", _crew] call ALiVE_fnc_hashSet;
                 [_newUnit,"texture", _texture] call ALiVE_fnc_hashSet;
+                [_newUnit,"markingsOff", _markingsOff] call ALiVE_fnc_hashSet;
             };
         };
 
@@ -5202,10 +5251,12 @@ switch(_operation) do {
                     private _turrets = + ([_parentCopy,"turrets"] call ALiVE_fnc_hashGet);
                     private _crew = [_parentCopy,"crew"] call ALiVE_fnc_hashGet;
                     private _texture = [_parentCopy,"texture"] call ALiVE_fnc_hashGet;
+                    private _markingsOff = +([_parentCopy,"markingsOff",[]] call ALiVE_fnc_hashGet);
 
                     [_selectedUnitData,"turrets", _turrets] call ALiVE_fnc_hashSet;
                     [_selectedUnitData,"crew", _crew] call ALiVE_fnc_hashSet;
                     [_selectedUnitData,"texture", _texture] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"markingsOff", _markingsOff] call ALiVE_fnc_hashSet;
                 };
             } else {
                 if (_realParentClass isKindOf "Man") then {
@@ -5218,10 +5269,12 @@ switch(_operation) do {
                     private _turrets = + ([_parentClassUnit,"turrets"] call ALiVE_fnc_hashGet);
                     private _crew = [_parentClassUnit,"crew"] call ALiVE_fnc_hashGet;
                     private _texture = [_parentClassUnit,"texture"] call ALiVE_fnc_hashGet;
+                    private _markingsOff = +([_parentClassUnit,"markingsOff",[]] call ALiVE_fnc_hashGet);
 
                     [_selectedUnitData,"turrets", _turrets] call ALiVE_fnc_hashSet;
                     [_selectedUnitData,"crew", _crew] call ALiVE_fnc_hashSet;
                     [_selectedUnitData,"texture", _texture] call ALiVE_fnc_hashSet;
+                    [_selectedUnitData,"markingsOff", _markingsOff] call ALiVE_fnc_hashSet;
                 };
             };
         };
@@ -5313,6 +5366,8 @@ switch(_operation) do {
         if !(_texture == _vehicleTexture) then {
             [_vehicleData,"texture", _texture] call ALiVE_fnc_hashSet;
         };
+
+        [_vehicleData,"markingsOff", +([_state,"editVehicle_markingsOff",[]] call ALiVE_fnc_hashGet)] call ALiVE_fnc_hashSet;
 
         closeDialog 0;
 
@@ -5446,7 +5501,82 @@ switch(_operation) do {
 
         [_state,"editVehicle_selectedTexture", _selectedTexture] call ALiVE_fnc_hashSet;
 
-        [_logic,"setVehicleTexure", [_activeObject,_selectedTexture]] call MAINCLASS;
+        [_logic,"setVehicleLook", [_activeObject,_selectedTexture,[_state,"editVehicle_markingsOff",[]] call ALiVE_fnc_hashGet]] call MAINCLASS;
+
+    };
+
+    case "onEditVehicleMarkingsClicked": {
+
+        private ["_index"];
+
+        private _rightListOneTitle = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_RIGHT_LIST_ONE_TITLE );
+        _rightListOneTitle ctrlShow false;
+
+        private _rightListOne = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_RIGHT_LIST_ONE );
+        _rightListOne ctrlShow false;
+
+        private _left_list_one = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_ONE );
+        _left_list_one ctrlshow false;
+
+        private _left_list_two = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_TWO );
+        _left_list_two ctrlshow false;
+
+        private _left_list_three = OC_getControl( OC_DISPLAY_EDITVEHICLE , OC_EDITVEHICLE_LEFT_LIST_THREE );
+
+        if (ctrlShown _left_list_three) exitWith {
+            _left_list_three ctrlshow false;
+        };
+
+        private _state = [_logic,"state"] call MAINCLASS;
+
+        private _selectedVehicle = [_state,"editVehicle_vehicle"] call ALiVE_fnc_hashGet;
+        private _realVehClass = [_logic,"getRealUnitClass", _selectedVehicle] call MAINCLASS;
+        private _markingsOff = [_state,"editVehicle_markingsOff",[]] call ALiVE_fnc_hashGet;
+
+        lbClear _left_list_three;
+
+        {
+            _x params ["_markingIndex","_markingName"];
+
+            _index = _left_list_three lbAdd _markingName;
+            _left_list_three lbSetValue [_index, _markingIndex];
+            _left_list_three lbSetPicture [_index, ["\A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa","\A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa"] select (_markingIndex in _markingsOff)];
+        } foreach ([_logic,"getVehicleMarkings", _realVehClass] call MAINCLASS);
+
+        _left_list_three lbSetCurSel -1;
+        _left_list_three ctrlshow true;
+
+    };
+
+    case "onEditVehicleListThreeSelected": {
+
+        // a click on a marking takes it off the vehicle, or puts it back
+
+        _args params ["_list","_index"];
+
+        if (_index < 0) exitWith {};
+
+        private _markingIndex = _list lbValue _index;
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _markingsOff = [_state,"editVehicle_markingsOff",[]] call ALiVE_fnc_hashGet;
+
+        if (_markingIndex in _markingsOff) then {
+            _markingsOff = _markingsOff - [_markingIndex];
+        } else {
+            _markingsOff = _markingsOff + [_markingIndex];
+            _markingsOff sort true;
+        };
+
+        [_state,"editVehicle_markingsOff", _markingsOff] call ALiVE_fnc_hashSet;
+
+        _list lbSetPicture [_index, ["\A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa","\A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa"] select (_markingIndex in _markingsOff)];
+        _list lbSetCurSel -1;
+
+        private _activeObject = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
+        private _selectedTexture = [_state,"editVehicle_selectedTexture"] call ALiVE_fnc_hashGet;
+
+        [_logic,"setVehicleLook", [_activeObject,_selectedTexture,_markingsOff]] call MAINCLASS;
 
     };
 
@@ -7074,6 +7204,11 @@ switch(_operation) do {
             _result = _result + _indent + _indent + "ALiVE_orbatCreator_texture = " + str _unitTexture + ";" + _newLine;
         };
 
+        private _unitMarkingsOff = [_unit,"markingsOff",[]] call ALiVE_fnc_hashGet;
+        if (_unitMarkingsOff isNotEqualTo []) then {
+            _result = _result + _indent + _indent + "ALiVE_orbatCreator_markingsOff[] = {" + (_unitMarkingsOff joinString ",") + "};" + _newLine;
+        };
+
         // finish export
 
         _result = _result + _newLine + _indent + "};" + _newLine;
@@ -7257,6 +7392,11 @@ switch(_operation) do {
             } foreach _unitTextureArray;
             [_eventHandlers,"init", _initEventHandler] call ALiVE_fnc_hashSet;
         };
+
+        // markings taken off in Edit Vehicle (a roundel, an emblem, a number), after the paint, which can carry one
+        {
+            _initEventHandler = _initEventHandler + "_unit setObjectTextureGlobal " + (format ["[%1,'']",_x]) + ";";
+        } foreach ([_unit,"markingsOff",[]] call ALiVE_fnc_hashGet);
 
         _result = _result + _newLine;
         _result = _result + _indent + _indent + "crew = " + str _unitCrew + ";" + _newLine;
