@@ -14,6 +14,22 @@ _ordnance = _this select 7;
 _dispersion = _this select 8;
 _units = _this select 9;
 
+// A gun found without its crew (one thrown off its spot, its crew out of it) is crewed again before it is
+// given rounds, in the battery's group and kept on the server; one that still has no crew is left out of
+// this mission, so its share of the rounds goes to the guns that can fire.
+private _bGrp = group _battery;
+if (isNull _bGrp) then { { if (!isNull group _x) exitWith { _bGrp = group _x } } forEach _units };
+{
+    if (!(_x isKindOf "Man") && {alive _x} && {!alive (gunner _x)} && {!alive (effectiveCommander _x)}) then {
+        createVehicleCrew _x;
+        if (!isNull _bGrp) then { (crew _x) joinSilent _bGrp };
+        { _x setVariable ["ALiVE_ignore_HC", true, true] } forEach (crew _x);
+        ["COMBAT SUPPORT - Artillery %1: a %2 had no crew, crewed again: %3", groupId _bGrp, typeOf _x, alive (gunner _x) || {alive (effectiveCommander _x)}] call ALiVE_fnc_dump;
+    };
+} forEach _units;
+private _canFire = _units select { (_x isKindOf "Man") || {alive _x && {alive (gunner _x) || {alive (effectiveCommander _x)}}} };
+if (_canFire isNotEqualTo []) then { _units = _canFire };
+
 
 if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["MISSION: %1", _this] call ALiVE_fnc_dump; };
 
@@ -193,7 +209,8 @@ if(_missionRoundCount == 1) then {
 
 } else {
     private _roundsOut = _missionRoundCount;
-    private _numUnits = (group _battery) getVariable ["supportWeaponCount",3];
+    // only the guns given, which can fire (see the top)
+    private _numUnits = ((group _battery) getVariable ["supportWeaponCount",3]) min ((count _units) max 1);
     private _roundsOutEach = [];
     _roundsOutEach resize [_numUnits,0];
     private _i = 0;

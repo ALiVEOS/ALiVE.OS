@@ -1246,6 +1246,12 @@ switch(_operation) do {
                                 {
                                     private ["_veh","_sptarr"];
                                     _vehPos = _pos getPos [15, _vehDir]; _vehPos set [2, 0];
+                                    // a spot another battery's gun already stands on (two batteries 30 m apart share one) moves to clear
+                                    // ground nearby: both guns were made on it, one was thrown off it and its crew got out
+                                    if ((_vehPos nearEntities ["LandVehicle", 7]) isNotEqualTo []) then {
+                                        private _room = _vehPos findEmptyPosition [0, 40, [_class, _tempclass] select (!isNil "_tempclass")];
+                                        if (_room isNotEqualTo []) then { _vehPos = _room; _vehPos set [2, 0] };
+                                    };
 
                                     if (isNil "_tempclass") then {
                                         _veh = createVehicle [_class, _vehPos, [], 0, "CAN_COLLIDE"];
@@ -1321,6 +1327,9 @@ switch(_operation) do {
 
                                     // set ownership flag for other modules
                                     _veh setVariable ["ALIVE_CombatSupport", true];
+                                    // the crews stay on the server, where the battery's missions are run: a crew member out of the gun
+                                    // used to take the whole battery to a headless client
+                                    { _x setVariable ["ALiVE_ignore_HC", true, true] } forEach _crew;
 
                                     // kept out of other AI mods (LAMBS, VCOM) under Guard, as the rest of ALiVE's groups are
                                     ["guard", [group driver _veh]] call ALiVE_fnc_modConflicts;
