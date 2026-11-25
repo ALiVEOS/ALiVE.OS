@@ -61,6 +61,8 @@ private _boardEntry = [];
 // before, so release restores holds owned by other systems (e.g. an air
 // component preventDespawn on the same target) instead of clobbering them
 private _priorHolds = [];
+// the crews of the guns, held still while the battery fires (see after the guns are crewed)
+private _heldCrew = [];
 
 private _fnc_hold = {
     params ["_p","_pid","_pkind"];
@@ -108,6 +110,12 @@ private _fnc_release = {
     [_record,"cooldownUntil", time + (_cooldownBase * _cooldownFactor) + random _cooldownJitter] call ALiVE_fnc_hashSet;
 
     _logic setVariable ["activeMissions", ((_logic getVariable ["activeMissions", 1]) - 1) max 0];
+
+    // the battery moves on again
+    { if (!isNull _x) then { [_x, "PATH"] remoteExec ["enableAI", _x] } } forEach _heldCrew;
+    if (_debug && {_heldCrew isNotEqualTo []}) then {
+        ["ALiVE MIL_ARTILLERY - battery %1 moves on again (%2 crew)", _entityID, count _heldCrew] call ALiVE_fnc_dump;
+    };
 };
 
 // the HQ's answer to a player who called this mission from the Combat Support tablet
@@ -216,6 +224,10 @@ if (count _guns == 0) exitWith {
     ["STR_ALIVE_MIL_ARTILLERY_CALL_NOGUNS"] call _fnc_tell;
     [0.5] call _fnc_release;
 };
+
+// The battery holds still from here to its last round. It used to go on along its route as it fired, so its
+// guns fired from wherever they happened to be and drove on afterwards. Set where each crewman is local.
+{ { _heldCrew pushBack _x; [_x, "PATH"] remoteExec ["disableAI", _x] } forEach (crew _x) } forEach _guns;
 
 // a missile launcher at sea comes up under water, where it can't fire: put back on its deck, and given a
 // moment to settle there before anything is aimed. It holds its fire, so it doesn't launch at whatever the
