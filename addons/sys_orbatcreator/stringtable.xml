@@ -338,6 +338,9 @@
 <Key ID="STR_ALIVE_FS_L_PARTS">
     <English>Parts</English>
 </Key>
+<Key ID="STR_ALIVE_FS_MARKING_ROW">
+    <English>Marking: %1</English>
+</Key>
 <Key ID="STR_ALIVE_FS_PARTS_NONE">
     <English>No parts to choose for this vehicle</English>
 </Key>

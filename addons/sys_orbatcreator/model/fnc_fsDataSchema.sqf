@@ -160,6 +160,8 @@ private _schema = createHashMapFromArray [
         ["turrets", "L:turret", [], "", 16],
         ["texture", "S", "", "gear"],
         ["textures", "LS", [], "path", 16],
+        // markings taken off: hiddenSelections names of the base (a roundel, an emblem, a number)
+        ["markingsOff", "LS", [], "gear", 32],
         ["components", "L:component", [], "", 32],
         // 0 as the base vehicle, 1 empty, 2 the cargo list
         ["pylons", "LS", [], "gear", 64],

@@ -60,6 +60,8 @@ private _texture = _e getOrDefault ["texture", ""];
 if !(_texture isEqualTo "") then { _lines pushBack (_i + "textureList[] = " + ([_texture, 1] call _a) + ";") };
 private _textures = _e getOrDefault ["textures", []];
 if (count _textures > 0) then { _lines pushBack (_i + "hiddenSelectionsTextures[] = " + (_textures call _a) + ";") };
+private _markingsOff = _e getOrDefault ["markingsOff", []];
+if (count _markingsOff > 0) then { _lines pushBack (_i + "ALiVE_FS_markingsOff[] = " + (_markingsOff call _a) + ";") };
 
 private _components = (_e getOrDefault ["components", []]) apply { [_x getOrDefault ["source", ""], _x getOrDefault ["value", 0]] } select { !((_x select 0) isEqualTo "") };
 if (count _components > 0) then {

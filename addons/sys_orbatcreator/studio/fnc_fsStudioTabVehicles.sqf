@@ -16,7 +16,9 @@ crew, gunners, paint and parts, with the selection on the stage.
       faction);
     - "seat", "gunner": a gunner seat and the unit in it;
     - "texture": the paint (Default, or one of the base's TextureSources);
-    - "part": a click on a part turns it on or off. The parts are the base's
+    - "part": a click on a part turns it on or off; a click on a marking (a
+      roundel, emblem or number, the rows under the parts) takes it off or puts
+      it back (markingsOff, the base's hidden selections other than the paint). The parts are the base's
       animationSources that Eden's Edit Vehicle Appearance shows (a displayName
       and scope above 1 or no scope, the Garage's rule); only the ones changed from the base are stored;
     - "pylons": the base's pylon presets ("As the base vehicle" stores nothing;
@@ -196,7 +198,19 @@ private _show = {
         _parts lbSetValue [_i, [0, 1] select _on];
         _parts lbSetPicture [_i, [_unchecked, _checked] select _on];
     } forEach _all;
-    if (_all isEqualTo [] && {!(_id isEqualTo "")}) then { _parts lbAdd (localize "STR_ALIVE_FS_PARTS_NONE") };
+    // markings: the base's hidden selections other than the paint, the classic editor's list, ticked unless taken off
+    private _off = _entry getOrDefault ["markingsOff", []];
+    private _markRow = localize "STR_ALIVE_FS_MARKING_ROW";
+    if (_markRow isEqualTo "") then { _markRow = "Marking: %1" };
+    {
+        private _sel = _x select 1;
+        private _on = !(_sel in _off);
+        _i = _parts lbAdd format [_markRow, _sel];
+        _parts lbSetData [_i, "#mark:" + _sel];
+        _parts lbSetValue [_i, [0, 1] select _on];
+        _parts lbSetPicture [_i, [_unchecked, _checked] select _on];
+    } forEach (if (_base isEqualTo "") then { [] } else { [objNull, "getVehicleMarkings", _base] call ALiVE_fnc_orbatCreator });
+    if (lbSize _parts == 0 && {!(_id isEqualTo "")}) then { _parts lbAdd (localize "STR_ALIVE_FS_PARTS_NONE") };
     _parts lbSetCurSel -1;
     // as tall as its rows (1 to 6, whole rows, never half a row); the crew note follows below it
     private _rowH = 0.9 * ((((safezoneW / safezoneH) min 1.2) / 1.2) / 25);
@@ -380,6 +394,12 @@ switch (_op) do {
         private _id = _session getOrDefault ["selVehicle", ""];
         if (_source isEqualTo "" || {!(_id in _vehicles)}) exitWith {};
         private _entry = _vehicles get _id;
+        if ((_source select [0, 6]) isEqualTo "#mark:") exitWith {
+            private _sel = _source select [6];
+            private _off = +(_entry getOrDefault ["markingsOff", []]);
+            if (_sel in _off) then { _off = _off - [_sel] } else { _off pushBack _sel };
+            ["markingsOff", _off, true] call _set;
+        };
         private _now = 1 - (_ctrl lbValue _index);
         private _init = (([_entry getOrDefault ["base", ""]] call _partsOf) select { (_x select 0) == _source }) param [0, ["", "", 0]] select 2;
         // only what differs from the base is stored

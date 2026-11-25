@@ -269,13 +269,25 @@ private _looks = [];
         private _source = _x getOrDefault ["source", ""];
         if !(_source isEqualTo "") then { _parts append [_source, [0, 1] select ((_x getOrDefault ["value", 0]) > 0.5)] };
     } forEach (_e getOrDefault ["components", []]);
-    if (!(_texture isEqualTo "") || {count _parts > 0}) then {
-        // class-rule names only, so single quotes are safe inside the handler string
-        private _paint = if (_texture isEqualTo "") then { "false" } else { format ["['%1',1]", _texture] };
-        private _anims = if (count _parts == 0) then { "false" } else {
-            "[" + ((_parts apply { if (_x isEqualType "") then { "'" + _x + "'" } else { _x toFixed 0 } }) joinString ",") + "]"
+    // markings taken off (a roundel, an emblem, a number): the base's hidden selection indices, cleared 0.3 s on,
+    // after the paint, since a paint can carry a roundel and some mods put their own markings on at init
+    private _sels = (getArray (configFile >> "CfgVehicles" >> (_e getOrDefault ["base", ""]) >> "hiddenSelections")) apply { if (_x isEqualType "") then { toLower _x } else { "" } };
+    private _markIdx = [];
+    { private _k = _sels find (toLower _x); if (_k >= 0) then { _markIdx pushBack _k } } forEach (_e getOrDefault ["markingsOff", []]);
+    if (!(_texture isEqualTo "") || {count _parts > 0} || {count _markIdx > 0}) then {
+        private _cmd = "private _v = _this select 0;";
+        if (!(_texture isEqualTo "") || {count _parts > 0}) then {
+            // class-rule names only, so single quotes are safe inside the handler string
+            private _paint = if (_texture isEqualTo "") then { "false" } else { format ["['%1',1]", _texture] };
+            private _anims = if (count _parts == 0) then { "false" } else {
+                "[" + ((_parts apply { if (_x isEqualType "") then { "'" + _x + "'" } else { _x toFixed 0 } }) joinString ",") + "]"
+            };
+            _cmd = _cmd + format [" if (local _v && {isNil {_v getVariable 'BIS_fnc_initVehicle_customization'}}) then {[_v, %1, %2] call BIS_fnc_initVehicle};", _paint, _anims];
         };
-        _looks pushBack [_classOf get _x, format ["private _v = _this select 0; if (local _v && {isNil {_v getVariable 'BIS_fnc_initVehicle_customization'}}) then {[_v, %1, %2] call BIS_fnc_initVehicle}", _paint, _anims]];
+        if (count _markIdx > 0) then {
+            _cmd = _cmd + format [" if (local _v) then {[{{(_this select 0) setObjectTextureGlobal [_x, '']} forEach (_this select 1)}, [_v, %1], 0.3] call CBA_fnc_waitAndExecute};", str _markIdx];
+        };
+        _looks pushBack [_classOf get _x, _cmd];
     };
 } forEach _vehicles;
 

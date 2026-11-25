@@ -122,6 +122,14 @@ if !(_owned isEqualTo "") then {
     };
 };
 
+// Markings taken off: Faction Studio writes the selection names, the classic editor the indices.
+private _sels = getArray (_cfg >> "hiddenSelections");
+private _markingsOff = [];
+{
+    private _n = if (_x isEqualType 0) then { _sels param [_x, ""] } else { _x };
+    if (_n isEqualType "" && {[_n, "gear"] call _ok} && {!(_n isEqualTo "")}) then { _markingsOff pushBackUnique _n };
+} forEach ((getArray (_cfg >> "ALiVE_FS_markingsOff")) + (getArray (_cfg >> "ALiVE_orbatCreator_markingsOff")));
+
 // Category: the one named like the Eden subcategory of the class.
 private _category = "";
 private _subName = [getText (configFile >> "CfgEditorSubcategories" >> getText (_cfg >> "editorSubcategory") >> "displayName"), ""] call _text60;
@@ -148,5 +156,6 @@ createHashMapFromArray [
     ["crewClass", _crewClass],
     ["turrets", _turrets],
     ["texture", [_texture] call _gear],
-    ["textures", _textures]
+    ["textures", _textures],
+    ["markingsOff", _markingsOff select [0, 32]]
 ]

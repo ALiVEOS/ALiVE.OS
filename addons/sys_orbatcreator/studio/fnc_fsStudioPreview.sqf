@@ -76,6 +76,7 @@ private _identity = createHashMap;
 private _paint = "";
 private _parts = [];
 private _pylons = [];
+private _marks = [];
 if (_op in ["unit", "vehicle"]) then {
     private _faction = missionNamespace getVariable ["ALiVE_FS_faction", createHashMap];
     private _entry = (_faction getOrDefault [["units", "vehicles"] select (_op == "vehicle"), createHashMap]) getOrDefault [_arg, createHashMap];
@@ -87,6 +88,13 @@ if (_op in ["unit", "vehicle"]) then {
     _paint = _entry getOrDefault ["texture", ""];
     { _parts append [_x getOrDefault ["source", ""], _x getOrDefault ["value", 0]] } forEach (_entry getOrDefault ["components", []]);
     _pylons = _entry getOrDefault ["pylons", []];
+    _marks = _entry getOrDefault ["markingsOff", []];
+};
+// the markings taken off, as the base's hidden selection indices
+private _markIdx = [];
+if (_marks isNotEqualTo []) then {
+    private _sels = (getArray (configFile >> "CfgVehicles" >> _class >> "hiddenSelections")) apply { if (_x isEqualType "") then { toLower _x } else { "" } };
+    { private _k = _sels find (toLower _x); if (_k >= 0) then { _markIdx pushBack _k } } forEach _marks;
 };
 
 private _stage = _session getOrDefault ["stagePos", []];
@@ -116,7 +124,10 @@ if (_op == "vehicle" && {!isNull _old} && {_oldRef isEqualTo _arg} && {typeOf _o
     _old setPosASL _stage;
     _old enableSimulation true;
     _session set ["bodyPaint", _paint];
+    // the class's own textures first, so a marking put back shows again when there is no paint to put it back
+    { if (_x isEqualType "") then { _old setObjectTexture [_forEachIndex, _x] } } forEach (getArray (configFile >> "CfgVehicles" >> _class >> "hiddenSelectionsTextures"));
     [_old, [false, [_paint, 1]] select !(_paint isEqualTo ""), [false, _all] select !(_all isEqualTo [])] call BIS_fnc_initVehicle;
+    { _old setObjectTexture [_x, ""] } forEach _markIdx;
     [{
         params ["_body", "_stage", "_gen"];
         private _s = missionNamespace getVariable ["ALiVE_FS_session", createHashMap];
@@ -193,6 +204,7 @@ if (_class isKindOf "CAManBase") then {
             _body setVelocity [0, 0, 0];
         }, [_body, _stage, _gen], 2] call CBA_fnc_execAfterNFrames;
     };
+    { _body setObjectTexture [_x, ""] } forEach _markIdx;
 };
 
 _session set ["body", _body];
