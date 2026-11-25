@@ -38,7 +38,7 @@ Parameters:
 2: ARRAY - a roaming drone: the position of the objective it is launched from
 3: SIDE - a roaming drone: its side
 
-or a mode: ["nolink", [drone]] (every client: its UAV terminal can't connect to the drone),
+or a mode: ["eyes", [players]] (where they watch from: each body, and a Zeus's camera), ["nolink", [drone]] (every client: its UAV terminal can't connect to the drone),
 ["roofed", [unit or vehicle]] (is there a roof within 3 m over him), ["height", [object]] (its height over the
 ground, or over the sea where it is over water), ["blow", [state, position ASL, fuse, on target]],
 ["downed", [state, reason]], ["info", [state]] and ["end", [state, reason, drop]] (server).
@@ -58,6 +58,20 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
             if (!hasInterface) exitWith {};
             _args params [["_uav", objNull, [objNull]]];
             if (!isNull _uav && {!isNull player}) then { player disableUAVConnectability [_uav, true] };
+        };
+
+        case "eyes": {
+            // where the players are watching from: each player's body, and a Zeus's camera too (fnc_ZEUSinit moves
+            // his Zeus module to it every second and parks it at [-5000,-5000] when he is out of the Zeus interface;
+            // the camera itself exists only on his own machine). Positions ATL
+            _args params [["_players", [], [[]]]];
+            private _eyes = [];
+            {
+                _eyes pushBack (getPosATL _x);
+                private _c = getAssignedCuratorLogic _x;
+                if (!isNull _c && {((getPosATL _c) distance2D [-5000, -5000]) > 100}) then { _eyes pushBack (getPosATL _c) };
+            } forEach _players;
+            _eyes
         };
 
         case "roofed": {
@@ -800,7 +814,8 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         if ((fuel _uav) <= 0) exitWith { ["no fuel (jammed by another mod?)", true] call _fnc_end };
         if (time > (_d get "batteryEnd")) exitWith { "out of battery" call _fnc_downed };
         private _players = allPlayers - entities "HeadlessClient_F";
-        if ((_players findIf { (_x distance _uav) < (_d get "recall") }) < 0) exitWith { [format ["no player within %1 m", _d get "recall"], false] call _fnc_end };
+        // a Zeus's camera counts as a player here, so a drone sent at AI he is watching is not called back
+        if (((["eyes", [_players]] call ALiVE_fnc_createFPVDrone) findIf { (_x distance _uav) < (_d get "recall") }) < 0) exitWith { [format ["no player within %1 m", _d get "recall"], false] call _fnc_end };
         if ((_d get "marker") != "") then { (_d get "marker") setMarkerPos getPosATL _uav };
         // held by a soft jam: nothing more this second
         if ((_d getOrDefault ["jamTick", -1]) >= 0) then { continue };

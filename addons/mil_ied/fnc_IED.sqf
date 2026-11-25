@@ -1580,14 +1580,16 @@ switch(_operation) do {
                     };
                     // Drone Targets Players and AI with no player a drone may go after (all Zeus, or none on foot or in
                     // a land vehicle): a group of a launching side sends one at hostile AI it knows about, 300 m to
-                    // Drone Launch Range from its leader and within 1200 m of a player, so it is seen
+                    // Drone Launch Range from its leader and within 1200 m of a player, so it is seen (a Zeus's camera
+                    // counts as a player for that, as well as his body)
                     if (_droneOn && {_toAI} && {_eligible isEqualTo []} && {_players isNotEqualTo []}
                         && {(count ALiVE_IED_drones) < (ADDON getVariable ["Drone_Max", 2])} && {(random 100) < _droneChance}) then {
+                        private _eyes = ["eyes", [_players]] call ALiVE_fnc_createFPVDrone;
                         private _vehOk = (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL";
                         private _groups = allGroups select {
                             (side _x) in _droneSides && {alive leader _x} && {!isPlayer leader _x}
                             && {time > (_x getVariable ["ALiVE_IED_droneGroupNext", 0])}
-                            && {private _l = leader _x; (_players findIf { (_x distance _l) < (_range + 1200) }) >= 0}
+                            && {private _l = leader _x; (_eyes findIf { (_x distance _l) < (_range + 1200) }) >= 0}
                         };
                         private _pick = [];
                         {
@@ -1596,7 +1598,7 @@ switch(_operation) do {
                             private _ai = (_lead targets [true, _range]) select {
                                 private _t = _x;
                                 alive _t && {(_t distance _lead) > 300}
-                                && {(_players findIf { (_x distance _t) < 1200 }) >= 0}
+                                && {(_eyes findIf { (_x distance _t) < 1200 }) >= 0}
                                 && {(["height", [_t]] call ALiVE_fnc_createFPVDrone) < 25}
                                 && {isNull (_t getVariable ["ALiVE_IED_droneOn", objNull])}
                                 && {if (_t isKindOf "Man") then { !isPlayer _t && {(vehicle _t) isEqualTo _t} } else {
