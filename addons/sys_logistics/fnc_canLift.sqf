@@ -41,8 +41,8 @@ _canLift = false;
 // vehicle was offered Lift object for whatever stood nearest, which was the load on its own ropes.
 // Something already attached means the vehicle is towing or lifting, which is also how Untow and Release know there is
 // a load. A crate strapped on with Cargo Straps (cgs_carrier) and its strap parts (simple objects) are not a load, so a
-// vehicle carrying one can still tow and lift (#1143).
-if (isnil "_object" || {isnil "_container"} || {{_object isKindOf _x} count _blackList > 0} || {!isnil {_object getvariable QGVAR(DISABLE)}} || {!(_container isKindOf "Air")} || {(getNumber (configFile >> "cfgVehicles" >> typeof _container >> "transportSoldier")) < 6} || {(({!(isSimpleObject _x) && {(_x getVariable ["cgs_carrier", objNull]) isNotEqualTo _container}} count attachedObjects _container) > 0)} || {!isNull getSlingLoad _container}) exitwith {_canLift};
+// vehicle carrying one can still tow and lift, and so can one with a crate placed on it with ALiVE (#1143).
+if (isnil "_object" || {isnil "_container"} || {{_object isKindOf _x} count _blackList > 0} || {!isnil {_object getvariable QGVAR(DISABLE)}} || {!(_container isKindOf "Air")} || {(getNumber (configFile >> "cfgVehicles" >> typeof _container >> "transportSoldier")) < 6} || {(({!(isSimpleObject _x) && {(_x getVariable ["cgs_carrier", objNull]) isNotEqualTo _container} && {!(_x in (_container getVariable [QGVAR(CARGO_PLACED), []]))}} count attachedObjects _container) > 0)} || {!isNull getSlingLoad _container}) exitwith {_canLift};
 
 {if (_container isKindOf _x) exitwith {_containerCanLift = true}} foreach _allowedContainers;
 {if (_object isKindOf _x) exitwith {_objectCanLift = true}} foreach _allowedObjects;

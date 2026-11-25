@@ -155,6 +155,8 @@ switch (_operation) do {
 
                 if !(_logic getvariable ["DISABLECARRY",false]) then {[_logic,"addAction",[player,"carryObject"]] call ALiVE_fnc_logistics};
                 if !(_logic getvariable ["DISABLECARRY",false]) then {[_logic,"addAction",[player,"dropObject"]] call ALiVE_fnc_logistics};
+                if !(_logic getvariable ["DISABLECARRY",false]) then {[_logic,"addAction",[player,"placeObject"]] call ALiVE_fnc_logistics};
+                if !(_logic getvariable ["DISABLECARRY",false]) then {[_logic,"addAction",[player,"takeObject"]] call ALiVE_fnc_logistics};
                 if !(_logic getvariable ["DISABLELOAD",false]) then {[_logic,"addAction",[player,"stowObjects"]] call ALiVE_fnc_logistics};
                 if !(_logic getvariable ["DISABLELOAD",false]) then {[_logic,"addAction",[player,"unloadObjects"]] call ALiVE_fnc_logistics};
                 if !(_logic getvariable ["DISABLETOW",false]) then {[_logic,"addAction",[player,"towObject"]] call ALiVE_fnc_logistics};
@@ -163,6 +165,38 @@ switch (_operation) do {
                 if !(_logic getvariable ["DISABLELIFT",false]) then {[_logic,"addAction",[player,"releaseObject"]] call ALiVE_fnc_logistics};
 
                 player setvariable [QGVAR(ACTIONS),true];
+
+                // Ctrl, Shift or both with the mouse wheel move what the player carries (#1143): once per machine
+                if (isNil QGVAR(WHEELEH) && {!(_logic getvariable ["DISABLECARRY",false])}) then {
+                    GVAR(WHEELEH) = true;
+                    [] spawn {
+                        waitUntil { sleep 1; !isNull (findDisplay 46) };
+                        GVAR(MODKEYS) = [false, false, false];
+                        private _keys = {
+                            params ["_display", "_key", "", "", "", "_down"];
+                            private _i = [[29, 157], [42, 54], [56, 184]] findIf { _key in _x };
+                            if (_i > -1) then { GVAR(MODKEYS) set [_i, _down] };
+                            false
+                        };
+                        (findDisplay 46) displayAddEventHandler ["KeyDown", format ["(_this + [true]) call %1", _keys]];
+                        (findDisplay 46) displayAddEventHandler ["KeyUp", format ["(_this + [false]) call %1", _keys]];
+                        (findDisplay 46) displayAddEventHandler ["MouseZChanged", {
+                            params ["", "_scroll"];
+                            if ((player getVariable [QGVAR(CARGO), []]) isEqualTo [] || {!(GVAR(MODKEYS) param [0, false]) && {!(GVAR(MODKEYS) param [1, false])} && {!(GVAR(MODKEYS) param [2, false])}}) exitWith { false };
+                            private _step = [-1, 1] select (_scroll > 0);
+                            // Alt alone is left out: it is free look
+                            GVAR(MODKEYS) params ["_ctrl", "_shift"];
+                            if (!_ctrl && {!_shift}) exitWith { false };
+                            private _delta = switch (true) do {
+                                case (_ctrl && {_shift}): { [0, 0, 0.2 * _step] };
+                                case (_ctrl): { [0.1 * _step, 0, 0] };
+                                default { [0, 15 * _step, 0] };
+                            };
+                            [MOD(SYS_LOGISTICS), "adjustCarry", _delta] call ALiVE_fnc_logistics;
+                            true
+                        }];
+                    };
+                };
                 true;
             };
 
@@ -189,6 +223,15 @@ switch (_operation) do {
                 if (_storeDebug isEqualTo true || {missionNamespace getVariable ["ALiVE_SYS_DATA_DEBUG_ON", false]}) then { GVAR(STORE) call ALIVE_fnc_inspectHash };
 
                 [_logic,"state",GVAR(STORE)] call ALiVE_fnc_logistics;
+
+                // what was placed on a vehicle goes with it when it is destroyed (#1143)
+                addMissionEventHandler ["EntityKilled", {
+                    params ["_vehicle"];
+                    private _placed = (_vehicle getVariable [QGVAR(CARGO_PLACED), []]) select { !isNull _x };
+                    if (_placed isEqualTo []) exitWith {};
+                    _vehicle setVariable [QGVAR(CARGO_PLACED), [], true];
+                    { [MOD(SYS_LOGISTICS), "removeObject", [_x]] call ALiVE_fnc_logistics; deleteVehicle _x } forEach _placed;
+                }];
 
                 _logic setVariable ["init", true, true];
             };
@@ -376,6 +419,14 @@ switch (_operation) do {
                         [_args,QGVAR(CONTAINER)] call ALiVE_fnc_HashRem;
                     };
 
+                    //Placed on a vehicle (#1143): where on it and which way round, so a load puts it back there
+                    private _placedOn = _x getVariable [QGVAR(PLACED), []];
+                    if (_placedOn isEqualType [] && {count _placedOn == 2} && {!isNull (attachedTo _x)}) then {
+                        [_args,QGVAR(PLACED),_placedOn] call ALiVE_fnc_HashSet;
+                    } else {
+                        [_args,QGVAR(PLACED)] call ALiVE_fnc_HashRem;
+                    };
+
                     //_args call ALiVE_fnc_InspectHash;
                 };
             } foreach _objects;
@@ -454,15 +505,170 @@ switch (_operation) do {
             _object setvariable [QGVAR(CONTAINER),_container,true];
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
 
-            _object attachTo [_container, [
-                0,
-                1 - (boundingBox _container select 0 select 1) - (boundingBox _object select 0 select 1),
-                (boundingBox _container select 0 select 2) - (boundingBox _object select 0 select 2) + 0.4
-            ]];
+            // carried at the player's own height, turn and reach, which Ctrl, Shift and both with the mouse wheel change (#1143)
+            if (hasInterface && {_container isEqualTo player}) then {
+                _container setVariable [QGVAR(CARRYADJ), [0, 0, 0]];
+                [_logic, "adjustCarry", [0, 0, 0]] call ALiVE_fnc_logistics;
+                hintSilent "Ctrl + mouse wheel: raise or lower\nShift + mouse wheel: turn\nCtrl + Shift + mouse wheel: nearer or further\nLook at a vehicle to place it there";
+            } else {
+                _object attachTo [_container, [
+                    0,
+                    1 - (boundingBox _container select 0 select 1) - (boundingBox _object select 0 select 1),
+                    (boundingBox _container select 0 select 2) - (boundingBox _object select 0 select 2) + 0.4
+                ]];
+            };
 
             [[_logic,"updateObject",[_container,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
 
             _result =_container;
+        };
+
+        // the carried object's place in front of the player, moved by [height, turn in degrees, reach] (#1143)
+        case "adjustCarry": {
+            private _carrier = player;
+            private _object = (_carrier getVariable [QGVAR(CARGO), []]) param [0, objNull];
+            if (isNull _object || {!(isNull (attachedTo _object)) && {!((attachedTo _object) isEqualTo _carrier)}}) exitWith { _result = false };
+
+            (_carrier getVariable [QGVAR(CARRYADJ), [0, 0, 0]]) params ["_height", "_turn", "_reach"];
+            private _delta = if (isNil "_args") then { [0, 0, 0] } else { _args };
+            _height = ((_height + (_delta param [0, 0])) max -0.6) min 2;
+            _turn = (_turn + (_delta param [1, 0])) mod 360;
+            _reach = ((_reach + (_delta param [2, 0])) max 0) min 2;
+            _carrier setVariable [QGVAR(CARRYADJ), [_height, _turn, _reach]];
+
+            _object attachTo [_carrier, [
+                0,
+                1 - (boundingBox _carrier select 0 select 1) - (boundingBox _object select 0 select 1) + _reach,
+                (boundingBox _carrier select 0 select 2) - (boundingBox _object select 0 select 2) + 0.4 + _height
+            ]];
+            [_logic, "turnObject", [_object, [[sin _turn, cos _turn, 0], [0, 0, 1]]]] call ALiVE_fnc_logistics;
+
+            _result = true;
+        };
+
+        // Put the carried object on the vehicle it is held over (#1143). It lands on the first surface of that
+        // vehicle below it and is fixed there, so it travels with it. Not held over the vehicle, it stays carried.
+        case "placeObject": {
+            if (isnil "_args") exitwith {};
+
+            private _object = _args param [0, objNull, [objNull]];
+            private _vehicle = _args param [1, objNull, [objNull]];
+            private _carrier = player;
+            if (isNull _object || {isNull _vehicle} || {!alive _vehicle} || {!(_object in (_carrier getVariable [QGVAR(CARGO), []]))}) exitWith { _result = false };
+
+            // the vehicle's surface under the object: cast from just above its top down through it
+            private _bb = boundingBoxReal _object;
+            private _centre = getPosWorld _object;
+            private _from = _centre vectorAdd [0, 0, ((_bb select 1) select 2) + 0.3];
+            private _hits = lineIntersectsSurfaces [_from, _from vectorAdd [0, 0, -8], _object, _carrier, true, 1, "GEOM", "NONE"];
+            private _hit = _hits param [0, []];
+            if (_hit isEqualTo [] || {!((_hit select 2) isEqualTo _vehicle) && {!((_hit select 3) isEqualTo _vehicle)}}) exitWith {
+                if (hasInterface) then { hintSilent "Hold it over the vehicle to place it there" };
+                _result = false;
+            };
+
+            [_logic, "dropObject", [_object, _carrier]] call ALiVE_fnc_logistics;
+
+            // upright on the vehicle, turned as it was carried
+            private _up = vectorUp _vehicle;
+            private _dir = vectorDir _object;
+            _dir = vectorNormalized (_dir vectorDiff (_up vectorMultiply (_dir vectorDotProduct _up)));
+            private _at = [_centre select 0, _centre select 1, ((_hit select 0) select 2) - ((_bb select 0) select 2) + 0.02];
+            _object setPosWorld _at;
+
+            // fixed where it stands: the offset is checked against where it ended up and corrected once
+            private _offset = _vehicle worldToModel (ASLToAGL _at);
+            private _dirInVehicle = _vehicle vectorWorldToModel _dir;
+            _object attachTo [_vehicle, _offset];
+            [_logic, "turnObject", [_object, [_dirInVehicle, [0, 0, 1]]]] call ALiVE_fnc_logistics;
+            private _miss = _at vectorDiff (getPosWorld _object);
+            if (vectorMagnitude _miss > 0.01) then {
+                _offset = _offset vectorAdd (_vehicle vectorWorldToModel _miss);
+                _object attachTo [_vehicle, _offset];
+                [_logic, "turnObject", [_object, [_dirInVehicle, [0, 0, 1]]]] call ALiVE_fnc_logistics;
+            };
+
+            _object setVariable [QGVAR(CONTAINER), _vehicle, true];
+            _object setVariable [QGVAR(PLACED), [_offset, _dirInVehicle], true];
+            _vehicle setVariable [QGVAR(CARGO_PLACED), ((_vehicle getVariable [QGVAR(CARGO_PLACED), []]) - [objNull]) + [_object], true];
+
+            [[_logic,"updateObject",[_vehicle,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
+            [_logic, "watchPlaced", [_vehicle]] call ALiVE_fnc_logistics;
+
+            _result = _vehicle;
+        };
+
+        // Turns an object where it is local, which is the only place setVectorDirAndUp takes effect: a crate the
+        // server owns is turned there when a player carries or places it (#1143). Attached, the turn is relative.
+        case "turnObject": {
+            if (isnil "_args") exitwith {};
+            _args params [["_object", objNull, [objNull]], ["_vectors", [], [[]]]];
+            if (isNull _object || {count _vectors != 2}) exitWith {};
+            if (local _object) then {
+                _object setVectorDirAndUp _vectors;
+            } else {
+                [[_logic, _operation, _args],"ALIVE_fnc_logistics", _object, false] call BIS_fnc_MP;
+            };
+        };
+
+        // A vehicle with something placed on it, deleted rather than destroyed (taken out of the world by the
+        // Virtual AI System, a clean-up or Zeus), leaves what it carried standing where it was, on the ground (#1143)
+        case "watchPlaced": {
+            if (isnil "_args") exitwith {};
+            if !(isServer) exitwith {
+                [[_logic, _operation, _args],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
+            };
+
+            private _vehicle = _args param [0, objNull, [objNull]];
+            if (isNull _vehicle || {!isNil {_vehicle getVariable QGVAR(EH_PLACEDDELETED)}}) exitWith {};
+
+            _vehicle setVariable [QGVAR(EH_PLACEDDELETED), _vehicle addEventHandler ["Deleted", {
+                params ["_vehicle"];
+                {
+                    if (!isNull _x) then {
+                        detach _x;
+                        _x setVariable [QGVAR(PLACED), nil, true];
+                        _x setVariable [QGVAR(CONTAINER), nil, true];
+                        private _at = getPosATL _x;
+                        _at set [2, 0];
+                        _x setPosATL _at;
+                        _x setVectorUp surfaceNormal _at;
+                        if (!isnil QMOD(SYS_LOGISTICS)) then { [MOD(SYS_LOGISTICS), "updateObject", [_x]] call ALiVE_fnc_logistics };
+                    };
+                } forEach (_vehicle getVariable [QGVAR(CARGO_PLACED), []]);
+            }]];
+        };
+
+        // A placed object back off its vehicle and into the player's hands (#1143)
+        case "takeObject": {
+            if (isnil "_args") exitwith {};
+
+            private _object = _args param [0, objNull, [objNull]];
+            private _carrier = _args param [1, objNull, [objNull]];
+            private _vehicle = _object getVariable [QGVAR(CONTAINER), objNull];
+            if (isNull _object || {(_object getVariable [QGVAR(PLACED), []]) isEqualTo []}) exitWith { _result = false };
+            // not off a vehicle on the move, into the player's hands
+            if (!isNull _vehicle && {abs (speed _vehicle) > 5}) exitWith {
+                if (hasInterface) then { hintSilent "Wait until the vehicle stops" };
+                _result = false;
+            };
+
+            detach _object;
+            _object setVariable [QGVAR(PLACED), nil, true];
+            _object setVariable [QGVAR(CONTAINER), nil, true];
+            if (!isNull _vehicle) then {
+                _vehicle setVariable [QGVAR(CARGO_PLACED), (_vehicle getVariable [QGVAR(CARGO_PLACED), []]) - [_object, objNull], true];
+            };
+
+            _result = [_logic, "carryObject", [_object, _carrier]] call ALiVE_fnc_logistics;
+            if (isNil "_result") then {
+                // can't be carried after all (another load in hand): set it down beside the vehicle
+                private _down = _carrier getPos [1.5, getDir _carrier];
+                _down set [2, 0];
+                _object setPosATL _down;
+                [[_logic,"updateObject",[_vehicle,_object]],"ALIVE_fnc_logistics", false, false] call BIS_fnc_MP;
+                _result = objNull;
+            };
         };
 
         case "dropObject": {
@@ -839,9 +1045,22 @@ switch (_operation) do {
                     _container = {vehicle (_this select 1)};
                     _condition = "alive _target && {(getposATL (vehicle _target) select 2) > 10} && {(getposATL (vehicle _target) select 2) < 20} && {[(nearestObjects [vehicle (_target), ALiVE_SYS_LOGISTICS_LIFTABLE select 1, 20]) select 0, vehicle _target] call ALiVE_fnc_canLift}";
                 };
+                case ("placeObject") : {
+                    _text  = "Place on vehicle";
+                    _input = {((_this select 1) getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) select 0};
+                    _container = {cursorObject};
+                    _condition = "alive _target && {vehicle _target == _target} && {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0} && {private _v = cursorObject; !isNull _v && {alive _v} && {_v distance _target < 6} && {(['LandVehicle','Ship','Air'] findIf {_v isKindOf _x}) > -1} && {!(_v in (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]))}}";
+                };
+                case ("takeObject") : {
+                    _text  = "Take off vehicle";
+                    _input = {cursorObject};
+                    _container = {_this select 1};
+                    _condition = "alive _target && {vehicle _target == _target} && {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) == 0} && {cursorObject distance _target < 5} && {(cursorObject getvariable ['ALiVE_SYS_LOGISTICS_PLACED',[]]) isNotEqualTo []} && {abs (speed (attachedTo cursorObject)) <= 5}";
+                };
                 case ("releaseObject") : {
                     _text  = "Release object";
-                    _input = {attachedObjects (vehicle (_this select 1)) select 0};
+                    // what it lifted, not a crate placed on it (#1143)
+                    _input = {((vehicle (_this select 1)) getvariable ['ALiVE_SYS_LOGISTICS_CARGO_LIFT',[]]) select 0};
                     _container = {vehicle (_this select 1)};
                     _condition = "alive _target && {(getposATL (vehicle _target) select 2) > 10} && {(getposATL (vehicle _target) select 2) < 20} && {count ((vehicle _target) getvariable ['ALiVE_SYS_LOGISTICS_CARGO_LIFT',[]]) > 0}";
                 };
@@ -896,6 +1115,8 @@ switch (_operation) do {
 
                 [_logic,"removeAction",[_args,"carryObject"]] call ALiVE_fnc_logistics;
                 [_logic,"removeAction",[_args,"dropObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"placeObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"takeObject"]] call ALiVE_fnc_logistics;
                 [_logic,"removeAction",[_args,"stowObjects"]] call ALiVE_fnc_logistics;
                 [_logic,"removeAction",[_args,"unloadObjects"]] call ALiVE_fnc_logistics;
                 [_logic,"removeAction",[_args,"towObject"]] call ALiVE_fnc_logistics;
@@ -918,6 +1139,8 @@ switch (_operation) do {
 
             [_logic,"removeAction",[_args,"carryObject"]] call ALiVE_fnc_logistics;
             [_logic,"removeAction",[_args,"dropObject"]] call ALiVE_fnc_logistics;
+            [_logic,"removeAction",[_args,"placeObject"]] call ALiVE_fnc_logistics;
+            [_logic,"removeAction",[_args,"takeObject"]] call ALiVE_fnc_logistics;
             [_logic,"removeAction",[_args,"stowObjects"]] call ALiVE_fnc_logistics;
             [_logic,"removeAction",[_args,"unloadObjects"]] call ALiVE_fnc_logistics;
             [_logic,"removeAction",[_args,"towObject"]] call ALiVE_fnc_logistics;
@@ -1136,7 +1359,8 @@ switch (_operation) do {
                             case (!alive _x && {_x isKindOf "AllVehicles"}): {};
                             case (_x isKindOf "Air" && {((getPosATL _x) select 2) > 2}): {};
                             // a crate strapped onto a vehicle with Cargo Straps is saved beside it in the same way (#1143)
-                            case (!isNull _carrier && {(_x in (_carrier getVariable ["ace_cargo_loaded", []])) || {(_x getVariable ["cgs_carrier", objNull]) isEqualTo _carrier}}): { _inAceCargo pushBack [_x, _carrier] };
+                            // and so is one placed on a vehicle with ALiVE's own action, which a load then puts back on it
+                            case (!isNull _carrier && {(_x in (_carrier getVariable ["ace_cargo_loaded", []])) || {(_x getVariable ["cgs_carrier", objNull]) isEqualTo _carrier} || {_x in (_carrier getVariable [QGVAR(CARGO_PLACED), []])}}): { _inAceCargo pushBack [_x, _carrier] };
                             case (isObjectHidden _x || {!isNull _carrier}): {};
                             default {
                                 // only what has moved: taking every object's cargo and damage again would lengthen each save
@@ -1425,6 +1649,10 @@ switch (_operation) do {
                 };
              } foreach (_startObjects + _createdObjects);
 
+            //Put each object placed on a vehicle back on it (#1143). Saved beside it, it stays there if that
+            //vehicle didn't come back.
+            [_logic, "restorePlaced", _startObjects + _createdObjects] call ALiVE_fnc_logistics;
+
             // Delay building destruction to start of mission or clients and dedicated server will be out of sync
             _buildings spawn {
                 waituntil {time > 0};
@@ -1432,6 +1660,32 @@ switch (_operation) do {
             };
 
             _result = GVAR(STORE);
+        };
+
+        // Puts each of these objects whose record says it was placed on a vehicle back on that vehicle, if the
+        // vehicle is among them and alive (#1143). Run by a load once everything is made.
+        case "restorePlaced": {
+            if (isnil "_args" || {!isServer}) exitwith {};
+            private _byID = createHashMap;
+            { if (!isNull _x) then { private _oid = _x getVariable [QGVAR(ID), ""]; if (_oid isEqualType "" && {_oid != ""}) then { _byID set [_oid, _x] } } } forEach _args;
+            {
+                private _obj = _x;
+                private _rec = if (isNull _obj) then { nil } else { [GVAR(STORE), _obj getVariable [QGVAR(ID), ""]] call ALiVE_fnc_HashGet };
+                if (!isNil "_rec") then {
+                    private _placedOn = [_rec, QGVAR(PLACED), []] call ALiVE_fnc_HashGet;
+                    private _vehicle = _byID getOrDefault [[_rec, QGVAR(CONTAINER), ""] call ALiVE_fnc_HashGet, objNull];
+                    if (_placedOn isEqualType [] && {count _placedOn == 2} && {!isNull _vehicle} && {alive _vehicle}) then {
+                        _placedOn params ["_offset", "_dirInVehicle"];
+                        _obj attachTo [_vehicle, _offset];
+                        _obj setVectorDirAndUp [_dirInVehicle, [0, 0, 1]];
+                        _obj setVariable [QGVAR(CONTAINER), _vehicle, true];
+                        _obj setVariable [QGVAR(PLACED), [_offset, _dirInVehicle], true];
+                        _vehicle setVariable [QGVAR(CARGO_PLACED), ((_vehicle getVariable [QGVAR(CARGO_PLACED), []]) - [objNull, _obj]) + [_obj], true];
+                        [_logic, "watchPlaced", [_vehicle]] call ALiVE_fnc_logistics;
+                    };
+                };
+            } forEach _args;
+            _result = true;
         };
 
         case "convertData": {
