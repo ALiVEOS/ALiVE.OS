@@ -21,10 +21,16 @@ Description:
     "premark" (start of mission, called by createProfilesFromUnits before it
         takes the editor groups): every group LAFS will use is marked
         ALIVE_profileIgnore, with the vehicles it crews: groups synced to a LAFS
-        module, groups on a LAFS support side led from an artillery vehicle, and
-        groups holding a class a LAFS spotter or detector module names. The mark
-        keeps them out of every later profiling pass too (Virtualise In Radius,
-        Zeus, recruitment, admin actions). Starts the "watch" loop.
+        module, groups LAFS has already flagged as its own, groups on a LAFS
+        support side led from an artillery vehicle, and groups holding a class a
+        LAFS spotter or detector module names. The mark keeps them out of every
+        later profiling pass too (Virtualise In Radius, Zeus, recruitment, admin
+        actions). Starts the "watch" loop.
+        LAFS's own class lists (tank QRF, sniper, drone and the rest) are not
+        read here: filled by a mod such as PHEN Automated Unit Definitions they
+        name every armoured vehicle and marksman of a side, and every such
+        group was kept out of the profile system. A group LAFS picks from those
+        lists is released by "watch" once LAFS flags it.
 
     "watch" (server loop, every 30 s): a group LAFS marks as one of its own
         later (Scan After Start, a group ALiVE had spawned near the players) is
@@ -59,10 +65,7 @@ private _N = createHashMapFromArray [
     ["sideAttr", "LAFS_SupportSide"],
     ["grpIgnore", "LAFS_var_ignoreGroup"],
     ["grpSupport", "LAFS_var_isSupport"],
-    ["grpSpotter", "LAFS_var_isSpotter"],
-    ["classLists", ["LAFS_var_spotterClasses_%1", "LAFS_var_droneClasses_%1", "LAFS_var_planeClasses_%1",
-                    "LAFS_var_attackHeliClasses_%1", "LAFS_var_tankHunterClasses_%1", "LAFS_var_sniperClasses_%1",
-                    "LAFS_var_tankQRFClasses_%1", "LAFS_var_mobileAAClasses_%1"]]
+    ["grpSpotter", "LAFS_var_isSpotter"]
 ];
 
 private _loaded = isClass (configFile >> "CfgPatches" >> (_N get "patch"));
@@ -78,6 +81,7 @@ private _fnc_mark = {
 
 switch (_mode) do {
     case "premark": {
+        private _t0 = diag_tickTime;
         if (_groups isEqualTo []) then { _groups = allGroups };
         private _cfgV = configFile >> "CfgVehicles";
         private _missing = ((_N get "modules") + [_N get "ignoreModule"]) select { !isClass (_cfgV >> _x) };
@@ -104,16 +108,6 @@ switch (_mode) do {
                 { _classes set [typeOf _x, true]; _classes set [typeOf vehicle _x, true] } forEach synchronizedObjects _x;
             };
         } forEach _modules;
-        {
-            private _side = _x;
-            {
-                // spotter classes are names; the others are [name, settings]
-                {
-                    private _c = if (_x isEqualType []) then { _x param [0, ""] } else { _x };
-                    if (_c isEqualType "" && {_c != ""}) then { _classes set [_c, true] };
-                } forEach (missionNamespace getVariable [format [_x, _side], []]);
-            } forEach (_N get "classLists");
-        } forEach _sides;
 
         private _marked = [];
         private _why = [];
@@ -129,6 +123,9 @@ switch (_mode) do {
                 && {(units _grp) findIf { !isPlayer _x } > -1}) then {
                 private _lv = vehicle leader _grp;
                 if (!(_grp in _marked)) then {
+                    if ((_grp getVariable [_N get "grpSupport", false]) || {_grp getVariable [_N get "grpSpotter", false]}) exitWith {
+                        _marked pushBack _grp; _why pushBack [_grp, "flagged by LAFS"];
+                    };
                     if (getNumber (_cfgV >> typeOf _lv >> "artilleryScanner") == 1) then {
                         _marked pushBack _grp; _why pushBack [_grp, "artillery " + typeOf _lv];
                     } else {
@@ -139,7 +136,7 @@ switch (_mode) do {
             };
         } forEach _groups;
         { [_x] call _fnc_mark } forEach _marked;
-        ["ALiVE LAFS: LAFS is loaded (support sides %1); %2 group(s) it uses are left as live AI", _sides, count _marked] call ALiVE_fnc_dump;
+        ["ALiVE LAFS: LAFS is loaded (support sides %1); %2 group(s) it uses are left as live AI (%3 groups looked at in %4 ms)", _sides, count _marked, count _groups, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
         { ["ALiVE LAFS: left live %1 (%2) at %3, %4", _x select 0, side (_x select 0), mapGridPosition leader (_x select 0), _x select 1] call ALiVE_fnc_dump } forEach _why;
 
         if (isNil "ALiVE_LAFS_watching") then {
