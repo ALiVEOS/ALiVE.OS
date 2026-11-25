@@ -834,6 +834,24 @@
     <Portuguese>Coloca uma composição de QG de campo (tendas, veículos) no objetivo de QG mais próximo do módulo, num terreno que a verificação de colocação considere livre. Sem objetivo de QG na área do módulo, nada é colocado. Complementa o QG principal como posto de comando avançado.</Portuguese>
     <Russian>Размещает композицию полевого штаба (палатки, транспорт) на ближайшем к модулю объекте-штабе, на участке, который проверка размещения сочтёт свободным. Если в зоне модуля нет объекта-штаба, ничего не размещается. Дополняет главный штаб как передовой командный пункт.</Russian>
 </Key>
+<Key ID="STR_ALIVE_MP_MCS_JAMMER">
+    <English>MCS Jammer At HQ:</English>
+    <Chinese>在指揮部設置MCS干擾器：</Chinese>
+    <Chinesesimp>在指挥部设置MCS干扰器：</Chinesesimp>
+    <Spanish>Inhibidor MCS en el cuartel:</Spanish>
+    <French>Brouilleur MCS au QG :</French>
+    <Portuguese>Bloqueador MCS no QG:</Portuguese>
+    <Russian>Глушилка MCS у штаба:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_MCS_JAMMER_COMMENT">
+    <English>With the MCS containers mod loaded, puts an MCS jammer beside this side's HQ and Field HQ: an EW container and a mast container of the side, powered without a generator, mast up, set to engage enemy drones by itself (they lose their link while in reach). Players can destroy it. Does nothing without MCS.</English>
+    <Chinese>載入MCS貨櫃模組時，在此陣營的指揮部和野戰指揮部旁設置MCS干擾器：一個電子戰貨櫃和一個天線桅杆貨櫃，屬於該陣營，無需發電機供電，桅杆已升起，會自動干擾敵方無人機（在範圍內時失去連線）。玩家可以摧毀它。未載入MCS時無作用。</Chinese>
+    <Chinesesimp>加载MCS集装箱模组时，在此阵营的指挥部和野战指挥部旁设置MCS干扰器：一个电子战集装箱和一个天线桅杆集装箱，属于该阵营，无需发电机供电，桅杆已升起，会自动干扰敌方无人机（在范围内时失去连接）。玩家可以摧毁它。未加载MCS时无作用。</Chinesesimp>
+    <Spanish>Con el mod de contenedores MCS cargado, coloca un inhibidor MCS junto al cuartel y al cuartel de campaña de este bando: un contenedor de guerra electrónica y un contenedor de mástil del bando, con energía sin generador, mástil alzado, que ataca solo a los drones enemigos (pierden su enlace mientras estén a su alcance). Los jugadores pueden destruirlo. Sin MCS no hace nada.</Spanish>
+    <French>Avec le mod de conteneurs MCS chargé, place un brouilleur MCS près du QG et du QG de campagne de ce camp : un conteneur de guerre électronique et un conteneur à mât du camp, alimentés sans générateur, mât levé, qui engagent seuls les drones ennemis (ils perdent leur liaison à portée). Les joueurs peuvent le détruire. Sans MCS, ne fait rien.</French>
+    <Portuguese>Com o mod de contêineres MCS carregado, coloca um bloqueador MCS ao lado do QG e do QG de campo deste lado: um contêiner de guerra eletrônica e um contêiner de mastro do lado, com energia sem gerador, mastro erguido, que ataca sozinho drones inimigos (perdem o enlace enquanto ao alcance). Os jogadores podem destruí-lo. Sem MCS não faz nada.</Portuguese>
+    <Russian>Если загружен мод контейнеров MCS, ставит глушилку MCS рядом со штабом и полевым штабом этой стороны: контейнер РЭБ и контейнер с мачтой этой стороны, с питанием без генератора, мачта поднята, сами подавляют вражеские дроны (в зоне действия они теряют связь). Игроки могут её уничтожить. Без MCS ничего не делает.</Russian>
+</Key>
 <Key ID="STR_ALIVE_MP_PLACE_HELI">
     <English>Place helicopters:</English>
     <Chinese>放置直升機：</Chinese>

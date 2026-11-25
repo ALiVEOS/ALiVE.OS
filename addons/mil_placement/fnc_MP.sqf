@@ -296,6 +296,20 @@ switch(_operation) do {
 
             _result = _args;
     };
+    // "MCS Jammer At HQ": an MCS jammer beside the HQ when the MCS containers mod is loaded
+    case "mcsJammer": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["mcsJammer", _args];
+        } else {
+            _args = _logic getVariable ["mcsJammer", false];
+        };
+        if (typeName _args == "STRING") then {
+            _args = _args == "true";
+            _logic setVariable ["mcsJammer", _args];
+        };
+        if (typeName _args != "BOOL") then { _args = false };
+        _result = _args;
+    };
     case "placeHelis": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeHelis", _args];
@@ -1338,6 +1352,7 @@ switch(_operation) do {
                          };
 
                         [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
+                        if ([_logic, "mcsJammer"] call MAINCLASS) then { ["hqJammer", [getPosATL _hqBuilding, _side, "MP"]] call ALiVE_fnc_MCSCompat };
 
                         ["MP - HQ building selected: %1",[_logic, "HQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
                     } else {
@@ -1433,6 +1448,7 @@ switch(_operation) do {
                         };
 
                         [_logic, "FieldHQBuilding", nearestObject [_safePos, "building"]] call MAINCLASS;
+                        if ([_logic, "mcsJammer"] call MAINCLASS) then { ["hqJammer", [_safePos, _side, "MP"]] call ALiVE_fnc_MCSCompat };
 
                         if !(ALIVE_loadProfilesPersistent) then {
                             _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;

@@ -313,6 +313,20 @@ switch(_operation) do {
         _result = _args;
     };
 
+    // "MCS Jammer At HQ": an MCS jammer beside the HQ when the MCS containers mod is loaded
+    case "mcsJammer": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["mcsJammer", _args];
+        } else {
+            _args = _logic getVariable ["mcsJammer", false];
+        };
+        if (typeName _args == "STRING") then {
+            _args = _args == "true";
+            _logic setVariable ["mcsJammer", _args];
+        };
+        if (typeName _args != "BOOL") then { _args = false };
+        _result = _args;
+    };
     case "placeHelis": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeHelis", _args];
@@ -2038,6 +2052,7 @@ switch(_operation) do {
                     };
 
                     [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
+                    if ([_logic, "mcsJammer"] call MAINCLASS) then { ["hqJammer", [getPosATL _hqBuilding, _side, "CMP"]] call ALiVE_fnc_MCSCompat };
                 } else {
                     ["CMP - Warning no HQ locations found"] call ALiVE_fnc_dump;
                 };

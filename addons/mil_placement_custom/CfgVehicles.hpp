@@ -253,6 +253,7 @@ class CfgVehicles {
                         };
                         class createHQ : Combo { property = "ALiVE_mil_placement_custom_createHQ"; displayName = "$STR_ALIVE_CMP_CREATE_HQ"; tooltip = "$STR_ALIVE_CMP_CREATE_HQ_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class createFieldHQ : Combo { property = "ALiVE_mil_placement_custom_createFieldHQ"; displayName = "$STR_ALIVE_CMP_CREATE_FIELD_HQ"; tooltip = "$STR_ALIVE_CMP_CREATE_FIELD_HQ_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
+                        class mcsJammer : Combo { property = "ALiVE_mil_placement_custom_mcsJammer"; displayName = "$STR_ALIVE_MP_MCS_JAMMER"; tooltip = "$STR_ALIVE_MP_MCS_JAMMER_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value="false";default=1;}; class Yes{name="Yes";value="true";}; }; };
                         // ambientVehicleAmount + allowPlayerTasking moved up to
                         // bottom of GENERAL 2026-05-08 so they don't trail
                         // the OBJECTIVE OBJECTS section without their own

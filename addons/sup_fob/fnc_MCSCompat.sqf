@@ -30,6 +30,13 @@ Description:
     "rows":    [[class, cost, tier], ...] for the build scan; [] when off.
     "onBuilt": [object, side string] after a FOB builds or rebuilds a
                container (server).
+    "hqJammer": [position, side string, module name] from Military Placement
+               with "MCS Jammer At HQ" on: an EW container and a mast
+               container on clear ground near the side's HQ, of that side,
+               powered without a generator, antennas and mast up, its first
+               workstation switched on to engage by itself (broadband, soft
+               kill: a drone in reach loses its link). One per side within
+               300 m (server).
 
 Parameters:
     0: STRING - mode
@@ -60,7 +67,17 @@ private _N = createHashMapFromArray [
     ["armory", "Land_MCS_ArmoryContainer_F"],
     // the side a jammer or mast container works for (MCS sets it from its first user otherwise)
     ["net", "mcs_net"],
-    ["netClasses", ["Land_MCS_EWContainer_F", "Land_MCS_MastContainer_F"]]
+    ["netClasses", ["Land_MCS_EWContainer_F", "Land_MCS_MastContainer_F"]],
+    // the jammer at an AI side's HQ: the EW container and the mast it sends through
+    ["ew", "Land_MCS_EWContainer_F"],
+    ["mast", "Land_MCS_MastContainer_F"],
+    ["powerAlways", "mcs_powerAlways"],
+    ["antUp", "mcs_antUp"],
+    ["antSource", "antenna_source"],
+    ["mastSource", "mast_source"],
+    ["raiseMast", "mcs_fnc_radarMast"],
+    // a workstation's setting: mcs_<field>_<workstation>
+    ["wsVar", "mcs_%1_%2"]
 ];
 
 private _loaded = isClass (configFile >> "CfgPatches" >> (_N get "patch"));
@@ -70,6 +87,56 @@ if (!_loaded || {!isServer}) exitWith { [[], nil] select (_mode != "rows") };
 private _logic = missionNamespace getVariable ["ALiVE_sup_fob", objNull];
 
 switch (_mode) do {
+    case "hqJammer": {
+        _args params [["_pos", [], [[]]], ["_side", "", [""]], ["_by", "", [""]]];
+        if (count _pos < 2 || {!(_side in ["EAST", "WEST", "GUER"])}) exitWith {};
+        _pos = [_pos select 0, _pos select 1, 0];
+        private _classes = [_N get "ew", _N get "mast"];
+        private _missing = _classes select { !isClass (configFile >> "CfgVehicles" >> _x) };
+        if (_missing isNotEqualTo []) exitWith {
+            ["ALiVE %1 - MCS: %2 not in this version of MCS, so there is no jammer at the %3 HQ", _by, _missing, _side] call ALiVE_fnc_dump;
+        };
+        // an HQ and a Field HQ close together, or two modules on one HQ, share one jammer
+        private _jammers = (missionNamespace getVariable ["ALiVE_MCS_hqJammers", []]) select { !isNull (_x select 0) };
+        if (_jammers findIf { (_x select 1) == _side && {((_x select 0) distance2D _pos) < 300} } >= 0) exitWith {};
+        private _made = [];
+        {
+            // clear, fairly flat ground 15-70 m from the HQ, 6 m from anything else
+            private _spot = [_pos, 15, 70, 6, 0, 0.25, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
+            if ((_spot distance2D _pos) < 1) exitWith {};
+            private _o = createVehicle [_x, [_spot select 0, _spot select 1, 0], [], 0, "CAN_COLLIDE"];
+            _o setDir (random 360);
+            _o setVectorUp (surfaceNormal (getPosATL _o));
+            _made pushBack _o;
+        } forEach _classes;
+        if (count _made < 2) exitWith {
+            { deleteVehicle _x } forEach _made;
+            ["ALiVE %1 - MCS: no clear ground near the %2 HQ at %3 for a jammer", _by, _side, mapGridPosition _pos] call ALiVE_fnc_dump;
+        };
+        _made params ["_ew", "_mast"];
+        _jammers pushBack [_ew, _side];
+        missionNamespace setVariable ["ALiVE_MCS_hqJammers", _jammers];
+        ["ALiVE %1 - MCS: jammer at the %2 HQ at %3 (EW container %4 m and mast %5 m from it)", _by, _side, mapGridPosition _pos, round (_ew distance2D _pos), round (_mast distance2D _pos)] call ALiVE_fnc_dump;
+        // after MCS has set the containers up (its own init runs 0.1 s after they are made)
+        [_ew, _mast, _side, _N] spawn {
+            params ["_ew", "_mast", "_side", "_N"];
+            sleep 2;
+            { _x setVariable [_N get "net", _side, true]; _x setVariable [_N get "powerAlways", true, true] } forEach [_ew, _mast];
+            _ew animateSource [_N get "antSource", 0];
+            _ew setVariable [_N get "antUp", true, true];
+            private _raise = missionNamespace getVariable [_N get "raiseMast", {}];
+            if (_raise isEqualTo {}) then {
+                ["ALiVE - MCS: %1 is not in this version of MCS, so the HQ jammer's mast is raised by its animation", _N get "raiseMast"] call ALiVE_fnc_dump;
+                _mast animateSource [_N get "mastSource", 0];
+            } else {
+                [_mast, "raise"] call _raise;
+            };
+            {
+                _ew setVariable [format [_N get "wsVar", _x select 0, 1], _x select 1, true];
+            } forEach [["mode", "soft"], ["filter", "broadband"], ["opMode", "auto"], ["nextCheck", 0], ["on", true]];
+        };
+    };
+
     case "rows": {
         if !([_logic, "attribute", ["fob_mcs_build"]] call ALiVE_fnc_FOB) exitWith { [] };
         private _armory = [_logic, "attribute", ["fob_mcs_armory"]] call ALiVE_fnc_FOB;

@@ -291,6 +291,7 @@ class CfgVehicles {
                         class HDR_ASSETS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_ASSETS"; displayName = "HQ & PLACED ASSETS"; ALiVE_showWhen[] = {{"withPlacement", "not", "false"}}; };
                         class createHQ : Combo { property = "ALiVE_mil_placement_createHQ"; displayName = "$STR_ALIVE_MP_CREATE_HQ"; tooltip = "$STR_ALIVE_MP_CREATE_HQ_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class createFieldHQ : Combo { property = "ALiVE_mil_placement_createFieldHQ"; displayName = "$STR_ALIVE_MP_CREATE_FIELDHQ"; tooltip = "$STR_ALIVE_MP_CREATE_FIELDHQ_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
+                        class mcsJammer : Combo { property = "ALiVE_mil_placement_mcsJammer"; displayName = "$STR_ALIVE_MP_MCS_JAMMER"; tooltip = "$STR_ALIVE_MP_MCS_JAMMER_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value="false";default=1;}; class Yes{name="Yes";value="true";}; }; };
                         // ambientVehicleAmount moved up to bottom of GENERAL
                         // 2026-05-08 so it doesn't trail the OBJECTIVE
                         // OBJECTS section without its own header.
