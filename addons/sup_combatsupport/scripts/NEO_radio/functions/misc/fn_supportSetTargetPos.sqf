@@ -37,7 +37,7 @@ switch (toUpper (_lb lbText (lbCurSel _lb))) do
 
     case "CAS" :
     {
-        _marker setMarkerTextLocal "CAS";
+        _marker setMarkerTextLocal localize "STR_ALIVE_CS_UI_MARKER_CAS";
         ["pin", [_marker, "hd_Destroy_noShadow", "strikeTarget", markerColor _marker]] call ALiVE_fnc_mapPins;
 
         // area-of-influence ring at the CAS engagement radius (slider 655592)

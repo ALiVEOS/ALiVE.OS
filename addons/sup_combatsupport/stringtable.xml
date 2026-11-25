@@ -171,7 +171,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_USAGE">
-    <English>Place the module and sync it to SUP CAS, SUP Transport and/or SUP Artillery modules.</English>
+    <English>Place the module and sync it to SUP CAS, SUP Transport and/or SUP Artillery modules. You can also sync your own placed vehicle to it and set its role in its init: this setVariable ["CS_TYPE", "transport"] (or "CAS", "arty", or "hybrid" for one aircraft that both carries troops and flies CAS).</English>
     <Chinese>放置此模組並將其同步至 SUP CAS、SUP 運輸及／或 SUP 火砲模組。</Chinese>
     <Chinesesimp>放置该模块并将其同步至近距空中支援、运输及/或火炮支援模块。</Chinesesimp>
     <Spanish>Coloque el módulo y sincronícelo con los módulos SUP CAS, SUP Transporte y/o SUP Artillería.</Spanish>
@@ -490,7 +490,7 @@
     <Russian>Подразделение выдвинется к месту, обеспечит непосредственную авиаподдержку и атакует все отмеченные цели</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_CAS_DESC_LOITER">
-    <English>Orbits the location at the chosen altitude. On Hold Fire it only watches; on Fire At Will it engages hostiles it sees</English>
+    <English>Orbits the location at the chosen altitude. On Hold fire it only watches; on Fire at will it engages hostiles it sees</English>
     <Chinesesimp>单位将前往该位置并在所选高度盘旋。停火时只观察；自由开火时会掩护该区域并攻击发现的敌人</Chinesesimp>
     <Chinese>單位將前往該位置並在所選高度盤旋。停火時只觀察；自由開火時會掩護該區域並攻擊發現的敵人</Chinese>
     <Spanish>La unidad irá a la ubicación y la orbitará a la altitud elegida. Con Alto el fuego solo observa; con Fuego a discreción cubre la zona y ataca a los hostiles que vea</Spanish>
@@ -1618,7 +1618,7 @@
     <Russian>В радиусе 100 м нет груза для подъёма</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_SPEED_SLOW">
-    <English>Speed - Slow</English>
+    <English>Speed: Slow</English>
     <Chinesesimp>速度 - 慢</Chinesesimp>
     <Chinese>速度 - 慢</Chinese>
     <Spanish>Velocidad - lenta</Spanish>
@@ -1627,7 +1627,7 @@
     <Russian>Скорость - малая</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_SPEED_NORMAL">
-    <English>Speed - Normal</English>
+    <English>Speed: Normal</English>
     <Chinesesimp>速度 - 正常</Chinesesimp>
     <Chinese>速度 - 正常</Chinese>
     <Spanish>Velocidad - normal</Spanish>
@@ -1636,7 +1636,7 @@
     <Russian>Скорость - обычная</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_SPEED_FAST">
-    <English>Speed - Fast</English>
+    <English>Speed: Fast</English>
     <Chinesesimp>速度 - 快</Chinesesimp>
     <Chinese>速度 - 快</Chinese>
     <Spanish>Velocidad - rápida</Spanish>
@@ -1645,7 +1645,7 @@
     <Russian>Скорость - высокая</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_TR_ROE_HOLD">
-    <English>ROE: Hold Fire</English>
+    <English>ROE: Hold fire</English>
     <Chinesesimp>交战规则：禁止开火</Chinesesimp>
     <Chinese>交戰規則：禁止開火</Chinese>
     <Spanish>ROE: no abrir fuego</Spanish>
@@ -1672,7 +1672,7 @@
     <English>%1, escort %2. Weapons free. Over.</English>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_TR_ROE_FREE">
-    <English>ROE: Fire At Will</English>
+    <English>ROE: Fire at will</English>
     <Chinesesimp>交战规则：自由开火</Chinesesimp>
     <Chinese>交戰規則：自由開火</Chinese>
     <Spanish>ROE: fuego a discreción</Spanish>
@@ -1681,7 +1681,7 @@
     <Russian>Режим огня: по готовности</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_BLUE">
-    <English>Hold Fire</English>
+    <English>Hold fire</English>
     <Chinesesimp>禁止开火</Chinesesimp>
     <Chinese>禁止開火</Chinese>
     <Spanish>No abrir fuego</Spanish>
@@ -1690,7 +1690,7 @@
     <Russian>Не стрелять</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_GREEN">
-    <English>Hold Fire - Defend</English>
+    <English>Hold fire, defend only</English>
     <Chinesesimp>禁止开火 - 防御</Chinesesimp>
     <Chinese>禁止開火 - 防禦</Chinese>
     <Spanish>No abrir fuego - defender</Spanish>
@@ -1699,7 +1699,7 @@
     <Russian>Не стрелять - оборона</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_WHITE">
-    <English>Hold Fire - Return Fire</English>
+    <English>Return fire only</English>
     <Chinesesimp>禁止开火 - 还击</Chinesesimp>
     <Chinese>禁止開火 - 還擊</Chinese>
     <Spanish>No abrir fuego - responder al fuego</Spanish>
@@ -1708,7 +1708,7 @@
     <Russian>Не стрелять - ответный огонь</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_YELLOW">
-    <English>Fire At Will</English>
+    <English>Fire at will</English>
     <Chinesesimp>自由开火</Chinesesimp>
     <Chinese>自由開火</Chinese>
     <Spanish>Fuego a discreción</Spanish>
@@ -1717,7 +1717,7 @@
     <Russian>Огонь по готовности</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_UI_ROE_RED">
-    <English>Fire At Will - Engage At Will</English>
+    <English>Fire at will, engage at will</English>
     <Chinesesimp>自由开火 - 自由交战</Chinesesimp>
     <Chinese>自由開火 - 自由交戰</Chinese>
     <Spanish>Fuego a discreción - atacar a discreción</Spanish>
@@ -1752,8 +1752,11 @@
     <Portuguese>Transporte</Portuguese>
     <Russian>Транспорт</Russian>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_MARKER_CAS">
+    <English>CAS</English>
+</Key>
 <Key ID="STR_ALIVE_CS_UI_MARKER_STRIKE">
-    <English>STRIKE</English>
+    <English>Strike</English>
     <Chinesesimp>打击</Chinesesimp>
     <Chinese>打擊</Chinese>
     <Spanish>ATAQUE</Spanish>
