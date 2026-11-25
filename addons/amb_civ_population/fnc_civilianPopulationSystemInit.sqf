@@ -415,6 +415,8 @@ if(isServer) then {
         if (_unit getVariable ["ACE_isUnconscious", false]) exitWith { true };
         if (_unit getVariable ["ace_captives_isHandcuffed", false]) exitWith { true };
         if (_unit getVariable ["ace_captives_isSurrendering", false]) exitWith { true };
+        // CQB Interactions' own surrender and arrest, which use no ACE state when ACE isn't loaded
+        if (_unit getVariable ["CBQ_Interactions_JustSurrender", false] || {_unit getVariable ["CQB_IsArrested", false]}) exitWith { true };
         false
     };
     publicVariable "ALiVE_fnc_advciv_isRestrained";

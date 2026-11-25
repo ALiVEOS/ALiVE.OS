@@ -65,6 +65,8 @@ params [["_unit", objNull, [objNull]], ["_type", "GUNFIRE", [""]], ["_extraParam
 if (isNull _unit || {!alive _unit}) exitWith {};
 if (isPlayer _unit) exitWith {};
 if (_unit getVariable ["ALiVE_advciv_blacklist", false]) exitWith {};
+// a civilian CQB Interactions has made surrender or arrested is that mod's to handle
+if (_unit getVariable ["CBQ_Interactions_JustSurrender", false] || {_unit getVariable ["CQB_IsArrested", false]}) exitWith {};
 if (vehicle _unit != _unit && {_type == "HIT"}) exitWith {};   // Don't react to HIT while in a vehicle
 
 // Orders run where the civilian is local (see Locality above): on a dedicated

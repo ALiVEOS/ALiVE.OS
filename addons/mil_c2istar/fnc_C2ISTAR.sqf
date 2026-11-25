@@ -1559,7 +1559,9 @@ switch(_operation) do {
         ALiVE_c2istar_fnc_isHeld = {
             params ["_u", "_by"];
             (_u getVariable ["ace_captives_isHandcuffed", false] || {_u getVariable ["ace_captives_isSurrendering", false]}
-                || {_u getVariable ["ALiVE_restrained", false]})
+                || {_u getVariable ["ALiVE_restrained", false]}
+                // CQB Interactions' surrender and arrest (no ACE state without ACE)
+                || {_u getVariable ["CBQ_Interactions_JustSurrender", false]} || {_u getVariable ["CQB_IsArrested", false]})
             && {((side group _by) getFriend (_u getVariable ["ALiVE_prisonerSide", side group _u])) < 0.6}
         };
         ALiVE_c2istar_fnc_canBeQuestioned = {
@@ -1642,12 +1644,32 @@ switch(_operation) do {
                 private _chance = missionNamespace getVariable ["ALiVE_c2istar_surrenderChance", 0];
                 {
                     private _u = _x;
-                    if (vehicle _u isEqualTo _u && {random 100 < _chance}
+                    // one CQB Interactions has already made surrender or arrested is taken by the CQB watch below
+                    if (vehicle _u isEqualTo _u && {!(_u getVariable ["CBQ_Interactions_JustSurrender", false])} && {!(_u getVariable ["CQB_IsArrested", false])} && {random 100 < _chance}
                         && {(allPlayers findIf { alive _x && {(_side getFriend side group _x) < 0.6} && {(_x distance _u) < 200} }) >= 0}) then {
                         [_u] call ALiVE_c2istar_fnc_surrender;
                     };
                 } forEach _alive;
             }];
+            // CQB Interactions (Workshop 3335065609): a soldier it has made surrender or arrested is taken by ALiVE
+            // as a prisoner already in hand. That takes him off his profile, which would otherwise delete him when
+            // the area despawns and bring him back armed, and lets him be questioned. The mod broadcasts both
+            // flags. One walking in a player's group is left until he's out of it again.
+            if (isClass (configFile >> "CfgPatches" >> "CQB_Interactions") && {isNil "ALiVE_c2istar_cqbWatch"}) then {
+                ["C2ISTAR: CQB Interactions is loaded, so the soldiers it takes are held as prisoners here"] call ALiVE_fnc_dump;
+                ALiVE_c2istar_cqbWatch = [] spawn {
+                    while { true } do {
+                        sleep 5;
+                        {
+                            if (alive _x && {!isPlayer _x} && {side group _x != civilian} && {!(_x getVariable ["ALiVE_surrendered", false])}
+                                && {_x getVariable ["CBQ_Interactions_JustSurrender", false] || {_x getVariable ["CQB_IsArrested", false]}}
+                                && {!isPlayer leader group _x}) then {
+                                [_x, true] call ALiVE_c2istar_fnc_surrender;
+                            };
+                        } forEach allUnits;
+                    };
+                };
+            };
             // Asked by a player's machine: answer with what the prisoner knows.
             // A task from what someone gave up (a prisoner at a prison, an informant at his debrief), for the asking side:
             // destroy an insurgent installation he named (his own Recruitment HQ first, for a recruiter), else the
