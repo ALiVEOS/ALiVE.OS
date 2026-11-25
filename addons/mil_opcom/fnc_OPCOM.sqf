@@ -985,8 +985,11 @@ switch (_operation) do {
             };
         
             // Load starting forces
+            // records taken over from a moved module (loadObjectivesDB) are read under its old id until the next save
+            private _from = [_handler,"adoptedFrom",""] call ALiVE_fnc_HashGet;
             private _key = format ["%1-OPCOM_%2-starting-forces", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];
             private _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+            if (!(_result isEqualType []) && {_from != ""}) then { _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], format ["%1-OPCOM_%2-starting-forces", ([""] call ALiVE_fnc_storeKeys) select 0, _from]]] call ALIVE_fnc_Data };
 
             if (_result isEqualType []) then {
                 private _startingForces = [_result,"data"] call CBA_fnc_hashGet;
@@ -1001,6 +1004,7 @@ switch (_operation) do {
             // The high value target, so a saved mission doesn't place a second one
             _key = format ["%1-OPCOM_%2-hvt", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];
             _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+            if (!(_result isEqualType []) && {_from != ""}) then { _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], format ["%1-OPCOM_%2-hvt", ([""] call ALiVE_fnc_storeKeys) select 0, _from]]] call ALIVE_fnc_Data };
             if (_result isEqualType [] && {!isNil {[_result,"data"] call CBA_fnc_hashGet}}) then {
                 [_handler,"hvtRecord", [_result,"data"] call CBA_fnc_hashGet] call CBA_fnc_hashSet;
             };
@@ -1009,6 +1013,7 @@ switch (_operation) do {
             // gone after a load, and the commander moved straight on): its pause and preparations carry on
             _key = format ["%1-OPCOM_%2-opstate", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];
             _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+            if (!(_result isEqualType []) && {_from != ""}) then { _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], format ["%1-OPCOM_%2-opstate", ([""] call ALiVE_fnc_storeKeys) select 0, _from]]] call ALIVE_fnc_Data };
             if (_result isEqualType [] && {!isNil {[_result,"data"] call CBA_fnc_hashGet}}) then {
                 [_handler, "opResume", [_result,"data"] call CBA_fnc_hashGet] call MAINCLASS;
             };
@@ -1016,6 +1021,7 @@ switch (_operation) do {
             // Start From Ship: what is still aboard at the save
             _key = format ["%1-OPCOM_%2-ship", ([""] call ALiVE_fnc_storeKeys) select 0, [_handler,"opcomID"] call CBA_fnc_hashGet];
             _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+            if (!(_result isEqualType []) && {_from != ""}) then { _result = [GVAR(DATAHANDLER),"read", ["mil_opcom", [], format ["%1-OPCOM_%2-ship", ([""] call ALiVE_fnc_storeKeys) select 0, _from]]] call ALIVE_fnc_Data };
             if ([_handler, "shipStart", false] call ALiVE_fnc_hashGet && {_result isEqualType []} && {([_result,"data"] call CBA_fnc_hashGet) isEqualType []}) then {
                 [_handler, "shipAboard", [_result,"data"] call CBA_fnc_hashGet] call ALiVE_fnc_hashSet;
             };
@@ -4988,7 +4994,8 @@ switch (_operation) do {
                 _exportObjectives = [] call ALIVE_fnc_hashCreate;
 
                 // each commander's type goes with its objectives, so a load can tell the type was changed in Eden since
-                private _typeByID = OPCOM_INSTANCES apply { [[_x,"opcomID",""] call ALiVE_fnc_HashGet, [_x,"controltype",""] call ALiVE_fnc_HashGet] };
+                // with its side and factions, so a commander whose module is moved in Eden can find them again (loadObjectivesDB)
+                private _typeByID = OPCOM_INSTANCES apply { [[_x,"opcomID",""] call ALiVE_fnc_HashGet, [_x,"controltype",""] call ALiVE_fnc_HashGet, [_x,"side",""] call ALiVE_fnc_HashGet, [_x,"factions",[]] call ALiVE_fnc_HashGet] };
 
                 {
                     _objective = _x;
@@ -5004,7 +5011,12 @@ switch (_operation) do {
 
                     private _ownerID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
                     private _owner = _typeByID findIf { (_x select 0) == _ownerID };
-                    if (_owner >= 0) then { [_exportObjective, "savedType", (_typeByID select _owner) select 1] call ALIVE_fnc_hashSet };
+                    if (_owner >= 0) then {
+                        ((_typeByID select _owner) select [1, 3]) params ["_savedType", "_savedSide", "_savedFactions"];
+                        [_exportObjective, "savedType", _savedType] call ALIVE_fnc_hashSet;
+                        [_exportObjective, "savedSide", _savedSide] call ALIVE_fnc_hashSet;
+                        [_exportObjective, "savedFactions", +_savedFactions] call ALIVE_fnc_hashSet;
+                    };
 
                     [_exportObjectives, _objectiveID, _exportObjective] call ALIVE_fnc_hashSet;
 
@@ -5251,6 +5263,77 @@ switch (_operation) do {
                         _objectives pushback _x;
                     };
                 } foreach (_result select 2);
+
+                // None of the save is this commander's. Its id is built from where its module sits, so a module moved
+                // in Eden since the save finds nothing under the new id, and its records sit under the old one with no
+                // commander to own them (#1108). Such records are taken over when it is clear whose they are: saves
+                // from this build carry each commander's side and factions; an older save only when exactly one set
+                // of records and exactly one commander are left without a match. The pick and the claim are one
+                // unscheduled step, so two commanders starting together can't take the same records.
+                if (_objectives isEqualTo []) then {
+                    private _saved = _result select 2;
+                    private _mySide = [_logic,"side",""] call ALiVE_fnc_HashGet;
+                    private _myFactions = +([_logic,"factions",[]] call ALiVE_fnc_HashGet);
+                    _myFactions sort true;
+                    private _took = "";
+                    private _why = "";
+                    private _orphans = [];
+                    isNil {
+                        // every commander in the mission, from its module, as OPCOM_instances may not hold them all yet
+                        private _here = (entities "ALiVE_mil_OPCOM") apply { private _p = getPosATL _x; str (floor (_p select 0)) + str (floor (_p select 1)) };
+                        { if (_x isEqualType []) then { _here pushBackUnique ([_x,"opcomID",""] call ALiVE_fnc_HashGet) } } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+                        private _savedIDs = [];
+                        { _savedIDs pushBackUnique ([_x,"opcomID",""] call ALiVE_fnc_HashGet) } forEach _saved;
+                        if (isNil QGVAR(adoptClaims)) then { GVAR(adoptClaims) = createHashMap };
+                        // a set this commander took earlier counts again (a reload reads the store, which keeps the old id until the next save)
+                        _orphans = _savedIDs select { _x != "" && {!(_x in _here)} && {(GVAR(adoptClaims) getOrDefault [_x, _opcomID]) == _opcomID} };
+                        private _sideOf = {
+                            private _id = _this;
+                            private _first = _saved select (_saved findIf { ([_x,"opcomID",""] call ALiVE_fnc_HashGet) == _id });
+                            private _f = [_first,"savedFactions",[]] call ALiVE_fnc_HashGet;
+                            if (_f isEqualType []) then { _f = +_f; _f sort true } else { _f = [] };
+                            [[_first,"savedSide",""] call ALiVE_fnc_HashGet, _f]
+                        };
+                        private _tagged = _orphans select { ((_x call _sideOf) select 0) != "" };
+                        private _mine = _tagged select { (_x call _sideOf) isEqualTo [_mySide, _myFactions] };
+                        private _untagged = _orphans - _tagged;
+                        // the commanders that, like this one, found nothing of their own
+                        private _empty = _here select { !(_x in _savedIDs) };
+                        switch (true) do {
+                            case (count _mine == 1): { _took = _mine select 0 };
+                            case (count _mine > 1): { _why = format ["%1 sets of records were saved by a commander of the same side and factions", count _mine] };
+                            case (count _untagged == 1 && {count _empty == 1}): { _took = _untagged select 0 };
+                            case (count _untagged > 1): { _why = format ["%1 sets of records from an older save could be this commander's", count _untagged] };
+                            case (count _untagged == 1): { _why = format ["%1 commanders have no saved records, so it is not clear which one moved", count _empty] };
+                            default {};
+                        };
+                        if (_took != "") then { GVAR(adoptClaims) set [_took, _opcomID] };
+                    };
+
+                    if (_took != "") then {
+                        {
+                            if (([_x,"opcomID",""] call ALiVE_fnc_HashGet) == _took) then {
+                                private _rev = [_x,"_rev",""] call ALiVE_fnc_HashGet;
+                                [_x, "_id"] call ALIVE_fnc_hashRem;
+                                [_x, "_rev"] call ALIVE_fnc_hashRem;
+                                [_x,"_rev",_rev] call ALiVE_fnc_HashSet;
+                                // the objectiveID keeps the old id inside it; it is only ever matched whole, so the
+                                // profiles' orders and the tasks that name it still find it
+                                [_x,"opcomID",_opcomID] call ALiVE_fnc_HashSet;
+                                _objectives pushback _x;
+                            };
+                        } foreach _saved;
+                        // the commander's other records are read under the old id until its next save writes them under the new one
+                        [_logic,"adoptedFrom",_took] call ALiVE_fnc_HashSet;
+                        if (isNil "ALiVE_storeSuffixes") then { ALiVE_storeSuffixes = [] };
+                        { ALiVE_storeSuffixes pushBackUnique format ["-OPCOM_%1-%2", _took, _x] } forEach ["starting-forces","hvt","opstate","ship"];
+                        ["OPCOM %1 (%2) took over the saved records of %3 (its module was moved in Eden since the save): %4 objectives", _opcomID, _mySide, _took, count _objectives] call ALiVE_fnc_dump;
+                    } else {
+                        if (_why != "") then {
+                            ["OPCOM %1 (%2) found no saved records of its own. The save holds records of %3, which belong to no commander here, but %4, so it starts fresh. Move its module back to where it was saved, or clear the mission's data", _opcomID, _mySide, _orphans, _why] call ALiVE_fnc_dump;
+                        };
+                    };
+                };
 
                 private _keys = [
                     "objectiveID","center","size","objectiveType","priority","opcom_state","clusterID","opcomID",
