@@ -420,9 +420,38 @@ switch (_op) do {
                 if !(_kind in ["leader", "zeus"]) exitWith { _result = [false, "STR_ALIVE_RALLY_ADMIN_NOMOVE", [_name]] };
                 _pos = [_pos select 0, _pos select 1, 0];
                 private _from = mapGridPosition _obj;
-                _obj setDir _dir;
-                _obj setPosATL _pos;
-                _obj setVectorUp (surfaceNormal _pos);
+                if (isSimpleObject _obj) then {
+                    // a simple object moved on the server stays where it was on every player's machine, so a new one
+                    // goes down at the spot instead and takes the old one's place in its row
+                    private _placedAt = (_list select _i) param [7, serverTime];
+                    if (_kind == "leader" && {!isNull _squad} && {toUpper (["leaderRally", "OFF"] call _set) != "OFF"}) then {
+                        // a squad's own: put down again for the squad, with the mission's init code and its overrun watch
+                        ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
+                        deleteVehicle _obj;
+                        _squad setVariable ["ALiVE_rallyDeployed", nil, true];
+                        private _new = ["plant", [_squad, _pos, _dir, _name]] call ALiVE_fnc_rallyPoint;
+                        private _l = missionNamespace getVariable ["ALiVE_rallyPoints", []];
+                        private _j = _l findIf { (_x select 0) isEqualTo _new };
+                        if (_j >= 0) then { (_l select _j) set [7, _placedAt]; ALiVE_rallyPoints = _l; publicVariable "ALiVE_rallyPoints" };
+                    } else {
+                        private _cls = typeOf _obj;
+                        if (_cls == "") then { _cls = "B_Carryall_oli" };
+                        private _new = createSimpleObject [_cls, AGLToASL _pos];
+                        _new setDir _dir;
+                        _new setVectorUp (surfaceNormal _pos);
+                        { if (!isNil { _obj getVariable _x }) then { _new setVariable [_x, _obj getVariable _x] } } forEach ["ALiVE_rallyName", "ALiVE_rallyOverrun", "ALiVE_rallyDeleteOverrun"];
+                        // a wait to bring it back belongs to the old spot
+                        ["cancel", [_obj getVariable ["ALiVE_rallyBack", ""]]] call ALiVE_fnc_siteClock;
+                        (_list select _i) set [0, _new];
+                        ALiVE_rallyPoints = _list;
+                        publicVariable "ALiVE_rallyPoints";
+                        deleteVehicle _obj;
+                    };
+                } else {
+                    _obj setDir _dir;
+                    _obj setPosATL _pos;
+                    _obj setVectorUp (surfaceNormal _pos);
+                };
                 ["storeQueue"] call ALiVE_fnc_rallyPoint;
                 ["ALiVE Rally Points - %1 moved %2 from %3 to %4", _by, _name, _from, mapGridPosition _pos] call ALiVE_fnc_dump;
                 _result = [true, "STR_ALIVE_RALLY_ADMIN_MOVED", [_name, mapGridPosition _pos]];
