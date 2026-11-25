@@ -42,6 +42,11 @@ upgrade - [fobID] -> true when the FOB went up a tier and was paid for
 respawn - [fobID] -> whether the FOB now has a respawn point (active, at or above the Respawn Point tier)
 rename - [fobID, name] -> true when the FOB took the new name
 retype - [fobID, type id] -> true when the FOB changed to that FOB type
+admin - [op, args, byText] -> [ok, message key, its arguments]: rename, upgrade, repair or dismantle from the
+    server with no player (the War Room's live map). byText names who for the RPT. The side, 25 m and Who Can
+    Dismantle checks are skipped; every other rule holds. upgrade and repair take a last argument free (true: no
+    supply taken). A dismantle's message goes to the FOB's side by radio. The key is the refusal's when ok is false
+upgradeCost - [fobID] -> the supply the next tier costs, or -1 at the top tier (or no such FOB)
 permissions - [rules, list] -> true when an admin changed Who Can Dismantle and its list
 permReset - [] -> true when an admin dropped that change, so the module's settings apply again
 fieldHQ - [object, "KIT" or "CRATE"] -> the FOB kit or supply crate handed out, or false
@@ -96,15 +101,20 @@ private _pickClass = {
 };
 private _debug = [_logic, "attribute", ["fob_debug"]] call ALiVE_fnc_FOB;
 private _result = nil;
+// Who an admin change is from ("admin" below), else "". That case sets the name for the one call it makes, seen down
+// the call chain only; a player's request (ALiVE_fnc_fobRequest) never carries it.
+private _admin = if (isNil "_ALiVE_fobAdmin" || {!isNil "_ALiVE_fobCaller"}) then { "" } else { _ALiVE_fobAdmin };
+private _who = if (_admin != "") then { _admin } else { if (isNull _caller) then { "the server" } else { name _caller } };
 
 // Tell the player why, on their own machine only
 private _tell = {
     params ["_key", ["_fmt", []]];
-    ALiVE_FOB_lastMessage = _key;   // read by the debug output and tests
+    ALiVE_FOB_lastMessage = _key;   // read by the debug output, tests and "admin"
+    ALiVE_FOB_lastArgs = _fmt;
     if (!isNull _caller && {isPlayer _caller}) then {
         ["notify", [_key, _fmt]] remoteExecCall ["ALiVE_fnc_fobClient", _caller];
     };
-    if (_debug) then { ["ALiVE Player FOBs - %1 %2 for %3", _key, _fmt, name _caller] call ALiVE_fnc_dump };
+    if (_debug) then { ["ALiVE Player FOBs - %1 %2 for %3", _key, _fmt, _who] call ALiVE_fnc_dump };
 };
 
 // What the server itself made a FOB kit, a supply crate or a Field HQ. Kept in a list on the
@@ -325,11 +335,11 @@ switch (_op) do {
         _result = false;
         _args params [["_id", "", [""]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
-        if (isNil "_entry" || {isNull _caller}) exitWith {};
-        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
-        if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        if (isNil "_entry" || {isNull _caller && {_admin == ""}}) exitWith {};
+        if (_admin == "" && {([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (_admin == "" && {_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) == "damaged") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED"] call _tell };
-        if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
+        if (_admin == "" && {!([_entry] call _mayManage)}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
         if !(["dismantle", _id, [_logic, "attribute", ["fob_dismantle_time"]] call ALiVE_fnc_FOB] call _timed) exitWith {};
 
         // anyone in this FOB's arsenal pays first, while it still has its supply
@@ -358,7 +368,9 @@ switch (_op) do {
             ["tag", [_crate, "CRATE", _left]] call ALiVE_fnc_fobOps;
         };
         if (_left > 0) then { ["STR_ALIVE_FOB_DISMANTLED_SUPPLY", [_name, _left]] call _tell } else { ["STR_ALIVE_FOB_DISMANTLED", [_name]] call _tell };
-        ["ALiVE Player FOBs - %1 dismantled %2 (%3)", name _caller, _id, _name] call ALiVE_fnc_dump;
+        // with no player to tell, the FOB's side hears it by radio
+        if (_admin != "") then { [_logic, "radio", [_side, ALiVE_FOB_lastMessage, ALiVE_FOB_lastArgs]] call ALiVE_fnc_FOB };
+        ["ALiVE Player FOBs - %1 dismantled %2 (%3)", _who, _id, _name] call ALiVE_fnc_dump;
         _result = true;
     };
 
@@ -1061,22 +1073,24 @@ switch (_op) do {
     // engineer of its side within 25 m; the wreck and its ruins are cleared and a new one put up
     case "repair": {
         _result = false;
-        _args params [["_id", "", [""]]];
+        _args params [["_id", "", [""]], ["_free", false, [false]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
-        if (isNil "_entry" || {isNull _caller}) exitWith {};
-        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (isNil "_entry" || {isNull _caller && {_admin == ""}}) exitWith {};
+        _free = _free && {_admin != ""};
+        if (_admin == "" && {([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "damaged") exitWith { ["STR_ALIVE_FOB_REFUSED_NOT_DAMAGED"] call _tell };
         private _pos = [_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet;
-        if (_caller distance2D _pos > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
-        private _cost = ["repairCost", [_id]] call ALiVE_fnc_fobOps;
-        if !(["debit", [_id, _cost, "repair"]] call ALiVE_fnc_fobSupply) exitWith {
+        if (_admin == "" && {_caller distance2D _pos > 25}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        private _cost = if (_free) then { 0 } else { ["repairCost", [_id]] call ALiVE_fnc_fobOps };
+        if (!_free && {!(["debit", [_id, _cost, "repair"]] call ALiVE_fnc_fobSupply)}) exitWith {
             ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
         };
         if !(["rebuild", [_id]] call ALiVE_fnc_fobOps) exitWith {
-            ["credit", [_id, _cost, "refund repair"]] call ALiVE_fnc_fobSupply;
+            if (!_free) then { ["credit", [_id, _cost, "refund repair"]] call ALiVE_fnc_fobSupply };
             ["STR_ALIVE_FOB_REFUSED_SPOT"] call _tell;
         };
         ["STR_ALIVE_FOB_REPAIRED", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _cost]] call _tell;
+        if (_admin != "") then { ["ALiVE Player FOBs - %1 repaired %2 for %3 supply", _who, _id, _cost] call ALiVE_fnc_dump };
         _result = true;
     };
 
@@ -1251,16 +1265,17 @@ switch (_op) do {
     // tier 3 is also a respawn point for its side when the module allows it
     case "upgrade": {
         _result = false;
-        _args params [["_id", "", [""]]];
+        _args params [["_id", "", [""]], ["_free", false, [false]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
-        if (isNil "_entry" || {isNull _caller}) exitWith {};
-        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (isNil "_entry" || {isNull _caller && {_admin == ""}}) exitWith {};
+        _free = _free && {_admin != ""};
+        if (_admin == "" && {([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
         if (([_entry, "status", ""] call ALIVE_fnc_hashGet) != "active") exitWith { ["STR_ALIVE_FOB_REFUSED_DAMAGED_BUILD"] call _tell };
-        if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        if (_admin == "" && {_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
         private _tier = [_entry, "tier", 1] call ALIVE_fnc_hashGet;
         if (_tier >= 3) exitWith { ["STR_ALIVE_FOB_REFUSED_TOPTIER"] call _tell };
-        private _cost = [_logic, "attribute", [format ["fob_tier%1_cost", _tier + 1]]] call ALiVE_fnc_FOB;
-        if !(["debit", [_id, _cost, "upgrade"]] call ALiVE_fnc_fobSupply) exitWith {
+        private _cost = if (_free) then { 0 } else { ["upgradeCost", [_id]] call ALiVE_fnc_fobOps };
+        if (!_free && {!(["debit", [_id, _cost, "upgrade"]] call ALiVE_fnc_fobSupply)}) exitWith {
             ["STR_ALIVE_FOB_REFUSED_SUPPLY", [_cost, ["balance", [_id]] call ALiVE_fnc_fobSupply]] call _tell;
         };
         [_entry, "tier", _tier + 1] call ALIVE_fnc_hashSet;
@@ -1269,7 +1284,17 @@ switch (_op) do {
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
         ["STR_ALIVE_FOB_UPGRADED", [[_entry, "name", ""] call ALIVE_fnc_hashGet, _tier + 1, _cost]] call _tell;
+        if (_admin != "") then { ["ALiVE Player FOBs - %1 raised %2 to tier %3 for %4 supply", _who, _id, _tier + 1, _cost] call ALiVE_fnc_dump };
         _result = true;
+    };
+
+    // What the next tier costs, for a confirm box before an upgrade: -1 at the top tier or for no such FOB
+    case "upgradeCost": {
+        _args params [["_id", "", [""]]];
+        private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
+        if (isNil "_entry") exitWith { _result = -1 };
+        private _tier = [_entry, "tier", 1] call ALIVE_fnc_hashGet;
+        _result = if (_tier >= 3) then { -1 } else { [_logic, "attribute", [format ["fob_tier%1_cost", _tier + 1]]] call ALiVE_fnc_FOB };
     };
 
     // The respawn point a FOB should have: one at an active FOB at or above the module's Respawn Point tier
@@ -1295,6 +1320,20 @@ switch (_op) do {
         _result = _want;
     };
 
+    // A FOB renamed, upgraded, repaired or dismantled from the server with no player, for the War Room's live map:
+    // [op, args, byText]. The op runs as it does for a player, without the checks that need one (side, 25 m,
+    // Who Can Dismantle); byText names who in the RPT. Not in ALiVE_fnc_fobRequest's list, so no player reaches it.
+    // Returns [ok, the message key the op gave (its refusal when not ok), that key's arguments]
+    case "admin": {
+        _args params [["_sub", "", [""]], ["_subArgs", [], [[]]], ["_by", "", [""]]];
+        if (!isNil "_ALiVE_fobCaller" || {!(_sub in ["rename", "upgrade", "repair", "dismantle"])} || {_by == ""}) exitWith { _result = [false, "", []] };
+        ALiVE_FOB_lastMessage = "";
+        ALiVE_FOB_lastArgs = [];
+        private _ALiVE_fobAdmin = _by;
+        private _ok = [_sub, _subArgs, objNull] call ALiVE_fnc_fobOps;
+        _result = [_ok isEqualTo true, ALiVE_FOB_lastMessage, ALiVE_FOB_lastArgs];
+    };
+
     // A new name for a FOB, from a player of its side standing at it. The map marker and the rally
     // point read the name from the FOB list, so they follow it; the respawn point keeps the name it
     // was made with, so it is made again. The name is cleaned here, never trusted from the request:
@@ -1303,10 +1342,10 @@ switch (_op) do {
         _result = false;
         _args params [["_id", "", [""]], ["_new", "", [""]]];
         private _entry = [ALiVE_FOB_registry, _id] call ALIVE_fnc_hashGet;
-        if (isNil "_entry" || {isNull _caller}) exitWith {};
-        if (([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
-        if (_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
-        if !([_entry] call _mayManage) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
+        if (isNil "_entry" || {isNull _caller && {_admin == ""}}) exitWith {};
+        if (_admin == "" && {([_entry, "side", ""] call ALIVE_fnc_hashGet) != str (side group _caller)}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTOURS"] call _tell };
+        if (_admin == "" && {_caller distance2D ([_entry, "pos", [0,0,0]] call ALIVE_fnc_hashGet) > 25}) exitWith { ["STR_ALIVE_FOB_REFUSED_RANGE", [25]] call _tell };
+        if (_admin == "" && {!([_entry] call _mayManage)}) exitWith { ["STR_ALIVE_FOB_REFUSED_NOTALLOWED"] call _tell };
         _new = ["cleanName", [_new, 32]] call ALiVE_fnc_siteWho;
         if (_new == "") exitWith { ["STR_ALIVE_FOB_REFUSED_NAME", [32]] call _tell };
         private _old = [_entry, "name", ""] call ALIVE_fnc_hashGet;
@@ -1322,7 +1361,7 @@ switch (_op) do {
         [_logic, "broadcastMirror"] call ALiVE_fnc_FOB;
         ["save", [true]] call ALiVE_fnc_fobPersistence;
         ["STR_ALIVE_FOB_RENAMED", [_old, _new]] call _tell;
-        ["ALiVE Player FOBs - %1 renamed %2 from %3 to %4", name _caller, _id, _old, _new] call ALiVE_fnc_dump;
+        ["ALiVE Player FOBs - %1 renamed %2 from %3 to %4", _who, _id, _old, _new] call ALiVE_fnc_dump;
         _result = true;
     };
 
