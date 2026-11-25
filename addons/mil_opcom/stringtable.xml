@@ -1049,6 +1049,12 @@
 <Key ID="STR_ALIVE_OPCOM_FLANKING_COMMENT">
     <English>Any commander but an Asymmetric one (Dug In never attacks). When its scouts have found defenders on an objective and it sends three or more ground groups to take it, one group (the heaviest vehicles, else the infantry nearest the objective) stops about 300 m short and holds the defenders in place, while the others swing round to its side, about 90 degrees off, before all of them close in together. A group already standing off to the side goes straight in. Attacks with fewer groups, or where the scouts found nobody, go straight in as before. Aircraft aren't involved, and a group swinging round isn't sent to help elsewhere until the objective is taken.</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_DRONE_SUPPORT">
+    <English>Drone Support</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_DRONE_SUPPORT_COMMENT">
+    <English>Needs a Military IED module, whose FPV Drones settings the drones use (warhead, battery, jammers, Most Drones At Once, Drone Wait). While the commander attacks an objective, a group of the attack near a player sends a drone at an enemy it knows of there: a dropper at a man on foot, an FPV drone at a crewed vehicle (Medium or Large warhead only). A target with any of the commander's men within 30 m is left alone. Few sends 1 drone per attack on an objective, Many up to 3. Attacks far from every player get none.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_DISMOUNT">
     <English>Motorised Troops Dismount Short Of Objectives</English>
     <Chinese>摩托化部隊在目標前下車</Chinese>

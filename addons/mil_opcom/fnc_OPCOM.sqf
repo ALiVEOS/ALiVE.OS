@@ -246,6 +246,8 @@ switch (_operation) do {
         private _frontlineMinefields = toLower format ["%1", _logic getvariable ["frontlineMinefields","none"]];
         // Prepared Defences (#233): none, few or many.
         private _preparedDefences = toLower format ["%1", _logic getvariable ["preparedDefences","none"]];
+        // Drone Support: none, few or many (read each pass by fnc_OPCOMdroneSupport)
+        private _droneSupport = toLower format ["%1", _logic getvariable ["droneSupport","none"]];
         // Security Patrols (#1087): the share of reserve groups that patrol between rear objectives.
         private _securityPatrols = switch (toLower format ["%1", _logic getvariable ["securityPatrols","none"]]) do {
             case "few": { 0.25 }; case "some": { 0.5 }; case "many": { 0.75 }; default { 0 };
@@ -484,6 +486,7 @@ switch (_operation) do {
             ["recruiterBoost", _recruiterBoost],
             ["frontlineMinefields", _frontlineMinefields],
             ["preparedDefences", _preparedDefences],
+            ["droneSupport", _droneSupport],
             ["securityPatrols", _securityPatrols],
             ["securityPatrolMode", _securityPatrolMode],
             ["securityPatrolReach", _securityPatrolReach],
@@ -752,6 +755,22 @@ switch (_operation) do {
                     };
                     sleep 120;
                 };
+            };
+        };
+
+        // Drone Support: every 30 s; the pass itself does nothing while the setting is None, so it can be
+        // changed during the mission
+        [_handler] spawn {
+            params ["_handler"];
+            private _state = createHashMap;
+            sleep 60;
+            while {true} do {
+                private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
+                if (isNull _module) exitWith {};
+                if !([_handler, "pause", false] call ALiVE_fnc_HashGet) then {
+                    [_handler, _state] call ALIVE_fnc_OPCOMdroneSupport;
+                };
+                sleep 30;
             };
         };
 

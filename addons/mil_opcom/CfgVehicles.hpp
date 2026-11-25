@@ -370,6 +370,19 @@ class CfgVehicles {
                                 };
                                 ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
                         };
+                        class droneSupport : Combo
+                        {
+                                property = "ALiVE_mil_opcom_droneSupport";
+                                displayName = "$STR_ALIVE_OPCOM_DRONE_SUPPORT";
+                                tooltip = "$STR_ALIVE_OPCOM_DRONE_SUPPORT_COMMENT";
+                                defaultValue = """none""";
+                                class Values
+                                {
+                                        class None { name = "None"; value = "none"; };
+                                        class Few  { name = "Few";  value = "few"; };
+                                        class Many { name = "Many"; value = "many"; };
+                                };
+                        };
                         // Spicy on Discord, 24 Nov: passengers get out short of an objective and go in on foot
                         class dismount : Combo
                         {

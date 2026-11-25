@@ -106,6 +106,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMcoverage.sqf";
                                 ALIVE_RECOMPILE;
                         };
+                        class OPCOMdroneSupport {
+                                description = "Drone Support: groups attacking an objective send drones at hostiles there";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMdroneSupport.sqf";
+                                ALIVE_RECOMPILE;
+                        };
                         class OPCOMfriendlyDisableInstallations {
                                 description = "Issue #697: friendly AI disables enemy asymmetric installations via proximity presence and/or friendly OPCOM capture of the objective";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMfriendlyDisableInstallations.sqf";

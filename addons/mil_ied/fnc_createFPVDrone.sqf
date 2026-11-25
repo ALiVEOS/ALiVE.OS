@@ -37,6 +37,7 @@ Parameters:
 1: GROUP - the AI Commander's group that spotted him and launches it (grpNull for a roaming drone)
 2: ARRAY - a roaming drone: the position of the objective it is launched from
 3: SIDE - a roaming drone: its side
+4: STRING - (optional) the kind: "dropper" or "fpv" for that kind, "" (default) rolls Dropper Drones
 
 or a mode: ["eyes", [players]] (where they watch from: each body, and a Zeus's camera), ["nolink", [drone]] (every client: its UAV terminal can't connect to the drone),
 ["roofed", [unit or vehicle]] (is there a roof within 3 m over him), ["height", [object]] (its height over the
@@ -332,7 +333,7 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
 
 // ---- create --------------------------------------------------------------------------------------------------------
 
-params [["_target", objNull, [objNull]], ["_grp", grpNull, [grpNull]], ["_site", [], [[]]], ["_roamSide", sideUnknown, [west]]];
+params [["_target", objNull, [objNull]], ["_grp", grpNull, [grpNull]], ["_site", [], [[]]], ["_roamSide", sideUnknown, [west]], ["_kind", "", [""]]];
 private _roam = isNull _target && {isNull _grp} && {count _site >= 2} && {_roamSide in [west, east, independent]};
 if (!isServer || {!_roam && {isNull _target || {isNull _grp}}}) exitWith { objNull };
 
@@ -366,8 +367,12 @@ if !(isClass (configFile >> "CfgAmmo" >> _ammo)) exitWith {
     objNull
 };
 // Dropper Drones: the chance this one is a dropper, which carries hand grenades instead of a warhead (its dummy, and
-// what goes off if it is downed, is one of them)
-private _dropper = (random 100) < (ADDON getVariable ["Drone_Dropper", 0]);
+// what goes off if it is downed, is one of them). An AI Commander's Drone Support asks for the kind it wants
+private _dropper = switch (_kind) do {
+    case "dropper": { true };
+    case "fpv": { false };
+    default { (random 100) < (ADDON getVariable ["Drone_Dropper", 0]) };
+};
 if (_dropper) then {
     private _g = (["GrenadeHand", "mini_Grenade"] select { isClass (configFile >> "CfgAmmo" >> _x) }) param [0, ""];
     if (_g == "") then { _dropper = false } else { _ammo = _g };
