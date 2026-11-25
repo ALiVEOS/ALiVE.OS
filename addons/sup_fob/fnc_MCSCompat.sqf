@@ -37,6 +37,13 @@ Description:
                workstation switched on to engage by itself (broadband, soft
                kill: a drone in reach loses its link). One per side within
                300 m (server).
+    "hubContainers": [position, side string, module name, command post]
+               from the Logistics Hub with "MCS Containers At Built Hubs"
+               on: an MCS command post (the hub object) and a medical
+               container on clear ground near a built hub, powered without a
+               generator. Given a command post (a hub back after a restart),
+               only the medical container is made, when none is within 80 m.
+               Returns [command post, medical container], or [] (server).
 
 Parameters:
     0: STRING - mode
@@ -70,6 +77,9 @@ private _N = createHashMapFromArray [
     ["netClasses", ["Land_MCS_EWContainer_F", "Land_MCS_MastContainer_F"]],
     // the jammer at an AI side's HQ: the EW container and the mast it sends through
     ["ew", "Land_MCS_EWContainer_F"],
+    // a built Logistics Hub: the command post is the hub, the medical container stands beside it
+    ["cp", "Land_MCS_CommandPost_F"],
+    ["med", "Land_MCS_MedContainer_F"],
     ["mast", "Land_MCS_MastContainer_F"],
     ["powerAlways", "mcs_powerAlways"],
     ["antUp", "mcs_antUp"],
@@ -135,6 +145,43 @@ switch (_mode) do {
                 _ew setVariable [format [_N get "wsVar", _x select 0, 1], _x select 1, true];
             } forEach [["mode", "soft"], ["filter", "broadband"], ["opMode", "auto"], ["nextCheck", 0], ["on", true]];
         };
+    };
+
+    case "hubContainers": {
+        _args params [["_pos", [], [[]]], ["_side", "", [""]], ["_by", "", [""]], ["_cp", objNull, [objNull]]];
+        if (count _pos < 2) exitWith { [] };
+        _pos = [_pos select 0, _pos select 1, 0];
+        private _classes = [_N get "cp", _N get "med"];
+        private _missing = _classes select { !isClass (configFile >> "CfgVehicles" >> _x) };
+        if (_missing isNotEqualTo []) exitWith {
+            ["ALiVE %1 - MCS: %2 not in this version of MCS, so the built hub at %3 keeps its own crate", _by, _missing, mapGridPosition _pos] call ALiVE_fnc_dump;
+            []
+        };
+        private _med = if (isNull _cp) then { objNull } else { (nearestObjects [_cp, [_N get "med"], 80]) param [0, objNull] };
+        {
+            if (isNull ([_cp, _med] select _forEachIndex)) then {
+                // clear, fairly flat ground 15-70 m from the hub's layout, 6 m from anything else
+                private _spot = [_pos, 15, 70, 6, 0, 0.25, 0, [], [_pos, _pos]] call BIS_fnc_findSafePos;
+                if ((_spot distance2D _pos) >= 1) then {
+                    private _o = createVehicle [_x, [_spot select 0, _spot select 1, 0], [], 0, "CAN_COLLIDE"];
+                    _o setDir (random 360);
+                    _o setVectorUp (surfaceNormal (getPosATL _o));
+                    if (_forEachIndex == 0) then { _cp = _o } else { _med = _o };
+                };
+            };
+        } forEach _classes;
+        if (isNull _cp) exitWith {
+            ["ALiVE %1 - MCS: no clear ground near the built hub at %2 for its containers, so it keeps its own crate", _by, mapGridPosition _pos] call ALiVE_fnc_dump;
+            []
+        };
+        ["ALiVE %1 - MCS: the %2 hub at %3 is an MCS command post (%4 m from its layout), medical container %5", _by, _side, mapGridPosition _pos, round (_cp distance2D _pos), ["none", format ["%1 m from it", round (_med distance2D _cp)]] select !isNull _med] call ALiVE_fnc_dump;
+        // after MCS has set the containers up (its own init runs 0.1 s after they are made)
+        [[_cp, _med] select { !isNull _x }, _N] spawn {
+            params ["_os", "_N"];
+            sleep 2;
+            { _x setVariable [_N get "powerAlways", true, true] } forEach _os;
+        };
+        [_cp, _med]
     };
 
     case "rows": {

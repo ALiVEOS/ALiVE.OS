@@ -286,6 +286,9 @@ switch (_op) do {
         private _inBuildings = toUpper (["hub_build_buildings", "NEVER"] call _text);
         if !(_inBuildings in ["NEVER", "PREFER", "ONLY"]) then { _inBuildings = "NEVER" };
         _logic setVariable ["ALiVE_hub_inBuildings", _inBuildings];
+        // MCS Containers At Built Hubs: with MCS loaded, a hub built from a layout is an MCS command post with a
+        // medical container beside it (ALiVE_fnc_MCSCompat "hubContainers")
+        _logic setVariable ["ALiVE_hub_mcs", (toLower (["hub_build_mcs", "false"] call _text)) == "true" && {!isNil "ALiVE_fnc_MCSCompat"} && {["loaded"] call ALiVE_fnc_MCSCompat}];
         private _buildMax = parseNumber (["hub_build_max", "3"] call _text);
         if (_buildMax <= 0) then { _buildMax = 3 };
         _buildMax = (round _buildMax) min 20;
@@ -629,6 +632,11 @@ switch (_op) do {
         if (isNull _counter) then {
             _counter = createVehicle ["Land_CargoBox_V1_F", _pos, [], 3, "NONE"];
             _counter setDir _dir;
+        };
+        // MCS Containers At Built Hubs: the command post is the hub instead, the layout's crates stay as they are
+        if (_logic getVariable ["ALiVE_hub_mcs", false]) then {
+            private _mcs = ["hubContainers", [_pos, (["settings", [_logic]] call ALIVE_fnc_hub) select 0, "Logistics Hub"]] call ALiVE_fnc_MCSCompat;
+            if (_mcs isEqualType [] && {count _mcs == 2} && {!isNull (_mcs select 0)}) then { _counter = _mcs select 0 };
         };
         if ((_counter getVariable ["ALiVE_hub_name", ""]) == "") then {
             _counter setVariable ["ALiVE_hub_name", localize (switch (_kind) do { case "FIELDHQ": {"STR_ALIVE_HUB_FIELD_NAME"}; case "SUPPLY": {"STR_ALIVE_HUB_SUPPLY_NAME"}; default {"STR_ALIVE_HUB_HQ_NAME"} })];
@@ -1375,6 +1383,10 @@ switch (_op) do {
                         if (_z == 3) then {
                             _hub setVariable ["ALiVE_hub_built", _kind, true];
                             if (_left > 0) then { _down pushBack [_hub, _left] };
+                            // a command post hub (MCS Containers At Built Hubs): powered again, its medical container back
+                            if (typeOf _hub == "Land_MCS_CommandPost_F" && {!isNil "ALiVE_fnc_MCSCompat"} && {["loaded"] call ALiVE_fnc_MCSCompat}) then {
+                                ["hubContainers", [getPosATL _hub, _side, "Logistics Hub", _hub]] call ALiVE_fnc_MCSCompat;
+                            };
                         };
                         // a side other than its module's only when that module lets the enemy take hubs
                         private _ms = ["settings", [_mods select _i]] call ALIVE_fnc_hub;

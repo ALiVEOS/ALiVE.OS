@@ -844,6 +844,12 @@
 <Key ID="STR_ALIVE_HUB_BUILD_BUILDINGS_COMMENT">
     <English>Where a built hub goes. Never (the default): a small supplies layout on open ground. Prefer: inside the nearest building that can hold one (enterable, can be destroyed, not a tower, and with no insurgent installation or other hub in it), with its crates indoors; a layout when there is none. Only: in a building or not at all.</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_BUILD_MCS">
+    <English>MCS Containers At Built Hubs</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_BUILD_MCS_COMMENT">
+    <English>With the MCS containers mod loaded, a hub built on open ground is an MCS command post, with an MCS medical container beside it, both working without a generator. The layout's crates stay. A hub built inside a building is unchanged. No (the default) keeps the layout's crate as the hub. Does nothing without MCS.</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_BUILD_MAX">
     <English>Most Built Hubs</English>
 </Key>

@@ -369,6 +369,20 @@ class CfgVehicles {
                                     class ONLY { name = "Only: in a building, or none"; value = "ONLY"; };
                             };
                     };
+                    class hub_build_mcs : Combo
+                    {
+                            property = "ALiVE_sup_logistics_hub_hub_build_mcs";
+                            displayName = "$STR_ALIVE_HUB_BUILD_MCS";
+                            tooltip = "$STR_ALIVE_HUB_BUILD_MCS_COMMENT";
+                            defaultValue = """false""";
+                            typeName = "STRING";
+                            ALiVE_showWhen[] = {{"hub_build", "not", "OFF"}};
+                            class Values
+                            {
+                                    class No { name = "No"; value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
 
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_GENERAL"; displayName = "GENERAL"; };
                     class hub_debug : Combo
