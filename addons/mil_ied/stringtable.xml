@@ -327,6 +327,12 @@
 <Key ID="STR_ALIVE_IED_DRONE_ROAM_COMMENT">
     <English>Chance, checked every 30 seconds for each player, of a drone launched from an objective held by a side hostile to them, 400 m to 2 km away. It searches the ground round the objective, then round where its side last knew a player to be, and goes after the first hostile player it sees within 300 m (or, with a Medium or Large warhead, the first crewed hostile vehicle). It uses the same limits as the other drones (Most Drones At Once, Drone Wait, Drones Launched By). None switches roaming drones off.</English>
 </Key>
+<Key ID="STR_ALIVE_IED_DRONE_DROPPER">
+    <English>Dropper Drones:</English>
+</Key>
+<Key ID="STR_ALIVE_IED_DRONE_DROPPER_COMMENT">
+    <English>How many of the drones launched are droppers instead of FPV drones. A dropper flies to its target the same way, then hovers about 30 m over it and drops 2 or 3 grenades, leading a moving target, and flies off. It holds a drop while anyone friendly to its side is within 15 m of where it would land, or while its target is under a roof. Jammers stop it as they stop an FPV drone: a jammed dropper falls with its grenades still on it. It uses the same limits as the other drones. None makes every drone an FPV drone.</English>
+</Key>
 <Key ID="STR_ALIVE_IED_DRONE_MAX">
     <English>Most Drones At Once:</English>
 </Key>

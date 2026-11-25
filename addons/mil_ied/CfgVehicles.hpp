@@ -125,6 +125,11 @@ class CfgVehicles {
                                 property = "ALiVE_mil_ied_Drone_Roam"; displayName = "$STR_ALIVE_IED_DRONE_ROAM"; tooltip = "$STR_ALIVE_IED_DRONE_ROAM_COMMENT"; defaultValue = """0""";
                                 class Values { class None{name="None";value=0;default=1;}; class Low{name="Low";value=10;}; class Med{name="Medium";value=20;}; class High{name="High";value=30;}; };
                         };
+                        class Drone_Dropper : Combo
+                        {
+                                property = "ALiVE_mil_ied_Drone_Dropper"; displayName = "$STR_ALIVE_IED_DRONE_DROPPER"; tooltip = "$STR_ALIVE_IED_DRONE_DROPPER_COMMENT"; defaultValue = """0""";
+                                class Values { class None{name="None";value=0;default=1;}; class Some{name="A quarter";value=25;}; class Half{name="Half";value=50;}; class All{name="All";value=100;}; };
+                        };
                         class Drone_Max : Edit { property = "ALiVE_mil_ied_Drone_Max"; displayName = "$STR_ALIVE_IED_DRONE_MAX"; tooltip = "$STR_ALIVE_IED_DRONE_MAX_COMMENT"; defaultValue = """2"""; };
                         class Drone_Wait : Edit { property = "ALiVE_mil_ied_Drone_Wait"; displayName = "$STR_ALIVE_IED_DRONE_WAIT"; tooltip = "$STR_ALIVE_IED_DRONE_WAIT_COMMENT"; defaultValue = """10"""; };
                         class Drone_Range : Edit { property = "ALiVE_mil_ied_Drone_Range"; displayName = "$STR_ALIVE_IED_DRONE_RANGE"; tooltip = "$STR_ALIVE_IED_DRONE_RANGE_COMMENT"; defaultValue = """2000"""; };

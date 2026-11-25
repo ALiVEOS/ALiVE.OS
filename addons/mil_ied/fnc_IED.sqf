@@ -324,7 +324,7 @@ switch(_operation) do {
                         if (!(_v isEqualType 0) || {_v < 0}) then { _v = _default };
                         ADDON setVariable [_name, _v];
                     } forEach [["Bomber_Dispatch_Wait", 10], ["Bomber_Dispatch_Share", 150], ["VB_Min_Distance", 300],
-                        ["Drone_Max", 2], ["Drone_Wait", 10], ["Drone_Range", 2000], ["Drone_Battery", 10], ["Drone_Roam", 0]];
+                        ["Drone_Max", 2], ["Drone_Wait", 10], ["Drone_Range", 2000], ["Drone_Battery", 10], ["Drone_Roam", 0], ["Drone_Dropper", 0]];
                     // FPV drone Warhead (SMALL, MEDIUM or LARGE), Jammers Stop Drones, Chance To Explode When Downed and Drone Class;
                     // read by bomberDispatch and createFPVDrone
                     private _charge = _logic getVariable ["Drone_Charge", "MEDIUM"];

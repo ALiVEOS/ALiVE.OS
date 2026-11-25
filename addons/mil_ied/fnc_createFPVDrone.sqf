@@ -16,6 +16,15 @@ minutes), it explodes where it hits the ground with the Chance To Explode When D
 (another mod's jammer that kills its AI pilot or drains its fuel counts), taken over by a UAV terminal or no longer
 run by the server, it always drops without exploding.
 
+A dropper (Dropper Drones, the chance a launch is one) flies to its target the same way, but makes no attack run:
+from 150 m it closes to about 30 m over him and drops 2 or 3 hand grenades, one every 2.5 s, each made under the
+drone as it is let go and set off when it strikes something on the way down (or after 6 s), credited to the drone
+and its pilot. It aims where he will be when a grenade lands (his ground speed over the fall time), and waits while
+he moves faster than 12 m/s. A drop is held while anyone friendly to the drone's side is within 15 m of where it
+would land, while he is under a roof, or while a jammer is in reach; after its drops, or 40 s over him whatever has
+dropped, it climbs away for 25 s and is removed. Jammed (the same checks as an FPV drone, below), it falls with its
+grenades still on it: nothing is released once a jam is found, and none is released while a soft jam holds it.
+
 A roaming drone (Roaming Drones) is launched from an objective its side holds with no player in mind: it flies a
 loose box 300 to 500 m round the site, then round where its side last knew a player to be, until it sees a player
 of a hostile side within 300 m; from then on it flies at him like any other drone.
@@ -161,6 +170,46 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
             ["end", [_d, format ["exploded (%1)", _fuse], false]] call ALiVE_fnc_createFPVDrone;
         };
 
+        case "release": {
+            // a dropper lets one grenade go: made half a metre under the drone, falling straight down at 1 m/s (it does
+            // not take the drone's speed; the aim allows for that), credited to the drone and its pilot (the launching
+            // group's leader when the pilot is gone), and set off in the frame it would strike something below it, the
+            // ground, a roof or a vehicle, or 6 s after it is let go. The target and everyone in it are marked as struck
+            // by this drone, as for an FPV hit, for a death that comes later
+            _args params ["_d"];
+            private _uav = _d get "uav";
+            if (isNull _uav || {!alive _uav}) exitWith {};
+            private _pilot = (crew _uav) param [0, objNull];
+            private _p = (getPosASL _uav) vectorAdd [0, 0, -0.5];
+            private _g = createVehicle [_d get "ammo", ASLToAGL _p, [], 0, "CAN_COLLIDE"];
+            if (isNull _g) exitWith {};
+            _g setPosASL _p;
+            _g setVelocity [0, 0, -1];
+            private _lead = _d get "lead";
+            private _parents = if (!isNull _pilot) then { [_uav, _pilot] } else { if (alive _lead) then { [_lead, _lead] } else { [] } };
+            if (_parents isNotEqualTo []) then { _g setShotParents _parents };
+            private _tgt = vehicle (_d get "target");
+            if (!isNull _tgt) then { { _x setVariable ["ALiVE_IED_fpvHit", [_uav, serverTime], true] } forEach ([_tgt] + crew _tgt) };
+            addMissionEventHandler ["EachFrame", {
+                _thisArgs params ["_g", "_t0", "_tgt", "_d"];
+                if (isNull _g) exitWith { removeMissionEventHandler ["EachFrame", _thisEventHandler] };
+                private _gp = getPosASL _g;
+                if (diag_tickTime - _t0 > 6 || {(lineIntersectsSurfaces [_gp, _gp vectorAdd ((velocity _g) vectorMultiply 0.05) vectorAdd [0, 0, -0.3], _g, objNull, true, 1]) isNotEqualTo []}) then {
+                    removeMissionEventHandler ["EachFrame", _thisEventHandler];
+                    // how far from its target each went off, kept on the drone's state for the debug line and for tests
+                    private _miss = if (isNull _tgt) then { -1 } else { (ASLToAGL _gp) distance2D _tgt };
+                    (_d get "bursts") pushBack _miss;
+                    if (_d get "debug") then { ["ALIVE-%1 FPV drone: a dropped grenade went off %2 m from its target", time, [round _miss, "-"] select (_miss < 0)] call ALiVE_fnc_dump };
+                    triggerAmmo _g;
+                };
+            }, [_g, diag_tickTime, _tgt, _d]];
+            _d set ["dropped", (_d get "dropped") + 1];
+            if (_d get "debug") then {
+                ["ALIVE-%1 FPV drone: the dropper let grenade %2 of %3 go at %4, %5 m up, %6 m from %7", time, _d get "dropped", _d get "drops", mapGridPosition _uav,
+                    round ((_p select 2) - ((getPosASL _tgt) select 2)), round (_uav distance2D _tgt), if (isNull _tgt) then { "nobody" } else { [typeOf _tgt, name _tgt] select (_tgt isKindOf "Man") }] call ALiVE_fnc_dump;
+            };
+        };
+
         case "downed": {
             // shot down, crashed, stuck or out of battery: one roll of Chance To Explode When Downed (0 to 100; the
             // old Yes and No read as 100 and 0). Yes: no more steering, it falls, and its warhead goes off where it
@@ -202,6 +251,9 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
             private _phase = switch (_d get "phase") do {
                 case "terminal": { ["attack", "dive"] select ((_d getOrDefault ["diveAt", -1]) >= 0) };
                 case "roof": { "hover" };
+                // a dropper over its target, and flying off after its drops
+                case "bomb": { "attack" };
+                case "leave": { "cruise" };
                 default { _d get "phase" };
             };
             _uav setVariable ["ALiVE_IED_droneInfo", [_phase, _d get "target", _d get "from", _d get "t0", _d get "batteryEnd"]];
@@ -230,6 +282,19 @@ if (_this isEqualType [] && {(_this param [0, objNull]) isEqualType ""}) exitWit
                     };
                 } else {
                     if (!isNull _dummy) then { deleteVehicle _dummy };
+                    // a dropper that has let grenades go is kept the same way, hidden, for 5 minutes
+                    if ((_d get "dropper") && {(_d get "dropped") > 0} && {!(_uav getVariable ["ALiVE_IED_fpvStrike", false])}) then {
+                        _uav setVariable ["ALiVE_IED_fpvStrike", true, true];
+                        _uav allowDamage false;
+                        { _x allowDamage false } forEach (crew _uav);
+                        _uav hideObjectGlobal true;
+                        _uav enableSimulationGlobal false;
+                        [_uav] spawn {
+                            params ["_uav"];
+                            sleep 300;
+                            if (!isNull _uav) then { { deleteVehicle _x } forEach (crew _uav); deleteVehicle _uav };
+                        };
+                    };
                     // a drone that has just struck is kept, hidden, until its blast has been credited (see "blow")
                     if !(_uav getVariable ["ALiVE_IED_fpvStrike", false]) then {
                         { deleteVehicle _x } forEach (crew _uav);
@@ -285,6 +350,13 @@ if (_ammo == "") then { _ammo = "mini_Grenade" };
 if !(isClass (configFile >> "CfgAmmo" >> _ammo)) exitWith {
     if (_debug) then { ["ALIVE-%1 FPV drone: no warhead class found, no drone launched", time] call ALiVE_fnc_dump };
     objNull
+};
+// Dropper Drones: the chance this one is a dropper, which carries hand grenades instead of a warhead (its dummy, and
+// what goes off if it is downed, is one of them)
+private _dropper = (random 100) < (ADDON getVariable ["Drone_Dropper", 0]);
+if (_dropper) then {
+    private _g = (["GrenadeHand", "mini_Grenade"] select { isClass (configFile >> "CfgAmmo" >> _x) }) param [0, ""];
+    if (_g == "") then { _dropper = false } else { _ammo = _g };
 };
 
 // launched 20 m up, 15 to 25 m behind the group's leader, away from the player; a roaming drone within 50 m of
@@ -376,7 +448,9 @@ private _d = createHashMapFromArray [
     // Drones Also Hit Abandoned Vehicles (Medium and Large only): empty, knocked-out hostile vehicles too
     ["abandoned", (ADDON getVariable ["Drone_Abandoned", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}],
     // Drones Also Hit Boats (Medium and Large only): a player in a boat, and crewed boats of a hostile side
-    ["boats", (ADDON getVariable ["Drone_Boats", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}]
+    ["boats", (ADDON getVariable ["Drone_Boats", false]) && {(ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"}],
+    // a dropper: how many grenades it carries, how many it has let go, and when the next may go
+    ["dropper", _dropper], ["drops", 2 + floor random 2], ["dropped", 0], ["nextDrop", -1], ["dropCheck", -1], ["bursts", []]
 ];
 if (_roam) then {
     // the search: a loose box of four legs 300 to 500 m round a centre, flown at cruise height
@@ -398,10 +472,10 @@ if (_debug) then {
     private _m = createMarker [format ["ALiVE_IED_drone_%1", netId _uav], getPosATL _uav];
     _m setMarkerType "mil_dot";
     _m setMarkerColor "ColorRed";
-    _m setMarkerText "FPV";
+    _m setMarkerText (["FPV", "Dropper"] select _dropper);
     _d set ["marker", _m];
     if (!_roam) then {
-        ["ALIVE-%1 FPV drone: %2 (%3, %4 warhead) launched at %5 from %6, %7 m away", time, _class, _side, _ammo, ([typeOf _target, name _target] select (_target isKindOf "Man")), mapGridPosition _p, round (_p distance _target)] call ALiVE_fnc_dump;
+        ["ALIVE-%1 FPV drone: %2 (%3, %4 %5) launched at %6 from %7, %8 m away", time, _class, _side, _ammo, ["warhead", format ["dropper, %1 grenades", _d get "drops"]] select _dropper, ([typeOf _target, name _target] select (_target isKindOf "Man")), mapGridPosition _p, round (_p distance _target)] call ALiVE_fnc_dump;
     };
 };
 
@@ -444,6 +518,64 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
             private _up = (_this vectorCrossProduct [0, 0, 1]) vectorCrossProduct _this;
             if ((vectorMagnitude _up) < 0.1) then { _up = [0, 1, 0] };
             _uav setVectorDirAndUp [_this, vectorNormalized _up];
+        };
+    };
+
+    // a dropper flying off after its drops: away from where its target was at 15 m/s, climbing to 70 m
+    if ((_d get "phase") == "leave") exitWith {
+        private _hd = _d get "leaveDir";
+        private _vz = (((((getTerrainHeightASL _pos) max 0) + 70) - (_pos select 2)) * 0.8) max -6 min 8;
+        _uav setVelocity ((_hd vectorMultiply 15) vectorAdd [0, 0, _vz]);
+        _hd call _fnc_turn;
+    };
+    // a dropper over its target: it holds 30 m over where he will be when a grenade let go now lands (his ground speed
+    // over the fall time from the height it is at), moving with him, and lets one go when it is within 2.5 m of that
+    // point, 15 to 45 m up, he moves no faster than 12 m/s, and 2.5 s have passed since the last. Each candidate drop
+    // (at most 4 a second) is held while anyone friendly to its side is within 15 m of where it would land (a vehicle
+    // counts while anyone alive is in it), while he is under a roof, or while a jammer is in reach of the drone
+    // (the once-a-second loop then ends the flight: a jammed dropper releases nothing). The once-a-second loop sends
+    // it off after its drops or 40 s
+    if ((_d get "phase") == "bomb") exitWith {
+        private _tp = getPosASL _tv;
+        private _tvel = velocity _tv;
+        _tvel set [2, 0];
+        private _h = ((_pos select 2) - (_tp select 2)) max 1;
+        private _fall = ((sqrt (1 + 19.62 * _h)) - 1) / 9.81;
+        private _aim = _tp vectorAdd (_tvel vectorMultiply _fall);
+        private _want = +_aim;
+        _want set [2, ((_tp select 2) + 30) max (((getTerrainHeightASL _aim) max 0) + 25)];
+        private _v = (_want vectorDiff _pos) vectorMultiply 1.2;
+        if ((vectorMagnitude _v) > 18) then { _v = (vectorNormalized _v) vectorMultiply 18 };
+        _uav setVelocity (_v vectorAdd _tvel);
+        private _flat = _aim vectorDiff _pos;
+        _flat set [2, 0];
+        if ((vectorMagnitude _flat) > 1) then { (vectorNormalized _flat) call _fnc_turn };
+        if ((_pos distance2D _aim) < 2.5 && {_h > 15} && {_h < 45} && {(vectorMagnitude _tvel) <= 12}
+            && {_now >= (_d get "nextDrop")} && {_now >= (_d get "dropCheck")} && {(_d get "dropped") < (_d get "drops")}) then {
+            _d set ["dropCheck", _now + 0.25];
+            private _side = _d get "side";
+            private _at = ASLToAGL [_aim select 0, _aim select 1, _tp select 2];
+            private _tcrew = crew _tv;
+            private _friend = (_at nearEntities [["CAManBase", "LandVehicle", "Ship", "StaticWeapon"], 15]) findIf {
+                alive _x && {_x != _tv} && {!(_x in _tcrew)}
+                && {(_x isKindOf "CAManBase") || {((crew _x) findIf { alive _x }) >= 0}}
+                && {(_side getFriend ([side _x, side group _x] select (_x isKindOf "CAManBase"))) >= 0.6}
+            };
+            private _why = switch (true) do {
+                case ((ADDON getVariable ["Drone_Jammed", true]) && {[_uav, -1, true] call ALiVE_fnc_iedJammerNear}): { "a jammer is in reach" };
+                case ((_uav getVariable ["mcs_jamState", ""]) != ""): { "jammed by Military Container Systems" };
+                case (_friend >= 0): { "a friendly is within 15 m" };
+                case (["roofed", [_tv]] call ALiVE_fnc_createFPVDrone): { "the target is under a roof" };
+                default { "" };
+            };
+            if (_why == "") then {
+                ["release", [_d]] call ALiVE_fnc_createFPVDrone;
+                _d set ["nextDrop", _now + 2.5];
+                _d set ["held", ""];
+            } else {
+                if ((_d get "debug") && {(_d getOrDefault ["held", ""]) != _why}) then { ["ALIVE-%1 FPV drone: the dropper holds its drop: %2", time, _why] call ALiVE_fnc_dump };
+                _d set ["held", _why];
+            };
         };
     };
 
@@ -567,6 +699,17 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         _roofSince = -1;
     };
 
+    // a dropper is done over its target: it flies off, away from it, for 25 s and is then removed
+    private _fnc_leave = {
+        private _t = _d get "target";
+        private _b = if (isNull _t) then { random 360 } else { (_t getDir _uav) + (random 60) - 30 };
+        _d set ["leaveDir", [sin _b, cos _b, 0]];
+        _d set ["leaveEnd", time + 25];
+        _d set ["phase", "leave"];
+        ["info", [_d]] call ALiVE_fnc_createFPVDrone;
+        if (_d get "debug") then { ["ALIVE-%1 FPV drone: the dropper flies off after %2 of %3 grenades (%4)", time, _d get "dropped", _d get "drops", _this] call ALiVE_fnc_dump };
+    };
+
     while { !(_d get "gone") } do {
         sleep 1;
         if (_d get "gone") exitWith {};
@@ -597,7 +740,8 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
             private _dtk = diag_tickTime - (_d get "heldTick");
             _d set ["heldAt", -1];
             _d set ["batteryEnd", (_d get "batteryEnd") + _dt];
-            { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dtk] } } forEach ["hoverLimit", "diveAt", "pauseUntil", "weaveAt", "jamTick"];
+            { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dt] } } forEach ["bombEnd", "leaveEnd"];
+            { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dtk] } } forEach ["hoverLimit", "diveAt", "pauseUntil", "weaveAt", "jamTick", "nextDrop", "dropCheck"];
             if (_roofSince >= 0) then { _roofSince = _roofSince + _dt };
             _stuckPos = getPosATL _uav;
             _stuckAt = time;
@@ -641,7 +785,7 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
             if ((_d getOrDefault ["jamTick", -1]) >= 0) then {
                 private _dtk = diag_tickTime - (_d get "jamTick");
                 _d set ["jamTick", -1];
-                { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dtk] } } forEach ["hoverLimit", "diveAt", "pauseUntil", "weaveAt"];
+                { if ((_d getOrDefault [_x, -1]) >= 0) then { _d set [_x, (_d get _x) + _dtk] } } forEach ["hoverLimit", "diveAt", "pauseUntil", "weaveAt", "nextDrop", "dropCheck"];
                 if (_roofSince >= 0) then { _roofSince = _roofSince + _dtk };
                 _stuckPos = getPosATL _uav;
                 _stuckAt = time;
@@ -739,6 +883,21 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         };
         if ((_d get "phase") == "search" || {_d get "gone"} || {_d getOrDefault ["falling", false]}) then { continue };
 
+        // a dropper flying off: removed after 25 s. Over its target (the frame handler aims and drops): it flies off
+        // once its grenades are gone, after 40 s, or when its target is dead or no longer one it may go after
+        if ((_d get "phase") == "leave") then {
+            if (time > (_d get "leaveEnd")) then { ["flew off after its drops", false] call _fnc_end };
+            continue;
+        };
+        if ((_d get "phase") == "bomb") then {
+            switch (true) do {
+                case ((_d get "dropped") >= (_d get "drops")): { "all dropped" call _fnc_leave };
+                case (time > (_d get "bombEnd")): { "40 s over the target" call _fnc_leave };
+                case (!((_d get "target") call _fit)): { "the target is gone or dead" call _fnc_leave };
+            };
+            continue;
+        };
+
         // the player; once, the nearest other player within 200 m instead
         private _target = _d get "target";
         private _tv = vehicle _target;
@@ -804,15 +963,23 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
                 };
             } else {
                 _roofSince = -1;
-                // the attack run (frame handler): a pause of up to 1 s or none, a random side to come in from
-                _d set ["hoverLimit", diag_tickTime + 20];
-                _d set ["pauseUntil", diag_tickTime + ([0, random 1] select (random 1 < 0.5))];
-                _d set ["weaveAt", 0];
-                _d set ["attackB", (_tv getDir _uav) + (selectRandom [-1, 1]) * (40 + random 50)];
-                _d set ["prev", getPosASL _uav];
-                _d set ["phase", "terminal"];
-                ["info", [_d]] call ALiVE_fnc_createFPVDrone;
-                if (_d get "debug") then { ["ALIVE-%1 FPV drone: final run at %2, %3 m away, %4 m up", time, ([typeOf _target, name _target] select (_target isKindOf "Man")), round (_uav distance _tv), round ((getPosATL _uav) select 2)] call ALiVE_fnc_dump };
+                if (_d get "dropper") then {
+                    // a dropper: over him to drop its grenades (frame handler), for 40 s at most
+                    _d set ["bombEnd", time + 40];
+                    _d set ["phase", "bomb"];
+                    ["info", [_d]] call ALiVE_fnc_createFPVDrone;
+                    if (_d get "debug") then { ["ALIVE-%1 FPV drone: the dropper closes on %2, %3 m away, %4 m up", time, ([typeOf _target, name _target] select (_target isKindOf "Man")), round (_uav distance _tv), round ((getPosATL _uav) select 2)] call ALiVE_fnc_dump };
+                } else {
+                    // the attack run (frame handler): a pause of up to 1 s or none, a random side to come in from
+                    _d set ["hoverLimit", diag_tickTime + 20];
+                    _d set ["pauseUntil", diag_tickTime + ([0, random 1] select (random 1 < 0.5))];
+                    _d set ["weaveAt", 0];
+                    _d set ["attackB", (_tv getDir _uav) + (selectRandom [-1, 1]) * (40 + random 50)];
+                    _d set ["prev", getPosASL _uav];
+                    _d set ["phase", "terminal"];
+                    ["info", [_d]] call ALiVE_fnc_createFPVDrone;
+                    if (_d get "debug") then { ["ALIVE-%1 FPV drone: final run at %2, %3 m away, %4 m up", time, ([typeOf _target, name _target] select (_target isKindOf "Man")), round (_uav distance _tv), round ((getPosATL _uav) select 2)] call ALiVE_fnc_dump };
+                };
             };
         } else {
             if ((_d get "phase") == "roof") then { _d set ["phase", "cruise"]; _roofSince = -1; ["info", [_d]] call ALiVE_fnc_createFPVDrone };
