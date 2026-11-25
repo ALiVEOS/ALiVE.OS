@@ -493,6 +493,8 @@ switch(_operation) do {
     case "createAirDefenceActivator": {
         private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
         private _airDefenceActivator = [nil,"create",_args] call ALiVE_fnc_profileActivatorAirDefence;
+        // read by the air commander's watch (mil_ato): a virtual AA site is only a target for its jets when this spawns it
+        ALiVE_airDefenceRadius = _args param [0, 0];
         _result = [_profileActivationCoordinator,"registerActivator", _airDefenceActivator] call ALiVE_fnc_profileActivationCoordinator;
     };
     case "createAirCombatActivator": {

@@ -127,17 +127,22 @@ switch (_taskState) do {
 
             if (typeName _targetVehicle != "OBJECT") then {
                 _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicle] call ALIVE_fnc_profileHandler;
-                if (_debug) then {
-                    _vehicleProfile call ALIVE_fnc_inspectHash;
+                // the air commander can hand over a virtual site by its profile id; one destroyed or removed
+                // since then has no profile, and the task keeps the location it was given
+                if (!isNil "_vehicleProfile" && {_vehicleProfile isEqualType []}) then {
+                    if (_debug) then {
+                        _vehicleProfile call ALIVE_fnc_inspectHash;
+                    };
+                    _vehiclePosition = [_vehicleProfile, "position", _taskLocation] call ALIVE_fnc_hashGet;
+                    _vehicleType = [_vehicleProfile, "vehicleClass", ""] call ALIVE_fnc_hashGet;
                 };
-                _vehiclePosition = _vehicleProfile select 2 select 2;
-                _vehicleType = _vehicleProfile select 2 select 11;
             } else {
                 _vehiclePosition = position _targetVehicle;
                 _vehicleType = typeof _targetVehicle;
             };
 
             _vehicleName = getText(configFile >> "CfgVehicles" >> _vehicleType >> "displayName");
+            if (_vehicleName == "") then { _vehicleName = "air defence" };
 
             private["_stagingPosition","_dialogOptions","_dialogOption"];
 

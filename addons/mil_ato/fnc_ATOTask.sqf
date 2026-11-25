@@ -997,6 +997,11 @@ switch(_operation) do {
             };
             private _stillThere = true;
             if (_who isEqualType objNull) then { _stillThere = !isNull _who && {alive _who} };
+            // a SEAD site held as a profile id is gone once its profile is (destroyed while virtual, or removed)
+            if (_type isEqualTo "SEAD" && {_who isEqualType ""} && {!isNil "ALiVE_profileHandler"}) then {
+                private _pr = [ALiVE_profileHandler, "getProfile", _who] call ALiVE_fnc_ProfileHandler;
+                _stillThere = !isNil "_pr";
+            };
             if (_stillThere && {(_now - _when) < PLAYER_TASK_QUIET}) then {
                 _kept pushBack [_who, _when];
             };

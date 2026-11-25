@@ -328,13 +328,99 @@ switch(_operation) do {
                     if (_isAA) then {
                         private _zone = [_logic, "zoneFor", _veh] call MAINCLASS;
                         if !(_zone isEqualTo "") then {
+                            // One with a profile is kept as its profile id, the same as registerThreat does,
+                            // so a site is the same entry spawned or virtual and a despawn doesn't make it new
+                            private _key = _veh getVariable ["profileID", ""];
+                            if (_key isEqualTo "") then { _key = _veh };
                             private _inZone = [_found, _zone, []] call ALIVE_fnc_hashGet;
-                            _inZone pushBackUnique _veh;
+                            _inZone pushBackUnique _key;
                             [_found, _zone, _inZone] call ALIVE_fnc_hashSet;
                         };
                     };
                 };
             } forEach vehicles;
+        };
+
+        // Virtual air defences (25 Nov). The sweep above only sees what is spawned, so an AA site
+        // far from every player never got a SEAD sortie or task. Asked only when SEAD is a type this
+        // commander raises. The enemy's own vehicle profiles are read by faction (side only when no
+        // faction is known), so nobody else's profiles are touched; the anti-air test is cached per
+        // class. A spawned one is skipped, the sweep above has it. Unlike a spawned site, a virtual
+        // one counts only INSIDE an airspace: it shoots at nothing until it is spawned.
+        if (count _spaces > 0 && {"SEAD" in ([_logic, "types", []] call ALIVE_fnc_hashGet)} && {!isNil "ALIVE_profileHandler"}) then {
+            private _t0 = diag_tickTime;
+            private _black = [_logic, "airspaceBlacklist", []] call ALIVE_fnc_hashGet;
+            private _ids = [];
+            private _bySide = count _factions == 0;
+            if (_bySide) then {
+                if (count _sides > 0) then {
+                    private _l = [ALIVE_profileHandler, "getProfilesByType", "vehicle"] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_l" && {_l isEqualType []}) then { _ids = +_l };
+                };
+            } else {
+                {
+                    private _l = [ALIVE_profileHandler, "getProfilesByFactionByType", [_x, "vehicle"]] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_l" && {_l isEqualType []}) then { _ids append _l };
+                } forEach _factions;
+            };
+            private _read = count _ids;
+            private _counts = [];
+            // Profile id to "is it a ground anti-air vehicle", worked out once per profile. A vehicle profile's
+            // class never changes, so after the first pass the many that are not air defence cost one lookup
+            // and are never fetched again; measured at 224 enemy vehicle profiles, fetching every one each pass
+            // was far over budget.
+            private _aaById = [_logic, "aaById", nil] call ALIVE_fnc_hashGet;
+            if (isNil "_aaById" || {!(_aaById isEqualType createHashMap)}) then {
+                _aaById = createHashMap;
+                [_logic, "aaById", _aaById] call ALIVE_fnc_hashSet;
+            };
+            // the many known not to be air defence are dropped in one engine-side select, not a script loop
+            _ids = _ids select { _aaById getOrDefault [_x, true] };
+            {
+                private _id = _x;
+                private _isAA = _aaById get _id;
+                private _p = nil;
+                if (isNil "_isAA") then {
+                    _p = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler;
+                    _isAA = !isNil "_p" && {_p isEqualType []}
+                        && {!((toLower ([_p, "objectType", ""] call ALIVE_fnc_hashGet)) in ["plane", "helicopter"])}
+                        && {[[_p, "vehicleClass", ""] call ALIVE_fnc_hashGet] call ALiVE_fnc_isAntiAirCapable};
+                    _aaById set [_id, _isAA];
+                };
+                if (_isAA && {isNil "_p"}) then { _p = [ALIVE_profileHandler, "getProfile", _id] call ALIVE_fnc_profileHandler };
+                if (_isAA && {!isNil "_p"} && {_p isEqualType []}) then {
+                    // canFire is not asked: the profile keeps canFire as read at despawn, which is false
+                    // once the crew has gone, so a crewed site read as unable to fire after one despawn
+                    if (!(([_p, "active", false] call ALIVE_fnc_hashGet) isEqualTo true)
+                        && {!_bySide || {(str ([[_p, "side", ""] call ALIVE_fnc_hashGet] call ALIVE_fnc_sideTextToObject)) in _sides}}) then {
+                        private _at = [_p, "position", []] call ALIVE_fnc_hashGet;
+                        if (_at isEqualType [] && {count _at >= 2} && {(_black findIf { _at inArea _x }) < 0}) then {
+                            private _zi = _spaces findIf { _at inArea _x };
+                            private _zone = if (_zi < 0) then { "" } else { _spaces select _zi };
+                            if !(_zone isEqualTo "") then {
+                                private _inZone = [_found, _zone, []] call ALIVE_fnc_hashGet;
+                                _inZone pushBackUnique _id;
+                                [_found, _zone, _inZone] call ALIVE_fnc_hashSet;
+                                private _c = _counts findIf { (_x select 0) isEqualTo _zone };
+                                if (_c < 0) then { _counts pushBack [_zone, 1] } else { (_counts select _c) set [1, ((_counts select _c) select 1) + 1] };
+                            };
+                        };
+                    };
+                };
+            } forEach _ids;
+            private _ms = (diag_tickTime - _t0) * 1000;
+            [_logic, "virtualScan", [_read, _counts, _ms]] call ALIVE_fnc_hashSet;
+            // one line when the count per airspace changes, not every pass
+            _counts sort true;
+            if !(_counts isEqualTo ([_logic, "virtualCounts", []] call ALIVE_fnc_hashGet)) then {
+                [_logic, "virtualCounts", +_counts] call ALIVE_fnc_hashSet;
+                private _mod = [_logic, "module", objNull] call ALIVE_fnc_hashGet;
+                private _dbg = if (_mod isEqualType objNull && {!isNull _mod}) then { _mod getVariable ["debug", false] } else { false };
+                if (_dbg isEqualType "") then { _dbg = (toLower _dbg) isEqualTo "true" };
+                if (_dbg isEqualTo true) then {
+                    ["ATO watch: virtual air defences counted %1 (%2 vehicle profiles read, pass %3 ms)", _counts, _read, _ms toFixed 2] call ALiVE_fnc_dump;
+                };
+            };
         };
 
         // And the reported ones. A threat that cannot be placed is SKIPPED, not
@@ -516,9 +602,17 @@ switch(_operation) do {
                             _held = _held select { count _x >= 2 };
                             // Hold Sites For Players off: the jets go after them regardless (the players are still told who did it)
                             if !([_logic, "holdSitesForPlayers", true] call ALIVE_fnc_hashGet) then { _held = [] };
+                            // A site that is still virtual is only real to a jet if Air Defence Spawning will spawn it
+                            // as the jets close in; with that off there is nothing there to hit, so it is the players' job
+                            private _adOn = (missionNamespace getVariable ["ALiVE_airDefenceRadius", 0]) > 0;
                             {
                                 private _p = [_logic, "positionOf", _x] call MAINCLASS;
-                                if (count _p >= 2 && {(_held findIf { (_x distance2D _p) < 500 }) < 0}) then { _at pushBack _p };
+                                private _virtualOnly = false;
+                                if (!_adOn && {_x isEqualType ""} && {!isNil "ALiVE_profileHandler"}) then {
+                                    private _pr = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_profileHandler;
+                                    _virtualOnly = !isNil "_pr" && {!(([_pr, "active", false] call ALiVE_fnc_hashGet) isEqualTo true)};
+                                };
+                                if (!_virtualOnly && {count _p >= 2} && {(_held findIf { (_x distance2D _p) < 500 }) < 0}) then { _at pushBack _p };
                             } forEach _seen;
                             if (count _at > 0) then {
                                 private _answer = [_task, "raiseSEAD", [_zone, _at, _now]] call ALIVE_fnc_ATOTask;

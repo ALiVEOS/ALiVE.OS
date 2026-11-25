@@ -3359,7 +3359,8 @@ switch(_operation) do {
             ["generateSEADTasks", [_logic, "generateSEADTasks"] call MAINCLASS],
             ["holdSitesForPlayers", [_logic, "holdSitesForPlayers"] call MAINCLASS],
             ["task", _task],
-            ["key", _key]
+            ["key", _key],
+            ["module", _logic]
         ]] call ALIVE_fnc_ATOWatch;
         [_resupply, "configure", [
             ["ledger", _ledger], ["place", _place], ["task", _task],
