@@ -10,9 +10,10 @@ stub and no EventHandlers class, since the loadout is applied by the CBA XEH
 handlers written by ALiVE_fnc_fsGenConfig. The class arrays (weapons,
 magazines, items, linkedItems) and the generated backpack let Eden and Zeus
 show him dressed; the exact loadout is in ALiVE_FS_loadout[].
-engineer and canDeactivateMines are written only when Engineer or EOD was set
-on the Units tab to differ from his base class, so he can repair and clear
-mines whatever he inherits from.
+engineer, canDeactivateMines, attendant and uavHacker are written only when
+Engineer, EOD, Medic or UAV Hacker was set on the Units tab to differ from his
+base class, so he can repair, clear mines, heal and hack drones whatever he
+inherits from.
 
 Parameters:
     _plan    - HASHMAP - from ALiVE_fnc_fsGenPlan
@@ -50,12 +51,12 @@ private _lines = [
     _i + "faction = " + ((_faction getOrDefault ["class", _tag]) call _q) + ";",
     _i + "editorSubcategory = " + (((_plan get "subOf") getOrDefault [_e getOrDefault ["category", ""], ""]) call _q) + ";"
 ];
-// Engineer and EOD: -1 leaves the base class's value
+// Engineer, EOD, Medic and UAV Hacker: -1 leaves the base class's value
 {
     _x params ["_key", "_prop"];
     private _v = _e getOrDefault [_key, -1];
     if (_v isEqualType 0 && {_v >= 0}) then { _lines pushBack (_i + _prop + " = " + ((_v min 1) toFixed 0) + ";") };
-} forEach [["engineer", "engineer"], ["eod", "canDeactivateMines"]];
+} forEach [["engineer", "engineer"], ["eod", "canDeactivateMines"], ["medic", "attendant"], ["uavHacker", "uavHacker"]];
 private _types = _identity getOrDefault ["types", []];
 if (count _types > 0) then { _lines pushBack (_i + "identityTypes[] = " + (_types call _a) + ";") };
 if !((_la get "uniform") isEqualTo "") then { _lines pushBack (_i + "uniformClass = " + ((_la get "uniform") call _q) + ";") };

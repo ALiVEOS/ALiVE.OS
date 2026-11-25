@@ -94,6 +94,10 @@
 #define FS_IDC_U_ENGINEERLABEL      14234
 #define FS_IDC_U_EOD                14235
 #define FS_IDC_U_EODLABEL           14236
+#define FS_IDC_U_MEDIC              14237
+#define FS_IDC_U_MEDICLABEL         14238
+#define FS_IDC_U_UAVHACKER          14239
+#define FS_IDC_U_UAVHACKERLABEL     14240
 
 // ---------------------------------------------------------------- Vehicles tab
 #define FS_IDC_V_LIST               14301

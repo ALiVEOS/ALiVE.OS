@@ -113,7 +113,7 @@ private _identity = createHashMapFromArray [
     ["fixed", !(_face isEqualTo "") || {!(_speaker isEqualTo "")}]
 ];
 
-// Engineer and EOD: 0 or 1 where the class differs from its base, else -1 (as the base).
+// Engineer, EOD, Medic and UAV Hacker: 0 or 1 where the class differs from its base, else -1 (as the base).
 private _differs = {
     private _own = getNumber (_cfg >> _this) > 0;
     [[0, 1] select _own, -1] select (_own isEqualTo (getNumber (configFile >> "CfgVehicles" >> _base >> _this) > 0))
@@ -144,7 +144,9 @@ createHashMapFromArray [
     ["category", _category],
     ["loadout", _loadout],
     ["identity", _identity],
-    // Engineer and EOD: kept only where the class differs from its base
+    // Engineer, EOD, Medic and UAV Hacker: kept only where the class differs from its base
     ["engineer", "engineer" call _differs],
-    ["eod", "canDeactivateMines" call _differs]
+    ["eod", "canDeactivateMines" call _differs],
+    ["medic", "attendant" call _differs],
+    ["uavHacker", "uavHacker" call _differs]
 ]

@@ -1148,6 +1148,18 @@
 <Key ID="STR_ALIVE_FS_U_EOD_TIP">
     <English>Explosive ordnance disposal: he can defuse mines and explosives with a toolkit, whatever his base class. Ticked as his base class until you change it.</English>
 </Key>
+<Key ID="STR_ALIVE_FS_U_MEDIC">
+    <English>Medic</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_MEDIC_TIP">
+    <English>Medic: he can heal others fully with a medikit, whatever his base class. Ticked as his base class until you change it.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_UAVHACKER">
+    <English>UAV Hacker</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_UAVHACKER_TIP">
+    <English>UAV hacker: he can take over enemy drones with a UAV terminal, whatever his base class. Ticked as his base class until you change it.</English>
+</Key>
 <Key ID="STR_ALIVE_FS_EC_INFANTRY">
     <English>Every ALiVE placement needs infantry groups.</English>
 </Key>

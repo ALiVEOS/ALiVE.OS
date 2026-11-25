@@ -136,6 +136,9 @@ private _schema = createHashMapFromArray [
         // engineer and canDeactivateMines written into his class: -1 = as his base class, 0 or 1 = set on the Units tab
         ["engineer", "N", -1, [-1, 1]],
         ["eod", "N", -1, [-1, 1]],
+        // attendant and uavHacker, the same way
+        ["medic", "N", -1, [-1, 1]],
+        ["uavHacker", "N", -1, [-1, 1]],
         // written in its own optional part, which loads only when the mods it needs are loaded
         ["optional", "B", false, ""]
     ]],

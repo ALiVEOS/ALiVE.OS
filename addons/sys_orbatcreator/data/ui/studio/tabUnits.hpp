@@ -260,7 +260,8 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
             y = (FS_H(26.24) + FS_SP_ULIST);
             w = FS_W(2.1);
         };
-        // written into his class, so any base class can repair and clear mines; shown as his base class until changed
+        // written into his class, so any base class can repair, clear mines, heal and hack drones; shown as his
+        // base class until changed. Two to a row: Engineer and EOD, then Medic and UAV Hacker.
         class Engineer : ALiVE_FS_RscCheckBox {
             idc = FS_IDC_U_ENGINEER;
             tooltip = "$STR_ALIVE_FS_U_ENGINEER_TIP";
@@ -287,6 +288,35 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
             text = "$STR_ALIVE_FS_U_EOD";
             tooltip = "$STR_ALIVE_FS_U_EOD_TIP";
             x = FS_W(5.9);
+        };
+        class Medic : Engineer {
+            idc = FS_IDC_U_MEDIC;
+            tooltip = "$STR_ALIVE_FS_U_MEDIC_TIP";
+            x = FS_W(0);
+            y = (FS_H(28.54) + FS_SP_ULIST);
+            onCheckedChanged = "['medic', _this] call ALiVE_fnc_fsStudioTabUnits";
+        };
+        class MedicLabel : EngineerLabel {
+            idc = FS_IDC_U_MEDICLABEL;
+            text = "$STR_ALIVE_FS_U_MEDIC";
+            tooltip = "$STR_ALIVE_FS_U_MEDIC_TIP";
+            x = FS_W(0.9);
+            y = (FS_H(28.54) + FS_SP_ULIST);
+        };
+        class UavHacker : Engineer {
+            idc = FS_IDC_U_UAVHACKER;
+            tooltip = "$STR_ALIVE_FS_U_UAVHACKER_TIP";
+            x = FS_W(5);
+            y = (FS_H(28.54) + FS_SP_ULIST);
+            onCheckedChanged = "['uavHacker', _this] call ALiVE_fnc_fsStudioTabUnits";
+        };
+        class UavHackerLabel : EngineerLabel {
+            idc = FS_IDC_U_UAVHACKERLABEL;
+            text = "$STR_ALIVE_FS_U_UAVHACKER";
+            tooltip = "$STR_ALIVE_FS_U_UAVHACKER_TIP";
+            x = FS_W(5.9);
+            y = (FS_H(28.54) + FS_SP_ULIST);
+            w = FS_W(5);
         };
     };
 };
