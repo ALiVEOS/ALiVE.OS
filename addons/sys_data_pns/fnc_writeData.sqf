@@ -52,6 +52,12 @@ if (isNil QMOD(PNS_STORE)) then { MOD(PNS_STORE) = [] call ALiVE_fnc_HashCreate 
 
 ["set", _missionKey, MOD(PNS_STORE)] call ALiVE_fnc_storeFile;
 
+// What the save screen shows after "Save Result:": it was always empty, which players read as a failed save
+// (#1108). True once the store holds it; after Clear Current Mission's Data the store keeps nothing until the
+// mission restarts, and the answer says so. Not false either way: a caller treats only false as a failure.
+private _held = (missionNamespace getVariable ["ALiVE_storeFile_held", createHashMap]) getOrDefault [_missionKey, nil];
+_result = if (!isNil "_held" && {_held isEqualTo [] || {_module in _held}}) then { "not kept, this mission's data was cleared" } else { true };
+
 // Recorded by name as well, so Wipe ALL can find it again: a dedicated server's
 // profile cannot list its own variables.
 private _savedMissions = profileNamespace getVariable [QMOD(SAVEDMISSIONS), []];
