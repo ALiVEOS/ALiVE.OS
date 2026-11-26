@@ -108,6 +108,35 @@ if (_puid != "") then {
     [_playerHash, "puid", _puid] call CBA_fnc_hashSet;
 };
 
+// The AI squad of a player who leads their group (Helios on Discord, 8 Nov): each living AI member's slot in
+// the group, class, kit, place, health and seat, so a load puts them back where they were and leaves out the
+// ones who were dead. A member who joined during play gets a slot of 100 up and is made again on load.
+// "NONE" when the player does not lead or positions are not saved, so the old behaviour stands.
+private _squad = "NONE";
+if (_savePosition && {!isNull _player} && {leader group _player == _player}) then {
+    _squad = [];
+    private _next = 100;
+    { _next = _next max (1 + (_x getVariable ["ALiVE_squadSlot", -1])) } forEach (units group _player);
+    {
+        if (!isPlayer _x && {alive _x}) then {
+            private _slot = _x getVariable ["ALiVE_squadSlot", -1];
+            if (_slot < 0) then { _slot = _next; _next = _next + 1; _x setVariable ["ALiVE_squadSlot", _slot, true] };
+            private _unit = _x;
+            private _veh = vehicle _unit;
+            private _vehID = "NONE";
+            private _role = [];
+            if (_veh != _unit) then {
+                _vehID = _veh getVariable ["vehicleID", vehicleVarName _veh];
+                // the seat: [role, cargo index, turret path] from the crew list
+                private _row = ((fullCrew _veh) select { (_x select 0) isEqualTo _unit }) param [0, []];
+                if (_row isNotEqualTo []) then { _role = [toLower (_row select 1), _row select 2, _row select 3] };
+            };
+            _squad pushBack [_slot, typeOf _unit, getUnitLoadout _unit, getPosATL _unit, getDir _unit, damage _unit, _vehID, _role];
+        };
+    } forEach (units group _player);
+};
+[_playerHash, "squad", _squad] call CBA_fnc_hashSet;
+
 // Persisting by slot, the record is the slot's: the occupant's name, voice, face, rank and rating aren't kept in it
 // (they are never put back by slot either)
 if ((MOD(sys_player) getVariable ["persistBy", "player"]) == "slot") then {

@@ -632,6 +632,11 @@ switch(_operation) do {
                         };
                     };
 
+                    // The AI of the player's group are numbered by their place in it the first time they are seen, so a
+                    // save can name each one and a load find it again: the same mission lines them up the same way
+                    // every time.
+                    { if (!isPlayer _x && {(_x getVariable ["ALiVE_squadSlot", -1]) < 0}) then { _x setVariable ["ALiVE_squadSlot", _forEachIndex, true] } } forEach (units group _unit);
+
                     // Check that the hash is found
                      if ([GVAR(player_data), _key] call CBA_fnc_hashHasKey) then {
 
@@ -674,6 +679,7 @@ switch(_operation) do {
                             private _savedPos = [_playerHash, "position", []] call ALIVE_fnc_hashGet;
                             if (
                                 _logic getVariable ["savePosition", true]
+                                && {([_playerHash, "squad", "NONE"] call ALIVE_fnc_hashGet) isEqualTo "NONE"}
                                 && {count _savedPos > 1}
                                 && {leader group _unit == _unit || {_wasLeader}}
                                 && {([_playerHash, "vehicle", "NONE"] call ALIVE_fnc_hashGet) == "NONE"}
@@ -699,6 +705,100 @@ switch(_operation) do {
                                 if (_moved > 0) then {
                                     ["SYS_PLAYER - %1 AI of %2's squad brought to where they were restored", _moved, name _unit] call ALiVE_fnc_dump;
                                 };
+                            };
+
+                            // The AI squad saved with a player who led their group (fnc_setPlayer): members who were dead
+                            // or gone when the player saved are taken out, the rest get their kit, place, health and seat
+                            // back, and members who joined during play are made again. Kit, facing and seats are set where
+                            // each one is local.
+                            private _squad = [_playerHash, "squad", "NONE"] call ALIVE_fnc_hashGet;
+                            // once a session: a player who drops and comes back finds the squad as the server kept it
+                            private _sqOnce = (getPlayerUID _unit) + "_squadRestored";
+                            if (
+                                _squad isEqualType []
+                                && {_logic getVariable ["savePosition", true]}
+                                && {!(MOD(sys_player) getVariable [_sqOnce, false])}
+                                && {leader group _unit == _unit || {_wasLeader}}
+                                && {typeOf _unit == ([_playerHash, "class", typeOf _unit] call ALIVE_fnc_hashGet) || {!isMultiplayer} || {_logic getVariable ["allowDiffClass", false]}}
+                            ) then {
+                                MOD(sys_player) setVariable [_sqOnce, true];
+                                private _sqGrp = group _unit;
+                                private _bySlot = createHashMap;
+                                { _bySlot set [_x select 0, _x] } forEach _squad;
+                                private _put = {
+                                    params ["_ai", "_e"];
+                                    _e params ["", "", "_loadout", "_pos", "_dir", "_dmg", "_vehID", "_role"];
+                                    if (_loadout isEqualType [] && {_loadout isNotEqualTo []}) then { [_ai, _loadout] remoteExecCall ["setUnitLoadout", _ai] };
+                                    _ai setDamage _dmg;
+                                    private _veh = objNull;
+                                    if (_vehID isNotEqualTo "NONE") then {
+                                        private _i = vehicles findIf { (_x getVariable ["vehicleID", vehicleVarName _x]) == _vehID };
+                                        if (_i >= 0) then { _veh = vehicles select _i };
+                                    };
+                                    if (isNull _veh) then {
+                                        _ai setPosATL _pos;
+                                        [_ai, _dir] remoteExecCall ["setDir", _ai];
+                                    } else {
+                                        // the group has to own the vehicle, or AI of a player's group get straight back out
+                                        [group _ai, _veh] remoteExecCall ["addVehicle", group _ai];
+                                        _role params [["_r", "cargo"], ["_idx", -1], ["_path", []]];
+                                        switch (_r) do {
+                                            case "driver": {
+                                                [_ai, _veh] remoteExecCall ["assignAsDriver", _ai];
+                                                [_ai, _veh] remoteExecCall ["moveInDriver", _ai];
+                                            };
+                                            case "cargo": {
+                                                if (_idx >= 0) then {
+                                                    [_ai, [_veh, _idx]] remoteExecCall ["assignAsCargoIndex", _ai];
+                                                    [_ai, [_veh, _idx]] remoteExecCall ["moveInCargo", _ai];
+                                                } else {
+                                                    [_ai, _veh] remoteExecCall ["assignAsCargo", _ai];
+                                                    [_ai, _veh] remoteExecCall ["moveInCargo", _ai];
+                                                };
+                                            };
+                                            default {
+                                                [_ai, [_veh, _path]] remoteExecCall ["assignAsTurret", _ai];
+                                                [_ai, [_veh, _path]] remoteExecCall ["moveInTurret", _ai];
+                                            };
+                                        };
+                                        // and told to stay in it
+                                        [[_ai], true] remoteExecCall ["allowGetIn", _ai];
+                                        [[_ai], true] remoteExecCall ["orderGetIn", _ai];
+                                    };
+                                };
+                                private _found = [];
+                                private _gone = 0;
+                                private _back = 0;
+                                private _made = 0;
+                                {
+                                    private _slot = _x getVariable ["ALiVE_squadSlot", -1];
+                                    if (!isPlayer _x && {_slot >= 0}) then {
+                                        private _e = _bySlot getOrDefault [_slot, []];
+                                        if (_e isEqualTo []) then {
+                                            // never one in a playable slot: that slot would be gone for whoever joins later
+                                            if !(_x in playableUnits) then {
+                                                deleteVehicle _x;
+                                                _gone = _gone + 1;
+                                            };
+                                        } else {
+                                            _found pushBack _slot;
+                                            // a mission changed since the save keeps the unit it now has
+                                            if (typeOf _x == (_e select 1)) then { [_x, _e] call _put; _back = _back + 1 };
+                                        };
+                                    };
+                                } forEach (units _sqGrp);
+                                {
+                                    private _cls = _x select 1;
+                                    if (!((_x select 0) in _found) && {isClass (configFile >> "CfgVehicles" >> _cls)}) then {
+                                        private _ai = _sqGrp createUnit [_cls, _x select 3, [], 0, "CAN_COLLIDE"];
+                                        if (!isNull _ai) then {
+                                            _ai setVariable ["ALiVE_squadSlot", _x select 0, true];
+                                            [_ai, _x] call _put;
+                                            _made = _made + 1;
+                                        };
+                                    };
+                                } forEach _squad;
+                                ["SYS_PLAYER - %1's AI squad restored: %2 put back, %3 who were dead or gone at the save taken out, %4 made again", name _unit, _back, _gone, _made] call ALiVE_fnc_dump;
                             };
 
                             _result = true;
