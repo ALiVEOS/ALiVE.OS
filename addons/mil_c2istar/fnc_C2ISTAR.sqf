@@ -1512,6 +1512,8 @@ switch(_operation) do {
             private _hold = _logic getVariable ["reconHold", "60"];
             if (_hold isEqualType "") then { _hold = parseNumber _hold };
             missionNamespace setVariable ["ALiVE_c2istar_reconHold", (_hold max 60) min 300];
+            // Recon Ends With A SITREP, read by ALIVE_fnc_taskReconObjective
+            missionNamespace setVariable ["ALiVE_c2istar_reconSitrep", (toLower format ["%1", _logic getVariable ["reconSitrep", "false"]]) in ["true", "1"]];
             // Task Reward Multiplier (AshTray on Discord, 5 Nov), read by ALIVE_fnc_taskCreateReward: 0 to 5
             private _rewardMult = _logic getVariable ["taskRewardMultiplier", 1];
             if (_rewardMult isEqualType "") then { _rewardMult = if (_rewardMult == "") then { 1 } else { parseNumber _rewardMult } };

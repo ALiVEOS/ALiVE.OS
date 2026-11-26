@@ -405,75 +405,113 @@ switch (_taskState) do {
                 _task set [10, "N"];
                 _result = _task;
             };
-            // the groups the spotted units belong to, reported to the side: [side, position, time, group profile ids,
-            // group positions, this task's id, units spotted, the OPs]. The id is how a commander that asked for the
-            // recon knows it has reported: the task's own rows are deleted the moment it finishes
-            private _ids = [];
-            private _pos = [];
-            private _units = [];
-            {
-                _y params ["_pid", "_upos", "_class", "_know"];
-                _units pushBack [_pid, _upos, _class, _know];
-                if !(_pid in _ids) then {
-                    _ids pushBack _pid;
-                    private _prof = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
-                    _pos pushBack (if (isNil "_prof") then { _upos } else { [_prof, "position", _upos] call ALIVE_fnc_hashGet });
-                };
-            } forEach _seen;
-            private _reports = missionNamespace getVariable ["ALiVE_reconReports", []];
-            _reports pushBack [_taskSide, +_target, time, _ids, _pos, _task select 11, _units, +_ops];
-            ALiVE_reconReports = _reports select { time - (_x select 2) < 3600 };
-            ["C2ISTAR - Task ReconObjective %1: %2 enemy spotted in %3 groups round %4", _taskID, count _units, count _ids, mapGridPosition _target] call ALiVE_fnc_Dump;
-
-            // the Air Commander is asked for a strike on what was seen, unless an AI Commander's intel cycle asked for this
-            // recon (its task id starts INTEL_): that commander strikes once it knows enough, and two strikes would be one
-            // too many. Vehicles first, as the commander's own strike does; groups on foot when none was seen
-            if (_ids isNotEqualTo [] && {((_task select 11) find "INTEL_") != 0} && {!isNil "ALIVE_fnc_ATOKernel"} && {!isNil "ALIVE_eventLog"}) then {
-                private _best = [];
-                { _best pushBack [-(_x select 3), _x select 0, _x select 1] } forEach _units;
-                _best sort true;
-                private _veh = [];
-                private _foot = [];
+            // Recon Ends With A SITREP: what was seen is reported at once, and the task then waits for a SITREP from one of
+            // its players, sent after HQ asked for it (the SITREP module's store on the server, which holds the sender's
+            // id), for up to 15 minutes. Without the SITREP module the task closes as before
+            private _sitrepWait = [_params, "sitrepWait", -1] call ALIVE_fnc_hashGet;
+            if (_sitrepWait == -1) then {
+                // the groups the spotted units belong to, reported to the side: [side, position, time, group profile ids,
+                // group positions, this task's id, units spotted, the OPs]. The id is how a commander that asked for the
+                // recon knows it has reported: the task's own rows are deleted the moment it finishes
+                private _ids = [];
+                private _pos = [];
+                private _units = [];
                 {
-                    _x params ["", "_pid", "_upos"];
-                    private _prof = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
-                    if (!isNil "_prof" && {!(_pid in (_veh apply { _x select 0 }))} && {!(_pid in (_foot apply { _x select 0 }))}) then {
-                        private _isVeh = ([_prof, "type", ""] call ALIVE_fnc_hashGet) == "vehicle"
-                            || {count (([_prof, "vehicleAssignments", [[],[]]] call ALIVE_fnc_hashGet) select 1) > 0};
-                        private _at = [_prof, "position", _upos] call ALIVE_fnc_hashGet;
-                        if (_isVeh) then { _veh pushBack [_pid, _at] } else { _foot pushBack [_pid, _at] };
+                    _y params ["_pid", "_upos", "_class", "_know"];
+                    _units pushBack [_pid, _upos, _class, _know];
+                    if !(_pid in _ids) then {
+                        _ids pushBack _pid;
+                        private _prof = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
+                        _pos pushBack (if (isNil "_prof") then { _upos } else { [_prof, "position", _upos] call ALIVE_fnc_hashGet });
                     };
-                } forEach _best;
-                // the players' own side's Air Commander first, then an allied one, flying the kind wanted or failing that the other
-                private _side = [_taskSide] call ALiVE_fnc_sideTextToObject;
-                private _want = ["CAS", "Strike"] select (_veh isNotEqualTo []);
-                private _chosen = objNull;
-                private _type = "";
-                private _maccs = (entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" };
-                {
-                    private _kind = _x;
+                } forEach _seen;
+                private _reports = missionNamespace getVariable ["ALiVE_reconReports", []];
+                _reports pushBack [_taskSide, +_target, time, _ids, _pos, _task select 11, _units, +_ops];
+                ALiVE_reconReports = _reports select { time - (_x select 2) < 3600 };
+                ["C2ISTAR - Task ReconObjective %1: %2 enemy spotted in %3 groups round %4", _taskID, count _units, count _ids, mapGridPosition _target] call ALiVE_fnc_Dump;
+
+                // the Air Commander is asked for a strike on what was seen, unless an AI Commander's intel cycle asked for this
+                // recon (its task id starts INTEL_): that commander strikes once it knows enough, and two strikes would be one
+                // too many. Vehicles first, as the commander's own strike does; groups on foot when none was seen
+                if (_ids isNotEqualTo [] && {((_task select 11) find "INTEL_") != 0} && {!isNil "ALIVE_fnc_ATOKernel"} && {!isNil "ALIVE_eventLog"}) then {
+                    private _best = [];
+                    { _best pushBack [-(_x select 3), _x select 0, _x select 1] } forEach _units;
+                    _best sort true;
+                    private _veh = [];
+                    private _foot = [];
                     {
-                        private _friendly = _x;
+                        _x params ["", "_pid", "_upos"];
+                        private _prof = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_prof" && {!(_pid in (_veh apply { _x select 0 }))} && {!(_pid in (_foot apply { _x select 0 }))}) then {
+                            private _isVeh = ([_prof, "type", ""] call ALIVE_fnc_hashGet) == "vehicle"
+                                || {count (([_prof, "vehicleAssignments", [[],[]]] call ALIVE_fnc_hashGet) select 1) > 0};
+                            private _at = [_prof, "position", _upos] call ALIVE_fnc_hashGet;
+                            if (_isVeh) then { _veh pushBack [_pid, _at] } else { _foot pushBack [_pid, _at] };
+                        };
+                    } forEach _best;
+                    // the players' own side's Air Commander first, then an allied one, flying the kind wanted or failing that the other
+                    private _side = [_taskSide] call ALiVE_fnc_sideTextToObject;
+                    private _want = ["CAS", "Strike"] select (_veh isNotEqualTo []);
+                    private _chosen = objNull;
+                    private _type = "";
+                    private _maccs = (entities "Module_F") select { (typeOf _x) isEqualTo "ALiVE_mil_ato" };
+                    {
+                        private _kind = _x;
                         {
-                            if (isNull _chosen) then {
-                                private _mSide = [[_x, "side"] call ALIVE_fnc_ATOKernel] call ALiVE_fnc_sideTextToObject;
-                                private _mTypes = [_x, "types"] call ALIVE_fnc_ATOKernel;
-                                private _sideOk = if (_friendly) then { [_side, _mSide] call BIS_fnc_sideIsFriendly } else { _mSide isEqualTo _side };
-                                if (_sideOk && {_mTypes isEqualType []} && {_kind in _mTypes}) then { _chosen = _x; _type = _kind };
-                            };
-                        } forEach _maccs;
-                    } forEach [false, true];
-                } forEach ([_want] + (["CAS", "Strike"] - [_want]));
-                if (!isNull _chosen) then {
-                    private _hit = ((if (_veh isNotEqualTo []) then { _veh } else { _foot }) select [0, 3]);
-                    private _mSide = [[_chosen, "side"] call ALIVE_fnc_ATOKernel] call ALiVE_fnc_sideTextToObject;
-                    private _faction = ([_chosen, "factions"] call ALIVE_fnc_ATOKernel) param [0, [_chosen, "faction"] call ALIVE_fnc_ATOKernel];
-                    private _reqID = format ["RECON_%1_%2", _task select 11, floor time];
-                    private _args = ["RED", 200, "FULL", 0.1, 0.1, 2000, 10, _hit apply { _x select 0 }];
-                    [ALIVE_eventLog, "addEvent", ["ATO_REQUEST", [_type, _mSide, _faction, (_hit select 0) select 1, _args, _reqID], "C2ISTAR"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
-                    ["C2ISTAR - Task ReconObjective %1: %2 asked of the %3 Air Commander on %4 of what was spotted (%5)", _taskID, _type, _faction, count _hit, _reqID] call ALiVE_fnc_Dump;
+                            private _friendly = _x;
+                            {
+                                if (isNull _chosen) then {
+                                    private _mSide = [[_x, "side"] call ALIVE_fnc_ATOKernel] call ALiVE_fnc_sideTextToObject;
+                                    private _mTypes = [_x, "types"] call ALIVE_fnc_ATOKernel;
+                                    private _sideOk = if (_friendly) then { [_side, _mSide] call BIS_fnc_sideIsFriendly } else { _mSide isEqualTo _side };
+                                    if (_sideOk && {_mTypes isEqualType []} && {_kind in _mTypes}) then { _chosen = _x; _type = _kind };
+                                };
+                            } forEach _maccs;
+                        } forEach [false, true];
+                    } forEach ([_want] + (["CAS", "Strike"] - [_want]));
+                    if (!isNull _chosen) then {
+                        private _hit = ((if (_veh isNotEqualTo []) then { _veh } else { _foot }) select [0, 3]);
+                        private _mSide = [[_chosen, "side"] call ALIVE_fnc_ATOKernel] call ALiVE_fnc_sideTextToObject;
+                        private _faction = ([_chosen, "factions"] call ALIVE_fnc_ATOKernel) param [0, [_chosen, "faction"] call ALIVE_fnc_ATOKernel];
+                        private _reqID = format ["RECON_%1_%2", _task select 11, floor time];
+                        private _args = ["RED", 200, "FULL", 0.1, 0.1, 2000, 10, _hit apply { _x select 0 }];
+                        [ALIVE_eventLog, "addEvent", ["ATO_REQUEST", [_type, _mSide, _faction, (_hit select 0) select 1, _args, _reqID], "C2ISTAR"] call ALIVE_fnc_event] call ALIVE_fnc_eventLog;
+                        ["C2ISTAR - Task ReconObjective %1: %2 asked of the %3 Air Commander on %4 of what was spotted (%5)", _taskID, _type, _faction, count _hit, _reqID] call ALiVE_fnc_Dump;
+                    };
+                };
+
+                if ((missionNamespace getVariable ["ALiVE_c2istar_reconSitrep", false]) && {!isNil "ALiVE_sys_sitrep_STORE"}) then {
+                    _sitrepWait = time;
+                    [_params, "sitrepWait", _sitrepWait] call ALIVE_fnc_hashSet;
+                    [_params, "sitrepKnown", +(ALiVE_sys_sitrep_STORE select 1)] call ALIVE_fnc_hashSet;
+                    private _ask = [] call ALIVE_fnc_hashCreate;
+                    [_ask, "chat_sitrep", [["HQ", format ["Observation complete at %1. Send your SITREP from the map to close the task. Over.", mapGridPosition _target]]]] call ALIVE_fnc_hashSet;
+                    ["chat_sitrep", _ask, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                    ["C2ISTAR - Task ReconObjective %1: waiting for a SITREP from %2", _taskID, _taskPlayers] call ALiVE_fnc_Dump;
                 };
             };
+
+            // still waiting: a SITREP from one of the task's players that wasn't in the store when HQ asked, or 15 minutes
+            if (_sitrepWait >= 0) then {
+                private _known = [_params, "sitrepKnown", []] call ALIVE_fnc_hashGet;
+                private _store = missionNamespace getVariable ["ALiVE_sys_sitrep_STORE", []];
+                private _keys = _store param [1, []];
+                private _vals = _store param [2, []];
+                // time starts again after a saved game is loaded: the 15 minutes start again too
+                if (time < _sitrepWait) then { _sitrepWait = time; [_params, "sitrepWait", time] call ALIVE_fnc_hashSet };
+                private _sent = -1;
+                {
+                    if (_sent < 0 && {!(_x in _known)} && {([_vals param [_forEachIndex, []], "ALiVE_sys_sitrep_player", ""] call ALIVE_fnc_hashGet) in _taskPlayers}) then { _sent = _forEachIndex };
+                } forEach _keys;
+                if (_sent >= 0) then {
+                    ["C2ISTAR - Task ReconObjective %1: SITREP %2 received, the task closes", _taskID, _keys select _sent] call ALiVE_fnc_Dump;
+                } else {
+                    if (time - _sitrepWait >= 900) then { ["C2ISTAR - Task ReconObjective %1: no SITREP in 15 minutes, the task closes", _taskID] call ALiVE_fnc_Dump };
+                };
+                if (_sent < 0 && {time - _sitrepWait < 900}) exitWith {};
+                [_params, "sitrepWait", -2] call ALIVE_fnc_hashSet;
+            };
+            if (([_params, "sitrepWait", -1] call ALIVE_fnc_hashGet) >= 0) exitWith {};
 
             [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
             _task set [8, "Succeeded"];

@@ -307,6 +307,19 @@ class CfgVehicles {
                                     class Five  { name = "5 minutes"; value = "300"; };
                             };
                     };
+                    // A Recon task ends with the team's SITREP (milfmadness and spooked, 29 Oct)
+                    class reconSitrep : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_reconSitrep";
+                            displayName = "$STR_ALIVE_C2ISTAR_RECON_SITREP";
+                            tooltip = "$STR_ALIVE_C2ISTAR_RECON_SITREP_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
                     // Scales the force pool points a finished task gives (AshTray on Discord, 5 Nov)
                     class taskRewardMultiplier : Edit
                     {

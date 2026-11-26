@@ -2125,6 +2125,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_RECON_HOLD">
     <English>Recon OP Hold Time:</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_RECON_SITREP">
+    <English>Recon Ends With A SITREP</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_RECON_SITREP_COMMENT">
+    <English>Needs the SITREP module. Yes: once every observation post of a Recon task has been watched, HQ asks the team for a SITREP, and the task closes, with its reward, when one of them sends one from the map. If none comes within 15 minutes the task closes anyway. What the team spotted is reported to the AI Commander and the Air Commander straight away, as with No. No (the default) closes the task as soon as the last post has been watched.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_RECON_HOLD_COMMENT">
     <English>How long a Recon task's team has to watch from each observation post before it's ticked off: 1 minute (the default), 2, 3 or 5. Watching longer spots more, and the task text says how long.</English>
 </Key>
