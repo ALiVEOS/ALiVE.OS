@@ -226,7 +226,7 @@ switch(_operation) do {
                             private _p = _x;
                             while {count _p > 0 && {(_p select [0,1]) == " "}} do { _p = _p select [1] };
                             while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
-                            if (_p != "" && {_p != "NONE"}) then { _arr pushBackUnique _p };
+                            if (_p != "" && {_p != "NONE"} && {_p != "[]"}) then { _arr pushBackUnique _p };
                         } forEach ([_classCsv, ","] call CBA_fnc_split);
                         _consolidatedTiers set [_segKey, _arr];
                     };
@@ -258,7 +258,8 @@ switch(_operation) do {
                         [[_manualRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
                     };
                     {
-                        if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {!(_x in _merged)}) then {
+                        // a legacy "[]" in the hidden tier attributes is an empty list, not a faction called "[]"
+                        if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {_x != "[]"} && {!(_x in _merged)}) then {
                             _merged pushBack _x;
                         };
                     } forEach (_factionsArr + _manualArr);
@@ -492,6 +493,16 @@ switch(_operation) do {
         } forEach _customSkillFactions;
 
         ADDON setvariable ["factionSkills",_factionSkills,true];
+
+        // said with debug off too: a module that sets no skill, or Custom values with no faction to use them, does nothing in game
+        private _customChanged = _customSkill isNotEqualTo [0.2,0.25,0.3,0.9,0.3,0.3,0.9,0.5,0.7,0.3,0.3,1,0.5];
+        if (count (_factionSkills select 1) == 0) then {
+            ["ALiVE AI Skill: no faction is listed in any skill tier, so this module sets no AI skill%1", ["", " (the Custom values are set, but Custom has no factions)"] select _customChanged] call ALiVE_fnc_dump;
+        } else {
+            if (_customChanged && {_customSkillFactions isEqualTo []}) then {
+                ["ALiVE AI Skill: the Custom values are set, but no faction is listed under Custom, so no AI gets them"] call ALiVE_fnc_dump;
+            };
+        };
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
