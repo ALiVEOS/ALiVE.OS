@@ -489,8 +489,11 @@ if (_roam) then {
 ["info", [_d]] call ALiVE_fnc_createFPVDrone;
 if (isNil "ALiVE_IED_drones") then { ALiVE_IED_drones = [] };
 ALiVE_IED_drones pushBack _d;
+// every launch is logged, debug or not, so a server admin can tell one drone from the next in the RPT
 if (_roam) then {
     ["ALIVE-%1 FPV drone: a roaming %2 drone (%3) launched from the objective at %4", time, _side, _class, mapGridPosition _site] call ALiVE_fnc_dump;
+} else {
+    ["ALIVE-%1 FPV drone: %2 (%3, %4 %5) launched at %6 from %7, %8 m away", time, _class, _side, _ammo, ["warhead", format ["dropper, %1 grenades", _d get "drops"]] select _dropper, ([typeOf _target, name _target] select (_target isKindOf "Man")), mapGridPosition _p, round (_p distance _target)] call ALiVE_fnc_dump;
 };
 if (_debug) then {
     private _m = createMarker [format ["ALiVE_IED_drone_%1", netId _uav], getPosATL _uav];
@@ -498,9 +501,6 @@ if (_debug) then {
     _m setMarkerColor "ColorRed";
     _m setMarkerText (["FPV", "Dropper"] select _dropper);
     _d set ["marker", _m];
-    if (!_roam) then {
-        ["ALIVE-%1 FPV drone: %2 (%3, %4 %5) launched at %6 from %7, %8 m away", time, _class, _side, _ammo, ["warhead", format ["dropper, %1 grenades", _d get "drops"]] select _dropper, ([typeOf _target, name _target] select (_target isKindOf "Man")), mapGridPosition _p, round (_p distance _target)] call ALiVE_fnc_dump;
-    };
 };
 
 // ---- the flight: checks once a second; the steering runs in one frame handler ----------------------------------------
