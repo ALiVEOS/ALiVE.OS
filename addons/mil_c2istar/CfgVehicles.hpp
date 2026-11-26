@@ -427,6 +427,8 @@ class CfgVehicles {
                             {
                                     class No  { name = "No";  value = "false"; default = 1; };
                                     class Yes { name = "Yes"; value = "true"; };
+                                    // both sides race for the pilot (A. Ares on Discord)
+                                    class Race { name = "Yes, both sides race"; value = "race"; };
                             };
                     };
 

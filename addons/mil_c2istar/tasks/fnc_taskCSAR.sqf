@@ -23,6 +23,14 @@ rescue, and with none alive, reaching the wreck ends it. A crew rescued this way
 is taken out of the AI Commander's hands; with nobody on their side to rescue
 them, the commander keeps them as infantry on foot.
 
+With Capture Enemy Pilots set to "Yes, both sides race" (A. Ares on Discord), a
+pilot whose own side has players gets a rescue for that side and, at the same
+moment, a capture for a hostile side with players. The first side to reach him
+takes him; the other side's task fails. The pilot then carries two task ids:
+ALIVE_csarTaskID (the rescue) and ALIVE_csarCaptureID (the capture), and a task
+that ends lets go of its own id only, so the pilot stays with the task still
+running. ALIVE_csarTakenBy is the side text of whoever took him.
+
 Besides the task stages ("init", "Parent", "Wreck", "Rescue", "Return") this file holds
 the operations that drive the task, because it is the only file the task has:
 
@@ -104,8 +112,40 @@ private _fnc_resolvePilots = {
 
     _netIDs apply {
         private _unit = if (_x isEqualType "") then {_x call BIS_fnc_objectFromNetId} else {objNull};
-        if (isNull _unit || {(_unit getVariable ["ALIVE_csarTaskID", ""]) != _rootID}) then {objNull} else {_unit};
+        if (isNull _unit || {!(_rootID in [_unit getVariable ["ALIVE_csarTaskID", ""], _unit getVariable ["ALIVE_csarCaptureID", ""]])}) then {objNull} else {_unit};
     };
+};
+
+// A task lets go of a pilot. With a race, the other side's task keeps him: true only when no other
+// task holds him, so he may be cleared.
+private _fnc_dropClaim = {
+    params ["_unit", "_rootID"];
+
+    private _captureID = _unit getVariable ["ALIVE_csarCaptureID", ""];
+    if (_captureID == "") exitWith {true};
+    if (_captureID == _rootID) exitWith {
+        _unit setVariable ["ALIVE_csarCaptureID", nil, true];
+        false
+    };
+    if ((_unit getVariable ["ALIVE_csarTaskID", ""]) == _rootID) exitWith {
+        _unit setVariable ["ALIVE_csarTaskID", _captureID, true];
+        _unit setVariable ["ALIVE_csarCaptureID", nil, true];
+        false
+    };
+    false
+};
+
+// [lost, sideText] for a task's pilots: one of them taken by a side hostile to the task's own
+private _fnc_lostPilot = {
+    params ["_pilots", "_taskSide"];
+
+    private _own = [_taskSide] call ALIVE_fnc_sideTextToObject;
+    private _at = _pilots findIf {
+        !isNull _x && {_x getVariable ["ALIVE_csarRescued", false]}
+        && {(_x getVariable ["ALIVE_csarTakenBy", ""]) != ""}
+        && {(([_x getVariable ["ALIVE_csarTakenBy", ""]] call ALIVE_fnc_sideTextToObject) getFriend _own) < 0.6}
+    };
+    [_at > -1, if (_at > -1) then {(_pilots select _at) getVariable ["ALIVE_csarTakenBy", ""]} else {""}]
 };
 
 private _fnc_sideText = {
@@ -129,7 +169,8 @@ private _fnc_cleanupTask = {
     private _rootID = ([_taskParams, "taskIDs", [""]] call ALIVE_fnc_hashGet) select 0;
     private _pilots = [[_taskParams, "pilotNetIDs", []] call ALIVE_fnc_hashGet, _rootID] call _fnc_resolvePilots;
 
-    ["retirePilots", "", [_pilots select {!isNull _x && {alive _x}}, _mode], [], false] call ALIVE_fnc_taskCSAR;
+    // a pilot the other side's task still holds stays with it
+    ["retirePilots", "", [_pilots select {!isNull _x && {alive _x} && {[_x, _rootID] call _fnc_dropClaim}}, _mode], [], false] call ALIVE_fnc_taskCSAR;
 };
 
 // A chat line that may be missing from an older Tasks.hpp falls back to another.
@@ -622,17 +663,19 @@ switch (_taskState) do {
                     private _netIDs = _group apply {_x call BIS_fnc_netId};
 
                     // a capture is the capturing side's task, in a player's faction from that side
-                    private _taskFaction = faction _leader;
-                    if (_taskSideText != _sideText) then {
-                        private _taskSideObj = [_taskSideText] call ALIVE_fnc_sideTextToObject;
+                    private _fnc_captureFaction = {
+                        params ["_captureSideText"];
+                        private _taskSideObj = [_captureSideText] call ALIVE_fnc_sideTextToObject;
                         private _players = allPlayers select {(side group _x) == _taskSideObj && {!(_x isKindOf "HeadlessClient_F")}};
-                        _taskFaction = if (_players isEqualTo []) then {
+                        if (_players isEqualTo []) then {
                             // only a test side has nobody on it: any faction of that side
                             private _sideNo = [_taskSideObj] call ALIVE_fnc_sideObjectToNumber;
                             private _cfg = (format ["getNumber (_x >> 'side') == %1", _sideNo]) configClasses (configFile >> "CfgFactionClasses");
                             if (_cfg isEqualTo []) then {""} else {configName (_cfg select 0)}
-                        } else {faction (_players select 0)};
+                        } else {faction (_players select 0)}
                     };
+                    private _taskFaction = faction _leader;
+                    if (_taskSideText != _sideText) then {_taskFaction = [_taskSideText] call _fnc_captureFaction};
 
                     { _x setVariable ["ALIVE_csarTaskID", _rootID, true]; } forEach _group;
 
@@ -649,6 +692,46 @@ switch (_taskState) do {
                     { ALiVE_c2istar_csarOffered pushBack [_x, _rootID, _now]; } forEach _group;
 
                     ["C2ISTAR - Task CSAR - %1 %2 offered to %3 for %4 (%5)", ["capture", "rescue"] select (_taskSideText == _sideText), _rootID, _taskSideText, _group, _class] call ALiVE_fnc_dump;
+
+                    // Both sides race (A. Ares on Discord): a rescue for his own side, and a capture for a
+                    // hostile side with players and no capture or rescue of its own open
+                    if (_taskSideText == _sideText && {(missionNamespace getVariable ["ALIVE_taskCsarCaptureRace", false]) isEqualTo true}) then {
+                        private _own = [_sideText] call ALIVE_fnc_sideTextToObject;
+                        private _race = [];
+                        {
+                            private _other = [_x] call _fnc_sideText;
+                            if (_other != _sideText && {(_x getFriend _own) < 0.6}) then {
+                                private _otherGate = [_other] call _fnc_sideGate;
+                                private _otherOpen = ALiVE_c2istar_csarOpen getOrDefault [_other, ["", -1e9]];
+                                if ((_otherGate select 0) && {!((_otherOpen select 0) in _taskKeys)} && {(_now - (_otherOpen select 1)) >= CSAR_OFFER_GRACE}) then {
+                                    _race = _otherGate + [_other];
+                                    break;
+                                };
+                            };
+                        } forEach [west, east, resistance];
+
+                        if (_race isEqualTo []) exitWith {
+                            ["C2ISTAR - Task CSAR - %1: no hostile side free to race for %2", _rootID, _group] call ALiVE_fnc_dump;
+                        };
+
+                        private _raceSide = _race select 3;
+                        ALiVE_c2istar_csarCount = ALiVE_c2istar_csarCount + 1;
+                        private _captureID = format ["CSAR_%1_%2_%3", _raceSide, floor _now, ALiVE_c2istar_csarCount];
+                        { _x setVariable ["ALIVE_csarCaptureID", _captureID, true]; } forEach _group;
+
+                        private _captureData = [
+                            _captureID, "C2ISTAR", _raceSide, [_raceSide] call _fnc_captureFaction, "CSAR", "NULL",
+                            getPosATL _leader, _race select 1, _race select 2, "Y", "Side",
+                            [_netIDs, _hullKey]
+                        ];
+                        private _captureEvent = ["TASK_GENERATE", _captureData, "C2ISTAR"] call ALIVE_fnc_event;
+                        [ALIVE_eventLog, "addEvent", _captureEvent] call ALIVE_fnc_eventLog;
+
+                        ALiVE_c2istar_csarOpen set [_raceSide, [_captureID, _now]];
+                        { ALiVE_c2istar_csarOffered pushBack [_x, _captureID, _now]; } forEach _group;
+
+                        ["C2ISTAR - Task CSAR - capture %1 offered to %2 for %3, racing rescue %4", _captureID, _raceSide, _group, _rootID] call ALiVE_fnc_dump;
+                    };
                 };
             };
         } forEach ALiVE_c2istar_csarLanded;
@@ -666,9 +749,15 @@ switch (_taskState) do {
                 continue
             };
 
-            if (_unit getVariable ["ALIVE_csarLive", false]) then {
+            // with a race, the other side's task may still hold him
+            private _claimed = _rootID in [_unit getVariable ["ALIVE_csarTaskID", ""], _unit getVariable ["ALIVE_csarCaptureID", ""]];
+            // let go of by its own task when it ended, so the other side's task has him
+            if (!_claimed) then {continue};
+
+            if (_rootID in (_unit getVariable ["ALIVE_csarLiveIDs", []])) then {
                 // The task existed and is now gone, cancelled or deleted by some
                 // other route than its own stages: a pilot still held goes too.
+                if !([_unit, _rootID] call _fnc_dropClaim) then {continue};
                 if (alive _unit && {_unit getVariable ["ALIVE_csarHeld", false]} && {!(_unit getVariable ["ALIVE_csarRetiring", false])}) then {
                     ["retirePilots", "", [[_unit], "delete"], [], false] call ALIVE_fnc_taskCSAR;
                     ["C2ISTAR - Task CSAR - %1 removed, rescue %2 no longer exists", _unit, _rootID] call ALiVE_fnc_dump;
@@ -681,7 +770,11 @@ switch (_taskState) do {
                 continue
             };
 
-            // The offer never became a task.
+            // The offer never became a task: the other side's task keeps him if it did
+            if !([_unit, _rootID] call _fnc_dropClaim) then {
+                ["C2ISTAR - Task CSAR - %1 was never created, %2 stays with the other side's task", _rootID, _unit] call ALiVE_fnc_dump;
+                continue
+            };
             [_unit, format ["rescue %1 was never created", _rootID]] call _fnc_dropPilot;
         } forEach ALiVE_c2istar_csarOffered;
         ALiVE_c2istar_csarOffered = _offered;
@@ -812,7 +905,7 @@ switch (_taskState) do {
             { _unit enableAI _x; } forEach ["AUTOTARGET", "TARGET", "FSM", "MOVE", "PATH", "AUTOCOMBAT"];
             // A detained enemy pilot is a prisoner: no weapons. Done here because removeAllWeapons only
             // works where he is local, and he only becomes the players' a moment after he joins them.
-            if ((_unit getVariable ["ALIVE_csarForSide", ""]) != "") then { removeAllWeapons _unit };
+            if ((_unit getVariable ["ALIVE_csarForSide", ""]) != "" && {(_unit getVariable ["ALIVE_csarForSide", ""]) == (_unit getVariable ["ALIVE_csarTakenBy", ""])}) then { removeAllWeapons _unit };
             _unit setCaptive false;
             _unit setUnitPos "AUTO";
             // He still has the behaviour his aircraft's group flew with, which is CARELESS for
@@ -949,7 +1042,7 @@ switch (_taskState) do {
             if (isNull _unit
                 || {!alive _unit}
                 || {!(_unit getVariable ["ALIVE_csarTracked", false])}
-                || {!((_unit getVariable ["ALIVE_csarTaskID", ""]) in ["", _taskID])}
+                || {!((_unit getVariable ["ALIVE_csarTaskID", ""]) in ["", _taskID]) && {(_unit getVariable ["ALIVE_csarCaptureID", ""]) != _taskID}}
             ) then {
                 _bad = true;
             } else {
@@ -1173,10 +1266,19 @@ switch (_taskState) do {
         // hands them to whoever reaches them. Keyed to the pilot, so it goes
         // when he does.
         {
-            _x setVariable ["ALIVE_csarTaskID", _taskID, true];
+            // the capture of a race keeps its own id beside the rescue's
+            private _racing = (_x getVariable ["ALIVE_csarCaptureID", ""]) == _taskID;
+            if (!_racing) then {_x setVariable ["ALIVE_csarTaskID", _taskID, true]};
             _x setVariable ["ALIVE_csarLive", true];
-            // the side that may detain him; empty for a rescue
-            _x setVariable ["ALIVE_csarForSide", ["", _taskSide] select _capture, true];
+            private _liveIDs = _x getVariable ["ALIVE_csarLiveIDs", []];
+            _liveIDs pushBackUnique _taskID;
+            _x setVariable ["ALIVE_csarLiveIDs", _liveIDs];
+            // the side that may detain him; empty for a rescue, and a race's rescue leaves the capture's side
+            if (_capture) then {
+                _x setVariable ["ALIVE_csarForSide", _taskSide, true];
+            } else {
+                if ((_x getVariable ["ALIVE_csarCaptureID", ""]) == "") then {_x setVariable ["ALIVE_csarForSide", "", true]};
+            };
 
             [
                 _x,
@@ -1195,8 +1297,10 @@ switch (_taskState) do {
 
                     _target setVariable ["ALIVE_csarRescued", true, true];
                     _target setVariable ["ALIVE_csarHeld", false, true];
+                    // which side has him, so in a race the other side's task knows it has lost him
+                    _target setVariable ["ALIVE_csarTakenBy", str side group _caller, true];
                     // a prisoner is disarmed by pilotRelease, once he is local to the group that took him
-                    private _prisoner = (_target getVariable ["ALIVE_csarForSide", ""]) != "";
+                    private _prisoner = (_target getVariable ["ALIVE_csarForSide", ""]) == str side group _caller;
                     // A pilot often outranks the players; keep their leader.
                     private _prevLeader = leader group _caller;
                     [_target] joinSilent (group _caller);
@@ -1259,6 +1363,22 @@ switch (_taskState) do {
                 [_params, "delete"] call _fnc_cleanupTask;
 
                 ["C2ISTAR - Task CSAR - %1 expired before the crash site was reached", _rootID] call ALiVE_fnc_Dump;
+            };
+
+            // the other side reached the crew while this side was still on its way to the wreck
+            case (([_pilots, _taskSide] call _fnc_lostPilot) select 0): {
+                [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+
+                _task set [8,"Failed"];
+                _task set [10,"N"];
+                _result = _task;
+
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                private _rescueDialog = [_taskDialog, "Rescue"] call ALIVE_fnc_hashGet;
+                ["chat_lost", "chat_failed", _rescueDialog, _taskSide, _taskPlayers] call _fnc_chat;
+                [_params, "delete"] call _fnc_cleanupTask;
+
+                ["C2ISTAR - Task CSAR - %1 lost before the crash site was reached, %2 reached the crew first", _rootID, ([_pilots, _taskSide] call _fnc_lostPilot) select 1] call ALiVE_fnc_Dump;
             };
 
             // at ground or sea level: a wreck at sea lies on the bottom, its height measured from there
@@ -1335,6 +1455,21 @@ switch (_taskState) do {
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                 ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
                 [_params, "delete"] call _fnc_cleanupTask;
+            };
+
+            // the other side reached him first (both sides race)
+            case (([_pilots, _taskSide] call _fnc_lostPilot) select 0): {
+                [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+
+                _task set [8,"Failed"];
+                _task set [10,"N"];
+                _result = _task;
+
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                ["chat_lost", "chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call _fnc_chat;
+                [_params, "delete"] call _fnc_cleanupTask;
+
+                ["C2ISTAR - Task CSAR - %1 lost, %2 reached the pilot first", _rootID, ([_pilots, _taskSide] call _fnc_lostPilot) select 1] call ALiVE_fnc_Dump;
             };
 
             // nobody came in time

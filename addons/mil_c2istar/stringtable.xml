@@ -2214,7 +2214,7 @@
     <English>Capture Enemy Pilots:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CSAR_CAPTURE_ENEMY_COMMENT">
-    <English>When Yes, an enemy pilot who ejects and lands alive, with nobody on his own side to rescue him, gives the players a task to capture him: find him, detain him (he is disarmed and joins your group) and bring him back to base. Uses the Pilot Rescue Timeout. Default No.</English>
+    <English>When Yes, an enemy pilot who ejects and lands alive, with nobody on his own side to rescue him, gives the players a task to capture him: find him, detain him (he is disarmed and joins your group) and bring him back to base. With Yes, both sides race, a pilot whose own side has players gets their rescue and the enemy's capture at the same time: whichever side reaches him first takes him, and the other side's task fails. Uses the Pilot Rescue Timeout. Default No.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CSAR_TIMEOUT_COMMENT">
     <English>How long, in seconds, a downed pilot waits to be rescued. When it runs out the rescue task is cancelled and the pilot is removed. Never less than 300.</English>
