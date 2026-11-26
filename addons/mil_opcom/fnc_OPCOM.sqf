@@ -583,20 +583,21 @@ switch (_operation) do {
 
         //Add to OPCOM_instances global array for easier access
 
-        if (isnil "OPCOM_instances") then {
-            OPCOM_instances = [];
+        // In one unbroken step: commanders start side by side, and one could find the list missing, the other make
+        // it and add itself, then the first make it again and wipe the other out. That commander then went unsaved,
+        // so a restart rebuilt its objectives from scratch (KH, 26 Nov: both commanders logged as m_73).
+        isNil {
+            if (isnil "OPCOM_instances") then {
+                OPCOM_instances = [];
+            };
+            private _index = OPCOM_instances pushback _handler;
+            missionnamespace setvariable [format ["OPCOM_%1", _index], _handler];
         };
-        OPCOM_instances pushback _handler;
         // what each commander fights, published for players' tablets: on a dedicated server OPCOM_instances is the
         // server's alone, so C2ISTAR's enemy faction filter found nothing there and listed every faction (NeisAEL on
         // Discord, 23 Oct)
         ALiVE_OPCOM_factionsPublic = (OPCOM_instances select { _x isEqualType [] }) apply { [[_x, "sidesenemy", []] call ALiVE_fnc_HashGet, [_x, "factions", []] call ALiVE_fnc_HashGet] };
         publicVariable "ALiVE_OPCOM_factionsPublic";
-
-        missionnamespace setvariable [
-            format ["OPCOM_%1", (count OPCOM_instances) - 1], // -1 to maintain zero index
-            _handler
-        ];
 
         // Start From Ship: find the ship and its helipads, and check the force can leave it; any gap starts on land
         if (_shipStart) then {
