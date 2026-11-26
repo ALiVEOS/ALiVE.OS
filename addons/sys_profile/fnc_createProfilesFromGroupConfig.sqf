@@ -287,6 +287,8 @@ if(count _config > 0) then {
     // if there are vehicles for this group
 
     private ["_vehicleID","_vehicleClass","_vehicleRank","_crew","_profileVehicle","_vehiclePositions","_countCrewPositions","_vehiclePosition","_vehicleKind"];
+    // the group's vehicle profiles, for the cargo pass below
+    private _vehicleProfiles = [];
 
     {
         // create the profile for the vehicle
@@ -328,6 +330,7 @@ if(count _config > 0) then {
         };
 
         _groupProfiles pushback _profileVehicle;
+        _vehicleProfiles pushBack _profileVehicle;
         [ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
 
         // create crew members for the vehicle
@@ -382,9 +385,11 @@ if(count _config > 0) then {
         [_profileEntity, "addUnit", [_class,_position,0,_rank]] call ALIVE_fnc_profileEntity;
     } forEach _groupUnits;
 
+    // the rest of the group rides in each vehicle's free seats in turn (every turn used to
+    // offer only the last vehicle's, so the others went empty)
     {
-        [_profileEntity,_profileVehicle,true] call ALIVE_fnc_createProfileVehicleAssignment;
-    } forEach _groupVehicles;
+        [_profileEntity,_x,true] call ALIVE_fnc_createProfileVehicleAssignment;
+    } forEach _vehicleProfiles;
 
 };
 
