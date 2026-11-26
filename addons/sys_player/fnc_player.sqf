@@ -742,28 +742,43 @@ switch(_operation) do {
                                         // the group has to own the vehicle, or AI of a player's group get straight back out
                                         [group _ai, _veh] remoteExecCall ["addVehicle", group _ai];
                                         _role params [["_r", "cargo"], ["_idx", -1], ["_path", []]];
-                                        switch (_r) do {
-                                            case "driver": {
-                                                [_ai, _veh] remoteExecCall ["assignAsDriver", _ai];
-                                                [_ai, _veh] remoteExecCall ["moveInDriver", _ai];
-                                            };
-                                            case "cargo": {
-                                                if (_idx >= 0) then {
-                                                    [_ai, [_veh, _idx]] remoteExecCall ["assignAsCargoIndex", _ai];
-                                                    [_ai, [_veh, _idx]] remoteExecCall ["moveInCargo", _ai];
-                                                } else {
-                                                    [_ai, _veh] remoteExecCall ["assignAsCargo", _ai];
-                                                    [_ai, _veh] remoteExecCall ["moveInCargo", _ai];
+                                        // A squadmate can change hands as the player connects (seen with AI slots on: the
+                                        // server's at first, the player's a moment later), and a move sent during that is
+                                        // lost. Sent again to whoever has him, every 2 s, until he sits in it.
+                                        [_ai, _veh, _r, _idx, _path] spawn {
+                                            params ["_ai", "_veh", "_r", "_idx", "_path"];
+                                            for "_try" from 1 to 5 do {
+                                                if (isNull _ai || {!alive _ai} || {isNull _veh} || {vehicle _ai == _veh}) exitWith {};
+                                                switch (_r) do {
+                                                    case "driver": {
+                                                        [_ai, _veh] remoteExecCall ["assignAsDriver", _ai];
+                                                        [_ai, _veh] remoteExecCall ["moveInDriver", _ai];
+                                                    };
+                                                    case "cargo": {
+                                                        if (_idx >= 0) then {
+                                                            [_ai, [_veh, _idx]] remoteExecCall ["assignAsCargoIndex", _ai];
+                                                            [_ai, [_veh, _idx]] remoteExecCall ["moveInCargo", _ai];
+                                                        } else {
+                                                            [_ai, _veh] remoteExecCall ["assignAsCargo", _ai];
+                                                            [_ai, _veh] remoteExecCall ["moveInCargo", _ai];
+                                                        };
+                                                    };
+                                                    default {
+                                                        [_ai, [_veh, _path]] remoteExecCall ["assignAsTurret", _ai];
+                                                        [_ai, [_veh, _path]] remoteExecCall ["moveInTurret", _ai];
+                                                    };
                                                 };
+                                                sleep 2;
                                             };
-                                            default {
-                                                [_ai, [_veh, _path]] remoteExecCall ["assignAsTurret", _ai];
-                                                [_ai, [_veh, _path]] remoteExecCall ["moveInTurret", _ai];
+                                            if (isNull _ai || {!alive _ai}) exitWith {};
+                                            if (vehicle _ai != _veh) exitWith {
+                                                _ai setPos (_veh getPos [4, (getDir _veh) + 180]);
+                                                ["SYS_PLAYER - %1 could not be put back in %2 (%3), left beside it", _ai, _veh, _r] call ALiVE_fnc_dump;
                                             };
+                                            // and told to stay in it
+                                            [[_ai], true] remoteExecCall ["allowGetIn", _ai];
+                                            [[_ai], true] remoteExecCall ["orderGetIn", _ai];
                                         };
-                                        // and told to stay in it
-                                        [[_ai], true] remoteExecCall ["allowGetIn", _ai];
-                                        [[_ai], true] remoteExecCall ["orderGetIn", _ai];
                                     };
                                 };
                                 private _found = [];
