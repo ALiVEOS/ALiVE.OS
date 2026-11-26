@@ -135,8 +135,18 @@ class ALiVE_FobBuildWindow {
             x = 0.51 * safezoneW + safezoneX;
             y = 0.33 * safezoneH + safezoneY;
             w = 0.18 * safezoneW;
-            h = 0.38 * safezoneH;
+            h = 0.335 * safezoneH;
             colorBackground[] = {0,0,0,0};
+        };
+        // Favourites (NeisAEL's group, 16 Nov): marks the selected item, which then heads its category's list
+        class FobUI_Favourite: FobUI_RscButton {
+            idc = 92816;
+            text = "$STR_ALIVE_FOB_UI_FAV_ADD";
+            action = "['favourite'] call ALiVE_fnc_buildMenu";
+            x = 0.51 * safezoneW + safezoneX;
+            y = 0.675 * safezoneH + safezoneY;
+            w = 0.18 * safezoneW;
+            h = 0.035 * safezoneH;
         };
         class FobUI_Status: FobUI_RscStructuredText {
             idc = 92804;

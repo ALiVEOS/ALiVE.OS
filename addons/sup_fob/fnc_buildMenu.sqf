@@ -9,9 +9,11 @@ The FOB build window on the player's machine (idd 9280). It lists the build cata
 sent (fortifications, supply, or the player's side's static weapons, cheapest first), shows the selected item's picture and price
 and the FOB's supply, and Place closes the window and starts placing the item in the world
 (ALiVE_fnc_fobPlacement). Prices shown here are the server's; the server charges its own.
+Favourites: the player's marked items head each category's list, in gold. They are kept in the
+player's profile, so they carry over to other missions and FOBs.
 
 Parameters:
-String - The operation: open, category, filter, select, place, closed
+String - The operation: open, category, filter, select, favourite, place, closed
 Any - Its arguments: for open, the FOB's row from ALiVE_FOB_registryMirror; for category,
 "FORTIFICATION", "SUPPLY" or "STATIC"
 
@@ -58,6 +60,12 @@ private _fnc_status = {
     (BW_DISPLAY displayCtrl 92804) ctrlSetStructuredText ([_lines] call _fnc_lines);
 };
 
+// The player's favourite items, as lower-case class names (the build catalog's first column)
+private _fnc_favs = {
+    private _f = profileNamespace getVariable ["ALiVE_FOB_favourites", []];
+    if (_f isEqualType []) then { _f select { _x isEqualType "" } } else { [] }
+};
+
 switch (_operation) do {
 
     case "open": {
@@ -100,11 +108,12 @@ switch (_operation) do {
                 || {[_logic, "factionAllows", [_scope, _side, _x]] call ALiVE_fnc_FOB}}
                 && {[_logic, "typeAllows", [_type, _x select 0]] call ALiVE_fnc_FOB}
         };
-        // cheapest first, then by name
+        // favourites first, then cheapest first, then by name
+        private _favs = call _fnc_favs;
         private _keys = [];
-        { _keys pushBack [_x select 3, _x select 1, _forEachIndex] } forEach _rows;
+        { _keys pushBack [[1, 0] select ((toLower (_x select 0)) in _favs), _x select 3, _x select 1, _forEachIndex] } forEach _rows;
         _keys sort true;
-        _rows = _keys apply { _rows select (_x select 2) };
+        _rows = _keys apply { _rows select (_x select 3) };
         uiNamespace setVariable ["ALiVE_FOB_buildAll", _rows];
         {
             private _tab = BW_DISPLAY displayCtrl (_x select 0);
@@ -139,10 +148,13 @@ switch (_operation) do {
             (BW_DISPLAY displayCtrl 92803) ctrlSetStructuredText parseText "";
             (BW_DISPLAY displayCtrl 92809) ctrlSetText "";
             (BW_DISPLAY displayCtrl 92805) ctrlEnable false;
+            (BW_DISPLAY displayCtrl 92816) ctrlEnable false;
         };
+        private _favs = call _fnc_favs;
         {
             _x params ["_class", "_name", "", "_cost", "", ["_tierMin", 1]];
             private _i = _list lbAdd format ["%1  (%2)", [_name, _class] select (_name == ""), _cost];
+            if ((toLower _class) in _favs) then { _list lbSetColor [_i, [1, 0.82, 0.35, 1]] };
             if (_tierMin > _fobTier) then {
                 _list lbSetColor [_i, [0.6, 0.6, 0.6, 1]];
                 _list lbSetTextRight [_i, format [localize "STR_ALIVE_FOB_UI_TIER_SHORT", _tierMin]];
@@ -169,8 +181,27 @@ switch (_operation) do {
         if (_locked) then { _lines pushBack format [localize "STR_ALIVE_FOB_UI_TIER_NEEDED", _tierMin] };
         // a greyed item can be looked at but not placed
         (BW_DISPLAY displayCtrl 92805) ctrlEnable !_locked;
+        // and marked as a favourite either way, for when the FOB reaches its tier
+        private _fav = BW_DISPLAY displayCtrl 92816;
+        _fav ctrlEnable true;
+        _fav ctrlSetText localize (["STR_ALIVE_FOB_UI_FAV_ADD", "STR_ALIVE_FOB_UI_FAV_REMOVE"] select ((toLower _class) in (call _fnc_favs)));
         (BW_DISPLAY displayCtrl 92803) ctrlSetStructuredText ([_lines, true] call _fnc_lines);
         call _fnc_status;
+    };
+
+    // Marks or unmarks the selected item, then shows the list again with it still selected
+    case "favourite": {
+        if (isNull BW_DISPLAY) exitWith {};
+        private _row = (uiNamespace getVariable ["ALiVE_FOB_buildRows", []]) param [lbCurSel (BW_DISPLAY displayCtrl 92802), []];
+        if (_row isEqualTo []) exitWith {};
+        private _class = toLower (_row select 0);
+        private _favs = call _fnc_favs;
+        if (_class in _favs) then { _favs = _favs - [_class] } else { _favs pushBack _class };
+        profileNamespace setVariable ["ALiVE_FOB_favourites", _favs];
+        saveProfileNamespace;
+        ["category", uiNamespace getVariable ["ALiVE_FOB_buildCategory", "FORTIFICATION"]] call ALiVE_fnc_buildMenu;
+        private _at = (uiNamespace getVariable ["ALiVE_FOB_buildRows", []]) findIf { (toLower (_x select 0)) == _class };
+        if (_at >= 0) then { (BW_DISPLAY displayCtrl 92802) lbSetCurSel _at };
     };
 
     case "place": {

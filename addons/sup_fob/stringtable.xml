@@ -654,6 +654,12 @@
             <Key ID="STR_ALIVE_FOB_UI_PLACE">
                 <English>Place</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_UI_FAV_ADD">
+                <English>Add to favourites</English>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_UI_FAV_REMOVE">
+                <English>Remove from favourites</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_UI_CLOSE">
                 <English>Close</English>
             </Key>
