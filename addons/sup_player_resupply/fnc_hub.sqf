@@ -1708,6 +1708,21 @@ switch (_op) do {
                 _hub setDir _dir;
                 _hub setPosATL _pos;
                 _hub setVectorUp (surfaceNormal _pos);
+                _hub setVelocity [0, 0, 0];
+                // a hub can be a physics object (a cargo container is): moved, it settled somewhere else on a player's
+                // machine, one far off above all (21 m away and 2.6 m up, with the server's own copy at rest at the
+                // spot, so nothing put it right). Put down again as it settles, every machine ends where the server is
+                [_hub, _pos, _dir] spawn {
+                    params ["_h", "_p", "_d"];
+                    {
+                        sleep _x;
+                        if (isNull _h || {!alive _h}) exitWith {};
+                        _h setDir _d;
+                        _h setPosATL _p;
+                        _h setVectorUp (surfaceNormal _p);
+                        _h setVelocity [0, 0, 0];
+                    } forEach [1, 2, 4];
+                };
                 _e set [6, getPosATL _hub];
                 _e set [7, getDir _hub];
                 _e set [8, vectorUp _hub];
