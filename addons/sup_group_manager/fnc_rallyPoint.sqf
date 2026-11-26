@@ -413,21 +413,30 @@ switch (_op) do {
         private _i = if (isNull _obj) then { -1 } else { _list findIf { (_x select 0) isEqualTo _obj } };
         if (_i < 0 || {!alive _obj}) exitWith { _result = [false, "STR_ALIVE_RALLY_UI_GONE", []] };
         (_list select _i) params ["", "_name", "", "_kind", ["_owner", grpNull], "", ["_squad", grpNull]];
+        // a backpack a mission made with createVehicle and added itself sits in a ground holder of its own, which
+        // reports a place kilometres off: moving the bag shifted it by the target instead of to it, and deleting
+        // it left the holder standing, so the holder is what is moved, deleted and saved. Only a ground holder
+        // counts: a bag on a unit's back or in a vehicle's cargo has that unit or vehicle as its parent, and is
+        // neither moved nor picked up from here
+        private _body = objectParent _obj;
+        private _carried = !isNull _body && {!(_body isKindOf "WeaponHolder" || {_body isKindOf "WeaponHolderSimulated"})};
+        if (isNull _body || {_carried}) then { _body = _obj };
         switch (_op) do {
             case "adminMove": {
                 _args params ["", ["_pos", [], [[]]], ["_dir", 0, [0]], ["_by", "", [""]]];
                 if (_by == "" || {!(_pos isEqualTypeParams [0, 0])}) exitWith {};
-                if !(_kind in ["leader", "zeus"]) exitWith { _result = [false, "STR_ALIVE_RALLY_ADMIN_NOMOVE", [_name]] };
+                if (!(_kind in ["leader", "zeus"]) || {_carried}) exitWith { _result = [false, "STR_ALIVE_RALLY_ADMIN_NOMOVE", [_name]] };
                 _pos = [_pos select 0, _pos select 1, 0];
-                private _from = mapGridPosition _obj;
-                if (isSimpleObject _obj) then {
-                    // a simple object moved on the server stays where it was on every player's machine, so a new one
-                    // goes down at the spot instead and takes the old one's place in its row
+                private _from = mapGridPosition _body;
+                if (isSimpleObject _obj || {_body isNotEqualTo _obj}) then {
+                    // a simple object or a ground holder moved on the server stays where it was on every player's
+                    // machine, so a new one goes down at the spot instead and takes the old one's place in its row
                     private _placedAt = (_list select _i) param [7, serverTime];
                     if (_kind == "leader" && {!isNull _squad} && {toUpper (["leaderRally", "OFF"] call _set) != "OFF"}) then {
                         // a squad's own: put down again for the squad, with the mission's init code and its overrun watch
                         ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
                         deleteVehicle _obj;
+                        if (_body isNotEqualTo _obj) then { deleteVehicle _body };
                         _squad setVariable ["ALiVE_rallyDeployed", nil, true];
                         private _new = ["plant", [_squad, _pos, _dir, _name]] call ALiVE_fnc_rallyPoint;
                         private _l = missionNamespace getVariable ["ALiVE_rallyPoints", []];
@@ -446,6 +455,7 @@ switch (_op) do {
                         ALiVE_rallyPoints = _list;
                         publicVariable "ALiVE_rallyPoints";
                         deleteVehicle _obj;
+                        if (_body isNotEqualTo _obj) then { deleteVehicle _body };
                     };
                 } else {
                     _obj setDir _dir;
@@ -473,11 +483,12 @@ switch (_op) do {
             case "adminPickup": {
                 _args params ["", ["_by", "", [""]]];
                 if (_by == "") exitWith {};
-                if !(_kind in ["leader", "zeus"]) exitWith { _result = [false, "STR_ALIVE_RALLY_ADMIN_NOPICKUP", [_name]] };
+                if (!(_kind in ["leader", "zeus"]) || {_carried}) exitWith { _result = [false, "STR_ALIVE_RALLY_ADMIN_NOPICKUP", [_name]] };
                 private _grp = [_squad, _owner] select (isNull _squad);
                 ["remove", [_obj]] call ALiVE_fnc_rallyPoint;
-                deleteVehicle _obj;
                 if (!isNull _grp && {(_grp getVariable ["ALiVE_rallyDeployed", objNull]) isEqualTo _obj}) then { _grp setVariable ["ALiVE_rallyDeployed", nil, true] };
+                deleteVehicle _obj;
+                if (_body isNotEqualTo _obj) then { deleteVehicle _body };
                 ["ALiVE Rally Points - %1 picked up %2", _by, _name] call ALiVE_fnc_dump;
                 _result = [true, "STR_ALIVE_RALLY_ADMIN_PICKED", [_name]];
             };
@@ -712,7 +723,8 @@ switch (_op) do {
             _x params ["_o", "_name", "_who", "_kind", "", "", ["_squad", grpNull]];
             if (!isNull _o && {alive _o}) then {
                 switch (_kind) do {
-                    case "zeus": { _points pushBack ["zeus", _who, _name, getPosATL _o, getDir _o, ""] };
+                    // a backpack in a ground holder, or carried by a unit or vehicle, is where that holder or carrier is
+                    case "zeus": { private _b = objectParent _o; if (isNull _b) then { _b = _o }; _points pushBack ["zeus", _who, _name, getPosATL _b, getDir _b, ""] };
                     case "zeusObj": { _points pushBack ["zeusObj", _who, _name, getPosATL _o, getDir _o, typeOf _o] };
                     case "leader": { if (!isNull _squad) then { _points pushBack ["leader", _who, _name, getPosATL _o, getDir _o, [str side _squad, groupId _squad]] } };
                 };
