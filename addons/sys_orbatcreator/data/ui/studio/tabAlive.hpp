@@ -82,6 +82,7 @@ class ALiVE_FS_TabAlive : ALiVE_FS_RscGroup {
             idc = FS_IDC_A_CRATELIST;
             y = FS_H(1.15);
             h = (FS_H(4.6) + FS_SP_ACRATES);
+            onLBSelChanged = "['crateSel', _this] call ALiVE_fnc_fsStudioTabAlive";
         };
         class CrateEdit : ALiVE_FS_RscButton {
             idc = FS_IDC_A_CRATEEDIT;
@@ -97,9 +98,46 @@ class ALiVE_FS_TabAlive : ALiVE_FS_RscGroup {
             x = FS_B2_X(1);
             onButtonClick = "['crateAuto', _this] call ALiVE_fnc_fsStudioTabAlive";
         };
+        // the author's own crates: made, named, put in a box of his choice and taken out again
+        class CrateNew : ALiVE_FS_RscButton {
+            idc = FS_IDC_A_CRATENEW;
+            text = "$STR_ALIVE_FS_A_CRATE_NEW";
+            tooltip = "$STR_ALIVE_FS_A_CRATE_NEW_TIP";
+            x = FS_B3_X(0);
+            y = (FS_H(7.1) + FS_SP_ACRATES);
+            w = FS_B3_W;
+            onButtonClick = "['crateNew', _this] call ALiVE_fnc_fsStudioTabAlive";
+        };
+        class CrateRename : CrateNew {
+            idc = FS_IDC_A_CRATERENAME;
+            text = "$STR_ALIVE_FS_A_CRATE_RENAME";
+            tooltip = "$STR_ALIVE_FS_A_CRATE_RENAME_TIP";
+            x = FS_B3_X(1);
+            onButtonClick = "['crateRename', _this] call ALiVE_fnc_fsStudioTabAlive";
+        };
+        class CrateRemove : CrateNew {
+            idc = FS_IDC_A_CRATEREMOVE;
+            text = "$STR_ALIVE_FS_A_CRATE_REMOVE";
+            tooltip = "$STR_ALIVE_FS_A_CRATE_REMOVE_TIP";
+            x = FS_B3_X(2);
+            onButtonClick = "['crateRemove', _this] call ALiVE_fnc_fsStudioTabAlive";
+        };
+        class CrateBoxLabel : ALiVE_FS_RscLabel {
+            idc = FS_IDC_A_CRATEBOXLABEL;
+            text = "$STR_ALIVE_FS_A_CRATE_BOX";
+            tooltip = "$STR_ALIVE_FS_A_CRATE_BOX_TIP";
+            y = (FS_H(8.25) + FS_SP_ACRATES);
+        };
+        class CrateBox : ALiVE_FS_RscCombo {
+            idc = FS_IDC_A_CRATEBOX;
+            tooltip = "$STR_ALIVE_FS_A_CRATE_BOX_TIP";
+            x = FS_FIELD_X;
+            y = (FS_H(8.25) + FS_SP_ACRATES);
+            onLBSelChanged = "['crateBox', _this] call ALiVE_fnc_fsStudioTabAlive";
+        };
         class CrateNote : ALiVE_FS_RscStructuredText {
             idc = FS_IDC_A_CRATENOTE;
-            y = (FS_H(7.1) + FS_SP_ACRATES);
+            y = (FS_H(9.4) + FS_SP_ACRATES);
             h = FS_H(3.4);
         };
 

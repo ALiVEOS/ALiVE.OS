@@ -113,7 +113,18 @@ _lines append [
     "  Change at least one item besides headgear and facewear: the game itself picks random",
     "  headgear and facewear, so a change to those alone is read as the game's, and is replaced.",
     "  To keep a soldier exactly as you dressed him, set ALiVE_OverrideLoadout to true on him.",
-    "",
+    ""
+];
+// ACE training, said only when a soldier has some
+if ((values (_faction getOrDefault ["units", createHashMap])) findIf { (_x getOrDefault ["aceMedic", -1]) > 0 || {(_x getOrDefault ["aceEngineer", -1]) > 0} } >= 0) then {
+    _lines append [
+        "ACE MEDICS AND ENGINEERS",
+        "  Soldiers made ACE medics, doctors or advanced engineers get that training as they are made, with ACE",
+        "  loaded. A setting your mission or ACE's own Eden attributes give a soldier is kept. Without ACE it does nothing.",
+        ""
+    ];
+};
+_lines append [
     "HOW TO PUBLISH",
     format ["  Open Arma 3 Tools, Publisher, and pick the @%1 folder.", _mod],
     "",

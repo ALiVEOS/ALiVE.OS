@@ -16,7 +16,7 @@
 #define FS_MAX_MEMBERS      40
 #define FS_MAX_CATEGORIES   40
 #define FS_MAX_POOLS        32
-#define FS_MAX_CRATES       8
+#define FS_MAX_CRATES       16
 #define FS_MAX_CRATE_ROWS   96
 // optional parts of an export, one per set of mods (ALiVE_fnc_fsGenPlan)
 #define FS_MAX_OPT_PATCHES  8

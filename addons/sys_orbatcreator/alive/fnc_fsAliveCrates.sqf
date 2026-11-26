@@ -17,7 +17,10 @@ gear pool a man wears (a man ticked Optional is left out), so new gear reaches t
     uniforms  - uniforms, vests, headgear and facewear, 5 each; backpacks, 3
 Most-used gear first, at most FS_MAX_CRATE_ROWS rows a crate. A crate with
 nothing in it is left out, and a civilian faction gets none. Once a crate is
-edited by hand, alive.crates is used as it is.
+edited by hand, alive.crates is used as it is. A crate made with New crate
+(key "custom") is the faction author's own: it stays in alive.crates and comes
+after the worked-out crates while they are automatic, so the others still follow
+the men's gear.
 
 Parameters:
     _faction - HASHMAP - the studio faction
@@ -46,6 +49,8 @@ private _alive = _faction getOrDefault ["alive", createHashMap];
 private _side = _faction getOrDefault ["side", 1];
 if (_side == 3) exitWith { [[], []] };
 if !("crates" in (_alive getOrDefault ["auto", FS_ALIVE_LISTS])) exitWith { [+(_alive getOrDefault ["crates", []]), []] };
+// the author's own crates, after the worked-out ones
+private _custom = (_alive getOrDefault ["crates", []]) select { (_x getOrDefault ["key", ""]) isEqualTo "custom" };
 
 private _tag = _faction getOrDefault ["tag", ""];
 private _fname = _faction getOrDefault ["name", _tag];
@@ -189,4 +194,4 @@ private _crates = [];
     ["uniforms", "Uniforms", "STR_ALIVE_FS_CR_UNIFORMS"]
 ];
 
-[_crates, _notes]
+[_crates + (_custom apply { +_x }), _notes]

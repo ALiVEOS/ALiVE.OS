@@ -13,7 +13,9 @@ show him dressed; the exact loadout is in ALiVE_FS_loadout[].
 engineer, canDeactivateMines, attendant and uavHacker are written only when
 Engineer, EOD, Medic or UAV Hacker was set on the Units tab to differ from his
 base class, so he can repair, clear mines, heal and hack drones whatever he
-inherits from.
+inherits from. ALiVE_FS_aceMedic and ALiVE_FS_aceEngineer are written the same
+way for ACE Medic, Doctor and Advanced Engineer; ACE reads those levels from a
+variable on the unit, not from his class, so the faction runtime sets them.
 
 Parameters:
     _plan    - HASHMAP - from ALiVE_fnc_fsGenPlan
@@ -57,6 +59,12 @@ private _lines = [
     private _v = _e getOrDefault [_key, -1];
     if (_v isEqualType 0 && {_v >= 0}) then { _lines pushBack (_i + _prop + " = " + ((_v min 1) toFixed 0) + ";") };
 } forEach [["engineer", "engineer"], ["eod", "canDeactivateMines"], ["medic", "attendant"], ["uavHacker", "uavHacker"]];
+// ACE Medic, Doctor and Advanced Engineer: a level the faction runtime puts on him (rt\fn_applyLoadout.sqf)
+{
+    _x params ["_key", "_prop"];
+    private _v = _e getOrDefault [_key, -1];
+    if (_v isEqualType 0 && {_v >= 0}) then { _lines pushBack (_i + _prop + " = " + ((_v min 2) toFixed 0) + ";") };
+} forEach [["aceMedic", "ALiVE_FS_aceMedic"], ["aceEngineer", "ALiVE_FS_aceEngineer"]];
 // the Init Code as typed, one string per line so its comments and line breaks come back on import; it runs from
 // the CBA InitPost entry (ALiVE_fnc_fsGenConfig)
 private _initCode = _e getOrDefault ["initCode", ""];

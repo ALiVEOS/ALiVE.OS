@@ -252,11 +252,12 @@ if (_anyOpt) then {
     } forEach _pulled;
     if (count _sets > FS_MAX_OPT_PATCHES) then { _errors pushBack ["E_OPT_SETS", [(count _sets) toFixed 0, FS_MAX_OPT_PATCHES toFixed 0]] };
     // the main part, crates included; a crate row set by hand that only an optional part's mods give is left out
+    // (while the crates are automatic, that is the author's own crates)
     _reqView = [_opt, _optG, true] call _view;
     private _optAddons = createHashMap;
     { { _optAddons set [toLower _x, true] } forEach _y } forEach _setAddons;
     private _aliveV = _reqView getOrDefault ["alive", createHashMap];
-    if !("crates" in (_aliveV getOrDefault ["auto", FS_ALIVE_LISTS])) then {
+    if ((_aliveV getOrDefault ["crates", []]) isNotEqualTo []) then {
         _aliveV = +_aliveV;
         private _addonOf = {
             private _class = _this;
@@ -558,6 +559,10 @@ if (_hook) then {
             if (!(_base call _isLoaded)) then {
                 _warnings pushBack ["W_GEAR_MISSING", [_crate getOrDefault ["name", _class], _base]];
             } else {
+                // a box an ORBAT Creator faction made (this one's own included) would hand down its tag and crate key
+                if ((toLower _base) isEqualTo (toLower _class) || {getNumber (configFile >> "CfgVehicles" >> _base >> "ALiVE_FS_owned") == 1}) exitWith {
+                    _errors pushBack ["E_CRATE_BASE", [_crate getOrDefault ["name", _class], _base]];
+                };
                 (["check", _faction, _class, "", "unit"] call ALiVE_fnc_fsDataClassName) params ["_ok", "_hit"];
                 if (!_ok) then {
                     private _where = if (_hit in _units || {_hit in _vehicles}) then { (_hit call _entryOf) getOrDefault ["name", _hit] } else { [_hit, "CfgVehicles"] select (_hit isEqualTo "") };

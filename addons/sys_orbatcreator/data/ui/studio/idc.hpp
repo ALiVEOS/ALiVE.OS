@@ -101,6 +101,12 @@
 #define FS_IDC_U_INITLABEL          14241
 #define FS_IDC_U_INIT               14242
 #define FS_IDC_U_INITEDIT           14243
+#define FS_IDC_U_ACEMEDIC           14244
+#define FS_IDC_U_ACEMEDICLABEL      14245
+#define FS_IDC_U_ACEDOCTOR          14246
+#define FS_IDC_U_ACEDOCTORLABEL     14247
+#define FS_IDC_U_ACEENGINEER        14248
+#define FS_IDC_U_ACEENGINEERLABEL   14249
 
 // ---------------------------------------------------------------- Vehicles tab
 #define FS_IDC_V_LIST               14301
@@ -168,6 +174,11 @@
 #define FS_IDC_A_CRATEEDIT          14521
 #define FS_IDC_A_CRATEAUTO          14522
 #define FS_IDC_A_CRATENOTE          14523
+#define FS_IDC_A_CRATENEW           14524
+#define FS_IDC_A_CRATERENAME        14525
+#define FS_IDC_A_CRATEREMOVE        14526
+#define FS_IDC_A_CRATEBOXLABEL      14527
+#define FS_IDC_A_CRATEBOX           14528
 #define FS_IDC_A_LISTPICK           14530
 #define FS_IDC_A_LIST               14531
 #define FS_IDC_A_LISTSOURCE         14532

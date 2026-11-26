@@ -139,6 +139,10 @@ private _schema = createHashMapFromArray [
         // attendant and uavHacker, the same way
         ["medic", "N", -1, [-1, 1]],
         ["uavHacker", "N", -1, [-1, 1]],
+        // ACE medical (1 medic, 2 doctor) and engineer (2 advanced) training: ALiVE_FS_aceMedic and ALiVE_FS_aceEngineer
+        // in his class, set on him by the faction runtime when ACE reads them; -1 = as his base class
+        ["aceMedic", "N", -1, [-1, 2]],
+        ["aceEngineer", "N", -1, [-1, 2]],
         // the faction author's Init Code, run for this class only (ALiVE_fnc_fsGenConfig); never taken from pasted text
         ["initCode", "S", "", "code"],
         // written in its own optional part, which loads only when the mods it needs are loaded

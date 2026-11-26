@@ -1184,6 +1184,24 @@
 <Key ID="STR_ALIVE_FS_U_UAVHACKER_TIP">
     <English>UAV hacker: he can take over enemy drones with a UAV terminal, whatever his base class. Ticked as his base class until you change it.</English>
 </Key>
+<Key ID="STR_ALIVE_FS_U_ACEMEDIC">
+    <English>ACE Medic</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_ACEMEDIC_TIP">
+    <English>ACE Medic: with ACE loaded he has ACE medic training, without being a Medic above. A unit ticked Medic is an ACE medic already, so this shows ticked for him. Without ACE it does nothing.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_ACEDOCTOR">
+    <English>ACE Doctor</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_ACEDOCTOR_TIP">
+    <English>ACE Doctor: with ACE loaded he has ACE doctor training, the level above medic. Without ACE it does nothing. Ticked as his base class until you change it.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_ACEENGINEER">
+    <English>ACE Adv. Engineer</English>
+</Key>
+<Key ID="STR_ALIVE_FS_U_ACEENGINEER_TIP">
+    <English>ACE Advanced Engineer: with ACE loaded he has ACE advanced engineer training, for the repairs only advanced engineers can do. A unit ticked Engineer above is a plain ACE engineer already. Without ACE it does nothing.</English>
+</Key>
 <Key ID="STR_ALIVE_FS_EC_INFANTRY">
     <English>Every ALiVE placement needs infantry groups.</English>
 </Key>
@@ -1275,10 +1293,61 @@
     <English>%1 rows</English>
 </Key>
 <Key ID="STR_ALIVE_FS_A_CRATE_AUTO">
-    <English>These crates are made from the gear your men carry, and change when their gear does. Edit contents keeps them as they are now, so you can change them.</English>
+    <English>These crates are made from the gear your men carry, and change when their gear does. Edit contents keeps them as they are now, so you can change them. A crate you add with New crate stays as you made it. Every crate is also one of the supplies ALiVE logistics brings.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_A_CRATE_SET">
-    <English>You have set these crates yourself. Back to automatic makes them from your men's gear again.</English>
+    <English>You have set these crates yourself. Back to automatic makes them from your men's gear again, and keeps the crates you added with New crate. Every crate is also one of the supplies ALiVE logistics brings.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_NEW">
+    <English>New crate</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_NEW_TIP">
+    <English>Adds a crate of your own: name it, pick its box and fill it. It stays as you made it when the other crates go back to automatic.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_RENAME">
+    <English>Rename</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_RENAME_TIP">
+    <English>Renames the picked crate, as Eden and Zeus show it.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_REMOVE">
+    <English>Remove</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_REMOVE_TIP">
+    <English>Takes the picked crate out of the export.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_BOX">
+    <English>Box</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_BOX_TIP">
+    <English>The box the picked crate is made from: its look, and where Eden and Zeus list it. The box's own contents are replaced by the crate's.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_A_CRATE_DEFNAME">
+    <English>%1 crate</English>
+</Key>
+<Key ID="STR_ALIVE_FS_Q_CRATE_NAME">
+    <English>Crate name (1 to 60 characters):</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_CRATE_NEW">
+    <English>Crate %1 added.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_CRATE_RENAMED">
+    <English>Crate renamed to %1.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_CRATE_REMOVED">
+    <English>Crate %1 removed.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_CRATE_BOX">
+    <English>Crate box changed to %1.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_CRATE_NAME">
+    <English>A crate name needs 1 to 60 characters.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_S_ALIVE_CRATE_FULL">
+    <English>A faction can have at most %1 crates.</English>
+</Key>
+<Key ID="STR_ALIVE_FS_E_CRATE_BASE">
+    <English>Crate %1 is made from %2, a box an ORBAT Creator faction made. Pick a game or mod box for it.</English>
 </Key>
 <Key ID="STR_ALIVE_FS_A_CRATE_CIV">
     <English>A civilian faction gets no supply crates.</English>

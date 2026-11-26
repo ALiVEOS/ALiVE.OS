@@ -11,7 +11,10 @@ from the Section combo (the controls of the other three are hidden).
        groups by rarity" ticks, the preview (ALiVE_fnc_fsAlivePreview), Copy
        block and Check against the loaded mod (ALiVE_fnc_fsAliveLive);
     2. Supplies and crates: the crates with their row counts; Edit contents opens
-       the cargo popup on the picked crate; Back to automatic;
+       the cargo popup on the picked crate; Back to automatic; New crate (the
+       author's own, key "custom", which stays when the others go back to
+       automatic and leaves them automatic), Rename, Remove, and the Box combo
+       that puts the picked crate in another game or mod box;
     3. Logistics picks: transport, air transport, supports, AA and containers;
        Add from the faction's vehicles or a typed class, Remove, Back to automatic;
     4. Category redirects: an empty ALiVE category drawn from another of the
@@ -21,7 +24,8 @@ automatic list (or crate) first keeps what was worked out, then takes it out of
 alive.auto, so ALiVE_fnc_fsGenPlan writes it as it now stands.
 
 Events: "refresh", "section", "hook", "rarity", "copy", "live", "crateEdit",
-"crateAuto", "listPick", "listAdd", "listRemove", "listAuto", "redirFrom",
+"crateAuto", "crateSel", "crateNew", "crateNewSet", "crateRename", "crateRenameSet",
+"crateRemove", "crateBox", "listPick", "listAdd", "listRemove", "listAuto", "redirFrom",
 "redirTo".
 
 Parameters:
@@ -64,7 +68,7 @@ private _vehicles = _faction getOrDefault ["vehicles", createHashMap];
 // the four sections' controls; the Section combo and its label are always on show
 private _panels = [
     [FS_IDC_A_HOOK, FS_IDC_A_HOOKLABEL, FS_IDC_A_RARITY, FS_IDC_A_RARITYLABEL, FS_IDC_A_COPY, FS_IDC_A_LIVE, FS_IDC_A_PREVIEW],
-    [FS_IDC_A_CRATELIST, FS_IDC_A_CRATEEDIT, FS_IDC_A_CRATEAUTO, FS_IDC_A_CRATENOTE],
+    [FS_IDC_A_CRATELIST, FS_IDC_A_CRATEEDIT, FS_IDC_A_CRATEAUTO, FS_IDC_A_CRATENOTE, FS_IDC_A_CRATENEW, FS_IDC_A_CRATERENAME, FS_IDC_A_CRATEREMOVE, FS_IDC_A_CRATEBOXLABEL, FS_IDC_A_CRATEBOX],
     [FS_IDC_A_LISTPICKLABEL, FS_IDC_A_LISTPICK, FS_IDC_A_LIST, FS_IDC_A_LISTNOTE, FS_IDC_A_LISTSOURCELABEL, FS_IDC_A_LISTSOURCE, FS_IDC_A_LISTADD, FS_IDC_A_LISTREMOVE, FS_IDC_A_LISTAUTO],
     [FS_IDC_A_REDIRFROM, FS_IDC_A_REDIRTOLABEL, FS_IDC_A_REDIRTO, FS_IDC_A_REDIRNOTE]
 ];
@@ -97,6 +101,36 @@ private _own = {
         _alive set [_name, +(([_faction] call ALiVE_fnc_fsAlivePicks) getOrDefault [_name, []])];
     };
     _alive set ["auto", (_alive getOrDefault ["auto", FS_ALIVE_LISTS]) - [_name]];
+};
+// the crate at a row of the crate list, as its index in alive.crates. The author's own crate (key "custom") is
+// there already; any other is kept first, so the worked-out crates stay automatic until one of them is changed
+private _crateIndex = {
+    params ["_i"];
+    private _shown = ([_faction] call ALiVE_fnc_fsAliveCrates) select 0;
+    if (_i < 0 || {_i >= count _shown}) exitWith { -1 };
+    private _c = _shown select _i;
+    if ((_c getOrDefault ["key", ""]) isEqualTo "custom") exitWith {
+        private _cls = _c getOrDefault ["class", ""];
+        (_alive getOrDefault ["crates", []]) findIf { (_x getOrDefault ["class", ""]) isEqualTo _cls }
+    };
+    private _wasAuto = "crates" call _auto;
+    ["crates"] call _own;
+    if (_wasAuto) then { ["alive crates", false] call ALiVE_fnc_fsDataTouch };
+    _i
+};
+// every box a crate can be put in: a game or mod box, never one an ORBAT Creator faction made; read once a session
+private _boxes = {
+    private _list = _session getOrDefault ["crateBoxes", []];
+    if (_list isEqualTo []) then {
+        {
+            if (getNumber (_x >> "scope") == 2 && {getNumber (_x >> "ALiVE_FS_owned") != 1} && {(configName _x) isKindOf "ReammoBox_F"}) then {
+                _list pushBack [getText (_x >> "displayName"), configName _x];
+            };
+        } forEach ("isClass _x" configClasses (configFile >> "CfgVehicles"));
+        _list sort true;
+        _session set ["crateBoxes", _list];
+    };
+    _list
 };
 // a list's entries as shown: what is set, or what is worked out
 private _entriesOf = {
@@ -230,6 +264,23 @@ switch (_op) do {
                 private _can = _hook && {!_civ};
                 (FS_IDC_A_CRATEEDIT call _ctrl) ctrlEnable (_can && {lbSize _l > 0});
                 (FS_IDC_A_CRATEAUTO call _ctrl) ctrlEnable (_can && {!_isAuto});
+                (FS_IDC_A_CRATENEW call _ctrl) ctrlEnable (_can && {count _crates < FS_MAX_CRATES});
+                { (_x call _ctrl) ctrlEnable (_can && {lbSize _l > 0}) } forEach [FS_IDC_A_CRATERENAME, FS_IDC_A_CRATEREMOVE, FS_IDC_A_CRATEBOX];
+                // the box of the crate picked in the list; one that is not loaded is shown by its class
+                private _box = FS_IDC_A_CRATEBOX call _ctrl;
+                lbClear _box;
+                private _baseCls = (_crates param [lbCurSel _l, createHashMap]) getOrDefault ["base", ""];
+                private _base = toLower _baseCls;
+                private _at = -1;
+                {
+                    _x params ["_name", "_cls"];
+                    private _i = _box lbAdd ([_name, _cls] select (_name isEqualTo ""));
+                    _box lbSetData [_i, _cls];
+                    _box lbSetTooltip [_i, _cls];
+                    if ((toLower _cls) isEqualTo _base) then { _at = _i };
+                } forEach (call _boxes);
+                if (_at < 0 && {_base != ""}) then { _at = _box lbAdd _baseCls; _box lbSetData [_at, _baseCls] };
+                _box lbSetCurSel _at;
                 private _note = switch (true) do {
                     case (!_hook): { "STR_ALIVE_FS_A_PREVIEW_OFF" };
                     case (_civ): { "STR_ALIVE_FS_A_CRATE_CIV" };
@@ -358,16 +409,94 @@ switch (_op) do {
     };
 
     case "crateEdit": {
-        private _i = lbCurSel (FS_IDC_A_CRATELIST call _ctrl);
-        if (_i < 0) exitWith {};
-        private _wasAuto = "crates" call _auto;
-        ["crates"] call _own;
-        if (_i >= count (_alive getOrDefault ["crates", []])) exitWith {};
-        if (_wasAuto) then { ["alive crates", false] call ALiVE_fnc_fsDataTouch };
+        private _i = (lbCurSel (FS_IDC_A_CRATELIST call _ctrl)) call _crateIndex;
+        if (_i < 0 || {_i >= count (_alive getOrDefault ["crates", []])}) exitWith {};
         ["open", ["crate", _i]] call ALiVE_fnc_fsStudioCargo;
     };
+    // another crate picked in the list: the Box combo shows its box
+    case "crateSel": {
+        if (_session getOrDefault ["aliveFilling", false]) exitWith {};
+        ["refresh", []] call ALiVE_fnc_fsStudioTabAlive;
+    };
+    // the author's own crate: named first, then put in the side's support box with nothing in it and its contents
+    // opened; the worked-out crates are left as they are
+    case "crateNew": {
+        if (count (([_faction] call ALiVE_fnc_fsAliveCrates) select 0) >= FS_MAX_CRATES) exitWith { [1, "S_ALIVE_CRATE_FULL", [FS_MAX_CRATES]] call ALiVE_fnc_fsStudioStatus };
+        private _default = (format [localize "STR_ALIVE_FS_A_CRATE_DEFNAME", _faction getOrDefault ["name", _faction getOrDefault ["tag", ""]]]) select [0, 60];
+        ["open", [localize "STR_ALIVE_FS_Q_CRATE_NAME", _default, {
+            params ["_ok", "_text"];
+            if (_ok) then { ["crateNewSet", [_text]] call ALiVE_fnc_fsStudioTabAlive };
+        }]] call ALiVE_fnc_fsStudioPrompt;
+    };
+    case "crateNewSet": {
+        _args params [["_text", "", [""]]];
+        private _name = trim _text;
+        if (_name isEqualTo "" || {count _name > 60}) exitWith { [1, "S_ALIVE_CRATE_NAME"] call ALiVE_fnc_fsStudioStatus };
+        private _shown = ([_faction] call ALiVE_fnc_fsAliveCrates) select 0;
+        if (count _shown >= FS_MAX_CRATES) exitWith { [1, "S_ALIVE_CRATE_FULL", [FS_MAX_CRATES]] call ALiVE_fnc_fsStudioStatus };
+        private _used = _shown apply { toLower (_x getOrDefault ["class", ""]) };
+        private _tag = _faction getOrDefault ["tag", ""];
+        private _n = 1;
+        while { (toLower format ["%1_Crate_C%2", _tag, _n]) in _used } do { _n = _n + 1 };
+        private _crates = _alive getOrDefault ["crates", []];
+        _crates pushBack createHashMapFromArray [
+            ["key", "custom"],
+            ["name", _name],
+            ["class", format ["%1_Crate_C%2", _tag, _n]],
+            ["classAuto", true],
+            ["base", ["Box_East_Support_F", "Box_NATO_Support_F", "Box_IND_Support_F"] select (((_faction getOrDefault ["side", 1]) max 0) min 2)],
+            ["cargo", []]
+        ];
+        _alive set ["crates", _crates];
+        // the new crate is the last row of the list
+        ["crates", "S_ALIVE_CRATE_NEW", [_name]] call _changed;
+        private _l = FS_IDC_A_CRATELIST call _ctrl;
+        _session set ["aliveFilling", true];
+        _l lbSetCurSel ((lbSize _l) - 1);
+        _session set ["aliveFilling", false];
+        ["refresh", []] call ALiVE_fnc_fsStudioTabAlive;
+        ["open", ["crate", (count _crates) - 1]] call ALiVE_fnc_fsStudioCargo;
+    };
+    case "crateRename": {
+        private _i = lbCurSel (FS_IDC_A_CRATELIST call _ctrl);
+        private _c = (([_faction] call ALiVE_fnc_fsAliveCrates) select 0) param [_i, createHashMap];
+        if (_i < 0 || {count _c == 0}) exitWith {};
+        ["open", [localize "STR_ALIVE_FS_Q_CRATE_NAME", _c getOrDefault ["name", ""], {
+            params ["_ok", "_text", "_cbArgs"];
+            if (_ok) then { ["crateRenameSet", [_cbArgs select 0, _text]] call ALiVE_fnc_fsStudioTabAlive };
+        }, [_i]]] call ALiVE_fnc_fsStudioPrompt;
+    };
+    case "crateRenameSet": {
+        _args params [["_row", -1, [0]], ["_text", "", [""]]];
+        private _name = trim _text;
+        if (_name isEqualTo "" || {count _name > 60}) exitWith { [1, "S_ALIVE_CRATE_NAME"] call ALiVE_fnc_fsStudioStatus };
+        private _i = _row call _crateIndex;
+        if (_i < 0) exitWith {};
+        ((_alive get "crates") select _i) set ["name", _name];
+        ["crates", "S_ALIVE_CRATE_RENAMED", [_name]] call _changed;
+    };
+    case "crateRemove": {
+        private _i = (lbCurSel (FS_IDC_A_CRATELIST call _ctrl)) call _crateIndex;
+        if (_i < 0) exitWith {};
+        private _name = ((_alive get "crates") select _i) getOrDefault ["name", ""];
+        (_alive get "crates") deleteAt _i;
+        ["crates", "S_ALIVE_CRATE_REMOVED", [_name]] call _changed;
+    };
+    case "crateBox": {
+        _args params [["_ctrlBox", controlNull], ["_index", -1]];
+        if (_index < 0 || {_session getOrDefault ["aliveFilling", false]}) exitWith {};
+        private _cls = _ctrlBox lbData _index;
+        private _row = lbCurSel (FS_IDC_A_CRATELIST call _ctrl);
+        private _shown = (([_faction] call ALiVE_fnc_fsAliveCrates) select 0) param [_row, createHashMap];
+        if (_cls isEqualTo "" || {(toLower (_shown getOrDefault ["base", ""])) isEqualTo (toLower _cls)}) exitWith {};
+        private _i = _row call _crateIndex;
+        if (_i < 0) exitWith {};
+        ((_alive get "crates") select _i) set ["base", _cls];
+        ["crates", "S_ALIVE_CRATE_BOX", [_ctrlBox lbText _index]] call _changed;
+    };
     case "crateAuto": {
-        _alive set ["crates", []];
+        // the author's own crates stay
+        _alive set ["crates", (_alive getOrDefault ["crates", []]) select { (_x getOrDefault ["key", ""]) isEqualTo "custom" }];
         _alive set ["auto", (_alive getOrDefault ["auto", FS_ALIVE_LISTS]) + (["crates"] - (_alive getOrDefault ["auto", FS_ALIVE_LISTS]))];
         ["crates", "S_ALIVE_AUTO"] call _changed;
     };

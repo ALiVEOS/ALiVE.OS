@@ -118,6 +118,11 @@ private _differs = {
     private _own = getNumber (_cfg >> _this) > 0;
     [[0, 1] select _own, -1] select (_own isEqualTo (getNumber (configFile >> "CfgVehicles" >> _base >> _this) > 0))
 };
+// ACE Medic, Doctor and Advanced Engineer: the level, where it differs from the base's
+private _differsN = {
+    private _own = ((getNumber (_cfg >> _this)) max 0) min 2;
+    [_own, -1] select (_own isEqualTo (getNumber (configFile >> "CfgVehicles" >> _base >> _this)))
+};
 
 // Category: the one named like the Eden subcategory of the class.
 private _category = "";
@@ -163,5 +168,7 @@ createHashMapFromArray [
     ["eod", "canDeactivateMines" call _differs],
     ["medic", "attendant" call _differs],
     ["uavHacker", "uavHacker" call _differs],
+    ["aceMedic", "ALiVE_FS_aceMedic" call _differsN],
+    ["aceEngineer", "ALiVE_FS_aceEngineer" call _differsN],
     ["initCode", _initCode]
 ]

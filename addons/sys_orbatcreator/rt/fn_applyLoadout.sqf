@@ -7,6 +7,8 @@
       "local"    he has just become local here (handed to a headless client, or taken over by a player).
     Left alone: a unit with ALiVE_OverrideLoadout set, and a unit whose gear no longer matches his class
     (the mission gave him something else) unless the class says ALiVE_FS_force = 1.
+    ALiVE_FS_aceMedic (1 medic, 2 doctor) and ALiVE_FS_aceEngineer (2 advanced) are put on him first, as
+    ACE's own variables, so they hold for a unit the mission dressed too.
     "local" always makes that comparison, force or not: the game sometimes puts a unit back to his class
     gear when he changes owner, and only a unit in exactly his class gear is dressed again.
     The third parameter names another config class to read the ALiVE_FS_ entries from (used by tests).
@@ -19,6 +21,16 @@ params [["_unit", objNull, [objNull]], ["_mode", "init", [""]], ["_cfg", configN
 if (is3DEN || {isNull _unit} || {!alive _unit} || {!local _unit}) exitWith {false};
 if (isNull _cfg) then { _cfg = configOf _unit };
 if (getNumber (_cfg >> "ALiVE_FS_owned") != 1) exitWith {false};
+
+// ACE medical and engineer training from his class, whatever gear the mission gave him. ACE reads these levels
+// from a variable on the unit only. A number already there (the mission's, or ACE's Eden attribute) is kept;
+// ACE's own true/false for an engineer is not a level, so it gives way. Without ACE nothing reads them.
+{
+    _x params ["_entry", "_var"];
+    private _n = getNumber (_cfg >> _entry);
+    if (_n > 0 && {!((_unit getVariable [_var, false]) isEqualType 0)}) then { _unit setVariable [_var, _n, true] };
+} forEach [["ALiVE_FS_aceMedic", "ace_medical_medicClass"], ["ALiVE_FS_aceEngineer", "ACE_IsEngineer"]];
+
 if (_unit getVariable ["ALiVE_OverrideLoadout", false]) exitWith {false};
 if (_mode == "init" && {_unit getVariable ["ALiVE_FS_done", false]}) exitWith {false};
 

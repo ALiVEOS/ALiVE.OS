@@ -186,9 +186,16 @@ if (!(_studioTag isEqualTo "") && {isClass _block}) then {
         _rows sort true;
         [_x get "key", toLower (_x get "class"), toLower (_x get "base"), _rows]
     }; _out sort true; str _out };
-    if !(([_crates] call _plain) isEqualTo ([([_incoming] call ALiVE_fnc_fsAliveCrates) select 0] call _plain)) then {
+    // the author's own crates (New crate) are kept whatever; only the others are compared with the worked-out ones
+    private _custom = _crates select { (_x get "key") isEqualTo "custom" };
+    private _others = _crates select { !((_x get "key") isEqualTo "custom") };
+    private _view = +_incoming;
+    (_view get "alive") set ["crates", []];
+    if !(([_others] call _plain) isEqualTo ([([_view] call ALiVE_fnc_fsAliveCrates) select 0] call _plain)) then {
         _alive set ["crates", _crates];
         _auto = _auto - ["crates"];
+    } else {
+        _alive set ["crates", _custom];
     };
     _alive set ["auto", _auto];
     // the lists: one of the faction's own vehicles by its id, anything else as an outside class

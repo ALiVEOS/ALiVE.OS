@@ -62,10 +62,10 @@
 #define FS_SP_GLIST         (FS_SPARE(23.7) * 0.6)
 #define FS_SP_GMEMBERS      (FS_SPARE(23.7) * 0.4)
 // the Units rows allow for an 8-cell loadout summary, the Vehicles rows for a full six-row parts list
-#define FS_SP_ULIST         FS_SPARE(30.2)
+#define FS_SP_ULIST         FS_SPARE(31.35)
 #define FS_SP_VLIST         (FS_SPARE(30.9) * 0.6)
 #define FS_SP_VSEATS        (FS_SPARE(30.9) * 0.4)
-#define FS_SP_ACRATES       FS_SPARE(10.6)
+#define FS_SP_ACRATES       FS_SPARE(12.9)
 #define FS_SP_ALIST         FS_SPARE(10.4)
 #define FS_SP_AREDIR        FS_SPARE(10.6)
 #define FS_SP_ERESULTS      FS_SPARE(23.7)

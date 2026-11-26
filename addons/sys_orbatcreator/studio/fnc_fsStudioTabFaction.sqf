@@ -190,6 +190,14 @@ switch (_op) do {
                 if (_y getOrDefault ["classAuto", false]) then { ["set", [_x, "classAuto", true]] call _fn };
             } forEach (_faction getOrDefault [_dictKey, createHashMap]);
         } forEach [["units", ALiVE_fnc_fsDataUnit], ["vehicles", ALiVE_fnc_fsDataVehicle], ["groups", ALiVE_fnc_fsDataGroup]];
+        // the author's own crates (New crate) follow the tag too
+        {
+            private _cls = _x getOrDefault ["class", ""];
+            private _head = _old + "_Crate_C";
+            if ((_x getOrDefault ["key", ""]) isEqualTo "custom" && {(toLower (_cls select [0, count _head])) isEqualTo (toLower _head)}) then {
+                _x set ["class", _tag + "_Crate_C" + (_cls select [count _head])];
+            };
+        } forEach ((_faction getOrDefault ["alive", createHashMap]) getOrDefault ["crates", []]);
         ["refresh", []] call ALiVE_fnc_fsStudioTabFaction;
     };
 

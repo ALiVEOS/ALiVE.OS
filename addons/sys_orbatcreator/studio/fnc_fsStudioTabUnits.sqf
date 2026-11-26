@@ -23,6 +23,10 @@ fields, with the selection driving the preview.
       Hacker, ticked as the base class until changed; a tick that matches the
       base class is stored as "as the base" (-1), so the export writes engineer,
       canDeactivateMines, attendant and uavHacker only where he differs;
+    - "aceMedic", "aceDoctor", "aceEngineer": ACE Medic, ACE Doctor and ACE
+      Advanced Engineer, one ACE level each for medical (aceMedic 1 or 2) and
+      engineering (aceEngineer 2), kept as -1 where it matches the base class;
+      ACE Medic shows ticked, and is locked, while Medic is ticked;
     - "initCode": opens the Init Code popup (ALiVE_FS_CodePrompt); "initCodeSet"
       [id, text] keeps what was typed when the model takes it (rule "code"),
       else says why;
@@ -113,7 +117,9 @@ private _show = {
         [FS_IDC_U_ROLELABEL, 2], [FS_IDC_U_ROLE, 2], [FS_IDC_U_SPECOPS, 2], [FS_IDC_U_SPECOPSLABEL, 2],
         [FS_IDC_U_ENGINEER, 3], [FS_IDC_U_ENGINEERLABEL, 3], [FS_IDC_U_EOD, 3], [FS_IDC_U_EODLABEL, 3],
         [FS_IDC_U_MEDIC, 4], [FS_IDC_U_MEDICLABEL, 4], [FS_IDC_U_UAVHACKER, 4], [FS_IDC_U_UAVHACKERLABEL, 4],
-        [FS_IDC_U_INITLABEL, 5], [FS_IDC_U_INIT, 5], [FS_IDC_U_INITEDIT, 5]];
+        [FS_IDC_U_ACEMEDIC, 5], [FS_IDC_U_ACEMEDICLABEL, 5], [FS_IDC_U_ACEDOCTOR, 5], [FS_IDC_U_ACEDOCTORLABEL, 5],
+        [FS_IDC_U_ACEENGINEER, 5], [FS_IDC_U_ACEENGINEERLABEL, 5],
+        [FS_IDC_U_INITLABEL, 6], [FS_IDC_U_INIT, 6], [FS_IDC_U_INITEDIT, 6]];
     // the Init Code, first line only
     private _code = _entry getOrDefault ["initCode", ""];
     private _first = trim ((_code splitString (toString [10, 13])) param [0, ""]);
@@ -144,7 +150,16 @@ private _show = {
         (_display displayCtrl _idc) cbSetChecked (if (_v < 0) then { getNumber (configFile >> "CfgVehicles" >> _base >> _prop) > 0 } else { _v > 0 });
     } forEach [[FS_IDC_U_ENGINEER, "engineer", "engineer"], [FS_IDC_U_EOD, "eod", "canDeactivateMines"],
         [FS_IDC_U_MEDIC, "medic", "attendant"], [FS_IDC_U_UAVHACKER, "uavHacker", "uavHacker"]];
-    { (_display displayCtrl _x) ctrlEnable !(_id isEqualTo "") } forEach [FS_IDC_U_ROLE, FS_IDC_U_SPECOPS, FS_IDC_U_OPTIONAL, FS_IDC_U_ENGINEER, FS_IDC_U_EOD, FS_IDC_U_MEDIC, FS_IDC_U_UAVHACKER];
+    { (_display displayCtrl _x) ctrlEnable !(_id isEqualTo "") } forEach [FS_IDC_U_ROLE, FS_IDC_U_SPECOPS, FS_IDC_U_OPTIONAL, FS_IDC_U_ENGINEER, FS_IDC_U_EOD, FS_IDC_U_MEDIC, FS_IDC_U_UAVHACKER, FS_IDC_U_ACEDOCTOR, FS_IDC_U_ACEENGINEER];
+    // ACE Medic and Doctor show his ACE medical level: his own, else his base class's. A Medic ticked above is an
+    // ACE medic already, so ACE Medic then shows ticked and can't be changed
+    private _aceLevel = { params ["_key", "_prop"]; private _v = _entry getOrDefault [_key, -1]; if (_v < 0) then { getNumber (configFile >> "CfgVehicles" >> _base >> _prop) } else { _v } };
+    private _medLevel = ["aceMedic", "ALiVE_FS_aceMedic"] call _aceLevel;
+    private _vanillaMedic = cbChecked (_display displayCtrl FS_IDC_U_MEDIC);
+    (_display displayCtrl FS_IDC_U_ACEMEDIC) cbSetChecked (_medLevel >= 1 || {_vanillaMedic});
+    (_display displayCtrl FS_IDC_U_ACEMEDIC) ctrlEnable (!(_id isEqualTo "") && {!_vanillaMedic});
+    (_display displayCtrl FS_IDC_U_ACEDOCTOR) cbSetChecked (_medLevel >= 2);
+    (_display displayCtrl FS_IDC_U_ACEENGINEER) cbSetChecked ((["aceEngineer", "ALiVE_FS_aceEngineer"] call _aceLevel) >= 2);
     private _poolDict = _faction getOrDefault ["pools", createHashMap];
     private _worn = (_entry getOrDefault ["pools", []]) select { _x in _poolDict };
     (_display displayCtrl FS_IDC_U_POOLS) ctrlSetText (if (_worn isEqualTo []) then { localize "STR_ALIVE_FS_PL_NONE" } else { (_worn apply { (_poolDict get _x) getOrDefault ["name", _x] }) joinString ", " });
@@ -303,6 +318,28 @@ switch (_op) do {
         // the same as his base class is kept as -1, so a later change of base class still carries through
         private _baseOn = getNumber (configFile >> "CfgVehicles" >> ((_units get _id) getOrDefault ["base", ""]) >> (["engineer", "canDeactivateMines", "attendant", "uavHacker"] select _k)) > 0;
         [_op, [[0, 1] select _on, -1] select (_on isEqualTo _baseOn)] call _set;
+    };
+    case "aceMedic";
+    case "aceDoctor";
+    case "aceEngineer": {
+        private _id = _session getOrDefault ["selUnit", ""];
+        if !(_id in _units) exitWith {};
+        private _entry = _units get _id;
+        private _key = ["aceMedic", "aceEngineer"] select (_op isEqualTo "aceEngineer");
+        private _prop = ["ALiVE_FS_aceMedic", "ALiVE_FS_aceEngineer"] select (_op isEqualTo "aceEngineer");
+        private _baseLevel = getNumber (configFile >> "CfgVehicles" >> (_entry getOrDefault ["base", ""]) >> _prop);
+        private _was = _entry getOrDefault [_key, -1];
+        if (_was < 0) then { _was = _baseLevel };
+        private _on = cbChecked (_display displayCtrl ([FS_IDC_U_ACEMEDIC, FS_IDC_U_ACEDOCTOR, FS_IDC_U_ACEENGINEER] select (["aceMedic", "aceDoctor", "aceEngineer"] find _op)));
+        // Medic on: at least medic; off: no ACE level of his own. Doctor on: doctor; off: back to medic.
+        // Advanced Engineer: 2 or none (ACE then takes Engineer above as a plain engineer)
+        private _level = switch (_op) do {
+            case "aceMedic": { [0, _was max 1] select _on };
+            case "aceDoctor": { [1, 2] select _on };
+            default { [0, 2] select _on };
+        };
+        // the same as his base class is kept as -1, so a later change of base class still carries through
+        [_key, [_level, -1] select (_level == _baseLevel)] call _set;
     };
     case "initCode": {
         private _id = _session getOrDefault ["selUnit", ""];

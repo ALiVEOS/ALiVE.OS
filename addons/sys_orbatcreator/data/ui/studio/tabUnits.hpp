@@ -318,18 +318,59 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
             y = (FS_H(28.54) + FS_SP_ULIST);
             w = FS_W(5);
         };
+        // ACE Medic, ACE Doctor and ACE Advanced Engineer: a level ACE reads from the unit, set on him by the faction
+        // runtime; shown as his base class until changed
+        class AceMedic : Engineer {
+            idc = FS_IDC_U_ACEMEDIC;
+            tooltip = "$STR_ALIVE_FS_U_ACEMEDIC_TIP";
+            x = FS_W(0);
+            y = (FS_H(29.69) + FS_SP_ULIST);
+            onCheckedChanged = "['aceMedic', _this] call ALiVE_fnc_fsStudioTabUnits";
+        };
+        class AceMedicLabel : EngineerLabel {
+            idc = FS_IDC_U_ACEMEDICLABEL;
+            text = "$STR_ALIVE_FS_U_ACEMEDIC";
+            tooltip = "$STR_ALIVE_FS_U_ACEMEDIC_TIP";
+            x = FS_W(0.9);
+            y = (FS_H(29.69) + FS_SP_ULIST);
+        };
+        class AceDoctor : AceMedic {
+            idc = FS_IDC_U_ACEDOCTOR;
+            tooltip = "$STR_ALIVE_FS_U_ACEDOCTOR_TIP";
+            x = FS_W(5);
+            onCheckedChanged = "['aceDoctor', _this] call ALiVE_fnc_fsStudioTabUnits";
+        };
+        class AceDoctorLabel : AceMedicLabel {
+            idc = FS_IDC_U_ACEDOCTORLABEL;
+            text = "$STR_ALIVE_FS_U_ACEDOCTOR";
+            tooltip = "$STR_ALIVE_FS_U_ACEDOCTOR_TIP";
+            x = FS_W(5.9);
+        };
+        class AceEngineer : AceMedic {
+            idc = FS_IDC_U_ACEENGINEER;
+            tooltip = "$STR_ALIVE_FS_U_ACEENGINEER_TIP";
+            x = FS_W(10.5);
+            onCheckedChanged = "['aceEngineer', _this] call ALiVE_fnc_fsStudioTabUnits";
+        };
+        class AceEngineerLabel : AceMedicLabel {
+            idc = FS_IDC_U_ACEENGINEERLABEL;
+            text = "$STR_ALIVE_FS_U_ACEENGINEER";
+            tooltip = "$STR_ALIVE_FS_U_ACEENGINEER_TIP";
+            x = FS_W(11.4);
+            w = FS_W(4.6);
+        };
         // the Init Code: a short view of it and the popup; placed under the tick boxes by the tab
         class InitLabel : ALiVE_FS_RscLabel {
             idc = FS_IDC_U_INITLABEL;
             text = "$STR_ALIVE_FS_L_INITCODE";
             tooltip = "$STR_ALIVE_FS_INITCODE_TIP";
-            y = (FS_H(29.69) + FS_SP_ULIST);
+            y = (FS_H(30.84) + FS_SP_ULIST);
         };
         class Init : ALiVE_FS_RscText {
             idc = FS_IDC_U_INIT;
             tooltip = "$STR_ALIVE_FS_INITCODE_TIP";
             x = FS_FIELD_X;
-            y = (FS_H(29.69) + FS_SP_ULIST);
+            y = (FS_H(30.84) + FS_SP_ULIST);
             w = FS_NARROW_W;
         };
         class InitEdit : ALiVE_FS_RscButton {
@@ -337,7 +378,7 @@ class ALiVE_FS_TabUnits : ALiVE_FS_RscGroup {
             text = "$STR_ALIVE_FS_BTN_EDIT";
             tooltip = "$STR_ALIVE_FS_INITCODE_TIP";
             x = FS_SIDE_X;
-            y = (FS_H(29.69) + FS_SP_ULIST);
+            y = (FS_H(30.84) + FS_SP_ULIST);
             w = FS_SIDE_W;
             onButtonClick = "['initCode', []] call ALiVE_fnc_fsStudioTabUnits";
         };
