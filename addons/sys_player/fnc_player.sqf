@@ -730,6 +730,14 @@ switch(_operation) do {
                         if (_puid == "") then {
                             TRACE_1("SYS_PLAYER NO UID FOR PLAYER SAVE",_unit);
                             _result = false;
+                        } else { if (_puid in (MOD(sys_player) getVariable ["clearedUIDs", []])) then {
+                            // their saved state was cleared (ALiVE_fnc_ProfileNameSpaceClearParts "player:<UID>"): nothing
+                            // of theirs is saved again until the mission restarts, which then starts them afresh
+                            if !(MOD(sys_player) getVariable [_puid + "_clearedSaid", false]) then {
+                                MOD(sys_player) setVariable [_puid + "_clearedSaid", true];
+                                ["SYS_PLAYER - %1 (%2) IS NOT SAVED: THEIR SAVED STATE WAS CLEARED, UNTIL THE MISSION RESTARTS", name _unit, _puid] call ALiVE_fnc_dump;
+                            };
+                            _result = false;
                         } else {
                             // Inferno #885: this is the single choke point for the
                             // server player store - autoStorePlayer, the Abort
@@ -771,7 +779,7 @@ switch(_operation) do {
                                 [GVAR(player_data), _key, _playerHash] call ALIVE_fnc_hashSet;
                                 _result = _playerHash;
                             };
-                        };
+                        }; };
         };
         case "leftWhileDown": {
                 // A player who left while dead or down kept their last good save (#885: a dead or downed state is
