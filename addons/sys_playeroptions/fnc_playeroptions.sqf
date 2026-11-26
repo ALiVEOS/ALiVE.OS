@@ -123,7 +123,7 @@ switch (_operation) do {
             // be moved in Eden (Persist By went into the persistence section, Jman 18 Oct 2026) without another
             // system being handed the wrong value.
             _playerOptionLogics = [
-                    ["ALiVE_fnc_player",["debug","enablePlayerPersistence","allowReset","allowManualSave","allowDiffClass",
+                    ["ALiVE_fnc_player",["debug","enablePlayerPersistence","allowReset","allowManualSave","allowSelfClear","allowDiffClass",
                         "saveLoadout","saveAmmo","saveHealth","savePosition","saveScores","storeToDB","autoSaveTime","persistBy"]],
                     ["ALiVE_fnc_vdist",["debug","minVD","maxVD","minTG","maxTG"]],
                     ["ALiVE_fnc_crewinfo",["debug","crewinfo_ui_setting"]],

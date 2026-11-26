@@ -21,7 +21,7 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 class ModuleDescription
                 {
-                        description = "This module allows you to persist player state between reconnects and server restarts.";
+                        description = "This module allows you to persist player state between reconnects and server restarts. An admin can clear one player's saved state with ALiVE_fnc_ProfileNameSpaceClearParts and player:<UID>, and with Allow Players To Clear Their Own Save players can clear their own from their ALiVE menu.";
                 };
                 class Attributes : AttributesBase
                 {
@@ -48,6 +48,18 @@ class CfgVehicles {
                                 {
                                     class Yes { name = "Yes"; value = true; default = 1; };
                                     class No { name = "No"; value = false; };
+                                };
+                        };
+                        class allowSelfClear : Combo
+                        {
+                                property = "ALiVE_sys_player_allowSelfClear";
+                                displayName = "$STR_ALIVE_player_allowSelfClear";
+                                tooltip = "$STR_ALIVE_player_allowSelfClear_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = true; };
+                                    class No { name = "No"; value = false; default = 1; };
                                 };
                         };
                         class allowDiffClass : Combo

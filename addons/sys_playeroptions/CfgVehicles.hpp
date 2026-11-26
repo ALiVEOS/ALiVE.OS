@@ -181,6 +181,27 @@ class CfgVehicles
                 };
                 ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}};
             };
+            class allowSelfClear: Combo
+            {
+                property = MVAR(allowSelfClear);
+                displayName = "$STR_ALIVE_player_allowSelfClear";
+                tooltip = "$STR_ALIVE_player_allowSelfClear_COMMENT";
+                defaultValue = """false""";
+                class Values
+                {
+                    class Yes
+                    {
+                        name = "Yes";
+                        value = "true";
+                    };
+                    class No
+                    {
+                        name = "No";
+                        value = "false";
+                    };
+                };
+                ALiVE_showWhen[] = {{"enablePlayerPersistence", "is", "true"}};
+            };
             class allowDiffClass: Combo
             {
                 property = MVAR(allowDiffClass);

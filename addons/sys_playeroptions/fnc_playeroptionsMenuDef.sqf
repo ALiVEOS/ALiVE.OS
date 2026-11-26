@@ -163,6 +163,21 @@ if (_menuName == "playeroptions") then {
                      !isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["allowManualSave", true]},
                      !isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["enablePlayerPersistence",false]} && {MOD(sys_player) getVariable ["allowManualSave", true]}
                 ],
+                // a player's own saved state cleared, when the mission lets them (asked to be sure first: it can't be undone)
+                [localize "STR_ALIVE_player_allowSelfClear_ACTION",
+                    { [] spawn {
+                        if ([localize "STR_ALIVE_player_allowSelfClear_CONFIRM", localize "STR_ALIVE_player_allowSelfClear_ACTION", true, true] call BIS_fnc_guiMessage) then {
+                            [["player:" + getPlayerUID player], name player, getPlayerUID player] remoteExec ["ALiVE_fnc_ProfileNameSpaceClearParts", 2];
+                            hint localize "STR_ALIVE_player_allowSelfClear_DONE";
+                        };
+                    } },
+                    "",
+                    localize "STR_ALIVE_player_allowSelfClear_ACTION_COMMENT",
+                    "",
+                    -1,
+                    !isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["allowSelfClear", false]},
+                    !isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["enablePlayerPersistence",false]} && {MOD(sys_player) getVariable ["allowSelfClear", false]}
+                ],
                 [localize "STR_ALIVE_player_RESTORE_MARKERS",
                     {[ALIVE_SYS_MARKER, "restoreMarkers", [ALIVE_SYS_MARKER_STORE]] call ALiVE_fnc_marker},
                     "",

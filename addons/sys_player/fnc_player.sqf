@@ -20,6 +20,7 @@ Boolean - allowReset - Enabled or disable reset function
 Boolean - diffClass - Enabled or disable rejoin as different class function
 Boolean - storeToDB - Enabled or disable auto save to external database
 Boolean - allowManualSave - Enable or disable manual save
+Boolean - allowSelfClear - Let players clear their own saved state from their ALiVE menu (default off)
 integer - autoSaveTime - Interval between database saves
 string - key - a unique id to represent the mission on this specific server
 
@@ -51,6 +52,7 @@ nil
 #define DEFAULT_RESET true
 #define DEFAULT_DIFFCLASS false
 #define DEFAULT_MANUALSAVE true
+#define DEFAULT_SELFCLEAR false
 #define DEFAULT_storeToDB false
 #define DEFAULT_autoSaveTime 0
 
@@ -118,6 +120,7 @@ switch(_operation) do {
             MOD(sys_player) setVariable ["allowReset", call compile (_logic getvariable ["allowReset", "true"])];
             MOD(sys_player) setVariable ["allowDiffClass", call compile (_logic getvariable ["allowDiffClass", "false"])];
             MOD(sys_player) setVariable ["allowManualSave", call compile (_logic getvariable ["allowManualSave", "true"])];
+            MOD(sys_player) setVariable ["allowSelfClear", call compile (_logic getvariable ["allowSelfClear", "false"])];
             MOD(sys_player) setVariable ["storeToDB", call compile (_logic getvariable ["storeToDB", "false"])];
             MOD(sys_player) setVariable ["autoSaveTime", call compile (_logic getvariable ["autoSaveTime", "0"])];
 
@@ -480,6 +483,9 @@ switch(_operation) do {
         case "allowManualSave": {
                 _result = [_logic,_operation,_args,DEFAULT_MANUALSAVE] call ALIVE_fnc_OOsimpleOperation;
         };
+        case "allowSelfClear": {
+                _result = [_logic,_operation,_args,DEFAULT_SELFCLEAR] call ALIVE_fnc_OOsimpleOperation;
+        };
         case "storeToDB": {
                 _result = [_logic,_operation,_args,DEFAULT_storeToDB] call ALIVE_fnc_OOsimpleOperation;
         };
@@ -732,10 +738,11 @@ switch(_operation) do {
                             _result = false;
                         } else { if (_puid in (MOD(sys_player) getVariable ["clearedUIDs", []])) then {
                             // their saved state was cleared (ALiVE_fnc_ProfileNameSpaceClearParts "player:<UID>"): nothing
-                            // of theirs is saved again until the mission restarts, which then starts them afresh
+                            // of theirs is saved again until their next connection, which starts them afresh
+                            // (ALIVE_fnc_player_onPlayerConnected lifts the hold)
                             if !(MOD(sys_player) getVariable [_puid + "_clearedSaid", false]) then {
                                 MOD(sys_player) setVariable [_puid + "_clearedSaid", true];
-                                ["SYS_PLAYER - %1 (%2) IS NOT SAVED: THEIR SAVED STATE WAS CLEARED, UNTIL THE MISSION RESTARTS", name _unit, _puid] call ALiVE_fnc_dump;
+                                ["SYS_PLAYER - %1 (%2) IS NOT SAVED: THEIR SAVED STATE WAS CLEARED, UNTIL THEY NEXT JOIN", name _unit, _puid] call ALiVE_fnc_dump;
                             };
                             _result = false;
                         } else {

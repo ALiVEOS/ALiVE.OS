@@ -84,6 +84,24 @@
 	<Chinesesimp>在断开连接和重新连接之间保存您的播放器数据。 如果启用 DB,将在服务器重新启动之间存储玩家状态。</Chinesesimp>
     <Spanish>Guarda tus datos de jugador entre la desconexión y la reconexión. Si la base de datos está activada, conservará el estado del jugador entre reinicios del servidor.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_player_allowSelfClear">
+    <English>Allow Players To Clear Their Own Save:</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowSelfClear_COMMENT">
+    <English>Players can clear their own saved state from their ALiVE menu (Player Options). They keep playing as they are and start afresh the next time they join. Every other player's save is kept.</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowSelfClear_ACTION">
+    <English>Clear My Saved State</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowSelfClear_ACTION_COMMENT">
+    <English>Remove your saved gear, position and the rest. You keep playing as you are, and start afresh the next time you join.</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowSelfClear_CONFIRM">
+    <English>Clear your saved state? You keep playing as you are now, and start afresh the next time you join. This can't be undone.</English>
+</Key>
+<Key ID="STR_ALIVE_player_allowSelfClear_DONE">
+    <English>Your saved state is cleared. You start afresh the next time you join.</English>
+</Key>
 <Key ID="STR_ALIVE_player_persistBy">
     <English>Persist By</English>
 </Key>

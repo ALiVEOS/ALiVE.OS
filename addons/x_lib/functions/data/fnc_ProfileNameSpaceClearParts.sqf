@@ -12,7 +12,9 @@ start the cleared parts begin afresh.
 
 The names come from ALiVE_fnc_storeKeysOwned, the list Clear Current Mission's Data uses.
 Server only. A call from another machine is checked as Clear Current Mission's Data checks
-it: refused unless that machine is an admin or the mission's debug console lets it in.
+it: refused unless that machine is an admin or the mission's debug console lets it in. One
+exception: when Player Persistence's Allow Players To Clear Their Own Save is on, a player
+may clear their own save, and only that ("player:" and their own player ID, nothing else).
 
 Parameters:
 Array - the parts, any of:
@@ -22,8 +24,9 @@ Array - the parts, any of:
     "players"   - the players' saves (gear, position and the rest)
     "player:<UID>" - one player's save only, by their player ID; every other player's is kept.
                   Their own record, the ones per side, and a slot's record they saved last.
-                  They start afresh at their next connection, and nothing of theirs is saved
-                  again until the mission restarts
+                  Nothing of theirs is saved while they stay connected, so the old state
+                  can't be written back; their next connection starts them afresh, and
+                  they are saved as usual from then on
 String - who asked for it, for the RPT (optional)
 String - their UID, for the RPT (optional)
 
@@ -36,6 +39,9 @@ Examples:
 
 // one player starts afresh: run on the server, or from the debug console as an admin
 [["player:76561198000000000"], name player, getPlayerUID player] remoteExec ["ALiVE_fnc_ProfileNameSpaceClearParts", 2];
+
+// a player clears their own save (Player Options' Clear My Saved State, when the mission allows it)
+[["player:" + getPlayerUID player], name player, getPlayerUID player] remoteExec ["ALiVE_fnc_ProfileNameSpaceClearParts", 2];
 (end)
 
 See Also:
@@ -57,6 +63,15 @@ if (isRemoteExecuted && {_owner > 0} && {_owner != clientOwner} && {(admin _owne
     private _uid = if (_i > -1) then {getPlayerUID (allPlayers select _i)} else {""};
     private _console = getMissionConfigValue ["enableDebugConsole", 0];
     _refused = !((_console isEqualTo 2) || {_console isEqualType [] && {_uid != ""} && {_uid in _console}});
+    // a player clearing their own save and nothing else, when the mission lets them; the ID is the sending
+    // machine's own, so nobody can clear another player's this way
+    if (_refused && {_uid != ""} && {!isNil "ALiVE_sys_player"}
+        && {ALiVE_sys_player getVariable ["enablePlayerPersistence", false]}
+        && {ALiVE_sys_player getVariable ["allowSelfClear", false]}
+        && {_parts isEqualTo ["player:" + _uid]}) then {
+        _refused = false;
+        ["[ALiVE Data] %1 (UID %2) cleared their own saved state", name (allPlayers select _i), _uid] call ALiVE_fnc_dump;
+    };
 };
 if (_refused) exitWith {
     ["[ALiVE Data] Refused to clear %1 of this mission's saved data for machine %2 (%3, UID %4): not an admin", _parts, _owner, _requestedBy, _requestedByUID] call ALiVE_fnc_dump;
@@ -165,7 +180,7 @@ private _fnc_stripPlayers = {
     [_store, "sys_player", _players] call ALiVE_fnc_hashSet;
     ["set", _name, _store] call ALiVE_fnc_storeFile;
     _cleared pushBackUnique _name;
-    ["[ALiVE Data] Removed player save(s) %1 from %2; not saved again until the mission restarts", _gone, _name] call ALiVE_fnc_dump;
+    ["[ALiVE Data] Removed player save(s) %1 from %2; not saved again until they next join", _gone, _name] call ALiVE_fnc_dump;
 };
 
 private _base = (["", worldName] call ALiVE_fnc_storeKeys) select 0;
@@ -195,7 +210,8 @@ private _base = (["", worldName] call ALiVE_fnc_storeKeys) select 0;
 } forEach ([] call ALiVE_fnc_storeKeysOwned);
 
 // and from the running mission: what it holds now would be written back by the next save, so their records go
-// from it too, and they are not saved again until the mission restarts (ALIVE_fnc_player's setPlayer)
+// from it too, and they are not saved while they stay connected (ALIVE_fnc_player's setPlayer); their next
+// connection lifts that (ALIVE_fnc_player_onPlayerConnected)
 if (_uids isNotEqualTo [] && {!isNil "ALiVE_sys_player"}) then {
     ALiVE_sys_player setVariable ["clearedUIDs", (ALiVE_sys_player getVariable ["clearedUIDs", []]) + (_uids - (ALiVE_sys_player getVariable ["clearedUIDs", []]))];
     private _inMemory = [];
@@ -203,9 +219,7 @@ if (_uids isNotEqualTo [] && {!isNil "ALiVE_sys_player"}) then {
         private _h = missionNamespace getVariable _x;
         if (!isNil "_h" && {[_h] call ALiVE_fnc_isHash}) then { _inMemory append ([_h] call _fnc_dropPlayers) };
     } forEach ["ALiVE_sys_player_player_data", "ALiVE_sys_player_gear_data"];
-    {
-        ["[ALiVE Data] Player %1's saved state is cleared: they start afresh at their next connection, and are not saved again until the mission restarts (records %2)", _x, _inMemory] call ALiVE_fnc_dump;
-    } forEach _uids;
+    ["[ALiVE Data] Player(s) %1: saved state cleared; they start afresh at their next connection, and are not saved until then (records %2)", _uids, _inMemory] call ALiVE_fnc_dump;
 };
 
 // Held even when nothing was saved yet, so a part cleared before its first save stays clear too.

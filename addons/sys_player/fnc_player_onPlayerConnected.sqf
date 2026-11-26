@@ -42,6 +42,16 @@ if (!isNil QMOD(sys_player) && isServer) then {
     if (MOD(sys_player) getVariable [_uid + "_connectHandled", false]) exitWith {};
     MOD(sys_player) setVariable [_uid + "_connectHandled", true];
 
+    // A player whose saved state was cleared (ALiVE_fnc_ProfileNameSpaceClearParts "player:<UID>") wasn't saved
+    // while the old state could still be written back. This connection starts them afresh, so from here on they
+    // are saved as anyone else.
+    private _cleared = MOD(sys_player) getVariable ["clearedUIDs", []];
+    if (_uid in _cleared) then {
+        MOD(sys_player) setVariable ["clearedUIDs", _cleared - [_uid]];
+        MOD(sys_player) setVariable [_uid + "_clearedSaid", nil];
+        ["SYS_PLAYER - %1 (%2) JOINS AFRESH AFTER THEIR SAVED STATE WAS CLEARED, AND IS SAVED AGAIN FROM NOW", _name, _uid] call ALiVE_fnc_dump;
+    };
+
     // Disable user input?
     // Disallow damage?
     // Black Screen?
