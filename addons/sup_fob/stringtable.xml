@@ -615,6 +615,9 @@
             <Key ID="STR_ALIVE_FOB_ACTION_PLACE">
                 <English>Place %1 (%2 supply)</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_ACTION_PLACE_AGAIN">
+                <English>Place %1 and another (%2 supply each)</English>
+            </Key>
             <Key ID="STR_ALIVE_FOB_ACTION_ROTATE">
                 <English>Rotate 45 degrees</English>
             </Key>

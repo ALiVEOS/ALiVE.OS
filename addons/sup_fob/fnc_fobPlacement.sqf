@@ -11,6 +11,8 @@ where it can go (inside the FOB's build range, on land) and red where it can't, 
 that can't be tinted gets a green or red outline instead. The copy collides with nothing. From the
 scroll menu:
 - Place puts it there: the server is asked to build it and charges the FOB's supply.
+- Place And Another (walls, fences and other fortifications, and supply objects): the same, then the
+  same item comes back at the same turn for the next one, until Cancel (NeisAEL's group, 16 Nov).
 - Rotate turns it 45 degrees.
 - Toggle View switches to third person and back (Placing View setting), where the mission allows it.
 - Cancel stops.
@@ -18,8 +20,8 @@ Placing also stops if the player dies, gets into a vehicle or walks out of the b
 
 Parameters:
 String - "start" with [catalog row, FOB row from ALiVE_FOB_registryMirror] (for a new FOB's
-headquarters [[class, name, "DEPLOY", 0], a FOB-like row centred on the kit, kit]), or "place",
-"rotate", "cancel"; "surface" with [spot, height ASL, object to ignore] for the first surface
+headquarters [[class, name, "DEPLOY", 0], a FOB-like row centred on the kit, kit]), or "place"
+(true to place another after it), "rotate", "cancel"; "surface" with [spot, height ASL, object to ignore] for the first surface
 straight down from that height; "airSpot" with [aircraft class, spot, reach, object to ignore]
 for where a helicopter or plane would stand there: [position ATL, why not ("" when it can)]
 
@@ -115,13 +117,35 @@ private _fnc_stop = {
     ALiVE_FOB_placing = false;
 };
 
+// Place And Another: once the build is asked for, the same item comes back, turned as before. A Build Time
+// bar runs first, so this waits for it to end, and a bar that is stopped early ends placing (its "stop"
+// clears ALiVE_FOB_placeAgain). Anything else the player starts in the meantime wins.
+private _fnc_again = {
+    params ["_again"];
+    ALiVE_FOB_placeAgain = _again;
+    _again spawn {
+        params ["_row", "_fob", "_kit", "_turn"];
+        private _t = diag_tickTime + 1.5;
+        // the server's answer, which starts the bar when the item has a Build Time
+        waitUntil { diag_tickTime > _t || {!isNil "ALiVE_FOB_timer"} };
+        private _t2 = diag_tickTime + 600;
+        waitUntil { isNil "ALiVE_FOB_timer" || {diag_tickTime > _t2} };
+        if !((missionNamespace getVariable ["ALiVE_FOB_placeAgain", []]) isEqualTo _this) exitWith {};
+        ALiVE_FOB_placeAgain = nil;
+        if (!alive player || {vehicle player != player} || {missionNamespace getVariable ["ALiVE_FOB_placing", false]} || {!isNil "ALiVE_FOB_timer"}) exitWith {};
+        ["start", [_row, _fob, _kit, true]] call ALiVE_fnc_fobPlacement;
+        if (!isNil "ALiVE_FOB_placeState") then { ALiVE_FOB_placeState set [3, _turn] };
+    };
+};
+
 switch (_operation) do {
 
     case "start": {
         // stepping to another FOB type or headquarters starts again: the view the player had chosen stays
         private _viewOn = missionNamespace getVariable ["ALiVE_FOB_placeViewOn", false];
         call _fnc_stop;
-        _args params ["_row", "_fob", ["_kit", objNull]];
+        ALiVE_FOB_placeAgain = nil;
+        _args params ["_row", "_fob", ["_kit", objNull], ["_again", false]];
         _row params ["_class", "_name", "_kind", "_cost"];
         private _g = _class createVehicleLocal [0, 0, 0];
         if (isNull _g) exitWith {};
@@ -193,6 +217,12 @@ switch (_operation) do {
             player addAction [(localize "STR_ALIVE_FOB_ACTION_ROTATE") call ALiVE_fnc_actionTitle, { ["rotate"] call ALiVE_fnc_fobPlacement }, nil, 9.9, false, false, "", "ALiVE_FOB_placing"],
             player addAction [(localize "STR_ALIVE_FOB_ACTION_CANCEL") call ALiVE_fnc_actionTitle, { ["cancel"] call ALiVE_fnc_fobPlacement }, nil, 9.8, false, true, "", "ALiVE_FOB_placing"]
         ];
+        // walls, fences and crates are often wanted in a row: placed one after another without the menu
+        if (_kind in ["FORTIFICATION", "SUPPLY"]) then {
+            private _fmt = if (isLocalized "STR_ALIVE_FOB_ACTION_PLACE_AGAIN") then { localize "STR_ALIVE_FOB_ACTION_PLACE_AGAIN" } else { "Place %1 and another (%2 supply each)" };
+            ALiVE_FOB_placeActions pushBack (player addAction [(format [_fmt, [_name, _class] select (_name == ""), _cost]) call ALiVE_fnc_actionTitle,
+                { ["place", true] call ALiVE_fnc_fobPlacement }, nil, 9.95, false, true, "", "ALiVE_FOB_placing"]);
+        };
         // Placing View: Own (the player's view, as before), Toggle (a scroll action switches it) or
         // Third Person (starts in it, and the action switches back)
         private _view = (missionNamespace getVariable ["ALiVE_sup_fob", objNull]) getVariable ["fob_place_view", "TOGGLE"];
@@ -236,7 +266,8 @@ switch (_operation) do {
                     { ["nextHub"] call ALiVE_fnc_fobActions }, nil, 9.85, false, true, "", "ALiVE_FOB_placing"]);
             };
         };
-        [localize "STR_ALIVE_FOB", localize "STR_ALIVE_FOB_PLACE_HELP", true] call ALIVE_fnc_sendHint;
+        // shown once, not again each time Place And Another brings the item back
+        if !(_again) then { [localize "STR_ALIVE_FOB", localize "STR_ALIVE_FOB_PLACE_HELP", true] call ALIVE_fnc_sendHint };
     };
 
     case "rotate": {
@@ -247,7 +278,7 @@ switch (_operation) do {
     case "place": {
         private _g = missionNamespace getVariable ["ALiVE_FOB_ghost", objNull];
         if (isNull _g) exitWith {};
-        ALiVE_FOB_placeState params ["_row", "_fob", "", "", "", "", "", "_kit"];
+        ALiVE_FOB_placeState params ["_row", "_fob", "", "_turn", "", "", "", "_kit"];
         (call ALiVE_FOB_placeSpot) params ["_pos", "_dir", "_ok", "", "_why"];
         private _deploying = (_row select 2) == "DEPLOY";
         if !(_ok) exitWith { [localize "STR_ALIVE_FOB", format ([localize (_why select 0)] + (_why select 1)), true] call ALIVE_fnc_sendHint };
@@ -258,10 +289,12 @@ switch (_operation) do {
         if (_deploying) exitWith { ["deploy", [_kit, _pos, _dir, _row select 0, missionNamespace getVariable ["ALiVE_FOB_deployType", ""]]] remoteExecCall ["ALiVE_fnc_fobRequest", 2] };
         // the height as ASL: the server looks for a surface there itself rather than taking it on trust
         ["build", [_row select 0, ATLToASL _pos, _dir, _fob select 0]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
+        if (_args isEqualTo true && {(_row select 2) in ["FORTIFICATION", "SUPPLY"]}) then { [[_row, _fob, _kit, _turn]] call _fnc_again };
     };
 
     case "cancel": {
         call _fnc_stop;
+        ALiVE_FOB_placeAgain = nil;
     };
 
     // Where an aircraft would stand at a spot, here for the preview and on the server for the build:

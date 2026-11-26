@@ -127,6 +127,8 @@ switch (_op) do {
         if (_why == "") exitWith {
             [_kind, _request + [true]] remoteExecCall ["ALiVE_fnc_fobRequest", 2];
         };
+        // a bar stopped early also ends Place And Another (ALiVE_fnc_fobPlacement)
+        ALiVE_FOB_placeAgain = nil;
         [localize "STR_ALIVE_FOB", localize (switch (_why) do {
             case "MOVED": { "STR_ALIVE_FOB_TIMER_MOVED" };
             case "FIRE": { "STR_ALIVE_FOB_TIMER_FIRE" };
