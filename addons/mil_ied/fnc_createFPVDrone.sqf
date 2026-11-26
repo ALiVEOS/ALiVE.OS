@@ -390,7 +390,12 @@ private _crew = crew _uav;
 if (_crew isEqualTo []) exitWith { deleteVehicle _uav; objNull };
 if ((side group (_crew select 0)) != _side) then {
     private _g = createGroup [_side, true];
-    if (!isNull _g) then { _crew joinSilent _g };
+    if (!isNull _g) then {
+        // the crew's own group, of the class's side, is left empty: gone too
+        private _old = group (_crew select 0);
+        _crew joinSilent _g;
+        if (!isNull _old && {(units _old) isEqualTo []}) then { deleteGroup _old };
+    };
 };
 private _dg = group (_crew select 0);
 // kept on the server: off the AI distributor and ACE's headless client, and out of advanced civilians
@@ -739,6 +744,13 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
         // in the dive the frame handler decides what a death means
         if (!alive _uav && {(_d get "phase") != "terminal"}) exitWith { "shot down" call _fnc_downed };
         if (!alive _uav) then { continue };
+        // the Crocus mod makes its drones captive a frame after they are made, and again whenever its settings are
+        // applied: a captive drone counts as civilian (Zeus showed it so, beside its crew's group of its real side) and
+        // nobody shoots at it. One flown here is never captive (Will501 on Discord, 25 Nov)
+        if (captive _uav || {((crew _uav) findIf { captive _x }) >= 0}) then {
+            _uav setCaptive false;
+            { _x setCaptive false } forEach (crew _uav);
+        };
         // Pause Modules (Required module): while the server is paused with no players, or about to be (on, and nobody
         // connected), the drone is held where it is, frozen, with its battery stopped; it carries on from the same
         // phase when a player is back. A drone whose player has gone searches round where it is instead
