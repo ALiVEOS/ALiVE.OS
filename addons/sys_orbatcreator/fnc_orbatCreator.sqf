@@ -3536,6 +3536,16 @@ switch(_operation) do {
             };
         };
 
+        // a vehicle has no face or voice: the empty set a new unit starts with (ALiVE_fnc_orbatCreatorUnit), so a
+        // vehicle imported from config keeps one, and its export (which reads the insignia) doesn't fail
+        if (isNil "_result") then {
+            _result = [] call ALiVE_fnc_hashCreate;
+            [_result,"face", ""] call ALiVE_fnc_hashSet;
+            [_result,"voice", ""] call ALiVE_fnc_hashSet;
+            [_result,"insignia", ""] call ALiVE_fnc_hashSet;
+            [_result,"misc", []] call ALiVE_fnc_hashSet;
+        };
+
     };
 
     // faction editor
