@@ -1022,6 +1022,9 @@ switch (_action) do {
         if (!isNull _on && {(_on call BIS_fnc_netId) in ALiVE_hub_registry}) exitWith { ["STR_ALIVE_ZEUS_HUB_ALREADY"] call _reply };
         [_position, _on, _module, _side, _caller, _side call _sideName, ["cleanName", [_name]] call ALIVE_fnc_hub] spawn {
             params ["_position", "_on", "_module", "_side", "_caller", "_sideShown", "_name"];
+            // code spawned from the Zeus's request still counts as sent from that machine, but the request's name
+            // doesn't reach it: named again here, so the hub code knows ALiVE_fnc_zeusRequest checked this Zeus
+            private _ALiVE_zeusCaller = _caller;
             private _hub = _on;
             if (isNull _hub) then {
                 _hub = createVehicle ["Land_Cargo20_military_green_F", _position, [], 0, "NONE"];

@@ -125,6 +125,21 @@ private _debug = { if (missionNamespace getVariable ["ALiVE_hub_debug", false]) 
 
 private _result = nil;
 
+// Sent straight here by remoteExec from another machine, only a question is answered: anything that changes a hub
+// comes from the server itself, or from a player's request the hub, rally point, FOB or Zeus code has already
+// checked, which carries that code's own name down the call chain (as ALiVE_fnc_siteClock accepts), or from the
+// hub's own Deleted or MPKilled event (_ALiVE_hubEvent). The stats ops
+// are left open, as Military Logistics calls them while it handles a player's remote-executed request.
+if (isRemoteExecuted && {remoteExecutedOwner != 2} && {isNil "_ALiVE_hubCaller"} && {isNil "_ALiVE_rallyInner"}
+    && {isNil "_ALiVE_fobCaller"} && {isNil "_ALiVE_zeusCaller"} && {isNil "_ALiVE_hubEvent"} && {!(_op in [
+    "label", "cleanName", "settings", "rules", "catalogueRules", "tabletModule", "unitSide", "nearHub", "isAdmin",
+    "mayWho", "mayCollect", "mayDismantle", "sideCatalogue", "commanderFactions", "collectCost", "validateCollect",
+    "permKey", "permCanSave", "permStoreKey", "keyAt", "siteLabel", "statsDeparture", "statsEventDone"
+])}) exitWith {
+    ["ALiVE Logistics Hub - refused %1 sent by remoteExec from machine %2", _op, remoteExecutedOwner] call ALiVE_fnc_dumpR;
+    nil
+};
+
 switch (_op) do {
 
     // A map marker on each working hub of this player's side (Jman, 29 Oct: hubs had none), on this
@@ -769,12 +784,16 @@ switch (_op) do {
         // MPKilled, not Killed: Killed fires only where the object is local, and a crate can move to a player's machine
         _hub addMPEventHandler ["MPKilled", {
             params ["_hub"];
+            // the game's own event, so it passes the check on calls from another machine (an object can be
+            // deleted or destroyed inside a call a player sent)
+            private _ALiVE_hubEvent = true;
             if (isServer) then { ["hubDown", [_hub call BIS_fnc_netId, true]] call ALIVE_fnc_hub };
         }];
         // deleted by Zeus or a script: down as if destroyed, so the AI stop sending convoys from an empty spot
         _hub setVariable ["ALiVE_hub_netId", _netId];
         _hub addEventHandler ["Deleted", {
             params ["_hub"];
+            private _ALiVE_hubEvent = true;
             ["hubDown", [_hub getVariable ["ALiVE_hub_netId", ""], true]] call ALIVE_fnc_hub;
         }];
 
