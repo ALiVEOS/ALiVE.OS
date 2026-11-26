@@ -141,4 +141,8 @@ if (_result isEqualTo [] && {_setting != "settlement" || {_hqFallback}}) then {
     } forEach (allMissionObjects "ALiVE_mil_OPCOM");
 };
 
+// on the ground: a module's position keeps the height it was placed at (-106 m on one mission), and the
+// tasks measure players reaching this point in 3D, so they could stand on it and never arrive
+if (count _result >= 2) then { _result = [_result select 0, _result select 1, 0] };
+
 [_result, [_result, _name]] select _withName
