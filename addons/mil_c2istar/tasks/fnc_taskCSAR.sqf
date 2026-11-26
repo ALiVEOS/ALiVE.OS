@@ -26,7 +26,10 @@ them, the commander keeps them as infantry on foot.
 With Capture Enemy Pilots set to "Yes, both sides race" (A. Ares on Discord), a
 pilot whose own side has players gets a rescue for that side and, at the same
 moment, a capture for a hostile side with players. The first side to reach him
-takes him; the other side's task fails. The pilot then carries two task ids:
+takes him, and the other side chases them: until he is handed over at their base
+the losers can take him back with the same hold action, and the roles swap
+(ALIVE_csarRetakeBy is the side allowed to, while its task chases; A. Ares on
+Discord, 26 Nov). The chasing task fails once he is handed over. The pilot then carries two task ids:
 ALIVE_csarTaskID (the rescue) and ALIVE_csarCaptureID (the capture), and a task
 that ends lets go of its own id only, so the pilot stays with the task still
 running. ALIVE_csarTakenBy is the side text of whoever took him.
@@ -148,6 +151,49 @@ private _fnc_lostPilot = {
     [_at > -1, if (_at > -1) then {(_pilots select _at) getVariable ["ALIVE_csarTakenBy", ""]} else {""}]
 };
 
+// a pilot handed over at a side's base, ending every other task that held him
+private _fnc_delivered = {
+    params ["_pilots"];
+    (_pilots findIf {!isNull _x && {(_x getVariable ["ALIVE_csarDeliveredBy", ""]) != ""}}) > -1
+};
+
+// The other side has the pilot and is taking him home (both sides race): this side may take him back
+// with the hold action, the pin follows him, and the chase gets as long as the captors' trip home.
+private _fnc_chase = {
+    params ["_taskParams", "_pilots", "_taskSide", "_markerID", "_players", "_dialog", "_title", "_rootID"];
+
+    private _own = [_taskSide] call ALIVE_fnc_sideTextToObject;
+    private _held = _pilots select {
+        !isNull _x && {_x getVariable ["ALIVE_csarRescued", false]}
+        && {(_x getVariable ["ALIVE_csarTakenBy", ""]) != ""}
+        && {(([_x getVariable ["ALIVE_csarTakenBy", ""]] call ALIVE_fnc_sideTextToObject) getFriend _own) < 0.6}
+    };
+    if (_held isEqualTo []) exitWith {};
+
+    {
+        if ((_x getVariable ["ALIVE_csarRetakeBy", ""]) != _taskSide) then {
+            _x setVariable ["ALIVE_csarRetakeBy", _taskSide, true];
+            _x setVariable ["ALIVE_csarRetakeID", _rootID];
+        };
+    } forEach _held;
+
+    private _pos = getPosATL (_held select 0);
+    private _sent = [_taskParams, "chasePinPos", []] call ALIVE_fnc_hashGet;
+    if (_sent isEqualTo [] || {(_sent distance2D _pos) > 20}) then {
+        [_taskParams, "chasePinPos", _pos] call ALIVE_fnc_hashSet;
+        [_pos, _taskSide, _players, _markerID, "csar", "", _title] call ALIVE_fnc_taskCreateMarkersForPlayers;
+    };
+
+    if !([_taskParams, "chasing", false] call ALIVE_fnc_hashGet) then {
+        [_taskParams, "chasing", true] call ALIVE_fnc_hashSet;
+        private _timeout = missionNamespace getVariable ["ALIVE_taskCsarTimeout", CSAR_DEFAULT_TIMEOUT];
+        if !(_timeout isEqualType 0) then {_timeout = CSAR_DEFAULT_TIMEOUT};
+        [_taskParams, "expiresAt", ([_taskParams, "expiresAt", 0] call ALIVE_fnc_hashGet) max ((call ALiVE_fnc_taskTime) + (_timeout max CSAR_MIN_TIMEOUT))] call ALIVE_fnc_hashSet;
+        ["chat_snatched", "", _dialog, _taskSide, _players] call _fnc_chat;
+        ["C2ISTAR - Task CSAR - %1: %2 has the pilot, %3 can take him back until he is handed over", _rootID, (_held select 0) getVariable ["ALIVE_csarTakenBy", ""], _taskSide] call ALiVE_fnc_Dump;
+    };
+};
+
 private _fnc_sideText = {
     params ["_side"];
     [[_side] call ALIVE_fnc_sideObjectToNumber] call ALIVE_fnc_sideNumberToText
@@ -168,6 +214,14 @@ private _fnc_cleanupTask = {
 
     private _rootID = ([_taskParams, "taskIDs", [""]] call ALIVE_fnc_hashGet) select 0;
     private _pilots = [[_taskParams, "pilotNetIDs", []] call ALIVE_fnc_hashGet, _rootID] call _fnc_resolvePilots;
+
+    // a chase that ends can no longer take him back
+    {
+        if ((_x getVariable ["ALIVE_csarRetakeID", ""]) == _rootID) then {
+            _x setVariable ["ALIVE_csarRetakeBy", "", true];
+            _x setVariable ["ALIVE_csarRetakeID", nil];
+        };
+    } forEach (_pilots select {!isNull _x});
 
     // a pilot the other side's task still holds stays with it
     ["retirePilots", "", [_pilots select {!isNull _x && {alive _x} && {[_x, _rootID] call _fnc_dropClaim}}, _mode], [], false] call ALIVE_fnc_taskCSAR;
@@ -755,6 +809,10 @@ switch (_taskState) do {
             if (!_claimed) then {continue};
 
             if (_rootID in (_unit getVariable ["ALIVE_csarLiveIDs", []])) then {
+                if ((_unit getVariable ["ALIVE_csarRetakeID", ""]) == _rootID) then {
+                    _unit setVariable ["ALIVE_csarRetakeBy", "", true];
+                    _unit setVariable ["ALIVE_csarRetakeID", nil];
+                };
                 // The task existed and is now gone, cancelled or deleted by some
                 // other route than its own stages: a pilot still held goes too.
                 if !([_unit, _rootID] call _fnc_dropClaim) then {continue};
@@ -1285,16 +1343,19 @@ switch (_taskState) do {
                 format [["Rescue %1", "Detain %1"] select _capture, name _x],
                 "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
                 "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                ["_this distance _target < 3 && {alive _target} && {!(_target getVariable ['ALIVE_csarRescued', false])} && {((side group _this) getFriend (side group _target)) >= 0.6}",
-                 "_this distance _target < 3 && {alive _target} && {!(_target getVariable ['ALIVE_csarRescued', false])} && {(str side group _this) == (_target getVariable ['ALIVE_csarForSide', ''])}"] select _capture,
+                // free, or held by the other side while this side's task chases them (ALIVE_csarRetakeBy)
+                ["_this distance _target < 3 && {alive _target} && {(str side group _this) == (_target getVariable ['ALIVE_csarRetakeBy', '']) || {!(_target getVariable ['ALIVE_csarRescued', false]) && {((side group _this) getFriend (side group _target)) >= 0.6}}}",
+                 "_this distance _target < 3 && {alive _target} && {(str side group _this) == (_target getVariable ['ALIVE_csarForSide', ''])} && {!(_target getVariable ['ALIVE_csarRescued', false]) || {(str side group _this) == (_target getVariable ['ALIVE_csarRetakeBy', ''])}}"] select _capture,
                 "_caller distance _target < 3",
                 {},
                 {},
                 {
                     params ["_target", "_caller"];
 
-                    if (_target getVariable ["ALIVE_csarRescued", false]) exitWith {};
+                    // taken already, unless this side is taking him back from the other
+                    if ((_target getVariable ["ALIVE_csarRescued", false]) && {(str side group _caller) != (_target getVariable ["ALIVE_csarRetakeBy", ""])}) exitWith {};
 
+                    _target setVariable ["ALIVE_csarRetakeBy", "", true];
                     _target setVariable ["ALIVE_csarRescued", true, true];
                     _target setVariable ["ALIVE_csarHeld", false, true];
                     // which side has him, so in a race the other side's task knows it has lost him
@@ -1457,8 +1518,8 @@ switch (_taskState) do {
                 [_params, "delete"] call _fnc_cleanupTask;
             };
 
-            // the other side reached him first (both sides race)
-            case (([_pilots, _taskSide] call _fnc_lostPilot) select 0): {
+            // the other side reached him first (both sides race) and has handed him over at their base
+            case ((([_pilots, _taskSide] call _fnc_lostPilot) select 0) && {[_pilots] call _fnc_delivered}): {
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
                 _task set [8,"Failed"];
@@ -1469,7 +1530,7 @@ switch (_taskState) do {
                 ["chat_lost", "chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call _fnc_chat;
                 [_params, "delete"] call _fnc_cleanupTask;
 
-                ["C2ISTAR - Task CSAR - %1 lost, %2 reached the pilot first", _rootID, ([_pilots, _taskSide] call _fnc_lostPilot) select 1] call ALiVE_fnc_Dump;
+                ["C2ISTAR - Task CSAR - %1 lost, %2 handed the pilot over at their base", _rootID, ([_pilots, _taskSide] call _fnc_lostPilot) select 1] call ALiVE_fnc_Dump;
             };
 
             // nobody came in time
@@ -1485,6 +1546,11 @@ switch (_taskState) do {
                 [_params, "delete"] call _fnc_cleanupTask;
 
                 ["C2ISTAR - Task CSAR - %1 expired, pilots %2 cleared", _rootID, _pilots] call ALiVE_fnc_Dump;
+            };
+
+            // the other side has him and is taking him home: chase them and take him back
+            case (([_pilots, _taskSide] call _fnc_lostPilot) select 0): {
+                [_params, _pilots, _taskSide, _taskID, _taskPlayers, _currentTaskDialog, _taskTitle, _rootID] call _fnc_chase;
             };
 
             default {
@@ -1523,6 +1589,9 @@ switch (_taskState) do {
                         };
                     } forEach ([_params, "strobes", []] call ALIVE_fnc_hashGet);
                     [_params, "strobes", []] call ALIVE_fnc_hashSet;
+                    // a pilot taken back ends the chase
+                    [_params, "chasing", false] call ALIVE_fnc_hashSet;
+                    [_params, "chasePinPos", []] call ALIVE_fnc_hashSet;
 
                     _task set [8,"Succeeded"];
                     _task set [10, "N"];
@@ -1570,6 +1639,7 @@ switch (_taskState) do {
             _result = _task;
 
             [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+            [_taskPlayers, format ["%1_pilot", _taskID]] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
             [_params, "retire"] call _fnc_cleanupTask;
         } else {
@@ -1582,10 +1652,44 @@ switch (_taskState) do {
                 _result = _task;
 
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                [_taskPlayers, format ["%1_pilot", _taskID]] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                 ["chat_expired", "chat_cancelled", _currentTaskDialog, _taskSide, _taskPlayers] call _fnc_chat;
                 [_params, "retire"] call _fnc_cleanupTask;
 
                 ["C2ISTAR - Task CSAR - %1 expired on the way home, pilots %2 retired", _rootID, _pilots] call ALiVE_fnc_Dump;
+            };
+
+            // both sides race: the other side took him back from them
+            private _lost = ([_pilots, _taskSide] call _fnc_lostPilot) select 0;
+
+            // ... and handed him over at their base
+            if (_lost && {[_pilots] call _fnc_delivered}) exitWith {
+                [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+
+                _task set [8,"Failed"];
+                _task set [10, "N"];
+                _result = _task;
+
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                [_taskPlayers, format ["%1_pilot", _taskID]] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                ["chat_lost", "chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call _fnc_chat;
+                [_params, "retire"] call _fnc_cleanupTask;
+
+                ["C2ISTAR - Task CSAR - %1 lost on the way home, %2 handed the pilot over at their base", _rootID, ([_pilots, _taskSide] call _fnc_lostPilot) select 1] call ALiVE_fnc_Dump;
+            };
+
+            // ... and is taking him home: chase them and take him back
+            if (_lost) exitWith {
+                [_params, _pilots, _taskSide, format ["%1_pilot", _taskID], _taskPlayers, _currentTaskDialog, _taskTitle, _rootID] call _fnc_chase;
+            };
+
+            // taken back from them: on with the trip home
+            if ([_params, "chasing", false] call ALIVE_fnc_hashGet) then {
+                [_params, "chasing", false] call ALIVE_fnc_hashSet;
+                [_params, "chasePinPos", []] call ALIVE_fnc_hashSet;
+                [_taskPlayers, format ["%1_pilot", _taskID]] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                ["chat_regained", "", _currentTaskDialog, _taskSide, _taskPlayers] call _fnc_chat;
+                ["C2ISTAR - Task CSAR - %1: pilot taken back, on the way home again", _rootID] call ALiVE_fnc_Dump;
             };
 
             if ([_taskPosition, _taskPlayers, 10] call ALIVE_fnc_taskHavePlayersReachedDestination
@@ -1600,6 +1704,12 @@ switch (_taskState) do {
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                 ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
                 [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+
+                // handed over, which ends a chase by the other side: nobody can take him back now
+                {
+                    _x setVariable ["ALIVE_csarDeliveredBy", _taskSide];
+                    _x setVariable ["ALIVE_csarRetakeBy", "", true];
+                } forEach (_pilots select {!isNull _x});
 
                 // handed over: out of the player's group, gone in a minute
                 [_params, "retire"] call _fnc_cleanupTask;

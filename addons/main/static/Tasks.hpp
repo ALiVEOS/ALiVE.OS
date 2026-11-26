@@ -272,7 +272,9 @@
 		[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_expired",[["HQ","The pilot is no longer at the site. Mission cancelled, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
 		// with Capture Enemy Pilots set to race: the enemy reached the crew first
-		[_taskData,"chat_lost",[["HQ","The enemy reached the crew before you did and has taken them. Mission aborted, Over"],["PLAYERS","Roger, we are RTB, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_lost",[["HQ","The enemy got the crew back to their lines. Mission aborted, Over"],["PLAYERS","Roger, we are RTB, out"]]] call ALIVE_fnc_hashSet;
+		// ... and the chase while they carry them home
+		[_taskData,"chat_snatched",[["HQ","The enemy reached the crew before you did and is taking them away. Get them back before they reach their lines, Over"],["PLAYERS","Roger, moving to intercept, out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
 		[_tasksData,"Rescue",_taskData] call ALIVE_fnc_hashSet;
 
@@ -283,6 +285,10 @@
 		[_taskData,"chat_failed",[["HQ","Surviving crew have been killed, abort mission and RTB immediately, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_success",[["PLAYERS","Crew has been returned to base, over."],["HQ","Roger, great job! Well done, Out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_expired",[["HQ","Out of time. Another unit will bring the crew in. Mission cancelled, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
+		// with Capture Enemy Pilots set to race: the enemy took the crew back on the way home
+		[_taskData,"chat_snatched",[["HQ","The enemy has taken the crew from you. Get them back before they reach their lines, Over"],["PLAYERS","Roger, moving to intercept, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_regained",[["PLAYERS","Crew back with us, continuing RTB, Over"],["HQ","Roger, get them home, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_lost",[["HQ","The enemy got the crew back to their lines. Mission aborted, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
 		[_tasksData,"Return",_taskData] call ALIVE_fnc_hashSet;
 
@@ -302,7 +308,9 @@
 		[_taskData,"chat_cancelled",[["PLAYERS","Callsign compromised, mission aborted, Over"],["HQ","Roger, break contact and withdraw. Send SITREP when ready, out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_expired",[["HQ","The enemy pilot has got away. Mission cancelled, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
 		// with Capture Enemy Pilots set to race: his own side reached him first
-		[_taskData,"chat_lost",[["HQ","His own side got to the enemy pilot first and has taken him away. Mission aborted, Over"],["PLAYERS","Roger, we are RTB, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_lost",[["HQ","His own side got the enemy pilot back to their lines. Mission aborted, Over"],["PLAYERS","Roger, we are RTB, out"]]] call ALIVE_fnc_hashSet;
+		// ... and the chase while they carry him home
+		[_taskData,"chat_snatched",[["HQ","His own side got to the enemy pilot first and is taking him away. Stop them before they reach their lines, Over"],["PLAYERS","Roger, moving to intercept, out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
 		[_tasksData,"Capture",_taskData] call ALIVE_fnc_hashSet;
 
@@ -313,6 +321,10 @@
 		[_taskData,"chat_failed",[["HQ","The prisoner is dead, abort mission and RTB, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_success",[["PLAYERS","Prisoner handed over at base, over."],["HQ","Roger, he'll be questioned. Well done, Out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"chat_expired",[["HQ","Out of time. Another unit will collect the prisoner. Mission cancelled, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
+		// with Capture Enemy Pilots set to race: his own side took him back on the way in
+		[_taskData,"chat_snatched",[["HQ","His own side has taken the prisoner back. Stop them before they reach their lines, Over"],["PLAYERS","Roger, moving to intercept, out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_regained",[["PLAYERS","Prisoner back with us, continuing to base, Over"],["HQ","Roger, bring him in, Out"]]] call ALIVE_fnc_hashSet;
+		[_taskData,"chat_lost",[["HQ","His own side got the prisoner back to their lines. Mission aborted, Over"],["PLAYERS","Roger, out"]]] call ALIVE_fnc_hashSet;
 		[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
 		[_tasksData,"CaptureReturn",_taskData] call ALIVE_fnc_hashSet;
 
