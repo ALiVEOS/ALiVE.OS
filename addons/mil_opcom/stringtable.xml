@@ -1073,6 +1073,12 @@
     <Russian>Любой командир. Группа на собственных грузовиках или бронетехнике, посланная взять объект, останавливается в 150–300 м от него на подходе; пассажиры спешиваются и идут дальше пешком, а машины следуют за ними для поддержки. При следующем приказе дальше этого расстояния пассажиры сначала садятся обратно; при более близком идут пешком. Группы вне видимости поступают так же и движутся шагом, пока пассажиры спешены. Выкл.: едут до самого объекта, как раньше.</Russian>
     <Spanish>Cualquier comandante. Un grupo transportado en sus propios camiones o blindados, enviado a tomar un objetivo, se detiene a 150-300 m de él durante la aproximación; sus pasajeros desembarcan y avanzan a pie, y los vehículos los siguen en apoyo. Ante una orden posterior más lejana, los pasajeros vuelven a subir primero; si es más cercana, caminan. Los grupos fuera de la vista hacen lo mismo y se mueven al paso mientras sus pasajeros van a pie. Desactivado: van en vehículo hasta el final, como antes.</Spanish>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_KEY_MOMENTS">
+    <English>Announce Key Moments</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_KEY_MOMENTS_COMMENT">
+    <English>Yes has the commander tell its own side over the HQ radio at a few key moments, without giving its plans away: when the last group of an attack sets off with Attacks Arrive Together on, so the assault is about to go in together, and when Start From Ship has landed its whole force and no more groups are coming from the ship. No (the default) leaves things as they are.</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_ARRIVE_TOGETHER">
     <English>Attacks Arrive Together</English>
 </Key>

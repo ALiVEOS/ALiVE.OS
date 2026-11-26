@@ -410,6 +410,19 @@ class CfgVehicles {
                                 };
                                 ALiVE_showWhen[] = {{"controltype", "not", "asymmetric"}};
                         };
+                        // Announce Key Moments (TheLogatron on Discord, 18 Nov): a few moments told to the commander's side over the HQ radio
+                        class keyMoments : Combo
+                        {
+                                property = "ALiVE_mil_opcom_keyMoments";
+                                displayName = "$STR_ALIVE_OPCOM_KEY_MOMENTS";
+                                tooltip = "$STR_ALIVE_OPCOM_KEY_MOMENTS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
                         // Relieve Worn Groups (ashtray_by on Discord, 13 Nov): a worn-out group hands its place to a fresh one
                         class relieveWorn : Combo
                         {

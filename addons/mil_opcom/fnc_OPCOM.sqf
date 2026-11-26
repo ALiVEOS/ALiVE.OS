@@ -176,6 +176,8 @@ switch (_operation) do {
         private _holdForGo = (toLower format ["%1", _logic getVariable ["holdForGo", "false"]]) in ["true", "1"];
         // Groups Call For Help (A. Ares on Discord, 26 Oct): a group losing a fight asks for the nearest free group
         private _callForHelp = (toLower format ["%1", _logic getVariable ["callForHelp", "false"]]) in ["true", "1"];
+        // Announce Key Moments (TheLogatron on Discord, 18 Nov): a few moments told to the side over the HQ radio
+        private _keyMoments = (toLower format ["%1", _logic getVariable ["keyMoments", "false"]]) in ["true", "1"];
         // Relieve Worn Groups (ashtray_by on Discord, 13 Nov): a worn-out group is swapped for a fresh one and filled up at the rear
         private _relieveWorn = (toLower format ["%1", _logic getVariable ["relieveWorn", "true"]]) in ["true", "1"];
         // Start From Ship (Ando on Discord, 24 Oct): the starting force is aboard a static ship and lands by helicopter
@@ -535,6 +537,7 @@ switch (_operation) do {
             ["intelMarkers", _intelMarkers],
             ["followPlayers", _followPlayers],
             ["callForHelp", _callForHelp],
+            ["keyMoments", _keyMoments],
             ["relieveWorn", _relieveWorn],
             // true while it waits for Go; only "go" clears it, so the empty-server pause and the save menu can't lift it
             ["startPaused", false],
@@ -3201,6 +3204,22 @@ switch (_operation) do {
                 _profileWaypoints pushBack _profileWaypoint;
             };
         } forEach _orderBatch;
+
+        // Announce Key Moments: with Attacks Arrive Together, the side hears when the last held group of the assault sets
+        // off, if that group still has this order then (a reload, a new order or its loss in the meantime says nothing)
+        if (_orders == "capture" && {count _delays > 0} && {[_logic,"keyMoments",false] call ALiVE_fnc_HashGet}) then {
+            private _lastID = "";
+            private _lastWait = -1;
+            { if (_y > _lastWait) then { _lastWait = _y; _lastID = _x } } forEach _delays;
+            private _place = if (!isNil "_targetObjective" && {_targetObjective isNotEqualTo []}) then {
+                [[_targetObjective,"center",[0,0,0]] call ALiVE_fnc_HashGet] call ALIVE_fnc_taskGetNearestLocationName
+            } else { "the objective" };
+            [{
+                params ["_logic", "_pid", "_at", "_place"];
+                if ((([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet) findIf { (_x select 1) == _pid && {(_x select 3) == _at} }) < 0) exitWith {};
+                [_logic, "opRadio", format ["All units, the last group of the assault on %1 is moving. The attack goes in together.", _place]] call ALiVE_fnc_OPCOM;
+            }, [_logic, _lastID, _issuedAt, _place], _lastWait + _prepHold] call CBA_fnc_waitAndExecute;
+        };
 
 
         _result = _profileWaypoints;
@@ -8993,6 +9012,11 @@ switch (_operation) do {
         _aboard = [_logic, "shipAboard", [0,0,0,0,0,0,0,0]] call ALiVE_fnc_HashGet;
         if ((_aboard select 0) + (_aboard select 1) == 0) then {
             ["OPCOM SHIP - %1: everyone is ashore; reinforcements now come from the ground it holds", _name] call ALiVE_fnc_dump;
+            // Announce Key Moments: said once
+            if ([_logic, "keyMoments", false] call ALiVE_fnc_HashGet && {!([_logic, "shipAshoreSaid", false] call ALiVE_fnc_HashGet)}) then {
+                [_logic, "shipAshoreSaid", true] call ALiVE_fnc_HashSet;
+                [_logic, "opRadio", "All units, the whole landing force is ashore. No more groups are coming from the ship."] call ALiVE_fnc_OPCOM;
+            };
             [_logic, "shipBeachheadID", ""] call ALiVE_fnc_HashSet;
         };
         call _fsmDone;
