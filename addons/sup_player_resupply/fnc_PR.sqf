@@ -525,6 +525,15 @@ switch(_operation) do {
         if (_men) then { _result pushBack "Individuals" };
         if (_anyGroup) then { _result pushBack "Groups" };
     };
+    // The crates standing within 300 m of a request's destination when it is sent, on this machine: the Supplies
+    // markers the delivery puts up leave them out and mark only what the request brings (#1091). [requestID, position]
+    case "noteCratesBefore": {
+        _args params [["_requestID", -1, [0]], ["_destination", [], [[]]]];
+        if (count _destination < 2) exitWith {};
+        private _before = _logic getVariable ["PR_cratesBefore", createHashMap];
+        _before set [_requestID, (_destination nearObjects ["ReammoBox_F", 300]) + (_destination nearObjects ["Slingload_base_F", 300])];
+        _logic setVariable ["PR_cratesBefore", _before];
+    };
     case "destroy": {
         if (isServer) then {
             // if server
@@ -2020,14 +2029,18 @@ switch(_operation) do {
                     if (count _position > 0) then {
                         private _token = diag_tickTime;
                         _logic setVariable ["PR_destinationToken", _token];
-                        [_logic, _position, _token] spawn {
-                            params ["_logic", "_position", "_token"];
+                        // crates that were already there when the request was sent are not this delivery's (#1091)
+                        private _before = _logic getVariable ["PR_cratesBefore", createHashMap];
+                        private _skip = _before getOrDefault [_requestID, []];
+                        _before deleteAt _requestID;
+                        [_logic, _position, _token, _skip] spawn {
+                            params ["_logic", "_position", "_token", ["_skip", []]];
                             private _crates = [];
                             private _until = diag_tickTime + 600;
                             while { diag_tickTime < _until && {(_logic getVariable ["PR_destinationToken", -1]) isEqualTo _token} } do {
                                 // a crate can still be coming down when the answer arrives, so new ones are looked for each pass
                                 {
-                                    if !(_x in _crates) then {
+                                    if (!(_x in _crates) && {!(_x in _skip)}) then {
                                         private _m = createMarkerLocal [format ["PR_CRATE_%1", count _crates], getPos _x];
                                         if (_m != "") then {
                                             _m setMarkerShapeLocal "Icon";
@@ -3776,6 +3789,9 @@ switch(_operation) do {
                             _requestID = floor(time);
 
                             _forceMakeup = [_requestID,_payload,_emptyVehicles,_staticIndividuals,_joinIndividuals,_reinforceIndividuals,_staticGroups,_joinGroups,_reinforceGroups];
+
+                            // the crates already near the destination get no Supplies marker when this request arrives (#1091)
+                            [_logic, "noteCratesBefore", [_requestID, _destination]] call MAINCLASS;
 
                             // send the event
 
