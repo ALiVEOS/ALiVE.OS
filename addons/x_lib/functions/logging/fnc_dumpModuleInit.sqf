@@ -109,10 +109,11 @@ if (isServer) then {
 };
 
 if(_start) then {
-    _moduleID = format["m_%1", ALIVE_moduleCount];
+    // the number is taken and moved on in one unbroken step: two modules starting side by side both
+    // took the same one (both AI Commanders logged as m_73), and the second's timer replaced the first's
+    isNil { _moduleID = format["m_%1", ALIVE_moduleCount]; ALIVE_moduleCount = ALIVE_moduleCount + 1; };
     _message = format["[%3|%1] Module %2 INIT",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
     [true, _message, _moduleID] call ALIVE_fnc_timer;
-    ALIVE_moduleCount = ALIVE_moduleCount + 1;
 }else{
     _message = format["[%3|%1] Module %2 INIT COMPLETE TIME: ",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
     [false, _message, _moduleID] call ALIVE_fnc_timer;
