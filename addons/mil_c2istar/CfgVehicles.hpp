@@ -346,6 +346,7 @@ class CfgVehicles {
                                     class Two   { name = "2 minutes"; value = "120"; };
                                     class Three { name = "3 minutes"; value = "180"; };
                                     class Five  { name = "5 minutes"; value = "300"; };
+                                    class Ten   { name = "10 minutes"; value = "600"; };
                             };
                     };
                     // A Recon task ends with the team's SITREP (milfmadness and spooked, 29 Oct)

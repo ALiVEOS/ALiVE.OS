@@ -1508,10 +1508,10 @@ switch(_operation) do {
             missionNamespace setVariable ["ALiVE_c2istar_hvtManhuntChance", (_manhunt max 0) min 100];
             // Recon Task OPs, read by ALIVE_fnc_taskReconObjective: 2, or 4 all round the objective
             missionNamespace setVariable ["ALiVE_c2istar_reconOPs", [2, 4] select ((_logic getVariable ["reconOPs", "2"]) in ["4", 4])];
-            // Recon OP Hold Time: seconds at each OP, a minute to five
+            // Recon OP Hold Time: seconds at each OP, a minute to ten (10 asked for on Discord, 29 Oct)
             private _hold = _logic getVariable ["reconHold", "60"];
             if (_hold isEqualType "") then { _hold = parseNumber _hold };
-            missionNamespace setVariable ["ALiVE_c2istar_reconHold", (_hold max 60) min 300];
+            missionNamespace setVariable ["ALiVE_c2istar_reconHold", (_hold max 60) min 600];
             // Recon Ends With A SITREP, read by ALIVE_fnc_taskReconObjective
             missionNamespace setVariable ["ALiVE_c2istar_reconSitrep", (toLower format ["%1", _logic getVariable ["reconSitrep", "false"]]) in ["true", "1"]];
             // Task Reward Multiplier (AshTray on Discord, 5 Nov), read by ALIVE_fnc_taskCreateReward: 0 to 5
