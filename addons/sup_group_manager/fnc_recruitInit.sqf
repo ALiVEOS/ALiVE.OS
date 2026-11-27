@@ -60,7 +60,8 @@ if (isServer) then {
 // 0.02 and each hour it stays alive by 0.03, up to the module's Skill Cap. The skill is set on the machine the
 // recruit is local to (its player's) and kept on it as ALiVE_recruitSkill, which a player save writes and restores.
 if (isServer && {isNil "ALiVE_recruitXP"}) then {
-    private _rawX = _logic getVariable ["recruitExperience", "false"];
+    // on unless the module says No: a mission saved before the setting existed has no value and gets it too
+    private _rawX = _logic getVariable ["recruitExperience", "true"];
     private _on = if (_rawX isEqualType "") then { (toLower _rawX) in ["true", "1", "yes"] } else { _rawX isEqualTo true || {_rawX isEqualTo 1} };
     if (_on) then {
         private _rawCap = _logic getVariable ["recruitSkillCap", "0.9"];
@@ -502,6 +503,25 @@ ALiVE_fnc_recruitVehicle = {
     if (_settings param [12, true]) then { [_veh, _cost, true, _settings param [13, []]] call ALiVE_fnc_recruitDismissAction };
     [localize "STR_ALIVE_RECRUIT", format [localize "STR_ALIVE_RECRUIT_UI_VEH_READY", _template param [1, getText (configFile >> "CfgVehicles" >> _class >> "displayName")], _have + 1, _maxVeh]] call ALIVE_fnc_sendHint;
     true
+};
+
+// Squad member's inventory (AshTray, #1148): a player can open the whole inventory of an AI soldier in their own
+// group, uniform, vest and backpack, not only the backpack, to rearm and re-equip them. The AI opens its own gear on
+// this machine, which only works where it is local, so the player has to lead the group. Once per machine, and put
+// back on the new body after a respawn
+if (hasInterface && {isNil "ALiVE_recruitSquadInventory"}) then {
+    ALiVE_recruitSquadInventory = true;
+    [] spawn {
+        while { true } do {
+            waitUntil { sleep 2; !isNull player && {!(player getVariable ["ALiVE_recruitInvAction", false])} };
+            player setVariable ["ALiVE_recruitInvAction", true];
+            player addAction [localize "STR_ALIVE_RECRUIT_UI_INVENTORY", {
+                private _ai = cursorTarget;
+                if (alive _ai && {local _ai}) then { _ai action ["Gear", _ai] };
+            }, nil, 1.2, false, true, "",
+                "_this == player && {vehicle _this == _this} && {alive cursorTarget} && {cursorTarget isKindOf 'CAManBase'} && {!isPlayer cursorTarget} && {vehicle cursorTarget == cursorTarget} && {group cursorTarget == group _this} && {leader group _this == _this} && {local cursorTarget} && {_this distance cursorTarget < 3}"];
+        };
+    };
 };
 
 [_logic, _synced] spawn {

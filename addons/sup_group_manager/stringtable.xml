@@ -48,13 +48,13 @@
     <Russian>Завербованные набираются опыта</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_EXPERIENCE_COMMENT">
-    <English>Yes: a recruit in a player's group gets better as it fights. Each enemy it kills raises its skill by 0.02 and each hour it stays alive by 0.03, up to the Skill Cap. With player persistence on, the skill is kept across restarts. No, the default: recruits keep the skill they joined with.</English>
-    <Chinesesimp>是：玩家小队中的招募士兵会在战斗中成长。每击杀一名敌人技能提高 0.02，每存活一小时提高 0.03，直至技能上限。开启玩家持久化时，技能在重启后保留。否（默认）：招募士兵保持加入时的技能。</Chinesesimp>
-    <Chinese>是：玩家小隊中的招募士兵會在戰鬥中成長。每擊殺一名敵人技能提高 0.02，每存活一小時提高 0.03，直至技能上限。開啟玩家持久化時，技能在重啟後保留。否（預設）：招募士兵保持加入時的技能。</Chinese>
-    <Spanish>Sí: un recluta del grupo de un jugador mejora al combatir. Cada enemigo que mata sube su habilidad 0,02 y cada hora que sigue vivo 0,03, hasta el Límite de habilidad. Con la persistencia de jugadores activada, la habilidad se conserva entre reinicios. No, por defecto: los reclutas mantienen la habilidad con la que llegaron.</Spanish>
-    <French>Oui : une recrue du groupe d'un joueur progresse en combattant. Chaque ennemi tué augmente sa compétence de 0,02 et chaque heure en vie de 0,03, jusqu'au Plafond de compétence. Avec la persistance des joueurs, la compétence est conservée entre les redémarrages. Non, par défaut : les recrues gardent leur compétence d'arrivée.</French>
-    <Portuguese>Sim: um recruta no grupo de um jogador melhora ao combater. Cada inimigo que mata aumenta a habilidade em 0,02 e cada hora vivo em 0,03, até o Limite de habilidade. Com a persistência de jogadores ligada, a habilidade é mantida entre reinícios. Não, o padrão: os recrutas mantêm a habilidade com que entraram.</Portuguese>
-    <Russian>Да: завербованный в группе игрока становится лучше в бою. Каждый убитый враг повышает навык на 0,02, каждый час жизни на 0,03, до предела навыка. При включённом сохранении игроков навык сохраняется между перезапусками. Нет, по умолчанию: завербованные сохраняют навык, с которым пришли.</Russian>
+    <English>Yes, the default: a recruit in a player's group gets better as it fights. Each enemy it kills raises its skill by 0.02 and each hour it stays alive by 0.03, up to the Skill Cap. With player persistence on, the skill is kept across restarts. No: recruits keep the skill they joined with.</English>
+    <Chinesesimp>是（默认）：玩家小队中的招募士兵会在战斗中成长。每击杀一名敌人技能提高 0.02，每存活一小时提高 0.03，直至技能上限。开启玩家持久化时，技能在重启后保留。否：招募士兵保持加入时的技能。</Chinesesimp>
+    <Chinese>是（預設）：玩家小隊中的招募士兵會在戰鬥中成長。每擊殺一名敵人技能提高 0.02，每存活一小時提高 0.03，直至技能上限。開啟玩家持久化時，技能在重啟後保留。否：招募士兵保持加入時的技能。</Chinese>
+    <Spanish>Sí, por defecto: un recluta del grupo de un jugador mejora al combatir. Cada enemigo que mata sube su habilidad 0,02 y cada hora que sigue vivo 0,03, hasta el Límite de habilidad. Con la persistencia de jugadores activada, la habilidad se conserva entre reinicios. No: los reclutas mantienen la habilidad con la que llegaron.</Spanish>
+    <French>Oui, par défaut : une recrue du groupe d'un joueur progresse en combattant. Chaque ennemi tué augmente sa compétence de 0,02 et chaque heure en vie de 0,03, jusqu'au Plafond de compétence. Avec la persistance des joueurs, la compétence est conservée entre les redémarrages. Non : les recrues gardent leur compétence d'arrivée.</French>
+    <Portuguese>Sim, o padrão: um recruta no grupo de um jogador melhora ao combater. Cada inimigo que mata aumenta a habilidade em 0,02 e cada hora vivo em 0,03, até o Limite de habilidade. Com a persistência de jogadores ligada, a habilidade é mantida entre reinícios. Não: os recrutas mantêm a habilidade com que entraram.</Portuguese>
+    <Russian>Да, по умолчанию: завербованный в группе игрока становится лучше в бою. Каждый убитый враг повышает навык на 0,02, каждый час жизни на 0,03, до предела навыка. При включённом сохранении игроков навык сохраняется между перезапусками. Нет: завербованные сохраняют навык, с которым пришли.</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_HINT_XP">
     <English>Recruitment - Experienced recruits</English>
@@ -75,13 +75,13 @@
     <Russian>Беречь своих бойцов выгодно</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_HINT_XP_DESC">
-    <English>Where the mission has %3Recruits Gain Experience%4 on, the soldiers you recruit get better the longer they serve.%1%1%2Each enemy a recruit kills raises its skill a little%1%2So does each hour it stays alive%1%2Their skill stops at the cap the mission sets%1%1With player persistence on, your recruits come back with the skill they earned. A fresh recruit starts again at the skill recruits join with, so heal and rearm the ones you have.</English>
-    <Chinesesimp>当任务开启了%3招募士兵积累经验%4时，你招募的士兵服役越久就越出色。%1%1%2新兵每击杀一名敌人，技能就会提高一点%1%2每存活一小时也会提高%1%2技能在任务设定的上限处停止%1%1开启玩家持久化时，你的新兵会带着他们获得的技能回来。新招募的士兵从初始技能重新开始，所以要为现有的士兵治疗和补给。</Chinesesimp>
-    <Chinese>當任務開啟了%3招募士兵累積經驗%4時，你招募的士兵服役越久就越出色。%1%1%2新兵每擊殺一名敵人，技能就會提高一點%1%2每存活一小時也會提高%1%2技能在任務設定的上限處停止%1%1開啟玩家持久化時，你的新兵會帶著他們獲得的技能回來。新招募的士兵從初始技能重新開始，所以要為現有的士兵治療和補給。</Chinese>
-    <Spanish>Si la misión tiene activado %3Los reclutas ganan experiencia%4, los soldados que reclutas mejoran cuanto más tiempo sirven.%1%1%2Cada enemigo que mata un recluta sube un poco su habilidad%1%2También cada hora que sigue con vida%1%2Su habilidad se detiene en el límite que fija la misión%1%1Con la persistencia de jugadores activada, tus reclutas vuelven con la habilidad que ganaron. Un recluta nuevo empieza de nuevo con la habilidad de ingreso, así que cura y rearma a los que tienes.</Spanish>
-    <French>Si la mission active %3Les recrues gagnent en expérience%4, les soldats que vous recrutez s'améliorent à mesure qu'ils servent.%1%1%2Chaque ennemi tué par une recrue augmente un peu sa compétence%1%2Chaque heure passée en vie aussi%1%2Leur compétence s'arrête au plafond fixé par la mission%1%1Avec la persistance des joueurs activée, vos recrues reviennent avec la compétence acquise. Une nouvelle recrue repart de la compétence d'entrée : soignez et réarmez donc celles que vous avez.</French>
-    <Portuguese>Se a missão tiver %3Os recrutas ganham experiência%4 ativado, os soldados que recruta melhoram quanto mais tempo servem.%1%1%2Cada inimigo que um recruta mata aumenta um pouco a sua perícia%1%2Cada hora que se mantém vivo também%1%2A perícia para no limite definido pela missão%1%1Com a persistência de jogadores ativada, os seus recrutas voltam com a perícia que ganharam. Um recruta novo recomeça com a perícia de entrada, por isso trate e rearme os que tem.</Portuguese>
-    <Russian>Если в миссии включено %3Завербованные набираются опыта%4, завербованные вами бойцы становятся лучше, чем дольше служат.%1%1%2Каждый убитый новобранцем враг немного повышает его навык%1%2Как и каждый час, прожитый им%1%2Навык растёт до предела, заданного миссией%1%1При включённом сохранении игроков ваши новобранцы возвращаются с заработанным навыком. Новый новобранец начинает заново с исходного навыка, так что лечите и пополняйте тех, кто у вас есть.</Russian>
+    <English>Unless the mission turns %3Recruits Gain Experience%4 off, the soldiers you recruit get better the longer they serve.%1%1%2Each enemy a recruit kills raises its skill a little%1%2So does each hour it stays alive%1%2Their skill stops at the cap the mission sets%1%1With player persistence on, your recruits come back with the skill they earned. A fresh recruit starts again at the skill recruits join with, so heal and rearm the ones you have.</English>
+    <Chinesesimp>除非任务关闭了%3招募士兵积累经验%4，你招募的士兵服役越久就越出色。%1%1%2新兵每击杀一名敌人，技能就会提高一点%1%2每存活一小时也会提高%1%2技能在任务设定的上限处停止%1%1开启玩家持久化时，你的新兵会带着他们获得的技能回来。新招募的士兵从初始技能重新开始，所以要为现有的士兵治疗和补给。</Chinesesimp>
+    <Chinese>除非任務關閉了%3招募士兵累積經驗%4，你招募的士兵服役越久就越出色。%1%1%2新兵每擊殺一名敵人，技能就會提高一點%1%2每存活一小時也會提高%1%2技能在任務設定的上限處停止%1%1開啟玩家持久化時，你的新兵會帶著他們獲得的技能回來。新招募的士兵從初始技能重新開始，所以要為現有的士兵治療和補給。</Chinese>
+    <Spanish>Salvo que la misión desactive %3Los reclutas ganan experiencia%4, los soldados que reclutas mejoran cuanto más tiempo sirven.%1%1%2Cada enemigo que mata un recluta sube un poco su habilidad%1%2También cada hora que sigue con vida%1%2Su habilidad se detiene en el límite que fija la misión%1%1Con la persistencia de jugadores activada, tus reclutas vuelven con la habilidad que ganaron. Un recluta nuevo empieza de nuevo con la habilidad de ingreso, así que cura y rearma a los que tienes.</Spanish>
+    <French>Sauf si la mission désactive %3Les recrues gagnent en expérience%4, les soldats que vous recrutez s'améliorent à mesure qu'ils servent.%1%1%2Chaque ennemi tué par une recrue augmente un peu sa compétence%1%2Chaque heure passée en vie aussi%1%2Leur compétence s'arrête au plafond fixé par la mission%1%1Avec la persistance des joueurs activée, vos recrues reviennent avec la compétence acquise. Une nouvelle recrue repart de la compétence d'entrée : soignez et réarmez donc celles que vous avez.</French>
+    <Portuguese>Salvo se a missão desligar %3Os recrutas ganham experiência%4, os soldados que recruta melhoram quanto mais tempo servem.%1%1%2Cada inimigo que um recruta mata aumenta um pouco a sua perícia%1%2Cada hora que se mantém vivo também%1%2A perícia para no limite definido pela missão%1%1Com a persistência de jogadores ativada, os seus recrutas voltam com a perícia que ganharam. Um recruta novo recomeça com a perícia de entrada, por isso trate e rearme os que tem.</Portuguese>
+    <Russian>Если в миссии не отключено %3Завербованные набираются опыта%4, завербованные вами бойцы становятся лучше, чем дольше служат.%1%1%2Каждый убитый новобранцем враг немного повышает его навык%1%2Как и каждый час, прожитый им%1%2Навык растёт до предела, заданного миссией%1%1При включённом сохранении игроков ваши новобранцы возвращаются с заработанным навыком. Новый новобранец начинает заново с исходного навыка, так что лечите и пополняйте тех, кто у вас есть.</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_HINT_XP_TIP">
     <English>Dismissing a recruit loses what it has learned.</English>
@@ -978,5 +978,50 @@
 </Key>
 <Key ID="STR_ALIVE_RALLY_LEADERINIT_COMMENT">
     <English>Code run on the server on each object a squad leader's rally point makes, when it is put down and when it comes back after Overrun Repair Time, as Eden and Zeus rally points have their init fields. _this is [object, group]. It runs on the server, so an action players should see goes out to them, for example: [_this select 0, ["Arsenal", { ["Open", true] spawn BIS_fnc_arsenal }]] remoteExec ["addAction", 0, _this select 0]. The usual backpack is a simple object with no inventory or actions of its own; set Squad Rally Point Object to an object that can carry them. Empty (default) runs nothing.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_UI_INVENTORY">
+    <English>Open this soldier's inventory</English>
+    <Chinesesimp>打开该士兵的物品栏</Chinesesimp>
+    <Chinese>打開該士兵的物品欄</Chinese>
+    <Spanish>Abrir el inventario de este soldado</Spanish>
+    <French>Ouvrir l'inventaire de ce soldat</French>
+    <Portuguese>Abrir o inventário deste soldado</Portuguese>
+    <Russian>Открыть снаряжение этого бойца</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_HINT_INV">
+    <English>Recruitment - Your soldiers' kit</English>
+    <Chinesesimp>招募 - 你的士兵的装备</Chinesesimp>
+    <Chinese>招募 - 你的士兵的裝備</Chinese>
+    <Spanish>Reclutamiento - El equipo de tus soldados</Spanish>
+    <French>Recrutement - L'équipement de vos soldats</French>
+    <Portuguese>Recrutamento - O equipamento dos seus soldados</Portuguese>
+    <Russian>Вербовка - снаряжение ваших бойцов</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_HINT_INV_SHORT">
+    <English>Rearming and re-equipping your AI</English>
+    <Chinesesimp>为你的AI补给和更换装备</Chinesesimp>
+    <Chinese>為你的AI補給和更換裝備</Chinese>
+    <Spanish>Rearmar y reequipar a tu IA</Spanish>
+    <French>Réarmer et rééquiper votre IA</French>
+    <Portuguese>Rearmar e reequipar a sua IA</Portuguese>
+    <Russian>Пополнение и переоснащение ваших ИИ</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_HINT_INV_DESC">
+    <English>With a Recruitment module in the mission, you can open the whole inventory of an AI soldier in your group, not only the backpack.%1%1%2Stand within 3 m of the soldier, look at them and use %3Open this soldier's inventory%4%1%2Their uniform, vest and backpack are shown, with what lies on the ground beside them%1%2To hand them something, put it on the ground first, then take it from their inventory%1%1This works while you lead the group.</English>
+    <Chinesesimp>任务中有招募模块时，你可以打开你小组中AI士兵的全部物品栏，而不仅仅是背包。%1%1%2站在士兵3米以内，看着他们并使用%3打开该士兵的物品栏%4%1%2会显示他们的制服、背心和背包，以及他们身旁地上的物品%1%2要交给他们某样东西，先把它放在地上，再从他们的物品栏中拿取%1%1此功能在你担任小组队长时可用。</Chinesesimp>
+    <Chinese>任務中有招募模組時，你可以打開你小組中AI士兵的全部物品欄，而不僅僅是背包。%1%1%2站在士兵3公尺以內，看著他們並使用%3打開該士兵的物品欄%4%1%2會顯示他們的制服、背心和背包，以及他們身旁地上的物品%1%2要交給他們某樣東西，先把它放在地上，再從他們的物品欄中拿取%1%1此功能在你擔任小組隊長時可用。</Chinese>
+    <Spanish>Con un módulo de Reclutamiento en la misión, puedes abrir todo el inventario de un soldado IA de tu grupo, no solo la mochila.%1%1%2Ponte a menos de 3 m del soldado, míralo y usa %3Abrir el inventario de este soldado%4%1%2Se muestran su uniforme, chaleco y mochila, junto con lo que hay en el suelo a su lado%1%2Para darle algo, déjalo primero en el suelo y luego cógelo desde su inventario%1%1Funciona mientras lideras el grupo.</Spanish>
+    <French>Avec un module de Recrutement dans la mission, vous pouvez ouvrir tout l'inventaire d'un soldat IA de votre groupe, pas seulement le sac à dos.%1%1%2Placez-vous à moins de 3 m du soldat, regardez-le et utilisez %3Ouvrir l'inventaire de ce soldat%4%1%2Son uniforme, son gilet et son sac à dos s'affichent, avec ce qui se trouve au sol à côté de lui%1%2Pour lui donner quelque chose, posez-le d'abord au sol, puis prenez-le depuis son inventaire%1%1Cela fonctionne tant que vous dirigez le groupe.</French>
+    <Portuguese>Com um módulo de Recrutamento na missão, pode abrir todo o inventário de um soldado IA do seu grupo, não só a mochila.%1%1%2Fique a menos de 3 m do soldado, olhe para ele e use %3Abrir o inventário deste soldado%4%1%2São mostrados o uniforme, o colete e a mochila, com o que está no chão ao lado dele%1%2Para lhe dar algo, ponha-o primeiro no chão e depois tire-o a partir do inventário dele%1%1Funciona enquanto lidera o grupo.</Portuguese>
+    <Russian>Если в миссии есть модуль вербовки, вы можете открыть всё снаряжение ИИ-бойца из своей группы, а не только рюкзак.%1%1%2Подойдите к бойцу ближе чем на 3 м, посмотрите на него и выберите %3Открыть снаряжение этого бойца%4%1%2Будут показаны его форма, жилет и рюкзак, а также то, что лежит рядом на земле%1%2Чтобы передать ему предмет, сначала положите его на землю, затем возьмите из его снаряжения%1%1Это работает, пока вы командуете группой.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_HINT_INV_TIP">
+    <English>A soldier in a vehicle has to get out first.</English>
+    <Chinesesimp>车内的士兵需要先下车。</Chinesesimp>
+    <Chinese>車內的士兵需要先下車。</Chinese>
+    <Spanish>Un soldado en un vehículo tiene que bajarse primero.</Spanish>
+    <French>Un soldat dans un véhicule doit d'abord en descendre.</French>
+    <Portuguese>Um soldado num veículo tem de sair primeiro.</Portuguese>
+    <Russian>Боец в машине должен сначала из неё выйти.</Russian>
 </Key>
 </Container></Package></Project>

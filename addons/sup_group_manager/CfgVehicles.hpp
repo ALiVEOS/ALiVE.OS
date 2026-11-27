@@ -70,7 +70,7 @@ class CfgVehicles {
                                 property = "ALiVE_sup_recruit_recruitExperience";
                                 displayName = "$STR_ALIVE_RECRUIT_EXPERIENCE";
                                 tooltip = "$STR_ALIVE_RECRUIT_EXPERIENCE_COMMENT";
-                                defaultValue = """false""";
+                                defaultValue = """true""";
                                 class Values
                                 {
                                         class No  { name = "No";  value = "false"; };

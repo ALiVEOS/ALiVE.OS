@@ -36,6 +36,17 @@ class CfgHints
             image = "x\alive\addons\ui\logo_alive_square.paa";
             noImage = false;
         };
+        // A squad member's whole inventory (#1148)
+        class sup_recruit_inventory
+        {
+            displayName = "$STR_ALIVE_RECRUIT_HINT_INV";
+            displayNameShort = "$STR_ALIVE_RECRUIT_HINT_INV_SHORT";
+            description = "$STR_ALIVE_RECRUIT_HINT_INV_DESC";
+            tip = "$STR_ALIVE_RECRUIT_HINT_INV_TIP";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 
