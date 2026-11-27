@@ -144,6 +144,7 @@ switch (_operation) do {
             profileNamespace setVariable [_key, _plain];
             saveProfileNamespace;
             _result = true;
+            if (!_debug) then { ["[ALiVE Data] Player FOBs saved %1 FOBs, so the profile save file was written now", count (_plain select 2)] call ALiVE_fnc_dump };
         };
         ALiVE_FOB_dirty = false;
         ALiVE_FOB_lastSave = time;

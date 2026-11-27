@@ -185,11 +185,15 @@ switch (_op) do {
         if ((missionNamespace getVariable ["ALIVE_PNS_HOLD_FRAME", -1]) == diag_frameNo) then {
             ALIVE_PNS_HOLD_DIRTY = true;
         } else {
+            // the flush below is storeFile's own call: pass on who asked for the save
+            ALiVE_storeFile_by = _fnc_scriptNameParent;
             ["flush"] call ALiVE_fnc_storeFile;
         };
     };
 
     case "flush": {
+        private _askedBy = missionNamespace getVariable ["ALiVE_storeFile_by", ""];
+        ALiVE_storeFile_by = nil;
         if (missionNamespace getVariable ["ALiVE_storeFile_dirtyOwn", false]) then {
             ALiVE_storeFile_dirtyOwn = false;
             private _verified = missionProfileNamespace getVariable [VERIFIED, []];
@@ -205,6 +209,20 @@ switch (_op) do {
             private _w = diag_tickTime;
             private _ok = saveMissionProfileNamespace;
             ALiVE_storeFile_writeSplit = format ["own file %1 ms", round ((diag_tickTime - _w) * 1000)];
+            // Every write of the mission's own save file outside an autosave is said, with what asked for it, once a
+            // minute per caller at most: the callers' own lines are rate limited and some paths have none.
+            if ((missionNamespace getVariable ["ALiVE_storeFile_autoFlush", -1]) != diag_frameNo) then {
+                private _by = if (_askedBy != "" || {isNil "_fnc_scriptNameParent"}) then { _askedBy } else { _fnc_scriptNameParent };
+                private _flushLog = missionNamespace getVariable ["ALiVE_storeFile_flushBy", createHashMap];
+                (_flushLog getOrDefault [_by, [-1e9, 0]]) params ["_loggedAt", "_quiet"];
+                if ((diag_tickTime - _loggedAt) >= 60) then {
+                    ["[ALiVE Data] The mission's save file was written outside an autosave, asked for by %1%2", [_by, "an unnamed script"] select (_by == ""), ["", format [" (%1 more since the last line)", _quiet]] select (_quiet > 0)] call ALiVE_fnc_dump;
+                    _flushLog set [_by, [diag_tickTime, 0]];
+                } else {
+                    _flushLog set [_by, [_loggedAt, _quiet + 1]];
+                };
+                missionNamespace setVariable ["ALiVE_storeFile_flushBy", _flushLog];
+            };
             if (_ok) then {
                 {
                     if (!isNil {profileNamespace getVariable _x}) then {

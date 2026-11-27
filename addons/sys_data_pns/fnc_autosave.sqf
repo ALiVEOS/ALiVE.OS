@@ -295,6 +295,7 @@ private _handle = [_interval, _once] spawn {
 	        ALiVE_storeFile_writeSplit = nil;
 	        isNil {
 	            private _w = diag_tickTime;
+	            ALiVE_storeFile_autoFlush = diag_frameNo;
 	            ["flush"] call ALiVE_fnc_storeFile;
 	            _writeText = format ["; file write %1 ms on its own frame (%2)", round ((diag_tickTime - _w) * 1000), missionNamespace getVariable ["ALiVE_storeFile_writeSplit", ""]];
 	        };

@@ -135,6 +135,7 @@ switch (_operation) do {
             profileNamespace setVariable [_key, _plain];
             saveProfileNamespace;
             _result = true;
+            if (!_debug) then { ["[ALiVE Data] Persistent Craters saved %1 craters, so the profile save file was written now", count (_plain select 2)] call ALiVE_fnc_dump };
         };
         // a failed write stays dirty and goes again at the next interval
         if (_result) then { ALiVE_craters_dirty = false };

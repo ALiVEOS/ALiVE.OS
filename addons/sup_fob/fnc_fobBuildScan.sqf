@@ -897,6 +897,8 @@ _rows sort true;
 if (_measured > 0) then {
     profileNamespace setVariable ["ALiVE_FOB_sizes", _sizes];
     saveProfileNamespace;
+    // said, so a write to the save file at mission start can be traced here
+    ["[ALiVE Data] Player FOBs measured %1 build sizes, so the profile save file was written now", _measured] call ALiVE_fnc_dump;
 };
 
 // the server prices raised troops from its own copy, which no client's publicVariable can reach

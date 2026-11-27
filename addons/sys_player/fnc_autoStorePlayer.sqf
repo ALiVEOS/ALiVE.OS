@@ -97,6 +97,12 @@ if (_memDue) then {
             };
         } foreach _pairs;
         if (_dbDue) then {
+            // With nobody on and nothing changed since the last timed write, writing again only rewrote the same
+            // records to the save file (KH, 27 Nov): the first write after the last player leaves still goes, as
+            // their record is only in memory until then.
+            private _sig = hashValue (str (missionNamespace getVariable [QGVAR(player_data), []]));
+            if (_pairs isEqualTo [] && {_sig isEqualTo (MOD(sys_player) getVariable ["timedSaveSig", ""])}) exitWith {};
+            MOD(sys_player) setVariable ["timedSaveSig", _sig];
             TRACE_1("Saving players to DB", diag_tickTime);
             [MOD(sys_player), "savePlayers", [false]] call ALiVE_fnc_player;
         };
