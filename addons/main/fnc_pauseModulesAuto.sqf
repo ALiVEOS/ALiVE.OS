@@ -43,6 +43,11 @@ MOD(PAUSEMODULES_PAUSE) = {
     };
 
     ["- Pausing Modules"] call ALiVE_fnc_dumpR;
+    // for the War Room's Server Health, which marks the pause on its charts
+    if (isServer && {!isNil "ALiVE_fnc_diagEvent"}) then {
+        private _active = if (isNil "ALIVE_profileHandler") then { [] } else { [ALIVE_profileHandler, "getActiveEntities"] call ALIVE_fnc_profileHandler };
+        ["SERVER", "AUTO_PAUSE", format ["%1 spawned groups", if (_active isEqualType []) then { count _active } else { 0 }], [0,0]] call ALiVE_fnc_diagEvent;
+    };
 
     // The profile system pauses last. Paused at once, its spawning stops before the groups spawned around the last
     // player have been put away, and they stayed live AI all through the pause (68 to 81 groups overnight on an empty
@@ -80,6 +85,10 @@ MOD(PAUSEMODULES_RESUME) = {
     publicVariable QGVAR(PAUSEMODULES_PAUSED);
 
     ["- Starting Modules"] call ALiVE_fnc_dumpR;
+    if (isServer && {!isNil "ALiVE_fnc_diagEvent"}) then {
+        private _at = missionNamespace getVariable [QMOD(PAUSEMODULES_PAUSEDAT), -1];
+        ["SERVER", "AUTO_RESUME", if (_at < 0) then { "" } else { format ["paused %1 s", round (serverTime - _at)] }, [0,0]] call ALiVE_fnc_diagEvent;
+    };
 
     // Ease In After Idle (Required module, off by default): everything starting in the same minute as the first
     // player cost the server 29 s of game time in 26 minutes (19 Nov, stalls up to 2.5 s as groups, convoys and

@@ -46,6 +46,10 @@ ALiVE_diag_codeHeld = createHashMap;
 ALiVE_diag_spawns = 0;
 ALiVE_diag_despawns = 0;
 ALiVE_diag_fpsMin = 1000;
+// the longest single frame since the last row (Jman 27 Nov): diag_fpsMin, read once a second, only covers the last
+// 16 frames, so a lone freeze of 0.2-1 s was missed about half the time. One comparison a frame.
+ALiVE_diag_frameMax = 0;
+ALiVE_diag_frameEH = addMissionEventHandler ["EachFrame", { if (diag_deltaTime > ALiVE_diag_frameMax) then { ALiVE_diag_frameMax = diag_deltaTime } }];
 ALiVE_diag_next = time + 30;
 ALiVE_diag_active = false;
 ALiVE_diag_snapCount = 0;
@@ -144,7 +148,7 @@ ALiVE_diag_pfh = [{
         ALiVE_WR_diagOn isEqualTo true
     };
     ALiVE_diag_active = _on;
-    if (!_on) exitWith { ALiVE_diag_fpsMin = 1000; ALiVE_diag_errors = 0; ALiVE_diag_next = time + 30; ALiVE_diag_cpsN = 0; ALiVE_diag_cpsAt = diag_tickTime };
+    if (!_on) exitWith { ALiVE_diag_fpsMin = 1000; ALiVE_diag_frameMax = 0; ALiVE_diag_errors = 0; ALiVE_diag_next = time + 30; ALiVE_diag_cpsN = 0; ALiVE_diag_cpsAt = diag_tickTime };
     ALiVE_diag_fpsMin = ALiVE_diag_fpsMin min diag_fpsMin;
     if (time < ALiVE_diag_next) exitWith {};
     ALiVE_diag_next = time + 30;
@@ -209,13 +213,15 @@ ALiVE_diag_pfh = [{
         ALiVE_diag_spawns, ALiVE_diag_despawns,
         _aiOther, count vehicles, count allDead, count agents, ALiVE_diag_errors,
         count _ai - _aiOther,
-        _cps, _otherSide, _mach
+        _cps, _otherSide, _mach,
+        round (ALiVE_diag_frameMax * 1000)
     ];
     if (count ALiVE_diag_snap > 120) then { ALiVE_diag_snap deleteAt 0 };
     ALiVE_diag_spawns = 0;
     ALiVE_diag_despawns = 0;
     ALiVE_diag_errors = 0;
     ALiVE_diag_fpsMin = 1000;
+    ALiVE_diag_frameMax = 0;
 
     if (!ALiVE_diag_modsSent) then { ALiVE_diag_modsSent = true; call ALiVE_diag_fnc_mods };
     ALiVE_diag_snapCount = ALiVE_diag_snapCount + 1;

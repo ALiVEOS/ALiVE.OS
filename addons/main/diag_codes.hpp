@@ -25,11 +25,12 @@ ALiVE_diag_snap, a ring of 120, one row every 30 s:
    cps (scheduler cycles a second over the 30 s: how often a waiting scheduled script got a turn),
    [west, east, resistance, civilian] (aiOther by the side of its group),
    [[machine, aliveUnits, aiOther], ...] (where the AI is local: "server", "HC1", "HC2"... in the order of the
-   headless clients, then "players" for AI in groups local to a player's machine)]
+   headless clients, then "players" for AI in groups local to a player's machine),
+   frameMaxMs (the longest single frame since the previous row, in ms, from every frame's diag_deltaTime)]
   Indexes: 0 seq, 1 time, 2 fps, 3 fpsMin, 4 scripts, 5 profiles, 6 activeProfiles, 7 groups, 8 commanders,
   9 logistics, 10 pathfinderQueue, 11 spawns, 12 despawns, 13 aiOther, 14 vehicles, 15 dead, 16 agents, 17 scriptErrors, 18 aliveUnits,
-  19 cps, 20 aiOtherBySide, 21 aiByMachine.
-  Rows written before 16 Nov 2026 end at 12; before 23 Nov 2026 at 18.
+  19 cps, 20 aiOtherBySide, 21 aiByMachine, 22 frameMaxMs.
+  Rows written before 16 Nov 2026 end at 12; before 23 Nov 2026 at 18; before 27 Nov 2026 at 21.
 
 ALiVE_diag_events, a ring of 200:
   [seq, serverTime (s), category, code, text (1000 characters at most), [x, y] or [], repeatCount]
@@ -67,3 +68,7 @@ No player names or UIDs go in either ring.
 #define DIAG_SERVER_SCRIPT_TOP     "SERVER_SCRIPT_TOP"
 // once a run: the loaded mods by name, several rows when the list is longer than 1000 characters
 #define DIAG_SERVER_MODS           "SERVER_MODS"
+// Auto Pause paused the modules, nobody being on; the text is the spawned group count at that moment
+#define DIAG_SERVER_AUTO_PAUSE     "AUTO_PAUSE"
+// Auto Pause started the modules again for a player; the text is how long they were paused, as "paused <n> s"
+#define DIAG_SERVER_AUTO_RESUME    "AUTO_RESUME"
