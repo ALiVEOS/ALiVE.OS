@@ -289,7 +289,7 @@ switch(_operation) do {
                             _code;
                         };
 
-                        ["CS - synchronizedObjects: %1, _count: %2",synchronizedObjects _logic, count synchronizedObjects _logic] call ALiVE_fnc_dump;
+                        if (missionNamespace getVariable ["ALiVE_sup_combatsupport_debug", false]) then { ["CS - synchronizedObjects: %1, _count: %2",synchronizedObjects _logic, count synchronizedObjects _logic] call ALiVE_fnc_dump; };
 
                         for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
 
@@ -297,7 +297,7 @@ switch(_operation) do {
                             _type = _entry getvariable ["CS_TYPE","CAS"];
                             _cargoCount = getNumber(configFile >> "cfgVehicles" >> typeOf _entry >> "transportSoldier");
                             
-                        ["CS - _entry: %1, _type: %2, _cargoCount: %3",_entry,_type,_cargoCount] call ALiVE_fnc_dump;
+                        if (missionNamespace getVariable ["ALiVE_sup_combatsupport_debug", false]) then { ["CS - _entry: %1, _type: %2, _cargoCount: %3",_entry,_type,_cargoCount] call ALiVE_fnc_dump; };
 
                             if (_entry isKindOf "Air") then {
                                 switch (toLower(_type)) do {
@@ -1195,7 +1195,7 @@ switch(_operation) do {
                                 _roundsUnit = _class call ALiVE_fnc_GetArtyRounds;
                             };
 
-                            ["CS - _roundsUnit: %1",_roundsUnit] call ALiVE_fnc_dump;
+                            if (missionNamespace getVariable ["ALiVE_sup_combatsupport_debug", false]) then { ["CS - _roundsUnit: %1",_roundsUnit] call ALiVE_fnc_dump; };
 
 
                             _roundsAvailable = [];
@@ -1487,7 +1487,7 @@ switch(_operation) do {
                                 _roundsAvailable = [_probeGun, _artyBatteries + [_probeGun], _roundsAvailable] call NEO_fnc_artyLauncherSetup;
                             };
 
-                            ["CS - _roundsAvailable: %1",_roundsAvailable] call ALiVE_fnc_dump;
+                            if (missionNamespace getVariable ["ALiVE_sup_combatsupport_debug", false]) then { ["CS - _roundsAvailable: %1",_roundsAvailable] call ALiVE_fnc_dump; };
 
                             leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 

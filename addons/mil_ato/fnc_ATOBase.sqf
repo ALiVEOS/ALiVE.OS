@@ -1278,7 +1278,9 @@ switch(_operation) do {
                 ["isCarrier", _isCarrier],
                 ["isVirtual", _isVirtual],
                 ["virtualSlots", [_logic, "virtualSlots", 6] call ALIVE_fnc_hashGet],
-                ["airspace", _airspaces param [0, ""]]
+                ["airspace", _airspaces param [0, ""]],
+                // the place lists each profile it turns down only with this on
+                ["debug", [_logic, "debug", false] call ALIVE_fnc_hashGet]
             ]] call ALIVE_fnc_hashCreate;
             [_logic, "place", [
                 ["faction", _faction],

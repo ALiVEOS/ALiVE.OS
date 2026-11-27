@@ -1007,8 +1007,11 @@ switch(_operation) do {
         } forEach +(_profiles select 1); // a copy: each destroy takes its own key out of this list, and
                                          // walking the list itself left every second profile standing
 
-        private _state = [_logic, "state"] call MAINCLASS;
-        _state call ALIVE_fnc_inspectHash;
+        // the whole handler state, about 350 RPT lines a load: with debug on only
+        if ([_logic, "debug", false] call ALIVE_fnc_hashGet) then {
+            private _state = [_logic, "state"] call MAINCLASS;
+            _state call ALIVE_fnc_inspectHash;
+        };
     };
 
     case "saveProfileData": {

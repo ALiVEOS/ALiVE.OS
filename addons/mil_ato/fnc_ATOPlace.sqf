@@ -1135,6 +1135,11 @@ switch(_operation) do {
         };
 
         // Judge each one, and remember when we first saw the ones we would take.
+        // A new refusal is one line per profile with the base's debug on; otherwise the sweep's new refusals make one
+        // line for the faction, counted by reason (a large mission gave over 200 lines, one per tank or car)
+        private _baseL = [_logic, "base", []] call ALIVE_fnc_hashGet;
+        private _refDebug = _baseL isEqualType [] && {count _baseL > 2} && {([_baseL, "debug", false] call ALIVE_fnc_hashGet) isEqualTo true};
+        private _refTally = createHashMap;
         private _ready = [];
         private _seen = [];
         {
@@ -1162,10 +1167,16 @@ switch(_operation) do {
                 private _last = [_refusals, _id, ""] call ALIVE_fnc_hashGet;
                 if !(_last isEqualTo _reason) then {
                     [_refusals, _id, _reason] call ALIVE_fnc_hashSet;
-                    ["ALIVE_fnc_ATOPlace - %1 not adopted: %2", _id, _reason] call ALiVE_fnc_dump;
+                    if (_refDebug) then { ["ALIVE_fnc_ATOPlace - %1 not adopted: %2", _id, _reason] call ALiVE_fnc_dump } else { _refTally set [_reason, (_refTally getOrDefault [_reason, 0]) + 1] };
                 };
             };
         } forEach _ids;
+        if (count _refTally > 0) then {
+            private _refN = 0;
+            { _refN = _refN + _y } forEach _refTally;
+            ["ALIVE_fnc_ATOPlace - %1: %2 profiles not adopted (%3)", [_logic, "faction", ""] call ALIVE_fnc_hashGet,
+                _refN, (_refTally toArray false) apply { format ["%1 x %2", _x select 1, _x select 0] } joinString "; "] call ALiVE_fnc_dump;
+        };
 
         // A candidate that has gone away loses its sighting, so an aircraft
         // that appears, vanishes and appears again has to serve the gap afresh
