@@ -36,6 +36,17 @@ class CfgHints
             image = "x\alive\addons\ui\logo_alive_square.paa";
             noImage = false;
         };
+        // An escort for a transport, behind it or ahead of it (#1135)
+        class sup_transport_escort
+        {
+            displayName = "$STR_ALIVE_CS_HINT_ESCORT";
+            displayNameShort = "$STR_ALIVE_CS_HINT_ESCORT_SHORT";
+            description = "$STR_ALIVE_CS_HINT_ESCORT_DESC";
+            tip = "$STR_ALIVE_CS_HINT_ESCORT_TIP";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 

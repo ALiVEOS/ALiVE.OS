@@ -2,10 +2,11 @@
     NEO_fnc_transportEscort (Eric on Discord, 22 Oct): a support vehicle escorts a transport the player ordered, set to
     fire at will. Runs on the server, sent there by the transport panel's confirm with the Escort box's choice.
 
-    [transport, escort netId ("" for none), "AIR" | "GROUND", the player who asked]
+    [transport, escort netId ("" for none, "<netId>|AHEAD" to lead), "AIR" | "GROUND", the player who asked, where it was sent]
 
     An air escort (an attack helicopter from the CAS list, or an armed transport helicopter) flies 150 m behind the
-    transport, and circles 250 m out while the transport is slow or on the ground, never landing. A ground escort
+    transport, and circles 250 m out while the transport is slow or on the ground, never landing. Picked as "ahead"
+    (#1135) it heads for where the transport was sent at full speed, flies in front of it and circles there first. A ground escort
     (an armed ground transport) drives 40 m behind it. Its own group throughout: in the transport's group its gunners
     would only fire as the pilot's, and the transport's own orders would move it too.
 
@@ -16,8 +17,14 @@
 */
 if (!isServer) exitWith {};
 if (!canSuspend) exitWith { _this spawn NEO_fnc_transportEscort };
-params [["_transport", objNull], ["_escortId", ""], ["_kind", "AIR"], ["_player", objNull]];
+params [["_transport", objNull], ["_escortId", ""], ["_kind", "AIR"], ["_player", objNull], ["_dest", []]];
 if (isNull _transport) exitWith {};
+// "<id>|AHEAD" (arismagicgr, #1135): an air escort that goes ahead of the transport to where it was sent and circles
+// there, so it is over the landing spot first. Kept on the transport, so a new order with the same escort can switch it
+private _ahead = (_escortId find "|AHEAD") > -1;
+if (_ahead) then { _escortId = (_escortId splitString "|") select 0 };
+_transport setVariable ["NEO_radioEscortAhead", _ahead && {_kind == "AIR"}, true];
+_transport setVariable ["NEO_radioEscortDest", _dest, true];
 private _escort = if (_escortId isEqualTo "") then { objNull } else { _escortId call BIS_fnc_objectFromNetId };
 private _air = _kind == "AIR";
 
@@ -78,6 +85,9 @@ private _busy = false;     // the transport has taken its order: standing down a
 private _circle = 0;
 private _height = -1;
 private _stopped = false;
+private _fast = false;
+private _lastGoal = [0,0,0];
+private _speedWas = speedMode _grp;
 while {true} do {
     sleep 2;
     if (!alive _transport || {!alive _escort} || {!alive driver _escort} || {!canMove _escort}) exitWith {};
@@ -105,10 +115,27 @@ while {true} do {
     private _tp = getPosATL _transport;
     if (_air) then {
         private _slow = speed _transport < 15 || {isTouchingGround _transport};
-        private _goal = if (_slow) then { _circle = _circle + 30; _tp getPos [250, _circle] } else { _tp getPos [150, getDir _transport + 180] };
+        // ahead: 400 m in front on the way to where the transport was sent, and once that is within 700 m, circling
+        // 250 m out round it until the transport slows there; then round the transport, as one behind does
+        private _lead = (_transport getVariable ["NEO_radioEscortAhead", false]) && {count (_transport getVariable ["NEO_radioEscortDest", []]) > 1};
+        private _dp = _transport getVariable ["NEO_radioEscortDest", []];
+        private _goal = call {
+            if (_slow) exitWith { _circle = _circle + 30; _tp getPos [250, _circle] };
+            if (_lead) exitWith {
+                // not yet 300 m in front: straight for the destination at full speed, since a point only 400 m ahead
+                // of the transport is so close the pilot slows for it and drops behind (27 Nov test: 90-140 km/h
+                // against the transport's 200)
+                if ((_tp distance2D _dp) < 700) exitWith { _circle = _circle + 30; _dp getPos [250, _circle] };
+                if ((_escort distance2D _dp) > (_tp distance2D _dp) - 300) exitWith { _dp };
+                _tp getPos [400, _tp getDir _dp]
+            };
+            _tp getPos [150, getDir _transport + 180]
+        };
         private _h = [((_tp select 2) max 60) + 50, 120] select _slow;
         if (abs (_h - _height) > 30) then { _height = _h; [_escort, _h min 1000] remoteExec ["flyInHeight", _escort] };
-        if (_slow || {(_escort distance2D _goal) > 80}) then { [_escort, _goal] call ALiVE_fnc_doMoveRemote };
+        if (_lead && {!_fast}) then { _fast = true; [_grp, "FULL"] remoteExec ["setSpeedMode", leader _grp] };
+        // the same point again is not re-sent, so the pilot never brakes for a fresh order on the way to it
+        if ((_slow || {_lead} || {(_escort distance2D _goal) > 80}) && {(_goal distance2D _lastGoal) > 50}) then { _lastGoal = _goal; [_escort, _goal] call ALiVE_fnc_doMoveRemote };
     } else {
         if ((_escort distance2D _transport) > 60) then {
             _stopped = false;
@@ -126,6 +153,7 @@ if (_ownLoop) then { _escort setVariable ["NEO_radioGunnerDefendOn", if (isNil "
 if (!isNull _grp) then {
     [_grp, _was select 0] remoteExec ["setBehaviour", leader _grp];
     [_grp, _was select 1] remoteExec ["setCombatMode", leader _grp];
+    if (_fast) then { [_grp, _speedWas] remoteExec ["setSpeedMode", leader _grp] };
 };
 ["CS - %1 stops escorting %2", _escort, _transport] call ALiVE_fnc_dump;
 if (alive _escort && {(_escort getVariable ["NEO_radioCurrentTask", []]) isEqualTo _mark} && {isNil {_escort getVariable _orderVar}}) then {

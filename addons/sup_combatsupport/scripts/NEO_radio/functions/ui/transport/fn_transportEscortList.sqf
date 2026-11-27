@@ -37,18 +37,25 @@ if (_kind == "AIR") then {
     } forEach (NEO_radioLogic getVariable [format ["NEO_radioGroundArray_%1", playerSide], []]);
 };
 private _current = _transport getVariable ["NEO_radioEscort", objNull];
+private _aheadNow = _transport getVariable ["NEO_radioEscortAhead", false];
 private _sel = 0;
-{
-    _x params ["_callsign", "_veh"];
+// an air escort is offered twice (arismagicgr, #1135): behind the transport, or ahead of it to the landing spot. The
+// ahead row's data ends in "|AHEAD"
+private _addRows = {
+    params ["_callsign", "_veh"];
     private _r = _combo lbAdd format [localize "STR_ALIVE_CS_UI_ESCORT", _callsign];
     _combo lbSetData [_r, _veh call BIS_fnc_netId];
-    if (_veh isEqualTo _current) then { _sel = _r };
-} forEach _rows;
+    if (_veh isEqualTo _current && {!_aheadNow}) then { _sel = _r };
+    if (_kind == "AIR") then {
+        _r = _combo lbAdd format [localize "STR_ALIVE_CS_UI_ESCORT_AHEAD", _callsign];
+        _combo lbSetData [_r, (_veh call BIS_fnc_netId) + "|AHEAD"];
+        if (_veh isEqualTo _current && {_aheadNow}) then { _sel = _r };
+    };
+};
+{ _x call _addRows } forEach _rows;
 // the transport's current escort is busy escorting it, so it is not in the list above: show it as chosen
 if (!isNull _current && {_sel == 0} && {alive _current}) then {
-    private _r = _combo lbAdd format [localize "STR_ALIVE_CS_UI_ESCORT", (format ["%1", group driver _current]) call NEO_fnc_callsignFix];
-    _combo lbSetData [_r, _current call BIS_fnc_netId];
-    _sel = _r;
+    [(format ["%1", group driver _current]) call NEO_fnc_callsignFix, _current] call _addRows;
 };
 _combo lbSetCurSel _sel;
 _combo ctrlEnable true;

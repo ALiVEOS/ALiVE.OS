@@ -2862,4 +2862,49 @@
 <Key ID="STR_ALIVE_CS_MSG_CMDR_STANDBY">
     <English>%1, the commander's guns are laying on grid %2, stand by. Out.</English>
 </Key>
+<Key ID="STR_ALIVE_CS_UI_ESCORT_AHEAD">
+    <English>Escort ahead: %1</English>
+    <Chinesesimp>前方护航：%1</Chinesesimp>
+    <Chinese>前方護航：%1</Chinese>
+    <Spanish>Escolta en vanguardia: %1</Spanish>
+    <French>Escorte en tête : %1</French>
+    <Portuguese>Escolta à frente: %1</Portuguese>
+    <Russian>Эскорт впереди: %1</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_HINT_ESCORT">
+    <English>Combat Support - Escorting a transport</English>
+    <Chinesesimp>战斗支援 - 为运输护航</Chinesesimp>
+    <Chinese>戰鬥支援 - 為運輸護航</Chinese>
+    <Spanish>Apoyo de combate - Escoltar un transporte</Spanish>
+    <French>Soutien au combat - Escorter un transport</French>
+    <Portuguese>Apoio de combate - Escoltar um transporte</Portuguese>
+    <Russian>Боевая поддержка - сопровождение транспорта</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_HINT_ESCORT_SHORT">
+    <English>Behind the transport, or ahead of it</English>
+    <Chinesesimp>在运输后方，或在其前方</Chinesesimp>
+    <Chinese>在運輸後方，或在其前方</Chinese>
+    <Spanish>Detrás del transporte, o por delante</Spanish>
+    <French>Derrière le transport, ou devant lui</French>
+    <Portuguese>Atrás do transporte, ou à frente dele</Portuguese>
+    <Russian>Позади транспорта или впереди него</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_HINT_ESCORT_DESC">
+    <English>When you order a Transport, the %3Escort%4 box sends an armed support vehicle with it, weapons free.%1%1%2%3Escort%4: an air escort flies 150 m behind the transport, and a ground escort drives 40 m behind%1%2%3Escort ahead%4: an air escort flies out in front, gets to where you sent the transport first and circles 250 m out, so it can deal with the enemy before the transport arrives%1%2While the transport is slow or on the ground, an air escort circles it 250 m out and never takes the landing spot%1%1The escort goes home when the transport heads home or stands down.</English>
+    <Chinesesimp>下达运输命令时，%3护航%4选项会派出一辆武装支援载具随行，自由开火。%1%1%2%3护航%4：空中护航在运输后方 150 米飞行，地面护航在后方 40 米行驶%1%2%3前方护航%4：空中护航在前方飞行，先抵达你派运输前往的地点并在 250 米外盘旋，以便在运输抵达前对付敌人%1%2运输减速或着陆时，空中护航在其 250 米外盘旋，绝不占用着陆点%1%1运输返航或待命时，护航也会返航。</Chinesesimp>
+    <Chinese>下達運輸命令時，%3護航%4選項會派出一輛武裝支援載具隨行，自由開火。%1%1%2%3護航%4：空中護航在運輸後方 150 公尺飛行，地面護航在後方 40 公尺行駛%1%2%3前方護航%4：空中護航在前方飛行，先抵達你派運輸前往的地點並在 250 公尺外盤旋，以便在運輸抵達前對付敵人%1%2運輸減速或著陸時，空中護航在其 250 公尺外盤旋，絕不佔用著陸點%1%1運輸返航或待命時，護航也會返航。</Chinese>
+    <Spanish>Al pedir un Transporte, la casilla %3Escort%4 envía con él un vehículo de apoyo armado, con fuego libre.%1%1%2%3Escort%4: una escolta aérea vuela 150 m detrás del transporte, y una terrestre conduce 40 m detrás%1%2%3Escort ahead%4: una escolta aérea vuela por delante, llega antes al lugar al que enviaste el transporte y orbita a 250 m, para ocuparse del enemigo antes de que llegue el transporte%1%2Mientras el transporte va lento o está en tierra, la escolta aérea orbita a 250 m y nunca ocupa la zona de aterrizaje%1%1La escolta vuelve a la base cuando el transporte regresa o queda en espera.</Spanish>
+    <French>Quand vous commandez un Transport, la case %3Escort%4 envoie avec lui un véhicule de soutien armé, en tir libre.%1%1%2%3Escort%4 : une escorte aérienne vole 150 m derrière le transport, et une escorte terrestre roule 40 m derrière%1%2%3Escort ahead%4 : une escorte aérienne vole devant, arrive la première là où vous avez envoyé le transport et tourne à 250 m, pour traiter l'ennemi avant l'arrivée du transport%1%2Tant que le transport est lent ou au sol, l'escorte aérienne tourne à 250 m et ne prend jamais la zone d'atterrissage%1%1L'escorte rentre quand le transport rentre ou se met en attente.</French>
+    <Portuguese>Ao pedir um Transporte, a caixa %3Escort%4 envia com ele um veículo de apoio armado, com fogo livre.%1%1%2%3Escort%4: uma escolta aérea voa 150 m atrás do transporte, e uma terrestre conduz 40 m atrás%1%2%3Escort ahead%4: uma escolta aérea voa à frente, chega primeiro ao local para onde enviou o transporte e circula a 250 m, para tratar do inimigo antes de o transporte chegar%1%2Enquanto o transporte vai devagar ou está no chão, a escolta aérea circula a 250 m e nunca ocupa a zona de aterragem%1%1A escolta regressa à base quando o transporte regressa ou fica em espera.</Portuguese>
+    <Russian>Когда вы заказываете Transport, поле %3Escort%4 отправляет с ним вооружённую машину поддержки с разрешением на огонь.%1%1%2%3Escort%4: воздушный эскорт летит в 150 м позади транспорта, наземный едет в 40 м позади%1%2%3Escort ahead%4: воздушный эскорт летит впереди, первым прибывает туда, куда вы отправили транспорт, и кружит в 250 м, чтобы разобраться с противником до прибытия транспорта%1%2Пока транспорт идёт медленно или стоит на земле, воздушный эскорт кружит в 250 м и никогда не занимает площадку посадки%1%1Эскорт возвращается на базу, когда транспорт возвращается или переходит в ожидание.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CS_HINT_ESCORT_TIP">
+    <English>Escort ahead is for air escorts only. A ground escort always drives behind.</English>
+    <Chinesesimp>前方护航仅适用于空中护航。地面护航始终在后方行驶。</Chinesesimp>
+    <Chinese>前方護航僅適用於空中護航。地面護航始終在後方行駛。</Chinese>
+    <Spanish>Escort ahead es solo para escoltas aéreas. Una escolta terrestre siempre va detrás.</Spanish>
+    <French>Escort ahead ne concerne que les escortes aériennes. Une escorte terrestre roule toujours derrière.</French>
+    <Portuguese>Escort ahead é só para escoltas aéreas. Uma escolta terrestre vai sempre atrás.</Portuguese>
+    <Russian>Escort ahead только для воздушного эскорта. Наземный эскорт всегда едет позади.</Russian>
+</Key>
 </Container></Package></Project>

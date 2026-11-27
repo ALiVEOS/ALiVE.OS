@@ -101,7 +101,7 @@ if (!isNil "ALIVE_sys_statistics_fnc_feedEvent") then {
 if (toUpper _task != "RTB") then {
     private _escortCb = _display displayCtrl 655638;
     private _escortId = if (lbCurSel _escortCb > -1) then { _escortCb lbData (lbCurSel _escortCb) } else { "" };
-    [[_chopper, _escortId, "AIR", player], "NEO_fnc_transportEscort", false, false] spawn BIS_fnc_MP;
+    [[_chopper, _escortId, "AIR", player, _pos], "NEO_fnc_transportEscort", false, false] spawn BIS_fnc_MP;
 };
 // its destination stays on this player's map while it flies the order
 if (toUpper _task != "RTB") then { [_chopper, _arguments, "NEO_radioTrasportUnitStatus", [[_pos, _callsign]]] call NEO_fnc_supportOrderMarkers };
