@@ -749,6 +749,39 @@
 
 	[ALIVE_generatedTasks, "CAS", ["Close Air Support",_options]] call ALIVE_fnc_hashSet;
 
+// Fire Mission Task: for players crewing an artillery piece or a mortar
+
+	_options = [];
+
+	_tasksData = [] call ALIVE_fnc_hashCreate;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Fire Mission near %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Engage the enemy with your gun, then move it before they fire back"] call ALIVE_fnc_hashSet;
+	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Fire Mission at grid %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Enemy %2 at grid %1, %4 km from your gun on bearing %5. Fire %3 rounds and keep firing until the target area is clear."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["PLAYERS","Gun is up and ready for tasking, Over"],["HQ","Fire mission, grid %1, enemy %2 in the open, %3 rounds, bearing %4, range %5 km, fire when ready, Over"],["PLAYERS","Roger, fire mission grid %1, shot out."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["HQ","Target area is clear, end of mission. Good shooting!"],["PLAYERS","End of mission, displacing now."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","Target has moved on, end of mission, Over"],["PLAYERS","Roger, standing by, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",20]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Fire",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Relocate the gun"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","The enemy will be plotting your firing position. Move the gun at least 300 m within 10 minutes."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Expect counter-battery fire, displace at least 300 metres, Over"],["PLAYERS","Roger, moving."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","Gun is in its new position, ready for tasking."],["HQ","Roger, good work, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","Your gun is still where the enemy saw it fire, Over"],["PLAYERS","Roger, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Relocate",_taskData] call ALIVE_fnc_hashSet;
+
+	_options set [count _options,_tasksData];
+
+	[ALIVE_generatedTasks, "FireMission", ["Fire Mission",_options]] call ALIVE_fnc_hashSet;
+
 // Insurgency Patrol Task
 
 	_options = [];

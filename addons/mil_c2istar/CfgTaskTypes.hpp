@@ -178,6 +178,12 @@ class CfgTaskTypes
         icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\navigate_ca.paa";
         icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\navigate_ca.paa";
     };
+    class alive_pin_firemission
+    {
+        displayName = "Fire Mission";
+        icon = "\A3\ui_f\data\igui\cfg\simpleTasks\types\target_ca.paa";
+        icon3D = "\A3\ui_f\data\igui\cfg\simpleTasks\types\target_ca.paa";
+    };
     class alive_pin_reconobjective
     {
         displayName = "Recon Objective";

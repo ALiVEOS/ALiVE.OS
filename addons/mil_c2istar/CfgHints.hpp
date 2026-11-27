@@ -25,6 +25,17 @@ class CfgHints
             // optional parameter for not showing of image in context hint in mission (default false))
             noImage = false;
         };
+        // Fire missions for a player-crewed gun (Fitz, 9 Nov)
+        class c2istar_firemission
+        {
+            displayName = "$STR_ALIVE_C2ISTAR_HINT_FIRE";
+            displayNameShort = "$STR_ALIVE_C2ISTAR_HINT_FIRE_SHORT";
+            description = "$STR_ALIVE_C2ISTAR_HINT_FIRE_DESC";
+            tip = "$STR_ALIVE_C2ISTAR_HINT_FIRE_TIP";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 

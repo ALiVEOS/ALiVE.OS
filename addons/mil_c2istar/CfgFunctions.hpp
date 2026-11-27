@@ -406,6 +406,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskLaze.sqf";
                 ALIVE_RECOMPILE;
             };
+            class taskFireMission {
+                description = "Task Fire Mission for a player-crewed gun";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskFireMission.sqf";
+                ALIVE_RECOMPILE;
+            };
             class taskDestroyVehicles {
                 description = "Task Destroy Vehicles";
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyVehicles.sqf";

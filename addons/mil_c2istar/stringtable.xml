@@ -3407,4 +3407,40 @@
     <Portuguese>Cada alvo é uma tarefa própria dentro desta.</Portuguese>
     <Russian>Каждая цель — отдельная задача внутри этой.</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_HINT_FIRE">
+    <English>C2ISTAR - Fire missions</English>
+    <Chinesesimp>C2ISTAR - 火力任务</Chinesesimp>
+    <Chinese>C2ISTAR - 火力任務</Chinese>
+    <Spanish>C2ISTAR - Misiones de fuego</Spanish>
+    <French>C2ISTAR - Missions de tir</French>
+    <Portuguese>C2ISTAR - Missões de fogo</Portuguese>
+    <Russian>C2ISTAR - огневые задачи</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_HINT_FIRE_SHORT">
+    <English>Crewing a gun for the AI Commander</English>
+    <Chinesesimp>为AI指挥官操作火炮</Chinesesimp>
+    <Chinese>為AI指揮官操作火砲</Chinese>
+    <Spanish>Servir un cañón para el comandante IA</Spanish>
+    <French>Servir un canon pour le commandant IA</French>
+    <Portuguese>Guarnecer um canhão para o comandante IA</Portuguese>
+    <Russian>Расчёт орудия для ИИ-командира</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_HINT_FIRE_DESC">
+    <English>A player group crewing an artillery piece or a mortar can be given fire missions by the AI Commander.%1%1%2Get in the gun, open the %3ALiVE Action Menu%4 and use %3OPCOM Orders%4, %3Request Order%4, or pick %3Fire Mission%4 in the C2ISTAR task console%1%2HQ sends the grid, what is there, how many rounds and the bearing and range from your gun%1%2Keep firing until the target area is clear%1%2Then move the gun at least 300 m within 10 minutes, before the enemy fires back%1%1With no enemy group in range that your side knows of, you are given another kind of task.</English>
+    <Chinesesimp>操作火炮或迫击炮的玩家小组可以从AI指挥官那里接收火力任务。%1%1%2进入火炮，打开%3ALiVE行动菜单%4并使用%3OPCOM Orders%4、%3Request Order%4，或在C2ISTAR任务控制台中选择%3Fire Mission%4%1%2总部会发送网格坐标、目标情况、射击发数以及相对你火炮的方位和距离%1%2持续射击直到目标区域被清除%1%2然后在10分钟内将火炮移动至少300米，以免敌人还击%1%1如果射程内没有你方已知的敌方小组，你会收到其他类型的任务。</Chinesesimp>
+    <Chinese>操作火砲或迫擊砲的玩家小組可以從AI指揮官那裡接收火力任務。%1%1%2進入火砲，打開%3ALiVE行動選單%4並使用%3OPCOM Orders%4、%3Request Order%4，或在C2ISTAR任務控制台中選擇%3Fire Mission%4%1%2總部會發送網格座標、目標情況、射擊發數以及相對你火砲的方位和距離%1%2持續射擊直到目標區域被清除%1%2然後在10分鐘內將火砲移動至少300公尺，以免敵人還擊%1%1如果射程內沒有你方已知的敵方小組，你會收到其他類型的任務。</Chinese>
+    <Spanish>Un grupo de jugadores que sirve una pieza de artillería o un mortero puede recibir misiones de fuego del comandante IA.%1%1%2Sube al cañón, abre el %3menú de acciones de ALiVE%4 y usa %3OPCOM Orders%4, %3Request Order%4, o elige %3Fire Mission%4 en la consola de tareas de C2ISTAR%1%2El cuartel general envía la cuadrícula, qué hay allí, cuántos disparos y el rumbo y la distancia desde tu cañón%1%2Sigue disparando hasta que la zona del objetivo quede despejada%1%2Después mueve el cañón al menos 300 m en 10 minutos, antes de que el enemigo responda%1%1Si no hay ningún grupo enemigo conocido por tu bando a tu alcance, recibes otro tipo de tarea.</Spanish>
+    <French>Un groupe de joueurs servant une pièce d'artillerie ou un mortier peut recevoir des missions de tir du commandant IA.%1%1%2Montez dans le canon, ouvrez le %3menu d'actions ALiVE%4 et utilisez %3OPCOM Orders%4, %3Request Order%4, ou choisissez %3Fire Mission%4 dans la console des tâches C2ISTAR%1%2Le QG envoie la grille, ce qui s'y trouve, le nombre de coups ainsi que l'azimut et la distance depuis votre canon%1%2Continuez à tirer jusqu'à ce que la zone de l'objectif soit dégagée%1%2Puis déplacez le canon d'au moins 300 m en 10 minutes, avant que l'ennemi ne riposte%1%1S'il n'y a à portée aucun groupe ennemi connu de votre camp, vous recevez un autre type de tâche.</French>
+    <Portuguese>Um grupo de jogadores que guarnece uma peça de artilharia ou um morteiro pode receber missões de fogo do comandante IA.%1%1%2Entre no canhão, abra o %3menu de ações do ALiVE%4 e use %3OPCOM Orders%4, %3Request Order%4, ou escolha %3Fire Mission%4 na consola de tarefas do C2ISTAR%1%2O QG envia a quadrícula, o que lá está, quantos disparos e o rumo e a distância a partir do seu canhão%1%2Continue a disparar até a área do alvo ficar limpa%1%2Depois mova o canhão pelo menos 300 m em 10 minutos, antes que o inimigo responda%1%1Sem nenhum grupo inimigo conhecido do seu lado ao alcance, recebe outro tipo de tarefa.</Portuguese>
+    <Russian>Группа игроков в расчёте артиллерийского орудия или миномёта может получать огневые задачи от ИИ-командира.%1%1%2Займите место в орудии, откройте %3меню действий ALiVE%4 и выберите %3OPCOM Orders%4, %3Request Order%4, или выберите %3Fire Mission%4 в консоли задач C2ISTAR%1%2Штаб передаёт квадрат, что там находится, число выстрелов, а также азимут и дальность от вашего орудия%1%2Ведите огонь, пока район цели не будет очищен%1%2Затем в течение 10 минут переместите орудие минимум на 300 м, пока противник не ответил%1%1Если в пределах досягаемости нет известных вашей стороне вражеских групп, вы получите задачу другого типа.</Russian>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_HINT_FIRE_TIP">
+    <English>Staying put after a fire mission fails the move, and the gun may not survive the reply.</English>
+    <Chinesesimp>火力任务后原地不动会导致转移任务失败，火炮也可能挨不过敌人的还击。</Chinesesimp>
+    <Chinese>火力任務後原地不動會導致轉移任務失敗，火砲也可能挨不過敵人的還擊。</Chinese>
+    <Spanish>Quedarse en el sitio tras una misión de fuego hace fallar el traslado, y el cañón puede no sobrevivir a la respuesta.</Spanish>
+    <French>Rester sur place après une mission de tir fait échouer le déplacement, et le canon risque de ne pas survivre à la riposte.</French>
+    <Portuguese>Ficar no mesmo sítio depois de uma missão de fogo faz falhar a mudança de posição, e o canhão pode não sobreviver à resposta.</Portuguese>
+    <Russian>Если остаться на месте после огневой задачи, смена позиции будет провалена, а орудие может не пережить ответный огонь.</Russian>
+</Key>
 </Container></Package></Project>
