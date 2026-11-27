@@ -12592,13 +12592,14 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={6461.040,8.100,5383.330};
+				position[]={6517.000,8.200,5390.000};
+				angles[]={0,1.5707964,0};
 			};
 			side="Empty";
 			flags=4;
 			class Attributes
 			{
-				init="this setVariable ['ALiVE_garrisonClaim', [this, 1e10]];";
+				init="this setVariable ['ALiVE_garrisonClaim', [this, 1e10]]; if (isServer) then { this setPosATL [(getPosATL this) select 0, (getPosATL this) select 1, 0] };";
 			};
 			id=96;
 			type="B_Mortar_01_F";
