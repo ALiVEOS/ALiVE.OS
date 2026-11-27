@@ -25,6 +25,16 @@ class CfgHints
             // optional parameter for not showing of image in context hint in mission (default false))
             noImage = false;
         };
+        class ALiVE_access
+        {
+            displayName = "$STR_ALIVE_HINT_ACCESS_TITLE";
+            displayNameShort = "$STR_ALIVE_HINT_ACCESS_SHORT";
+            description = "$STR_ALIVE_HINT_ACCESS_DESC";
+            tip = "$STR_ALIVE_HINT_ACCESS_TIP";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 

@@ -985,4 +985,40 @@
 <Key ID="STR_ALIVE_ACCESS_COND_COMMENT">
     <English>Optional SQF that must return true for a player to use this module, on top of rank and slot. It runs on the player's own machine, with _caller as the player. Example: _caller getVariable ["canRecruit", false]. A condition with an error lets nobody in and is written once to the RPT. A logged-in admin always may.</English>
 </Key>
+<Key ID="STR_ALIVE_HINT_ACCESS_TITLE">
+    <English>Module Access</English>
+    <Chinesesimp>模块访问权限</Chinesesimp>
+    <Chinese>模組存取權限</Chinese>
+    <Spanish>Acceso a los módulos</Spanish>
+    <French>Accès aux modules</French>
+    <Portuguese>Acesso aos módulos</Portuguese>
+    <Russian>Доступ к модулям</Russian>
+</Key>
+<Key ID="STR_ALIVE_HINT_ACCESS_SHORT">
+    <English>Keep a module for a rank, a slot or a condition</English>
+    <Chinesesimp>按军衔、位置或条件限制模块</Chinesesimp>
+    <Chinese>按軍銜、位置或條件限制模組</Chinese>
+    <Spanish>Reservar un módulo para un rango, una plaza o una condición</Spanish>
+    <French>Réserver un module à un grade, un emplacement ou une condition</French>
+    <Portuguese>Reservar um módulo para uma patente, um slot ou uma condição</Portuguese>
+    <Russian>Ограничить модуль званием, слотом или условием</Russian>
+</Key>
+<Key ID="STR_ALIVE_HINT_ACCESS_DESC">
+    <English>%3C2ISTAR%4, %3Player Logistics%4, %3Combat Support%4 and %3Recruitment%4 each have three access settings in Eden. Left at their defaults, every player can use the module.%1%1%2%3Minimum Rank%4: Any lets everyone in. Group leaders only keeps it for the leader of each group. A rank keeps it for that rank and above.%1%2%3Allowed Slots%4: a comma separated list. Each entry matches a unit's variable name, its role description (part of it is enough) or its group's callsign, ignoring case.%1%2%3Access Condition%4: optional SQF that must also return true. It runs on the player's own machine, with _caller as the player.%1%1With both Minimum Rank and Allowed Slots set, meeting either one is enough. A player who is refused is told who the module is kept for.</English>
+    <Chinesesimp>%3C2ISTAR%4、%3玩家战斗后勤%4、%3玩家战斗支援%4和%3招募%4在 Eden 中各有三项访问设置。保持默认值时，所有玩家都可以使用该模块。%1%1%2%3Minimum Rank%4：Any 允许所有人使用。Group leaders only 仅限每个小组的组长使用。选择某个军衔则仅限该军衔及以上使用。%1%2%3Allowed Slots%4：以逗号分隔的列表。每一项匹配单位的变量名、其角色描述（部分即可）或其小组呼号，不区分大小写。%1%2%3Access Condition%4：可选的 SQF，也必须返回 true。它在玩家自己的机器上运行，_caller 即该玩家。%1%1同时设置 Minimum Rank 和 Allowed Slots 时，满足其中之一即可。被拒绝的玩家会被告知该模块限定给谁使用。</Chinesesimp>
+    <Chinese>%3C2ISTAR%4、%3玩家戰鬥後勤%4、%3玩家戰鬥支援%4和%3招募%4在 Eden 中各有三項存取設定。保持預設值時，所有玩家都可以使用該模組。%1%1%2%3Minimum Rank%4：Any 允許所有人使用。Group leaders only 僅限每個小組的組長使用。選擇某個軍銜則僅限該軍銜及以上使用。%1%2%3Allowed Slots%4：以逗號分隔的清單。每一項比對單位的變數名稱、其角色描述（部分即可）或其小組呼號，不區分大小寫。%1%2%3Access Condition%4：選用的 SQF，也必須傳回 true。它在玩家自己的電腦上執行，_caller 即該玩家。%1%1同時設定 Minimum Rank 與 Allowed Slots 時，符合其中之一即可。被拒絕的玩家會被告知該模組限定給誰使用。</Chinese>
+    <Spanish>%3C2ISTAR%4, %3Logística de combate del jugador%4, %3Apoyo de combate%4 y %3Reclutamiento%4 tienen cada uno tres ajustes de acceso en Eden. Con los valores por defecto, cualquier jugador puede usar el módulo.%1%1%2%3Minimum Rank%4: Any deja entrar a todos. Group leaders only lo reserva al líder de cada grupo. Un rango lo reserva a ese rango y superiores.%1%2%3Allowed Slots%4: una lista separada por comas. Cada entrada coincide con el nombre de variable de la unidad, su descripción de rol (basta una parte) o el indicativo de su grupo, sin distinguir mayúsculas.%1%2%3Access Condition%4: SQF opcional que también debe devolver true. Se ejecuta en la máquina del propio jugador, con _caller como el jugador.%1%1Con Minimum Rank y Allowed Slots configurados, basta con cumplir uno de los dos. A un jugador rechazado se le indica para quién está reservado el módulo.</Spanish>
+    <French>%3C2ISTAR%4, %3Logistique de combat joueur%4, %3Soutien de combat%4 et %3Recrutement%4 ont chacun trois réglages d'accès dans Eden. Avec les valeurs par défaut, tout joueur peut utiliser le module.%1%1%2%3Minimum Rank%4 : Any laisse entrer tout le monde. Group leaders only le réserve au chef de chaque groupe. Un grade le réserve à ce grade et au-dessus.%1%2%3Allowed Slots%4 : une liste séparée par des virgules. Chaque entrée correspond au nom de variable d'une unité, à sa description de rôle (une partie suffit) ou à l'indicatif de son groupe, sans tenir compte de la casse.%1%2%3Access Condition%4 : SQF facultatif qui doit aussi renvoyer true. Il s'exécute sur la machine du joueur, avec _caller pour le joueur.%1%1Si Minimum Rank et Allowed Slots sont tous deux réglés, remplir l'un des deux suffit. Un joueur refusé apprend à qui le module est réservé.</French>
+    <Portuguese>%3C2ISTAR%4, %3Logística de combate do jogador%4, %3Apoio de combate%4 e %3Recrutamento%4 têm cada um três configurações de acesso no Eden. Com os valores padrão, qualquer jogador pode usar o módulo.%1%1%2%3Minimum Rank%4: Any deixa todos entrarem. Group leaders only reserva o módulo ao líder de cada grupo. Uma patente o reserva para essa patente e acima.%1%2%3Allowed Slots%4: uma lista separada por vírgulas. Cada entrada corresponde ao nome de variável da unidade, à sua descrição de função (basta uma parte) ou ao indicativo do seu grupo, sem diferenciar maiúsculas.%1%2%3Access Condition%4: SQF opcional que também deve retornar true. É executado na máquina do próprio jogador, com _caller como o jogador.%1%1Com Minimum Rank e Allowed Slots definidos, basta cumprir um dos dois. Um jogador recusado é informado para quem o módulo está reservado.</Portuguese>
+    <Russian>%3C2ISTAR%4, %3Боевое снабжение игрока%4, %3Боевая поддержка%4 и %3Вербовка%4 имеют по три настройки доступа в Eden. По умолчанию модулем может пользоваться любой игрок.%1%1%2%3Minimum Rank%4: Any пускает всех. Group leaders only оставляет модуль командиру каждой группы. Звание оставляет его для этого звания и выше.%1%2%3Allowed Slots%4: список через запятую. Каждая запись совпадает с именем переменной юнита, описанием его роли (достаточно части) или позывным его группы, без учёта регистра.%1%2%3Access Condition%4: необязательный SQF, который тоже должен вернуть true. Он выполняется на машине самого игрока, где _caller означает игрока.%1%1Если заданы и Minimum Rank, и Allowed Slots, достаточно выполнить одно из двух. Игроку, получившему отказ, сообщают, для кого предназначен модуль.</Russian>
+</Key>
+<Key ID="STR_ALIVE_HINT_ACCESS_TIP">
+    <English>A logged-in admin can always use the module, so a mission can't lock its maker out. A condition with an error lets nobody in and is written once to the RPT.</English>
+    <Chinesesimp>已登录的管理员始终可以使用该模块，因此任务不会把其制作者拒之门外。出错的条件不允许任何人使用，并会在 RPT 中记录一次。</Chinesesimp>
+    <Chinese>已登入的管理員始終可以使用該模組，因此任務不會把其製作者拒之門外。出錯的條件不允許任何人使用，並會在 RPT 中記錄一次。</Chinese>
+    <Spanish>Un administrador con sesión iniciada siempre puede usar el módulo, así una misión no puede dejar fuera a su creador. Una condición con un error no deja entrar a nadie y se escribe una vez en el RPT.</Spanish>
+    <French>Un administrateur connecté peut toujours utiliser le module, une mission ne peut donc pas en exclure son auteur. Une condition contenant une erreur ne laisse entrer personne et est écrite une fois dans le RPT.</French>
+    <Portuguese>Um administrador logado sempre pode usar o módulo, assim uma missão não consegue bloquear o seu criador. Uma condição com erro não deixa ninguém entrar e é registrada uma vez no RPT.</Portuguese>
+    <Russian>Вошедший администратор всегда может пользоваться модулем, поэтому миссия не может закрыть доступ своему автору. Условие с ошибкой не пускает никого и один раз записывается в RPT.</Russian>
+</Key>
 </Container></Package></Project>
