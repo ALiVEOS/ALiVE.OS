@@ -1255,7 +1255,8 @@ switch(_operation) do {
                                     // a spot another battery's gun already stands on (two batteries 30 m apart share one) moves to clear
                                     // ground nearby: both guns were made on it, one was thrown off it and its crew got out
                                     if ((_vehPos nearEntities ["LandVehicle", 7]) isNotEqualTo []) then {
-                                        private _room = _vehPos findEmptyPosition [0, 40, [_class, _tempclass] select (!isNil "_tempclass")];
+                                        // _tempclass is nil for a battery of its own class: read only when set
+                                        private _room = _vehPos findEmptyPosition [0, 40, if (isNil "_tempclass") then { _class } else { _tempclass }];
                                         if (_room isNotEqualTo []) then { _vehPos = _room; _vehPos set [2, 0] };
                                     };
 
