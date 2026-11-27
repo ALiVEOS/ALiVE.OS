@@ -25,6 +25,17 @@ class CfgHints
             // optional parameter for not showing of image in context hint in mission (default false))
             noImage = false;
         };
+        // Recruits gaining experience (#1148)
+        class sup_recruit_experience
+        {
+            displayName = "$STR_ALIVE_RECRUIT_HINT_XP";
+            displayNameShort = "$STR_ALIVE_RECRUIT_HINT_XP_SHORT";
+            description = "$STR_ALIVE_RECRUIT_HINT_XP_DESC";
+            tip = "$STR_ALIVE_RECRUIT_HINT_XP_TIP";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 

@@ -64,6 +64,28 @@ class CfgVehicles {
                                         class Elite   { name = "Elite (1.0)";  value = "1"; };
                                 };
                         };
+                        // #1148: recruits get better with kills and time alive, up to a cap; a player save keeps it
+                        class recruitExperience : Combo
+                        {
+                                property = "ALiVE_sup_recruit_recruitExperience";
+                                displayName = "$STR_ALIVE_RECRUIT_EXPERIENCE";
+                                tooltip = "$STR_ALIVE_RECRUIT_EXPERIENCE_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                        class No  { name = "No";  value = "false"; };
+                                        class Yes { name = "Yes"; value = "true"; };
+                                };
+                        };
+                        class recruitSkillCap : Edit
+                        {
+                                property = "ALiVE_sup_recruit_recruitSkillCap";
+                                displayName = "$STR_ALIVE_RECRUIT_SKILLCAP";
+                                tooltip = "$STR_ALIVE_RECRUIT_SKILLCAP_COMMENT";
+                                defaultValue = """0.9""";
+                                typeName = "STRING";
+                                ALiVE_showWhen[] = {{"recruitExperience", "is", "true"}};
+                        };
                         class HDR_VEHICLES : ALiVE_ModuleSubTitle { property = "ALiVE_sup_recruit_HDR_VEHICLES"; displayName = "VEHICLES"; };
                         class vehicleClasses : Edit
                         {

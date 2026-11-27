@@ -38,6 +38,54 @@
     <Portuguese>Nomes de classe dos soldados que os jogadores podem recrutar, separados por vírgulas. Deixe vazio para até oito funções de infantaria comuns da fação de cada jogador.</Portuguese>
     <Russian>Имена классов солдат, которых могут вербовать игроки, через запятую. Оставьте пустым — до восьми обычных пехотных ролей фракции каждого игрока.</Russian>
 </Key>
+<Key ID="STR_ALIVE_RECRUIT_EXPERIENCE">
+    <English>Recruits Gain Experience</English>
+    <Chinesesimp>招募士兵积累经验</Chinesesimp>
+    <Chinese>招募士兵累積經驗</Chinese>
+    <Spanish>Los reclutas ganan experiencia</Spanish>
+    <French>Les recrues gagnent en expérience</French>
+    <Portuguese>Os recrutas ganham experiência</Portuguese>
+    <Russian>Завербованные набираются опыта</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_EXPERIENCE_COMMENT">
+    <English>Yes: a recruit in a player's group gets better as it fights. Each enemy it kills raises its skill by 0.02 and each hour it stays alive by 0.03, up to the Skill Cap. With player persistence on, the skill is kept across restarts. No, the default: recruits keep the skill they joined with.</English>
+    <Chinesesimp>是：玩家小队中的招募士兵会在战斗中成长。每击杀一名敌人技能提高 0.02，每存活一小时提高 0.03，直至技能上限。开启玩家持久化时，技能在重启后保留。否（默认）：招募士兵保持加入时的技能。</Chinesesimp>
+    <Chinese>是：玩家小隊中的招募士兵會在戰鬥中成長。每擊殺一名敵人技能提高 0.02，每存活一小時提高 0.03，直至技能上限。開啟玩家持久化時，技能在重啟後保留。否（預設）：招募士兵保持加入時的技能。</Chinese>
+    <Spanish>Sí: un recluta del grupo de un jugador mejora al combatir. Cada enemigo que mata sube su habilidad 0,02 y cada hora que sigue vivo 0,03, hasta el Límite de habilidad. Con la persistencia de jugadores activada, la habilidad se conserva entre reinicios. No, por defecto: los reclutas mantienen la habilidad con la que llegaron.</Spanish>
+    <French>Oui : une recrue du groupe d'un joueur progresse en combattant. Chaque ennemi tué augmente sa compétence de 0,02 et chaque heure en vie de 0,03, jusqu'au Plafond de compétence. Avec la persistance des joueurs, la compétence est conservée entre les redémarrages. Non, par défaut : les recrues gardent leur compétence d'arrivée.</French>
+    <Portuguese>Sim: um recruta no grupo de um jogador melhora ao combater. Cada inimigo que mata aumenta a habilidade em 0,02 e cada hora vivo em 0,03, até o Limite de habilidade. Com a persistência de jogadores ligada, a habilidade é mantida entre reinícios. Não, o padrão: os recrutas mantêm a habilidade com que entraram.</Portuguese>
+    <Russian>Да: завербованный в группе игрока становится лучше в бою. Каждый убитый враг повышает навык на 0,02, каждый час жизни на 0,03, до предела навыка. При включённом сохранении игроков навык сохраняется между перезапусками. Нет, по умолчанию: завербованные сохраняют навык, с которым пришли.</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_HINT_XP">
+    <English>Recruitment - Experienced recruits</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_HINT_XP_SHORT">
+    <English>Keeping your soldiers alive pays</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_HINT_XP_DESC">
+    <English>Where the mission has %3Recruits Gain Experience%4 on, the soldiers you recruit get better the longer they serve.%1%1%2Each enemy a recruit kills raises its skill a little%1%2So does each hour it stays alive%1%2Their skill stops at the cap the mission sets%1%1With player persistence on, your recruits come back with the skill they earned. A fresh recruit starts again at the skill recruits join with, so heal and rearm the ones you have.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_HINT_XP_TIP">
+    <English>Dismissing a recruit loses what it has learned.</English>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_SKILLCAP">
+    <English>Skill Cap</English>
+    <Chinesesimp>技能上限</Chinesesimp>
+    <Chinese>技能上限</Chinese>
+    <Spanish>Límite de habilidad</Spanish>
+    <French>Plafond de compétence</French>
+    <Portuguese>Limite de habilidade</Portuguese>
+    <Russian>Предел навыка</Russian>
+</Key>
+<Key ID="STR_ALIVE_RECRUIT_SKILLCAP_COMMENT">
+    <English>The highest skill a recruit can reach through experience, from 0.1 to 1 (0.9 if left alone). A recruit that joined above it keeps its skill.</English>
+    <Chinesesimp>招募士兵通过经验可达到的最高技能，0.1 到 1（默认 0.9）。加入时已高于此值的招募士兵保持原技能。</Chinesesimp>
+    <Chinese>招募士兵透過經驗可達到的最高技能，0.1 到 1（預設 0.9）。加入時已高於此值的招募士兵保持原技能。</Chinese>
+    <Spanish>La habilidad más alta que un recluta puede alcanzar con la experiencia, de 0,1 a 1 (0,9 si no se cambia). Un recluta que llegó por encima la conserva.</Spanish>
+    <French>La compétence la plus haute qu'une recrue peut atteindre par l'expérience, de 0,1 à 1 (0,9 par défaut). Une recrue arrivée au-dessus garde la sienne.</French>
+    <Portuguese>A habilidade mais alta que um recruta pode alcançar com experiência, de 0,1 a 1 (0,9 se não mudar). Um recruta que entrou acima mantém a sua.</Portuguese>
+    <Russian>Наивысший навык, которого завербованный может достичь опытом, от 0,1 до 1 (0,9 по умолчанию). Завербованный, пришедший выше, сохраняет свой.</Russian>
+</Key>
 <Key ID="STR_ALIVE_RECRUIT_SKILL">
     <English>Recruit Skill</English>
     <Chinesesimp>招募士兵技能</Chinesesimp>

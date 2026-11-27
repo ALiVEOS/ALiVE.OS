@@ -56,6 +56,51 @@ if (isServer) then {
     { _logic setVariable [_x, _logic getVariable [_x, ""], true] } forEach ["ALiVE_accessRank", "ALiVE_accessSlots", "ALiVE_accessCondition"];
 };
 
+// Recruits Gain Experience (AshTray, #1148): on the server, each enemy a recruit kills raises its overall skill by
+// 0.02 and each hour it stays alive by 0.03, up to the module's Skill Cap. The skill is set on the machine the
+// recruit is local to (its player's) and kept on it as ALiVE_recruitSkill, which a player save writes and restores.
+if (isServer && {isNil "ALiVE_recruitXP"}) then {
+    private _rawX = _logic getVariable ["recruitExperience", "false"];
+    private _on = if (_rawX isEqualType "") then { (toLower _rawX) in ["true", "1", "yes"] } else { _rawX isEqualTo true || {_rawX isEqualTo 1} };
+    if (_on) then {
+        private _rawCap = _logic getVariable ["recruitSkillCap", "0.9"];
+        private _cap = if (_rawCap isEqualType 0) then { _rawCap } else { parseNumber format ["%1", _rawCap] };
+        if (_cap <= 0) then { _cap = 0.9 };
+        ALiVE_recruitXP = [(_cap max 0.1) min 1, 0.02, 0.03];
+        ALiVE_recruitXP_fnc_raise = {
+            params ["_u", "_step", "_why"];
+            ALiVE_recruitXP params ["_cap"];
+            private _was = _u getVariable ["ALiVE_recruitSkill", skill _u];
+            if (_was >= _cap) exitWith {};
+            private _now = (_was + _step) min _cap;
+            _u setVariable ["ALiVE_recruitSkill", _now, true];
+            [_u, _now] remoteExecCall ["setSkill", _u];
+            if (missionNamespace getVariable ["ALiVE_recruit_debug", false]) then {
+                ["ALiVE Recruitment: %1 (%2) skill %3 -> %4 (%5)", name _u, typeOf _u, _was toFixed 3, _now toFixed 3, _why] call ALiVE_fnc_dump;
+            };
+        };
+        addMissionEventHandler ["EntityKilled", {
+            params ["_dead", "_killer", "_instigator"];
+            private _who = [_instigator, _killer] select (isNull _instigator);
+            if (isNull _who || {!(_who isKindOf "CAManBase")} || {!alive _who} || {isPlayer _who} || {!(_who getVariable ["ALiVE_recruited", false])}) exitWith {};
+            private _deadSide = if (isNull group _dead) then { side _dead } else { side group _dead };
+            if (_deadSide == civilian || {_dead == _who} || {((side group _who) getFriend _deadSide) >= 0.6}) exitWith {};
+            [_who, (ALiVE_recruitXP select 1), format ["killed %1", typeOf _dead]] call ALiVE_recruitXP_fnc_raise;
+            _who setVariable ["ALiVE_recruitKills", (_who getVariable ["ALiVE_recruitKills", 0]) + 1, true];
+        }];
+        // time alive, in 5-minute steps
+        [] spawn {
+            while { true } do {
+                sleep 300;
+                {
+                    [_x, (ALiVE_recruitXP select 2) / 12, "5 min alive"] call ALiVE_recruitXP_fnc_raise;
+                } forEach (allUnits select { alive _x && {!isPlayer _x} && {_x getVariable ["ALiVE_recruited", false]} && {lifeState _x != "INCAPACITATED"} });
+            };
+        };
+        ["ALiVE Recruitment: recruits gain experience, skill cap %1", ALiVE_recruitXP select 0] call ALiVE_fnc_dump;
+    };
+};
+
 // Force pool spending. The pool lives on the server, so a player's machine asks here and is
 // told yes or no: [caller, faction, cost, ticket]. A cost of 0 only asks how much is left, a
 // negative cost is a refund. A faction with no pool (no Military Logistics, or a faction it

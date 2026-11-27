@@ -152,7 +152,7 @@ GVAR(UNIT_DATA) = [
             // Only this player's own: everyone in a group saw the same men, and each would have
             // brought them back.
             ((units group _p) select { alive _x && {!isPlayer _x} && {_x getVariable ["ALiVE_recruited", false]} && {(_x getVariable ["ALiVE_recruitedBy", ""]) == getPlayerUID _p} }) apply {
-                [typeOf _x, getUnitLoadout _x, skill _x, damage _x, (getPosATL _x) vectorDiff (getPosATL _p), _x getVariable ["ALiVE_recruitCode", ""], _x getVariable ["ALiVE_recruitCost", 0]]
+                [typeOf _x, getUnitLoadout _x, _x getVariable ["ALiVE_recruitSkill", skill _x], damage _x, (getPosATL _x) vectorDiff (getPosATL _p), _x getVariable ["ALiVE_recruitCode", ""], _x getVariable ["ALiVE_recruitCost", 0]]
             }
         }, {
             if !((_this select 1) isEqualType []) exitWith {};
@@ -168,7 +168,7 @@ GVAR(UNIT_DATA) = [
                         private _u = (group _p) createUnit [_class, (getPosATL _p) vectorAdd _offset, [], 3, "NONE"];
                         [_u] joinSilent (group _p);
                         if (_loadout isNotEqualTo []) then { _u setUnitLoadout _loadout };
-                        if (_skill >= 0) then { _u setSkill _skill };
+                        if (_skill >= 0) then { _u setSkill _skill; _u setVariable ["ALiVE_recruitSkill", _skill, true] };
                         _u setDamage _damage;
                         _u setVariable ["ALiVE_recruited", true, true];
                         _u setVariable ["ALiVE_recruitedBy", _uid, true];
