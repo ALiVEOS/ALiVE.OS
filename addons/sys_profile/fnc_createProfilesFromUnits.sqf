@@ -154,6 +154,25 @@ if(_createMode == "IGNORE") then {
     };
 } forEach (allMissionObjects "ALiVE_sup_recruit");
 
+// High Command teams (Helios on Discord, 8 Nov): the High Command module links each group synced to one of its
+// Subordinate modules to the commander at start (hcSetGroup). Taken as a profile, the team gets a new group object
+// every time it spawns, so the commander loses it, and an AI Commander of its faction can give it orders. Left as
+// live AI, with the vehicle each member sits in; a player save keeps them (sys_player).
+{
+    {
+        if !(_x isKindOf "Logic") then {
+            if (!isNull group _x) then { (group _x) setVariable ["ALIVE_profileIgnore", true] };
+            if (vehicle _x != _x) then { (vehicle _x) setVariable ["ALIVE_profileIgnore", true] };
+        };
+    } forEach (synchronizedObjects _x);
+} forEach (allMissionObjects "HighCommandSubordinate");
+{
+    if (!isNull hcLeader _x) then {
+        _x setVariable ["ALIVE_profileIgnore", true];
+        { if (vehicle _x != _x) then { (vehicle _x) setVariable ["ALIVE_profileIgnore", true] } } forEach (units _x);
+    };
+} forEach _groups;
+
 // Anything already marked to be left alone is left alone, whichever mode this is.
 // ALIVE_profileIgnore is honoured by every virtualisation pass that runs DURING a
 // mission, and it was the one thing this pass ignored: it only ever subtracted

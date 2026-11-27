@@ -112,11 +112,11 @@ if (_puid != "") then {
 // the group, class, kit, place, health and seat, so a load puts them back where they were and leaves out the
 // ones who were dead. A member who joined during play gets a slot of 100 up and is made again on load.
 // "NONE" when the player does not lead or positions are not saved, so the old behaviour stands.
-private _squad = "NONE";
-if (_savePosition && {!isNull _player} && {leader group _player == _player}) then {
-    _squad = [];
+private _membersOf = {
+    params ["_grp"];
+    private _out = [];
     private _next = 100;
-    { _next = _next max (1 + (_x getVariable ["ALiVE_squadSlot", -1])) } forEach (units group _player);
+    { _next = _next max (1 + (_x getVariable ["ALiVE_squadSlot", -1])) } forEach (units _grp);
     {
         if (!isPlayer _x && {alive _x}) then {
             private _slot = _x getVariable ["ALiVE_squadSlot", -1];
@@ -131,11 +131,41 @@ if (_savePosition && {!isNull _player} && {leader group _player == _player}) the
                 private _row = ((fullCrew _veh) select { (_x select 0) isEqualTo _unit }) param [0, []];
                 if (_row isNotEqualTo []) then { _role = [toLower (_row select 1), _row select 2, _row select 3] };
             };
-            _squad pushBack [_slot, typeOf _unit, getUnitLoadout _unit, getPosATL _unit, getDir _unit, damage _unit, _vehID, _role];
+            _out pushBack [_slot, typeOf _unit, getUnitLoadout _unit, getPosATL _unit, getDir _unit, damage _unit, _vehID, _role];
         };
-    } forEach (units group _player);
+    } forEach (units _grp);
+    _out
+};
+private _squad = "NONE";
+if (_savePosition && {!isNull _player} && {leader group _player == _player}) then {
+    _squad = [group _player] call _membersOf;
 };
 [_playerHash, "squad", _squad] call CBA_fnc_hashSet;
+
+// The High Command teams the player commands (Helios on Discord, 8 Nov), each as [callsign, members], the members
+// saved as the squad's are. Every team seen under their command this session is saved (fnc_player "getPlayer"
+// keeps the list), so one wiped out since is saved with no members and a load takes its men out too. "NONE" when
+// the player commands none or positions are not saved.
+private _hcTeams = "NONE";
+if (_savePosition && {!isNull _player}) then {
+    private _seenKey = ([_player, _puid] call ALiVE_fnc_playerKey) + "_hcSeen";
+    private _seen = MOD(sys_player) getVariable [_seenKey, []];
+    {
+        private _grp = _x;
+        if ((_seen findIf { (_x select 1) isEqualTo _grp }) < 0) then {
+            if ((_grp getVariable ["ALiVE_hcTeam", ""]) == "") then { _grp setVariable ["ALiVE_hcTeam", groupId _grp, true] };
+            _seen pushBack [_grp getVariable "ALiVE_hcTeam", _grp];
+        };
+    } forEach ((hcAllGroups _player) - [group _player]);
+    MOD(sys_player) setVariable [_seenKey, _seen];
+    if (_seen isNotEqualTo []) then {
+        _hcTeams = _seen apply {
+            _x params ["_team", "_grp"];
+            [_team, if (isNull _grp) then { [] } else { [_grp] call _membersOf }]
+        };
+    };
+};
+[_playerHash, "hcTeams", _hcTeams] call CBA_fnc_hashSet;
 
 // Persisting by slot, the record is the slot's: the occupant's name, voice, face, rank and rating aren't kept in it
 // (they are never put back by slot either)

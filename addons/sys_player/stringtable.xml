@@ -220,4 +220,40 @@
 	<Chinesesimp>只有一个玩家持续性模组可以被使用</Chinesesimp>
     <Spanish>Solo se puede usar un módulo de persistencia de jugador</Spanish>
 </Key>
+<Key ID="STR_ALIVE_PLAYER_HINT_SQUAD">
+    <English>Player Persistence - Your squad and High Command teams</English>
+    <Chinesesimp>玩家持续性 - 你的小队与高级指挥小组</Chinesesimp>
+    <Chinese>玩家持續性 - 你的小隊與高級指揮小組</Chinese>
+    <Spanish>Persistencia del jugador - Tu escuadra y tus equipos de Alto Mando</Spanish>
+    <French>Persistance du joueur - Votre escouade et vos équipes du Haut commandement</French>
+    <Portuguese>Persistência do jogador - O seu esquadrão e as suas equipas de Alto Comando</Portuguese>
+    <Russian>Сохранение игрока - ваше отделение и группы высшего командования</Russian>
+</Key>
+<Key ID="STR_ALIVE_PLAYER_HINT_SQUAD_SHORT">
+    <English>What a save keeps of the soldiers you lead</English>
+    <Chinesesimp>存档会保留你所带领的士兵的哪些状态</Chinesesimp>
+    <Chinese>存檔會保留你所帶領的士兵的哪些狀態</Chinese>
+    <Spanish>Lo que una partida guardada conserva de los soldados que diriges</Spanish>
+    <French>Ce qu'une sauvegarde garde des soldats que vous menez</French>
+    <Portuguese>O que um save guarda dos soldados que lidera</Portuguese>
+    <Russian>Что сохраняется о бойцах, которыми вы командуете</Russian>
+</Key>
+<Key ID="STR_ALIVE_PLAYER_HINT_SQUAD_DESC">
+    <English>With %3Store Position%4 on in %3Player Persistence%4, a save keeps the AI soldiers you lead as well as yourself.%1%1%2The AI in a group you lead come back with their kit, place, health and seat%1%2So do the teams you command through the High Command module, each soldier in their own team%1%2A soldier who was dead at the save stays gone, and one who joined during play is made again%1%1High Command teams stay live groups the whole mission, so the AI Commander never gives them orders.</English>
+    <Chinesesimp>在%3玩家持续性%4中开启%3储存位置%4后，存档除了保存你自己，也会保存你所带领的 AI 士兵。%1%1%2你所带领小组中的 AI 会恢复装备、位置、伤势和座位%1%2你通过高级指挥模组指挥的小组也是如此，每名士兵都回到自己的小组%1%2存档时已阵亡的士兵不会回来，游戏中加入的士兵会被重新生成%1%1高级指挥小组在整个任务中都保持为实时小组，因此 AI 指挥官永远不会向它们下达命令。</Chinesesimp>
+    <Chinese>在%3玩家持續性%4中開啟%3儲存位置%4後，存檔除了保存你自己，也會保存你所帶領的 AI 士兵。%1%1%2你所帶領小組中的 AI 會恢復裝備、位置、傷勢和座位%1%2你透過高級指揮模組指揮的小組也是如此，每名士兵都回到自己的小組%1%2存檔時已陣亡的士兵不會回來，遊戲中加入的士兵會被重新生成%1%1高級指揮小組在整個任務中都保持為即時小組，因此 AI 指揮官永遠不會向它們下達命令。</Chinese>
+    <Spanish>Con %3Store Position%4 activado en %3Player Persistence%4, una partida guardada conserva a los soldados IA que diriges además de a ti.%1%1%2La IA de un grupo que diriges vuelve con su equipo, posición, salud y asiento%1%2Lo mismo ocurre con los equipos que mandas mediante el módulo High Command, cada soldado en su propio equipo%1%2Un soldado que estaba muerto al guardar no vuelve, y uno que se unió durante la partida se crea de nuevo%1%1Los equipos de Alto Mando siguen siendo grupos vivos toda la misión, así que el Comandante IA nunca les da órdenes.</Spanish>
+    <French>Avec %3Store Position%4 activé dans %3Player Persistence%4, une sauvegarde garde les soldats IA que vous menez en plus de vous-même.%1%1%2L'IA d'un groupe que vous menez revient avec son équipement, sa position, sa santé et sa place%1%2Il en va de même pour les équipes que vous commandez avec le module High Command, chaque soldat dans sa propre équipe%1%2Un soldat mort au moment de la sauvegarde ne revient pas, et un soldat arrivé en cours de partie est recréé%1%1Les équipes du Haut commandement restent des groupes actifs pendant toute la mission, donc le Commandant IA ne leur donne jamais d'ordres.</French>
+    <Portuguese>Com %3Store Position%4 ativado em %3Player Persistence%4, um save guarda os soldados IA que lidera, além de si próprio.%1%1%2A IA de um grupo que lidera volta com o equipamento, a posição, a saúde e o lugar%1%2O mesmo acontece com as equipas que comanda através do módulo High Command, cada soldado na sua própria equipa%1%2Um soldado que estava morto no save não volta, e um que se juntou durante o jogo é criado de novo%1%1As equipas de Alto Comando continuam a ser grupos ativos durante toda a missão, por isso o Comandante IA nunca lhes dá ordens.</Portuguese>
+    <Russian>Если в %3Player Persistence%4 включено %3Store Position%4, сохранение запоминает не только вас, но и бойцов ИИ, которыми вы командуете.%1%1%2ИИ в группе, которую вы ведёте, возвращаются со своим снаряжением, местом, здоровьем и местом в машине%1%2То же касается групп, которыми вы командуете через модуль High Command: каждый боец возвращается в свою группу%1%2Боец, погибший к моменту сохранения, не вернётся, а присоединившийся по ходу игры будет создан заново%1%1Группы высшего командования всю миссию остаются живыми группами, поэтому Командир ИИ никогда не отдаёт им приказы.</Russian>
+</Key>
+<Key ID="STR_ALIVE_PLAYER_HINT_SQUAD_TIP">
+    <English>A High Command team is kept when it is synced to a High Command - Subordinate module in the editor.</English>
+    <Chinesesimp>在编辑器中与“High Command - Subordinate”模组同步的高级指挥小组才会被保留。</Chinesesimp>
+    <Chinese>在編輯器中與「High Command - Subordinate」模組同步的高級指揮小組才會被保留。</Chinese>
+    <Spanish>Un equipo de Alto Mando se conserva cuando está sincronizado en el editor con un módulo High Command - Subordinate.</Spanish>
+    <French>Une équipe du Haut commandement est gardée lorsqu'elle est synchronisée dans l'éditeur avec un module High Command - Subordinate.</French>
+    <Portuguese>Uma equipa de Alto Comando é guardada quando está sincronizada no editor com um módulo High Command - Subordinate.</Portuguese>
+    <Russian>Группа высшего командования сохраняется, если в редакторе она синхронизирована с модулем High Command - Subordinate.</Russian>
+</Key>
 </Container></Package></Project>
