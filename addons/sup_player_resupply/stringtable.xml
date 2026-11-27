@@ -822,15 +822,39 @@
 </Key>
 <Key ID="STR_ALIVE_HUB_HINT_TRADE">
     <English>Logistics - Trade In at a hub</English>
+    <Chinesesimp>后勤 - 在枢纽交易</Chinesesimp>
+    <Chinese>後勤 - 在樞紐交易</Chinese>
+    <Spanish>Logística - Entregar en un centro</Spanish>
+    <French>Logistique - Céder à un dépôt</French>
+    <Portuguese>Logística - Entregar num centro</Portuguese>
+    <Russian>Логистика - сдача на узле</Russian>
 </Key>
 <Key ID="STR_ALIVE_HUB_HINT_TRADE_SHORT">
     <English>Vehicles and guns for the force pool</English>
+    <Chinesesimp>车辆和火炮换取兵力池</Chinesesimp>
+    <Chinese>車輛和火砲換取兵力池</Chinese>
+    <Spanish>Vehículos y cañones para la reserva de fuerzas</Spanish>
+    <French>Véhicules et canons pour la réserve de forces</French>
+    <Portuguese>Veículos e canhões para a reserva de forças</Portuguese>
+    <Russian>Техника и орудия в резерв сил</Russian>
 </Key>
 <Key ID="STR_ALIVE_HUB_HINT_TRADE_DESC">
     <English>Where the mission lets a hub take trade-ins, a vehicle or an artillery piece brought to one of your side's hubs can be given up for the force pool. A captured one is worth less than your own.%1%1%2A vehicle: stop it at the hub and use %3Trade In%4 from the driver's seat%1%2A towed gun or mortar: use %3Trade In%4 from the gunner's seat, or, with nobody in it, stand beside it and look at it. A gun folded for towing can be traded in that way too%1%2Static machine guns, and anything made at a hub or a FOB, can't be traded in%1%1What you collect at a hub is set down around it, or at the spot the mission has marked for it.</English>
+    <Chinesesimp>当任务允许枢纽接收交易时，带到你方枢纽的车辆或火炮可以交出以充实兵力池。缴获的价值低于你方自己的。%1%1%2车辆：停在枢纽，从驾驶座使用%3交易%4%1%2牵引火炮或迫击炮：从炮手座使用%3交易%4，或在无人乘坐时站在旁边看着它使用。折叠牵引状态的火炮也可以这样交易%1%2固定机枪以及在枢纽或前哨基地制造的任何东西都不能交易%1%1你在枢纽领取的物资会放在其周围，或放在任务为其标记的地点。</Chinesesimp>
+    <Chinese>當任務允許樞紐接收交易時，帶到你方樞紐的車輛或火砲可以交出以充實兵力池。繳獲的價值低於你方自己的。%1%1%2車輛：停在樞紐，從駕駛座使用%3交易%4%1%2牽引火砲或迫擊砲：從砲手座使用%3交易%4，或在無人乘坐時站在旁邊看著它使用。折疊牽引狀態的火砲也可以這樣交易%1%2固定機槍以及在樞紐或前哨基地製造的任何東西都不能交易%1%1你在樞紐領取的物資會放在其周圍，或放在任務為其標記的地點。</Chinese>
+    <Spanish>Si la misión permite que un centro acepte entregas, un vehículo o una pieza de artillería llevados a uno de los centros de tu bando pueden entregarse a cambio de la reserva de fuerzas. Uno capturado vale menos que uno propio.%1%1%2Un vehículo: detenlo en el centro y usa %3Entregar%4 desde el asiento del conductor%1%2Un cañón remolcado o un mortero: usa %3Entregar%4 desde el asiento del artillero o, si nadie va en él, ponte a su lado y míralo. Un cañón plegado para remolque también se puede entregar así%1%2Las ametralladoras estáticas, y todo lo fabricado en un centro o una FOB, no se pueden entregar%1%1Lo que recoges en un centro se deja a su alrededor, o en el punto que la misión le haya marcado.</Spanish>
+    <French>Si la mission permet à un dépôt d'accepter des cessions, un véhicule ou une pièce d'artillerie amené à l'un des dépôts de votre camp peut être cédé pour la réserve de forces. Une prise de guerre vaut moins qu'un des vôtres.%1%1%2Un véhicule : arrêtez-le au dépôt et utilisez %3Céder%4 depuis le siège du conducteur%1%2Un canon tracté ou un mortier : utilisez %3Céder%4 depuis le siège du tireur ou, s'il est vide, placez-vous à côté et regardez-le. Un canon replié pour le remorquage peut aussi être cédé ainsi%1%2Les mitrailleuses fixes, et tout ce qui a été fabriqué à un dépôt ou une FOB, ne peuvent pas être cédés%1%1Ce que vous récupérez à un dépôt est déposé autour de lui, ou à l'endroit que la mission lui a marqué.</French>
+    <Portuguese>Se a missão permitir que um centro aceite entregas, um veículo ou uma peça de artilharia levados a um dos centros do seu lado podem ser entregues em troca da reserva de forças. Um capturado vale menos do que um seu.%1%1%2Um veículo: pare-o no centro e use %3Entregar%4 a partir do lugar do condutor%1%2Um canhão rebocado ou um morteiro: use %3Entregar%4 a partir do lugar do artilheiro ou, sem ninguém nele, fique ao lado e olhe para ele. Um canhão dobrado para reboque também pode ser entregue assim%1%2Metralhadoras estáticas, e tudo o que foi feito num centro ou numa FOB, não podem ser entregues%1%1O que recolhe num centro é deixado à volta dele, ou no ponto que a missão lhe marcou.</Portuguese>
+    <Russian>Если миссия позволяет узлу принимать сдачу, технику или артиллерийское орудие, доставленные на узел вашей стороны, можно сдать в резерв сил. Трофейное стоит меньше вашего.%1%1%2Техника: остановитесь у узла и используйте %3Сдать%4 с места водителя%1%2Буксируемое орудие или миномёт: используйте %3Сдать%4 с места наводчика или, если в нём никого нет, встаньте рядом и посмотрите на него. Орудие, сложенное для буксировки, тоже можно сдать так%1%2Станковые пулемёты и всё, что сделано на узле или FOB, сдать нельзя%1%1То, что вы получаете на узле, выгружается вокруг него или в точке, которую миссия для него отметила.</Russian>
 </Key>
 <Key ID="STR_ALIVE_HUB_HINT_TRADE_TIP">
     <English>Nobody else may be in the vehicle or gun when you trade it in.</English>
+    <Chinesesimp>交易时，车辆或火炮里不能有其他人。</Chinesesimp>
+    <Chinese>交易時，車輛或火砲裡不能有其他人。</Chinese>
+    <Spanish>Nadie más puede ir en el vehículo o el cañón cuando lo entregas.</Spanish>
+    <French>Personne d'autre ne doit être dans le véhicule ou le canon quand vous le cédez.</French>
+    <Portuguese>Ninguém mais pode estar no veículo ou no canhão quando o entrega.</Portuguese>
+    <Russian>Когда вы сдаёте технику или орудие, в них не должно быть никого другого.</Russian>
 </Key>
 <Key ID="STR_ALIVE_HUB_SETDOWN">
     <English>Set Down At</English>

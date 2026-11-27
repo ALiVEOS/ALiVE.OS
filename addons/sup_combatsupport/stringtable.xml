@@ -2735,15 +2735,39 @@
 </Key>
 <Key ID="STR_ALIVE_CS_HINT_GROUNDPATROL">
     <English>Combat Support - Ground Transport patrol</English>
+    <Chinesesimp>战斗支援 - 地面运输巡逻</Chinesesimp>
+    <Chinese>戰鬥支援 - 地面運輸巡邏</Chinese>
+    <Spanish>Apoyo de combate - Patrulla de transporte terrestre</Spanish>
+    <French>Soutien au combat - Patrouille du transport terrestre</French>
+    <Portuguese>Apoio de combate - Patrulha do transporte terrestre</Portuguese>
+    <Russian>Боевая поддержка - патруль наземного транспорта</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_HINT_GROUNDPATROL_SHORT">
     <English>Riding a patrolling truck</English>
+    <Chinesesimp>乘坐巡逻卡车</Chinesesimp>
+    <Chinese>乘坐巡邏卡車</Chinese>
+    <Spanish>Subir a un camión de patrulla</Spanish>
+    <French>Monter dans un camion en patrouille</French>
+    <Portuguese>Embarcar num camião de patrulha</Portuguese>
+    <Russian>Поездка на патрульном грузовике</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_HINT_GROUNDPATROL_DESC">
     <English>A Ground Transport on a %3Patrol%4 order drives along the roads between two points and back until it gets another order, so it can run as a taxi between your base and the front.%1%1%2At each end it stops for the time the mission sets (30 seconds unless changed)%1%2While you or your AI are still getting in or out, it waits longer, up to 2 minutes%1%2Order your AI to get in as soon as it stops, so they are aboard before it moves off</English>
+    <Chinesesimp>执行%3巡逻%4命令的地面运输会沿道路在两点之间往返，直到收到新的命令，因此可以作为基地与前线之间的接驳车。%1%1%2在每一端，它会停靠任务设定的时间（未更改时为30秒）%1%2当你或你的AI仍在上下车时，它会多等一会儿，最多2分钟%1%2车一停下就命令你的AI上车，这样他们能在车开走前上车</Chinesesimp>
+    <Chinese>執行%3巡邏%4命令的地面運輸會沿道路在兩點之間往返，直到收到新的命令，因此可以作為基地與前線之間的接駁車。%1%1%2在每一端，它會停靠任務設定的時間（未更改時為30秒）%1%2當你或你的AI仍在上下車時，它會多等一會兒，最多2分鐘%1%2車一停下就命令你的AI上車，這樣他們能在車開走前上車</Chinese>
+    <Spanish>Un transporte terrestre con una orden de %3Patrulla%4 recorre las carreteras entre dos puntos, ida y vuelta, hasta recibir otra orden, así que puede servir de lanzadera entre tu base y el frente.%1%1%2En cada extremo se detiene el tiempo que fija la misión (30 segundos si no se cambia)%1%2Mientras tú o tu IA aún estáis subiendo o bajando, espera más, hasta 2 minutos%1%2Ordena a tu IA que suba en cuanto se detenga, para que esté a bordo antes de que arranque</Spanish>
+    <French>Un transport terrestre sous un ordre de %3Patrouille%4 roule sur les routes entre deux points, aller et retour, jusqu'à recevoir un autre ordre : il peut donc servir de navette entre votre base et le front.%1%1%2À chaque extrémité, il s'arrête le temps fixé par la mission (30 secondes par défaut)%1%2Tant que vous ou votre IA montez ou descendez encore, il attend plus longtemps, jusqu'à 2 minutes%1%2Ordonnez à votre IA de monter dès qu'il s'arrête, pour qu'elle soit à bord avant son départ</French>
+    <Portuguese>Um transporte terrestre com uma ordem de %3Patrulha%4 percorre as estradas entre dois pontos, ida e volta, até receber outra ordem, por isso pode servir de vaivém entre a sua base e a frente.%1%1%2Em cada extremo para durante o tempo definido pela missão (30 segundos se não for alterado)%1%2Enquanto você ou a sua IA ainda estão a entrar ou a sair, espera mais, até 2 minutos%1%2Mande a sua IA entrar assim que ele parar, para que esteja a bordo antes de partir</Portuguese>
+    <Russian>Наземный транспорт с приказом %3Патруль%4 ездит по дорогам между двумя точками туда и обратно, пока не получит другой приказ, поэтому может служить челноком между базой и передовой.%1%1%2На каждом конце он стоит время, заданное миссией (30 секунд, если не изменено)%1%2Пока вы или ваши ИИ ещё садитесь или выходите, он ждёт дольше, до 2 минут%1%2Прикажите своим ИИ сесть, как только он остановится, чтобы они были на борту до отъезда</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_HINT_GROUNDPATROL_TIP">
     <English>The mission maker can start a patrol at mission start, so the truck runs without anyone using the tablet.</English>
+    <Chinesesimp>任务制作者可以在任务开始时启动巡逻，这样无需任何人使用平板，卡车就会运行。</Chinesesimp>
+    <Chinese>任務製作者可以在任務開始時啟動巡邏，這樣無需任何人使用平板，卡車就會運行。</Chinese>
+    <Spanish>El creador de la misión puede iniciar una patrulla al empezar la misión, para que el camión funcione sin que nadie use la tableta.</Spanish>
+    <French>Le créateur de la mission peut lancer une patrouille dès le début, pour que le camion circule sans que personne n'utilise la tablette.</French>
+    <Portuguese>O criador da missão pode iniciar uma patrulha no começo da missão, para que o camião circule sem ninguém usar o tablet.</Portuguese>
+    <Russian>Автор миссии может запустить патруль в начале миссии, чтобы грузовик ездил без использования планшета.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_GROUNDAVOID">
     <English>Ground Transport Avoids Known Enemy</English>

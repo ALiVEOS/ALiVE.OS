@@ -58,15 +58,39 @@
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_HINT_XP">
     <English>Recruitment - Experienced recruits</English>
+    <Chinesesimp>招募 - 有经验的新兵</Chinesesimp>
+    <Chinese>招募 - 有經驗的新兵</Chinese>
+    <Spanish>Reclutamiento - Reclutas con experiencia</Spanish>
+    <French>Recrutement - Recrues expérimentées</French>
+    <Portuguese>Recrutamento - Recrutas experientes</Portuguese>
+    <Russian>Вербовка - опытные новобранцы</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_HINT_XP_SHORT">
     <English>Keeping your soldiers alive pays</English>
+    <Chinesesimp>让你的士兵活着是值得的</Chinesesimp>
+    <Chinese>讓你的士兵活著是值得的</Chinese>
+    <Spanish>Mantener vivos a tus soldados compensa</Spanish>
+    <French>Garder vos soldats en vie paie</French>
+    <Portuguese>Manter os seus soldados vivos compensa</Portuguese>
+    <Russian>Беречь своих бойцов выгодно</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_HINT_XP_DESC">
     <English>Where the mission has %3Recruits Gain Experience%4 on, the soldiers you recruit get better the longer they serve.%1%1%2Each enemy a recruit kills raises its skill a little%1%2So does each hour it stays alive%1%2Their skill stops at the cap the mission sets%1%1With player persistence on, your recruits come back with the skill they earned. A fresh recruit starts again at the skill recruits join with, so heal and rearm the ones you have.</English>
+    <Chinesesimp>当任务开启了%3招募士兵积累经验%4时，你招募的士兵服役越久就越出色。%1%1%2新兵每击杀一名敌人，技能就会提高一点%1%2每存活一小时也会提高%1%2技能在任务设定的上限处停止%1%1开启玩家持久化时，你的新兵会带着他们获得的技能回来。新招募的士兵从初始技能重新开始，所以要为现有的士兵治疗和补给。</Chinesesimp>
+    <Chinese>當任務開啟了%3招募士兵累積經驗%4時，你招募的士兵服役越久就越出色。%1%1%2新兵每擊殺一名敵人，技能就會提高一點%1%2每存活一小時也會提高%1%2技能在任務設定的上限處停止%1%1開啟玩家持久化時，你的新兵會帶著他們獲得的技能回來。新招募的士兵從初始技能重新開始，所以要為現有的士兵治療和補給。</Chinese>
+    <Spanish>Si la misión tiene activado %3Los reclutas ganan experiencia%4, los soldados que reclutas mejoran cuanto más tiempo sirven.%1%1%2Cada enemigo que mata un recluta sube un poco su habilidad%1%2También cada hora que sigue con vida%1%2Su habilidad se detiene en el límite que fija la misión%1%1Con la persistencia de jugadores activada, tus reclutas vuelven con la habilidad que ganaron. Un recluta nuevo empieza de nuevo con la habilidad de ingreso, así que cura y rearma a los que tienes.</Spanish>
+    <French>Si la mission active %3Les recrues gagnent en expérience%4, les soldats que vous recrutez s'améliorent à mesure qu'ils servent.%1%1%2Chaque ennemi tué par une recrue augmente un peu sa compétence%1%2Chaque heure passée en vie aussi%1%2Leur compétence s'arrête au plafond fixé par la mission%1%1Avec la persistance des joueurs activée, vos recrues reviennent avec la compétence acquise. Une nouvelle recrue repart de la compétence d'entrée : soignez et réarmez donc celles que vous avez.</French>
+    <Portuguese>Se a missão tiver %3Os recrutas ganham experiência%4 ativado, os soldados que recruta melhoram quanto mais tempo servem.%1%1%2Cada inimigo que um recruta mata aumenta um pouco a sua perícia%1%2Cada hora que se mantém vivo também%1%2A perícia para no limite definido pela missão%1%1Com a persistência de jogadores ativada, os seus recrutas voltam com a perícia que ganharam. Um recruta novo recomeça com a perícia de entrada, por isso trate e rearme os que tem.</Portuguese>
+    <Russian>Если в миссии включено %3Завербованные набираются опыта%4, завербованные вами бойцы становятся лучше, чем дольше служат.%1%1%2Каждый убитый новобранцем враг немного повышает его навык%1%2Как и каждый час, прожитый им%1%2Навык растёт до предела, заданного миссией%1%1При включённом сохранении игроков ваши новобранцы возвращаются с заработанным навыком. Новый новобранец начинает заново с исходного навыка, так что лечите и пополняйте тех, кто у вас есть.</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_HINT_XP_TIP">
     <English>Dismissing a recruit loses what it has learned.</English>
+    <Chinesesimp>解散新兵会失去其所学到的一切。</Chinesesimp>
+    <Chinese>解散新兵會失去其所學到的一切。</Chinese>
+    <Spanish>Al despedir a un recluta se pierde lo que ha aprendido.</Spanish>
+    <French>Renvoyer une recrue perd ce qu'elle a appris.</French>
+    <Portuguese>Dispensar um recruta perde o que ele aprendeu.</Portuguese>
+    <Russian>Распустив новобранца, вы теряете всё, чему он научился.</Russian>
 </Key>
 <Key ID="STR_ALIVE_RECRUIT_SKILLCAP">
     <English>Skill Cap</English>
