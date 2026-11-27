@@ -463,8 +463,16 @@ private _d = createHashMapFromArray [
     ["t0", time], ["phase", ["cruise", "search"] select _roam], ["gone", false], ["eh", -1], ["debug", _debug], ["marker", ""],
     ["min", 1e9], ["minBox", 1e9], ["lastDist", 1e9], ["lastPos", getPosASL _uav],
     ["side", _side], ["from", [_grp, _site] select _roam], ["batteryEnd", time + 60 * _battery],
-    // a player further than this from the drone: it is called back
-    ["recall", [1500, 2500] select _roam],
+    // a player further than this from the drone: it is called back. A group can launch from further out than 1500 m
+    // (up to Drone Launch Range from its target, which may itself be 1200 m from a player), so a drone launched at
+    // its target gets at least its launch distance from the nearest player plus 300 m, or it was called back a
+    // second after launch
+    ["recall", if (_roam) then { 2500 } else {
+        private _eyes0 = ["eyes", [allPlayers - entities "HeadlessClient_F"]] call ALiVE_fnc_createFPVDrone;
+        private _near0 = 1e9;
+        { _near0 = _near0 min (_x distance _uav) } forEach _eyes0;
+        1500 max (ceil (_near0 + 300)) min 1e6
+    }],
     // Medium and Large charges go after crewed vehicles too, AI-crewed ones included
     ["vehicles", (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL"],
     // Drone Targets Players and AI: a searching drone also takes hostile AI on foot
