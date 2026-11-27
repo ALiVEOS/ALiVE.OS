@@ -3,12 +3,12 @@
     #690: make (or adopt) a Combat Support ground transport, crew it, set it up and start its
     order loop. Used at mission start and on respawn. Server-side.
     Params: [class, position ATL, direction, callsign, code, settings]
-      settings: [logistics on, logistics source, disarm chance 0-100, road check on]
+      settings: [logistics on, logistics source, disarm chance 0-100, road check on, patrol stop seconds]
     Returns: [vehicle, group, order loop handle]
     Author: Jman
 */
 params ["_type", "_pos", "_dir", "_callsign", "_code", ["_settings", []]];
-_settings params [["_logistics", false], ["_logisticsSource", 0], ["_disarm", 70], ["_mineCheck", true]];
+_settings params [["_logistics", false], ["_logisticsSource", 0], ["_disarm", 70], ["_mineCheck", true], ["_patrolWait", 30]];
 private _side = switch (getNumber (configFile >> "CfgVehicles" >> _type >> "side")) do { case 1: {WEST}; case 2: {RESISTANCE}; default {EAST} };
 
 // a kept deck or roof height needs something still under it (a building can be destroyed since):
@@ -80,6 +80,7 @@ _veh setVariable ["ALIVE_logistics_enabled", _logistics, true];
 _veh setVariable ["ALIVE_logistics_source", _logisticsSource, true];
 _veh setVariable ["NEO_groundDisarmChance", (_disarm max 0) min 100, true];
 _veh setVariable ["NEO_groundMineCheck", _mineCheck, true];
+_veh setVariable ["NEO_groundPatrolWait", (_patrolWait max 0) min 600, true];
 _veh setVariable ["NEO_groundAvailableTasks", ["PICKUP", "MOVE", "PATROL"], true];
 _veh setVariable ["NEO_groundSettings", _settings, true];
 

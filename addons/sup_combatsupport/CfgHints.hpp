@@ -25,6 +25,17 @@ class CfgHints
             // optional parameter for not showing of image in context hint in mission (default false))
             noImage = false;
         };
+        // Ground Transport on a road patrol (#1146)
+        class sup_ground_patrol
+        {
+            displayName = "$STR_ALIVE_CS_HINT_GROUNDPATROL";
+            displayNameShort = "$STR_ALIVE_CS_HINT_GROUNDPATROL_SHORT";
+            description = "$STR_ALIVE_CS_HINT_GROUNDPATROL_DESC";
+            tip = "$STR_ALIVE_CS_HINT_GROUNDPATROL_TIP";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 

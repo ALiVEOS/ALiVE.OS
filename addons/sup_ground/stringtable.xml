@@ -101,6 +101,24 @@
     <Portuguese>Código executado no veículo ao ser criado; this é o veículo.</Portuguese>
     <Russian>Код, выполняемый при создании машины; this — сама машина.</Russian>
 </Key>
+<Key ID="STR_ALIVE_GROUND_PATROL_WAIT">
+    <English>Patrol Stop Time (s)</English>
+    <Chinesesimp>巡逻停靠时间（秒）</Chinesesimp>
+    <Chinese>巡邏停靠時間（秒）</Chinese>
+    <Spanish>Tiempo de parada en patrulla (s)</Spanish>
+    <French>Temps d'arrêt en patrouille (s)</French>
+    <Portuguese>Tempo de parada na patrulha (s)</Portuguese>
+    <Russian>Время остановки в патруле (с)</Russian>
+</Key>
+<Key ID="STR_ALIVE_GROUND_PATROL_WAIT_DESC">
+    <English>Seconds the vehicle waits at each end of a road patrol so people can get in or out. It waits longer while someone is still getting in or out, up to 2 minutes.</English>
+    <Chinesesimp>道路巡逻时载具在两端各停靠的秒数，方便人员上下车。若仍有人在上下车，会多等一会，最多 2 分钟。</Chinesesimp>
+    <Chinese>道路巡邏時載具在兩端各停靠的秒數，方便人員上下車。若仍有人在上下車，會多等一會，最多 2 分鐘。</Chinese>
+    <Spanish>Segundos que el vehículo espera en cada extremo de una patrulla por carretera para que se pueda subir o bajar. Espera más mientras alguien sigue subiendo o bajando, hasta 2 minutos.</Spanish>
+    <French>Secondes d'attente du véhicule à chaque extrémité d'une patrouille routière pour laisser monter ou descendre. Il attend plus longtemps tant que quelqu'un monte ou descend encore, jusqu'à 2 minutes.</French>
+    <Portuguese>Segundos que o veículo espera em cada ponta de uma patrulha pela estrada para as pessoas embarcarem ou desembarcarem. Espera mais enquanto alguém ainda está embarcando ou desembarcando, até 2 minutos.</Portuguese>
+    <Russian>Сколько секунд машина ждёт на каждом конце дорожного патруля, чтобы люди могли сесть или выйти. Пока кто-то ещё садится или выходит, она ждёт дольше, до 2 минут.</Russian>
+</Key>
 <Key ID="STR_ALIVE_GROUND_MINE_CHECK">
     <English>Check Road for IEDs and Mines</English>
     <Chinesesimp>检查道路上的简易爆炸装置和地雷</Chinesesimp>

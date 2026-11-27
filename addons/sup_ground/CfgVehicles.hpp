@@ -47,6 +47,8 @@ class CfgVehicles {
                         class ground_code : Edit { property = "ALiVE_sup_ground_ground_code"; displayName = "$STR_ALIVE_GROUND_CODE"; tooltip = "$STR_ALIVE_GROUND_CODE_DESC"; defaultValue = """"""; };
                         class ground_respawn_time : Edit { property = "ALiVE_sup_ground_ground_respawn_time"; displayName = "$STR_ALIVE_CS_ASSET_RESPAWN_TIME"; tooltip = "$STR_ALIVE_CS_ASSET_RESPAWN_TIME_COMMENT"; defaultValue = """"""; };
                         class ground_respawn_limit : Edit { property = "ALiVE_sup_ground_ground_respawn_limit"; displayName = "$STR_ALIVE_CS_ASSET_RESPAWN_LIMIT"; tooltip = "$STR_ALIVE_CS_ASSET_RESPAWN_LIMIT_COMMENT"; defaultValue = """"""; };
+                        // #1146: how long a road patrol stops at each end, so players and their AI can get in
+                        class ground_patrol_wait : Edit { property = "ALiVE_sup_ground_ground_patrol_wait"; displayName = "$STR_ALIVE_GROUND_PATROL_WAIT"; tooltip = "$STR_ALIVE_GROUND_PATROL_WAIT_DESC"; defaultValue = """30"""; };
                         class HDR_ROAD : ALiVE_ModuleSubTitle { property = "ALiVE_sup_ground_HDR_ROAD"; displayName = "ROAD CHECK"; };
                         class ground_mine_check : Combo
                         {

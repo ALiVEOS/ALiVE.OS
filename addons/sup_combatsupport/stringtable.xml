@@ -2733,6 +2733,18 @@
 <Key ID="STR_ALIVE_CS_SHAREFRIENDLY_COMMENT">
     <English>Yes (the default) lets players call on the transport, CAS, artillery and ground support of any side friendly to theirs, as well as their own. No keeps each side's supports to that side's own players, so allied sides each have their own.</English>
 </Key>
+<Key ID="STR_ALIVE_CS_HINT_GROUNDPATROL">
+    <English>Combat Support - Ground Transport patrol</English>
+</Key>
+<Key ID="STR_ALIVE_CS_HINT_GROUNDPATROL_SHORT">
+    <English>Riding a patrolling truck</English>
+</Key>
+<Key ID="STR_ALIVE_CS_HINT_GROUNDPATROL_DESC">
+    <English>A Ground Transport on a %3Patrol%4 order drives along the roads between two points and back until it gets another order, so it can run as a taxi between your base and the front.%1%1%2At each end it stops for the time the mission sets (30 seconds unless changed)%1%2While you or your AI are still getting in or out, it waits longer, up to 2 minutes%1%2Order your AI to get in as soon as it stops, so they are aboard before it moves off</English>
+</Key>
+<Key ID="STR_ALIVE_CS_HINT_GROUNDPATROL_TIP">
+    <English>The mission maker can start a patrol at mission start, so the truck runs without anyone using the tablet.</English>
+</Key>
 <Key ID="STR_ALIVE_CS_GROUNDAVOID">
     <English>Ground Transport Avoids Known Enemy</English>
 </Key>
