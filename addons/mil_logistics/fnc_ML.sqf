@@ -7533,8 +7533,12 @@ switch(_operation) do {
             private _logEvent = ['LOGCOM_RESPONSE', [_requestID, _playerID], "Logistics", "DENIED_HUB"] call ALIVE_fnc_event;
             [ALIVE_eventLog, "addEvent", _logEvent] call ALIVE_fnc_eventLog;
         };
-        private _hubPos = getPosATL _hub;
+        // the hub's set-down spot: its Set Down At marker or object, else the hub itself
+        private _hubPos = ["setDownAt", [_hub]] call ALIVE_fnc_hub;
         private _debug = [_logic, "debug"] call MAINCLASS;
+        if (_debug && {_hubPos distance2D _hub > 1}) then {
+            ["ML - collect at a hub: set down %1 m from the hub, at %2", round (_hubPos distance2D _hub), mapGridPosition _hubPos] call ALiVE_fnc_dump;
+        };
         private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
         private _spot = {
             params ["_class", ["_radius", 40]];

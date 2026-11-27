@@ -82,10 +82,14 @@ switch (_op) do {
     case "tradeAction": {
         _args params [["_unit", objNull, [objNull]]];
         if (isNull _unit) exitWith {};
+        // A gun folded for towing (the RHS D-30's moving mode) is locked, so nobody can sit in it: an empty artillery
+        // piece can also be traded in by a player on foot looking at it from within 5 m (AshTray, #1145)
         _unit addAction [localize "STR_ALIVE_HUB_UI_TRADE_IN", {
-            ["tradeIn", [netId vehicle (_this select 1)]] remoteExecCall ["ALIVE_fnc_hubRequest", 2];
+            params ["", "_caller"];
+            private _v = [cursorObject, vehicle _caller] select (vehicle _caller != _caller);
+            ["tradeIn", [netId _v]] remoteExecCall ["ALIVE_fnc_hubRequest", 2];
         }, nil, 1.3, false, true, "",
-            "!isNil 'ALiVE_hub_tradeOn' && {vehicle _this != _this} && {driver vehicle _this == _this || {vehicle _this isKindOf 'StaticWeapon' && {gunner vehicle _this == _this} && {[vehicle _this] call ALIVE_fnc_isArtillery}}} && {speed vehicle _this < 3} && {!isNull (['tradeHub', [_this]] call ALIVE_fnc_hubManage)}"];
+            "!isNil 'ALiVE_hub_tradeOn' && {(vehicle _this != _this && {driver vehicle _this == _this || {vehicle _this isKindOf 'StaticWeapon' && {gunner vehicle _this == _this} && {[vehicle _this] call ALIVE_fnc_isArtillery}}} && {speed vehicle _this < 3}) || {vehicle _this == _this && {cursorObject isKindOf 'StaticWeapon'} && {alive cursorObject} && {(crew cursorObject) findIf {alive _x} < 0} && {_this distance cursorObject < 5} && {[cursorObject] call ALIVE_fnc_isArtillery}}} && {!isNull (['tradeHub', [_this]] call ALIVE_fnc_hubManage)}"];
     };
 
     // the hub of the unit's side, near enough, that takes trade-ins, or objNull

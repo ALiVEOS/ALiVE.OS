@@ -257,6 +257,8 @@ switch (_op) do {
             _dismantle, _dismantleTime, _repairTime, _dWho, ["hub_dismantle_list", ""] call _text, _list, _trade, _tradeOwn, _capture];
         if (_trade != "OFF") then { ALiVE_hub_tradeOn = true; publicVariable "ALiVE_hub_tradeOn" };
         _logic setVariable ["ALiVE_hub_settings", _settings, true];
+        // Set Down At: a marker name or object classes, read by setDownAt
+        _logic setVariable ["ALiVE_hub_setDownText", (["hub_setdown", ""] call _text) trim [" ", 0], true];
         // the module's lists in the RPT now, whichever of it and the tablet starts first
         ["catalogueRules", [_logic]] call ALIVE_fnc_hub;
 
@@ -933,6 +935,44 @@ switch (_op) do {
                 if (_d <= (_info select 2) && {_d < _best}) then { _best = _d; _result = _x };
             };
         } forEach ALiVE_hub_list;
+    };
+
+    // Where a collection at this hub is set down (arismagicgr, #1091 thread): the hub object's own ALiVE_hub_setDown
+    // (a marker name, an object or a position), else the module's Set Down At (a marker name, or object classes of
+    // which the nearest within the Collect Radius), else the hub itself. A spot over 300 m away is not used.
+    // [hub] -> position ATL
+    case "setDownAt": {
+        _args params [["_hub", objNull, [objNull]]];
+        _result = getPosATL _hub;
+        if (isNull _hub) exitWith {};
+        private _info = _hub getVariable ["ALiVE_hub", []];
+        private _logic = _info param [3, objNull];
+        private _radius = _info param [2, 30];
+        private _fromText = {
+            params ["_t"];
+            if !(_t isEqualType "") exitWith { [] };
+            _t = _t trim [" ", 0];
+            if (_t == "") exitWith { [] };
+            if ((getMarkerPos _t) isNotEqualTo [0, 0, 0]) exitWith { getMarkerPos _t };
+            private _classes = (_t splitString ", ;") select { isClass (configFile >> "CfgVehicles" >> _x) };
+            if (_classes isEqualTo []) exitWith { [] };
+            private _near = (nearestObjects [_hub, _classes, _radius]) select { _x != _hub };
+            if (_near isEqualTo []) exitWith { [] };
+            getPosATL (_near select 0)
+        };
+        private _own = _hub getVariable ["ALiVE_hub_setDown", ""];
+        private _pos = switch (true) do {
+            case (_own isEqualType objNull): { if (isNull _own) then { [] } else { getPosATL _own } };
+            case (_own isEqualType [] && {count _own >= 2} && {(_own select [0, 2]) findIf { !(_x isEqualType 0) } < 0}): { +_own };
+            default { [_own] call _fromText };
+        };
+        if (_pos isEqualTo [] && {!isNull _logic}) then { _pos = [_logic getVariable ["ALiVE_hub_setDownText", ""]] call _fromText };
+        if (_pos isEqualTo []) exitWith {};
+        if (count _pos < 3) then { _pos = [_pos select 0, _pos select 1, 0] };
+        if (_pos distance2D _hub > 300) exitWith {
+            ["ALiVE Logistics Hub - the set-down spot for the hub at %1 is %2 m away, over 300 m, so collections are set down at the hub", mapGridPosition _hub, round (_pos distance2D _hub)] call ALiVE_fnc_dumpR;
+        };
+        _result = _pos;
     };
 
     case "isAdmin": {

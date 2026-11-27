@@ -254,6 +254,8 @@ class CfgVehicles {
                             };
                     };
                     class hub_radius : Edit { property = "ALiVE_sup_logistics_hub_hub_radius"; displayName = "$STR_ALIVE_HUB_RADIUS"; tooltip = "$STR_ALIVE_HUB_RADIUS_COMMENT"; typeName = "STRING"; defaultValue = """30"""; };
+                    // where what is collected here is set down (arismagicgr, #1091 thread): a marker, or object classes in the radius
+                    class hub_setdown : Edit { property = "ALiVE_sup_logistics_hub_hub_setdown"; displayName = "$STR_ALIVE_HUB_SETDOWN"; tooltip = "$STR_ALIVE_HUB_SETDOWN_COMMENT"; typeName = "STRING"; defaultValue = """"""; };
 
                     class HDR_COLLECT : ALiVE_ModuleSubTitle { property = "ALiVE_sup_logistics_hub_HDR_COLLECT"; displayName = "WHO CAN COLLECT"; };
                     class hub_collect_who { property = "ALiVE_sup_logistics_hub_hub_collect_who"; displayName = "$STR_ALIVE_HUB_COLLECT_WHO"; tooltip = "$STR_ALIVE_HUB_COLLECT_WHO_COMMENT"; control = "ALiVE_HubCollectChoice"; typeName = "STRING"; expression = "_this setVariable ['hub_collect_who', _value];"; defaultValue = """SIDE"""; };

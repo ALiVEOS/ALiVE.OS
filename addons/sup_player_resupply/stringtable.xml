@@ -820,6 +820,24 @@
 <Key ID="STR_ALIVE_HUB_RADIUS_COMMENT">
     <English>How close to a hub a player must stand to collect there, from 2 to 200 metres (30 if left alone). Within it the tablet opens without an access item, if Who Can Collect lets the player in.</English>
 </Key>
+<Key ID="STR_ALIVE_HUB_HINT_TRADE">
+    <English>Logistics - Trade In at a hub</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_HINT_TRADE_SHORT">
+    <English>Vehicles and guns for the force pool</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_HINT_TRADE_DESC">
+    <English>Where the mission lets a hub take trade-ins, a vehicle or an artillery piece brought to one of your side's hubs can be given up for the force pool. A captured one is worth less than your own.%1%1%2A vehicle: stop it at the hub and use %3Trade In%4 from the driver's seat%1%2A towed gun or mortar: use %3Trade In%4 from the gunner's seat, or, with nobody in it, stand beside it and look at it. A gun folded for towing can be traded in that way too%1%2Static machine guns, and anything made at a hub or a FOB, can't be traded in%1%1What you collect at a hub is set down around it, or at the spot the mission has marked for it.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_HINT_TRADE_TIP">
+    <English>Nobody else may be in the vehicle or gun when you trade it in.</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_SETDOWN">
+    <English>Set Down At</English>
+</Key>
+<Key ID="STR_ALIVE_HUB_SETDOWN_COMMENT">
+    <English>Where what players collect here is set down: a marker name, or object class names separated by commas (for example Land_HelipadEmpty_F), and it goes beside the nearest of those objects within the Collect Radius. Leave empty to set it down around the hub. One hub can have its own spot: put this setVariable ["ALiVE_hub_setDown", "marker_name"]; in the hub object's init.</English>
+</Key>
 <Key ID="STR_ALIVE_HUB_BUILD">
     <English>Build Hubs</English>
 </Key>

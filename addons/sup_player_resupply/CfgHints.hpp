@@ -36,6 +36,17 @@ class CfgHints
             image = "x\alive\addons\ui\logo_alive_square.paa";
             noImage = false;
         };
+        // Trade In at a hub, a towed gun included (#1145), and where a collection is set down
+        class sup_logistics_hub_tradein
+        {
+            displayName = "$STR_ALIVE_HUB_HINT_TRADE";
+            displayNameShort = "$STR_ALIVE_HUB_HINT_TRADE_SHORT";
+            description = "$STR_ALIVE_HUB_HINT_TRADE_DESC";
+            tip = "$STR_ALIVE_HUB_HINT_TRADE_TIP";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 
