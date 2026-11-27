@@ -54,6 +54,20 @@ if !(_mission in _allmissions) then {
     ALiVE_storeFile_dirtyShared = true;
 };    
 
+// Saved outside an autosave, the file is written straight away (storeFile "save"). Said in the RPT so a
+// write can be traced to what made it: once a minute per ID at most, as in sys_data_pns fnc_writeData.
+if ((missionNamespace getVariable ["ALIVE_PNS_HOLD_FRAME", -1]) != diag_frameNo) then {
+    private _flushLog = missionNamespace getVariable ["ALIVE_PNS_FLUSH_LOG", createHashMap];
+    (_flushLog getOrDefault [_id, [-1e9, 0]]) params ["_loggedAt", "_quiet"];
+    if ((diag_tickTime - _loggedAt) >= 60) then {
+        ["[ALiVE Data] %1 saved on its own, so the save file was written now%2", _id, ["", format [" (%1 more since the last line)", _quiet]] select (_quiet > 0)] call ALiVE_fnc_dump;
+        _flushLog set [_id, [diag_tickTime, 0]];
+    } else {
+        _flushLog set [_id, [_loggedAt, _quiet + 1]];
+    };
+    missionNamespace setVariable ["ALIVE_PNS_FLUSH_LOG", _flushLog];
+};
+
 ["save"] call ALiVE_fnc_storeFile;
 
 true;

@@ -79,6 +79,17 @@ TRACE_1("Saving Data", _data);
 if ((missionNamespace getVariable [QMOD(PNS_HOLD_FRAME), -1]) == diag_frameNo) then {
     MOD(PNS_HOLD_DIRTY) = true;
 } else {
+    // Said in the RPT, once a minute per module at most, as in fnc_writeData: a write outside an autosave
+    // can then be traced to the module that made it.
+    private _flushLog = missionNamespace getVariable [QMOD(PNS_FLUSH_LOG), createHashMap];
+    (_flushLog getOrDefault [_module, [-1e9, 0]]) params ["_loggedAt", "_quiet"];
+    if ((diag_tickTime - _loggedAt) >= 60) then {
+        ["[ALiVE Data] %1 saved on its own, so the save file was written now%2", _module, ["", format [" (%1 more since the last line)", _quiet]] select (_quiet > 0)] call ALiVE_fnc_dump;
+        _flushLog set [_module, [diag_tickTime, 0]];
+    } else {
+        _flushLog set [_module, [_loggedAt, _quiet + 1]];
+    };
+    missionNamespace setVariable [QMOD(PNS_FLUSH_LOG), _flushLog];
     ["flush"] call ALiVE_fnc_storeFile;
 };
 
