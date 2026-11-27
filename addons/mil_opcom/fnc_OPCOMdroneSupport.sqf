@@ -96,6 +96,8 @@ private _leaders = 0;
         if (isNil "_grp" || {!(_grp isEqualType grpNull)} || {isNull _grp}) then { continue };
         private _lead = leader _grp;
         if (!alive _lead || {isPlayer _lead}) then { continue };
+        // a drone or aircraft crew on the attack launches nothing, or a drone could come from a drone or a helicopter
+        if (unitIsUAV _lead || {(vehicle _lead) isKindOf "Air"}) then { continue };
         if ((_lead distance2D _c) > (_range + _reach)) then { "no spawned group of the attack is in reach" call _fnc_why; continue };
         if (time < (_grp getVariable ["ALiVE_IED_droneGroupNext", 0])) then { "the attack's groups are on Drone Wait" call _fnc_why; continue };
         if (_leaders >= DRONE_MAX_LEADERS) exitWith {};

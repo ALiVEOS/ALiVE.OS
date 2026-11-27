@@ -29,7 +29,8 @@ if (isNull _target || {_sides isEqualTo []} || {_max <= _min}) exitWith { [] };
 private _found = [];
 {
     private _l = leader _x;
-    if ((side _x) in _sides && {alive _l} && {!isPlayer _l}) then {
+    // a drone's own crew is a group of its side too: left out, or a drone could launch another drone
+    if ((side _x) in _sides && {alive _l} && {!isPlayer _l} && {!unitIsUAV _l} && {!((vehicle _l) isKindOf "Air")}) then {
         private _dist = _l distance _target;
         if (_dist > _min && {_dist < _max} && {(_l knowsAbout _target) >= 1.5}) then { _found pushBack [_x, _dist] };
     };

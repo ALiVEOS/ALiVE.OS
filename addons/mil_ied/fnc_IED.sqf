@@ -1588,6 +1588,8 @@ switch(_operation) do {
                         private _vehOk = (ADDON getVariable ["Drone_Charge", "MEDIUM"]) != "SMALL";
                         private _groups = allGroups select {
                             (side _x) in _droneSides && {alive leader _x} && {!isPlayer leader _x}
+                            // a drone's own crew (a Zeus-placed one, or one of these already flying) launches nothing
+                            && {!unitIsUAV leader _x} && {!((vehicle leader _x) isKindOf "Air")}
                             && {time > (_x getVariable ["ALiVE_IED_droneGroupNext", 0])}
                             && {private _l = leader _x; (_eyes findIf { (_x distance _l) < (_range + 1200) }) >= 0}
                         };
