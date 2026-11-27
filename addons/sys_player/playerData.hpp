@@ -213,62 +213,57 @@ GVAR(POSITION_DATA) = [
         _thisstance;
      }, {(_this select 0) playActionNow (_this select 1);}],
     ["side", { side (group (_this select 0));}, "SKIP"],
+    // The vehicle by its vehicleID (vehicleVarName for one named in the editor), and the seat as
+    // [role, cargo index, turret path] from the crew list. A passenger used to be saved as "NONE", which
+    // nothing put back, so a player saved in the back came back on foot beside the vehicle.
     ["vehicle",{
-        if (vehicle (_this select 0) != (_this select 0)) then {
-            str (vehicle (_this select 0));
-       } else {
-               "NONE";
-       };
+        private _veh = vehicle (_this select 0);
+        if (_veh == (_this select 0)) exitWith {"NONE"};
+        private _id = _veh getVariable ["vehicleID", vehicleVarName _veh];
+        if (_id isEqualTo "") then {"NONE"} else {_id};
     }, {(_this select 0) setVariable ["vehicle", (_this select 1), true];}
     ],
-     ["seat", {_seat = "NONE";
-        if (vehicle (_this select 0) != (_this select 0)) then {
-            _find = [str(vehicle (_this select 0)), "REMOTE", 0] call CBA_fnc_find;  // http://dev-heaven.net/docs/cba/files/strings/fnc_find-sqf.html
-            if ( _find == -1 ) then {
-                if (driver (vehicle (_this select 0)) == (_this select 0)) then { _seat = "driver"; };
-                if (gunner (vehicle (_this select 0)) == (_this select 0)) then { _seat = "gunner"; };
-                if (commander (vehicle (_this select 0)) == (_this select 0)) then { _seat = "commander"; };
-            };
-        };
-       _seat;
+    ["seat", {
+        private _unit = _this select 0;
+        private _veh = vehicle _unit;
+        if (_veh == _unit) exitWith {"NONE"};
+        private _row = ((fullCrew _veh) select {(_x select 0) isEqualTo _unit}) param [0, []];
+        if (_row isEqualTo []) exitWith {"NONE"};
+        [toLower (_row select 1), _row select 2, _row select 3]
     }, {
-        private ["_thisVehicle","_thisSeat"];
-        _thisVehicle = (_this select 0) getVariable ["vehicle", "NONE"];
-        if (_thisVehicle != "NONE") then {
-            {
-                TRACE_1("", _x getVariable "vehicleID");
-                if ( _x getVariable "vehicleID" == _thisVehicle) exitWith {
-                        _thisSeat = (_this select 1);
-                         if (_thisSeat != "") then {
-                            TRACE_2("", _thisVehicle, _thisSeat);
-                                    switch (_thisSeat) do
-                                    {
-                                       case "driver":
-                                        {
-                    //                   diag_log ["player is driver"];
-                                           (_this select 0) assignAsDriver _x;
-                                           (_this select 0) moveInDriver _x;
-                                        };
-                                       case "gunner":
-                                        {
-                        //                    diag_log ["player is gunner"];
-                                            (_this select 0) assignAsGunner _x;
-                                            (_this select 0) moveInGunner _x;
-
-                                        };
-                                       case "commander":
-                                        {
-                            //                diag_log ["player is commander"];
-                                            (_this select 0) assignAsCommander _x;
-                                            (_this select 0) moveInCommander _x;
-                                        };
-                                    };
-                        } else {
-                              (_this select 0) assignAsCargo _x;
-                               (_this select 0) moveInCargo _x;
-                        };
+        params ["_unit", "_seat"];
+        private _id = _unit getVariable ["vehicle", "NONE"];
+        if (!(_id isEqualType "") || {_id in ["NONE", ""]}) exitWith {};
+        private _i = vehicles findIf {(_x getVariable ["vehicleID", vehicleVarName _x]) == _id};
+        if (_i < 0) exitWith {};
+        private _veh = vehicles select _i;
+        // a save from before: "driver", "gunner" or "commander", and anything else was a passenger
+        if (_seat isEqualType "") then {
+            _seat = if (_seat in ["driver", "gunner", "commander"]) then {[_seat, -1, []]} else {["cargo", -1, []]};
+        };
+        if !(_seat isEqualType []) exitWith {};
+        // The rest of the restore (kit, stance) can move them out again as it runs, and a move made while the
+        // vehicle changes hands is lost: tried again every 2 s until they sit in it.
+        [_unit, _veh, _seat] spawn {
+            params ["_unit", "_veh", "_seat"];
+            _seat params [["_r", "cargo"], ["_idx", -1], ["_path", []]];
+            for "_try" from 1 to 5 do {
+                if (!alive _unit || {isNull _veh} || {vehicle _unit == _veh}) exitWith {};
+                switch (true) do {
+                    case (_r == "driver"): { _unit assignAsDriver _veh; _unit moveInDriver _veh };
+                    case (_r == "cargo"): {
+                        if (_idx >= 0) then { _unit assignAsCargoIndex [_veh, _idx]; _unit moveInCargo [_veh, _idx] } else { _unit assignAsCargo _veh; _unit moveInCargo _veh };
+                    };
+                    case (_path isNotEqualTo []): { _unit assignAsTurret [_veh, _path]; _unit moveInTurret [_veh, _path] };
+                    case (_r == "gunner"): { _unit assignAsGunner _veh; _unit moveInGunner _veh };
+                    case (_r == "commander"): { _unit assignAsCommander _veh; _unit moveInCommander _veh };
+                    default { _unit moveInAny _veh };
                 };
-            } forEach vehicles;
+                sleep 2;
+            };
+            if (alive _unit && {!isNull _veh} && {vehicle _unit != _veh}) then {
+                ["SYS_PLAYER - %1 could not be put back in %2 (%3)", name _unit, _veh, _r] call ALiVE_fnc_dump;
+            };
         };
     }]
 ];
