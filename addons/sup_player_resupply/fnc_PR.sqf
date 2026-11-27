@@ -1145,6 +1145,8 @@ switch(_operation) do {
         if (isServer) then {
             _logic setVariable ["pr_item", _logic getVariable ["pr_item", DEFAULT_PR_ITEM], true];
             _logic setVariable ["pr_item_custom", _logic getVariable ["pr_item_custom", DEFAULT_PR_ITEM_CUSTOM], true];
+            // rank, slot and condition access, read on each player's machine (ALIVE_fnc_playerHasAccessRole)
+            { _logic setVariable [_x, _logic getVariable [_x, ""], true] } forEach ["ALiVE_accessRank", "ALiVE_accessSlots", "ALiVE_accessCondition"];
             // The Factions list has the same gap: a mission saved before its expression was made
             // to broadcast keeps the old one, so it's sent from here, then a flag to say it's there.
             _logic setVariable ["pr_factionWhitelist", _logic getVariable ["pr_factionWhitelist", []], true];

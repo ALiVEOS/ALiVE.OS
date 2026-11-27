@@ -50,6 +50,11 @@ if (isNull _logic) exitWith {};
 // and those players got the Recruitment action twice (AshTray on Discord, 4 Nov).
 if !(isNil {_logic getVariable "initGlobal"}) exitWith { ["ALiVE Recruitment: already set up on this machine, second start ignored"] call ALiVE_fnc_dump };
 _logic setVariable ["initGlobal", false];
+// rank, slot and condition access (Minimum Rank, Allowed Slots, Access Condition): set on the server by Eden,
+// read on each player's machine when they use a recruitment action (ALIVE_fnc_playerHasAccessRole)
+if (isServer) then {
+    { _logic setVariable [_x, _logic getVariable [_x, ""], true] } forEach ["ALiVE_accessRank", "ALiVE_accessSlots", "ALiVE_accessCondition"];
+};
 
 // Force pool spending. The pool lives on the server, so a player's machine asks here and is
 // told yes or no: [caller, faction, cost, ticket]. A cost of 0 only asks how much is left, a
@@ -537,34 +542,34 @@ ALiVE_fnc_recruitVehicle = {
     {
         private _object = _x;
         if (_window) then {
-            _object addAction [(localize "STR_ALIVE_RECRUIT") call ALiVE_fnc_actionTitle, { ["open", _this select 3] call ALiVE_fnc_recruitWindow },
+            _object addAction [(localize "STR_ALIVE_RECRUIT") call ALiVE_fnc_actionTitle, { if ([((_this select 3) select 1) select 0, player, true, localize "STR_ALIVE_RECRUIT"] call ALIVE_fnc_playerHasAccessRole) then { ["open", _this select 3] call ALiVE_fnc_recruitWindow } },
                 [_object, _settings], 1.5, true, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5];
         } else {
             {
                 _object addAction [
                     (format [localize "STR_ALIVE_RECRUIT_UI_ACTION_RECRUIT", getText (configFile >> "CfgVehicles" >> _x >> "displayName")]) call ALiVE_fnc_actionTitle,
-                    { (_this select 3) call ALiVE_fnc_recruitUnit },
+                    { if ([((_this select 3) select 2) select 0, player, true, localize "STR_ALIVE_RECRUIT"] call ALIVE_fnc_playerHasAccessRole) then { (_this select 3) call ALiVE_fnc_recruitUnit } },
                     [_object, _x, _settings], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];
             } forEach _classes;
             {
                 _object addAction [
                     (format [localize "STR_ALIVE_RECRUIT_UI_ACTION_TAKE", getText (configFile >> "CfgVehicles" >> _x >> "displayName")]) call ALiVE_fnc_actionTitle,
-                    { (_this select 3) call ALiVE_fnc_recruitVehicle },
+                    { if ([((_this select 3) select 2) select 0, player, true, localize "STR_ALIVE_RECRUIT"] call ALIVE_fnc_playerHasAccessRole) then { (_this select 3) call ALiVE_fnc_recruitVehicle } },
                     [_object, _x, _settings], 1.4, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];
             } forEach _vehicles;
             {
                 _object addAction [
                     (format [localize "STR_ALIVE_RECRUIT_UI_ACTION_RECRUIT", _x select 1]) call ALiVE_fnc_actionTitle,
-                    { (_this select 3) call ALiVE_fnc_recruitUnit },
+                    { if ([((_this select 3) select 2) select 0, player, true, localize "STR_ALIVE_RECRUIT"] call ALIVE_fnc_playerHasAccessRole) then { (_this select 3) call ALiVE_fnc_recruitUnit } },
                     [_object, _x select 0, _settings, _x], 1.5, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];
             } forEach _menT;
             {
                 _object addAction [
                     (format [localize "STR_ALIVE_RECRUIT_UI_ACTION_TAKE", _x select 1]) call ALiVE_fnc_actionTitle,
-                    { (_this select 3) call ALiVE_fnc_recruitVehicle },
+                    { if ([((_this select 3) select 2) select 0, player, true, localize "STR_ALIVE_RECRUIT"] call ALIVE_fnc_playerHasAccessRole) then { (_this select 3) call ALiVE_fnc_recruitVehicle } },
                     [_object, _x select 0, _settings, _x], 1.4, false, true, "", "alive _target && {vehicle _this isEqualTo _this}", 5
                 ];
             } forEach _vehT;

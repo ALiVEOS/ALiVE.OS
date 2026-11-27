@@ -32,6 +32,8 @@ Jman
 ---------------------------------------------------------------------------- */
 
 if (isNil "NEO_radioLogic") exitWith { false };
+// Minimum Rank, Allowed Slots and Access Condition come first, whatever Support Access says
+if !([NEO_radioLogic, player] call ALIVE_fnc_playerHasAccessRole) exitWith { false };
 
 private _singleOperator = NEO_radioLogic getVariable ["combatsupport_singleoperator", true];
 // Combo attr: BOOL when binarised, "0"/"1" STRING on -packonly dev builds. Normalise.

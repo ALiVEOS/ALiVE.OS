@@ -49,11 +49,11 @@ _menuRsc = "popup";
 // Categories from CfgALiVEC2ISTARAccessItems + the free-text custom classnames,
 // then matches one player pool. The same gate backs the standalone flexiMenu and
 // ACE self-interaction entries, so every entry point agrees on who has access.
-_result = [
+_result = ([
     [MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR,
     [MOD(MIL_C2ISTAR),"c2_item_custom"] call ALIVE_fnc_C2ISTAR,
     ["ALIVE_Tablet"]
-] call ALIVE_fnc_playerHasAccessItems;
+] call ALIVE_fnc_playerHasAccessItems) && {[MOD(MIL_C2ISTAR), player, true, localize "STR_ALIVE_C2ISTAR"] call ALIVE_fnc_playerHasAccessRole};
 
 _otherResult = false;
 _csResult = false;
@@ -85,11 +85,11 @@ if (!isNil "ALIVE_SUP_COMMAND") then {
 
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     // or standing at a Logistics Hub the player may collect at (#1091)
-    _otherResult = ([
+    _otherResult = (([
         [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR,
         [MOD(SUP_PLAYER_RESUPPLY),"pr_item_custom"] call ALIVE_fnc_PR,
         ["ALIVE_Tablet"]
-    ] call ALIVE_fnc_playerHasAccessItems) || {!isNil "ALiVE_hub_list" && {["mayCollect", [player, ["nearHub", [player]] call ALIVE_fnc_hub]] call ALIVE_fnc_hub}};
+    ] call ALIVE_fnc_playerHasAccessItems) && {[MOD(SUP_PLAYER_RESUPPLY), player, true, localize "STR_ALIVE_PR"] call ALIVE_fnc_playerHasAccessRole}) || {!isNil "ALiVE_hub_list" && {["mayCollect", [player, ["nearHub", [player]] call ALIVE_fnc_hub]] call ALIVE_fnc_hub}};
 };
 
 // Tests NEO_radioLogic rather than scanning for the Combat Support module. That
@@ -371,7 +371,7 @@ if (_menuName == "C2ISTAR") then {
                      "",
                      -1,
                      true,
-                     (!isNil "NEO_radioLogic") && {_csResult} && {call ALIVE_fnc_combatSupportIsOperator}
+                     (!isNil "NEO_radioLogic") && {_csResult} && {[NEO_radioLogic, player, true, localize "STR_ALIVE_COMBATSUPPORT"] call ALIVE_fnc_playerHasAccessRole} && {call ALIVE_fnc_combatSupportIsOperator}
                 ],
                 // Ask HQ for a SITREP by radio (Fitz on Discord, 9 Nov). Shown when map intel needs a radio or the
                 // COP is off; the server checks the radio and the 5 minute wait, and answers after a short delay

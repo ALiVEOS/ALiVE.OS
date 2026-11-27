@@ -940,4 +940,49 @@
 <Key ID="STR_ALIVE_SITE_RALLY">
     <English>Rally point %1</English>
 </Key>
+<Key ID="STR_ALIVE_ACCESS_TITLE">
+    <English>Access</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_DENIED">
+    <English>This mission keeps it for %1.</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_DENIED_MISSION">
+    <English>This mission doesn't let you use it.</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_OR">
+    <English> or </English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_WHO_LEADER">
+    <English>group leaders</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_WHO_RANK">
+    <English>%1 and above</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_WHO_SLOTS">
+    <English>these slots: %1</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_RANK">
+    <English>Minimum Rank</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_RANK_COMMENT">
+    <English>Who may use this module by rank. Any: everyone. Group leaders only: the leader of each group. A rank: that rank and above. With Allowed Slots set as well, meeting either one is enough. A logged-in admin always may.</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_RANK_ANY">
+    <English>Any</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_RANK_LEADER">
+    <English>Group leaders only</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_SLOTS">
+    <English>Allowed Slots</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_SLOTS_COMMENT">
+    <English>Slots that may use this module, comma separated. Each entry matches a unit's variable name, its role description (part of it is enough) or its group's callsign, ignoring case: for example jtac1, Platoon Lead, Alpha 1-1. Empty: no slot limit. With Minimum Rank set as well, meeting either one is enough.</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_COND">
+    <English>Access Condition</English>
+</Key>
+<Key ID="STR_ALIVE_ACCESS_COND_COMMENT">
+    <English>Optional SQF that must return true for a player to use this module, on top of rank and slot. It runs on the player's own machine, with _caller as the player. Example: _caller getVariable ["canRecruit", false]. A condition with an error lets nobody in and is written once to the RPT. A logged-in admin always may.</English>
+</Key>
 </Container></Package></Project>

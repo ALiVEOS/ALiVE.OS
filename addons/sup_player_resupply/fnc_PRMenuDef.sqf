@@ -52,7 +52,7 @@ _result = ([
     [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR,
     [MOD(SUP_PLAYER_RESUPPLY),"pr_item_custom"] call ALIVE_fnc_PR,
     ["ALIVE_Tablet"]
-] call ALIVE_fnc_playerHasAccessItems) || {!isNil "ALiVE_hub_list" && {["mayCollect", [player, ["nearHub", [player]] call ALIVE_fnc_hub]] call ALIVE_fnc_hub}};
+] call ALIVE_fnc_playerHasAccessItems && {[MOD(SUP_PLAYER_RESUPPLY), player, true, localize "STR_ALIVE_PR"] call ALIVE_fnc_playerHasAccessRole}) || {!isNil "ALiVE_hub_list" && {["mayCollect", [player, ["nearHub", [player]] call ALIVE_fnc_hub]] call ALIVE_fnc_hub}};
 
 if (typeName _params == typeName []) then {
     if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};

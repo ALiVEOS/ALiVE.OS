@@ -156,6 +156,8 @@ switch(_operation) do {
                         // audio and single-operator attributes above. (#958)
                         NEO_radioLogic setVariable ["combatsupport_item", NEO_radioLogic getVariable ["combatsupport_item","LaserDesignators"], true];
                         NEO_radioLogic setVariable ["combatsupport_item_custom", NEO_radioLogic getVariable ["combatsupport_item_custom",""], true];
+                        // rank, slot and condition access, read on each player's machine (ALIVE_fnc_playerHasAccessRole)
+                        { NEO_radioLogic setVariable [_x, NEO_radioLogic getVariable [_x, ""], true] } forEach ["ALiVE_accessRank", "ALiVE_accessSlots", "ALiVE_accessCondition"];
 
                         // When restricted, the SERVER owns a single operator slot per side and keeps
                         // it filled: if the slot is empty or its holder has left, hand it to another
@@ -638,12 +640,16 @@ switch(_operation) do {
                                     private _gSource = (_m getVariable ["ground_logisticssource", "0"]) call _num;
                                     private _gChance = (_m getVariable ["ground_disarm_chance", "70"]) call _num;
                                     private _gCheck = ((_m getVariable ["ground_mine_check", "1"]) call _num) > 0;
+                                    // #1146: seconds a road patrol stops at each end; empty or not a number gives 30
+                                    private _gWaitRaw = _m getVariable ["ground_patrol_wait", "30"];
+                                    private _gWait = if (_gWaitRaw isEqualType "" && {(_gWaitRaw splitString " ") isEqualTo []}) then { 30 } else { _gWaitRaw call _num };
+                                    _gWait = (_gWait max 0) min 600;
                                     private _gPos = getPosATL _m;
                                     private _gDir = getDir _m;
                                     private _synced = [_m, _gCallsign, "ground", "GROUND"] call _fnc_syncedAsset;
                                     if (!isNull _synced) then { ([_synced] call _fnc_placed) params ["_pp", "_pd"]; _gPos = +_pp; _gType = typeOf _synced; _gDir = _pd };
                                     if (isClass (configFile >> "CfgVehicles" >> _gType)) then {
-                                        _groundArrays pushBack [_gPos, _gDir, _gType, _gCallsign, _gCode, _gLogistics, _gSource, _gChance, _gCheck];
+                                        _groundArrays pushBack [_gPos, _gDir, _gType, _gCallsign, _gCode, _gLogistics, _gSource, _gChance, _gCheck, _gWait];
                                     } else {
                                         ["COMBAT SUPPORT - Ground transport %1 ignored: vehicle class '%2' is unavailable. Load its required mod or select an available vehicle.", _gCallsign, _gType] call ALiVE_fnc_dump;
                                     };
@@ -976,9 +982,9 @@ switch(_operation) do {
 
                         // Ground transport (#690): each one is listed for its own side and every friendly side
                         {
-                            _x params ["_gPos", "_gDir", "_gType", "_gCallsign", "_gCode", "_gLogistics", "_gSource", "_gChance", "_gCheck"];
+                            _x params ["_gPos", "_gDir", "_gType", "_gCallsign", "_gCode", "_gLogistics", "_gSource", "_gChance", "_gCheck", ["_gWait", 30]];
                             _gPos = +_gPos; if ((_gPos select 2) < 1.5) then { _gPos set [2, 0] }; // a deck or pier height is kept
-                            [_gType, _gPos, _gDir, toUpper _gCallsign, _gCode, [_gLogistics, _gSource, _gChance, _gCheck]] call NEO_fnc_groundSpawn;
+                            [_gType, _gPos, _gDir, toUpper _gCallsign, _gCode, [_gLogistics, _gSource, _gChance, _gCheck, _gWait]] call NEO_fnc_groundSpawn;
                         } forEach SUP_GROUNDARRAYS;
 
                         // CAS

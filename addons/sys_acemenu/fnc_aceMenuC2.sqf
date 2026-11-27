@@ -57,6 +57,7 @@ private _c2Cond = {
         [MOD(MIL_C2ISTAR), "c2_item_custom"] call ALIVE_fnc_C2ISTAR,
         ["ALIVE_Tablet"]
     ] call ALIVE_fnc_playerHasAccessItems
+    && {[MOD(MIL_C2ISTAR), player] call ALIVE_fnc_playerHasAccessRole}
 };
 
 
@@ -127,7 +128,8 @@ private _opsCond = {
         [MOD(MIL_C2ISTAR), "c2_item"] call ALIVE_fnc_C2ISTAR,
         [MOD(MIL_C2ISTAR), "c2_item_custom"] call ALIVE_fnc_C2ISTAR,
         ["ALIVE_Tablet"]
-    ] call ALIVE_fnc_playerHasAccessItems;
+    ] call ALIVE_fnc_playerHasAccessItems
+    && {[MOD(MIL_C2ISTAR), player] call ALIVE_fnc_playerHasAccessRole};
 
     private _joinActive = false;
     if (!isNil "ALIVE_SUP_COMMAND") then {
@@ -166,6 +168,7 @@ private _cvCond = {
             ["ALIVE_Tablet"]
         ] call ALIVE_fnc_playerHasAccessItems
     }
+    && {[MOD(MIL_C2ISTAR), player] call ALIVE_fnc_playerHasAccessRole}
 };
 private _action = [
     "C2_CommandView",

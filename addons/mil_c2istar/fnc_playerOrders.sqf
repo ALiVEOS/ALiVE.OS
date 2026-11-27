@@ -1051,6 +1051,9 @@ switch (_operation) do {
         ] call ALIVE_fnc_playerHasAccessItems)}) exitWith {
             ["notify", [_player, "You need a C2ISTAR access item to change the OPCOM stance."]] call MAINCLASS;
         };
+        if !([MOD(MIL_C2ISTAR), _player] call ALIVE_fnc_playerHasAccessRole) exitWith {
+            ["notify", [_player, "This mission keeps OPCOM stance changes for other ranks or slots."]] call MAINCLASS;
+        };
 
         if !(_newControlType in ["invasion","occupation","asymmetric","dugin","assault"]) exitWith {
             ["notify", [_player, "Invalid OPCOM stance."]] call MAINCLASS;

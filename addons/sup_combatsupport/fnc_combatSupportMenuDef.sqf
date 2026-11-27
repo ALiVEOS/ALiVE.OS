@@ -56,7 +56,7 @@ _result = [
 
 // #940 follow-up: in "first player only" mode, only the current per-side operator
 // sees the Combat Support entry enabled (evaluated per-open, so it follows hand-offs).
-_result = _result && {call ALIVE_fnc_combatSupportIsOperator};
+_result = _result && {[NEO_radioLogic, player, true, localize "STR_ALIVE_COMBATSUPPORT"] call ALIVE_fnc_playerHasAccessRole} && {call ALIVE_fnc_combatSupportIsOperator};
 
 if (typeName _params == typeName []) then {
     if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};

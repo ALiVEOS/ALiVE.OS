@@ -2820,7 +2820,8 @@ switch(_operation) do {
                 [MOD(MIL_C2ISTAR),"c2_item_custom"] call ALIVE_fnc_C2ISTAR,
                 ["ALIVE_Tablet"],
                 _player
-            ] call ALIVE_fnc_playerHasAccessItems};
+            ] call ALIVE_fnc_playerHasAccessItems}
+            && {[MOD(MIL_C2ISTAR), _player] call ALIVE_fnc_playerHasAccessRole};
 
     };
 

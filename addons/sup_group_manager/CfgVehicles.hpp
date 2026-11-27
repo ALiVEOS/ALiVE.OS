@@ -168,6 +168,47 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        // Who may use it by rank, slot or a condition of the mission's own (Jman 27 Nov 2026, AshTray and A. Ares on Discord).
+                        // Read by ALIVE_fnc_playerHasAccessRole; empty or Any keeps everyone in, as before.
+                        class access_rank : Combo
+                        {
+                            property = "ALiVE_sup_recruit_access_rank";
+                            displayName = "$STR_ALIVE_ACCESS_RANK";
+                            tooltip = "$STR_ALIVE_ACCESS_RANK_COMMENT";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['ALiVE_accessRank', _value];";
+                            defaultValue = """ANY""";
+                            class Values
+                            {
+                                class any { name = "$STR_ALIVE_ACCESS_RANK_ANY"; value = "ANY"; default = 1; };
+                                class leader { name = "$STR_ALIVE_ACCESS_RANK_LEADER"; value = "LEADER"; };
+                                class corporal { name = "Corporal"; value = "CORPORAL"; };
+                                class sergeant { name = "Sergeant"; value = "SERGEANT"; };
+                                class lieutenant { name = "Lieutenant"; value = "LIEUTENANT"; };
+                                class captain { name = "Captain"; value = "CAPTAIN"; };
+                                class major { name = "Major"; value = "MAJOR"; };
+                                class colonel { name = "Colonel"; value = "COLONEL"; };
+                            };
+                        };
+                        class access_slots : Edit
+                        {
+                            property = "ALiVE_sup_recruit_access_slots";
+                            displayName = "$STR_ALIVE_ACCESS_SLOTS";
+                            tooltip = "$STR_ALIVE_ACCESS_SLOTS_COMMENT";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['ALiVE_accessSlots', _value];";
+                            defaultValue = """""";
+                        };
+                        class access_condition : Edit
+                        {
+                            property = "ALiVE_sup_recruit_access_condition";
+                            displayName = "$STR_ALIVE_ACCESS_COND";
+                            tooltip = "$STR_ALIVE_ACCESS_COND_COMMENT";
+                            control = "EditCodeMulti3";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['ALiVE_accessCondition', _value];";
+                            defaultValue = """""";
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription

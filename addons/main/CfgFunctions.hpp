@@ -61,6 +61,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_siteWhoDialog.sqf";
                 ALIVE_RECOMPILE;
             };
+            class playerHasAccessRole {
+                description = "Shared rank, slot and condition gate for the player modules";
+                file = "\x\alive\addons\main\fnc_playerHasAccessRole.sqf";
+                ALIVE_RECOMPILE;
+            };
             class playerHasAccessItems {
                 description = "Shared access-item gate for the player tablet/menu modules";
                 file = "\x\alive\addons\main\fnc_playerHasAccessItems.sqf";

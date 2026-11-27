@@ -2138,6 +2138,8 @@ if (isServer) then { publicVariable "ALiVE_c2istar_orderRepeatBlock" };
 if (isServer) then {
     _logic setVariable ["c2_item", _logic getVariable ["c2_item", DEFAULT_C2_ITEM], true];
     _logic setVariable ["c2_item_custom", _logic getVariable ["c2_item_custom", DEFAULT_C2_ITEM_CUSTOM], true];
+    // rank, slot and condition access, read on each player's machine (ALIVE_fnc_playerHasAccessRole)
+    { _logic setVariable [_x, _logic getVariable [_x, ""], true] } forEach ["ALiVE_accessRank", "ALiVE_accessSlots", "ALiVE_accessCondition"];
 
     // Command Point Classes: every object of these classes is a command post within the radius, read by
     // ALiVE_fnc_playerHasAccessItems on each player's machine, so broadcast once here.

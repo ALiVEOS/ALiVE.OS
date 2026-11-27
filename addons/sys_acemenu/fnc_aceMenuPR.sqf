@@ -39,7 +39,7 @@ private _prCond = {
         [MOD(SUP_PLAYER_RESUPPLY), "pr_item"] call ALIVE_fnc_PR,
         [MOD(SUP_PLAYER_RESUPPLY), "pr_item_custom"] call ALIVE_fnc_PR,
         ["ALIVE_Tablet"]
-    ] call ALIVE_fnc_playerHasAccessItems) || {!isNil "ALiVE_hub_list" && {["mayCollect", [player, ["nearHub", [player]] call ALIVE_fnc_hub]] call ALIVE_fnc_hub}})
+    ] call ALIVE_fnc_playerHasAccessItems && {[MOD(SUP_PLAYER_RESUPPLY), player] call ALIVE_fnc_playerHasAccessRole}) || {!isNil "ALiVE_hub_list" && {["mayCollect", [player, ["nearHub", [player]] call ALIVE_fnc_hub]] call ALIVE_fnc_hub}})
     && {(MOD(Require) getVariable [(format ["ALIVE_MIL_LOG_AVAIL_%1", (side group player)]), false])}
 };
 
