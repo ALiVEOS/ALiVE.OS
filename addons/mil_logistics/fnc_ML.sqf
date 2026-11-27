@@ -80,6 +80,9 @@ ARJay & Jman
 #define MAX_GROUPS_PER_REQUEST 5
 #define MAX_SLINGLOAD_CONCURRENT 3
 #define DISMOUNT_RADIUS 500
+// a ground transport this far from its objective that has moved under STALL_MOVE m in STALL_TIME s is stuck (#1147)
+#define STALL_MOVE 25
+#define STALL_TIME 180
 #define VEHICLE_LEAD_DIST 50
 // Slingload safe-drop constants
 #define SLINGLOAD_DROP_HEIGHT  3    // metres AGL at which slung load is released (safe fall distance)
@@ -12746,9 +12749,12 @@ switch(_operation) do {
                 private _dismountDone = _eventStateData param [1, false];
                 if (isNil "_dismountDone" || typeName _dismountDone != "BOOL") then { _dismountDone = false; };
 
-                if (!_dismountDone) then {
+                // A truck stuck far out (a jam at a gap, #1147) lets its men out to walk on: under STALL_MOVE metres
+                // in STALL_TIME seconds, out of combat. Looked at even after the first dismount, as the trucks behind
+                // can be jammed too; only a dismount near the objective ends the check for the event.
+                if (!_dismountDone || {count _eventTransportVehiclesProfiles > 0}) then {
 
-                    if (_debug && count _eventTransportVehiclesProfiles > 0) then {
+                    if (_debug && {!_dismountDone} && {count _eventTransportVehiclesProfiles > 0}) then {
                         ["ML - transportTravel: Checking early dismount. Transport vehicles: %1 Dismount radius: %2m Event: %3",
                             count _eventTransportVehiclesProfiles, _DISMOUNT_RADIUS, _eventID] call ALiVE_fnc_dump;
                     };
@@ -12781,7 +12787,20 @@ switch(_operation) do {
                                 _vehProfID, round _distToDest, _DISMOUNT_RADIUS] call ALiVE_fnc_dump;
                         };
 
-                        if (_distToDest > _DISMOUNT_RADIUS) then { continue };
+                        private _stalled = false;
+                        if (_distToDest > _DISMOUNT_RADIUS || {_dismountDone}) then {
+                            private _vehObjS = _vehProfile select 2 select 10;
+                            // a boat stays out of it: its men would get out into the sea
+                            if (isNull _vehObjS || {!alive _vehObjS} || {_vehObjS isKindOf "Ship"}) exitWith {};
+                            private _mark = _vehObjS getVariable ["alive_ml_stallMark", []];
+                            private _posS = getPosATL _vehObjS;
+                            if (_mark isEqualTo [] || {(_posS distance2D (_mark select 0)) > STALL_MOVE} || {behaviour effectiveCommander _vehObjS == "COMBAT"}) exitWith {
+                                _vehObjS setVariable ["alive_ml_stallMark", [_posS, time]];
+                            };
+                            _stalled = time - (_mark select 1) >= STALL_TIME;
+                        };
+                        if (_distToDest > _DISMOUNT_RADIUS && {!_stalled}) then { continue };
+                        if (_dismountDone && {!_stalled}) then { continue };
 
                         // Within dismount radius - check for cargo
                         private _inCargo = +(_vehProfile select 2 select 9); // a copy: releasing each group takes it out of the list
@@ -12791,8 +12810,13 @@ switch(_operation) do {
                         };
                         if (count _inCargo == 0) then { continue };
 
-                        ["ML - transportTravel: Early dismount triggered for %1 (%2) at %3m from destination. Event: %4",
-                            _vehProfID, _vehClass, round _distToDest, _eventID] call ALiVE_fnc_dump;
+                        if (_stalled) then {
+                            ["ML - transportTravel: %1 (%2) has moved under %3 m in %4 s, %5 m from the destination, so its troops get out and go on foot. Event: %6",
+                                _vehProfID, _vehClass, STALL_MOVE, STALL_TIME, round _distToDest, _eventID] call ALiVE_fnc_dump;
+                        } else {
+                            ["ML - transportTravel: Early dismount triggered for %1 (%2) at %3m from destination. Event: %4",
+                                _vehProfID, _vehClass, round _distToDest, _eventID] call ALiVE_fnc_dump;
+                        };
 
                         // Unload each cargo profile and give them a foot waypoint to the destination
                         {
@@ -12886,7 +12910,7 @@ switch(_operation) do {
                             };
                         };
 
-                        _dismountTriggered = true;
+                        if (!_stalled) then { _dismountTriggered = true };
 
                     } forEach _eventTransportVehiclesProfiles;
 

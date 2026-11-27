@@ -199,7 +199,12 @@ switch (_operation) do {
                     if ((_data param [33, false]) isEqualTo true) exitWith { "busy" };
                     if (!(_leader checkAIFeature "PATH") || {!(_leader checkAIFeature "MOVE")}) exitWith { "ai off" };
                     if (((expectedDestination _leader) param [1, ""]) == "DoNotPlan") exitWith { "stopped" };
-                    if (_inVehicle && {((_here getPos [20, _dir]) nearEntities [["LandVehicle"], 15]) findIf { _x != _vehicle && {side _x == side _group} } > -1}) exitWith { "queue" };
+                    // waiting behind its own side's traffic: a vehicle ahead facing the same way, or still moving. Two
+                    // nose to nose at a gap are stuck, not queuing (#1147), so a head-on one is no reason to wait.
+                    if (_inVehicle && {((_here getPos [20, _dir]) nearEntities [["LandVehicle"], 15]) findIf {
+                        _x != _vehicle && {side _x == side _group}
+                        && {abs (((getDir _x) - _dir + 540) % 360 - 180) < 90 || {abs speed _x > 2}}
+                    } > -1}) exitWith { "queue" };
                     if (_isOrder && {(_here distance2D waypointPosition _wp) < (waypointCompletionRadius _wp max 10) + 50}) exitWith { "at order" };
                     ""
                 };
