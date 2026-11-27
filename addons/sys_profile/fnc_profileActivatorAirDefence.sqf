@@ -13,6 +13,12 @@ with their crews, so they can engage it; nothing else round the aircraft is
 spawned. Once no enemy aircraft is near they are let go and despawn the usual
 way.
 
+Classes that run their own heavy scripts once spawned are left virtual here:
+POOK SAM Pack sites (pook_*) put a 360-600 ms frame on the server every 5 s
+while up (MACC runs, 27 Nov). A mission can set ALiVE_airDefenceSkipPrefixes
+to its own list of class name prefixes, or to [] to spawn every class. A site
+left out still spawns the usual way when a player comes near.
+
 The aircraft come from ALiVE_ATO_airborne, which each MACC kernel fills on its
 roster tick (hashmap of commander -> [[object, side text], ...]) and empties
 when it pauses or stops. Claims are worked out every 2 seconds, and a site
@@ -110,12 +116,32 @@ switch (_operation) do {
 
         // the anti-air vehicle profiles, rebuilt every minute (the anti-air test is cached per class)
         if (_now - (_logic get "candidatesAt") >= AIR_DEFENCE_LIST_INTERVAL) then {
+            // a class left out is said once in the RPT, with the prefix that matched it
+            private _prefixes = missionNamespace getVariable ["ALiVE_airDefenceSkipPrefixes", ["pook_"]];
+            if !(_prefixes isEqualType []) then { _prefixes = [] };
+            _prefixes = (_prefixes select { _x isEqualType "" && {_x != ""} }) apply { toLower _x };
+            private _skipCache = _logic getOrDefault ["skipCache", createHashMap, true];
+            private _fnc_skipped = {
+                params ["_class"];
+                private _key = toLower _class;
+                private _hit = _skipCache get _key;
+                if (isNil "_hit") then {
+                    private _i = _prefixes findIf { (_key find _x) == 0 };
+                    _hit = _i > -1;
+                    _skipCache set [_key, _hit];
+                    if (_hit) then {
+                        ["ALiVE Air Defence Spawning - %1 is left virtual (matches %2 in ALiVE_airDefenceSkipPrefixes); it still spawns when a player is near", _class, _prefixes select _i] call ALiVE_fnc_dump;
+                    };
+                };
+                _hit
+            };
             private _profilesByType = [MOD(profileHandler),"profilesByType"] call ALIVE_fnc_hashGet;
             private _candidates = ([_profilesByType,"vehicle", []] call ALiVE_fnc_hashGet) select {
                 private _profile = _profilesById get _x;
                 !isNil "_profile" && {
                     private _data = _profile select 2;
                     !((toLower (_data select 6)) in ["plane","helicopter"])
+                    && {!([_data select 11] call _fnc_skipped)}
                     && {[_data select 11] call ALiVE_fnc_isAntiAirCapable}
                 }
             };
