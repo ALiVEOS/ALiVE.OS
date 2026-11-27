@@ -4579,6 +4579,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
+				init="this setVariable ['ALiVE_garrisonClaim', [this, 1e10]];";
 			};
 			id=67;
 			type="B_Mortar_01_F";

@@ -4016,8 +4016,9 @@ switch(_operation) do {
 
     };
 
-    // What's New for players in ALiVE 3: one page per entry in _pages, each [title, text], shown in turn. To add a
-    // feature, add an entry; nothing else needs changing. Each page says where to read more in the Field Manual.
+    // What's New for players in ALiVE 3: one page per entry in _pages, each [title, text, has a Field Manual page],
+    // shown in turn. To add a feature, add an entry; nothing else needs changing. With the third element true the
+    // page says to read more in the Field Manual.
     case "activateSelectionUsageWhatsNew": {
 
         ALIVE_tourActiveScript = [_logic] spawn {
@@ -4025,18 +4026,21 @@ switch(_operation) do {
             params ["_logic"];
 
             private _pages = [
-                ["Who can use a module", "C2ISTAR, Player Logistics, Combat Support and Recruitment can each be kept for a minimum rank, for named slots, or behind a condition the mission sets. Left at their defaults, everyone can use them, and a logged-in admin always can. A player who is refused is told who the module is kept for."],
-                ["Player FOBs", "Get a FOB Kit from a Field HQ, or one the mission placed, carry it where the base is needed and use Deploy FOB. A mission can offer FOB types, such as a fire base or a patrol base, each with its own buildings, cost and limit. In the Build Menu, mark items as favourites, and place walls and fences one after another with Place ... and another. Manage FOB upgrades the FOB, changes its type or dismantles it."],
-                ["Logistics Hubs", "A vehicle or a towed gun brought to one of your side's hubs can be traded in for the force pool. A captured one is worth less than your own. What you collect at a hub is set down around it, or at the spot the mission has marked for it."],
-                ["Recruits", "Recruits gain skill from each kill and each hour they stay alive, unless the mission turns it off. Stand by an AI soldier in your group and use Open this soldier's inventory to see their uniform, vest and backpack, not only the backpack."],
-                ["Fire missions", "Crew an artillery piece or a mortar and ask the AI Commander for orders. HQ sends the grid, the target, how many rounds and the bearing and range from your gun. Fire until the area is clear, then move the gun at least 300 m before the enemy fires back."],
-                ["Transport patrols and escorts", "A Ground Transport on a Patrol order drives the roads between two points and back, as a taxi between your base and the front. When you order a Transport, the Escort box sends an armed support vehicle with it, behind it or, for an air escort, ahead of it to the landing spot."],
-                ["Your squad in a save", "With Store Position on in Player Persistence, a save keeps the AI soldiers you lead and your High Command teams, with their kit, places, health and seats. Soldiers who were dead at the save stay gone."]
+                ["Who can use a module", "C2ISTAR, Player Logistics, Combat Support and Recruitment can each be kept for a minimum rank, for named slots, or behind a condition the mission sets. Left at their defaults, everyone can use them, and a logged-in admin always can. A player who is refused is told who the module is kept for.", true],
+                ["Player FOBs", "Get a FOB Kit from a Field HQ, or one the mission placed, carry it where the base is needed and use Deploy FOB. A mission can offer FOB types, such as a fire base or a patrol base, each with its own buildings, cost and limit. In the Build Menu, mark items as favourites, and place walls and fences one after another with Place ... and another. Manage FOB upgrades the FOB, changes its type or dismantles it.", true],
+                ["Logistics Hubs", "A vehicle or a towed gun brought to one of your side's hubs can be traded in for the force pool. A captured one is worth less than your own. What you collect at a hub is set down around it, or at the spot the mission has marked for it.", true],
+                ["Recruits", "Recruits gain skill from each kill and each hour they stay alive, unless the mission turns it off. Stand by an AI soldier in your group and use Open this soldier's inventory to see their uniform, vest and backpack, not only the backpack.", true],
+                ["Fire missions", "Crew an artillery piece or a mortar and ask the AI Commander for orders. HQ sends the grid, the target, how many rounds and the bearing and range from your gun. Fire until the area is clear, then move the gun at least 300 m before the enemy fires back.", true],
+                ["Transport patrols and escorts", "A Ground Transport on a Patrol order drives the roads between two points and back, as a taxi between your base and the front. When you order a Transport, the Escort box sends an armed support vehicle with it, behind it or, for an air escort, ahead of it to the landing spot.", true],
+                ["Your squad in a save", "With Store Position on in Player Persistence, a save keeps the AI soldiers you lead and your High Command teams, with their kit, places, health and seats. Soldiers who were dead at the save stay gone.", true],
+                ["Air cover that stays with you", "On the Combat Support tablet, the CAS task ESCORT ME sends an aircraft to circle you as you move, on foot or in a vehicle, a little ahead of your direction of travel. It goes after enemies near you that your group knows about, and heads home when its time runs out, when it is given another task or when you are killed. Jets circle at least 700 m out.", false],
+                ["Deeper recon", "A Recon task's observation posts can now be held for up to 10 minutes. When the team reports, the side's Air Commander, if it has one, is asked for a strike on what it saw: vehicles first, or groups on foot if no vehicle was seen. A mission can also keep the task open until the team sends a SITREP from the map.", false],
+                ["The AI Commander", "A mission can let the AI Commander tell its side over the radio when its attack is about to go in together, and when a landing from the sea is complete. A reinforcement truck stuck far from its objective now lets its troops out to walk on, so they still arrive.", false]
             ];
 
             {
-                _x params ["_title", "_text"];
-                private _copy = format ["<br/><t size='1.5' color='#68a7b7'>What's New: %1</t><br/><br/><t size='1'>%2</t><br/><br/><t size='0.9' color='#999999'>Read more in the Field Manual, under ALiVE Mod. Page %3 of %4.</t><br/><br/>", _title, _text, _forEachIndex + 1, count _pages];
+                _x params ["_title", "_text", ["_manual", false]];
+                private _copy = format ["<br/><t size='1.5' color='#68a7b7'>What's New: %1</t><br/><br/><t size='1'>%2</t><br/><br/><t size='0.9' color='#999999'>%3Page %4 of %5.</t><br/><br/>", _title, _text, ["", "Read more in the Field Manual, under ALiVE Mod. "] select _manual, _forEachIndex + 1, count _pages];
                 ["openSideFull"] call ALIVE_fnc_displayMenu;
                 ["setSideFullText", _copy] call ALIVE_fnc_displayMenu;
                 sleep 20;
