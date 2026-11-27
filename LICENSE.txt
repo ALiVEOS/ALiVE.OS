@@ -11,9 +11,10 @@ does not give anyone the right to reuse it.
 These terms apply to everything in this repository and to every ALiVE
 release made from it, including the @ALiVE and @ALiVEServer mod folders,
 ALiVEClient.dll and ALiVEClient_x64.dll, the War Room server mod
-(@alive_wr), and all code, configs, scripts, functions, models, textures,
-sounds, images, missions, compositions, terrain indexes and documentation
-(together, "ALiVE"), except the third-party items listed in section 7.
+(@alive_wr), the ALiVE TOC, and all code, configs, scripts, functions,
+models, textures, sounds, images, missions, compositions, terrain indexes
+and documentation (together, "ALiVE"), except the third-party items listed
+in section 7.
 
 
 1. OWNERSHIP
