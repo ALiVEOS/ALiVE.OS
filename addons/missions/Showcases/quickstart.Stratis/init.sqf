@@ -3,6 +3,12 @@ enableSaving [false, false];
 
 /////--Intro--/////
 if (hasInterface) then {
+	[] spawn {
+		waitUntil {!isNull player};
+		player createDiaryRecord ["Diary", ["Try these first",
+			"Round your start point:<br/>- A FOB Kit: use Deploy FOB on it to build a base. The cargo house beside it is a Field HQ for another kit.<br/>- A camping table: recruit soldiers into your group there.<br/>- A mortar: get in it and ask for orders on the ALiVE menu (C2ISTAR) to be given a fire mission.<br/><br/>The Field Manual, under ALiVE Mod, has a page for each."
+		]];
+	};
 	private ["_cam","_camx","_camy","_camz","_object"];
 	
 	titleText ["The ALiVE Team presents...", "BLACK IN",9999];

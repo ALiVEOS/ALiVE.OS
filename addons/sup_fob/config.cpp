@@ -4,6 +4,7 @@
 #include "CfgVehicles.hpp"
 #include "CfgFunctions.hpp"
 #include "Cfg3DEN.hpp"
+#include "CfgHints.hpp"
 
 #include "\x\alive\addons\sup_fob\data\ui\fobBuild.hpp"
 #include "\x\alive\addons\sup_fob\data\ui\fobManage.hpp"

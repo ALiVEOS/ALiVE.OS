@@ -8,7 +8,7 @@ class EditorData
 	toggles=1;
 	class ItemIDProvider
 	{
-		nextID=93;
+		nextID=101;
 	};
 	class MarkerIDProvider
 	{
@@ -47,7 +47,13 @@ addons[]=
 	"alive_sys_tour",
 	"alive_amb_civ_population",
 	"alive_amb_civ_placement",
-	"alive_sys_playeroptions"
+	"alive_sys_playeroptions",
+	"alive_sup_fob",
+	"alive_sup_group_manager",
+	"alive_sup_ground",
+	"A3_Static_F_Mortar_01",
+	"A3_Structures_F_Mil_Cargo",
+	"A3_Structures_F_Civ_Camping"
 };
 class AddonsMetaData
 {
@@ -226,7 +232,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=52;
+		items=59;
 		class Item0
 		{
 			dataType="Marker";
@@ -12536,16 +12542,106 @@ class Mission
 				nAttributes=35;
 			};
 		};
+		class Item52
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={6504.955,7.130,5396.489};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=93;
+			type="Land_Cargo_House_V1_F";
+		};
+		class Item53
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={6485.955,7.360,5405.489};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=94;
+			type="ALiVE_FOB_Kit";
+		};
+		class Item54
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={6469.955,7.350,5410.489};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=95;
+			type="Land_CampingTable_F";
+		};
+		class Item55
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={6461.040,8.100,5383.330};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=96;
+			type="B_Mortar_01_F";
+		};
+		class Item56
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={6446.955,7.450,5420.489};
+			};
+			id=97;
+			type="ALiVE_sup_fob";
+		};
+		class Item57
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={6442.955,7.450,5420.489};
+			};
+			id=98;
+			type="ALiVE_sup_recruit";
+		};
+		class Item58
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={6436.955,7.450,5396.489};
+			};
+			id=100;
+			type="ALiVE_sup_ground";
+		};
 	};
 	class Connections
 	{
 		class LinkIDProvider
 		{
-			nextID=66;
+			nextID=69;
 		};
 		class Links
 		{
-			items=66;
+			items=69;
 			class Item0
 			{
 				linkID=0;
@@ -13200,6 +13296,36 @@ class Mission
 			{
 				linkID=65;
 				item0=72;
+				item1=69;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item66
+			{
+				linkID=66;
+				item0=97;
+				item1=93;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item67
+			{
+				linkID=67;
+				item0=98;
+				item1=95;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item68
+			{
+				linkID=68;
+				item0=100;
 				item1=69;
 				class CustomData
 				{

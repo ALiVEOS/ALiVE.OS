@@ -8,7 +8,7 @@ class EditorData
 	toggles=513;
 	class ItemIDProvider
 	{
-		nextID=64;
+		nextID=71;
 	};
 	class MarkerIDProvider
 	{
@@ -59,7 +59,12 @@ addons[]=
 	"A3_Modules_F_Intel",
 	"A3_Armor_F_Beta_APC_Wheeled_01",
 	"A3_Armor_F_Gamma_MBT_01",
-	"A3_Structures_F_Mil_Flags"
+	"A3_Structures_F_Mil_Flags",
+	"alive_sup_fob",
+	"alive_sup_group_manager",
+	"alive_mil_c2istar",
+	"A3_Static_F_Mortar_01",
+	"A3_Structures_F_Mil_Cargo"
 };
 class AddonsMetaData
 {
@@ -249,7 +254,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=62;
+		items=69;
 		class Item0
 		{
 			dataType="Object";
@@ -4518,16 +4523,106 @@ class Mission
 			id=63;
 			atlOffset=-229.22346;
 		};
+		class Item62
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3318.534,228.470,2936.678};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=64;
+			type="Land_Cargo_House_V1_F";
+		};
+		class Item63
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3299.534,229.190,2945.678};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=65;
+			type="ALiVE_FOB_Kit";
+		};
+		class Item64
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3291.800,229.350,2941.300};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=66;
+			type="Land_CampingTable_F";
+		};
+		class Item65
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3293.260,229.450,2932.200};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=67;
+			type="B_Mortar_01_F";
+		};
+		class Item66
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={3260.534,229.189,2960.678};
+			};
+			id=68;
+			type="ALiVE_sup_fob";
+		};
+		class Item67
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={3256.534,229.189,2960.678};
+			};
+			id=69;
+			type="ALiVE_sup_recruit";
+		};
+		class Item68
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={3252.534,229.189,2960.678};
+			};
+			id=70;
+			type="ALiVE_mil_c2istar";
+		};
 	};
 	class Connections
 	{
 		class LinkIDProvider
 		{
-			nextID=6;
+			nextID=8;
 		};
 		class Links
 		{
-			items=6;
+			items=8;
 			class Item0
 			{
 				linkID=0;
@@ -4583,6 +4678,26 @@ class Mission
 				linkID=5;
 				item0=49;
 				item1=48;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item6
+			{
+				linkID=6;
+				item0=68;
+				item1=64;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item7
+			{
+				linkID=7;
+				item0=69;
+				item1=66;
 				class CustomData
 				{
 					type="Sync";

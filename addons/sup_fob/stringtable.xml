@@ -1129,6 +1129,78 @@
             <Key ID="STR_ALIVE_FOB_MARKER_RALLY">
                 <English>%1 (rally point)</English>
             </Key>
+            <Key ID="STR_ALIVE_FOB_HINT_DEPLOY">
+                <English>Player FOBs - Deploying a FOB</English>
+                <Chinesesimp>玩家前沿基地 - 部署前沿基地</Chinesesimp>
+                <Chinese>玩家前進基地 - 部署前進基地</Chinese>
+                <Spanish>FOB de jugadores - Desplegar una FOB</Spanish>
+                <French>FOB des joueurs - Déployer une FOB</French>
+                <Portuguese>FOB dos jogadores - Implantar uma FOB</Portuguese>
+                <Russian>FOB игроков - развёртывание FOB</Russian>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HINT_DEPLOY_SHORT">
+                <English>From a kit to a working base</English>
+                <Chinesesimp>从工具包到可用的基地</Chinesesimp>
+                <Chinese>從工具包到可用的基地</Chinese>
+                <Spanish>De un kit a una base en marcha</Spanish>
+                <French>D'un kit à une base opérationnelle</French>
+                <Portuguese>De um kit a uma base a funcionar</Portuguese>
+                <Russian>От комплекта до рабочей базы</Russian>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HINT_DEPLOY_DESC">
+                <English>A FOB is a base your side builds where it is needed. It becomes an objective for your side's AI Commander.%1%1%2Get a %3FOB Kit%4: use %3Request FOB Kit%4 at a Field HQ, or find one the mission placed%1%2Take the kit where you want the base and use %3Deploy FOB%4 on it%1%2A headquarters outline follows you: green means it can go there. %3Next Headquarters%4 picks another building, and %3Next FOB Type%4 picks the type when the mission offers several, such as a fire base or a patrol base%1%2Use %3Deploy FOB Here%4. The deploy action shows what that type costs%1%1At the headquarters, %3Manage FOB%4 upgrades the FOB to a higher tier, changes its type, renames it or dismantles it.</English>
+                <Chinesesimp>前沿基地是你方在需要的地方建立的基地，会成为你方 AI 指挥官的目标。%1%1%2获取%3前沿基地工具包%4：在野战指挥部使用%3请求前沿基地工具包%4，或找到任务放置的工具包%1%2把工具包带到想建基地的地方，对其使用%3部署前沿基地%4%1%2指挥部轮廓会跟随你：绿色表示可以放置。%3下一个指挥部%4选择另一栋建筑；任务提供多种类型时，%3下一个前沿基地类型%4选择类型，例如火力基地或巡逻基地%1%2使用%3在此部署前沿基地%4。部署动作会显示该类型的花费%1%1在指挥部，%3管理前沿基地%4可将其升级到更高等级、更改类型、重命名或拆除。</Chinesesimp>
+                <Chinese>前進基地是你方在需要的地方建立的基地，會成為你方 AI 指揮官的目標。%1%1%2取得%3前進基地工具包%4：在野戰指揮部使用%3請求前進基地工具包%4，或找到任務放置的工具包%1%2把工具包帶到想建基地的地方，對其使用%3部署前進基地%4%1%2指揮部輪廓會跟隨你：綠色表示可以放置。%3下一個指揮部%4選擇另一棟建築；任務提供多種類型時，%3下一個前進基地類型%4選擇類型，例如火力基地或巡邏基地%1%2使用%3在此部署前進基地%4。部署動作會顯示該類型的花費%1%1在指揮部，%3管理前進基地%4可將其升級到更高等級、更改類型、重新命名或拆除。</Chinese>
+                <Spanish>Una FOB es una base que tu bando levanta donde hace falta. Se convierte en un objetivo para el Comandante IA de tu bando.%1%1%2Consigue un %3FOB Kit%4: usa %3Request FOB Kit%4 en un Field HQ, o encuentra uno que haya colocado la misión%1%2Lleva el kit a donde quieras la base y usa %3Deploy FOB%4 sobre él%1%2Te sigue el contorno de un cuartel general: verde significa que puede ir ahí. %3Next Headquarters%4 elige otro edificio, y %3Next FOB Type%4 elige el tipo cuando la misión ofrece varios, como una base de fuego o una base de patrulla%1%2Usa %3Deploy FOB Here%4. La acción de despliegue muestra lo que cuesta ese tipo%1%1En el cuartel general, %3Manage FOB%4 mejora la FOB a un nivel superior, cambia su tipo, la renombra o la desmonta.</Spanish>
+                <French>Une FOB est une base que votre camp monte là où il en a besoin. Elle devient un objectif pour le Commandant IA de votre camp.%1%1%2Obtenez un %3FOB Kit%4 : utilisez %3Request FOB Kit%4 à un Field HQ, ou trouvez-en un placé par la mission%1%2Portez le kit là où vous voulez la base et utilisez %3Deploy FOB%4 dessus%1%2Le contour d'un quartier général vous suit : vert signifie qu'il peut aller là. %3Next Headquarters%4 choisit un autre bâtiment, et %3Next FOB Type%4 choisit le type quand la mission en propose plusieurs, comme une base de feu ou une base de patrouille%1%2Utilisez %3Deploy FOB Here%4. L'action de déploiement indique ce que coûte ce type%1%1Au quartier général, %3Manage FOB%4 fait monter la FOB d'un niveau, change son type, la renomme ou la démonte.</French>
+                <Portuguese>Uma FOB é uma base que o seu lado monta onde é precisa. Torna-se um objetivo para o Comandante IA do seu lado.%1%1%2Obtenha um %3FOB Kit%4: use %3Request FOB Kit%4 num Field HQ, ou encontre um colocado pela missão%1%2Leve o kit até onde quer a base e use %3Deploy FOB%4 nele%1%2O contorno de um quartel-general segue-o: verde significa que pode ficar ali. %3Next Headquarters%4 escolhe outro edifício, e %3Next FOB Type%4 escolhe o tipo quando a missão oferece vários, como uma base de fogo ou uma base de patrulha%1%2Use %3Deploy FOB Here%4. A ação de implantação mostra o custo desse tipo%1%1No quartel-general, %3Manage FOB%4 sobe a FOB de nível, muda o seu tipo, dá-lhe outro nome ou desmonta-a.</Portuguese>
+                <Russian>FOB — это база, которую ваша сторона ставит там, где она нужна. Она становится целью для ИИ-командира вашей стороны.%1%1%2Получите %3FOB Kit%4: используйте %3Request FOB Kit%4 у Field HQ или найдите комплект, размещённый миссией%1%2Отнесите комплект туда, где нужна база, и используйте на нём %3Deploy FOB%4%1%2За вами следует контур штаба: зелёный значит, что его можно поставить здесь. %3Next Headquarters%4 выбирает другое здание, а %3Next FOB Type%4 выбирает тип, если миссия предлагает несколько, например огневую или патрульную базу%1%2Используйте %3Deploy FOB Here%4. Действие развёртывания показывает стоимость этого типа%1%1В штабе %3Manage FOB%4 повышает уровень FOB, меняет её тип, переименовывает или разбирает её.</Russian>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HINT_DEPLOY_TIP">
+                <English>A type at its limit, or kept for other players, isn't offered. The FOB keeps its type in a save.</English>
+                <Chinesesimp>已达上限或保留给其他玩家的类型不会出现。前沿基地的类型会保存在存档中。</Chinesesimp>
+                <Chinese>已達上限或保留給其他玩家的類型不會出現。前進基地的類型會保存在存檔中。</Chinese>
+                <Spanish>Un tipo que llegó a su límite, o reservado para otros jugadores, no se ofrece. La FOB guarda su tipo al guardar.</Spanish>
+                <French>Un type arrivé à sa limite, ou réservé à d'autres joueurs, n'est pas proposé. La FOB garde son type dans une sauvegarde.</French>
+                <Portuguese>Um tipo que chegou ao limite, ou reservado para outros jogadores, não é oferecido. A FOB guarda o seu tipo ao gravar.</Portuguese>
+                <Russian>Тип, достигший предела или оставленный для других игроков, не предлагается. FOB сохраняет свой тип при сохранении.</Russian>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HINT_BUILD">
+                <English>Player FOBs - The Build Menu</English>
+                <Chinesesimp>玩家前沿基地 - 建造菜单</Chinesesimp>
+                <Chinese>玩家前進基地 - 建造選單</Chinese>
+                <Spanish>FOB de jugadores - El Build Menu</Spanish>
+                <French>FOB des joueurs - Le Build Menu</French>
+                <Portuguese>FOB dos jogadores - O Build Menu</Portuguese>
+                <Russian>FOB игроков - Build Menu</Russian>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HINT_BUILD_SHORT">
+                <English>Favourites, and placing one after another</English>
+                <Chinesesimp>收藏，以及连续放置</Chinesesimp>
+                <Chinese>收藏，以及連續放置</Chinese>
+                <Spanish>Favoritos, y colocar uno tras otro</Spanish>
+                <French>Favoris, et placer l'un après l'autre</French>
+                <Portuguese>Favoritos, e colocar um a seguir ao outro</Portuguese>
+                <Russian>Избранное и размещение одного за другим</Russian>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HINT_BUILD_DESC">
+                <English>Use %3Build Menu%4 at the FOB headquarters to build within the FOB's range. Each item costs supply, and greyed items need a higher tier FOB.%1%1%2%3Add to favourites%4 marks the selected item. Favourites head their category's list in gold, and carry over to other FOBs and missions%1%2%3Place%4 builds one item. %3Place ... and another%4, for fortifications and supply objects, brings the same item straight back at the same rotation until you use %3Cancel placing%4%1%2While placing, walk and turn to move it: green means it can go there. %3Rotate 45 degrees%4 is on the scroll menu%1%1Each item is checked and charged by the server, so a FOB short of supply refuses the next one.</English>
+                <Chinesesimp>在前沿基地指挥部使用%3建造菜单%4，可在基地范围内建造。每件物品都要消耗补给，灰色物品需要更高等级的前沿基地。%1%1%2%3加入收藏%4可标记所选物品。收藏物品以金色排在其类别列表最前，并会带到其他前沿基地和任务中%1%2%3放置%4建造一件物品。对于工事和补给物品，%3放置……并再放一个%4会以相同角度立即再给出同一物品，直到你使用%3取消放置%4%1%2放置时，走动和转身即可移动它：绿色表示可以放置。%3旋转 45 度%4在滚轮菜单中%1%1每件物品都由服务器检查并扣费，所以补给不足的前沿基地会拒绝下一件。</Chinesesimp>
+                <Chinese>在前進基地指揮部使用%3建造選單%4，可在基地範圍內建造。每件物品都要消耗補給，灰色物品需要更高等級的前進基地。%1%1%2%3加入收藏%4可標記所選物品。收藏物品以金色排在其類別清單最前，並會帶到其他前進基地和任務中%1%2%3放置%4建造一件物品。對於工事和補給物品，%3放置……並再放一個%4會以相同角度立即再給出同一物品，直到你使用%3取消放置%4%1%2放置時，走動和轉身即可移動它：綠色表示可以放置。%3旋轉 45 度%4在滾輪選單中%1%1每件物品都由伺服器檢查並扣費，所以補給不足的前進基地會拒絕下一件。</Chinese>
+                <Spanish>Usa %3Build Menu%4 en el cuartel general de la FOB para construir dentro de su alcance. Cada objeto cuesta suministros, y los grises necesitan una FOB de nivel superior.%1%1%2%3Add to favourites%4 marca el objeto elegido. Los favoritos encabezan la lista de su categoría en dorado, y pasan a otras FOB y misiones%1%2%3Place%4 construye un objeto. %3Place ... and another%4, para fortificaciones y objetos de suministro, vuelve a darte el mismo objeto con la misma rotación hasta que uses %3Cancel placing%4%1%2Al colocar, camina y gira para moverlo: verde significa que puede ir ahí. %3Rotate 45 degrees%4 está en el menú de acciones%1%1El servidor comprueba y cobra cada objeto, así que una FOB sin suministros suficientes rechaza el siguiente.</Spanish>
+                <French>Utilisez %3Build Menu%4 au quartier général de la FOB pour construire dans sa portée. Chaque objet coûte du ravitaillement, et les objets grisés demandent une FOB de niveau supérieur.%1%1%2%3Add to favourites%4 marque l'objet choisi. Les favoris passent en tête de la liste de leur catégorie, en or, et suivent vers d'autres FOB et missions%1%2%3Place%4 construit un objet. %3Place ... and another%4, pour les fortifications et les objets de ravitaillement, redonne aussitôt le même objet à la même rotation jusqu'à %3Cancel placing%4%1%2Pendant le placement, marchez et tournez pour le déplacer : vert signifie qu'il peut aller là. %3Rotate 45 degrees%4 est dans le menu d'actions%1%1Le serveur vérifie et facture chaque objet, donc une FOB à court de ravitaillement refuse le suivant.</French>
+                <Portuguese>Use %3Build Menu%4 no quartel-general da FOB para construir dentro do seu alcance. Cada objeto custa abastecimentos, e os objetos a cinzento precisam de uma FOB de nível superior.%1%1%2%3Add to favourites%4 marca o objeto escolhido. Os favoritos ficam no topo da lista da sua categoria, a dourado, e passam para outras FOB e missões%1%2%3Place%4 constrói um objeto. %3Place ... and another%4, para fortificações e objetos de abastecimento, devolve logo o mesmo objeto com a mesma rotação até usar %3Cancel placing%4%1%2Ao colocar, ande e rode para o mover: verde significa que pode ficar ali. %3Rotate 45 degrees%4 está no menu de ações%1%1O servidor verifica e cobra cada objeto, por isso uma FOB sem abastecimentos suficientes recusa o seguinte.</Portuguese>
+                <Russian>Используйте %3Build Menu%4 в штабе FOB, чтобы строить в её радиусе. Каждый объект стоит снабжения, а серые объекты требуют FOB более высокого уровня.%1%1%2%3Add to favourites%4 отмечает выбранный объект. Избранное стоит первым в списке своей категории, золотым цветом, и переходит на другие FOB и миссии%1%2%3Place%4 строит один объект. %3Place ... and another%4 для укреплений и объектов снабжения сразу возвращает тот же объект с тем же поворотом, пока вы не выберете %3Cancel placing%4%1%2При размещении ходите и поворачивайтесь, чтобы двигать его: зелёный значит, что его можно поставить здесь. %3Rotate 45 degrees%4 есть в меню действий%1%1Сервер проверяет и списывает каждый объект, поэтому FOB без снабжения откажет в следующем.</Russian>
+            </Key>
+            <Key ID="STR_ALIVE_FOB_HINT_BUILD_TIP">
+                <English>Recycle on something built at the FOB gives half its price back.</English>
+                <Chinesesimp>对前沿基地建造的物品使用回收，可返还其一半价格。</Chinesesimp>
+                <Chinese>對前進基地建造的物品使用回收，可返還其一半價格。</Chinese>
+                <Spanish>Recycle sobre algo construido en la FOB devuelve la mitad de su precio.</Spanish>
+                <French>Recycle sur un objet construit à la FOB rend la moitié de son prix.</French>
+                <Portuguese>Recycle sobre algo construído na FOB devolve metade do seu preço.</Portuguese>
+                <Russian>Recycle на построенном у FOB объекте возвращает половину его цены.</Russian>
+            </Key>
         </Container>
     </Package>
 </Project>

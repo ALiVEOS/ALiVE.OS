@@ -344,7 +344,14 @@ switch(_operation) do {
 
         // usage selections
 
-        private["_aliveMenuSelection","_adminActionsSelection","_playerOptionsSelection","_playerLogisticsSelection","_playerCombatLogisticsSelection","_playerC2","_playerCombatSupport","_playerMarkers","_backSelection"];
+        private["_whatsNewSelection","_aliveMenuSelection","_adminActionsSelection","_playerOptionsSelection","_playerLogisticsSelection","_playerCombatLogisticsSelection","_playerC2","_playerCombatSupport","_playerMarkers","_backSelection"];
+
+        _whatsNewSelection = [] call ALIVE_fnc_hashCreate;
+
+        [_whatsNewSelection,"icon","x\alive\addons\sys_tour\data\alive_icons_tour_info.paa"] call ALIVE_fnc_hashSet;
+        [_whatsNewSelection,"inactiveLabel","What's New"] call ALIVE_fnc_hashSet;
+        [_whatsNewSelection,"activeLabel","What's new for players in ALiVE 3"] call ALIVE_fnc_hashSet;
+        [_whatsNewSelection,"iconState",["UsageWhatsNew",0,0]] call ALIVE_fnc_hashSet;
 
         _aliveMenuSelection = [] call ALIVE_fnc_hashCreate;
 
@@ -409,7 +416,7 @@ switch(_operation) do {
         [_backSelection,"activeLabel","Go back to the previous menu"] call ALIVE_fnc_hashSet;
         [_backSelection,"iconState",["Back",0,0]] call ALIVE_fnc_hashSet;
 
-        [_selectionOptions,"Usage",[_aliveMenuSelection,_adminActionsSelection,_playerOptionsSelection,_playerLogisticsSelection,_playerCombatLogisticsSelection,_playerC2,_playerCombatSupport,_playerMarkers,_backSelection]] call ALIVE_fnc_hashSet;
+        [_selectionOptions,"Usage",[_whatsNewSelection,_aliveMenuSelection,_adminActionsSelection,_playerOptionsSelection,_playerLogisticsSelection,_playerCombatLogisticsSelection,_playerC2,_playerCombatSupport,_playerMarkers,_backSelection]] call ALIVE_fnc_hashSet;
 
         // store all the selection options
 
@@ -3223,10 +3230,12 @@ switch(_operation) do {
             sleep 10;
 
             _line1 = "<br/><t size='1.5' color='#68a7b7'>Player Persistence</t><br/><br/>";
-            _line2 = "<t size='1'>The Player Persistence option is available on dedicated servers that are connected to the ALiVE WarRoom for campaign persistence.</t><br/><br/>";
-            _line3 = "<t size='1'>This menu contains options for the player to control saving of their character.</t><br/><br/>";
+            _line2 = "<t size='1'>With a Player Persistence module in the mission, the server keeps each player's state for when they rejoin while the mission is still running.</t><br/><br/>";
+            _line3 = "<t size='1'>With Save to Database on and an ALiVE Data module set to Local, it is also written to the server's own profile when an admin uses Server Save and Exit, and at every Auto Save Interval, so it lasts past a server restart. No War Room account is needed. Nothing is written when a mission simply ends.</t><br/><br/>";
+            _line4 = "<t size='1'>What is kept follows the module's settings: loadout, ammo, health, position and scores. With Store Position on, the AI you lead and your High Command teams come back too.</t><br/><br/>";
+            _line5 = "<t size='1'>An admin's Player Persistence menu turns player reset, rejoining as a different class and manual saves on or off.</t><br/><br/>";
 
-            _baseCopy = format["%1%2%3%4%5%6%7",_line1,_line2,_line3];
+            _baseCopy = format["%1%2%3%4%5%6%7",_line1,_line2,_line3,_line4,_line5];
 
             ["openSideFull"] call ALIVE_fnc_displayMenu;
             ["setSideFullText",_baseCopy] call ALIVE_fnc_displayMenu;
@@ -4000,6 +4009,54 @@ switch(_operation) do {
                 terminate ALIVE_tourActiveScript;
             };
         };
+
+        _logic setVariable ["selectionState","Usage"];
+
+        [_logic,"displaySelectionState"] call MAINCLASS;
+
+    };
+
+    // What's New for players in ALiVE 3: one page per entry in _pages, each [title, text], shown in turn. To add a
+    // feature, add an entry; nothing else needs changing. Each page says where to read more in the Field Manual.
+    case "activateSelectionUsageWhatsNew": {
+
+        ALIVE_tourActiveScript = [_logic] spawn {
+
+            params ["_logic"];
+
+            private _pages = [
+                ["Who can use a module", "C2ISTAR, Player Logistics, Combat Support and Recruitment can each be kept for a minimum rank, for named slots, or behind a condition the mission sets. Left at their defaults, everyone can use them, and a logged-in admin always can. A player who is refused is told who the module is kept for."],
+                ["Player FOBs", "Get a FOB Kit from a Field HQ, or one the mission placed, carry it where the base is needed and use Deploy FOB. A mission can offer FOB types, such as a fire base or a patrol base, each with its own buildings, cost and limit. In the Build Menu, mark items as favourites, and place walls and fences one after another with Place ... and another. Manage FOB upgrades the FOB, changes its type or dismantles it."],
+                ["Logistics Hubs", "A vehicle or a towed gun brought to one of your side's hubs can be traded in for the force pool. A captured one is worth less than your own. What you collect at a hub is set down around it, or at the spot the mission has marked for it."],
+                ["Recruits", "Recruits gain skill from each kill and each hour they stay alive, unless the mission turns it off. Stand by an AI soldier in your group and use Open this soldier's inventory to see their uniform, vest and backpack, not only the backpack."],
+                ["Fire missions", "Crew an artillery piece or a mortar and ask the AI Commander for orders. HQ sends the grid, the target, how many rounds and the bearing and range from your gun. Fire until the area is clear, then move the gun at least 300 m before the enemy fires back."],
+                ["Transport patrols and escorts", "A Ground Transport on a Patrol order drives the roads between two points and back, as a taxi between your base and the front. When you order a Transport, the Escort box sends an armed support vehicle with it, behind it or, for an air escort, ahead of it to the landing spot."],
+                ["Your squad in a save", "With Store Position on in Player Persistence, a save keeps the AI soldiers you lead and your High Command teams, with their kit, places, health and seats. Soldiers who were dead at the save stay gone."]
+            ];
+
+            {
+                _x params ["_title", "_text"];
+                private _copy = format ["<br/><t size='1.5' color='#68a7b7'>What's New: %1</t><br/><br/><t size='1'>%2</t><br/><br/><t size='0.9' color='#999999'>Read more in the Field Manual, under ALiVE Mod. Page %3 of %4.</t><br/><br/>", _title, _text, _forEachIndex + 1, count _pages];
+                ["openSideFull"] call ALIVE_fnc_displayMenu;
+                ["setSideFullText", _copy] call ALIVE_fnc_displayMenu;
+                sleep 20;
+            } forEach _pages;
+
+            [_logic,"deactivateSelectionUsageWhatsNew"] call MAINCLASS;
+
+        };
+
+    };
+
+    case "deactivateSelectionUsageWhatsNew": {
+
+        if!(isNil "ALIVE_tourActiveScript") then {
+            if!(scriptDone ALIVE_tourActiveScript) then {
+                terminate ALIVE_tourActiveScript;
+            };
+        };
+
+        ["closeSideFull"] call ALIVE_fnc_displayMenu;
 
         _logic setVariable ["selectionState","Usage"];
 
