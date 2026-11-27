@@ -423,6 +423,21 @@ class CfgVehicles {
                                         class Yes { name = "Yes"; value = "true"; };
                                 };
                         };
+                        // Force Report (Jman, 27 Nov): the commander's own strength and reinforcement pool told to its side every so often
+                        class forceReport : Combo
+                        {
+                                property = "ALiVE_mil_opcom_forceReport";
+                                displayName = "$STR_ALIVE_OPCOM_FORCE_REPORT";
+                                tooltip = "$STR_ALIVE_OPCOM_FORCE_REPORT_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                        class Off     { name = "Off";              value = "0"; };
+                                        class Every15 { name = "Every 15 minutes"; value = "15"; };
+                                        class Every30 { name = "Every 30 minutes"; value = "30"; };
+                                        class Every60 { name = "Every 60 minutes"; value = "60"; };
+                                };
+                        };
                         // Relieve Worn Groups (ashtray_by on Discord, 13 Nov): a worn-out group hands its place to a fresh one
                         class relieveWorn : Combo
                         {

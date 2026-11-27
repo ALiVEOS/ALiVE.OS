@@ -13175,6 +13175,29 @@ switch(_operation) do {
                 // a convoy's escort helicopter, if it has one, keeps over the lead truck while it unloads
                 if (_eventState == "transportUnloadWait") then { [_event, _debug] call _fnc_escortTick; };
 
+                // Announce Key Moments (the AI Commander of this faction): its side hears once that the reinforcements have
+                // reached the front, or, for a convoy whose men got out short of it (a jam, #1147), that they go on foot
+                if (!_playerRequested && {!([_event, "kmSaid", false] call ALIVE_fnc_hashGet)}) then {
+                    [_event, "kmSaid", true] call ALIVE_fnc_hashSet;
+                    private _opcom = (missionNamespace getVariable ["OPCOM_instances", []]) select { _eventFaction in ([_x, "factions", []] call ALiVE_fnc_HashGet) };
+                    if (_opcom isNotEqualTo [] && {[_opcom select 0, "keyMoments", false] call ALiVE_fnc_HashGet}) then {
+                        private _place = [_eventPosition] call ALIVE_fnc_taskGetNearestLocationName;
+                        if (isNil "_place" || {!(_place isEqualType "")} || {_place == ""}) then { _place = "grid " + mapGridPosition _eventPosition };
+                        private _far = -1;
+                        {
+                            private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                            // the nearest truck: all of them short of it means the men walk on
+                            if (!isNil "_vp") then { private _dv = (_vp select 2 select 2) distance2D _eventPosition; _far = if (_far < 0) then { _dv } else { _far min _dv } };
+                        } forEach (_eventTransportVehiclesProfiles select { _x isEqualType "" });
+                        private _text = if (_eventState == "transportUnloadWait" && {_far > 700}) then {
+                            format ["All units, reinforcements for %1 are held up %2 m short and are going on foot.", _place, (round (_far / 100)) * 100]
+                        } else {
+                            format ["All units, reinforcements have reached %1.", _place]
+                        };
+                        [_opcom select 0, "keyMoment", [_text, format ["ml_%1", _eventID]]] call ALiVE_fnc_OPCOM;
+                    };
+                };
+
                 // mechanism for aborting this state
                 // once set time limit has passed
                 // if all units haven't reached objective

@@ -178,6 +178,8 @@ switch (_operation) do {
         private _callForHelp = (toLower format ["%1", _logic getVariable ["callForHelp", "false"]]) in ["true", "1"];
         // Announce Key Moments (TheLogatron on Discord, 18 Nov): a few moments told to the side over the HQ radio
         private _keyMoments = (toLower format ["%1", _logic getVariable ["keyMoments", "false"]]) in ["true", "1"];
+        // Force Report (Jman, 27 Nov): minutes between reports of the commander's own strength to its side, 0 for none
+        private _forceReport = parseNumber format ["%1", _logic getVariable ["forceReport", "0"]];
         // Relieve Worn Groups (ashtray_by on Discord, 13 Nov): a worn-out group is swapped for a fresh one and filled up at the rear
         private _relieveWorn = (toLower format ["%1", _logic getVariable ["relieveWorn", "true"]]) in ["true", "1"];
         // Start From Ship (Ando on Discord, 24 Oct): the starting force is aboard a static ship and lands by helicopter
@@ -742,6 +744,19 @@ switch (_operation) do {
                     if (!([_handler, "pause", false] call ALiVE_fnc_HashGet) && {([_handler, "controltype", ""] call ALiVE_fnc_HashGet) != "dugin"}) then {
                         [_handler, "relieveWorn"] call ALiVE_fnc_OPCOM;
                     };
+                };
+            };
+        };
+
+        // Force Report: the first report after one interval, then every interval; none while paused
+        if (_forceReport > 0) then {
+            [_handler, _forceReport * 60] spawn {
+                params ["_handler", "_gap"];
+                while {true} do {
+                    sleep _gap;
+                    private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
+                    if (isNull _module) exitWith {};
+                    if !([_handler, "pause", false] call ALiVE_fnc_HashGet) then { [_handler, "forceReport"] call ALiVE_fnc_OPCOM };
                 };
             };
         };
@@ -3218,7 +3233,7 @@ switch (_operation) do {
             [{
                 params ["_logic", "_pid", "_at", "_place"];
                 if ((([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet) findIf { (_x select 1) == _pid && {(_x select 3) == _at} }) < 0) exitWith {};
-                [_logic, "opRadio", format ["All units, the last group of the assault on %1 is moving. The attack goes in together.", _place]] call ALiVE_fnc_OPCOM;
+                [_logic, "opRadio", [format ["All units, the last group of the assault on %1 is moving. The attack goes in together.", _place], true]] call ALiVE_fnc_OPCOM;
             }, [_logic, _lastID, _issuedAt, _place], _lastWait + _prepHold] call CBA_fnc_waitAndExecute;
         };
 
@@ -6052,6 +6067,49 @@ switch (_operation) do {
             };
         };
 
+        // Announce Key Moments: an objective this side takes, one it loses, and one it holds that a strong enemy force
+        // comes against (3 or more enemy groups the side knows of). Judged against the last look that found only one side
+        // there, so taking an empty place, or the first look of the mission, says nothing. A capture the occupation pause
+        // already reports ("... is secured") isn't said twice
+        if ([_logic, "keyMoments", false] call ALiVE_fnc_HashGet) then {
+            // kept on the module, out of the commander's saved state: after a load the first look starts afresh
+            private _kmModule = [_logic, "module"] call ALiVE_fnc_HashGet;
+            private _first = isNil { _kmModule getVariable "ALiVE_km_held" };
+            if (_first) then { _kmModule setVariable ["ALiVE_km_held", createHashMap] };
+            private _kmHeld = _kmModule getVariable "ALiVE_km_held";
+            private _byID = [_logic, "objectivesByID", createHashMap] call ALiVE_fnc_HashGet;
+            private _occSays = (([_logic, "occPauseMins", 0] call ALiVE_fnc_HashGet) isEqualType 0) && {([_logic, "occPauseMins", 0] call ALiVE_fnc_HashGet) > 0}
+                && {([_logic, "controltype", ""] call ALiVE_fnc_HashGet) == "occupation"};
+            private _kmPlace = {
+                private _o = _byID get _this;
+                if (isNil "_o") exitWith { "" };
+                private _c = [_o, "center", [0,0,0]] call ALiVE_fnc_HashGet;
+                private _n = [_c] call ALIVE_fnc_taskGetNearestLocationName;
+                if (isNil "_n" || {!(_n isEqualType "")} || {_n == ""}) then { _n = "grid " + mapGridPosition _c };
+                _n
+            };
+            {
+                private _id = _x select 0;
+                if (!_first && {(_kmHeld getOrDefault [_id, ""]) == "E"} && {!_occSays}) then {
+                    [_logic, "keyMoment", [format ["All units, %1 is ours.", _id call _kmPlace], "taken_" + _id]] call MAINCLASS;
+                };
+                _kmHeld set [_id, "F"];
+            } forEach _friendlyObjectives;
+            {
+                private _id = _x select 0;
+                if (!_first && {(_kmHeld getOrDefault [_id, ""]) == "F"}) then {
+                    [_logic, "keyMoment", [format ["All units, we have lost %1 to the enemy.", _id call _kmPlace], "lost_" + _id]] call MAINCLASS;
+                };
+                _kmHeld set [_id, "E"];
+            } forEach _enemyObjectives;
+            {
+                _x params ["_id", "", "_en"];
+                if (!_first && {(_kmHeld getOrDefault [_id, ""]) == "F"} && {count _en >= 3}) then {
+                    [_logic, "keyMoment", [format ["All units, %1 is under attack by %2 enemy groups.", _id call _kmPlace, count _en], "attack_" + _id]] call MAINCLASS;
+                };
+            } forEach _contestedObjectives;
+        };
+
         private _clusterOccupation = [_friendlyObjectives, _enemyObjectives, _contestedObjectives, time];
         // the look before this one is kept as well: a place whose defenders were wiped out just before this look is
         // already the enemy's in it, and Military Logistics asks whether this side held a place another side has taken
@@ -7962,13 +8020,70 @@ switch (_operation) do {
         ["OPCOM Go given by %1: %2 commanders start", _by, _result] call ALiVE_fnc_dump;
     };
 
+    // Announce Key Moments: one radio line for the side, if the setting is on. [text, key]: the same key is said at most
+    // once in 10 minutes, and the commander says at most one of these a minute, so a busy fight doesn't fill the
+    // radio; a line held back is dropped (in the RPT with debug on). Military Logistics calls it for a delivery
+    case "keyMoment": {
+        _args params [["_text", "", [""]], ["_key", "", [""]]];
+        _result = false;
+        if (_text == "" || {!([_logic, "keyMoments", false] call ALiVE_fnc_HashGet)}) exitWith {};
+        private _kmModule = [_logic, "module"] call ALiVE_fnc_HashGet;
+        private _said = _kmModule getVariable "ALiVE_km_said";
+        if (isNil "_said") then { _said = createHashMap; _kmModule setVariable ["ALiVE_km_said", _said] };
+        if (time - (_said getOrDefault ["", -1e9]) < 60 || {time - (_said getOrDefault [_key, -1e9]) < 600}) exitWith {
+            if ([_logic, "debug", false] call ALiVE_fnc_HashGet) then { ["OPCOM %1 - key moment held back (too soon): %2", [_logic, "side", ""] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump };
+        };
+        _said set ["", time];
+        if (_key != "") then { _said set [_key, time] };
+        [_logic, "opRadio", [_text, true]] call MAINCLASS;
+        ["OPCOM %1 - key moment: %2", [_logic, "side", ""] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump;
+        _result = true;
+    };
+
+    // Force Report: one HQ radio line to the commander's own side with its groups in the field by type, as the last
+    // troop scan counted them (currentForceStrength: infantry, motorised, mechanised, armour, air, naval, artillery,
+    // anti-air), only the types it has, and the Military Logistics reinforcement pool left for its factions. Air is
+    // the Air Commander's and isn't in the scan. Returns the line said
+    case "forceReport": {
+        _result = "";
+        private _c = [_logic, "currentForceStrength", []] call ALiVE_fnc_HashGet;
+        if !(_c isEqualType []) then { _c = [] };
+        private _parts = [];
+        private _total = 0;
+        {
+            private _n = _c param [_forEachIndex, 0];
+            if (_n isEqualType 0 && {_n > 0}) then { _parts pushBack format ["%1 %2", _n, _x]; _total = _total + _n };
+        } forEach ["infantry", "motorised", "mechanised", "armour", "air", "naval", "artillery", "anti-air"];
+        private _text = if (_parts isEqualTo []) then { "Force report: no groups in the field." } else {
+            format ["Force report: %1 %2 in the field (%3).", _total, ["groups", "group"] select (_total == 1), _parts joinString ", "]
+        };
+        if (!isNil "ALIVE_globalForcePool") then {
+            private _pool = 0;
+            private _any = false;
+            {
+                private _p = [ALIVE_globalForcePool, _x] call ALIVE_fnc_hashGet;
+                if (!isNil "_p" && {_p isEqualType 0}) then { _pool = _pool + _p; _any = true };
+            } forEach ([_logic, "factions", []] call ALiVE_fnc_HashGet);
+            if (_any) then { _text = _text + format [" Reinforcement pool: %1.", round (_pool max 0)] };
+        };
+        [_logic, "opRadio", [_text, true]] call MAINCLASS;
+        ["OPCOM %1 - %2", [_logic, "side", ""] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump;
+        _result = _text;
+    };
+
+    // a line to the side from HQ. [text, true]: a Key Moment or Force Report, which each player sees the way they chose in
+    // Addon Options > ALiVE > Game > AI Commander announcements (ALiVE_prefCommanderMessages)
     case "opRadio": {
         private _text = _args;
+        private _announce = false;
+        if (_args isEqualType []) then { _text = _args param [0, ""]; _announce = _args param [1, false] };
         if (!(_text isEqualType "") || {_text == ""}) exitWith {};
         private _side = [_logic, "side", "WEST"] call ALiVE_fnc_HashGet;
         ([_logic, "module"] call ALiVE_fnc_HashGet) setVariable ["ALiVE_op_lastRadio", _text];
         if (isNil "ALIVE_fnc_radioBroadcastToSide") exitWith {};
-        [_side, [objNull, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, false, false, true, "HQ"]] call ALIVE_fnc_radioBroadcastToSide;
+        private _msg = [objNull, _text, "side", [_side] call ALiVE_fnc_sideTextToObject, false, false, false, true, "HQ"];
+        if (_announce isEqualTo true) then { _msg append [false, false, false, "side", "ALiVE_prefCommanderMessages"] };
+        [_side, _msg] call ALIVE_fnc_radioBroadcastToSide;
     };
 
     ///////////////////////////////////////////////////
@@ -9016,7 +9131,7 @@ switch (_operation) do {
             // Announce Key Moments: said once
             if ([_logic, "keyMoments", false] call ALiVE_fnc_HashGet && {!([_logic, "shipAshoreSaid", false] call ALiVE_fnc_HashGet)}) then {
                 [_logic, "shipAshoreSaid", true] call ALiVE_fnc_HashSet;
-                [_logic, "opRadio", "All units, the whole landing force is ashore. No more groups are coming from the ship."] call ALiVE_fnc_OPCOM;
+                [_logic, "opRadio", ["All units, the whole landing force is ashore. No more groups are coming from the ship.", true]] call ALiVE_fnc_OPCOM;
             };
             [_logic, "shipBeachheadID", ""] call ALiVE_fnc_HashSet;
         };

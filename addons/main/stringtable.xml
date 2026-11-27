@@ -206,6 +206,24 @@
 <Key ID="STR_ALIVE_SETTINGS_MSG_COMMENT">
     <English>How C2ISTAR task updates, the Hearts and Minds hold countdown and Combat Support's radio messages reach you. Chat lines keep the radio in side chat, as it always was.</English>
 </Key>
+<Key ID="STR_ALIVE_SETTINGS_CMDMSG">
+    <English>AI Commander announcements</English>
+    <Chinese>AI指揮官通報</Chinese>
+    <Chinesesimp>AI指挥官通报</Chinesesimp>
+    <Spanish>Anuncios del Comandante IA</Spanish>
+    <French>Annonces du commandant IA</French>
+    <Portuguese>Anúncios do Comandante IA</Portuguese>
+    <Russian>Объявления ИИ-командира</Russian>
+</Key>
+<Key ID="STR_ALIVE_SETTINGS_CMDMSG_COMMENT">
+    <English>How your AI Commander's key moments (an objective taken or lost, an attack on one it holds, reinforcements arriving, an assault going in together, the landing ashore) and its Force Report reach you, when the mission maker has turned them on. Chat lines keep them in side chat from HQ, as before.</English>
+    <Chinese>當任務製作者開啟這些功能時，己方AI指揮官的關鍵時刻（奪取或失去目標、己方據點遭到攻擊、增援抵達、突擊同時展開、登陸完成）以及兵力報告以何種方式顯示給你。聊天選項會將其保留在來自總部的陣營頻道中，與以前相同。</Chinese>
+    <Chinesesimp>当任务制作者开启这些功能时，己方AI指挥官的关键时刻（夺取或失去目标、己方据点遭到攻击、增援抵达、突击同时展开、登陆完成）以及兵力报告以何种方式显示给你。聊天选项会将其保留在来自总部的阵营频道中，与以前相同。</Chinesesimp>
+    <Spanish>Cómo te llegan los momentos clave de tu Comandante IA (un objetivo tomado o perdido, un ataque contra uno que controla, la llegada de refuerzos, un asalto que entra a la vez, el desembarco completado) y su Informe de fuerzas, cuando el creador de la misión los activa. Las líneas de chat los mantienen en el chat de bando desde el cuartel general, como antes.</Spanish>
+    <French>Comment vous parviennent les moments clés de votre commandant IA (un objectif pris ou perdu, une attaque contre un objectif qu'il tient, l'arrivée de renforts, un assaut lancé ensemble, le débarquement terminé) et son Rapport des forces, quand le créateur de la mission les a activés. Les lignes de discussion les gardent dans le canal de camp, depuis le QG, comme avant.</French>
+    <Portuguese>Como te chegam os momentos-chave do teu Comandante IA (um objetivo tomado ou perdido, um ataque a um que ele controla, a chegada de reforços, um assalto que avança em conjunto, o desembarque concluído) e o seu Relatório de forças, quando o criador da missão os ativa. As linhas de chat mantêm-nos no chat do lado, vindos do QG, como antes.</Portuguese>
+    <Russian>Как до вас доходят ключевые моменты вашего ИИ-командира (взятый или потерянный объект, атака на удерживаемый объект, прибытие подкреплений, одновременный штурм, завершённая высадка) и его «Доклад о силах», если автор миссии их включил. Строки чата оставляют их в чате стороны от штаба, как раньше.</Russian>
+</Key>
 <Key ID="STR_ALIVE_SETTINGS_MSG_SUB">
     <English>Subtitles</English>
 </Key>

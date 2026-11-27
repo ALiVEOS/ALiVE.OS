@@ -17,18 +17,21 @@ Parameters:
     _this select 2: BOOL - leave it off the Radio Log page (optional, default false; the hold countdown sets it)
     _this select 3: STRING - "side" when the whole side hears it, so the server keeps it in the side's Radio Log
         (optional; see ALIVE_fnc_radioLog)
+    _this select 4: STRING - "subtitle", "hint" or "chat" to use instead of the player's task setting (optional; the
+        AI Commander's announcements pass the player's own choice for those)
 
 Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params [["_title", ""], ["_text", ""], ["_noLog", false], ["_heard", "", [""]]];
+params [["_title", ""], ["_text", ""], ["_noLog", false], ["_heard", "", [""]], ["_style", "", [""]]];
 if (!hasInterface) exitWith {};
 
 // the Radio Log page in the map diary keeps it too
 if (!_noLog) then { [_title, _text, _heard] call ALIVE_fnc_radioLog };
 
-switch (missionNamespace getVariable ["ALiVE_prefTaskMessages", "subtitle"]) do {
+if (_style == "") then { _style = missionNamespace getVariable ["ALiVE_prefTaskMessages", "subtitle"] };
+switch (_style) do {
     // ALiVE's own hint, with the logo and the title; the message is structured text, so a < or & in a
     // town or player name is escaped
     case "hint": { [_title, ((_text regexReplace ["&", "&amp;"]) regexReplace ["<", "&lt;"]) regexReplace [">", "&gt;"]] call ALIVE_fnc_sendHint };

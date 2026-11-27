@@ -1077,7 +1077,61 @@
     <English>Announce Key Moments</English>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_KEY_MOMENTS_COMMENT">
-    <English>Yes has the commander tell its own side over the HQ radio at a few key moments, without giving its plans away: when the last group of an attack sets off with Attacks Arrive Together on, so the assault is about to go in together, and when Start From Ship has landed its whole force and no more groups are coming from the ship. No (the default) leaves things as they are.</English>
+    <English>Yes has the commander tell its own side over the HQ radio at a few key moments, without giving its plans away: when it takes an objective or loses one, when 3 or more enemy groups come against one it holds, when a Military Logistics delivery reaches the front (or its troops get out short of it and go on foot), when the last group of an attack sets off with Attacks Arrive Together on, so the assault is about to go in together, and when Start From Ship has landed its whole force and no more groups are coming from the ship. At most one such line a minute. No (the default) leaves things as they are.</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_FORCE_REPORT">
+    <English>Force Report</English>
+    <Chinese>兵力報告</Chinese>
+    <Chinesesimp>兵力报告</Chinesesimp>
+    <Spanish>Informe de fuerzas</Spanish>
+    <French>Rapport des forces</French>
+    <Portuguese>Relatório de forças</Portuguese>
+    <Russian>Доклад о силах</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_FORCE_REPORT_COMMENT">
+    <English>Every 15, 30 or 60 minutes the commander tells its own side over the HQ radio how strong it is: its groups in the field by type (infantry, motorised, mechanised, armour, artillery, anti-air, naval; only the types it has), counted live, and the reinforcement pool Military Logistics has left for its factions. Nothing about the enemy. Works with or without Announce Key Moments, and says nothing while the commander is paused. Off (the default) sends no report.</English>
+    <Chinese>每隔15、30或60分鐘，指揮官透過總部無線電向己方通報自身兵力：按類型列出在場的小組（步兵、摩托化、機械化、裝甲、炮兵、防空、海軍；只列出它擁有的類型），即時統計，以及軍事後勤為其陣營剩餘的增援兵力池。不涉及敵方任何資訊。無論是否開啟「通報關鍵時刻」都可使用，指揮官暫停時不會通報。關閉（預設）：不發送報告。</Chinese>
+    <Chinesesimp>每隔15、30或60分钟，指挥官通过总部无线电向己方通报自身兵力：按类型列出在场的小组（步兵、摩托化、机械化、装甲、炮兵、防空、海军；只列出它拥有的类型），实时统计，以及军事后勤为其阵营剩余的增援兵力池。不涉及敌方任何信息。无论是否开启“通报关键时刻”都可使用，指挥官暂停时不会通报。关闭（默认）：不发送报告。</Chinesesimp>
+    <Spanish>Cada 15, 30 o 60 minutos el comandante informa a su propio bando por la radio del cuartel general de su fuerza: sus grupos en el terreno por tipo (infantería, motorizada, mecanizada, blindados, artillería, antiaérea, naval; solo los tipos que tiene), contados en directo, y la reserva de refuerzos que le queda a Logística Militar para sus facciones. Nada sobre el enemigo. Funciona con o sin Anunciar momentos clave, y no dice nada mientras el comandante está en pausa. Desactivado (por defecto): no envía informes.</Spanish>
+    <French>Toutes les 15, 30 ou 60 minutes, le commandant indique à son propre camp, par la radio du QG, l'état de ses forces : ses groupes sur le terrain par type (infanterie, motorisée, mécanisée, blindés, artillerie, antiaérienne, navale ; seulement les types qu'il possède), comptés en direct, et la réserve de renforts qu'il reste à la Logistique militaire pour ses factions. Rien sur l'ennemi. Fonctionne avec ou sans Annoncer les moments clés, et ne dit rien tant que le commandant est en pause. Désactivé (par défaut) : aucun rapport.</French>
+    <Portuguese>A cada 15, 30 ou 60 minutos o comandante informa o seu próprio lado, pelo rádio do QG, da sua força: os seus grupos no terreno por tipo (infantaria, motorizada, mecanizada, blindados, artilharia, antiaérea, naval; só os tipos que tem), contados em direto, e a reserva de reforços que a Logística Militar ainda tem para as suas fações. Nada sobre o inimigo. Funciona com ou sem Anunciar momentos-chave, e não diz nada enquanto o comandante está em pausa. Desligado (predefinição): não envia relatórios.</Portuguese>
+    <Russian>Каждые 15, 30 или 60 минут командир сообщает своей стороне по радио штаба о своих силах: группы на местности по типам (пехота, моторизованные, механизированные, бронетехника, артиллерия, ПВО, флот; только имеющиеся типы), посчитанные на текущий момент, и оставшийся у Военной логистики резерв подкреплений для его фракций. Ничего о противнике. Работает с параметром «Объявлять ключевые моменты» или без него и молчит, пока командир на паузе. Выкл. (по умолчанию): отчёты не отправляются.</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HINT_FORCE">
+    <English>Force Report</English>
+    <Chinese>兵力報告</Chinese>
+    <Chinesesimp>兵力报告</Chinesesimp>
+    <Spanish>Informe de fuerzas</Spanish>
+    <French>Rapport des forces</French>
+    <Portuguese>Relatório de forças</Portuguese>
+    <Russian>Доклад о силах</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HINT_FORCE_SHORT">
+    <English>Your side's strength from HQ</English>
+    <Chinese>總部通報的己方兵力</Chinese>
+    <Chinesesimp>总部通报的己方兵力</Chinesesimp>
+    <Spanish>La fuerza de tu bando, desde el cuartel general</Spanish>
+    <French>Les forces de votre camp, par le QG</French>
+    <Portuguese>A força do teu lado, pelo QG</Portuguese>
+    <Russian>Силы вашей стороны от штаба</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HINT_FORCE_DESC">
+    <English>When the mission maker turns on Force Report, the AI Commander of your side sends a short HQ radio report every 15, 30 or 60 minutes.%1%1%2How many of its groups are in the field, by type: infantry, motorised, mechanised, armour, artillery, anti-air, naval%1%2The reinforcement pool Military Logistics has left for its factions%1%1It covers your own side only and never tells you about the enemy.</English>
+    <Chinese>任務製作者開啟「兵力報告」後，己方的AI指揮官每隔15、30或60分鐘透過總部無線電發送一份簡短報告。%1%1%2在場小組的數量，按類型列出：步兵、摩托化、機械化、裝甲、炮兵、防空、海軍%1%2軍事後勤為其陣營剩餘的增援兵力池%1%1報告只涉及己方，從不透露敵方情況。</Chinese>
+    <Chinesesimp>任务制作者开启“兵力报告”后，己方的AI指挥官每隔15、30或60分钟通过总部无线电发送一份简短报告。%1%1%2在场小组的数量，按类型列出：步兵、摩托化、机械化、装甲、炮兵、防空、海军%1%2军事后勤为其阵营剩余的增援兵力池%1%1报告只涉及己方，从不透露敌方情况。</Chinesesimp>
+    <Spanish>Si el creador de la misión activa Informe de fuerzas, el Comandante IA de tu bando envía un breve informe por la radio del cuartel general cada 15, 30 o 60 minutos.%1%1%2Cuántos de sus grupos hay en el terreno, por tipo: infantería, motorizada, mecanizada, blindados, artillería, antiaérea, naval%1%2La reserva de refuerzos que le queda a Logística Militar para sus facciones%1%1Solo habla de tu propio bando y nunca da información sobre el enemigo.</Spanish>
+    <French>Si le créateur de la mission active Rapport des forces, le commandant IA de votre camp envoie un court rapport par la radio du QG toutes les 15, 30 ou 60 minutes.%1%1%2Combien de ses groupes sont sur le terrain, par type : infanterie, motorisée, mécanisée, blindés, artillerie, antiaérienne, navale%1%2La réserve de renforts qu'il reste à la Logistique militaire pour ses factions%1%1Il ne parle que de votre camp et ne dit jamais rien de l'ennemi.</French>
+    <Portuguese>Quando o criador da missão ativa Relatório de forças, o Comandante IA do teu lado envia um breve relatório pelo rádio do QG a cada 15, 30 ou 60 minutos.%1%1%2Quantos dos seus grupos estão no terreno, por tipo: infantaria, motorizada, mecanizada, blindados, artilharia, antiaérea, naval%1%2A reserva de reforços que a Logística Militar ainda tem para as suas fações%1%1Só fala do teu próprio lado e nunca dá informação sobre o inimigo.</Portuguese>
+    <Russian>Если автор миссии включил «Доклад о силах», ИИ-командир вашей стороны каждые 15, 30 или 60 минут передаёт по радио штаба короткий доклад.%1%1%2Сколько его групп на местности, по типам: пехота, моторизованные, механизированные, бронетехника, артиллерия, ПВО, флот%1%2Оставшийся у Военной логистики резерв подкреплений для его фракций%1%1Доклад касается только вашей стороны и никогда не сообщает о противнике.</Russian>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HINT_FORCE_TIP">
+    <English>The counts are taken live at each report. A falling pool means fewer reinforcements are left to come. Choose how this report and the commander's other announcements reach you in Addon Options, ALiVE, Game, AI Commander announcements: a subtitle, a hint or side chat.</English>
+    <Chinese>每次報告時即時統計。兵力池減少表示剩下可派來的增援越來越少。在 Addon Options、ALiVE、Game、AI指揮官通報 中選擇此報告和指揮官其他通報的顯示方式：字幕、提示或陣營聊天。</Chinese>
+    <Chinesesimp>每次报告时实时统计。兵力池减少表示剩下可派来的增援越来越少。在 Addon Options、ALiVE、Game、AI指挥官通报 中选择此报告和指挥官其他通报的显示方式：字幕、提示或阵营聊天。</Chinesesimp>
+    <Spanish>Los números se cuentan en directo en cada informe. Una reserva que baja significa que quedan menos refuerzos por llegar. Elige cómo te llegan este informe y los demás anuncios del comandante en Addon Options, ALiVE, Game, Anuncios del Comandante IA: un subtítulo, una pista o el chat de bando.</Spanish>
+    <French>Les chiffres sont comptés en direct à chaque rapport. Une réserve qui baisse signifie qu'il reste moins de renforts à venir. Choisissez comment ce rapport et les autres annonces du commandant vous parviennent dans Addon Options, ALiVE, Game, Annonces du commandant IA : un sous-titre, une info-bulle ou le canal de camp.</French>
+    <Portuguese>Os números são contados em direto em cada relatório. Uma reserva a descer significa que restam menos reforços por chegar. Escolhe como te chegam este relatório e os outros anúncios do comandante em Addon Options, ALiVE, Game, Anúncios do Comandante IA: uma legenda, uma dica ou o chat do lado.</Portuguese>
+    <Russian>Числа считаются заново при каждом докладе. Уменьшение резерва означает, что подкреплений осталось меньше. Как до вас доходят этот доклад и другие объявления командира, выберите в Addon Options, ALiVE, Game, «Объявления ИИ-командира»: субтитры, подсказка или чат стороны.</Russian>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_ARRIVE_TOGETHER">
     <English>Attacks Arrive Together</English>

@@ -21,6 +21,9 @@ Boolean - to group (optional)
 Boolean - leave it off the Radio Log page (optional, default false; the kill feed sets it)
 String - who heard it, for the Radio Log (optional): "side" or "" (only the players it was sent to, so the server
     doesn't keep it for the whole side). Left out, a group or vehicle line is "" and any other is "side".
+String - a side line from HQ: the player setting that chooses how it is shown (optional, e.g.
+    "ALiVE_prefCommanderMessages"): "chat" keeps it in side chat, "subtitle" or "hint" shows it that way
+    (ALIVE_fnc_taskSubtitle). Left out, side chat as always.
 
 Returns:
 
@@ -75,6 +78,7 @@ _fromGroup = if(count _this > 9) then {_this select 9} else {false};
 _toGroup = if(count _this > 10) then {_this select 10} else {false};
 private _noLog = if(count _this > 11) then {_this select 11} else {false};
 private _heard = if(count _this > 12) then {_this select 12} else {["side", ""] select (_channel in ["group", "vehicle"])};
+private _prefVar = if(count _this > 13) then {_this select 13} else {""};
 
 if(isNil "_message") exitWith {};
 
@@ -147,7 +151,15 @@ switch (_channel) do
         };
 
         if(_fromHQ) then {
-            [_side,_hqClass] sideChat _message;
+            // the player's own choice for this kind of line (Addon Options > ALiVE > Game), side chat otherwise
+            private _style = if (_prefVar isEqualType "" && {_prefVar != ""} && {hasInterface}) then { missionNamespace getVariable [_prefVar, "chat"] } else { "chat" };
+            if (_style != "chat" && {!isNil "ALIVE_fnc_taskSubtitle"}) then {
+                // it keeps the Radio Log line itself
+                ["HQ", _message, _noLog, _heard, _style] call ALIVE_fnc_taskSubtitle;
+                _noLog = true;
+            } else {
+                [_side,_hqClass] sideChat _message;
+            };
         };
 
         if(!(_fromUnit) && !(_fromHQ) && !(_fromGroup)) then {

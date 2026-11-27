@@ -25,6 +25,17 @@ class CfgHints
             // optional parameter for not showing of image in context hint in mission (default false))
             noImage = false;
         };
+        // Force Report (Jman, 27 Nov)
+        class opcom_forcereport
+        {
+            displayName = "$STR_ALIVE_OPCOM_HINT_FORCE";
+            displayNameShort = "$STR_ALIVE_OPCOM_HINT_FORCE_SHORT";
+            description = "$STR_ALIVE_OPCOM_HINT_FORCE_DESC";
+            tip = "$STR_ALIVE_OPCOM_HINT_FORCE_TIP";
+            arguments[] = {};
+            image = "x\alive\addons\ui\logo_alive_square.paa";
+            noImage = false;
+        };
     };
 };
 
