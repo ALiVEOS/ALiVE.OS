@@ -78,11 +78,14 @@ switch (_taskState) do {
             ([_pr, "position", [0,0,0]] call ALiVE_fnc_HashGet) distance2D _Input0
         }, "ASCEND"] call ALiVE_fnc_SortBy;
         if (_taskLocationType != "Map") then { _targets = ["groups", _taskSide, _targets] call ALIVE_fnc_taskKnownEnemy };
+        // only a group that is on the ground now (spawned, so near a player): rounds on a group that is only a profile
+        // hit nothing, and the Fire stage waited out its 20 minutes on a target that could never be cleared (Fitz)
         _targets = (_targets select [0, 40]) select {
             private _pr = [ALiVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-            [[_pr, "position", [0,0,0]] call ALiVE_fnc_HashGet] call _inRange
+            ([_pr, "active", false] call ALiVE_fnc_HashGet) isEqualTo true
+            && {[[_pr, "position", [0,0,0]] call ALiVE_fnc_HashGet] call _inRange}
         };
-        if (_targets isEqualTo []) exitWith { ["C2ISTAR - Task FireMission - no enemy group known to %1 in range of the %2 at %3", _taskSide, typeOf _gun, mapGridPosition _gun] call ALiVE_fnc_Dump };
+        if (_targets isEqualTo []) exitWith { ["C2ISTAR - Task FireMission - no spawned enemy group known to %1 in range of the %2 at %3", _taskSide, typeOf _gun, mapGridPosition _gun] call ALiVE_fnc_Dump };
         private _free = ["free", _targets] call ALIVE_fnc_taskTargetClaim;
         if (_free isNotEqualTo []) then { _targets = _free };
         private _targetID = _targets select 0;
