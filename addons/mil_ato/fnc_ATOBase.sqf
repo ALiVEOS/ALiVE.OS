@@ -536,6 +536,46 @@ switch(_operation) do {
                 };
             };
 
+            // Extra Helipads (#1149, localjedi on Discord, Anizay): class names of a map's or a mod's own pads that the
+            // pad search doesn't know, and marker names for pads that are only painted on the ground. An invisible
+            // helipad is put on each one found, so every pad search (the air spawn validator, base adoption, the
+            // airfield test) uses it as a pad, as when a mission maker places Helipad (Invisible) on it in Eden.
+            // One already carrying a helipad within 3 m is left alone, so a second module adds nothing twice
+            private _extraPads = [_module getVariable ["extraHelipads", ""]] call _fnc_parseAirspace;
+            if (count _extraPads > 0) then {
+                private _padAt = {
+                    params ["_pos", "_dir"];
+                    if ((nearestObjects [_pos, ["HeliH"], 3]) isEqualTo []) then {
+                        private _pad = createVehicle ["Land_HelipadEmpty_F", _pos, [], 0, "CAN_COLLIDE"];
+                        _pad setDir _dir;
+                        _pad setPosATL [_pos select 0, _pos select 1, 0];
+                        true
+                    } else { false };
+                };
+                private _added = 0;
+                private _classes = [];
+                private _unknown = [];
+                {
+                    if ((getMarkerType _x) != "" || {(markerShape _x) in ["RECTANGLE", "ELLIPSE"]}) then {
+                        if ([getMarkerPos _x, markerDir _x] call _padAt) then { _added = _added + 1 };
+                    } else {
+                        if (isClass (configFile >> "CfgVehicles" >> _x)) then { _classes pushBackUnique _x } else { _unknown pushBack _x };
+                    };
+                } forEach _extraPads;
+                if (count _classes > 0) then {
+                    private _c = worldSize / 2;
+                    {
+                        if !(_x isKindOf "HeliH") then {
+                            if ([getPosATL _x, getDir _x] call _padAt) then { _added = _added + 1 };
+                        };
+                    } forEach (nearestObjects [[_c, _c, 0], _classes, _c * 1.5]);
+                };
+                if (count _unknown > 0) then {
+                    ["ALIVE_fnc_ATOBase - Extra Helipads: %1 is neither a marker nor a vehicle class and has been ignored. Check the spelling in this module's Extra Helipads setting.", _unknown] call ALiVE_fnc_dumpR;
+                };
+                ["ALIVE_fnc_ATOBase - Extra Helipads: %1 pad(s) added from %2", _added, _extraPads] call ALiVE_fnc_dump;
+            };
+
             // Where to fly from when there is no airfield to fly from.
             //
             // Read but not acted on here: whether it is NEEDED is not known

@@ -191,6 +191,16 @@
     <Chinesesimp>空域标记</Chinesesimp>
     <Spanish>Marcadores de espacio aéreo:</Spanish>
 </Key>
+<Key ID="STR_ALIVE_ATO_EXTRA_HELIPADS">
+    <English>Extra Helipads:</English>
+    <Spanish>Helipuertos adicionales:</Spanish>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ATO_EXTRA_HELIPADS_COMMENT">
+    <English>Helipads the air commander doesn't find by itself, comma-separated: class names of a map's or a mod's own pads, and marker names for pads that are only painted on the ground. Each one gets an invisible helipad, so helicopters park on it. Blank (the default) adds none.</English>
+    <Spanish>Helipuertos que el comandante aéreo no encuentra por sí mismo, separados por comas: nombres de clase de los helipuertos propios de un mapa o de un mod, y nombres de marcadores para helipuertos que solo están pintados en el suelo. Cada uno recibe un helipuerto invisible, así que los helicópteros aparcan en él. En blanco (por defecto) no añade ninguno.</Spanish>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ATO_AIRSPACE_BLACKLIST">
     <English>Airspace Blacklist:</English>
     <Spanish>Lista negra del espacio aéreo:</Spanish>

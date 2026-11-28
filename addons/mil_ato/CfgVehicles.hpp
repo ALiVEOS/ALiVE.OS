@@ -112,6 +112,13 @@ class CfgVehicles
                         tooltip = "$STR_ALIVE_ATO_AIRSPACE_BLACKLIST_COMMENT";
                         defaultValue = """""";
                 };
+                class extraHelipads : Edit
+                {
+                        property = "ALiVE_mil_ato_extraHelipads";
+                        displayName = "$STR_ALIVE_ATO_EXTRA_HELIPADS";
+                        tooltip = "$STR_ALIVE_ATO_EXTRA_HELIPADS_COMMENT";
+                        defaultValue = """""";
+                };
                 // Tempo controls. All blank by default and blank means "as before",
                 // so an untouched mission is byte-identical in behaviour.
                 class sortieDuration : Edit
