@@ -782,6 +782,15 @@ _d set ["eh", addMissionEventHandler ["EachFrame", {
                 _uav enableSimulationGlobal false;
                 if (_d get "debug") then { ["ALIVE-%1 FPV drone: held while the server is paused, at %2", time, mapGridPosition _uav] call ALiVE_fnc_dump };
             };
+            // the War Room's live map counts the battery down to the end it was given, and the end only moves on when
+            // the drone carries on: while it is held the end it is sent moves on with the clock, so the battery left
+            // reads the same all through the pause (it read as running down, with nobody on to see the drone itself)
+            private _info = _uav getVariable ["ALiVE_IED_droneInfo", []];
+            if (count _info > 4) then {
+                _info = +_info;
+                _info set [4, (_d get "batteryEnd") + (time - (_d get "heldAt"))];
+                _uav setVariable ["ALiVE_IED_droneInfo", _info];
+            };
             sleep 4;
             continue;
         };
