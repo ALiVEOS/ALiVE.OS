@@ -2145,6 +2145,17 @@ switch(_operation) do {
 
         private _label = [_profileID, "_"] call CBA_fnc_split;
         private _debugAlpha = if (_profileActive) then { 1 } else { 0.3 };
+        // the AI Commander order this group is on (#1154, Spicy on Discord): recon, capture, defend or reserve, read from
+        // the objective its commander has it assigned to; nothing when it has none
+        private _order = "";
+        {
+            private _objID = ([_x, "profileObjectiveAssignment", createHashMap] call ALiVE_fnc_HashGet) getOrDefault [_profileID, ""];
+            if (_objID isNotEqualTo "") exitWith {
+                private _obj = ([_x, "objectivesByID", createHashMap] call ALiVE_fnc_HashGet) getOrDefault [_objID, []];
+                private _state = if (_obj isEqualType [] && {_obj isNotEqualTo []}) then { [_obj, "tacom_state", "none"] call ALiVE_fnc_HashGet } else { "none" };
+                if (_state in ["recon", "capture", "defend", "reserve"]) then { _order = " " + _state };
+            };
+        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
         private _waypointCount = 0;
         {
@@ -2163,7 +2174,7 @@ switch(_operation) do {
                 ["id", format[MTEMPLATE, format["%1_debug",_profileID]]],
                 ["position", _position], ["shape", "ICON"], ["size", [.4, .4]],
                 ["type", _debugIcon], ["color", _debugColor], ["alpha", _debugAlpha],
-                ["text", format["e%1",_label select ((count _label) - 1)]]
+                ["text", format["e%1%2",_label select ((count _label) - 1), _order]]
             ]);
         };
     };
