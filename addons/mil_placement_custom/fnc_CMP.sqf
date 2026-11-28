@@ -678,7 +678,10 @@ switch(_operation) do {
                 _factionSource = "its older hidden faction setting, as no synced AI Commander gave one";
             };
             if (count _factions == 0) then { _factions = [DEFAULT_FACTION]; _factionSource = "the default, as nothing else gave one" };
-            ["%1 - objective at %2 places %3, from %4", "CMP", mapGridPosition _logic, _factions, _factionSource] call ALiVE_fnc_dump;
+            // where the factions came from: with debug on, or when nothing gave one and the default is used
+            if (_debug || {_factionSource isEqualTo "the default, as nothing else gave one"}) then {
+                ["%1 - objective at %2 places %3, from %4", "CMP", mapGridPosition _logic, _factions, _factionSource] call ALiVE_fnc_dump;
+            };
 
             private _faction = _factions select 0;
             private _size = [_logic, "size"] call MAINCLASS;

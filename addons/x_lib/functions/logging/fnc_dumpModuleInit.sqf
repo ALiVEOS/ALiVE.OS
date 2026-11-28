@@ -108,15 +108,53 @@ if (isServer) then {
     publicVariable "ALiVE_initActivity";
 };
 
+// The first module of each type logs its INIT and INIT COMPLETE TIME lines. Further ones of the same type (a
+// mission with 28 placement modules gave 56 lines) are timed quietly, and once none of that type is still
+// starting, one line gives how many there were and the slowest. Tools that look for the first
+// "] Module ALiVE_" line still find it.
+if (isNil "ALIVE_moduleInitSeen") then { ALIVE_moduleInitSeen = createHashMap };
+private _typeM = typeOf _logic;
 if(_start) then {
     // the number is taken and moved on in one unbroken step: two modules starting side by side both
     // took the same one (both AI Commanders logged as m_73), and the second's timer replaced the first's
-    isNil { _moduleID = format["m_%1", ALIVE_moduleCount]; ALIVE_moduleCount = ALIVE_moduleCount + 1; };
-    _message = format["[%3|%1] Module %2 INIT",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
-    [true, _message, _moduleID] call ALIVE_fnc_timer;
+    private _repeat = false;
+    isNil {
+        _moduleID = format["m_%1", ALIVE_moduleCount]; ALIVE_moduleCount = ALIVE_moduleCount + 1;
+        // [started, finished, slowest, ids of the quiet ones]
+        private _seen = ALIVE_moduleInitSeen getOrDefault [_typeM, []];
+        if (_seen isEqualTo []) then { ALIVE_moduleInitSeen set [_typeM, [0, 0, 0, []]] } else {
+            _repeat = true;
+            _seen set [0, (_seen select 0) + 1];
+            (_seen select 3) pushBack _moduleID;
+        };
+    };
+    if (_repeat) then {
+        if (isNil "ALIVE_timers") then { ALIVE_timers = [] call ALIVE_fnc_hashCreate };
+        [ALIVE_timers, _moduleID, diag_tickTime] call ALIVE_fnc_hashSet;
+    } else {
+        _message = format["[%3|%1] Module %2 INIT",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
+        [true, _message, _moduleID] call ALIVE_fnc_timer;
+    };
 }else{
-    _message = format["[%3|%1] Module %2 INIT COMPLETE TIME: ",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
-    [false, _message, _moduleID] call ALIVE_fnc_timer;
+    private _seen = ALIVE_moduleInitSeen getOrDefault [_typeM, []];
+    if (_seen isNotEqualTo [] && {_moduleID in (_seen select 3)}) then {
+        private _took = diag_tickTime - ([ALIVE_timers, _moduleID, diag_tickTime] call ALIVE_fnc_hashGet);
+        private _done = [];
+        isNil {
+            _seen set [1, (_seen select 1) + 1];
+            _seen set [2, (_seen select 2) max _took];
+            if ((_seen select 1) >= (_seen select 0)) then {
+                _done = [_seen select 1, _seen select 2];
+                _seen set [0, 0]; _seen set [1, 0]; _seen set [2, 0];
+            };
+        };
+        if (_done isNotEqualTo []) then {
+            ["Module %1 INIT COMPLETE for %2 more, the slowest in %3", _typeM, _done select 0, (_done select 1) toFixed 3] call ALiVE_fnc_dump;
+        };
+    } else {
+        _message = format["[%3|%1] Module %2 INIT COMPLETE TIME: ",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
+        [false, _message, _moduleID] call ALIVE_fnc_timer;
+    };
 };
 
 _moduleID

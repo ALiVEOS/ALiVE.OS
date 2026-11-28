@@ -2044,7 +2044,11 @@ switch(_operation) do {
         [_ledger, "markPresent", _tail] call ALIVE_fnc_ATOLedger;
         [_deferred, _tail] call ALIVE_fnc_hashRem;
 
-        ["ALIVE_fnc_ATOPlace - attached %1 (%2) at %3", _tail, typeOf _obj, _home select 0] call ALiVE_fnc_dump;
+        // one line per airframe, with the base's debug on only
+        private _baseA = [_logic, "base", []] call ALIVE_fnc_hashGet;
+        if (_baseA isEqualType [] && {count _baseA > 2} && {([_baseA, "debug", false] call ALIVE_fnc_hashGet) isEqualTo true}) then {
+            ["ALIVE_fnc_ATOPlace - attached %1 (%2) at %3", _tail, typeOf _obj, _home select 0] call ALiVE_fnc_dump;
+        };
         _result = [true, ""];
     };
 

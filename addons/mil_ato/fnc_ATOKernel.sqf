@@ -973,8 +973,12 @@ private _fnc_transition = {
         _alt = [_obs, "altAGL", 0] call ALIVE_fnc_hashGet;
         _fuel = [_obs, "fuel", 0] call ALIVE_fnc_hashGet;
     };
-    ["ALIVE_fnc_ATOKernel - %1: %2 -> %3 (%4, alt %5 m, fuel %6)", _tail, _from, _to,
-        [_row2, "reason", ""] call ALIVE_fnc_hashGet, round _alt, _fuel toFixed 2] call ALiVE_fnc_dump;
+    // An aircraft settling onto its stand (RECOVERING -> PARKED, every airframe at the start and after each landing) is
+    // logged with debug on only; every other change always is
+    if (!(_from isEqualTo "RECOVERING" && {_to isEqualTo "PARKED"}) || {[_logic] call _fnc_debugOn}) then {
+        ["ALIVE_fnc_ATOKernel - %1: %2 -> %3 (%4, alt %5 m, fuel %6)", _tail, _from, _to,
+            [_row2, "reason", ""] call ALIVE_fnc_hashGet, round _alt, _fuel toFixed 2] call ALiVE_fnc_dump;
+    };
 
     // Why it is coming home, when the answer is that its targets are gone. The
     // reason alone reads RETURN for that, for a clock that ran out and for a
@@ -3521,7 +3525,7 @@ switch(_operation) do {
                 private _row = [_machine, "newRow", [_x, [_logic, _x] call _fnc_homeOf]] call ALIVE_fnc_ATOMachine;
                 [_rows, _x, _row] call ALIVE_fnc_hashSet;
                 [_sortieOf, _x, ""] call ALIVE_fnc_hashSet;
-                ["ALIVE_fnc_ATOKernel - row opened for %1", _x] call ALiVE_fnc_dump;
+                if ([_logic] call _fnc_debugOn) then { ["ALIVE_fnc_ATOKernel - row opened for %1", _x] call ALiVE_fnc_dump };
                 if !([_logic, "playersCanUseAircraft"] call MAINCLASS) then {
                     private _oR = [_place, "objFor", _x] call ALIVE_fnc_ATOPlace;
                     private _effectR = [_logic, "effect"] call _fnc_piece;

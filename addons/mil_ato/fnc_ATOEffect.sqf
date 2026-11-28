@@ -1107,7 +1107,8 @@ switch(_operation) do {
                 if (_okS) then {
                     _matched = !(_whyS isEqualTo "");
                     _detail = _whyS;
-                    if (!_matched) then { ["ALIVE_fnc_ATOEffect - %1 (%2) asleep on its stand, nobody near", typeOf _obj, _tailS] call ALiVE_fnc_dump };
+                    // a stand going to sleep or waking is logged with the Air Commander's debug on only (the registry holds it)
+                    if (!_matched && {!isNil "ALIVE_ATOGlobalRegistry" && {([ALIVE_ATOGlobalRegistry, "debug", false] call ALIVE_fnc_hashGet) isEqualTo true}}) then { ["ALIVE_fnc_ATOEffect - %1 (%2) asleep on its stand, nobody near", typeOf _obj, _tailS] call ALiVE_fnc_dump };
                 } else {
                     _status = "refused";
                     _detail = _whyS;
@@ -1121,7 +1122,7 @@ switch(_operation) do {
                 if (_okW) then {
                     _matched = !(_whyW isEqualTo "");
                     _detail = _whyW;
-                    if (!_matched) then { ["ALIVE_fnc_ATOEffect - %1 (%2) awake%3", typeOf _obj, _tailW, if (alive _obj) then {""} else {", a wreck"}] call ALiVE_fnc_dump };
+                    if (!_matched && {!isNil "ALIVE_ATOGlobalRegistry" && {([ALIVE_ATOGlobalRegistry, "debug", false] call ALIVE_fnc_hashGet) isEqualTo true}}) then { ["ALIVE_fnc_ATOEffect - %1 (%2) awake%3", typeOf _obj, _tailW, if (alive _obj) then {""} else {", a wreck"}] call ALiVE_fnc_dump };
                 } else {
                     _status = "refused";
                     _detail = _whyW;
