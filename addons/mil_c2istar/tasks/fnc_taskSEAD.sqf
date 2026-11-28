@@ -72,6 +72,18 @@ switch (_taskState) do {
         if (count _task > 11) then {
 
             _targetVehicles = _task select 11;
+            // Tasks Only Against Known Enemy covers a site handed over too (#1153, A. Ares): the Air Commander sees
+            // every enemy air defence in its airspaces, spawned or virtual, whether or not the side has seen it, so
+            // one it hands to players passes the same check as one picked here (a spawned one without a profile
+            // by where it stands)
+            if (_taskLocationType != "Map" && {missionNamespace getVariable ["ALiVE_c2istar_tasksKnownOnly", false]}) then {
+                _targetVehicles = _targetVehicles select {
+                    if (_x isEqualType "") then { (["vehicles", _taskSide, [_x]] call ALIVE_fnc_taskKnownEnemy) isNotEqualTo [] } else {
+                        _x isEqualType objNull && {!isNull _x} && {["place", _taskSide, getPosATL _x] call ALIVE_fnc_taskKnownEnemy}
+                    }
+                };
+                if (_debug && {_targetVehicles isEqualTo []}) then { ["C2ISTAR - Task SEAD - the site handed over is not known to %1, no task", _taskSide] call ALiVE_fnc_Dump };
+            };
 
         } else {
 
