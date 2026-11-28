@@ -581,6 +581,11 @@ switch (_operation) do {
             ["pendingorders", []]
         ]] call ALIVE_fnc_hashCreate;
 
+        // the name this commander goes by in the RPT (#1151): its side, its variable name when it has one, and its
+        // factions, so two commanders on one side can be told apart
+        private _logVar = vehicleVarName _logic;
+        [_handler, "logName", format ["%1%2 (%3)", _side, [" " + _logVar, ""] select (_logVar == ""), _factions joinString ", "]] call ALiVE_fnc_HashSet;
+
         _logic setVariable ["handler", _handler];
 
         //Add to OPCOM_instances global array for easier access
@@ -1102,7 +1107,7 @@ switch (_operation) do {
             [_handler, "scantroops"] call ALiVE_fnc_OPCOM;
         };
 
-        ["OPCOM %1 Initial analysis done...", _side] call ALiVE_fnc_dump;
+        ["OPCOM %1 Initial analysis done...", [_handler, "logName", _side] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
 
         // Hold Until Go: paused before its FSMs start, which read the pause when they begin, so nothing is ordered in
         // between. A campaign loaded from a save started its war before it was saved, and a Go already given stands.
@@ -1116,10 +1121,10 @@ switch (_operation) do {
                 ALiVE_OPCOM_heldATO = true;
                 [] spawn { ["ALIVE_MIL_ATO"] call ALiVE_fnc_pauseModule };
             };
-            ["OPCOM %1 holds until Go is given", _side] call ALiVE_fnc_dump;
+            ["OPCOM %1 holds until Go is given", [_handler, "logName", _side] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
         };
 
-        ["OPCOM and TACOM %1 starting...",_side] call ALiVE_fnc_Dump;
+        ["OPCOM and TACOM %1 starting...",[_handler, "logName", _side] call ALiVE_fnc_HashGet] call ALiVE_fnc_Dump;
 
         // Dug In: the ground vehicles at the objectives it holds are parked where they are before anything is ordered
         if (_type == "dugin") then { [_handler, "dugInPin"] call MAINCLASS };
@@ -1197,7 +1202,7 @@ switch (_operation) do {
                         };
                     } forEach ([_handler,"objectives",[]] call ALiVE_fnc_HashGet);
                     [_handler,"minefields",_fields] call ALiVE_fnc_HashSet;
-                    if (_restored > 0) then { ["OPCOM %1: %2 saved minefield(s) laid again", _side, _restored] call ALiVE_fnc_dump };
+                    if (_restored > 0) then { ["OPCOM %1: %2 saved minefield(s) laid again", ([_handler, "logName", str _side] call ALiVE_fnc_HashGet), _restored] call ALiVE_fnc_dump };
                     private _setting = toLower ([_handler,"frontlineMinefields","none"] call ALiVE_fnc_HashGet);
                     private _max = switch (_setting) do { case "few": {2}; case "many": {6}; default {0} };
                     private _fields = [_handler,"minefields",[]] call ALiVE_fnc_HashGet;
@@ -1276,7 +1281,7 @@ switch (_operation) do {
                             _fields pushBack [[_objective,"objectiveID",""] call ALiVE_fnc_HashGet, _c, _mines, _classes];
                             private _saveList = []; { _saveList pushBack [_classes select _forEachIndex, getPosATL _x] } forEach _mines; [_objective,"minefield",_saveList] call ALiVE_fnc_HashSet; [_objective,"minefieldLaid",true] call ALiVE_fnc_HashSet;
                             [_handler,"minefields",_fields] call ALiVE_fnc_HashSet;
-                            ["OPCOM %1: minefield of %2 mines laid in front of %3, facing %4", _side, count _mines, mapGridPosition _c, round _dir] call ALiVE_fnc_dump;
+                            ["OPCOM %1: minefield of %2 mines laid in front of %3, facing %4", ([_handler, "logName", str _side] call ALiVE_fnc_HashGet), count _mines, mapGridPosition _c, round _dir] call ALiVE_fnc_dump;
                         };
                     };
                     sleep 300;
@@ -1371,7 +1376,7 @@ switch (_operation) do {
                             // players can take it apart once they've cleared the area (ALIVE_fnc_addDismantleAction)
                             [_pos, _r + 5, "fortifications"] call ALIVE_fnc_addDismantleAction;
                             _built pushBack _oid;
-                            ["OPCOM %1: prepared defences (%2) built at %3, facing %4", _side, configName _comp, mapGridPosition _pos, round _dir] call ALiVE_fnc_dump;
+                            ["OPCOM %1: prepared defences (%2) built at %3, facing %4", ([_handler, "logName", str _side] call ALiVE_fnc_HashGet), configName _comp, mapGridPosition _pos, round _dir] call ALiVE_fnc_dump;
                             break;
                         } forEach _candidates;
                         [_handler,"defences",_built] call ALiVE_fnc_HashSet;
@@ -2869,10 +2874,10 @@ switch (_operation) do {
                                     ([_logic, "reliefActive", createHashMap] call ALiVE_fnc_HashGet) deleteAt _id;
                                     [_logic, "removeObjective", _mid] call ALiVE_fnc_OPCOM;
                                     ["OPCOM RELIEVE - %1: group %2 at %3 is back to %4 of %5 men (%6 added) and is free for the commander again",
-                                        _side, _id, _rearWhat, _count, _most, _added] call ALiVE_fnc_dump;
+                                        ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _id, _rearWhat, _count, _most, _added] call ALiVE_fnc_dump;
                                 } else {
                                     ["OPCOM RELIEVE - %1: group %2 at %3 has %4 of %5 men (%6 added; %7) and stays there as a garrison",
-                                        _side, _id, _rearWhat, _count, _most, _added, _note] call ALiVE_fnc_dump;
+                                        ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _id, _rearWhat, _count, _most, _added, _note] call ALiVE_fnc_dump;
                                 };
                             };
                         };
@@ -2946,7 +2951,7 @@ switch (_operation) do {
             if (!isNil "_targetObjective" && {_targetObjective isNotEqualTo []}) then {
                 [_logic,"setObjectiveSection", [_targetObjective, ([_targetObjective,"section",[]] call ALiVE_fnc_HashGet) - _wet]] call MAINCLASS;
             };
-            ["OPCOM %1 - %2 not sent to objective %3: the way there crosses the sea", [_logic,"side",""] call ALiVE_fnc_HashGet, _wet, _objectiveID] call ALiVE_fnc_dump;
+            ["OPCOM %1 - %2 not sent to objective %3: the way there crosses the sea", [_logic, "logName", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _wet, _objectiveID] call ALiVE_fnc_dump;
         };
         if (_orderBatch isEqualTo []) exitWith { _result = [] };
 
@@ -3092,7 +3097,7 @@ switch (_operation) do {
                         && {!isNil {[ALiVE_ProfileHandler, "getProfile", _cid] call ALiVE_fnc_ProfileHandler}}) then { _defenders pushBack [_cid, _cpos] };
                 } forEach _cands;
                 if (_defenders isEqualTo []) then {
-                    ["[OPCOM INTEL] %1 %2: no preparation fire, nobody seen there in the last 10 minutes", [_logic,"side",""] call ALiVE_fnc_HashGet, _objectiveID] call ALiVE_fnc_dump;
+                    ["[OPCOM INTEL] %1 %2: no preparation fire, nobody seen there in the last 10 minutes", [_logic, "logName", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _objectiveID] call ALiVE_fnc_dump;
                 };
             } else {
                 _defenders = ([_logic,"findProfilesNearPosition",[_center,_sidesEnemy,false]] call MAINCLASS) select { ((_x select 1) distance2D _center) < 250 };
@@ -3360,7 +3365,7 @@ switch (_operation) do {
 
         if ([_logic,"debug",false] call ALiVE_fnc_HashGet) then {
             ["OPCOM %1 released %2 group(s) from dead order %3: %4",
-                [_logic,"side","EAST"] call ALiVE_fnc_HashGet, count _profileIDs, _orderID, _profileIDs] call ALiVE_fnc_dump;
+                [_logic, "logName", [_logic,"side","EAST"] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, count _profileIDs, _orderID, _profileIDs] call ALiVE_fnc_dump;
         };
 
         _result = _profileIDs;
@@ -4341,7 +4346,7 @@ switch (_operation) do {
 
                 // a commander holding until Go stays paused until "go"
                 if (!_args && {[_logic,"startPaused",false] call ALiVE_fnc_HashGet}) exitWith {
-                    ["OPCOM %1 is holding until Go: resume ignored", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
+                    ["OPCOM %1 is holding until Go: resume ignored", [_logic, "logName", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
                 };
 
                 // Nothing to release on a commander that is not paused. A player joining resumes the modules from an
@@ -6063,7 +6068,7 @@ switch (_operation) do {
         if (_knownTargets) then {
             [_logic, "unseenEnemyObjectives", _unseenObjectives] call ALiVE_fnc_HashSet;
             if ([_logic, "debug", false] call ALiVE_fnc_HashGet && {_unseenObjectives isNotEqualTo []}) then {
-                ["OPCOM %1 - enemies nobody has seen at %2, not counted (Targets Only What It Knows)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _unseenObjectives] call ALiVE_fnc_dump;
+                ["OPCOM %1 - enemies nobody has seen at %2, not counted (Targets Only What It Knows)", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _unseenObjectives] call ALiVE_fnc_dump;
             };
         };
 
@@ -6541,7 +6546,7 @@ switch (_operation) do {
             _module setVariable ["ALiVE_prep_state", "done"];
             _module setVariable ["ALiVE_prep_choice", ""];
             [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
-            ["OPCOM %1: the attack on %2 goes ahead (%3)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _pf, _why] call ALiVE_fnc_dump;
+            ["OPCOM %1: the attack on %2 goes ahead (%3)", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _pf, _why] call ALiVE_fnc_dump;
             if (([_logic, "prepCancelTasks"] call ALiVE_fnc_OPCOM) > 0 && {_say != ""}) then { _say = _say + " Remaining preparation tasks are cancelled." };
             if (_say != "") then { [_logic, "opRadio", _say] call ALiVE_fnc_OPCOM };
         };
@@ -6638,7 +6643,7 @@ switch (_operation) do {
                 _module setVariable ["ALiVE_prep_state", "expired"];
                 _cleared pushBackUnique _prepFor;
                 _module setVariable ["ALiVE_prep_cleared", _cleared];
-                ["OPCOM %1: the preparation for %2 ran out of time", [_logic, "side", ""] call ALiVE_fnc_HashGet, _prepFor] call ALiVE_fnc_dump;
+                ["OPCOM %1: the preparation for %2 ran out of time", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _prepFor] call ALiVE_fnc_dump;
                 private _gone = ([_logic, "prepCancelTasks"] call ALiVE_fnc_OPCOM) > 0;
                 [_logic, "opRadio", format ["Out of time at %1. The assault goes ahead without the preparations.%2", _module getVariable ["ALiVE_prep_place", "the objective"], ["", " Remaining preparation tasks are cancelled."] select _gone]] call ALiVE_fnc_OPCOM;
                 _result = false;
@@ -6719,7 +6724,7 @@ switch (_operation) do {
             _module setVariable ["ALiVE_prep_state", ["expired", "done"] select (_why == "done")];
             _cleared pushBackUnique _objectiveID;
             _module setVariable ["ALiVE_prep_cleared", _cleared];
-            ["OPCOM %1: the attack on %2 goes ahead (preparation %3, %4 of %5 tasks done)", [_logic, "side", ""] call ALiVE_fnc_HashGet, _objectiveID, _why, _won, count _ids] call ALiVE_fnc_dump;
+            ["OPCOM %1: the attack on %2 goes ahead (preparation %3, %4 of %5 tasks done)", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _objectiveID, _why, _won, count _ids] call ALiVE_fnc_dump;
             private _place = _module getVariable ["ALiVE_prep_place", "the objective"];
             private _say = switch (_why) do {
                 case "done": { format ["Preparations at %1 are complete. All units, the assault is going ahead.", _place] };
@@ -6735,7 +6740,7 @@ switch (_operation) do {
         if (random 1 >= ([_logic, "prepOften", 1] call ALiVE_fnc_HashGet)) exitWith {
             _cleared pushBackUnique _objectiveID;
             _module setVariable ["ALiVE_prep_cleared", _cleared];
-            ["OPCOM %1: no preparation tasks for %2 this time (Preparation Tasks How Often), the attack goes ahead", _side, _objectiveID] call ALiVE_fnc_dump;
+            ["OPCOM %1: no preparation tasks for %2 this time (Preparation Tasks How Often), the attack goes ahead", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _objectiveID] call ALiVE_fnc_dump;
         };
         private _players = [_logic, "prepTestPlayers", []] call ALiVE_fnc_HashGet;      // a test sets this; empty in play
         if (_players isEqualTo []) then {
@@ -6768,7 +6773,7 @@ switch (_operation) do {
             if (_enemyFaction == "") then {
                 _cleared pushBackUnique _objectiveID;
                 _module setVariable ["ALiVE_prep_cleared", _cleared];
-                ["OPCOM %1: no preparation task for %2 (no enemy groups there), the attack goes ahead", _side, _objectiveID] call ALiVE_fnc_dump;
+                ["OPCOM %1: no preparation task for %2 (no enemy groups there), the attack goes ahead", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _objectiveID] call ALiVE_fnc_dump;
             };
         };
         // what there is to do there, the wiretap always: a comms building at the objective if there is one (matched by
@@ -6828,7 +6833,7 @@ switch (_operation) do {
             private _more = _kinds select { !((_x select 0) in ["Wiretap", "ReconObjective"]) };
             private _place2 = _module getVariable ["ALiVE_prep_place", "the objective"];
             if (_more isEqualTo []) exitWith {
-                ["OPCOM %1: the recon at %2 found nothing to add to the preparations", _side, _objectiveID] call ALiVE_fnc_dump;
+                ["OPCOM %1: the recon at %2 found nothing to add to the preparations", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _objectiveID] call ALiVE_fnc_dump;
                 [_logic, "opRadio", format ["Recon at %1 is complete. Nothing there for further preparations.", _place2]] call ALiVE_fnc_OPCOM;
                 _result = false;
             };
@@ -6844,7 +6849,7 @@ switch (_operation) do {
             } forEach _more;
             _module setVariable ["ALiVE_prep_taskIDs", _ids2];
             _module setVariable ["ALiVE_prep_requestedAt", time];
-            ["OPCOM %1: the recon at %2 found %3; tasks added", _side, _objectiveID, _more apply { _x param [2, _x select 0] }] call ALiVE_fnc_dump;
+            ["OPCOM %1: the recon at %2 found %3; tasks added", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _objectiveID, _more apply { _x param [2, _x select 0] }] call ALiVE_fnc_dump;
             [_logic, "opRadio", format ["Recon at %1 is complete. %2 issued against what it found.", _place2,
                 [format ["%1 more tasks", count _more], "1 more task"] select (count _more == 1)]] call ALiVE_fnc_OPCOM;
             _result = false;
@@ -6889,7 +6894,7 @@ switch (_operation) do {
         _module setVariable ["ALiVE_prep_requestedAt", time];
         _module setVariable ["ALiVE_prep_deadline", time + ([_logic, "prepTimeout", 900] call ALiVE_fnc_HashGet)];
         _module setVariable ["ALiVE_prep_state", "requested"];
-        ["OPCOM %1: the attack on %2 waits for %3 at %4", _side, _objectiveID, _chosen apply { _x param [2, _x select 0] }, mapGridPosition _center] call ALiVE_fnc_dump;
+        ["OPCOM %1: the attack on %2 waits for %3 at %4", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _objectiveID, _chosen apply { _x param [2, _x select 0] }, mapGridPosition _center] call ALiVE_fnc_dump;
         [_logic, "opRadio", format ["The operation at %1 is not ready until the preparations are complete. %2 issued.", _place,
             [format ["%1 tasks", count _ids], "1 task"] select (count _ids == 1)]] call ALiVE_fnc_OPCOM;
         _result = false;
@@ -6940,7 +6945,7 @@ switch (_operation) do {
         } forEach _ids;
         _module setVariable ["ALiVE_prep_taskIDs", []];
         if (_result > 0) then {
-            ["OPCOM %1: preparation for %2 over, %3 tasks cancelled", [_logic, "side", ""] call ALiVE_fnc_HashGet, _module getVariable ["ALiVE_prep_objectiveID", ""], _result] call ALiVE_fnc_dump;
+            ["OPCOM %1: preparation for %2 over, %3 tasks cancelled", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _module getVariable ["ALiVE_prep_objectiveID", ""], _result] call ALiVE_fnc_dump;
         };
     };
 
@@ -6952,7 +6957,7 @@ switch (_operation) do {
         if (!isNil "_module" && {_args in ["take", "hand"]} && {(_module getVariable ["ALiVE_prep_choice", ""]) == "pending"}) then {
             _module setVariable ["ALiVE_prep_choice", _args];
             [_logic, "prepFlag"] call ALiVE_fnc_OPCOM;
-            ["OPCOM %1: the players answered %2 for %3", [_logic, "side", ""] call ALiVE_fnc_HashGet, _args, _module getVariable ["ALiVE_prep_objectiveID", ""]] call ALiVE_fnc_dump;
+            ["OPCOM %1: the players answered %2 for %3", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _args, _module getVariable ["ALiVE_prep_objectiveID", ""]] call ALiVE_fnc_dump;
             _result = true;
         };
     };
@@ -7232,7 +7237,7 @@ switch (_operation) do {
         private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet;
         private _close = {
             _intel set [1, "closed"];
-            ["[OPCOM INTEL] %1 %2: %3", _side, _objectiveID, _this] call ALiVE_fnc_dump;
+            ["[OPCOM INTEL] %1 %2: %3", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _objectiveID, _this] call ALiVE_fnc_dump;
         };
         switch (_state) do {
             // the request ID goes to ATO once, so a refusal is about this recce: asked for, or accepted then held too long
@@ -7252,14 +7257,14 @@ switch (_operation) do {
                 if (_air == "open") then {
                     _intel set [1, "accepted"];
                     if ((_intel param [14, -1]) < 0) then { _intel set [11, time] };
-                    ["[OPCOM INTEL] %1 %2: air recon accepted", _side, _objectiveID] call ALiVE_fnc_dump;
+                    ["[OPCOM INTEL] %1 %2: air recon accepted", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _objectiveID] call ALiVE_fnc_dump;
                 };
             };
             case "onstation": {
                 // a recce that comes late is still watched, as long as the assault waits
                 if (_air == "watching") exitWith {};
                 _intel set [1, "watching"];
-                ["[OPCOM INTEL] %1 %2: air recon on station (%3 aircraft)", _side, _objectiveID, count _aircraft] call ALiVE_fnc_dump;
+                ["[OPCOM INTEL] %1 %2: air recon on station (%3 aircraft)", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _objectiveID, count _aircraft] call ALiVE_fnc_dump;
                 [_logic, _objective, _aircraft select { _x isEqualType objNull && {!isNull _x} }] spawn {
                     params ["_logic", "_objective", "_aircraft"];
                     private _center = [_objective, "center", [0,0,0]] call ALiVE_fnc_HashGet;
@@ -7325,7 +7330,7 @@ switch (_operation) do {
         // the ground recon scans once, and the players' recon reports once
         if (_source in ["ground", "player"]) then { _intel set [[2, 3] select (_source == "player"), "closed"] };
         if (_source == "air" && {(_intel select 1) == "closed"} && {!(_intel param [12, false])}) then { _intel set [1, "open"] };
-        ["[OPCOM INTEL] %1 %2: %3 report, %4 seen, %5 contacts known there", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _source, count _ids, count _contacts] call ALiVE_fnc_dump;
+        ["[OPCOM INTEL] %1 %2: %3 report, %4 seen, %5 contacts known there", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _source, count _ids, count _contacts] call ALiVE_fnc_dump;
         // what counts for danger: groups still in the game, seen there in the last 15 minutes
         _result = { time - (_x select 2) <= 900 && {!isNil {[ALiVE_ProfileHandler, "getProfile", _x select 0] call ALiVE_fnc_ProfileHandler}} } count _contacts;
         // once TACOM has looked (danger 0 or more), a later report can only make it look more dangerous. Before that it
@@ -7333,7 +7338,7 @@ switch (_operation) do {
         private _danger = [_objective, "danger", -1] call ALiVE_fnc_HashGet;
         if (_danger >= 0 && {_result > _danger}) then {
             [_objective, "danger", _result] call ALiVE_fnc_HashSet;
-            ["[OPCOM INTEL] %1 %2: danger raised to %3 by a %4 report", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _result, _source] call ALiVE_fnc_dump;
+            ["[OPCOM INTEL] %1 %2: danger raised to %3 by a %4 report", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet, _result, _source] call ALiVE_fnc_dump;
         };
         [_logic, "intelMarkers", [_objective]] call MAINCLASS;
     };
@@ -7616,7 +7621,7 @@ switch (_operation) do {
                 [_logic, "intelNextID", _nid] call ALiVE_fnc_HashSet;
                 _next = _nid;
                 _nextPlace = [[_nobj, "center", [0,0,0]] call ALiVE_fnc_HashGet] call ALIVE_fnc_taskGetNearestLocationName;
-                ["[OPCOM INTEL] %1: %2 moved to the front, %3 groups last seen heading there from %4", _side, _nid, _groups, _oid] call ALiVE_fnc_dump;
+                ["[OPCOM INTEL] %1: %2 moved to the front, %3 groups last seen heading there from %4", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _nid, _groups, _oid] call ALiVE_fnc_dump;
             };
         };
         private _text = format ["At %1, %2 seen: %3 destroyed", _place, [format ["%1 enemy groups were", _seenN], "1 enemy group was"] select (_seenN == 1), _destroyed];
@@ -7781,7 +7786,7 @@ switch (_operation) do {
     // objective no longer being attacked (lost, given up, removed) is let go
     case "intelHold": {
         private _objective = _args;
-        ["[OPCOM INTEL] %1 %2: the assault waits for intel", [_logic, "side", ""] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
+        ["[OPCOM INTEL] %1 %2: the assault waits for intel", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, [_objective, "objectiveID", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
         [_logic, _objective] spawn {
             params ["_logic", "_objective"];
             waitUntil {
@@ -7883,7 +7888,7 @@ switch (_operation) do {
         };
 
         if (_members + _pinned > 0) then {
-            ["[OPCOM DUGIN] %1: %2 groups now hold an objective, %3 ground vehicle groups parked", _side, _members, _pinned] call ALiVE_fnc_dump;
+            ["[OPCOM DUGIN] %1: %2 groups now hold an objective, %3 ground vehicle groups parked", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _members, _pinned] call ALiVE_fnc_dump;
         };
         _result = _pinned;
     };
@@ -7902,7 +7907,7 @@ switch (_operation) do {
             [_objective, "dugInPinned", []] call ALiVE_fnc_HashSet;
             [_objective, "dugInMembers", []] call ALiVE_fnc_HashSet;
         } forEach ([_logic, "objectives", []] call ALiVE_fnc_HashGet);
-        ["[OPCOM DUGIN] %1: %2 parked vehicle groups free to move", [_logic, "side", ""] call ALiVE_fnc_HashGet, _freed] call ALiVE_fnc_dump;
+        ["[OPCOM DUGIN] %1: %2 parked vehicle groups free to move", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _freed] call ALiVE_fnc_dump;
         _result = _freed;
     };
 
@@ -8031,12 +8036,12 @@ switch (_operation) do {
         private _said = _kmModule getVariable "ALiVE_km_said";
         if (isNil "_said") then { _said = createHashMap; _kmModule setVariable ["ALiVE_km_said", _said] };
         if (time - (_said getOrDefault ["", -1e9]) < 60 || {time - (_said getOrDefault [_key, -1e9]) < 600}) exitWith {
-            if ([_logic, "debug", false] call ALiVE_fnc_HashGet) then { ["OPCOM %1 - key moment held back (too soon): %2", [_logic, "side", ""] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump };
+            if ([_logic, "debug", false] call ALiVE_fnc_HashGet) then { ["OPCOM %1 - key moment held back (too soon): %2", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump };
         };
         _said set ["", time];
         if (_key != "") then { _said set [_key, time] };
         [_logic, "opRadio", [_text, true]] call MAINCLASS;
-        ["OPCOM %1 - key moment: %2", [_logic, "side", ""] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump;
+        ["OPCOM %1 - key moment: %2", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump;
         _result = true;
     };
 
@@ -8067,7 +8072,7 @@ switch (_operation) do {
             if (_any) then { _text = _text + format [" Reinforcement pool: %1.", round (_pool max 0)] };
         };
         [_logic, "opRadio", [_text, true]] call MAINCLASS;
-        ["OPCOM %1 - %2", [_logic, "side", ""] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump;
+        ["OPCOM %1 - %2", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _text] call ALiVE_fnc_dump;
         _result = _text;
     };
 
@@ -8235,7 +8240,7 @@ switch (_operation) do {
                 _x params [["_kID", "", [""]], ["_kPos", [], [[]]], ["_kAge", 0, [0]]];
                 if (_kID != "" && {count _kPos > 1} && {_kAge <= 1800}) then { _seen set [_kID, [_kPos, time - _kAge]] };
             } forEach _knownSeen;
-            ["OPCOM %1: %2 enemy sightings known again after the load", [_logic,"side",""] call ALiVE_fnc_HashGet, count _seen] call ALiVE_fnc_dump;
+            ["OPCOM %1: %2 enemy sightings known again after the load", [_logic, "logName", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, count _seen] call ALiVE_fnc_dump;
         };
         if (_cleared isEqualType [] && {_cleared isNotEqualTo []}) then { _module setVariable ["ALiVE_prep_cleared", +_cleared] };
         // Assault: the target and its waves carry on, the next one after the time it had left
@@ -8245,13 +8250,13 @@ switch (_operation) do {
             _module setVariable ["ALiVE_Assault_targetID", _aID, true];
             _module setVariable ["ALiVE_Assault_waveNo", _aNo, true];
             _module setVariable ["ALiVE_Assault_nextWaveAt", time + _aLeft, true];
-            ["OPCOM %1: Assault carries on after the load, wave %2 on %3, the next in %4 s", [_logic,"side",""] call ALiVE_fnc_HashGet, _aNo, _aID, _aLeft] call ALiVE_fnc_dump;
+            ["OPCOM %1: Assault carries on after the load, wave %2 on %3, the next in %4 s", [_logic, "logName", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _aNo, _aID, _aLeft] call ALiVE_fnc_dump;
         };
         if (!(_left isEqualType 0) || {_left <= 0} || {_objID == ""}) exitWith {};
         private _deadline = time + _left;
         _module setVariable ["ALiVE_Occ_holdUntil", _deadline];
         _module setVariable ["ALiVE_Occ_objectiveID", _objID];
-        ["OPCOM %1: a pause after taking %2 carries on after the load, %3 s left", [_logic,"side",""] call ALiVE_fnc_HashGet, _objID, round _left] call ALiVE_fnc_dump;
+        ["OPCOM %1: a pause after taking %2 carries on after the load, %3 s left", [_logic, "logName", [_logic,"side",""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _objID, round _left] call ALiVE_fnc_dump;
         [_logic, _deadline, _objID] spawn {
             params ["_h", "_deadline", "_objID"];
             private _side = [_h,"side","WEST"] call ALiVE_fnc_HashGet;
@@ -8310,7 +8315,7 @@ switch (_operation) do {
                 if !(_name in _warned) then {
                     _warned pushBack _name;
                     ["OPCOM %1: Assault target %2 is no marker or named object with an objective within 500 m, so it's left out",
-                        [_logic, "side", ""] call ALiVE_fnc_HashGet, _name] call ALiVE_fnc_dump;
+                        [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet, _name] call ALiVE_fnc_dump;
                 };
             } else {
                 if ((_listed findIf { _x isEqualRef _best }) < 0) then { _listed pushBack _best };
@@ -8324,7 +8329,7 @@ switch (_operation) do {
             // decision loop to stop)
             if !([_logic, "assaultListDone", false] call ALiVE_fnc_HashGet) then {
                 [_logic, "assaultListDone", true] call ALiVE_fnc_HashSet;
-                ["OPCOM %1: every Assault target is held, so it carries on as Invasion", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
+                ["OPCOM %1: every Assault target is held, so it carries on as Invasion", [_logic, "logName", [_logic, "side", ""] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashGet] call ALiVE_fnc_dump;
                 [_logic] spawn { params ["_logic"]; private _ALiVE_stanceCaller = true; [_logic, "changeControlType", ["invasion"]] call ALiVE_fnc_OPCOM };
             };
         };
@@ -9328,7 +9333,7 @@ switch (_operation) do {
         };
 
         if (_debug) then {
-            ["OPCOM %1 starts with %2 profiles and %3 objectives!", _side, _opcomProfileCount, _objectiveCount] call ALIVE_fnc_dumpR;
+            ["OPCOM %1 starts with %2 profiles and %3 objectives!", ([_logic, "logName", format ["%1", _side]] call ALiVE_fnc_HashGet), _opcomProfileCount, _objectiveCount] call ALIVE_fnc_dumpR;
         };
 
         _result = true;
