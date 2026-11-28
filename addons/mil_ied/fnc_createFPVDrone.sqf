@@ -349,12 +349,6 @@ if (isClass (configFile >> "CfgVehicles" >> "ARMAFPV_Crocus_AT_Base")) then {
         ["AT", "AP"] select ((ADDON getVariable ["Drone_Charge", "MEDIUM"]) == "SMALL")];
     if (isClass (configFile >> "CfgVehicles" >> _crocus)) then { _fallback = _crocus };
 };
-private _class = ADDON getVariable ["Drone_Class", ""];
-if (_class != "" && {!isClass (configFile >> "CfgVehicles" >> _class) || {getNumber (configFile >> "CfgVehicles" >> _class >> "isUav") != 1}}) then {
-    if (_debug) then { ["ALIVE-%1 FPV drone: Drone Class %2 is not a drone, using %3", time, _class, _fallback] call ALiVE_fnc_dump };
-    _class = "";
-};
-if (_class == "") then { _class = _fallback };
 
 // the warhead: Large the Titan's top-attack anti-tank warhead, Medium a rocket warhead, Small a grenade; a missing
 // class falls back to the next one that exists
@@ -376,6 +370,23 @@ private _dropper = switch (_kind) do {
 if (_dropper) then {
     private _g = (["GrenadeHand", "mini_Grenade"] select { isClass (configFile >> "CfgAmmo" >> _x) }) param [0, ""];
     if (_g == "") then { _dropper = false } else { _ammo = _g };
+};
+// a dropper uses Dropper Drone Class when one is set (#1152), otherwise Drone Class; a wrong name falls back to Drone
+// Class, then the side's own drone
+private _isDrone = { _this != "" && {isClass (configFile >> "CfgVehicles" >> _this)} && {getNumber (configFile >> "CfgVehicles" >> _this >> "isUav") == 1} };
+private _class = ADDON getVariable ["Drone_Class", ""];
+if (_class != "" && {!(_class call _isDrone)}) then {
+    if (_debug) then { ["ALIVE-%1 FPV drone: Drone Class %2 is not a drone, using %3", time, _class, _fallback] call ALiVE_fnc_dump };
+    _class = "";
+};
+if (_class == "") then { _class = _fallback };
+if (_dropper) then {
+    private _dc = ADDON getVariable ["Drone_DropperClass", ""];
+    if (_dc != "") then {
+        if (_dc call _isDrone) then { _class = _dc } else {
+            if (_debug) then { ["ALIVE-%1 FPV drone: Dropper Drone Class %2 is not a drone, using %3", time, _dc, _class] call ALiVE_fnc_dump };
+        };
+    };
 };
 
 // launched 20 m up, 15 to 25 m behind the group's leader, away from the player; a roaming drone within 50 m of

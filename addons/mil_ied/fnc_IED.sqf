@@ -353,6 +353,9 @@ switch(_operation) do {
                     private _droneClass = _logic getVariable ["Drone_Class", ""];
                     ADDON setVariable ["Drone_Class", [_droneClass, ""] select !(_droneClass isEqualType "")];
                     if ((ADDON getVariable "Drone_Class") isEqualType "") then { ADDON setVariable ["Drone_Class", trim (ADDON getVariable "Drone_Class")] };
+                    // Dropper Drone Class (#1152): empty leaves droppers on Drone Class
+                    private _dropperClass = _logic getVariable ["Drone_DropperClass", ""];
+                    ADDON setVariable ["Drone_DropperClass", if (_dropperClass isEqualType "") then { trim _dropperClass } else { "" }];
                     // Drones Launched By: every AI Commander's side (ALL, default) or only the insurgent ones; read by bomberDispatch
                     private _launchers = _logic getVariable ["Drone_Launchers", "ALL"];
                     ADDON setVariable ["Drone_Launchers", ["ALL", "INSURGENT"] select (_launchers isEqualType "" && {(toUpper _launchers) == "INSURGENT"})];

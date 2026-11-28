@@ -170,6 +170,7 @@ class CfgVehicles {
                                 class Values { class Never{name="Never";value="false";}; class C25{name="25 %";value="25";}; class C50{name="50 %";value="50";default=1;}; class C75{name="75 %";value="75";}; class Always{name="Always";value="true";}; };
                         };
                         class Drone_Class : Edit { property = "ALiVE_mil_ied_Drone_Class"; displayName = "$STR_ALIVE_IED_DRONE_CLASS"; tooltip = "$STR_ALIVE_IED_DRONE_CLASS_COMMENT"; defaultValue = """"""; };
+                        class Drone_DropperClass : Edit { property = "ALiVE_mil_ied_Drone_DropperClass"; displayName = "$STR_ALIVE_IED_DRONE_DROPPERCLASS"; tooltip = "$STR_ALIVE_IED_DRONE_DROPPERCLASS_COMMENT"; defaultValue = """"""; };
                         // ---- Vehicle-Borne IED ----------------------------------------------
                         class HDR_VBIED : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ied_HDR_VBIED"; displayName = "VEHICLE-BORNE IED"; };
                         class VB_IED_Threat : Combo
